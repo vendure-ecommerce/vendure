@@ -1,73 +1,19 @@
 import { VendureConfig } from '@vendure/core';
-import { parse } from 'acorn';
-import { simple as walkSimple } from 'acorn-walk';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { open } from 'fs/promises';
 import path from 'path';
 import tsConfigPaths from 'tsconfig-paths';
+import { RegisterParams } from 'tsconfig-paths/lib/register.js';
 import * as ts from 'typescript';
 import { fileURLToPath, pathToFileURL } from 'url';
 
+import { Logger, PathAdapter, PluginInfo } from '../types.js';
+
 import { findConfigExport } from './ast-utils.js';
-
-type Logger = {
-    info: (message: string) => void;
-    warn: (message: string) => void;
-    debug: (message: string) => void;
-    error: (message: string) => void;
-};
-
-export type PluginInfo = {
-    name: string;
-    pluginPath: string;
-    dashboardEntryPath: string | undefined;
-};
-
-const defaultLogger: Logger = {
-    info: (message: string) => {
-        // eslint-disable-next-line no-console
-        console.log(message);
-    },
-    warn: (message: string) => {
-        // eslint-disable-next-line no-console
-        console.warn(message);
-    },
-    debug: (message: string) => {
-        // eslint-disable-next-line no-console
-        console.debug(message);
-    },
-    error: (message: string) => {
-        // eslint-disable-next-line no-console
-        console.error(message);
-    },
-};
-
-/**
- * @description
- * The PathAdapter interface allows customization of how paths are handled
- * when compiling the Vendure config and its imports.
- */
-export interface PathAdapter {
-    /**
-     * @description
-     * A function to determine the path to the compiled Vendure config file.
-     */
-    getCompiledConfigPath?: (params: {
-        inputRootDir: string;
-        outputPath: string;
-        configFileName: string;
-    }) => string;
-    /**
-     * If your project makes use of the TypeScript `paths` configuration, the compiler will
-     * attempt to use these paths when compiling the Vendure config and its imports.
-     */
-    transformTsConfigPathMappings?: (params: {
-        phase: 'compiling' | 'loading';
-        alias: string;
-        patterns: string[];
-    }) => string[];
-}
+import { debugLogger } from './debug-logger.js';
+import { discoverPlugins } from './plugin-discovery.js';
+import { findTsConfigPaths } from './tsconfig-utils.js';
 
 const defaultPathAdapter: Required<PathAdapter> = {
     getCompiledConfigPath: ({ outputPath, configFileName }) => path.join(outputPath, configFileName),
@@ -98,13 +44,7 @@ export interface CompileResult {
  * and in node_modules.
  */
 export async function compile(options: CompilerOptions): Promise<CompileResult> {
-    const {
-        vendureConfigPath,
-        outputPath,
-        pathAdapter,
-        logger = defaultLogger,
-        pluginScanPatterns,
-    } = options;
+    const { vendureConfigPath, outputPath, pathAdapter, logger = debugLogger, pluginScanPatterns } = options;
     const getCompiledConfigPath =
         pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
     const transformTsConfigPathMappings =
@@ -131,7 +71,14 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     });
 
     const analyzePluginsStart = Date.now();
-    const plugins = await discoverPlugins(pluginFiles, logger);
+
+    logger.debug(`pluginFiles: ${JSON.stringify(pluginFiles)}`);
+    const plugins = await discoverPlugins(
+        vendureConfigPath,
+        transformTsConfigPathMappings,
+        pluginFiles,
+        logger,
+    );
     logger.info(
         `Analyzed plugins and found ${plugins.length} dashboard extensions in ${Date.now() - analyzePluginsStart}ms`,
     );
@@ -147,7 +94,10 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     ).href.replace(/.ts$/, '.js');
 
     // Create package.json with type commonjs
-    await fs.writeFile(path.join(outputPath, 'package.json'), JSON.stringify({ type: 'commonjs' }, null, 2));
+    await fs.writeFile(
+        path.join(outputPath, 'package.json'),
+        JSON.stringify({ type: 'commonjs', private: true }, null, 2),
+    );
 
     // Find the exported config symbol
     const sourceFile = ts.createSourceFile(
@@ -164,20 +114,21 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     }
 
     const loadConfigStart = Date.now();
-    // Register path aliases from tsconfig
-    const tsConfigInfo = await findTsConfigPaths(
-        vendureConfigPath,
+
+    await registerTsConfigPaths({
+        outputPath,
+        configPath: vendureConfigPath,
         logger,
-        'loading',
+        phase: 'loading',
         transformTsConfigPathMappings,
-    );
-    if (tsConfigInfo) {
-        tsConfigPaths.register({
-            baseUrl: outputPath,
-            paths: tsConfigInfo.paths,
-        });
+    });
+
+    let config: any;
+    try {
+        config = await import(compiledConfigFilePath).then(m => m[exportedSymbolName]);
+    } catch (e) {
+        logger.error(`Error loading config: ${e instanceof Error ? e.message : String(e)}`);
     }
-    const config = await import(compiledConfigFilePath).then(m => m[exportedSymbolName]);
     if (!config) {
         throw new Error(
             `Could not find a variable exported as VendureConfig with the name "${exportedSymbolName}".`,
@@ -229,7 +180,7 @@ async function findVendurePluginFiles({
             : [path.join(nodeModulesRoot, 'node_modules/**/*.js')]),
     ];
 
-    logger.info(`Using patterns: ${patterns.join('\n')}`);
+    logger.debug(`Finding Vendure plugins using patterns: ${patterns.join('\n')}`);
 
     const globStart = Date.now();
     const files = await glob(patterns, {
@@ -238,10 +189,6 @@ async function findVendurePluginFiles({
             '**/node_modules/**/node_modules/**',
             '**/*.spec.js',
             '**/*.test.js',
-            '**/tests/**',
-            '**/testing/**',
-            '**/coverage/**',
-            '**/docs/**',
         ],
         onlyFiles: true,
         absolute: true,
@@ -304,99 +251,6 @@ async function findVendurePluginFiles({
     return potentialPluginFiles;
 }
 
-interface DiscoverPluginsOptions {
-    compiledConfigDir: string;
-    vendureConfigPath: string;
-    logger: Logger;
-}
-
-async function discoverPlugins(filePaths: string[], logger: Logger): Promise<PluginInfo[]> {
-    const plugins: PluginInfo[] = [];
-
-    for (const filePath of filePaths) {
-        const content = await fs.readFile(filePath, 'utf-8');
-
-        // First check if this file imports from @vendure/core
-        if (!content.includes('@vendure/core')) {
-            continue;
-        }
-
-        try {
-            const ast = parse(content, {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
-            });
-
-            let hasVendurePlugin = false;
-            let pluginName: string | undefined;
-            let dashboardPath: string | undefined;
-
-            // Walk the AST to find the plugin class and its decorator
-            walkSimple(ast, {
-                CallExpression(node: any) {
-                    // Look for __decorate calls
-                    if (node.callee.name === '__decorate') {
-                        const args = node.arguments;
-                        if (args.length >= 2) {
-                            // Check the decorators array (first argument)
-                            const decorators = args[0];
-                            if (decorators.type === 'ArrayExpression') {
-                                for (const decorator of decorators.elements) {
-                                    if (
-                                        decorator.type === 'CallExpression' &&
-                                        decorator.arguments.length === 1 &&
-                                        decorator.arguments[0].type === 'ObjectExpression'
-                                    ) {
-                                        // Look for the dashboard property in the decorator config
-                                        const props = decorator.arguments[0].properties;
-                                        for (const prop of props) {
-                                            if (
-                                                prop.key.name === 'dashboard' &&
-                                                prop.value.type === 'Literal'
-                                            ) {
-                                                dashboardPath = prop.value.value;
-                                                hasVendurePlugin = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            // Get the plugin class name (second argument)
-                            const targetClass = args[1];
-                            if (targetClass.type === 'Identifier') {
-                                pluginName = targetClass.name;
-                            }
-                        }
-                    }
-                },
-            });
-
-            if (hasVendurePlugin && pluginName && dashboardPath) {
-                logger.debug(`Found plugin "${pluginName}" in file: ${filePath}`);
-                logger.debug(`Raw dashboard path from decorator: ${dashboardPath}`);
-                // Keep the dashboard path relative to the plugin file
-                const resolvedDashboardPath = dashboardPath.startsWith('.')
-                    ? dashboardPath // Keep the relative path as-is
-                    : './' + path.relative(path.dirname(filePath), dashboardPath); // Make absolute path relative
-                logger.debug(`Plugin base dir: ${path.dirname(filePath)}`);
-                logger.debug(`Resolved dashboard path: ${resolvedDashboardPath}`);
-                const absolutePath = path.resolve(path.dirname(filePath), resolvedDashboardPath);
-                logger.debug(`Absolute path for existence check: ${absolutePath}`);
-                logger.debug(`Does dashboard file exist? ${fs.existsSync(absolutePath) ? 'true' : 'false'}`);
-                plugins.push({
-                    name: pluginName,
-                    pluginPath: filePath,
-                    dashboardEntryPath: resolvedDashboardPath, // Use the relative path
-                });
-            }
-        } catch (e) {
-            logger.error(`Failed to parse ${filePath}: ${e instanceof Error ? e.message : String(e)}`);
-        }
-    }
-
-    return plugins;
-}
-
 /**
  * Compiles TypeScript files to JavaScript
  */
@@ -412,17 +266,25 @@ async function compileTypeScript({
     transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
 }): Promise<void> {
     await fs.ensureDir(outputPath);
-    const program = ts.createProgram([inputPath], {
+
+    // Find tsconfig paths first
+    const tsConfigInfo = await findTsConfigPaths(
+        inputPath,
+        logger,
+        'compiling',
+        transformTsConfigPathMappings,
+    );
+
+    const compilerOptions: ts.CompilerOptions = {
         target: ts.ScriptTarget.ES2020,
-        module: ts.ModuleKind.NodeNext,
-        moduleResolution: ts.ModuleResolutionKind.NodeNext,
+        module: ts.ModuleKind.CommonJS,
+        moduleResolution: ts.ModuleResolutionKind.Node10, // More explicit CJS resolution
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         esModuleInterop: true,
         skipLibCheck: true,
         noEmit: false,
-        // Speed optimizations - disable all type checking
-        noResolve: true, // Don't add referenced modules to the program
+        // Speed optimizations
         noEmitOnError: false, // Emit output even if there are errors
         noImplicitAny: false, // Don't require implicit any
         noUnusedLocals: false, // Don't check for unused locals
@@ -430,19 +292,48 @@ async function compileTypeScript({
         allowJs: true,
         checkJs: false, // Don't type check JS files
         skipDefaultLibCheck: true, // Skip checking .d.ts files
-        isolatedModules: true, // Speed up compilation by not checking cross-file references
+        isolatedModules: false, // Need to check cross-file references to compile dependencies
         incremental: false, // Don't use incremental compilation (faster for one-off builds)
         resolveJsonModule: true,
+        preserveSymlinks: false,
         outDir: outputPath,
-    });
+    };
 
-    // Skip type checking entirely
-    const emitResult = program.emit(undefined, undefined, undefined, undefined, {
-        // Only transform the code, skip type checking
-        before: [],
-        after: [],
-        afterDeclarations: [],
-    });
+    logger.debug(`Compiling ${inputPath} to ${outputPath} using TypeScript...`);
+
+    // Add path mappings if found
+    if (tsConfigInfo) {
+        // We need to set baseUrl and paths for TypeScript to resolve the imports
+        compilerOptions.baseUrl = tsConfigInfo.baseUrl;
+        compilerOptions.paths = tsConfigInfo.paths;
+        // This is critical - it tells TypeScript to preserve the paths in the output
+        // compilerOptions.rootDir = tsConfigInfo.baseUrl;
+    }
+
+    logger.debug(`tsConfig paths: ${JSON.stringify(tsConfigInfo?.paths, null, 2)}`);
+    logger.debug(`tsConfig baseUrl: ${tsConfigInfo?.baseUrl ?? 'UNKNOWN'}`);
+
+    // Create a custom transformer to rewrite the output paths
+    const customTransformers: ts.CustomTransformers = {
+        after: [
+            context => {
+                return sourceFile => {
+                    // Only transform files that are not the entry point
+                    if (sourceFile.fileName === inputPath) {
+                        return sourceFile;
+                    }
+                    // Rewrite the file path to be relative to the config file
+                    const relativePath = path.relative(path.dirname(inputPath), sourceFile.fileName);
+                    const newPath = path.join(outputPath, path.basename(sourceFile.fileName));
+                    sourceFile.fileName = newPath;
+                    return sourceFile;
+                };
+            },
+        ],
+    };
+
+    const program = ts.createProgram([inputPath], compilerOptions);
+    const emitResult = program.emit(undefined, undefined, undefined, undefined, customTransformers);
 
     // Only log actual emit errors, not type errors
     if (emitResult.emitSkipped) {
@@ -461,58 +352,21 @@ async function compileTypeScript({
     }
 }
 
-/**
- * Finds and parses tsconfig files in the given directory and its parent directories.
- */
-async function findTsConfigPaths(
-    configPath: string,
-    logger: Logger,
-    phase: 'compiling' | 'loading',
-    transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'],
-): Promise<{ baseUrl: string; paths: Record<string, string[]> } | undefined> {
-    const configDir = path.dirname(configPath);
-    let currentDir = configDir;
-
-    while (currentDir !== path.parse(currentDir).root) {
-        try {
-            const files = await fs.readdir(currentDir);
-            const tsConfigFiles = files.filter(file => /^tsconfig(\..*)?\.json$/.test(file));
-
-            for (const fileName of tsConfigFiles) {
-                const tsConfigPath = path.join(currentDir, fileName);
-                try {
-                    const tsConfigContent = await fs.readFile(tsConfigPath, 'utf-8');
-                    const tsConfig = JSON.parse(tsConfigContent);
-                    const compilerOptions = tsConfig.compilerOptions || {};
-
-                    if (compilerOptions.paths) {
-                        const tsConfigBaseUrl = path.resolve(currentDir, compilerOptions.baseUrl || '.');
-                        const paths: Record<string, string[]> = {};
-
-                        for (const [alias, patterns] of Object.entries(compilerOptions.paths)) {
-                            const normalizedPatterns = (patterns as string[]).map(pattern =>
-                                pattern.replace(/\\/g, '/'),
-                            );
-                            paths[alias] = transformTsConfigPathMappings({
-                                phase,
-                                alias,
-                                patterns: normalizedPatterns,
-                            });
-                        }
-                        return { baseUrl: tsConfigBaseUrl, paths };
-                    }
-                } catch (e) {
-                    logger.warn(
-                        `Could not read or parse tsconfig file ${tsConfigPath}: ${e instanceof Error ? e.message : String(e)}`,
-                    );
-                }
-            }
-        } catch (e) {
-            logger.warn(
-                `Could not read directory ${currentDir}: ${e instanceof Error ? e.message : String(e)}`,
-            );
-        }
-        currentDir = path.dirname(currentDir);
+async function registerTsConfigPaths(options: {
+    outputPath: string;
+    configPath: string;
+    logger: Logger;
+    phase: 'compiling' | 'loading';
+    transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
+}) {
+    const { outputPath, configPath, logger, phase, transformTsConfigPathMappings } = options;
+    const tsConfigInfo = await findTsConfigPaths(configPath, logger, phase, transformTsConfigPathMappings);
+    if (tsConfigInfo) {
+        const params: RegisterParams = {
+            baseUrl: outputPath,
+            paths: tsConfigInfo.paths,
+        };
+        logger.debug(`Registering tsconfig paths: ${JSON.stringify(params, null, 2)}`);
+        tsConfigPaths.register(params);
     }
-    return undefined;
 }

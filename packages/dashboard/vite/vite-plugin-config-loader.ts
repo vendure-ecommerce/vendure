@@ -1,6 +1,7 @@
 import { Plugin } from 'vite';
 
 import { ConfigLoaderOptions, loadVendureConfig, LoadVendureConfigResult } from './utils/config-loader.js';
+import { debugLogger } from './utils/debug-logger.js';
 
 export interface ConfigLoaderApi {
     getVendureConfig(): Promise<LoadVendureConfigResult>;
@@ -28,17 +29,21 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                     tempDir: options.tempDir,
                     vendureConfigPath: options.vendureConfigPath,
                     vendureConfigExport: options.vendureConfigExport,
-                    logger: {
-                        info: (message: string) => this.info(message),
-                        warn: (message: string) => this.warn(message),
-                        debug: (message: string) => this.debug(message),
-                        error: (message: string) => this.error(message),
-                    },
+                    logger: process.env.LOG
+                        ? debugLogger
+                        : {
+                              info: (message: string) => this.info(message),
+                              warn: (message: string) => this.warn(message),
+                              debug: (message: string) => this.debug(message),
+                              error: (message: string) => this.error(message),
+                          },
                     pluginScanPatterns: options.pluginScanPatterns,
                 });
                 const endTime = Date.now();
                 const duration = endTime - startTime;
-                const pluginNames = result.pluginInfo.map(p => p.name).join(', ');
+                const pluginNames = result.pluginInfo
+                    .map(p => `${p.name} ${p.sourcePluginPath ? '(local)' : '(npm)'}`)
+                    .join(', ');
                 this.info(`Found ${result.pluginInfo.length} plugins: ${pluginNames}`);
                 this.info(
                     `Vendure config loaded (using export "${result.exportedSymbolName}") in ${duration}ms`,

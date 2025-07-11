@@ -40,13 +40,15 @@ export function dashboardMetadataPlugin(): Plugin {
                 const resolveStart = Date.now();
                 const pluginsWithExtensions =
                     pluginInfo
-                        ?.map(({ dashboardEntryPath, pluginPath }) => {
+                        ?.map(({ dashboardEntryPath, pluginPath, sourcePluginPath }) => {
                             if (!dashboardEntryPath) {
                                 return null;
                             }
-                            // Since dashboardEntryPath is now relative to the plugin file,
-                            // we need to resolve from the plugin's directory
-                            const resolved = path.resolve(path.dirname(pluginPath), dashboardEntryPath);
+                            // For local plugins, use the sourcePluginPath to resolve the dashboard extension
+                            const basePath = sourcePluginPath
+                                ? path.dirname(sourcePluginPath)
+                                : path.dirname(pluginPath);
+                            const resolved = path.resolve(basePath, dashboardEntryPath);
                             this.debug(`Resolved extension path: ${resolved}`);
                             return resolved;
                         })

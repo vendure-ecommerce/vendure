@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "sourceMap": true,
+        "jsx": "react-jsx",
+        "paths": {
+            "@plugins/*": ["./fixtures-path-alias/*"]
+        }
+    },
+    "exclude": ["node_modules"]
+}

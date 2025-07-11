@@ -1,18 +1,14 @@
 import { VendureConfig } from '@vendure/core';
 
-import { compile, type PathAdapter } from './compiler.js';
+import { type PathAdapter, PluginInfo } from '../types.js';
+
+import { compile } from './compiler.js';
 
 type Logger = {
     info: (message: string) => void;
     warn: (message: string) => void;
     debug: (message: string) => void;
     error: (message: string) => void;
-};
-
-export type PluginInfo = {
-    name: string;
-    pluginPath: string;
-    dashboardEntryPath: string | undefined;
 };
 
 const defaultLogger: Logger = {
@@ -54,13 +50,11 @@ export interface LoadVendureConfigResult {
 export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<LoadVendureConfigResult> {
     const { vendureConfigPath, tempDir, pathAdapter, logger = defaultLogger, pluginScanPatterns } = options;
 
-    const result = await compile({
+    return await compile({
         vendureConfigPath,
         outputPath: tempDir,
         pathAdapter,
         logger,
         pluginScanPatterns,
     });
-
-    return result;
 }
