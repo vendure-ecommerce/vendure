@@ -1,7 +1,13 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { CompilerOptions } from 'typescript';
 
-import { Logger } from '../types.js';
+import { Logger, TransformTsConfigPathMappingsFn } from '../types.js';
+
+export interface TsConfigPathsConfig {
+    baseUrl: string;
+    paths: Record<string, string[]>;
+}
 
 /**
  * Finds and parses tsconfig files in the given directory and its parent directories.
@@ -10,14 +16,9 @@ export async function findTsConfigPaths(
     configPath: string,
     logger: Logger,
     phase: 'compiling' | 'loading',
-    transformTsConfigPathMappings: (params: {
-        phase: 'compiling' | 'loading';
-        alias: string;
-        patterns: string[];
-    }) => string[],
-): Promise<{ baseUrl: string; paths: Record<string, string[]> } | undefined> {
-    const configDir = path.dirname(configPath);
-    let currentDir = configDir;
+    transformTsConfigPathMappings: TransformTsConfigPathMappingsFn,
+): Promise<TsConfigPathsConfig | undefined> {
+    let currentDir = path.dirname(configPath);
 
     while (currentDir !== path.parse(currentDir).root) {
         try {
@@ -25,31 +26,21 @@ export async function findTsConfigPaths(
             const tsConfigFiles = files.filter(file => /^tsconfig(\..*)?\.json$/.test(file));
 
             for (const fileName of tsConfigFiles) {
-                const tsConfigPath = path.join(currentDir, fileName);
+                const tsConfigFilePath = path.join(currentDir, fileName);
                 try {
-                    const tsConfigContent = await fs.readFile(tsConfigPath, 'utf-8');
-                    const tsConfig = JSON.parse(tsConfigContent);
-                    const compilerOptions = tsConfig.compilerOptions || {};
-
-                    if (compilerOptions.paths) {
-                        const tsConfigBaseUrl = path.resolve(currentDir, compilerOptions.baseUrl || '.');
-                        const paths: Record<string, string[]> = {};
-
-                        for (const [alias, patterns] of Object.entries(compilerOptions.paths)) {
-                            const normalizedPatterns = (patterns as string[]).map(pattern =>
-                                pattern.replace(/\\/g, '/'),
-                            );
-                            paths[alias] = transformTsConfigPathMappings({
-                                phase,
-                                alias,
-                                patterns: normalizedPatterns,
-                            });
-                        }
-                        return { baseUrl: tsConfigBaseUrl, paths };
+                    const { paths, baseUrl } = await getCompilerOptionsFromFile(tsConfigFilePath);
+                    if (paths) {
+                        const tsConfigBaseUrl = path.resolve(currentDir, baseUrl || '.');
+                        const pathMappings = getTransformedPathMappings(
+                            paths,
+                            phase,
+                            transformTsConfigPathMappings,
+                        );
+                        return { baseUrl: tsConfigBaseUrl, paths: pathMappings };
                     }
                 } catch (e) {
                     logger.warn(
-                        `Could not read or parse tsconfig file ${tsConfigPath}: ${e instanceof Error ? e.message : String(e)}`,
+                        `Could not read or parse tsconfig file ${tsConfigFilePath}: ${e instanceof Error ? e.message : String(e)}`,
                     );
                 }
             }
@@ -61,4 +52,28 @@ export async function findTsConfigPaths(
         currentDir = path.dirname(currentDir);
     }
     return undefined;
+}
+
+async function getCompilerOptionsFromFile(tsConfigFilePath: string): Promise<CompilerOptions> {
+    const tsConfigContent = await fs.readFile(tsConfigFilePath, 'utf-8');
+    const tsConfig = JSON.parse(tsConfigContent);
+    return tsConfig.compilerOptions || {};
+}
+
+function getTransformedPathMappings(
+    paths: Required<CompilerOptions>['paths'],
+    phase: 'compiling' | 'loading',
+    transformTsConfigPathMappings: TransformTsConfigPathMappingsFn,
+) {
+    const pathMappings: Record<string, string[]> = {};
+
+    for (const [alias, patterns] of Object.entries(paths)) {
+        const normalizedPatterns = patterns.map(pattern => pattern.replace(/\\/g, '/'));
+        pathMappings[alias] = transformTsConfigPathMappings({
+            phase,
+            alias,
+            patterns: normalizedPatterns,
+        });
+    }
+    return pathMappings;
 }

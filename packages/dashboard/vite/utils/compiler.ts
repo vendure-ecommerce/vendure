@@ -197,10 +197,7 @@ async function compileTypeScript({
                     if (sourceFile.fileName === inputPath) {
                         return sourceFile;
                     }
-                    // Rewrite the file path to be relative to the config file
-                    const relativePath = path.relative(path.dirname(inputPath), sourceFile.fileName);
-                    const newPath = path.join(outputPath, path.basename(sourceFile.fileName));
-                    sourceFile.fileName = newPath;
+                    sourceFile.fileName = path.join(outputPath, path.basename(sourceFile.fileName));
                     return sourceFile;
                 };
             },

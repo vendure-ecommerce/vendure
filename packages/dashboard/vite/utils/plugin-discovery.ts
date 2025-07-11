@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import { Logger, PluginInfo, TransformTsConfigPathMappingsFn } from '../types.js';
 
 import { PackageScannerConfig } from './compiler.js';
+import { findTsConfigPaths, TsConfigPathsConfig } from './tsconfig-utils.js';
 
 export async function discoverPlugins({
     vendureConfigPath,
@@ -70,37 +71,30 @@ export async function discoverPlugins({
             walkSimple(ast, {
                 CallExpression(node: any) {
                     // Look for __decorate calls
-                    if (node.callee.name === '__decorate') {
-                        const args = node.arguments;
-                        if (args.length >= 2) {
-                            // Check the decorators array (first argument)
-                            const decorators = args[0];
-                            if (decorators.type === 'ArrayExpression') {
-                                for (const decorator of decorators.elements) {
-                                    if (
-                                        decorator.type === 'CallExpression' &&
-                                        decorator.arguments.length === 1 &&
-                                        decorator.arguments[0].type === 'ObjectExpression'
-                                    ) {
-                                        // Look for the dashboard property in the decorator config
-                                        const props = decorator.arguments[0].properties;
-                                        for (const prop of props) {
-                                            if (
-                                                prop.key.name === 'dashboard' &&
-                                                prop.value.type === 'Literal'
-                                            ) {
-                                                dashboardPath = prop.value.value;
-                                                hasVendurePlugin = true;
-                                            }
-                                        }
+                    const calleeName = node.callee.name;
+                    const nodeArgs = node.arguments;
+                    const isDecoratorWithArgs = calleeName === '__decorate' && nodeArgs.length >= 2;
+
+                    if (isDecoratorWithArgs) {
+                        // Check the decorators array (first argument)
+                        const decorators = nodeArgs[0];
+                        if (decorators.type === 'ArrayExpression') {
+                            for (const decorator of decorators.elements) {
+                                const props = getDecoratorObjectProps(decorator);
+                                for (const prop of props) {
+                                    const isDashboardProd =
+                                        prop.key.name === 'dashboard' && prop.value.type === 'Literal';
+                                    if (isDashboardProd) {
+                                        dashboardPath = prop.value.value;
+                                        hasVendurePlugin = true;
                                     }
                                 }
                             }
-                            // Get the plugin class name (second argument)
-                            const targetClass = args[1];
-                            if (targetClass.type === 'Identifier') {
-                                pluginName = targetClass.name;
-                            }
+                        }
+                        // Get the plugin class name (second argument)
+                        const targetClass = nodeArgs[1];
+                        if (targetClass.type === 'Identifier') {
+                            pluginName = targetClass.name;
                         }
                     }
                 },
@@ -131,6 +125,18 @@ export async function discoverPlugins({
     return plugins;
 }
 
+function getDecoratorObjectProps(decorator: any): any[] {
+    if (
+        decorator.type === 'CallExpression' &&
+        decorator.arguments.length === 1 &&
+        decorator.arguments[0].type === 'ObjectExpression'
+    ) {
+        // Look for the dashboard property in the decorator config
+        return decorator.arguments[0].properties ?? [];
+    }
+    return [];
+}
+
 /**
  * Analyzes TypeScript source files starting from the config file to discover:
  * 1. Local Vendure plugins
@@ -147,7 +153,6 @@ export async function analyzeSourceFiles(
     const localPluginLocations = new Map<string, string>();
     const visitedFiles = new Set<string>();
     const packageImportsSet = new Set<string>();
-    const configDir = path.dirname(vendureConfigPath);
 
     // Get tsconfig paths for resolving aliases
     const tsConfigInfo = await findTsConfigPaths(
@@ -183,56 +188,28 @@ export async function analyzeSourceFiles(
 
             function visit(node: ts.Node) {
                 // Look for VendurePlugin decorator
-                if (ts.isClassDeclaration(node)) {
-                    const decorators = ts.canHaveDecorators(node) ? ts.getDecorators(node) : undefined;
-                    if (decorators?.length) {
-                        for (const decorator of decorators) {
-                            const decoratorName = getDecoratorName(decorator);
-                            if (decoratorName === 'VendurePlugin') {
-                                const className = node.name?.text;
-                                if (className) {
-                                    localPluginLocations.set(className, filePath);
-                                    logger.debug(`Found plugin "${className}" at ${filePath}`);
-                                }
-                            }
-                        }
-                    }
+                const vendurePluginClassName = getVendurePluginClassName(node);
+                if (vendurePluginClassName) {
+                    localPluginLocations.set(vendurePluginClassName, filePath);
+                    logger.debug(`Found plugin "${vendurePluginClassName}" at ${filePath}`);
                 }
 
                 // Handle both imports and exports
-                if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+                const isImportOrExport = ts.isImportDeclaration(node) || ts.isExportDeclaration(node);
+                if (isImportOrExport) {
                     const moduleSpecifier = node.moduleSpecifier;
                     if (moduleSpecifier && ts.isStringLiteral(moduleSpecifier)) {
                         const importPath = moduleSpecifier.text;
 
                         // Track non-local imports (packages)
-                        if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
-                            // Get the root package name (e.g. '@scope/package/subpath' -> '@scope/package')
-                            const packageName = importPath.startsWith('@')
-                                ? importPath.split('/').slice(0, 2).join('/')
-                                : importPath.split('/')[0];
-                            packageImportsSet.add(packageName);
+                        const npmPackageName = getNpmPackageNameFromImport(importPath);
+                        if (npmPackageName) {
+                            packageImportsSet.add(npmPackageName);
                         }
-
                         // Handle path aliases and local imports
-                        if (tsConfigInfo) {
-                            // Check if this import matches any path mapping
-                            for (const [alias, patterns] of Object.entries(tsConfigInfo.paths)) {
-                                const aliasPattern = alias.replace(/\*$/, '');
-                                if (importPath.startsWith(aliasPattern)) {
-                                    const relativePart = importPath.slice(aliasPattern.length);
-                                    // Try each pattern
-                                    for (const pattern of patterns) {
-                                        const resolvedPattern = pattern.replace(/\*$/, '');
-                                        const resolvedPath = path.resolve(
-                                            tsConfigInfo.baseUrl,
-                                            resolvedPattern,
-                                            relativePart,
-                                        );
-                                        importsToFollow.push(resolvedPath);
-                                    }
-                                }
-                            }
+                        const pathAliasImports = getPotentialPathAliasImportPaths(importPath, tsConfigInfo);
+                        if (pathAliasImports.length) {
+                            importsToFollow.push(...pathAliasImports);
                         }
                         // Also handle local imports
                         if (importPath.startsWith('.')) {
@@ -260,7 +237,8 @@ export async function analyzeSourceFiles(
                 // Try each possible path
                 let found = false;
                 for (const possiblePath of possiblePaths) {
-                    if (await fs.pathExists(possiblePath)) {
+                    const possiblePathExists = await fs.pathExists(possiblePath);
+                    if (possiblePathExists) {
                         await processFile(possiblePath);
                         found = true;
                         break;
@@ -269,12 +247,14 @@ export async function analyzeSourceFiles(
 
                 // If none of the file paths worked, try the raw import path
                 // (it might be a directory)
-                if (!found && (await fs.pathExists(importPath))) {
+                const tryRawPath = !found && (await fs.pathExists(importPath));
+                if (tryRawPath) {
                     await processFile(importPath);
                 }
             }
         } catch (e) {
-            logger.error(`Failed to process ${filePath}: ${e instanceof Error ? e.message : String(e)}`);
+            const message = e instanceof Error ? e.message : String(e);
+            logger.error(`Failed to process ${filePath}: ${message}`);
         }
     }
 
@@ -283,6 +263,57 @@ export async function analyzeSourceFiles(
         localPluginLocations,
         packageImports: Array.from(packageImportsSet),
     };
+}
+
+/**
+ * If this is a class declaration that is decorated with the `VendurePlugin` decorator,
+ * we want to return that class name, as we have found a local Vendure plugin.
+ */
+function getVendurePluginClassName(node: ts.Node): string | undefined {
+    if (ts.isClassDeclaration(node)) {
+        const decorators = ts.canHaveDecorators(node) ? ts.getDecorators(node) : undefined;
+        if (decorators?.length) {
+            for (const decorator of decorators) {
+                const decoratorName = getDecoratorName(decorator);
+                if (decoratorName === 'VendurePlugin') {
+                    const className = node.name?.text;
+                    if (className) {
+                        return className;
+                    }
+                }
+            }
+        }
+    }
+}
+
+function getNpmPackageNameFromImport(importPath: string): string | undefined {
+    if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
+        // Get the root package name (e.g. '@scope/package/subpath' -> '@scope/package')
+        const packageName = importPath.startsWith('@')
+            ? importPath.split('/').slice(0, 2).join('/')
+            : importPath.split('/')[0];
+        return packageName;
+    }
+}
+
+function getPotentialPathAliasImportPaths(importPath: string, tsConfigInfo?: TsConfigPathsConfig) {
+    const importsToFollow: string[] = [];
+    if (!tsConfigInfo) {
+        return importsToFollow;
+    }
+    for (const [alias, patterns] of Object.entries(tsConfigInfo.paths)) {
+        const aliasPattern = alias.replace(/\*$/, '');
+        if (importPath.startsWith(aliasPattern)) {
+            const relativePart = importPath.slice(aliasPattern.length);
+            // Try each pattern
+            for (const pattern of patterns) {
+                const resolvedPattern = pattern.replace(/\*$/, '');
+                const resolvedPath = path.resolve(tsConfigInfo.baseUrl, resolvedPattern, relativePart);
+                importsToFollow.push(resolvedPath);
+            }
+        }
+    }
+    return importsToFollow;
 }
 
 function getDecoratorName(decorator: ts.Decorator): string | undefined {
@@ -296,66 +327,6 @@ function getDecoratorName(decorator: ts.Decorator): string | undefined {
         if (ts.isPropertyAccessExpression(expression)) {
             return expression.name.text;
         }
-    }
-    return undefined;
-}
-
-/**
- * Finds and parses tsconfig files in the given directory and its parent directories.
- */
-async function findTsConfigPaths(
-    configPath: string,
-    logger: Logger,
-    phase: 'compiling' | 'loading',
-    transformTsConfigPathMappings: (params: {
-        phase: 'compiling' | 'loading';
-        alias: string;
-        patterns: string[];
-    }) => string[],
-): Promise<{ baseUrl: string; paths: Record<string, string[]> } | undefined> {
-    const configDir = path.dirname(configPath);
-    let currentDir = configDir;
-
-    while (currentDir !== path.parse(currentDir).root) {
-        try {
-            const files = await fs.readdir(currentDir);
-            const tsConfigFiles = files.filter(file => /^tsconfig(\..*)?\.json$/.test(file));
-
-            for (const fileName of tsConfigFiles) {
-                const tsConfigPath = path.join(currentDir, fileName);
-                try {
-                    const tsConfigContent = await fs.readFile(tsConfigPath, 'utf-8');
-                    const tsConfig = JSON.parse(tsConfigContent);
-                    const compilerOptions = tsConfig.compilerOptions || {};
-
-                    if (compilerOptions.paths) {
-                        const tsConfigBaseUrl = path.resolve(currentDir, compilerOptions.baseUrl || '.');
-                        const paths: Record<string, string[]> = {};
-
-                        for (const [alias, patterns] of Object.entries(compilerOptions.paths)) {
-                            const normalizedPatterns = (patterns as string[]).map(pattern =>
-                                pattern.replace(/\\/g, '/'),
-                            );
-                            paths[alias] = transformTsConfigPathMappings({
-                                phase,
-                                alias,
-                                patterns: normalizedPatterns,
-                            });
-                        }
-                        return { baseUrl: tsConfigBaseUrl, paths };
-                    }
-                } catch (e) {
-                    logger.warn(
-                        `Could not read or parse tsconfig file ${tsConfigPath}: ${e instanceof Error ? e.message : String(e)}`,
-                    );
-                }
-            }
-        } catch (e) {
-            logger.warn(
-                `Could not read directory ${currentDir}: ${e instanceof Error ? e.message : String(e)}`,
-            );
-        }
-        currentDir = path.dirname(currentDir);
     }
     return undefined;
 }
