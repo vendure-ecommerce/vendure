@@ -170,6 +170,12 @@ function generateTypeResolvers(schema: GraphQLSchema) {
         if (!typesHandled.has(returnType.name)) {
             typesHandled.add(returnType.name);
             const nonErrorResult = returnType.getTypes().find(t => !inheritsFromErrorResult(t));
+            if (!nonErrorResult) {
+                throw new Error(
+                    `The type "${returnType.name}" seems to be a union of only ErrorResult types. ` +
+                        `This is not a valid union in Vendure, as it should also contain a non-error result type.`,
+                );
+            }
             result.push(
                 `  ${returnType.name}: {`,
                 `    __resolveType(value: any) {`,
