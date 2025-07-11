@@ -1,12 +1,10 @@
 import { VendureConfig } from '@vendure/core';
-import glob from 'fast-glob';
 import fs from 'fs-extra';
-import { open } from 'fs/promises';
 import path from 'path';
 import tsConfigPaths from 'tsconfig-paths';
 import { RegisterParams } from 'tsconfig-paths/lib/register.js';
 import * as ts from 'typescript';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { pathToFileURL } from 'url';
 
 import { Logger, PathAdapter, PluginInfo } from '../types.js';
 
@@ -22,13 +20,6 @@ const defaultPathAdapter: Required<PathAdapter> = {
 
 export interface PackageScannerConfig {
     nodeModulesRoot?: string;
-    /**
-     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
-     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
-     * If not specified, will scan all files in node_modules that appear in imports
-     * from your project.
-     */
-    globPatterns?: string[];
 }
 
 export interface CompilerOptions {
@@ -62,8 +53,6 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     const transformTsConfigPathMappings =
         pathAdapter?.transformTsConfigPathMappings ?? defaultPathAdapter.transformTsConfigPathMappings;
 
-    const startTime = Date.now();
-
     // 1. Compile TypeScript files
     const compileStart = Date.now();
     await compileTypeScript({
@@ -75,22 +64,14 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     logger.info(`TypeScript compilation completed in ${Date.now() - compileStart}ms`);
 
     // 2. Discover plugins
-    const pluginFiles = await findVendurePluginFiles({
-        tempDir: outputPath,
-        vendureConfigPath,
-        logger,
-        packageScanner: pluginPackageScanner,
-    });
-
     const analyzePluginsStart = Date.now();
-
-    logger.debug(`pluginFiles: ${JSON.stringify(pluginFiles)}`);
-    const plugins = await discoverPlugins(
+    const plugins = await discoverPlugins({
         vendureConfigPath,
         transformTsConfigPathMappings,
-        pluginFiles,
         logger,
-    );
+        outputPath,
+        pluginPackageScanner,
+    });
     logger.info(
         `Analyzed plugins and found ${plugins.length} dashboard extensions in ${Date.now() - analyzePluginsStart}ms`,
     );
@@ -146,128 +127,9 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
             `Could not find a variable exported as VendureConfig with the name "${exportedSymbolName}".`,
         );
     }
-    logger.info(`Loaded config in ${Date.now() - loadConfigStart}ms`);
-
-    const totalTime = Date.now() - startTime;
-    logger.info(`Total compilation process completed in ${totalTime}ms`);
+    logger.debug(`Loaded config in ${Date.now() - loadConfigStart}ms`);
 
     return { vendureConfig: config, exportedSymbolName, pluginInfo: plugins };
-}
-
-interface FindPluginFilesOptions {
-    tempDir: string;
-    vendureConfigPath: string;
-}
-
-async function findVendurePluginFiles({
-    tempDir,
-    vendureConfigPath,
-    logger,
-    packageScanner,
-}: FindPluginFilesOptions & {
-    logger: Logger;
-    packageScanner?: PackageScannerConfig;
-}): Promise<string[]> {
-    let nodeModulesRoot = packageScanner?.nodeModulesRoot;
-    const readStart = Date.now();
-    if (!nodeModulesRoot) {
-        // If the node_modules root path has not been explicitly
-        // specified, we will try to guess it by resolving the
-        // `@vendure/core` package.
-        try {
-            const coreUrl = import.meta.resolve('@vendure/core');
-            logger.debug(`Found core URL: ${coreUrl}`);
-            const corePath = fileURLToPath(coreUrl);
-            logger.debug(`Found core path: ${corePath}`);
-            nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
-        } catch (e) {
-            logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
-            nodeModulesRoot = path.dirname(vendureConfigPath);
-        }
-    }
-
-    const pluginGlobPatterns = packageScanner?.globPatterns;
-
-    const patterns = [
-        // Local compiled plugins in temp dir
-        path.join(tempDir, '**/*.js'),
-        // Node modules patterns
-        ...(pluginGlobPatterns
-            ? pluginGlobPatterns.map(pattern =>
-                  path.join(nodeModulesRoot, 'node_modules', pattern, '**/*.js'),
-              )
-            : [path.join(nodeModulesRoot, 'node_modules/**/*.js')]),
-    ];
-
-    logger.debug(`Finding Vendure plugins using patterns: ${patterns.join('\n')}`);
-
-    const globStart = Date.now();
-    const files = await glob(patterns, {
-        ignore: [
-            // Standard test & doc files
-            '**/node_modules/**/node_modules/**',
-            '**/*.spec.js',
-            '**/*.test.js',
-        ],
-        onlyFiles: true,
-        absolute: true,
-        followSymbolicLinks: false,
-        stats: false,
-    });
-    logger.debug(`Glob found ${files.length} files in ${Date.now() - globStart}ms`);
-    logger.debug(`Using patterns: ${patterns.join('\n')}`);
-
-    // Read files in larger parallel batches
-    const batchSize = 100; // Increased batch size
-    const potentialPluginFiles: string[] = [];
-
-    for (let i = 0; i < files.length; i += batchSize) {
-        const batch = files.slice(i, i + batchSize);
-        const results = await Promise.all(
-            batch.map(async file => {
-                try {
-                    // Try reading just first 3000 bytes first - most imports are at the top
-                    const fileHandle = await open(file, 'r');
-                    try {
-                        const buffer = Buffer.alloc(3000);
-                        const { bytesRead } = await fileHandle.read(buffer, 0, 3000, 0);
-                        let content = buffer.toString('utf8', 0, bytesRead);
-
-                        // Quick check for common indicators
-                        if (content.includes('@vendure/core')) {
-                            return file;
-                        }
-
-                        // If we find a promising indicator but no definitive match,
-                        // read more of the file
-                        if (content.includes('@vendure') || content.includes('VendurePlugin')) {
-                            const largerBuffer = Buffer.alloc(5000);
-                            const { bytesRead: moreBytes } = await fileHandle.read(largerBuffer, 0, 5000, 0);
-                            content = largerBuffer.toString('utf8', 0, moreBytes);
-                            if (content.includes('@vendure/core')) {
-                                return file;
-                            }
-                        }
-                    } finally {
-                        await fileHandle.close();
-                    }
-                } catch (e: any) {
-                    logger.warn(`Failed to read file ${file}: ${e instanceof Error ? e.message : String(e)}`);
-                }
-                return null;
-            }),
-        );
-
-        const validResults = results.filter((f): f is string => f !== null);
-        potentialPluginFiles.push(...validResults);
-    }
-
-    logger.info(
-        `Found ${potentialPluginFiles.length} potential plugin files in ${Date.now() - readStart}ms ` +
-            `(scanned ${files.length} files)`,
-    );
-
-    return potentialPluginFiles;
 }
 
 /**

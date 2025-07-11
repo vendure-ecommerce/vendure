@@ -1,28 +1,51 @@
 import { parse } from 'acorn';
 import { simple as walkSimple } from 'acorn-walk';
+import glob from 'fast-glob';
 import fs from 'fs-extra';
+import { open } from 'fs/promises';
 import path from 'path';
 import * as ts from 'typescript';
+import { fileURLToPath } from 'url';
 
 import { Logger, PluginInfo, TransformTsConfigPathMappingsFn } from '../types.js';
 
-export async function discoverPlugins(
-    vendureConfigPath: string,
-    transformTsConfigPathMappings: TransformTsConfigPathMappingsFn,
-    filePaths: string[],
-    logger: Logger,
-): Promise<PluginInfo[]> {
+import { PackageScannerConfig } from './compiler.js';
+
+export async function discoverPlugins({
+    vendureConfigPath,
+    transformTsConfigPathMappings,
+    logger,
+    outputPath,
+    pluginPackageScanner,
+}: {
+    vendureConfigPath: string;
+    transformTsConfigPathMappings: TransformTsConfigPathMappingsFn;
+    logger: Logger;
+    outputPath: string;
+    pluginPackageScanner?: PackageScannerConfig;
+}): Promise<PluginInfo[]> {
     const plugins: PluginInfo[] = [];
 
-    // Discover local plugins before compilation
-    const localPluginMap = await discoverLocalPlugins(
+    // Analyze source files to find local plugins and package imports
+    const { localPluginLocations, packageImports } = await analyzeSourceFiles(
         vendureConfigPath,
         logger,
         transformTsConfigPathMappings,
     );
     logger.debug(
-        `[discoverPlugins] Found ${localPluginMap.size} local plugins: ${JSON.stringify([...localPluginMap.entries()], null, 2)}`,
+        `[discoverPlugins] Found ${localPluginLocations.size} local plugins: ${JSON.stringify([...localPluginLocations.entries()], null, 2)}`,
     );
+    logger.debug(
+        `[discoverPlugins] Found ${packageImports.length} package imports: ${JSON.stringify(packageImports, null, 2)}`,
+    );
+
+    const filePaths = await findVendurePluginFiles({
+        logger,
+        nodeModulesRoot: pluginPackageScanner?.nodeModulesRoot,
+        packageGlobs: packageImports.map(pkg => pkg + '/**/*.js'),
+        outputPath,
+        vendureConfigPath,
+    });
 
     for (const filePath of filePaths) {
         const content = await fs.readFile(filePath, 'utf-8');
@@ -91,7 +114,7 @@ export async function discoverPlugins(
                     : './' + path.relative(path.dirname(filePath), dashboardPath); // Make absolute path relative
 
                 // Check if this is a local plugin we found earlier
-                const sourcePluginPath = localPluginMap.get(pluginName);
+                const sourcePluginPath = localPluginLocations.get(pluginName);
 
                 plugins.push({
                     name: pluginName,
@@ -109,17 +132,21 @@ export async function discoverPlugins(
 }
 
 /**
- * Discovers local Vendure plugins by analyzing TypeScript files starting from the config file.
- *
- * Returns a map of plugin name to local source path.
+ * Analyzes TypeScript source files starting from the config file to discover:
+ * 1. Local Vendure plugins
+ * 2. All non-local package imports that could contain plugins
  */
-export async function discoverLocalPlugins(
+export async function analyzeSourceFiles(
     vendureConfigPath: string,
     logger: Logger,
     transformTsConfigPathMappings: TransformTsConfigPathMappingsFn,
-): Promise<Map<string, string>> {
-    const sourcePluginMap = new Map<string, string>();
+): Promise<{
+    localPluginLocations: Map<string, string>;
+    packageImports: string[];
+}> {
+    const localPluginLocations = new Map<string, string>();
     const visitedFiles = new Set<string>();
+    const packageImportsSet = new Set<string>();
     const configDir = path.dirname(vendureConfigPath);
 
     // Get tsconfig paths for resolving aliases
@@ -164,7 +191,7 @@ export async function discoverLocalPlugins(
                             if (decoratorName === 'VendurePlugin') {
                                 const className = node.name?.text;
                                 if (className) {
-                                    sourcePluginMap.set(className, filePath);
+                                    localPluginLocations.set(className, filePath);
                                     logger.debug(`Found plugin "${className}" at ${filePath}`);
                                 }
                             }
@@ -177,6 +204,16 @@ export async function discoverLocalPlugins(
                     const moduleSpecifier = node.moduleSpecifier;
                     if (moduleSpecifier && ts.isStringLiteral(moduleSpecifier)) {
                         const importPath = moduleSpecifier.text;
+
+                        // Track non-local imports (packages)
+                        if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
+                            // Get the root package name (e.g. '@scope/package/subpath' -> '@scope/package')
+                            const packageName = importPath.startsWith('@')
+                                ? importPath.split('/').slice(0, 2).join('/')
+                                : importPath.split('/')[0];
+                            packageImportsSet.add(packageName);
+                        }
+
                         // Handle path aliases and local imports
                         if (tsConfigInfo) {
                             // Check if this import matches any path mapping
@@ -242,7 +279,10 @@ export async function discoverLocalPlugins(
     }
 
     await processFile(vendureConfigPath);
-    return sourcePluginMap;
+    return {
+        localPluginLocations,
+        packageImports: Array.from(packageImportsSet),
+    };
 }
 
 function getDecoratorName(decorator: ts.Decorator): string | undefined {
@@ -318,4 +358,114 @@ async function findTsConfigPaths(
         currentDir = path.dirname(currentDir);
     }
     return undefined;
+}
+
+interface FindPluginFilesOptions {
+    outputPath: string;
+    vendureConfigPath: string;
+    logger: Logger;
+    packageGlobs: string[];
+    nodeModulesRoot?: string;
+}
+
+export async function findVendurePluginFiles({
+    outputPath,
+    vendureConfigPath,
+    logger,
+    nodeModulesRoot: providedNodeModulesRoot,
+    packageGlobs,
+}: FindPluginFilesOptions): Promise<string[]> {
+    let nodeModulesRoot = providedNodeModulesRoot;
+    const readStart = Date.now();
+    if (!nodeModulesRoot) {
+        // If the node_modules root path has not been explicitly
+        // specified, we will try to guess it by resolving the
+        // `@vendure/core` package.
+        try {
+            const coreUrl = import.meta.resolve('@vendure/core');
+            logger.debug(`Found core URL: ${coreUrl}`);
+            const corePath = fileURLToPath(coreUrl);
+            logger.debug(`Found core path: ${corePath}`);
+            nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
+        } catch (e) {
+            logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
+            nodeModulesRoot = path.dirname(vendureConfigPath);
+        }
+    }
+
+    const patterns = [
+        // Local compiled plugins in temp dir
+        path.join(outputPath, '**/*.js'),
+        // Node modules patterns
+        ...packageGlobs.map(pattern => path.join(nodeModulesRoot, 'node_modules', pattern)),
+    ];
+
+    logger.debug(`Finding Vendure plugins using patterns: ${patterns.join('\n')}`);
+
+    const globStart = Date.now();
+    const files = await glob(patterns, {
+        ignore: [
+            // Standard test & doc files
+            '**/node_modules/**/node_modules/**',
+            '**/*.spec.js',
+            '**/*.test.js',
+        ],
+        onlyFiles: true,
+        absolute: true,
+        followSymbolicLinks: false,
+        stats: false,
+    });
+    logger.debug(`Glob found ${files.length} files in ${Date.now() - globStart}ms`);
+
+    // Read files in larger parallel batches
+    const batchSize = 100; // Increased batch size
+    const potentialPluginFiles: string[] = [];
+
+    for (let i = 0; i < files.length; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        const results = await Promise.all(
+            batch.map(async file => {
+                try {
+                    // Try reading just first 3000 bytes first - most imports are at the top
+                    const fileHandle = await open(file, 'r');
+                    try {
+                        const buffer = Buffer.alloc(3000);
+                        const { bytesRead } = await fileHandle.read(buffer, 0, 3000, 0);
+                        let content = buffer.toString('utf8', 0, bytesRead);
+
+                        // Quick check for common indicators
+                        if (content.includes('@vendure/core')) {
+                            return file;
+                        }
+
+                        // If we find a promising indicator but no definitive match,
+                        // read more of the file
+                        if (content.includes('@vendure') || content.includes('VendurePlugin')) {
+                            const largerBuffer = Buffer.alloc(5000);
+                            const { bytesRead: moreBytes } = await fileHandle.read(largerBuffer, 0, 5000, 0);
+                            content = largerBuffer.toString('utf8', 0, moreBytes);
+                            if (content.includes('@vendure/core')) {
+                                return file;
+                            }
+                        }
+                    } finally {
+                        await fileHandle.close();
+                    }
+                } catch (e: any) {
+                    logger.warn(`Failed to read file ${file}: ${e instanceof Error ? e.message : String(e)}`);
+                }
+                return null;
+            }),
+        );
+
+        const validResults = results.filter((f): f is string => f !== null);
+        potentialPluginFiles.push(...validResults);
+    }
+
+    logger.info(
+        `Found ${potentialPluginFiles.length} potential plugin files in ${Date.now() - readStart}ms ` +
+            `(scanned ${files.length} files)`,
+    );
+
+    return potentialPluginFiles;
 }
