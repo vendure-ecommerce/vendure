@@ -86,6 +86,13 @@ export type VitePluginVendureDashboardOptions = {
      * @default false
      */
     reportCompilationErrors?: boolean;
+    /**
+     * @description
+     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
+     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
+     * If not specified, will scan all files in node_modules (slower).
+     */
+    pluginScanPatterns?: string[];
 } & UiConfigPluginOptions &
     ThemeVariablesPluginOptions;
 
@@ -129,6 +136,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             tempDir,
             reportCompilationErrors: options.reportCompilationErrors,
             pathAdapter: options.pathAdapter,
+            pluginScanPatterns: options.pluginScanPatterns,
         }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),

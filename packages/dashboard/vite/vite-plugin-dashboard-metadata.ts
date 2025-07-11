@@ -28,12 +28,12 @@ export function dashboardMetadataPlugin(): Plugin {
         async load(id) {
             if (id === resolvedVirtualModuleId) {
                 const startTime = Date.now();
-                this.info('Loading dashboard extensions...');
+                this.debug('Loading dashboard extensions...');
 
                 if (!loadVendureConfigResult) {
                     const configStart = Date.now();
                     loadVendureConfigResult = await configLoaderApi.getVendureConfig();
-                    this.info(`Loaded Vendure config in ${Date.now() - configStart}ms`);
+                    this.debug(`Loaded Vendure config in ${Date.now() - configStart}ms`);
                 }
 
                 const { pluginInfo } = loadVendureConfigResult;
@@ -47,7 +47,7 @@ export function dashboardMetadataPlugin(): Plugin {
                             // Since dashboardEntryPath is now relative to the plugin file,
                             // we need to resolve from the plugin's directory
                             const resolved = path.resolve(path.dirname(pluginPath), dashboardEntryPath);
-                            this.info(`Resolved extension path: ${resolved}`);
+                            this.debug(`Resolved extension path: ${resolved}`);
                             return resolved;
                         })
                         .filter(x => x != null) ?? [];
@@ -55,7 +55,7 @@ export function dashboardMetadataPlugin(): Plugin {
                 this.info(
                     `Found ${pluginsWithExtensions.length} Dashboard extensions in ${Date.now() - resolveStart}ms`,
                 );
-                this.info(`Total dashboard extension loading completed in ${Date.now() - startTime}ms`);
+                this.debug(`Total dashboard extension loading completed in ${Date.now() - startTime}ms`);
 
                 return `
                     export async function runDashboardExtensions() {

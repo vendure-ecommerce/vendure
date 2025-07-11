@@ -10,6 +10,7 @@ export default defineConfig({
             vendureConfigPath: pathToFileURL('./dev-config.ts'),
             adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
             gqlTadaOutputPath: path.resolve(__dirname, './graphql/'),
+            pluginScanPatterns: ['*vendure*'],
         }) as any,
     ],
 });

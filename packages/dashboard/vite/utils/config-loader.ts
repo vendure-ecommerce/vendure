@@ -6,6 +6,7 @@ type Logger = {
     info: (message: string) => void;
     warn: (message: string) => void;
     debug: (message: string) => void;
+    error: (message: string) => void;
 };
 
 export type PluginInfo = {
@@ -24,6 +25,9 @@ const defaultLogger: Logger = {
     debug: (message: string) => {
         /* noop */
     },
+    error: (message: string) => {
+        /* noop */
+    },
 };
 
 export interface ConfigLoaderOptions {
@@ -33,6 +37,7 @@ export interface ConfigLoaderOptions {
     vendureConfigExport?: string;
     logger?: Logger;
     reportCompilationErrors?: boolean;
+    pluginScanPatterns?: string[];
 }
 
 export interface LoadVendureConfigResult {
@@ -47,13 +52,14 @@ export interface LoadVendureConfigResult {
  * project files, not npm packages) into a temporary directory, and returns the compiled config.
  */
 export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<LoadVendureConfigResult> {
-    const { vendureConfigPath, tempDir, pathAdapter, logger = defaultLogger } = options;
+    const { vendureConfigPath, tempDir, pathAdapter, logger = defaultLogger, pluginScanPatterns } = options;
 
     const result = await compile({
         vendureConfigPath,
         outputPath: tempDir,
         pathAdapter,
         logger,
+        pluginScanPatterns,
     });
 
     return result;

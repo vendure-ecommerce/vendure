@@ -32,7 +32,9 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                         info: (message: string) => this.info(message),
                         warn: (message: string) => this.warn(message),
                         debug: (message: string) => this.debug(message),
+                        error: (message: string) => this.error(message),
                     },
+                    pluginScanPatterns: options.pluginScanPatterns,
                 });
                 const endTime = Date.now();
                 const duration = endTime - startTime;

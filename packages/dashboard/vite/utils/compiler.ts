@@ -3,6 +3,7 @@ import { parse } from 'acorn';
 import { simple as walkSimple } from 'acorn-walk';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
+import { open } from 'fs/promises';
 import path from 'path';
 import tsConfigPaths from 'tsconfig-paths';
 import * as ts from 'typescript';
@@ -14,6 +15,7 @@ type Logger = {
     info: (message: string) => void;
     warn: (message: string) => void;
     debug: (message: string) => void;
+    error: (message: string) => void;
 };
 
 export type PluginInfo = {
@@ -24,13 +26,20 @@ export type PluginInfo = {
 
 const defaultLogger: Logger = {
     info: (message: string) => {
+        // eslint-disable-next-line no-console
         console.log(message);
     },
     warn: (message: string) => {
+        // eslint-disable-next-line no-console
         console.warn(message);
     },
     debug: (message: string) => {
+        // eslint-disable-next-line no-console
         console.debug(message);
+    },
+    error: (message: string) => {
+        // eslint-disable-next-line no-console
+        console.error(message);
     },
 };
 
@@ -70,6 +79,12 @@ export interface CompilerOptions {
     outputPath: string;
     pathAdapter?: PathAdapter;
     logger?: Logger;
+    /**
+     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
+     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
+     * If not specified, will scan all files in node_modules (slower).
+     */
+    pluginScanPatterns?: string[];
 }
 
 export interface CompileResult {
@@ -83,13 +98,18 @@ export interface CompileResult {
  * and in node_modules.
  */
 export async function compile(options: CompilerOptions): Promise<CompileResult> {
-    const { vendureConfigPath, outputPath, pathAdapter, logger = defaultLogger } = options;
+    const {
+        vendureConfigPath,
+        outputPath,
+        pathAdapter,
+        logger = defaultLogger,
+        pluginScanPatterns,
+    } = options;
     const getCompiledConfigPath =
         pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
     const transformTsConfigPathMappings =
         pathAdapter?.transformTsConfigPathMappings ?? defaultPathAdapter.transformTsConfigPathMappings;
 
-    logger.info('Starting compilation process...');
     const startTime = Date.now();
 
     // 1. Compile TypeScript files
@@ -103,21 +123,20 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     logger.info(`TypeScript compilation completed in ${Date.now() - compileStart}ms`);
 
     // 2. Discover plugins
-    const findPluginsStart = Date.now();
     const pluginFiles = await findVendurePluginFiles({
         tempDir: outputPath,
         vendureConfigPath,
+        logger,
+        pluginScanPatterns,
     });
-    logger.info(`Found ${pluginFiles.length} potential plugin files in ${Date.now() - findPluginsStart}ms`);
 
     const analyzePluginsStart = Date.now();
-    const plugins = await discoverPlugins(pluginFiles);
+    const plugins = await discoverPlugins(pluginFiles, logger);
     logger.info(
         `Analyzed plugins and found ${plugins.length} dashboard extensions in ${Date.now() - analyzePluginsStart}ms`,
     );
 
     // 3. Load the compiled config
-    const loadConfigStart = Date.now();
     const configFileName = path.basename(vendureConfigPath);
     const compiledConfigFilePath = pathToFileURL(
         getCompiledConfigPath({
@@ -144,6 +163,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         );
     }
 
+    const loadConfigStart = Date.now();
     // Register path aliases from tsconfig
     const tsConfigInfo = await findTsConfigPaths(
         vendureConfigPath,
@@ -157,14 +177,13 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
             paths: tsConfigInfo.paths,
         });
     }
-
     const config = await import(compiledConfigFilePath).then(m => m[exportedSymbolName]);
     if (!config) {
         throw new Error(
             `Could not find a variable exported as VendureConfig with the name "${exportedSymbolName}".`,
         );
     }
-    logger.info(`Config loaded in ${Date.now() - loadConfigStart}ms`);
+    logger.info(`Loaded config in ${Date.now() - loadConfigStart}ms`);
 
     const totalTime = Date.now() - startTime;
     logger.info(`Total compilation process completed in ${totalTime}ms`);
@@ -180,37 +199,42 @@ interface FindPluginFilesOptions {
 async function findVendurePluginFiles({
     tempDir,
     vendureConfigPath,
-}: FindPluginFilesOptions): Promise<string[]> {
-    // Find the actual node_modules directory by resolving @vendure/core
+    logger,
+    pluginScanPatterns,
+}: FindPluginFilesOptions & {
+    logger: Logger;
+    pluginScanPatterns?: string[];
+}): Promise<string[]> {
     let nodeModulesRoot: string;
+    const readStart = Date.now();
     try {
-        const coreUrl = await import.meta.resolve('@vendure/core');
-        console.log(`Found core URL: ${coreUrl}`);
-        // Convert URL to path, strip 'file://' prefix
+        const coreUrl = import.meta.resolve('@vendure/core');
+        logger.debug(`Found core URL: ${coreUrl}`);
         const corePath = fileURLToPath(coreUrl);
-        console.log(`Found core path: ${corePath}`);
-        // corePath will be something like "...node_modules/@vendure/core/dist/index.js"
-        // We need to go up 3 levels to get to the root node_modules
+        logger.debug(`Found core path: ${corePath}`);
         nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
     } catch (e) {
-        console.log(`Failed to resolve @vendure/core: ${e}`);
-        // Fallback to using vendureConfigPath if resolve fails
+        logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
         nodeModulesRoot = path.dirname(vendureConfigPath);
     }
 
     const patterns = [
-        // Look for all JS files in the temp dir (for local compiled plugins)
+        // Local compiled plugins in temp dir
         path.join(tempDir, '**/*.js'),
-        // Look for JS files in node_modules, but skip nested node_modules
-        path.join(nodeModulesRoot, 'node_modules/*/dist/**/*.js'),
-        path.join(nodeModulesRoot, 'node_modules/@*/**/dist/**/*.js'),
-        // Also check root-level files in node_modules in case not compiled to dist
-        path.join(nodeModulesRoot, 'node_modules/*/*.js'),
-        path.join(nodeModulesRoot, 'node_modules/@*/*/*.js'),
+        // Node modules patterns
+        ...(pluginScanPatterns
+            ? pluginScanPatterns.map(pattern =>
+                  path.join(nodeModulesRoot, 'node_modules', pattern, '**/*.js'),
+              )
+            : [path.join(nodeModulesRoot, 'node_modules/**/*.js')]),
     ];
 
+    logger.info(`Using patterns: ${patterns.join('\n')}`);
+
+    const globStart = Date.now();
     const files = await glob(patterns, {
         ignore: [
+            // Standard test & doc files
             '**/node_modules/**/node_modules/**',
             '**/*.spec.js',
             '**/*.test.js',
@@ -219,25 +243,63 @@ async function findVendurePluginFiles({
             '**/coverage/**',
             '**/docs/**',
         ],
+        onlyFiles: true,
+        absolute: true,
+        followSymbolicLinks: false,
+        stats: false,
     });
+    logger.debug(`Glob found ${files.length} files in ${Date.now() - globStart}ms`);
+    logger.debug(`Using patterns: ${patterns.join('\n')}`);
 
-    console.log(`Found ${files.length} files to scan for plugins`);
-    console.log(`Node modules root: ${nodeModulesRoot}`);
-    console.log(`Temp dir: ${tempDir}`);
-    console.log(`Looking in patterns:`, patterns);
-
+    // Read files in larger parallel batches
+    const batchSize = 100; // Increased batch size
     const potentialPluginFiles: string[] = [];
 
-    for (const file of files) {
-        try {
-            const content = await fs.readFile(file, 'utf-8');
-            if (content.includes('@vendure/core')) {
-                potentialPluginFiles.push(file);
-            }
-        } catch (e: any) {
-            // Skip files we can't read
-        }
+    for (let i = 0; i < files.length; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        const results = await Promise.all(
+            batch.map(async file => {
+                try {
+                    // Try reading just first 3000 bytes first - most imports are at the top
+                    const fileHandle = await open(file, 'r');
+                    try {
+                        const buffer = Buffer.alloc(3000);
+                        const { bytesRead } = await fileHandle.read(buffer, 0, 3000, 0);
+                        let content = buffer.toString('utf8', 0, bytesRead);
+
+                        // Quick check for common indicators
+                        if (content.includes('@vendure/core')) {
+                            return file;
+                        }
+
+                        // If we find a promising indicator but no definitive match,
+                        // read more of the file
+                        if (content.includes('@vendure') || content.includes('VendurePlugin')) {
+                            const largerBuffer = Buffer.alloc(5000);
+                            const { bytesRead: moreBytes } = await fileHandle.read(largerBuffer, 0, 5000, 0);
+                            content = largerBuffer.toString('utf8', 0, moreBytes);
+                            if (content.includes('@vendure/core')) {
+                                return file;
+                            }
+                        }
+                    } finally {
+                        await fileHandle.close();
+                    }
+                } catch (e: any) {
+                    logger.warn(`Failed to read file ${file}: ${e instanceof Error ? e.message : String(e)}`);
+                }
+                return null;
+            }),
+        );
+
+        const validResults = results.filter((f): f is string => f !== null);
+        potentialPluginFiles.push(...validResults);
     }
+
+    logger.info(
+        `Found ${potentialPluginFiles.length} potential plugin files in ${Date.now() - readStart}ms ` +
+            `(scanned ${files.length} files)`,
+    );
 
     return potentialPluginFiles;
 }
@@ -248,7 +310,7 @@ interface DiscoverPluginsOptions {
     logger: Logger;
 }
 
-async function discoverPlugins(filePaths: string[]): Promise<PluginInfo[]> {
+async function discoverPlugins(filePaths: string[], logger: Logger): Promise<PluginInfo[]> {
     const plugins: PluginInfo[] = [];
 
     for (const filePath of filePaths) {
@@ -310,17 +372,17 @@ async function discoverPlugins(filePaths: string[]): Promise<PluginInfo[]> {
             });
 
             if (hasVendurePlugin && pluginName && dashboardPath) {
-                console.log(`Found plugin "${pluginName}" in file:`, filePath);
-                console.log(`Raw dashboard path from decorator:`, dashboardPath);
+                logger.debug(`Found plugin "${pluginName}" in file: ${filePath}`);
+                logger.debug(`Raw dashboard path from decorator: ${dashboardPath}`);
                 // Keep the dashboard path relative to the plugin file
                 const resolvedDashboardPath = dashboardPath.startsWith('.')
                     ? dashboardPath // Keep the relative path as-is
                     : './' + path.relative(path.dirname(filePath), dashboardPath); // Make absolute path relative
-                console.log(`Plugin base dir:`, path.dirname(filePath));
-                console.log(`Resolved dashboard path:`, resolvedDashboardPath);
+                logger.debug(`Plugin base dir: ${path.dirname(filePath)}`);
+                logger.debug(`Resolved dashboard path: ${resolvedDashboardPath}`);
                 const absolutePath = path.resolve(path.dirname(filePath), resolvedDashboardPath);
-                console.log(`Absolute path for existence check:`, absolutePath);
-                console.log(`Does dashboard file exist?`, fs.existsSync(absolutePath));
+                logger.debug(`Absolute path for existence check: ${absolutePath}`);
+                logger.debug(`Does dashboard file exist? ${fs.existsSync(absolutePath) ? 'true' : 'false'}`);
                 plugins.push({
                     name: pluginName,
                     pluginPath: filePath,
@@ -328,7 +390,7 @@ async function discoverPlugins(filePaths: string[]): Promise<PluginInfo[]> {
                 });
             }
         } catch (e) {
-            console.error(`Failed to parse ${filePath}:`, e);
+            logger.error(`Failed to parse ${filePath}: ${e instanceof Error ? e.message : String(e)}`);
         }
     }
 
@@ -352,28 +414,49 @@ async function compileTypeScript({
     await fs.ensureDir(outputPath);
     const program = ts.createProgram([inputPath], {
         target: ts.ScriptTarget.ES2020,
-        module: ts.ModuleKind.CommonJS,
+        module: ts.ModuleKind.NodeNext,
+        moduleResolution: ts.ModuleResolutionKind.NodeNext,
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         esModuleInterop: true,
         skipLibCheck: true,
-        forceConsistentCasingInFileNames: true,
-        moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        outDir: outputPath,
+        noEmit: false,
+        // Speed optimizations - disable all type checking
+        noResolve: true, // Don't add referenced modules to the program
+        noEmitOnError: false, // Emit output even if there are errors
+        noImplicitAny: false, // Don't require implicit any
+        noUnusedLocals: false, // Don't check for unused locals
+        noUnusedParameters: false, // Don't check for unused parameters
         allowJs: true,
+        checkJs: false, // Don't type check JS files
+        skipDefaultLibCheck: true, // Skip checking .d.ts files
+        isolatedModules: true, // Speed up compilation by not checking cross-file references
+        incremental: false, // Don't use incremental compilation (faster for one-off builds)
         resolveJsonModule: true,
+        outDir: outputPath,
     });
 
-    const emitResult = program.emit();
-    const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+    // Skip type checking entirely
+    const emitResult = program.emit(undefined, undefined, undefined, undefined, {
+        // Only transform the code, skip type checking
+        before: [],
+        after: [],
+        afterDeclarations: [],
+    });
 
-    for (const diagnostic of allDiagnostics) {
-        if (diagnostic.file) {
-            const { line, character } = ts.getLineAndCharacterOfPosition(diagnostic.file, diagnostic.start!);
-            const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-            logger.warn(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
-        } else {
-            logger.warn(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+    // Only log actual emit errors, not type errors
+    if (emitResult.emitSkipped) {
+        for (const diagnostic of emitResult.diagnostics) {
+            if (diagnostic.file && diagnostic.start !== undefined) {
+                const { line, character } = ts.getLineAndCharacterOfPosition(
+                    diagnostic.file,
+                    diagnostic.start,
+                );
+                const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+                logger.warn(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+            } else {
+                logger.warn(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+            }
         }
     }
 }
@@ -418,12 +501,16 @@ async function findTsConfigPaths(
                         }
                         return { baseUrl: tsConfigBaseUrl, paths };
                     }
-                } catch (e: any) {
-                    logger.warn(`Could not read or parse tsconfig file ${tsConfigPath}: ${e.message}`);
+                } catch (e) {
+                    logger.warn(
+                        `Could not read or parse tsconfig file ${tsConfigPath}: ${e instanceof Error ? e.message : String(e)}`,
+                    );
                 }
             }
-        } catch (e: any) {
-            logger.warn(`Could not read directory ${currentDir}: ${e.message}`);
+        } catch (e) {
+            logger.warn(
+                `Could not read directory ${currentDir}: ${e instanceof Error ? e.message : String(e)}`,
+            );
         }
         currentDir = path.dirname(currentDir);
     }
