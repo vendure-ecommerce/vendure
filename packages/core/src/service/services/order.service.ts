@@ -1555,17 +1555,21 @@ export class OrderService {
             .getMany();
 
         for (const inputLine of input.lines) {
-            const existingFulfillmentLine = existingFulfillmentLines.find(l =>
+            const fulfillmentLinesForOrderLine = existingFulfillmentLines.filter(l =>
                 idsAreEqual(l.orderLineId, inputLine.orderLineId),
             );
-            if (existingFulfillmentLine) {
+            if (fulfillmentLinesForOrderLine.length) {
+                const fulfilledQuantity = fulfillmentLinesForOrderLine.reduce(
+                    (totalQuantity, fulfillmentLine) => totalQuantity + fulfillmentLine.quantity,
+                    0,
+                );
                 const unfulfilledQuantity =
-                    existingFulfillmentLine.orderLine.quantity - existingFulfillmentLine.quantity;
+                    fulfillmentLinesForOrderLine[0].orderLine.quantity - fulfilledQuantity;
                 if (unfulfilledQuantity < inputLine.quantity) {
                     return true;
                 }
             } else {
-                const orderLine = await this.connection.getEntityOrThrow(
+                const orderLine = await this.connection.getEntityOrThrow<OrderLine>(
                     ctx,
                     OrderLine,
                     inputLine.orderLineId,
