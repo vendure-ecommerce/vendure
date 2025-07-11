@@ -76,7 +76,7 @@ describe('Add Command E2E', () => {
         it('adds an entity to the specified plugin', async () => {
             const result = await performAddOperation({
                 entity: 'MyEntity',
-                'selected-plugin': 'MyPlugin',
+                selectedPlugin: 'MyPlugin',
             });
 
             expect(entityRunSpy).toHaveBeenCalledOnce();
@@ -85,7 +85,7 @@ describe('Add Command E2E', () => {
                 isNonInteractive: true,
                 config: undefined,
                 pluginName: 'MyPlugin',
-                'custom-fields': undefined,
+                customFields: undefined,
                 translatable: undefined,
             });
             expect(result.success).toBe(true);
@@ -103,7 +103,7 @@ describe('Add Command E2E', () => {
         it('adds a service to the specified plugin', async () => {
             const result = await performAddOperation({
                 service: 'MyService',
-                'selected-plugin': 'MyPlugin',
+                selectedPlugin: 'MyPlugin',
             });
 
             expect(serviceRunSpy).toHaveBeenCalledOnce();
@@ -117,9 +117,9 @@ describe('Add Command E2E', () => {
 
         it('adds a job-queue when required parameters are provided', async () => {
             const options = {
-                'job-queue': 'MyPlugin',
+                jobQueue: 'MyPlugin',
                 name: 'ReindexJob',
-                'selected-service': 'SearchService',
+                selectedService: 'SearchService',
             } as const;
             const result = await performAddOperation(options);
 
@@ -135,7 +135,7 @@ describe('Add Command E2E', () => {
 
         it('fails when job-queue parameters are incomplete', async () => {
             await expect(
-                performAddOperation({ 'job-queue': true, name: 'JobWithoutService' } as any),
+                performAddOperation({ jobQueue: true, name: 'JobWithoutService' } as any),
             ).rejects.toThrow('Service name is required for job queue');
             expect(jobQueueRunSpy).not.toHaveBeenCalled();
         });
@@ -159,28 +159,28 @@ describe('Add Command E2E', () => {
 
         it('adds an API extension scaffold when queryName is provided', async () => {
             const result = await performAddOperation({
-                'api-extension': 'MyPlugin',
-                'query-name': 'myQuery',
+                apiExtension: 'MyPlugin',
+                queryName: 'myQuery',
             });
 
             expect(apiExtRunSpy).toHaveBeenCalledOnce();
             expect(apiExtRunSpy.mock.calls[0][0]).toMatchObject({
                 pluginName: 'MyPlugin',
-                'query-name': 'myQuery',
-                'mutation-name': undefined,
+                queryName: 'myQuery',
+                mutationName: undefined,
             });
             expect(result.success).toBe(true);
         });
 
         it('fails when neither queryName nor mutationName is provided for API extension', async () => {
-            await expect(performAddOperation({ 'api-extension': true } as any)).rejects.toThrow(
+            await expect(performAddOperation({ apiExtension: true } as any)).rejects.toThrow(
                 'At least one of query-name or mutation-name must be specified',
             );
             expect(apiExtRunSpy).not.toHaveBeenCalled();
         });
 
         it('adds UI extensions when the uiExtensions flag is used', async () => {
-            const result = await performAddOperation({ 'ui-extensions': 'MyPlugin' });
+            const result = await performAddOperation({ uiExtensions: 'MyPlugin' });
 
             expect(uiExtRunSpy).toHaveBeenCalledOnce();
             expect(uiExtRunSpy.mock.calls[0][0]).toMatchObject({ pluginName: 'MyPlugin' });
