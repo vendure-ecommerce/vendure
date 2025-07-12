@@ -114,7 +114,10 @@
     "tsconfig-paths": "^4.2.0",
     "tw-animate-css": "^1.2.9",
     "vite": "^6.3.5",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "acorn": "^8.11.3",
+    "acorn-walk": "^8.3.2",
+    "fast-glob": "^3.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

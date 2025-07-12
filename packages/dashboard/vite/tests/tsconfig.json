@@ -1,12 +1,10 @@
 {
-    "extends": "../../tsconfig",
     "compilerOptions": {
         "module": "NodeNext",
         "sourceMap": true,
         "jsx": "react-jsx",
         "paths": {
-            "@vendure/admin-ui/*": ["../admin-ui/package/*"],
-            "@plugins/*": ["./test-plugins/*"]
+            "@plugins/*": ["./fixtures-path-alias/*"]
         }
     },
     "exclude": ["node_modules"]
