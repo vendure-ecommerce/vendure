@@ -39,9 +39,7 @@ describe('detecting plugins in npm packages', () => {
             expect(result.pluginInfo[0].name).toBe('TestPlugin');
             expect(result.pluginInfo[0].dashboardEntryPath).toBe('./dashboard/index.tsx');
             expect(result.pluginInfo[0].sourcePluginPath).toBeUndefined();
-            expect(result.pluginInfo[0].pluginPath).toBe(
-                join(fakeNodeModules, 'test-plugin', 'dist', 'index.js'),
-            );
+            expect(result.pluginInfo[0].pluginPath).toBe(join(fakeNodeModules, 'test-plugin', 'index.js'));
         },
         { timeout: 10_000 },
     );
