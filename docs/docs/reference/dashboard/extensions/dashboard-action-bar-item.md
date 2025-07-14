@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardActionBarItem
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="51" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/layout.ts" sourceLine="19" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -21,6 +21,7 @@ Allows you to define custom action bar items for any page in the dashboard.
 interface DashboardActionBarItem {
     pageId: string;
     component: React.FunctionComponent<{ context: PageContextValue }>;
+    type?: 'button' | 'dropdown';
     requiresPermission?: string | string[];
 }
 ```
@@ -37,6 +38,25 @@ The ID of the page where the action bar item should be displayed.
 <MemberInfo kind="property" type={`React.FunctionComponent&#60;{ context: PageContextValue }&#62;`}   />
 
 A React component that will be rendered in the action bar.
+### type
+
+<MemberInfo kind="property" type={`'button' | 'dropdown'`} default={`'button'`}   />
+
+The type of action bar item to display. Defaults to `button`.
+The 'dropdown' type is used to display the action bar item as a dropdown menu item.
+
+When using the dropdown type, use a suitable [dropdown item](https://ui.shadcn.com/docs/components/dropdown-menu)
+component, such as:
+
+```tsx
+import { DropdownMenuItem } from '@vendure/dashboard';
+
+// ...
+
+{
+  component: () => <DropdownMenuItem>My Item</DropdownMenuItem>
+}
+```
 ### requiresPermission
 
 <MemberInfo kind="property" type={`string | string[]`}   />

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## mergeConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/merge-config.ts" sourceLine="30" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/merge-config.ts" sourceLine="32" packageName="@vendure/core" />
 
 Performs a deep merge of two VendureConfig objects. Unlike `Object.assign()` the `target` object is
 not mutated, instead the function returns a new object which is the result of deeply merging the
