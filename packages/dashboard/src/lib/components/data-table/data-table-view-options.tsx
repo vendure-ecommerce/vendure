@@ -1,6 +1,6 @@
 'use client';
 
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { closestCenter, DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -83,7 +83,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                         <Trans>Columns</Trans>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[150px]">
+                <DropdownMenuContent align="end">
                     <DndContext
                         collisionDetection={closestCenter}
                         onDragEnd={handleDragEnd}

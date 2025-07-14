@@ -40,6 +40,12 @@ export interface RelationSelectorConfig<T = any> {
 
 export interface RelationSelectorProps<T = any> {
     config: RelationSelectorConfig<T>;
+    /**
+     * @description
+     * The label for the selector trigger. Default is
+     * "Select item" for single select and "Select items" for multi select.
+     */
+    selectorLabel?: React.ReactNode;
     value?: string | string[];
     onChange: (value: string | string[]) => void;
     disabled?: boolean;
@@ -186,6 +192,7 @@ export function RelationSelector<T>({
     onChange,
     disabled,
     className,
+    selectorLabel,
 }: Readonly<RelationSelectorProps<T>>) {
     const [open, setOpen] = useState(false);
     const [selectedItemsCache, setSelectedItemsCache] = useState<T[]>([]);
@@ -396,10 +403,10 @@ export function RelationSelector<T>({
                             {isMultiple
                                 ? selectedItems.length > 0
                                     ? `Add more (${selectedItems.length} selected)`
-                                    : 'Select items'
+                                    : selectorLabel ?? <Trans>Select items</Trans>
                                 : selectedItems.length > 0
                                   ? 'Change selection'
-                                  : 'Select item'}
+                                  : selectorLabel ?? <Trans>Select item</Trans>}
                         </Trans>
                     </Button>
                 </PopoverTrigger>

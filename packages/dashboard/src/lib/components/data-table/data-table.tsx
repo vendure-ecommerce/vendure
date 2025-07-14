@@ -36,6 +36,7 @@ export interface FacetedFilter {
 }
 
 interface DataTableProps<TData> {
+    children?: React.ReactNode;
     columns: ColumnDef<TData, any>[];
     data: TData[];
     totalItems: number;
@@ -62,6 +63,7 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({
+    children,
     columns,
     data,
     totalItems,
@@ -178,7 +180,7 @@ export function DataTable<TData>({
                                 />
                             ))}
                         </Suspense>
-                        <AddFilterMenu columns={table.getAllColumns()} />
+                        {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
                     </div>
                     <div className="flex gap-1">
                         {columnFilters
@@ -266,11 +268,12 @@ export function DataTable<TData>({
                                 </TableCell>
                             </TableRow>
                         )}
+                        {children}
                     </TableBody>
                 </Table>
                 <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
             </div>
-            <DataTablePagination table={table} />
+            {onPageChange && totalItems != null && <DataTablePagination table={table} />}
         </>
     );
 }

@@ -56,3 +56,50 @@ export function transformRelationFields<E extends Record<string, any>>(fields: F
 
     return processedEntity;
 }
+
+/**
+ * @description
+ * Due to the schema types, sometimes "create" mutations will have a default empty "id"
+ * field which can cause issues if we actually send them with a "create" mutation to the server.
+ * This function deletes any empty ID fields on the entity or its nested objects.
+ */
+export function removeEmptyIdFields<T extends Record<string, any>>(values: T, fields: FieldInfo[]): T {
+    if (!values) {
+        return values;
+    }
+
+    // Create a deep copy to avoid mutating the original values
+    const result = structuredClone(values);
+
+    function recursiveRemove(obj: any, fieldDefs: FieldInfo[]) {
+        if (Array.isArray(obj)) {
+            for (const item of obj) {
+                recursiveRemove(item, fieldDefs);
+            }
+        } else if (typeof obj === 'object' && obj !== null) {
+            for (const field of fieldDefs) {
+                // Remove empty string ID fields at this level
+                if (field.type === 'ID' && typeof obj[field.name] === 'string' && obj[field.name] === '') {
+                    delete obj[field.name];
+                }
+                // If the field is an object or array, recurse into it
+                if (Array.isArray(obj[field.name])) {
+                    if (field.typeInfo) {
+                        for (const item of obj[field.name]) {
+                            recursiveRemove(item, field.typeInfo);
+                        }
+                    }
+                } else if (
+                    typeof obj[field.name] === 'object' &&
+                    obj[field.name] !== null &&
+                    field.typeInfo
+                ) {
+                    recursiveRemove(obj[field.name], field.typeInfo);
+                }
+            }
+        }
+    }
+
+    recursiveRemove(result, fields);
+    return result;
+}

@@ -47,7 +47,7 @@ export const GET_SHIPPING_METHOD_DETAIL = gql`
     templateUrl: './shipping-method-detail.component.html',
     styleUrls: ['./shipping-method-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
 export class ShippingMethodDetailComponent
     extends TypedBaseDetailComponent<typeof GetShippingMethodDetailDocument, 'shippingMethod'>
@@ -178,7 +178,6 @@ export class ShippingMethodDetailComponent
         if (!selectedChecker || !selectedCalculator || !checker || !calculator) {
             return;
         }
-        const formValue = this.detailForm.value;
         const input = {
             ...(this.getUpdatedShippingMethod(
                 {
@@ -227,7 +226,6 @@ export class ShippingMethodDetailComponent
             .pipe(
                 take(1),
                 mergeMap(([shippingMethod, languageCode]) => {
-                    const formValue = this.detailForm.value;
                     const input = {
                         ...(this.getUpdatedShippingMethod(
                             shippingMethod,

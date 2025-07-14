@@ -1,3 +1,4 @@
+import { SingleRelationInput } from '@/vdb/components/data-input/relation-input.js';
 import { ProductVariantSelector } from '@/vdb/components/shared/product-variant-selector.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { Button } from '@/vdb/components/ui/button.js';
@@ -14,8 +15,8 @@ import {
 } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import {
+    couponCodeSelectorPromotionListDocument,
     draftOrderEligibleShippingMethodsDocument,
     orderDetailDocument,
     orderLineFragment,
@@ -35,13 +36,20 @@ type ShippingMethodQuote = ResultOf<
 export interface OrderTableProps {
     order: OrderFragment;
     eligibleShippingMethods: ShippingMethodQuote[];
-    onAddItem: (event: { productVariantId: string }) => void;
+    onAddItem: (variant: {
+        productVariantId: string;
+        productVariantName: string;
+        sku: string;
+        productAsset: any;
+        price?: any;
+        priceWithTax?: any;
+    }) => void;
     onAdjustLine: (event: { lineId: string; quantity: number; customFields: Record<string, any> }) => void;
     onRemoveLine: (event: { lineId: string }) => void;
     onSetShippingMethod: (event: { shippingMethodId: string }) => void;
     onApplyCouponCode: (event: { couponCode: string }) => void;
     onRemoveCouponCode: (event: { couponCode: string }) => void;
-    orderLineForm: UseFormReturn<any>;
+    displayTotals?: boolean;
 }
 
 export function EditOrderTable({
@@ -53,14 +61,11 @@ export function EditOrderTable({
     onSetShippingMethod,
     onApplyCouponCode,
     onRemoveCouponCode,
-    orderLineForm,
+    displayTotals = true,
 }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-    const [couponCode, setCouponCode] = useState('');
-
     const currencyCode = order.currencyCode;
-
-    const columns: ColumnDef<OrderLineFragment>[] = [
+    const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
         {
             header: 'Image',
             accessorKey: 'featuredAsset',
@@ -99,7 +104,7 @@ export function EditOrderTable({
                                 onAdjustLine({
                                     lineId: row.original.id,
                                     quantity: e.target.valueAsNumber,
-                                    customFields: row.original.customFields,
+                                    customFields: row.original.customFields ?? {},
                                 })
                             }
                         />
@@ -120,7 +125,7 @@ export function EditOrderTable({
                                         customFields: customFields,
                                     });
                                 }}
-                                form={orderLineForm}
+                                value={row.original.customFields}
                             />
                         )}
                     </div>
@@ -189,11 +194,7 @@ export function EditOrderTable({
                             <TableCell colSpan={columns.length} className="h-12">
                                 <div className="my-4 flex justify-center">
                                     <div className="max-w-lg">
-                                        <ProductVariantSelector
-                                            onProductVariantIdChange={variantId => {
-                                                onAddItem({ productVariantId: variantId });
-                                            }}
-                                        />
+                                        <ProductVariantSelector onProductVariantSelect={onAddItem} />
                                     </div>
                                 </div>
                             </TableCell>
@@ -210,27 +211,7 @@ export function EditOrderTable({
                         </TableRow>
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-12">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex gap-2">
-                                        <Input
-                                            type="text"
-                                            placeholder="Coupon code"
-                                            value={couponCode}
-                                            onChange={e => setCouponCode(e.target.value)}
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter') {
-                                                    onApplyCouponCode({ couponCode });
-                                                }
-                                            }}
-                                        />
-                                        <Button
-                                            type="button"
-                                            onClick={() => onApplyCouponCode({ couponCode })}
-                                            disabled={!couponCode}
-                                        >
-                                            <Trans>Apply</Trans>
-                                        </Button>
-                                    </div>
+                                <div className="flex gap-4">
                                     {order.couponCodes?.length > 0 && (
                                         <div className="flex flex-wrap gap-2">
                                             {order.couponCodes.map(code => (
@@ -254,10 +235,22 @@ export function EditOrderTable({
                                             ))}
                                         </div>
                                     )}
+                                    <SingleRelationInput
+                                        config={{
+                                            listQuery: couponCodeSelectorPromotionListDocument,
+                                            idKey: 'couponCode',
+                                            labelKey: 'couponCode',
+                                            placeholder: 'Search coupon codes...',
+                                            label: (item: any) => `${item.couponCode} (${item.name})`,
+                                        }}
+                                        value={''}
+                                        selectorLabel={<Trans>Add coupon code</Trans>}
+                                        onChange={code => onApplyCouponCode({ couponCode: code })}
+                                    />
                                 </div>
                             </TableCell>
                         </TableRow>
-                        <OrderTableTotals order={order} columnCount={columns.length} />
+                        {displayTotals && <OrderTableTotals order={order} columnCount={columns.length} />}
                     </TableBody>
                 </Table>
             </div>

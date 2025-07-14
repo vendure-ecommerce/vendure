@@ -2,13 +2,13 @@ import { Separator } from '@/vdb/components/ui/separator.js';
 import { ResultOf } from 'gql.tada';
 import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
-type OrderAddress = ResultOf<typeof orderAddressFragment>;
+type OrderAddress = Omit<ResultOf<typeof orderAddressFragment>, 'country'> & {
+    country: string | { code: string; name: string } | null;
+};
 
 export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
-    if (!address) {
-        return null;
-    }
 
     const {
         fullName,
@@ -23,6 +23,13 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
         phoneNumber,
     } = address;
 
+    const countryName = typeof country === 'string' ? country : country?.name;
+    const countryCodeString = country && typeof country !== 'string' ? country?.code : countryCode;
+
+    if (!address || Object.values(address).every(value => !value)) {
+        return <div className="text-sm text-muted-foreground"><Trans>No address</Trans></div>;
+    }
+
     return (
         <div className="space-y-1 text-sm">
             {fullName && <p className="font-medium">{fullName}</p>}
@@ -36,9 +43,9 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
                 {country && (
                     <div className="flex items-center gap-1.5 mt-1">
                         <Globe className="h-3 w-3 text-muted-foreground" />
-                        <span>{country}</span>
-                        {countryCode && (
-                            <span className="text-xs text-muted-foreground">({countryCode})</span>
+                        <span>{countryName}</span>
+                        {countryCodeString && (
+                            <span className="text-xs text-muted-foreground">({countryCodeString})</span>
                         )}
                     </div>
                 )}

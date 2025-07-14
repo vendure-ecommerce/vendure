@@ -29,12 +29,6 @@ export function AssetPreview({ asset, assets, customFields = [] }: Readonly<Asse
     const imageRef = useRef<HTMLImageElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const form = useForm({
-        defaultValues: {
-            name: asset.name,
-            tags: asset.tags?.map(t => t.value) || [],
-        },
-    });
     const activeAsset = assets?.[assetIndex] ?? asset;
 
     useEffect(() => {

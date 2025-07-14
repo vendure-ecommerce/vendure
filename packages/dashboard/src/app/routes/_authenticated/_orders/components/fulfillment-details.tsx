@@ -1,12 +1,5 @@
 import { LabeledData } from '@/vdb/components/labeled-data.js';
-import { Button } from '@/vdb/components/ui/button.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/vdb/components/ui/dropdown-menu.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
@@ -19,6 +12,7 @@ import {
     orderDetailFragment,
     transitionFulfillmentToStateDocument,
 } from '../orders.graphql.js';
+import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
 
 type Order = NonNullable<ResultOf<typeof orderDetailFragment>>;
 
@@ -78,6 +72,30 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
         });
     };
 
+    const getFulfillmentActions = () => {
+        const actions = [];
+
+        const suggested = nextSuggestedState();
+        if (suggested) {
+            actions.push({
+                label: `Transition to ${suggested}`,
+                onClick: () => handleStateTransition(suggested),
+                disabled: transitionFulfillmentMutation.isPending,
+            });
+        }
+
+        nextOtherStates().forEach(state => {
+            actions.push({
+                label: `Transition to ${state}`,
+                type: getTypeForState(state),
+                onClick: () => handleStateTransition(state),
+                disabled: transitionFulfillmentMutation.isPending,
+            });
+        });
+
+        return actions;
+    };
+
     return (
         <div className="space-y-1 p-3 border rounded-md">
             <div className="space-y-1">
@@ -101,7 +119,7 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                             <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-1">
-                            {fulfillment.lines.map((line) => {
+                            {fulfillment.lines.map(line => {
                                 const orderLine = orderLinesMap.get(line.orderLineId);
                                 const productName = orderLine?.productVariant?.name ?? 'Unknown product';
                                 const sku = orderLine?.productVariant?.sku;
@@ -123,51 +141,13 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                 </div>
             )}
 
-            {fulfillment.nextStates.length > 0 && (
-                <div className="mt-3 pt-3 border-t">
-                    <div className="flex">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={transitionFulfillmentMutation.isPending}
-                            className="rounded-r-none flex-1 justify-start shadow-none"
-                        >
-                            <Trans>State: {fulfillment.state}</Trans>
-                        </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={transitionFulfillmentMutation.isPending}
-                                    className="rounded-l-none border-l-0 shadow-none"
-                                >
-                                    <ChevronDown className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {nextSuggestedState() && (
-                                    <DropdownMenuItem
-                                        onClick={() => handleStateTransition(nextSuggestedState()!)}
-                                        disabled={transitionFulfillmentMutation.isPending}
-                                    >
-                                        <Trans>Transition to {nextSuggestedState()}</Trans>
-                                    </DropdownMenuItem>
-                                )}
-                                {nextOtherStates().map(state => (
-                                    <DropdownMenuItem
-                                        key={state}
-                                        onClick={() => handleStateTransition(state)}
-                                        disabled={transitionFulfillmentMutation.isPending}
-                                    >
-                                        <Trans>Transition to {state}</Trans>
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                </div>
-            )}
+            <div className="mt-3 pt-3 border-t">
+                <StateTransitionControl
+                    currentState={fulfillment.state}
+                    actions={getFulfillmentActions()}
+                    isLoading={transitionFulfillmentMutation.isPending}
+                />
+            </div>
         </div>
     );
 }

@@ -19,7 +19,7 @@ export function MetricsWidget() {
     const { activeChannel } = useChannel();
     const [dataType, setDataType] = useState<DATA_TYPES>(DATA_TYPES.OrderTotal);
 
-    const { data, error } = useQuery({
+    const { data } = useQuery({
         queryKey: ['dashboard-order-metrics', dataType],
         queryFn: () => {
             return api.query(orderChartDataQuery, {
