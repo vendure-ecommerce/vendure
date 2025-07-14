@@ -1,7 +1,7 @@
 import path from 'path';
 import { Plugin } from 'vite';
 
-import { LoadVendureConfigResult } from './utils/config-loader.js';
+import { CompileResult } from './utils/compiler.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 /**
@@ -11,7 +11,7 @@ import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader
  */
 export function dashboardTailwindSourcePlugin(): Plugin {
     let configLoaderApi: ConfigLoaderApi;
-    let loadVendureConfigResult: LoadVendureConfigResult;
+    let loadVendureConfigResult: CompileResult;
     return {
         name: 'vendure:dashboard-tailwind-source',
         // Ensure this plugin runs before Tailwind CSS processing
