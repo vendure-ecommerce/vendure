@@ -132,16 +132,6 @@ export class StripeController {
                     );
                 }
 
-                // If the channel specific context fails, try to use the default channel context
-                // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
-                if (transitionToStateResult instanceof OrderStateTransitionError) {
-                    transitionToStateResult = await this.orderService.transitionToState(
-                        ctxWithDefaultChannel,
-                        orderId,
-                        'ArrangingPayment',
-                    );
-                }
-
                 // If the order is still not in the ArrangingPayment state, log an error
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
                     Logger.error(
