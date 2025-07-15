@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 Registers a React component to be used as a <a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>.
 
 ```ts title="Signature"
-function registerReactFormInputComponent(id: string, component: ElementType): FactoryProvider
+function registerReactFormInputComponent(id: string, component: ElementType): void
 ```
 Parameters
 

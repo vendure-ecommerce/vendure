@@ -11,6 +11,12 @@ import { RedisCachePluginInitOptions } from './types';
  * This is a high-performance cache strategy which is suitable for production use, and is a drop-in
  * replacement for the {@link DefaultCachePlugin}.
  *
+ * Note: To use this plugin, you need to manually install the `ioredis` package:
+ *
+ * ```shell
+ * npm install ioredis@^5.3.2
+ * ```
+ *
  * @docsCategory cache
  * @docsPage RedisCachePlugin
  * @docsWeight 0

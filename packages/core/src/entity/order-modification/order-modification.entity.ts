@@ -1,12 +1,12 @@
 import { OrderAddress } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
 import { Money } from '../money.decorator';
-import { Order } from '../order/order.entity';
 import { OrderModificationLine } from '../order-line-reference/order-modification-line.entity';
+import { Order } from '../order/order.entity';
 import { Payment } from '../payment/payment.entity';
 import { Refund } from '../refund/refund.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
@@ -40,11 +40,11 @@ export class OrderModification extends VendureEntity {
     @Money()
     priceChange: number;
 
-    @OneToOne(type => Payment)
+    @ManyToOne(type => Payment)
     @JoinColumn()
     payment?: Payment;
 
-    @OneToOne(type => Refund)
+    @ManyToOne(type => Refund)
     @JoinColumn()
     refund?: Refund;
 

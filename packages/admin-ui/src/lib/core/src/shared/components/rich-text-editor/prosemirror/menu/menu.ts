@@ -124,60 +124,80 @@ function wrapListItem(nodeType, options: CmdItemOptions) {
 export function buildMenuItems(schema: Schema, modalService: ModalService) {
     const r: Record<string, any> = {};
     let type: MarkType | NodeType;
-    /* eslint-disable no-cond-assign */
-    if ((type = schema.marks.strong)) {
+
+    type = schema.marks.strong;
+    if (type) {
         r.toggleStrong = markItem(type, {
             title: 'Toggle strong style',
             iconShape: 'bold',
         });
     }
-    if ((type = schema.marks.em)) {
+
+    type = schema.marks.em;
+    if (type) {
         r.toggleEm = markItem(type, {
             title: 'Toggle emphasis',
             iconShape: 'italic',
         });
     }
-    if ((type = schema.marks.code)) {
+
+    type = schema.marks.code;
+    if (type) {
         r.toggleCode = markItem(type, { title: 'Toggle code font', icon: icons.code });
     }
-    if ((type = schema.marks.link)) {
+
+    type = schema.marks.link;
+    if (type) {
         r.toggleLink = linkItem(type, modalService);
     }
 
-    if ((type = schema.nodes.image)) {
+    type = schema.nodes.image;
+    if (type) {
         r.insertImage = insertImageItem(type, modalService);
     }
-    if ((type = schema.nodes.bullet_list)) {
+
+    type = schema.nodes.bullet_list;
+    if (type) {
         r.wrapBulletList = wrapListItem(type, {
             title: 'Wrap in bullet list',
             iconShape: 'bullet-list',
         });
     }
-    if ((type = schema.nodes.ordered_list)) {
+
+    type = schema.nodes.ordered_list;
+    if (type) {
         r.wrapOrderedList = wrapListItem(type, {
             title: 'Wrap in ordered list',
             iconShape: 'number-list',
         });
     }
-    if ((type = schema.nodes.blockquote)) {
+
+    type = schema.nodes.blockquote;
+    if (type) {
         r.wrapBlockQuote = wrapItem(type, {
             title: 'Wrap in block quote',
             render: renderClarityIcon({ shape: 'block-quote', size: IconSize.Large }),
         });
     }
-    if ((type = schema.nodes.paragraph)) {
+
+    type = schema.nodes.paragraph;
+    if (type) {
         r.makeParagraph = blockTypeItem(type, {
             title: 'Change to paragraph',
             render: renderClarityIcon({ shape: 'text', label: 'Plain' }),
         });
     }
-    if ((type = schema.nodes.code_block)) {
+
+    type = schema.nodes.code_block;
+    if (type) {
         r.makeCodeBlock = blockTypeItem(type, {
             title: 'Change to code block',
             render: renderClarityIcon({ shape: 'code', label: 'Code' }),
         });
     }
-    if ((type = schema.nodes.heading)) {
+
+    type = schema.nodes.heading;
+    if (type) {
         for (let i = 1; i <= 10; i++) {
             r['makeHead' + i] = blockTypeItem(type, {
                 title: 'Change to heading ' + i,
@@ -186,7 +206,9 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
             });
         }
     }
-    if ((type = schema.nodes.horizontal_rule)) {
+
+    type = schema.nodes.horizontal_rule;
+    if (type) {
         const hr = type;
         r.insertHorizontalRule = new MenuItem({
             title: 'Insert horizontal rule',

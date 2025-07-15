@@ -11,12 +11,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## setDashboardWidgetLayout
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="31" packageName="@vendure/admin-ui" />
 
 Sets the default widget layout for the Admin UI dashboard.
 
 ```ts title="Signature"
-function setDashboardWidgetLayout(layoutDef: WidgetLayoutDefinition): FactoryProvider
+function setDashboardWidgetLayout(layoutDef: WidgetLayoutDefinition): void
 ```
 Parameters
 

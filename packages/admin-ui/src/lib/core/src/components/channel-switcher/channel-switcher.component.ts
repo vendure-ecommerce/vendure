@@ -13,6 +13,7 @@ import { ChannelService } from '../../providers/channel/channel.service';
     templateUrl: './channel-switcher.component.html',
     styleUrls: ['./channel-switcher.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ChannelSwitcherComponent implements OnInit {
     readonly displayFilterThreshold = 10;
@@ -20,17 +21,22 @@ export class ChannelSwitcherComponent implements OnInit {
     channelCount$: Observable<number>;
     filterControl = new UntypedFormControl('');
     activeChannelCode$: Observable<string>;
-    constructor(private dataService: DataService, private channelService: ChannelService) {}
+    constructor(
+        private dataService: DataService,
+        private channelService: ChannelService,
+    ) {}
 
     ngOnInit() {
         const channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
         const filterTerm$ = this.filterControl.valueChanges.pipe<string>(startWith(''));
         this.channels$ = combineLatest(channels$, filterTerm$).pipe(
-            map(([channels, filterTerm]) => filterTerm
+            map(([channels, filterTerm]) =>
+                filterTerm
                     ? channels.filter(c =>
                           c.code.toLocaleLowerCase().includes(filterTerm.toLocaleLowerCase()),
                       )
-                    : channels),
+                    : channels,
+            ),
         );
         this.channelCount$ = channels$.pipe(map(channels => channels.length));
         const activeChannel$ = this.dataService.client

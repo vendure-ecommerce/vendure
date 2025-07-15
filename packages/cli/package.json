@@ -1,6 +1,6 @@
 {
     "name": "@vendure/cli",
-    "version": "3.1.7",
+    "version": "3.3.6",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -13,7 +13,7 @@
         "graphql",
         "typescript"
     ],
-    "homepage": "https://www.vendure.io/",
+    "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
     "private": false,
     "license": "GPL-3.0-or-later",
@@ -22,7 +22,8 @@
         "build": "rimraf dist && tsc -p ./tsconfig.cli.json && ts-node ./build.ts",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
         "ci": "npm run build",
-        "test": "vitest --config vitest.config.mts --run"
+        "test": "vitest --config vitest.config.mts --run",
+        "e2e": "vitest --config e2e/vitest.e2e.config.mts --run"
     },
     "publishConfig": {
         "access": "public"
@@ -35,7 +36,7 @@
     ],
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "^3.1.7",
+        "@vendure/common": "3.3.6",
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
         "dotenv": "^16.4.5",
@@ -46,7 +47,7 @@
         "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
-        "@vendure/core": "^3.1.7",
-        "typescript": "5.3.3"
+        "@vendure/core": "3.3.6",
+        "typescript": "5.8.2"
     }
 }

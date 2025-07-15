@@ -14,7 +14,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/auth/default-password-validation-strategy.ts" sourceLine="18" packageName="@vendure/core" since="1.5.0" />
 
 The DefaultPasswordValidationStrategy allows you to specify a minimum length and/or
-a regular expression to match passwords against.
+a regular expression to match passwords against. The default `maxLength` is `72`.
 
 TODO:
 By default, the `minLength` will be set to `4`. This is rather permissive and is only
@@ -23,7 +23,7 @@ this default will be made more strict.
 
 ```ts title="Signature"
 class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
-    constructor(options: { minLength?: number; regexp?: RegExp })
+    constructor(options: { minLength?: number; maxLength?: number; regexp?: RegExp })
     validate(ctx: RequestContext, password: string) => boolean | string;
 }
 ```
@@ -35,7 +35,7 @@ class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options: { minLength?: number; regexp?: RegExp }) => DefaultPasswordValidationStrategy`}   />
+<MemberInfo kind="method" type={`(options: { minLength?: number; maxLength?: number; regexp?: RegExp }) => DefaultPasswordValidationStrategy`}   />
 
 
 ### validate

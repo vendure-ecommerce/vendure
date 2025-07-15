@@ -40,6 +40,7 @@ export const GET_PROFILE_DETAIL = gql`
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProfileComponent
     extends TypedBaseDetailComponent<typeof GetProfileDetailDocument, 'activeAdministrator'>

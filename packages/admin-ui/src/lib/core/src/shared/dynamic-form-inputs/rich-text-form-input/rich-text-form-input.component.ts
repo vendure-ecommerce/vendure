@@ -16,6 +16,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     templateUrl: './rich-text-form-input.component.html',
     styleUrls: ['./rich-text-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RichTextFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'rich-text-form-input';

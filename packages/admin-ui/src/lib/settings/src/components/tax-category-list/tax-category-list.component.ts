@@ -24,6 +24,7 @@ export const GET_TAX_CATEGORY_LIST = gql`
     templateUrl: './tax-category-list.component.html',
     styleUrls: ['./tax-category-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TaxCategoryListComponent extends TypedBaseListComponent<
     typeof GetTaxCategoryListDocument,

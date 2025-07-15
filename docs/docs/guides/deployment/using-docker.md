@@ -10,7 +10,7 @@ weight: 3
 The default installation with `@vendure/create` includes a sample Dockerfile:
 
 ```dockerfile title="Dockerfile"
-FROM node:16
+FROM node:22
 
 WORKDIR /usr/src/app
 

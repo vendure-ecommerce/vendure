@@ -1,15 +1,30 @@
 import { isObject } from '@vendure/common/lib/shared-utils';
 
+import { safeAssign } from '../../../common/safe-assign';
+
 /**
  * Merges properties into a target entity. This is needed for the cases in which a
  * property already exists on the target, but the hydrated version also contains that
  * property with a different set of properties. This prevents the original target
  * entity from having data overwritten.
  */
-export function mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
+export function mergeDeep<T extends { [key: string]: any }>(
+    a: T | undefined,
+    b: T,
+    visited: WeakSet<object> = new WeakSet(),
+): T {
     if (!a) {
         return b;
     }
+
+    // Prevent circular references
+    if (isObject(b)) {
+        if (visited.has(b)) {
+            return a;
+        }
+        visited.add(b);
+    }
+
     if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
         if (a[0].hasOwnProperty('id')) {
             // If the array contains entities, we can use the id to match them up
@@ -31,14 +46,34 @@ export function mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b:
             }
         }
     }
+
     for (const [key, value] of Object.entries(b)) {
+        // Guard against prototype pollution - block dangerous property names
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            continue;
+        }
+
         if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
             if (Array.isArray(value) || isObject(value)) {
-                (a as any)[key] = mergeDeep(a?.[key], b[key]);
+                // Skip if we detect a circular reference
+                if (isObject(value) && visited.has(value)) {
+                    continue;
+                }
+                // Only merge recursively if the property exists as an own property in the destination object
+                if (
+                    Object.prototype.hasOwnProperty.call(a, key) &&
+                    (Array.isArray(a[key]) || isObject(a[key]))
+                ) {
+                    const mergedValue = mergeDeep(a[key], b[key], visited);
+                    safeAssign(a, key, mergedValue);
+                } else {
+                    safeAssign(a, key, value);
+                }
             } else {
-                (a as any)[key] = b[key];
+                safeAssign(a, key, value);
             }
         }
     }
+
     return a ?? b;
 }

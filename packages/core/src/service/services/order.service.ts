@@ -74,6 +74,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -84,10 +85,10 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Order } from '../../entity/order/order.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
+import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
@@ -137,6 +138,7 @@ import { StockLevelService } from './stock-level.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class OrderService {
     constructor(
         private connection: TransactionalConnection,
@@ -235,22 +237,45 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
-        qb.setFindOptions({ relations: effectiveRelations })
+
+        // Split relations into two groups for different loading strategies:
+        // Main order relations - loaded with 'query' strategy for performance
+        const orderRelations = effectiveRelations.filter(r => !r.startsWith('lines'));
+
+        // Lines relations - loaded with 'join' strategy to enable multi-column sorting
+        const lineRelations = effectiveRelations
+            .filter(r => r.startsWith('lines.'))
+            .map(r => r.replace('lines.', ''));
+
+        qb.setFindOptions({
+            relations: orderRelations,
+            relationLoadStrategy: 'query',
+        })
             .leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
-        if (effectiveRelations.includes('lines')) {
-            qb.addOrderBy(`order__order_lines.${qb.escape('createdAt')}`, 'ASC').addOrderBy(
-                `order__order_lines.${qb.escape('productVariantId')}`,
-                'ASC',
-            );
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
+
         if (order) {
+            const hasLinesRelations = effectiveRelations.some(r => r.startsWith('lines'));
+            if (hasLinesRelations) {
+                const linesQb = this.connection.getRepository(ctx, OrderLine).createQueryBuilder('line');
+                linesQb
+                    .setFindOptions({
+                        relations: lineRelations,
+                    })
+                    .where('line.orderId = :orderId', { orderId })
+                    .addOrderBy('line.createdAt', 'ASC')
+                    .addOrderBy('line.productVariantId', 'ASC');
+
+                const lines = await linesQb.getMany();
+                order.lines = lines;
+            }
+
             if (effectiveRelations.includes('lines.productVariant')) {
                 for (const line of order.lines) {
                     line.productVariant = this.translator.translate(
@@ -479,7 +504,7 @@ export class OrderService {
         order = patchEntity(order, { customFields });
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, updatedOrder);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', { customFields }));
         return updatedOrder;
     }
 
@@ -513,7 +538,7 @@ export class OrderService {
         }
 
         const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', targetCustomer));
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId,
@@ -889,6 +914,19 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
+
+        const { orderInterceptors } = this.configService.orderOptions;
+        for (const orderLine of order.lines) {
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
+        }
+
         await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
@@ -1293,20 +1331,14 @@ export class OrderService {
 
     /**
      * @description
-     * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
-     * covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
-     * or `PaymentAuthorized`.
+     * Transitions the given {@link Payment} to a new state.
      */
     async transitionPaymentToState(
         ctx: RequestContext,
         paymentId: ID,
         state: PaymentState,
     ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
-        const result = await this.paymentService.transitionToState(ctx, paymentId, state);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        return result;
+        return this.paymentService.transitionToState(ctx, paymentId, state);
     }
 
     /**
@@ -1600,6 +1632,7 @@ export class OrderService {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             channelId: ctx.channelId,
             relations: ['surcharges'],
+            relationLoadStrategy: 'query',
         });
         return order.surcharges || [];
     }

@@ -20,6 +20,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './select-form-input.component.html',
     styleUrls: ['./select-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SelectFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'select-form-input';

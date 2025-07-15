@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './payment-state-label.component.html',
     styleUrls: ['./payment-state-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PaymentStateLabelComponent {
     @Input() state: string;

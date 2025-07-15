@@ -12,6 +12,7 @@ import {
     templateUrl: './order-history.component.html',
     styleUrls: ['./order-history.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
@@ -163,7 +164,6 @@ export class OrderHistoryComponent {
         for (const line of this.order.lines) {
             const cancellationLine = cancellationLines.find(l => l.orderLineId === line.id);
             if (cancellationLine) {
-                const count = itemMap.get(line.productVariant.name);
                 itemMap.set(line.productVariant.name, cancellationLine.quantity);
             }
         }

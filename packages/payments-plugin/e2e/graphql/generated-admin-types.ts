@@ -2689,6 +2689,18 @@ export type MolliePaymentIntentError = ErrorResult & {
 
 export type MolliePaymentIntentInput = {
     /**
+     * By default, pay later methods like Klarna will be immediately captured.
+     * Set this to false when you expect that order fulfillment takes longer than 24 hours.
+     * If set to false, you will need to settle the "Authorized" payment in Vendure manually!
+     * If you fail to do so, the Authorized payment will expire after 28 days.
+     */
+    immediateCapture?: InputMaybe<Scalars['Boolean']['input']>;
+    /**
+     * Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
+     * The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
+     */
+    locale?: InputMaybe<Scalars['String']['input']>;
+    /**
      * Optional preselected Mollie payment method. When this is passed
      * the payment selection step will be skipped.
      */
@@ -2991,6 +3003,7 @@ export type Mutation = {
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
     runPendingSearchIndexUpdates: Success;
+    runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
     setDraftOrderBillingAddress: Order;
@@ -3045,6 +3058,8 @@ export type Mutation = {
     updateProductOption: ProductOption;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
+    /** Update an existing ProductVariant */
+    updateProductVariant: ProductVariant;
     /** Update existing ProductVariants */
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Update multiple existing Products */
@@ -3054,6 +3069,7 @@ export type Mutation = {
     updateProvince: Province;
     /** Update an existing Role */
     updateRole: Role;
+    updateScheduledTask: ScheduledTask;
     /** Update an existing Seller */
     updateSeller: Seller;
     /** Update an existing ShippingMethod */
@@ -3561,6 +3577,10 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
 };
 
+export type MutationRunScheduledTaskArgs = {
+    id: Scalars['String']['input'];
+};
+
 export type MutationSetCustomerForDraftOrderArgs = {
     customerId?: InputMaybe<Scalars['ID']['input']>;
     input?: InputMaybe<CreateCustomerInput>;
@@ -3698,6 +3718,10 @@ export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
 };
 
+export type MutationUpdateProductVariantArgs = {
+    input: UpdateProductVariantInput;
+};
+
 export type MutationUpdateProductVariantsArgs = {
     input: Array<UpdateProductVariantInput>;
 };
@@ -3716,6 +3740,10 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
     input: UpdateRoleInput;
+};
+
+export type MutationUpdateScheduledTaskArgs = {
+    input: UpdateScheduledTaskInput;
 };
 
 export type MutationUpdateSellerArgs = {
@@ -4951,6 +4979,7 @@ export type Query = {
     provinces: ProvinceList;
     role?: Maybe<Role>;
     roles: RoleList;
+    scheduledTasks: Array<ScheduledTask>;
     search: SearchResponse;
     seller?: Maybe<Seller>;
     sellers: SellerList;
@@ -5456,6 +5485,18 @@ export type Sale = Node &
         type: StockMovementType;
         updatedAt: Scalars['DateTime']['output'];
     };
+
+export type ScheduledTask = {
+    description: Scalars['String']['output'];
+    enabled: Scalars['Boolean']['output'];
+    id: Scalars['String']['output'];
+    isRunning: Scalars['Boolean']['output'];
+    lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+    lastResult?: Maybe<Scalars['JSON']['output']>;
+    nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+    schedule: Scalars['String']['output'];
+    scheduleDescription: Scalars['String']['output'];
+};
 
 export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']['input']>;
@@ -6285,6 +6326,14 @@ export type UpdateOrderInput = {
     id: Scalars['ID']['input'];
 };
 
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult =
+    | InsufficientStockError
+    | NegativeQuantityError
+    | OrderInterceptorError
+    | OrderLimitError
+    | OrderModificationError;
+
 export type UpdateOrderItemsResult =
     | InsufficientStockError
     | NegativeQuantityError
@@ -6396,6 +6445,11 @@ export type UpdateRoleInput = {
     description?: InputMaybe<Scalars['String']['input']>;
     id: Scalars['ID']['input'];
     permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateScheduledTaskInput = {
+    enabled?: InputMaybe<Scalars['Boolean']['input']>;
+    id: Scalars['String']['input'];
 };
 
 export type UpdateSellerInput = {

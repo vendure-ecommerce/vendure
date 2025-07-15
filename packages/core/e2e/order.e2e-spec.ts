@@ -47,7 +47,6 @@ import {
     PaymentFragment,
     RefundFragment,
     RefundOrderDocument,
-    SettlePaymentDocument,
     SortOrder,
     StockMovementType,
     TransitFulfillmentDocument,
@@ -77,6 +76,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_MULTIPLE_ITEMS_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
@@ -218,6 +218,32 @@ describe('Orders resolver', () => {
     describe('querying', () => {
         it('orders', async () => {
             const result = await adminClient.query<Codegen.GetOrderListQuery>(GET_ORDERS_LIST);
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
+        it('filtering by total', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: { total: { gt: 1000_00 } },
+                },
+            });
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
+        it('filtering by total using boolean expression', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: {
+                        _and: [{ total: { gt: 1000_00 } }],
+                    },
+                },
+            });
             expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
@@ -1079,9 +1105,8 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
-                GET_ORDER_LIST_FULFILLMENTS,
-            );
+            const { orders } =
+                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
@@ -2779,6 +2804,59 @@ describe('Orders resolver', () => {
                 id: order.id,
             });
             expect(order2?.state).toBe('PartiallyShipped');
+        });
+    });
+
+    describe('multiple items to order', () => {
+        it('adds multiple items to a new active order', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemsToOrder } = await shopClient.query<
+                CodegenShop.AddItemsToOrderMutation,
+                CodegenShop.AddItemsToOrderMutationVariables
+            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+                inputs: [
+                    {
+                        productVariantId: 'T_1',
+                        quantity: 5,
+                    },
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 3,
+                    },
+                ],
+            });
+            expect(addItemsToOrder.order.lines.length).toBe(2);
+            expect(addItemsToOrder.order.lines[0].quantity).toBe(5);
+            expect(addItemsToOrder.order.lines[1].quantity).toBe(3);
+        });
+
+        it('adds successful items and returns error results for failed items', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemsToOrder } = await shopClient.query<
+                CodegenShop.AddItemsToOrderMutation,
+                CodegenShop.AddItemsToOrderMutationVariables
+            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+                inputs: [
+                    {
+                        productVariantId: 'T_1',
+                        quantity: 1,
+                    },
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 999999, // Exceeds limit
+                    }
+                ],
+            });
+            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1')
+            // Should have added 1 of T_1
+            expect(t1?.quantity).toBe(1);
+            // Should not have added T_2
+            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2')
+            expect(t2).toBeUndefined(); 
+            // Should have errors
+            expect(addItemsToOrder.errorResults.length).toBe(1);
+            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR')
+            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR')
         });
     });
 });

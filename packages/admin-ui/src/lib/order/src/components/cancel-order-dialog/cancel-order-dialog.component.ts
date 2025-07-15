@@ -14,6 +14,7 @@ import {
     templateUrl: './cancel-order-dialog.component.html',
     styleUrls: ['./cancel-order-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CancelOrderDialogComponent implements OnInit, Dialog<CancelOrderInput> {
     order: OrderDetailFragment;

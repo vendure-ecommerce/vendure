@@ -21,6 +21,11 @@ export type Scalars = {
 
 export type ActiveOrderResult = NoActiveOrderError | Order;
 
+export type AddItemInput = {
+  productVariantId: Scalars['ID']['input'];
+  quantity: Scalars['Int']['input'];
+};
+
 export type AddPaymentToOrderResult = IneligiblePaymentMethodError | NoActiveOrderError | Order | OrderPaymentStateError | OrderStateTransitionError | PaymentDeclinedError | PaymentFailedError;
 
 export type Address = Node & {
@@ -1724,6 +1729,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
   addItemToOrder: UpdateOrderItemsResult;
+  /** Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items. */
+  addItemsToOrder: UpdateMultipleOrderItemsResult;
   /** Add a Payment to the Order */
   addPaymentToOrder: AddPaymentToOrderResult;
   /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
@@ -1826,6 +1833,11 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
   productVariantId: Scalars['ID']['input'];
   quantity: Scalars['Int']['input'];
+};
+
+
+export type MutationAddItemsToOrderArgs = {
+  inputs: Array<AddItemInput>;
 };
 
 
@@ -2896,6 +2908,24 @@ export type ProvinceList = PaginatedList & {
   totalItems: Scalars['Int']['output'];
 };
 
+export type PublicPaymentMethod = {
+  __typename?: 'PublicPaymentMethod';
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  translations: Array<PaymentMethodTranslation>;
+};
+
+export type PublicShippingMethod = {
+  __typename?: 'PublicShippingMethod';
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  translations: Array<ShippingMethodTranslation>;
+};
+
 export type Query = {
   __typename?: 'Query';
   /** The active Channel */
@@ -2908,6 +2938,10 @@ export type Query = {
    * query will once again return `null`.
    */
   activeOrder?: Maybe<Order>;
+  /** Get active payment methods */
+  activePaymentMethods: Array<Maybe<PublicPaymentMethod>>;
+  /** Get active shipping methods */
+  activeShippingMethods: Array<Maybe<PublicShippingMethod>>;
   /** An array of supported Countries */
   availableCountries: Array<Country>;
   /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
@@ -3453,9 +3487,22 @@ export type UpdateCustomerInput = {
 
 export type UpdateCustomerPasswordResult = InvalidCredentialsError | NativeAuthStrategyError | PasswordValidationError | Success;
 
+/**
+ * Returned when multiple items are added to an Order.
+ * The errorResults array contains the errors that occurred for each item, if any.
+ */
+export type UpdateMultipleOrderItemsResult = {
+  __typename?: 'UpdateMultipleOrderItemsResult';
+  errorResults: Array<UpdateOrderItemErrorResult>;
+  order: Order;
+};
+
 export type UpdateOrderInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
 };
+
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult = InsufficientStockError | NegativeQuantityError | OrderInterceptorError | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderInterceptorError | OrderLimitError | OrderModificationError;
 

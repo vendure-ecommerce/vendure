@@ -132,6 +132,16 @@ export class StripeController {
                     );
                 }
 
+                // If the channel specific context fails, try to use the default channel context
+                // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
+                if (transitionToStateResult instanceof OrderStateTransitionError) {
+                    transitionToStateResult = await this.orderService.transitionToState(
+                        ctxWithDefaultChannel,
+                        orderId,
+                        'ArrangingPayment',
+                    );
+                }
+
                 // If the order is still not in the ArrangingPayment state, log an error
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
                     Logger.error(
@@ -173,11 +183,18 @@ export class StripeController {
         }
     }
 
-    private async createContext(channelToken: string, languageCode: LanguageCode, req: RequestWithRawBody): Promise<RequestContext> {
+    private async createContext(
+        channelToken: string,
+        languageCode: LanguageCode,
+        req: RequestWithRawBody,
+    ): Promise<RequestContext> {
         return this.requestContextService.create({
             apiType: 'admin',
             channelOrToken: channelToken,
-            req,
+            // This is a workaround for a type mismatch between express v5 (Vendure core)
+            // and express v4 (several transitive dependencies). Can be removed once the
+            // ecosystem has more significantly shifted to v5.
+            req: req as any,
             languageCode,
         });
     }

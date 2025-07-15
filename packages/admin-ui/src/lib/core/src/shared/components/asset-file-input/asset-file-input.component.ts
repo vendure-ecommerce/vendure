@@ -19,6 +19,7 @@ import { ServerConfigService } from '../../../data/server-config';
     templateUrl: './asset-file-input.component.html',
     styleUrls: ['./asset-file-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetFileInputComponent implements OnInit {
     /**

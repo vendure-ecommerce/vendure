@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { ResultOf } from '@graphql-typed-document-node/core';
 import {
@@ -31,6 +31,7 @@ export const CUSTOMER_GROUP_DETAIL_QUERY = gql`
     templateUrl: './customer-group-detail.component.html',
     styleUrls: ['./customer-group-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupDetailComponent
     extends TypedBaseDetailComponent<typeof GetCustomerGroupDetailDocument, 'customerGroup'>
@@ -106,7 +107,6 @@ export class CustomerGroupDetailComponent
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['customFields']) as UntypedFormGroup;
             this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
         }
     }

@@ -167,12 +167,21 @@ export class TypescriptDocsParser {
                 members: this.parseMembers(statement.members) as PropertyInfo[],
             };
         } else if (ts.isFunctionDeclaration(statement)) {
-            const parameters = statement.parameters.map(p => ({
-                name: p.name.getText(),
-                type: p.type ? p.type.getText() : '',
-                optional: !!p.questionToken,
-                initializer: p.initializer && p.initializer.getText(),
-            }));
+            const parameters = statement.parameters.map(p => {
+                let name = p.name.getText();
+                if (name.startsWith('{') && name.endsWith('}') && info.sourceFile.endsWith('.tsx')) {
+                    // The "name" of a React component is often a destructured object, e.g. `{ prod1, prop2 }` etc.
+                    // In this case we will simply replace that with "props".
+                    name = 'props';
+                }
+                return {
+                    name,
+                    type: p.type ? p.type.getText() : '',
+                    optional: !!p.questionToken,
+                    initializer: p.initializer && p.initializer.getText(),
+                }
+            });
+
             return {
                 ...info,
                 kind: 'function',

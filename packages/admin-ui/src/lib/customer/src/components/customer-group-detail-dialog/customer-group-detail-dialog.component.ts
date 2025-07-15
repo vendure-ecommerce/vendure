@@ -13,6 +13,7 @@ import {
     templateUrl: './customer-group-detail-dialog.component.html',
     styleUrls: ['./customer-group-detail-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupDetailDialogComponent implements Dialog<CreateCustomerGroupInput>, OnInit {
     group: { id?: string; name: string; customFields?: { [name: string]: any } };
@@ -20,7 +21,10 @@ export class CustomerGroupDetailDialogComponent implements Dialog<CreateCustomer
     customFields: CustomFieldConfig[];
     form: UntypedFormGroup;
 
-    constructor(private serverConfigService: ServerConfigService, private formBuilder: UntypedFormBuilder) {
+    constructor(
+        private serverConfigService: ServerConfigService,
+        private formBuilder: UntypedFormBuilder,
+    ) {
         this.customFields = this.serverConfigService.getCustomFieldsFor('CustomerGroup');
     }
 

@@ -105,3 +105,13 @@ type OrderInterceptorError implements ErrorResult {
     message: String!
     interceptorError: String!
 }
+
+"""
+Union type of all possible errors that can occur when adding or removing items from an Order.
+"""
+union UpdateOrderItemErrorResult =
+      OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
+    | OrderInterceptorError

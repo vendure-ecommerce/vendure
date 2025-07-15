@@ -27,6 +27,7 @@ import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
@@ -39,8 +40,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { Product } from '../../entity/product/product.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
@@ -88,6 +89,7 @@ export interface EntityAssetInput {
  * @docsWeight 0
  */
 @Injectable()
+@Instrument()
 export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
 
@@ -290,32 +292,23 @@ export class AssetService {
      * See the [Uploading Files docs](/guides/developer-guide/uploading-files) for an example of usage.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
-        return new Promise(async (resolve, reject) => {
-            const { createReadStream, filename, mimetype } = await input.file;
-            const stream = createReadStream();
-            stream.on('error', (err: any) => {
-                reject(err);
-            });
-            let result: Asset | MimeTypeError;
-            try {
-                result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
-            } catch (e: any) {
-                reject(e);
-                return;
-            }
-            if (isGraphQlErrorResult(result)) {
-                resolve(result);
-                return;
-            }
-            await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
-            if (input.tags) {
-                const tags = await this.tagService.valuesToTags(ctx, input.tags);
-                result.tags = tags;
-                await this.connection.getRepository(ctx, Asset).save(result);
-            }
-            await this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
-            resolve(result);
-        });
+        const { createReadStream, filename, mimetype } = await input.file;
+        const { stream, errorPromise } = this.makeStreamGuard(createReadStream);
+        const result = await Promise.race([
+            this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields),
+            errorPromise,
+        ]);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
+        if (input.tags) {
+            const tags = await this.tagService.valuesToTags(ctx, input.tags);
+            result.tags = tags;
+            await this.connection.getRepository(ctx, Asset).save(result);
+        }
+        await this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
+        return result;
     }
 
     /**
@@ -700,5 +693,25 @@ export class AssetService {
             },
         });
         return { products, variants, collections };
+    }
+
+    private makeStreamGuard(createReadStream: () => ReadStream): {
+        stream: ReadStream;
+        errorPromise: Promise<never>;
+    } {
+        let onReject: (err: unknown) => void;
+        const errorPromise = new Promise<never>((_, rej) => {
+            onReject = rej;
+        });
+
+        // `fs-capacitor`'s `createReadStream` can throw if its `WriteStream` has already been destroyed
+        // sync error so will bubble to consumer immediately
+        const stream = createReadStream();
+
+        stream.on('error', err => {
+            onReject(err);
+        });
+
+        return { stream, errorPromise };
     }
 }

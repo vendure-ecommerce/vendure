@@ -278,6 +278,79 @@ Using these specialized import services is preferable to using the normal servic
 
 However, it is still possible to use the normal service-layer services if you prefer. For example, the following code snippet shows how to create a new ProductVariant using the `ProductVariantService`:
 
+```ts title="src/create-new-variant-service.ts"
+import { INestApplicationContext } from '@nestjs/common';
+import {
+    ProductVariantService,
+    TransactionalConnection,
+    LanguageCode,
+    RequestContext,
+    RequestContextService,
+    bootstrapWorker,
+    ConfigService,
+    ID,
+    User,
+    SearchService,
+} from '@vendure/core';
+
+import { config } from './vendure-config';
+
+async function createNewVariantService() {
+    // We use the bootstrapWorker() function instead of bootstrap() because we don't
+    // need to start the server, we just need access to the services.
+    const { app } = await bootstrapWorker(config);
+
+    // Most service methods require a RequestContext, so we'll create one here.
+    const ctx = await getSuperadminContext(app);
+
+    // Get the ProductVariantService instance from the application
+    const productVariantService = app.get(ProductVariantService);
+
+    // To reindex after importing products
+    const searchService = app.get(SearchService);
+
+    // Example: Creating a new ProductVariant for an existing product with ID 1
+    const productId = '1' as ID;
+    // Create input data for the new variant
+    const variantInput = {
+        productId,
+        translations: [
+            {
+                languageCode: LanguageCode.en,
+                name: 'New Variant 1',
+            },
+        ],
+        sku: 'NEW-VARIANT-001',
+        // Specify additional variant properties...
+    };
+
+    // Create the variant
+    const newVariants = await productVariantService.create(ctx, [variantInput]);
+
+    console.log('Created new product variants:', newVariants);
+
+    // Rebuild search index to include the new variant
+    await searchService.reindex(ctx);
+
+    await app.close();
+}
+
+/**
+ * Creates a RequestContext configured for the default Channel with the activeUser set
+ * as the superadmin user.
+ */
+export async function getSuperadminContext(app: INestApplicationContext): Promise<RequestContext> {
+    const {superadminCredentials} = app.get(ConfigService).authOptions;
+    const superAdminUser = await app.get(TransactionalConnection)
+        .getRepository(User)
+        .findOneOrFail({where: {identifier: superadminCredentials.identifier}});
+    return app.get(RequestContextService).create({
+        apiType: 'admin',
+        user: superAdminUser,
+    });
+}
+```
+
 ## Importing from other platforms
 
 If you are migrating from another platform, you can create a custom import script to import your data into Vendure.

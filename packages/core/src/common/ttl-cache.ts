@@ -39,7 +39,10 @@ export class TtlCache<K, V> {
             this.cache.delete(key);
         } else if (this.cache.size === this.cacheSize) {
             // evict oldest
-            this.cache.delete(this.first());
+            const oldest = this.first();
+            if (oldest) {
+                this.cache.delete(oldest);
+            }
         }
         this.cache.set(key, {
             value,

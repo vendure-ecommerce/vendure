@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1091" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1159" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
 [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
@@ -37,6 +37,7 @@ interface VendureConfig {
     logger?: VendureLogger;
     taxOptions?: TaxOptions;
     jobQueueOptions?: JobQueueOptions;
+    schedulerOptions?: SchedulerOptions;
     systemOptions?: SystemOptions;
 }
 ```
@@ -147,6 +148,11 @@ Configures how taxes are calculated on products.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>`}   />
 
 Configures how the job queue is persisted and processed.
+### schedulerOptions
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/scheduled-tasks/scheduler-options#scheduleroptions'>SchedulerOptions</a>`}  since="3.3.0"  />
+
+Configures the scheduler mechanism and tasks.
 ### systemOptions
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>`}  since="1.6.0"  />

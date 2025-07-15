@@ -3,25 +3,24 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
+    DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    FacetValue,
     LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
-import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import { TelemetryPlugin } from '@vendure/telemetry-plugin';
 import 'dotenv/config';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
+import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
-import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
+const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
 /**
  * Config settings used during development
@@ -63,8 +62,35 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    customFields: {
+        Product: [
+            {
+                name: 'infoUrl',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+            },
+            {
+                name: 'downloadable',
+                type: 'boolean',
+                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+            },
+            {
+                name: 'shortName',
+                type: 'localeString',
+                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+            },
+            {
+                name: 'lastUpdated',
+                type: 'datetime',
+                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+            },
+        ],
+    },
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -73,6 +99,8 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        ReviewsPlugin,
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
@@ -87,6 +115,7 @@ export const devConfig: VendureConfig = {
         //     port: 9200,
         //     bufferUpdates: true,
         // }),
+        DefaultSchedulerPlugin.init({}),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',
@@ -99,9 +128,11 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
+        ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),

@@ -1,0 +1,25 @@
+name: Codegen
+
+on:
+    workflow_call:
+
+env:
+    CI: true
+
+jobs:
+    codegen:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - name: Install dependencies
+              run: npm install
+            - name: Build core and common packages
+              run: npm run build:core-common
+            - name: Generate GraphQL types
+              run: npm run codegen

@@ -3,7 +3,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 /**
  * Formats a string into sentence case (first letter of first word uppercase).
  */
-@Pipe({ name: 'sentenceCase' })
+@Pipe({
+    name: 'sentenceCase',
+    standalone: false,
+})
 export class SentenceCasePipe implements PipeTransform {
     transform(value: any): any {
         if (typeof value === 'string') {
