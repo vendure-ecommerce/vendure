@@ -1378,5 +1378,5 @@ When you define custom fields on the `PaymentMethod` entity, the following API c
 When you define custom fields on the `Customer` entity, the following API changes are also automatically provided by Vendure:
 
 - Shop API: [registerCustomerAccount](/reference/graphql-api/shop/mutations#registercustomeraccount) will have have a `customFields` field on the input
-object.
+  object.
 
