@@ -781,11 +781,24 @@ export class OrderService {
                 }
             }
             if (customFields != null) {
-                orderLine.customFields = customFields;
+                // Merge custom fields instead of replacing them entirely
+                // This preserves existing values while allowing updates and null-based unsetting
+                const existingCustomFields = orderLine.customFields || {};
+                const mergedCustomFields = { ...existingCustomFields } as any;
+
+                for (const [key, value] of Object.entries(customFields)) {
+                    if (value !== undefined) {
+                        // Update with the new value (including explicit null to unset)
+                        mergedCustomFields[key] = value;
+                    }
+                    // If value is undefined, preserve the existing value (don't set it)
+                }
+
+                orderLine.customFields = mergedCustomFields;
                 await this.customFieldRelationService.updateRelations(
                     ctx,
                     OrderLine,
-                    { customFields },
+                    { customFields: mergedCustomFields },
                     orderLine,
                 );
             }
