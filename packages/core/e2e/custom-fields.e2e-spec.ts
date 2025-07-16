@@ -4,11 +4,10 @@ import { createTestEnvironment } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
@@ -192,8 +191,8 @@ const customConfig = mergeConfig(testConfig(), {
             {
                 name: 'costPrice',
                 type: 'int',
-            }
-        ],  
+            },
+        ],
         // Single readonly Address custom field to test
         // https://github.com/vendure-ecommerce/vendure/issues/3326
         Address: [
@@ -1215,5 +1214,190 @@ describe('Custom fields', () => {
                 },
             },
         ]);
+    });
+
+    describe('default values on create', () => {
+        it('should apply default values when creating new product without custom fields', async () => {
+            const { createProduct } = await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: en
+                                    name: "Test Product 1"
+                                    slug: "test-product-1"
+                                    description: "Test"
+                                }
+                            ]
+                        }
+                    ) {
+                        id
+                        name
+                        customFields {
+                            stringWithDefault
+                            intWithDefault
+                            floatWithDefault
+                            booleanWithDefault
+                            dateTimeWithDefault
+                            stringListWithDefault
+                        }
+                    }
+                }
+            `);
+
+            expect(createProduct.customFields).toEqual({
+                stringWithDefault: 'hello',
+                intWithDefault: 5,
+                floatWithDefault: 5.5678,
+                booleanWithDefault: true,
+                dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
+                stringListWithDefault: customConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'],
+            });
+        });
+
+        it('should apply default values when creating new product with partial custom fields', async () => {
+            const { createProduct } = await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: en
+                                    name: "Test Product 2"
+                                    slug: "test-product-2"
+                                    description: "Test"
+                                }
+                            ]
+                            customFields: { stringWithDefault: "custom value" }
+                        }
+                    ) {
+                        id
+                        name
+                        customFields {
+                            stringWithDefault
+                            intWithDefault
+                            floatWithDefault
+                            booleanWithDefault
+                            dateTimeWithDefault
+                            stringListWithDefault
+                        }
+                    }
+                }
+            `);
+
+            expect(createProduct.customFields).toEqual({
+                stringWithDefault: 'custom value', // overridden
+                intWithDefault: 5, // default should be applied
+                floatWithDefault: 5.5678, // default should be applied
+                booleanWithDefault: true, // default should be applied
+                dateTimeWithDefault: '2019-04-30T12:59:16.415Z', // default should be applied
+                stringListWithDefault: customConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'], // default should be applied
+            });
+        });
+
+        it('should apply default values when creating new product with empty custom fields object', async () => {
+            const { createProduct } = await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: en
+                                    name: "Test Product 3"
+                                    slug: "test-product-3"
+                                    description: "Test"
+                                }
+                            ]
+                            customFields: {}
+                        }
+                    ) {
+                        id
+                        name
+                        customFields {
+                            stringWithDefault
+                            intWithDefault
+                            floatWithDefault
+                            booleanWithDefault
+                            dateTimeWithDefault
+                            stringListWithDefault
+                        }
+                    }
+                }
+            `);
+
+            expect(createProduct.customFields).toEqual({
+                stringWithDefault: 'hello',
+                intWithDefault: 5,
+                floatWithDefault: 5.5678,
+                booleanWithDefault: true,
+                dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
+                stringListWithDefault: customConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'],
+            });
+        });
+
+        it('should apply default values when custom fields are explicitly set to null', async () => {
+            const { createProduct } = await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: en
+                                    name: "Test Product Null"
+                                    slug: "test-product-null"
+                                    description: "Test"
+                                }
+                            ]
+                            customFields: {
+                                stringWithDefault: null
+                                intWithDefault: null
+                                booleanWithDefault: null
+                            }
+                        }
+                    ) {
+                        id
+                        name
+                        customFields {
+                            stringWithDefault
+                            intWithDefault
+                            booleanWithDefault
+                        }
+                    }
+                }
+            `);
+
+            // When custom fields are explicitly set to null, they should still get their default values
+            expect(createProduct.customFields.stringWithDefault).toBe('hello');
+            expect(createProduct.customFields.intWithDefault).toBe(5);
+            expect(createProduct.customFields.booleanWithDefault).toBe(true);
+        });
+
+        it('should apply default values for non-nullable fields', async () => {
+            const { createProduct } = await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: en
+                                    name: "Test Product 4"
+                                    slug: "test-product-4"
+                                    description: "Test"
+                                }
+                            ]
+                        }
+                    ) {
+                        id
+                        name
+                        customFields {
+                            notNullable
+                        }
+                    }
+                }
+            `);
+
+            expect(createProduct.customFields.notNullable).toBe('');
+        });
     });
 });
