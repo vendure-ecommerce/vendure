@@ -41,9 +41,8 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
             this.createInputsWithCustomFields.add(`Create${entityName}Input`);
             this.updateInputsWithCustomFields.add(`Update${entityName}Input`);
         });
-        // Special case for OrderLine custom fields
-        this.createInputsWithCustomFields.add('OrderLineCustomFieldsInput');
-        this.updateInputsWithCustomFields.add('OrderLineCustomFieldsInput');
+        // Note: OrderLineCustomFieldsInput is handled separately since it's used in both
+        // create operations (addItemToOrder) and update operations (adjustOrderLine)
     }
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
@@ -75,14 +74,16 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
 
         for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
             if (this.hasCustomFields(typeName) && variables[inputName]) {
-                await this.processInputVariables(typeName, variables[inputName], ctx, injector);
+                await this.processInputVariables(typeName, variables[inputName], ctx, injector, operation);
             }
         }
     }
 
     private hasCustomFields(typeName: string): boolean {
         return (
-            this.createInputsWithCustomFields.has(typeName) || this.updateInputsWithCustomFields.has(typeName)
+            this.createInputsWithCustomFields.has(typeName) ||
+            this.updateInputsWithCustomFields.has(typeName) ||
+            typeName === 'OrderLineCustomFieldsInput'
         );
     }
 
@@ -91,16 +92,51 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
         variableInput: any,
         ctx: RequestContext,
         injector: Injector,
+        operation: OperationDefinitionNode,
     ) {
         const inputVariables = Array.isArray(variableInput) ? variableInput : [variableInput];
-        const isCreateInput = this.createInputsWithCustomFields.has(typeName);
+        const shouldApplyDefaults = this.shouldApplyDefaults(typeName, operation);
 
         for (const inputVariable of inputVariables) {
-            if (isCreateInput) {
+            if (shouldApplyDefaults) {
                 this.applyDefaultsToInput(typeName, inputVariable);
             }
             await this.validateInput(typeName, ctx, injector, inputVariable);
         }
+    }
+
+    private shouldApplyDefaults(typeName: string, operation: OperationDefinitionNode): boolean {
+        // For regular create inputs, always apply defaults
+        if (this.createInputsWithCustomFields.has(typeName)) {
+            return true;
+        }
+
+        // For OrderLineCustomFieldsInput, check the actual mutation name
+        if (typeName === 'OrderLineCustomFieldsInput') {
+            return this.isOrderLineCreateOperation(operation);
+        }
+
+        // For update inputs, never apply defaults
+        return false;
+    }
+
+    private isOrderLineCreateOperation(operation: OperationDefinitionNode): boolean {
+        // Check if any field in the operation is a "create/add" operation for order lines
+        for (const selection of operation.selectionSet.selections) {
+            if (selection.kind === 'Field') {
+                const fieldName = selection.name.value;
+                // These mutations create new order lines, so should apply defaults
+                if (fieldName === 'addItemToOrder' || fieldName === 'addItemToDraftOrder') {
+                    return true;
+                }
+                // These mutations modify existing order lines, so should NOT apply defaults
+                if (fieldName === 'adjustOrderLine' || fieldName === 'adjustDraftOrderLine') {
+                    return false;
+                }
+            }
+        }
+        // Default to false for safety (don't apply defaults unless we're sure it's a create)
+        return false;
     }
 
     private getArgumentMap(
