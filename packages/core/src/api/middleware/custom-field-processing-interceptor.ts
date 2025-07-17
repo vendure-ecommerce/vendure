@@ -34,8 +34,8 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
     private readonly updateInputsWithCustomFields = new Set<string>();
 
     constructor(
-        private configService: ConfigService,
-        private moduleRef: ModuleRef,
+        private readonly configService: ConfigService,
+        private readonly moduleRef: ModuleRef,
     ) {
         Object.keys(configService.customFields).forEach(entityName => {
             this.createInputsWithCustomFields.add(`Create${entityName}Input`);
@@ -48,44 +48,59 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
         const parsedContext = parseContext(context);
+
+        if (!parsedContext.isGraphQL) {
+            return next.handle();
+        }
+
+        const { operation, schema } = parsedContext.info;
+        if (operation.operation === 'mutation') {
+            await this.processMutationCustomFields(context, operation, schema);
+        }
+
+        return next.handle();
+    }
+
+    private async processMutationCustomFields(
+        context: ExecutionContext,
+        operation: OperationDefinitionNode,
+        schema: GraphQLSchema,
+    ) {
+        const gqlExecutionContext = GqlExecutionContext.create(context);
+        const variables = gqlExecutionContext.getArgs();
+        const ctx = internal_getRequestContext(parseContext(context).req);
         const injector = new Injector(this.moduleRef);
 
-        if (parsedContext.isGraphQL) {
-            const gqlExecutionContext = GqlExecutionContext.create(context);
-            const { operation, schema } = parsedContext.info;
-            const variables = gqlExecutionContext.getArgs();
-            const ctx = internal_getRequestContext(parsedContext.req);
+        const inputTypeNames = this.getArgumentMap(operation, schema);
 
-            if (operation.operation === 'mutation') {
-                const inputTypeNames = this.getArgumentMap(operation, schema);
-
-                for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
-                    const isCreateInput = this.createInputsWithCustomFields.has(typeName);
-                    const isUpdateInput = this.updateInputsWithCustomFields.has(typeName);
-
-                    if (isCreateInput || isUpdateInput) {
-                        if (variables[inputName]) {
-                            const inputVariables: Array<Record<string, any>> = Array.isArray(
-                                variables[inputName],
-                            )
-                                ? variables[inputName]
-                                : [variables[inputName]];
-
-                            for (const inputVariable of inputVariables) {
-                                // Step 1: Apply defaults (only for create operations)
-                                if (isCreateInput) {
-                                    this.applyDefaultsToInput(typeName, inputVariable);
-                                }
-
-                                // Step 2: Validate custom fields
-                                await this.validateInput(typeName, ctx, injector, inputVariable);
-                            }
-                        }
-                    }
-                }
+        for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
+            if (this.hasCustomFields(typeName) && variables[inputName]) {
+                await this.processInputVariables(typeName, variables[inputName], ctx, injector);
             }
         }
-        return next.handle();
+    }
+
+    private hasCustomFields(typeName: string): boolean {
+        return (
+            this.createInputsWithCustomFields.has(typeName) || this.updateInputsWithCustomFields.has(typeName)
+        );
+    }
+
+    private async processInputVariables(
+        typeName: string,
+        variableInput: any,
+        ctx: RequestContext,
+        injector: Injector,
+    ) {
+        const inputVariables = Array.isArray(variableInput) ? variableInput : [variableInput];
+        const isCreateInput = this.createInputsWithCustomFields.has(typeName);
+
+        for (const inputVariable of inputVariables) {
+            if (isCreateInput) {
+                this.applyDefaultsToInput(typeName, inputVariable);
+            }
+            await this.validateInput(typeName, ctx, injector, inputVariable);
+        }
     }
 
     private getArgumentMap(
@@ -114,33 +129,43 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
 
     private applyDefaultsToInput(typeName: string, variableValues: any) {
         if (typeName === 'OrderLineCustomFieldsInput') {
-            // Special case for OrderLine custom fields
-            this.applyDefaultsToCustomFieldsObject(
-                this.configService.customFields.OrderLine || [],
-                variableValues,
-            );
+            this.applyDefaultsForOrderLine(variableValues);
         } else {
-            // Extract entity name from input type (e.g., "CreateProductInput" -> "Product")
-            const entityName = this.getEntityNameFromInputType(typeName);
-            const customFieldConfig = this.configService.customFields[entityName];
+            this.applyDefaultsForEntity(typeName, variableValues);
+        }
+    }
 
-            if (customFieldConfig) {
-                // Apply defaults to direct custom fields
-                if (variableValues.customFields) {
-                    this.applyDefaultsToCustomFieldsObject(customFieldConfig, variableValues.customFields);
-                }
+    private applyDefaultsForOrderLine(variableValues: any) {
+        const orderLineConfig = this.configService.customFields.OrderLine || [];
+        this.applyDefaultsToCustomFieldsObject(orderLineConfig, variableValues);
+    }
 
-                // Apply defaults to translation custom fields
-                if (variableValues.translations && Array.isArray(variableValues.translations)) {
-                    for (const translation of variableValues.translations) {
-                        if (translation.customFields) {
-                            this.applyDefaultsToCustomFieldsObject(
-                                customFieldConfig,
-                                translation.customFields,
-                            );
-                        }
-                    }
-                }
+    private applyDefaultsForEntity(typeName: string, variableValues: any) {
+        const entityName = this.getEntityNameFromInputType(typeName);
+        const customFieldConfig = this.configService.customFields[entityName];
+
+        if (!customFieldConfig) {
+            return;
+        }
+
+        this.applyDefaultsToDirectCustomFields(customFieldConfig, variableValues);
+        this.applyDefaultsToTranslationCustomFields(customFieldConfig, variableValues);
+    }
+
+    private applyDefaultsToDirectCustomFields(customFieldConfig: any[], variableValues: any) {
+        if (variableValues.customFields) {
+            this.applyDefaultsToCustomFieldsObject(customFieldConfig, variableValues.customFields);
+        }
+    }
+
+    private applyDefaultsToTranslationCustomFields(customFieldConfig: any[], variableValues: any) {
+        if (!variableValues.translations || !Array.isArray(variableValues.translations)) {
+            return;
+        }
+
+        for (const translation of variableValues.translations) {
+            if (translation.customFields) {
+                this.applyDefaultsToCustomFieldsObject(customFieldConfig, translation.customFields);
             }
         }
     }
