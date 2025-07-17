@@ -5,8 +5,6 @@ import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
-import { ConfigService } from '../../../config/config.service';
-import { HasCustomFields } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { patchEntity } from '../utils/patch-entity';
@@ -56,10 +54,7 @@ export interface UpdateTranslatableOptions<T extends Translatable> extends Creat
  */
 @Injectable()
 export class TranslatableSaver {
-    constructor(
-        private connection: TransactionalConnection,
-        private configService: ConfigService,
-    ) {}
+    constructor(private connection: TransactionalConnection) {}
 
     /**
      * @description
@@ -82,10 +77,6 @@ export class TranslatableSaver {
         }
 
         entity.translations = translations;
-
-        // Apply custom field defaults for null values
-        this.applyCustomFieldDefaults(entity, entityType);
-
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
@@ -124,32 +115,5 @@ export class TranslatableSaver {
         return this.connection
             .getRepository(ctx, entityType)
             .save(updatedEntity, { data: typeOrmSubscriberData });
-    }
-
-    /**
-     * @description
-     * Apply custom field default values to an entity when fields are explicitly set to null
-     */
-    private applyCustomFieldDefaults<T extends VendureEntity & Partial<HasCustomFields>>(
-        entity: T,
-        entityType: Type<T>,
-    ): void {
-        const customFields = this.configService.customFields;
-        const entityName = entityType.name as keyof typeof customFields;
-        const entityCustomFields = customFields[entityName];
-
-        if (!entityCustomFields || !entity.customFields) {
-            return;
-        }
-
-        for (const customField of entityCustomFields) {
-            const fieldName = customField.name;
-            const fieldValue = entity.customFields[fieldName];
-
-            // Only apply default if the field is explicitly null and has a default value
-            if (fieldValue === null && customField.defaultValue !== undefined) {
-                entity.customFields[fieldName] = customField.defaultValue;
-            }
-        }
     }
 }
