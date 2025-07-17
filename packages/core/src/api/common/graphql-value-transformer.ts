@@ -211,7 +211,8 @@ export class GraphqlValueTransformer {
                                 depth + 1,
                             );
                         }
-                        return { ...result, [key]: selfRefChild };
+                        result[key] = selfRefChild;
+                        return result;
                     }
                     return result;
                 }
