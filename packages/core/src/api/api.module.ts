@@ -10,12 +10,11 @@ import { ServiceModule } from '../service/service.module';
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { VENDURE_ADMIN_API_TYPE_PATHS, VENDURE_SHOP_API_TYPE_PATHS } from './constants';
-import { ApplyCustomFieldDefaultsInterceptor } from './middleware/apply-custom-field-defaults-interceptor';
 import { AuthGuard } from './middleware/auth-guard';
+import { CustomFieldProcessingInterceptor } from './middleware/custom-field-processing-interceptor';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
 import { IdInterceptor } from './middleware/id-interceptor';
 import { TranslateErrorResultInterceptor } from './middleware/translate-error-result-interceptor';
-import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
 
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
@@ -61,11 +60,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         },
         {
             provide: APP_INTERCEPTOR,
-            useClass: ApplyCustomFieldDefaultsInterceptor,
-        },
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: ValidateCustomFieldsInterceptor,
+            useClass: CustomFieldProcessingInterceptor,
         },
         {
             provide: APP_INTERCEPTOR,

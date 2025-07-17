@@ -9,49 +9,57 @@ import {
     GraphQLSchema,
     OperationDefinitionNode,
 } from 'graphql';
-import { Observable } from 'rxjs';
 
+import { Injector } from '../../common/injector';
 import { ConfigService } from '../../config/config.service';
+import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { parseContext } from '../common/parse-context';
+import { internal_getRequestContext, RequestContext } from '../common/request-context';
+import { validateCustomFieldValue } from '../common/validate-custom-field-value';
 
 /**
  * @description
- * Applies default values to custom fields when they are explicitly set to null in GraphQL create mutations.
- * This interceptor runs before the validation interceptor and modifies the input variables
- * to replace null values with their configured default values.
+ * Unified interceptor that processes custom fields in GraphQL mutations by:
  *
- * Note: This only applies to Create operations, not Update operations, to avoid interfering
- * with validation of null values during updates (e.g., when updating a non-nullable field to null
- * should properly throw a validation error).
+ * 1. Applying default values when fields are explicitly set to null (create operations only)
+ * 2. Validating custom field values according to their constraints
  */
 @Injectable()
-export class ApplyCustomFieldDefaultsInterceptor implements NestInterceptor {
-    private readonly inputsWithCustomFields = new Set<string>();
+export class CustomFieldProcessingInterceptor implements NestInterceptor {
+    private readonly createInputsWithCustomFields = new Set<string>();
+    private readonly updateInputsWithCustomFields = new Set<string>();
 
     constructor(
         private configService: ConfigService,
         private moduleRef: ModuleRef,
     ) {
-        this.inputsWithCustomFields = Object.keys(configService.customFields).reduce((inputs, entityName) => {
-            inputs.add(`Create${entityName}Input`);
-            // Note: We only apply defaults for Create operations, not Update operations
-            // to avoid interfering with validation of null values in updates
-            return inputs;
-        }, new Set<string>());
-        this.inputsWithCustomFields.add('OrderLineCustomFieldsInput');
+        Object.keys(configService.customFields).forEach(entityName => {
+            this.createInputsWithCustomFields.add(`Create${entityName}Input`);
+            this.updateInputsWithCustomFields.add(`Update${entityName}Input`);
+        });
+        // Special case for OrderLine custom fields
+        this.createInputsWithCustomFields.add('OrderLineCustomFieldsInput');
+        this.updateInputsWithCustomFields.add('OrderLineCustomFieldsInput');
     }
 
-    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    async intercept(context: ExecutionContext, next: CallHandler<any>) {
         const parsedContext = parseContext(context);
+        const injector = new Injector(this.moduleRef);
+
         if (parsedContext.isGraphQL) {
             const gqlExecutionContext = GqlExecutionContext.create(context);
             const { operation, schema } = parsedContext.info;
             const variables = gqlExecutionContext.getArgs();
+            const ctx = internal_getRequestContext(parsedContext.req);
 
             if (operation.operation === 'mutation') {
                 const inputTypeNames = this.getArgumentMap(operation, schema);
+
                 for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
-                    if (this.inputsWithCustomFields.has(typeName)) {
+                    const isCreateInput = this.createInputsWithCustomFields.has(typeName);
+                    const isUpdateInput = this.updateInputsWithCustomFields.has(typeName);
+
+                    if (isCreateInput || isUpdateInput) {
                         if (variables[inputName]) {
                             const inputVariables: Array<Record<string, any>> = Array.isArray(
                                 variables[inputName],
@@ -60,7 +68,13 @@ export class ApplyCustomFieldDefaultsInterceptor implements NestInterceptor {
                                 : [variables[inputName]];
 
                             for (const inputVariable of inputVariables) {
-                                this.applyDefaultsToInput(typeName, inputVariable);
+                                // Step 1: Apply defaults (only for create operations)
+                                if (isCreateInput) {
+                                    this.applyDefaultsToInput(typeName, inputVariable);
+                                }
+
+                                // Step 2: Validate custom fields
+                                await this.validateInput(typeName, ctx, injector, inputVariable);
                             }
                         }
                     }
@@ -79,11 +93,13 @@ export class ApplyCustomFieldDefaultsInterceptor implements NestInterceptor {
             return {};
         }
         const map: { [inputName: string]: string } = {};
+
         for (const selection of operation.selectionSet.selections) {
             if (selection.kind === 'Field') {
                 const name = selection.name.value;
                 const inputType = mutationType.getFields()[name];
                 if (!inputType) continue;
+
                 for (const arg of inputType.args) {
                     map[arg.name] = this.getInputTypeName(arg.type);
                 }
@@ -155,5 +171,63 @@ export class ApplyCustomFieldDefaultsInterceptor implements NestInterceptor {
             return typeName.slice(6, -5); // Remove "Update" and "Input"
         }
         return typeName;
+    }
+
+    private async validateInput(
+        typeName: string,
+        ctx: RequestContext,
+        injector: Injector,
+        variableValues?: { [key: string]: any },
+    ) {
+        if (variableValues) {
+            const entityName = typeName.replace(/(Create|Update)(.+)Input/, '$2');
+            const customFieldConfig = this.configService.customFields[entityName as keyof CustomFields];
+
+            if (typeName === 'OrderLineCustomFieldsInput') {
+                // special case needed to handle custom fields passed via addItemToOrder or adjustOrderLine
+                // mutations.
+                await this.validateCustomFieldsObject(
+                    this.configService.customFields.OrderLine,
+                    ctx,
+                    variableValues,
+                    injector,
+                );
+            }
+            if (variableValues.customFields) {
+                await this.validateCustomFieldsObject(
+                    customFieldConfig,
+                    ctx,
+                    variableValues.customFields,
+                    injector,
+                );
+            }
+            const translations = variableValues.translations;
+            if (Array.isArray(translations)) {
+                for (const translation of translations) {
+                    if (translation.customFields) {
+                        await this.validateCustomFieldsObject(
+                            customFieldConfig,
+                            ctx,
+                            translation.customFields,
+                            injector,
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    private async validateCustomFieldsObject(
+        customFieldConfig: CustomFieldConfig[],
+        ctx: RequestContext,
+        customFieldsObject: { [key: string]: any },
+        injector: Injector,
+    ) {
+        for (const [key, value] of Object.entries(customFieldsObject)) {
+            const config = customFieldConfig.find(c => getGraphQlInputName(c) === key);
+            if (config) {
+                await validateCustomFieldValue(config, value, injector, ctx);
+            }
+        }
     }
 }
