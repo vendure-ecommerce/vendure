@@ -3,11 +3,12 @@ import { ModuleRef } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
-    GraphQLInputType,
-    GraphQLList,
-    GraphQLNonNull,
+    getNamedType,
     GraphQLSchema,
     OperationDefinitionNode,
+    TypeInfo,
+    visit,
+    visitWithTypeInfo,
 } from 'graphql';
 
 import { Injector } from '../../common/injector';
@@ -23,6 +24,9 @@ import { validateCustomFieldValue } from '../common/validate-custom-field-value'
  *
  * 1. Applying default values when fields are explicitly set to null (create operations only)
  * 2. Validating custom field values according to their constraints
+ *
+ * Uses native GraphQL utilities (visit, visitWithTypeInfo, getNamedType) for efficient
+ * AST traversal and type analysis.
  */
 @Injectable()
 export class CustomFieldProcessingInterceptor implements NestInterceptor {
@@ -88,34 +92,24 @@ export class CustomFieldProcessingInterceptor implements NestInterceptor {
         operation: OperationDefinitionNode,
         schema: GraphQLSchema,
     ): { [inputName: string]: string } {
-        const mutationType = schema.getMutationType();
-        if (!mutationType) {
-            return {};
-        }
+        const typeInfo = new TypeInfo(schema);
         const map: { [inputName: string]: string } = {};
 
-        for (const selection of operation.selectionSet.selections) {
-            if (selection.kind === 'Field') {
-                const name = selection.name.value;
-                const inputType = mutationType.getFields()[name];
-                if (!inputType) continue;
-
-                for (const arg of inputType.args) {
-                    map[arg.name] = this.getInputTypeName(arg.type);
+        const visitor = {
+            enter(node: any) {
+                if (node.kind === 'Field') {
+                    const fieldDef = typeInfo.getFieldDef();
+                    if (fieldDef) {
+                        for (const arg of fieldDef.args) {
+                            map[arg.name] = getNamedType(arg.type).name;
+                        }
+                    }
                 }
-            }
-        }
-        return map;
-    }
+            },
+        };
 
-    private getInputTypeName(type: GraphQLInputType): string {
-        if (type instanceof GraphQLNonNull) {
-            return this.getInputTypeName(type.ofType);
-        }
-        if (type instanceof GraphQLList) {
-            return this.getInputTypeName(type.ofType);
-        }
-        return type.name;
+        visit(operation, visitWithTypeInfo(typeInfo, visitor));
+        return map;
     }
 
     private applyDefaultsToInput(typeName: string, variableValues: any) {
