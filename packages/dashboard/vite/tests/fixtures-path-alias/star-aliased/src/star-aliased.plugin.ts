@@ -5,4 +5,4 @@ import { PluginCommonModule, VendurePlugin } from '@vendure/core';
     providers: [],
     dashboard: './dashboard/index.tsx',
 })
-export class AliasedPlugin {}
+export class StarAliasedPlugin {}

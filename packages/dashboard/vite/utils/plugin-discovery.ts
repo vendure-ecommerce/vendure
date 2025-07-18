@@ -232,8 +232,11 @@ export async function analyzeSourceFiles(
                     importPath + '.js',
                     path.join(importPath, 'index.ts'),
                     path.join(importPath, 'index.js'),
+                    importPath,
                 ];
-
+                if (importPath.endsWith('.js')) {
+                    possiblePaths.push(importPath.replace(/.js$/, '.ts'));
+                }
                 // Try each possible path
                 let found = false;
                 for (const possiblePath of possiblePaths) {
