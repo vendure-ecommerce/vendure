@@ -1,3 +1,13 @@
+## <small>3.3.7 (2025-07-18)</small>
+
+
+#### Fixes
+
+* **core** Apply custom field defaults on entity creation (#3674) ([65804ba](https://github.com/vendure-ecommerce/vendure/commit/65804ba)), closes [#3674](https://github.com/vendure-ecommerce/vendure/issues/3674)
+* **core** Correct unfulfilled quantity calc for multiple fulfillment lines per orderline (#3647) ([430dcb8](https://github.com/vendure-ecommerce/vendure/commit/430dcb8)), closes [#3647](https://github.com/vendure-ecommerce/vendure/issues/3647)
+* **core** ID decoding in nested filter structures (#3677) ([b2c3bc9](https://github.com/vendure-ecommerce/vendure/commit/b2c3bc9)), closes [#3677](https://github.com/vendure-ecommerce/vendure/issues/3677)
+* **dashboard** Fix handling of more types of path alias (#3678) ([c9f993f](https://github.com/vendure-ecommerce/vendure/commit/c9f993f)), closes [#3678](https://github.com/vendure-ecommerce/vendure/issues/3678)
+
 ## <small>3.3.6 (2025-07-14)</small>
 
 

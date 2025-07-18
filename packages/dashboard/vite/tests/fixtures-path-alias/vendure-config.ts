@@ -1,6 +1,7 @@
+import { JsAliasedPlugin } from '@other/js-aliased';
+import { TsAliasedPlugin } from '@other/ts-aliased';
+import { StarAliasedPlugin } from '@plugins/star-aliased';
 import { VendureConfig } from '@vendure/core';
-
-import { AliasedPlugin } from './aliased-plugin';
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -15,5 +16,5 @@ export const config: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    plugins: [AliasedPlugin],
+    plugins: [StarAliasedPlugin, TsAliasedPlugin, JsAliasedPlugin],
 };

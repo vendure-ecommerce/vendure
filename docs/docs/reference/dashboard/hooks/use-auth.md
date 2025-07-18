@@ -31,7 +31,7 @@ function useAuth(): void
 
 ```ts title="Signature"
 interface AuthContext {
-    status: 'authenticated' | 'verifying' | 'unauthenticated';
+    status: 'initial' | 'authenticated' | 'verifying' | 'unauthenticated';
     authenticationError?: string;
     isAuthenticated: boolean;
     login: (username: string, password: string, onSuccess?: () => void) => void;
@@ -45,7 +45,7 @@ interface AuthContext {
 
 ### status
 
-<MemberInfo kind="property" type={`'authenticated' | 'verifying' | 'unauthenticated'`}   />
+<MemberInfo kind="property" type={`'initial' | 'authenticated' | 'verifying' | 'unauthenticated'`}   />
 
 
 ### authenticationError

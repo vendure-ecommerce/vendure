@@ -187,12 +187,33 @@ export class GraphqlValueTransformer {
     private getChildrenTreeNodes(
         inputType: GraphQLInputObjectType,
         parent: TypeTreeNode,
+        depth = 0,
     ): { [name: string]: TypeTreeNode } {
+        if (depth > 3) return {};
+
         return Object.entries(inputType.getFields()).reduce(
             (result, [key, field]) => {
                 const namedType = getNamedType(field.type);
                 if (namedType === parent.type) {
-                    // prevent recursion-induced stack overflow
+                    // Allow _and/_or self-references in filter types, but limit depth to prevent infinite loops
+                    if (key === '_and' || key === '_or') {
+                        const selfRefChild: TypeTreeNode = {
+                            type: namedType,
+                            isList: this.isList(field.type),
+                            parent,
+                            fragmentRefs: [],
+                            children: {},
+                        };
+                        if (isInputObjectType(namedType)) {
+                            selfRefChild.children = this.getChildrenTreeNodes(
+                                namedType,
+                                selfRefChild,
+                                depth + 1,
+                            );
+                        }
+                        result[key] = selfRefChild;
+                        return result;
+                    }
                     return result;
                 }
                 const child: TypeTreeNode = {

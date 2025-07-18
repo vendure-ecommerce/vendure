@@ -1,23 +1,22 @@
 ---
-title: 'TemplateLoader'
+title: "TemplateLoader"
 isDefaultIndex: false
 generated: true
 ---
-
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
-
 import MemberInfo from '@site/src/components/MemberInfo';
 import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
+
 
 ## TemplateLoader
 
 <GenerationInfo sourceFile="packages/email-plugin/src/template-loader/template-loader.ts" sourceLine="32" packageName="@vendure/email-plugin" />
 
 Loads email templates based on the given request context, type and template name
-and returns the template as a string.
+and return the template as a string.
 
-_Example_
+*Example*
 
 ```ts
 import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
@@ -47,18 +46,19 @@ interface TemplateLoader {
 
 ### loadTemplate
 
-<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`} />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`}   />
 
 Load template and return it's content as a string
-
 ### loadPartials
 
-<MemberInfo kind="method" type={`() => Promise&#60;Partial[]&#62;`} />
+<MemberInfo kind="method" type={`() => Promise&#60;Partial[]&#62;`}   />
 
 Load partials and return their contents.
 This method is only called during initialization, i.e. during server startup.
 
+
 </div>
+
 
 ## FileBasedTemplateLoader
 
@@ -74,21 +74,27 @@ class FileBasedTemplateLoader implements TemplateLoader {
     loadPartials() => Promise<Partial[]>;
 }
 ```
+* Implements: <code><a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a></code>
 
-- Implements: <code><a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a></code>
+
 
 <div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type={`(templatePath: string) => FileBasedTemplateLoader`} />
+<MemberInfo kind="method" type={`(templatePath: string) => FileBasedTemplateLoader`}   />
+
 
 ### loadTemplate
 
-<MemberInfo kind="method" type={`(_injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, _ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { type, templateName }: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`} />
+<MemberInfo kind="method" type={`(_injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, _ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { type, templateName }: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`}   />
+
 
 ### loadPartials
 
-<MemberInfo kind="method" type={`() => Promise&#60;Partial[]&#62;`} />
+<MemberInfo kind="method" type={`() => Promise&#60;Partial[]&#62;`}   />
+
+
+
 
 </div>

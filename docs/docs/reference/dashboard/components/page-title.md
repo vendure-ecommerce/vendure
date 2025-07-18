@@ -11,18 +11,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageTitle
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="244" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="258" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 A component for displaying the title of a page. This should be used inside the <a href='/reference/dashboard/components/page#page'>Page</a> component.
 
 ```ts title="Signature"
-function PageTitle(props: { children: React.ReactNode }): void
+function PageTitle(props: Readonly<{ children: React.ReactNode }>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`{ children: React.ReactNode }`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{ children: React.ReactNode }&#62;`} />
 
