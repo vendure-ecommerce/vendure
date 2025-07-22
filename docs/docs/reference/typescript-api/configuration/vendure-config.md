@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1159" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1162" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
 [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
@@ -23,6 +23,7 @@ interface VendureConfig {
     authOptions: AuthOptions;
     catalogOptions?: CatalogOptions;
     customFields?: CustomFields;
+    keyValueFields?: KeyValueFields;
     dbConnectionOptions: DataSourceOptions;
     defaultChannelToken?: string | null;
     defaultLanguageCode?: LanguageCode;
@@ -70,6 +71,14 @@ Configuration for Products and Collections.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>`} default={`{}`}   />
 
 Defines custom fields which can be used to extend the built-in entities.
+### keyValueFields
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/key-value-fields#keyvaluefields'>KeyValueFields</a>`}  since="3.4.0"  />
+
+Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
+and via the <a href='/reference/typescript-api/services/key-value-service#keyvalueservice'>KeyValueService</a>. These differ from custom fields in that they are not associated
+with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
+require any changes to the database schema.
 ### dbConnectionOptions
 
 <MemberInfo kind="property" type={`DataSourceOptions`}   />

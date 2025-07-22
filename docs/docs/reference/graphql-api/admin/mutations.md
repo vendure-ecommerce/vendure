@@ -1484,6 +1484,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## setKeyValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Set a single key-value pair (automatically scoped based on field configuration)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">setKeyValue(input: <a href="/reference/graphql-api/admin/input-types#keyvalueinput">KeyValueInput</a>!): <a href="/reference/graphql-api/admin/object-types#setkeyvalueresult">SetKeyValueResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## setKeyValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Set multiple key-value pairs in a transaction (each automatically scoped)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">setKeyValues(inputs: [<a href="/reference/graphql-api/admin/input-types#keyvalueinput">KeyValueInput</a>!]!): [<a href="/reference/graphql-api/admin/object-types#setkeyvalueresult">SetKeyValueResult</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## setOrderCustomFields
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>

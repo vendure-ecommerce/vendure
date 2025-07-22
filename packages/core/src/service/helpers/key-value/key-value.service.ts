@@ -45,6 +45,7 @@ import { KeyValueEntry } from '../../../entity/key-value-entry/key-value-entry.e
  * ```
  *
  * @docsCategory services
+ * @since 3.4.0
  */
 @Injectable()
 export class KeyValueService implements OnModuleInit {

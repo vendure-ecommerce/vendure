@@ -78,6 +78,7 @@ const sidebars = {
                 'guides/developer-guide/configuration/index',
                 'guides/developer-guide/custom-fields/index',
                 'guides/developer-guide/error-handling/index',
+                'guides/developer-guide/key-value-store/index',
                 'guides/developer-guide/events/index',
                 'guides/developer-guide/migrations/index',
                 'guides/developer-guide/plugins/index',

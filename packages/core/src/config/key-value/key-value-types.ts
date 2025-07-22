@@ -21,8 +21,8 @@ import { Injector } from '../../common/injector';
  *   `${ctx.activeUserId || ''}:${ctx.channelId || ''}`;
  * ```
  *
- * @docsCategory configuration
- * @docsPage KeyValueStorage
+ * @docsCategory KeyValueStorage
+ * @since 3.4.0
  */
 export type KeyValueScopeFunction = (params: { key: string; value?: any; ctx: RequestContext }) => string;
 
@@ -31,8 +31,8 @@ export type KeyValueScopeFunction = (params: { key: string; value?: any; ctx: Re
  * Configuration for a key-value field, defining how it should be stored,
  * scoped, validated, and accessed.
  *
- * @docsCategory configuration
- * @docsPage KeyValueStorage
+ * @docsCategory KeyValueStorage
+ * @since 3.4.0
  */
 export interface KeyValueFieldConfig {
     /**
@@ -79,8 +79,8 @@ export interface KeyValueFieldConfig {
  * @description
  * Configuration for registering a namespace of key-value fields.
  *
- * @docsCategory configuration
- * @docsPage KeyValueStorage
+ * @docsCategory KeyValueStorage
+ * @since 3.4.0
  */
 export interface KeyValueRegistration {
     /**
@@ -100,6 +100,9 @@ export interface KeyValueRegistration {
 /**
  * @description
  * This is how KeyValueFields are defined in the {@link VendureConfig} object.
+ *
+ * @since 3.4.0
+ * @docsCategory configuration
  */
 export type KeyValueFields = {
     [namespace: string]: KeyValueFieldConfig[];
@@ -131,8 +134,8 @@ export type KeyValueFields = {
  * };
  * ```
  *
- * @docsCategory configuration
- * @docsPage KeyValueStorage
+ * @docsCategory KeyValueStorage
+ * @since 3.4.0
  */
 export const KeyValueScopes = {
     /**
@@ -166,7 +169,7 @@ export const KeyValueScopes = {
  * Result type for key-value set operations, providing detailed feedback
  * about the success or failure of each operation.
  *
- * @docsCategory key-value-storage
+ * @docsCategory KeyValueStorage
  * @since 3.4.0
  */
 export interface SetKeyValueResult {
@@ -194,7 +197,7 @@ export interface SetKeyValueResult {
  * Represents an orphaned key-value entry that no longer has a corresponding
  * field definition in the configuration.
  *
- * @docsCategory key-value-storage
+ * @docsCategory KeyValueStorage
  * @since 3.4.0
  */
 export interface OrphanedKeyValueEntry {
@@ -227,7 +230,7 @@ export interface OrphanedKeyValueEntry {
  * @description
  * Options for cleaning up orphaned key-value entries.
  *
- * @docsCategory key-value-storage
+ * @docsCategory KeyValueStorage
  * @since 3.4.0
  */
 export interface CleanupOrphanedEntriesOptions {
@@ -265,7 +268,7 @@ export interface CleanupOrphanedEntriesOptions {
  * @description
  * Result of a cleanup operation for orphaned key-value entries.
  *
- * @docsCategory key-value-storage
+ * @docsCategory KeyValueStorage
  * @since 3.4.0
  */
 export interface CleanupOrphanedEntriesResult {
