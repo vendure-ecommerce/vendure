@@ -34,6 +34,7 @@ import { MoneyStrategy } from './entity/money-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
+import { KeyValueFields } from './key-value';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
@@ -1187,6 +1188,16 @@ export interface VendureConfig {
      * @default {}
      */
     customFields?: CustomFields;
+    /**
+     * @description
+     * Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
+     * and via the {@link KeyValueService}. These differ from custom fields in that they are not associated
+     * with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
+     * require any changes to the database schema.
+     *
+     * @since 3.4.0
+     */
+    keyValueFields?: KeyValueFields;
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.

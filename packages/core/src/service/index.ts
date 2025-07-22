@@ -7,6 +7,7 @@ export * from './helpers/entity-hydrator/merge-deep';
 export * from './helpers/external-authentication/external-authentication.service';
 export * from './helpers/facet-value-checker/facet-value-checker';
 export * from './helpers/fulfillment-state-machine/fulfillment-state';
+export * from './helpers/key-value/key-value.service';
 export * from './helpers/list-query-builder/list-query-builder';
 export * from './helpers/locale-string-hydrator/locale-string-hydrator';
 export * from './helpers/order-calculator/order-calculator';

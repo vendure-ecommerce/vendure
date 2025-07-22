@@ -43,6 +43,7 @@ export * from './fulfillment/fulfillment-process';
 export * from './fulfillment/manual-fulfillment-handler';
 export * from './job-queue/inspectable-job-queue-strategy';
 export * from './job-queue/job-queue-strategy';
+export * from './key-value';
 export * from './logger/default-logger';
 export * from './logger/noop-logger';
 export * from './logger/vendure-logger';

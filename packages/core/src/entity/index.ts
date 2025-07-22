@@ -20,6 +20,7 @@ export * from './facet/facet-translation.entity';
 export * from './facet/facet.entity';
 export * from './fulfillment/fulfillment.entity';
 export * from './global-settings/global-settings.entity';
+export * from './key-value-entry/key-value-entry.entity';
 export * from './money.decorator';
 export * from './order-line-reference/fulfillment-line.entity';
 export * from './order-line-reference/order-line-reference.entity';

@@ -1,0 +1,28 @@
+input KeyValueInput {
+    key: String!
+    value: JSON!
+}
+
+extend type Query {
+    """
+    Get value for a specific key (automatically scoped based on field configuration)
+    """
+    getKeyValue(key: String!): JSON
+    
+    """
+    Get multiple key-value pairs (each automatically scoped)
+    """
+    getKeyValues(keys: [String!]!): JSON
+}
+
+extend type Mutation {
+    """
+    Set a single key-value pair (automatically scoped based on field configuration)
+    """
+    setKeyValue(input: KeyValueInput!): Boolean!
+
+    """
+    Set multiple key-value pairs in a transaction (each automatically scoped)
+    """
+    setKeyValues(inputs: [KeyValueInput!]!): Boolean!
+}

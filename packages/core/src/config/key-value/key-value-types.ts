@@ -1,0 +1,162 @@
+import { LocalizedString, Permission } from '@vendure/common/lib/generated-types';
+
+import { RequestContext } from '../../api/common/request-context';
+import { Injector } from '../../common/injector';
+
+/**
+ * @description
+ * A function that determines how a key-value entry should be scoped.
+ * Returns a string that will be used as the scope key for storage isolation.
+ *
+ * @example
+ * ```ts
+ * // User-specific scoping
+ * const userScope: KeyValueScopeFunction = ({ ctx }) => ctx.activeUserId || '';
+ *
+ * // Channel-specific scoping
+ * const channelScope: KeyValueScopeFunction = ({ ctx }) => ctx.channelId || '';
+ *
+ * // User and channel scoping
+ * const userAndChannelScope: KeyValueScopeFunction = ({ ctx }) =>
+ *   `${ctx.activeUserId || ''}:${ctx.channelId || ''}`;
+ * ```
+ *
+ * @docsCategory configuration
+ * @docsPage KeyValueStorage
+ */
+export type KeyValueScopeFunction = (params: { key: string; value?: any; ctx: RequestContext }) => string;
+
+/**
+ * @description
+ * Configuration for a key-value field, defining how it should be stored,
+ * scoped, validated, and accessed.
+ *
+ * @docsCategory configuration
+ * @docsPage KeyValueStorage
+ */
+export interface KeyValueFieldConfig {
+    /**
+     * @description
+     * The name of the field. This will be combined with the namespace
+     * to create the full key (e.g., 'dashboard.theme').
+     */
+    name: string;
+
+    /**
+     * @description
+     * Function that determines how this field should be scoped.
+     * Defaults to global scoping (no isolation).
+     */
+    scope?: KeyValueScopeFunction;
+
+    /**
+     * @description
+     * Whether this field is readonly via the GraphQL API.
+     * Readonly fields can still be modified programmatically via a service.
+     * @default false
+     */
+    readonly?: boolean;
+
+    /**
+     * @description
+     * Permissions required to access this field. If not specified,
+     * basic authentication is required for admin API access.
+     */
+    requiresPermission?: Array<Permission | string> | Permission | string;
+
+    /**
+     * @description
+     * Custom validation function for field values.
+     */
+    validate?: (
+        value: any,
+        injector: Injector,
+        ctx: RequestContext,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
+}
+
+/**
+ * @description
+ * Configuration for registering a namespace of key-value fields.
+ *
+ * @docsCategory configuration
+ * @docsPage KeyValueStorage
+ */
+export interface KeyValueRegistration {
+    /**
+     * @description
+     * The namespace for these fields (e.g., 'dashboard', 'payment').
+     * Field names will be prefixed with this namespace.
+     */
+    namespace: string;
+
+    /**
+     * @description
+     * Array of field configurations for this namespace.
+     */
+    fields: KeyValueFieldConfig[];
+}
+
+/**
+ * @description
+ * This is how KeyValueFields are defined in the {@link VendureConfig} object.
+ */
+export type KeyValueFields = {
+    [namespace: string]: KeyValueFieldConfig[];
+};
+
+/**
+ * @description
+ * Pre-built scope functions for common scoping patterns.
+ *
+ * @example
+ * ```ts
+ * const config: VendureConfig = {
+ *   keyValueFields: {
+ *     dashboard: [
+ *       {
+ *         name: 'theme',
+ *         scope: KeyValueScopes.user, // User-specific
+ *       },
+ *       {
+ *         name: 'currency',
+ *         scope: KeyValueScopes.channel, // Channel-specific
+ *       },
+ *       {
+ *         name: 'tableFilters',
+ *         scope: KeyValueScopes.userAndChannel, // User-specific per channel
+ *       }
+ *     ]
+ *   }
+ * };
+ * ```
+ *
+ * @docsCategory configuration
+ * @docsPage KeyValueStorage
+ */
+export const KeyValueScopes = {
+    /**
+     * @description
+     * Global scoping - no isolation, single value for all users and channels.
+     */
+    global: (): string => '',
+
+    /**
+     * @description
+     * User-specific scoping - separate values per user.
+     */
+    user: ({ ctx }: { ctx: RequestContext }): string => `user:${ctx.activeUserId || 'unknown'}`,
+
+    /**
+     * @description
+     * Channel-specific scoping - separate values per channel.
+     */
+    channel: ({ ctx }: { ctx: RequestContext }): string => `channel:${ctx.channelId || 'unknown'}`,
+
+    /**
+     * @description
+     * User and channel specific scoping - separate values per user per channel.
+     */
+    userAndChannel: ({ ctx }: { ctx: RequestContext }): string =>
+        `user:${ctx.activeUserId || ''}:channel:${ctx.channelId || ''}`,
+};

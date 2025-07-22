@@ -15,6 +15,7 @@ import { EntityHydrator } from './helpers/entity-hydrator/entity-hydrator.servic
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FacetValueChecker } from './helpers/facet-value-checker/facet-value-checker';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
+import { KeyValueService } from './helpers/key-value/key-value.service';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { LocaleStringHydrator } from './helpers/locale-string-hydrator/locale-string-hydrator';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
@@ -133,6 +134,7 @@ const helpers = [
     TranslatorService,
     EntityDuplicatorService,
     FacetValueChecker,
+    KeyValueService,
 ];
 
 /**
