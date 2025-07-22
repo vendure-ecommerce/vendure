@@ -1,3 +1,8 @@
+/**
+ * Layout styles
+ * Page layout and structural styles
+ */
+
 .navbar__inner {
     margin-left: auto;
     margin-right: auto;
@@ -9,4 +14,10 @@
     margin-right: auto;
     max-width: 1419px;
     width: 100%;
+}
+
+@media screen and (min-width: 996px) {
+    .docs-wrapper article:not(.col) {
+        margin-left: 32px;
+    }
 }
