@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
+import { JsonCompatible } from '@vendure/common/lib/shared-types';
 import ms from 'ms';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -97,7 +98,7 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns The stored value or undefined if not found or access denied
      */
-    async get<T = any>(key: string, ctx: RequestContext): Promise<T | undefined> {
+    async get<T = JsonCompatible<any>>(key: string, ctx: RequestContext): Promise<T | undefined> {
         const fieldConfig = this.getFieldConfig(key);
 
         if (!this.hasPermission(ctx, fieldConfig)) {
@@ -122,7 +123,7 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns Object mapping keys to their values
      */
-    async getMany(keys: string[], ctx: RequestContext): Promise<Record<string, any>> {
+    async getMany(keys: string[], ctx: RequestContext): Promise<Record<string, JsonCompatible<any>>> {
         const result: Record<string, any> = {};
 
         // Build array of key/scopeKey pairs for authorized keys
@@ -179,7 +180,11 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns SetKeyValueResult with operation status and error details
      */
-    async set<T = any>(key: string, value: T, ctx: RequestContext): Promise<SetKeyValueResult> {
+    async set<T extends JsonCompatible<any> = JsonCompatible<any>>(
+        key: string,
+        value: T,
+        ctx: RequestContext,
+    ): Promise<SetKeyValueResult> {
         try {
             const fieldConfig = this.getFieldConfig(key);
 
@@ -244,7 +249,10 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns Array of SetKeyValueResult with operation status for each key
      */
-    async setMany(values: Record<string, any>, ctx: RequestContext): Promise<SetKeyValueResult[]> {
+    async setMany(
+        values: Record<string, JsonCompatible<any>>,
+        ctx: RequestContext,
+    ): Promise<SetKeyValueResult[]> {
         const results: SetKeyValueResult[] = [];
 
         for (const [key, value] of Object.entries(values)) {

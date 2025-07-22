@@ -1,3 +1,4 @@
+import { JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
@@ -30,7 +31,7 @@ export class KeyValueEntry extends VendureEntity {
      * The JSON-serialized value stored for this key.
      */
     @Column('json', { nullable: true })
-    value: any | null;
+    value: JsonCompatible<any> | null;
 
     /**
      * @description

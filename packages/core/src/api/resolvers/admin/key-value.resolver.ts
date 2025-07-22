@@ -16,7 +16,7 @@ export class KeyValueInput {
  */
 @Resolver()
 export class KeyValueAdminResolver {
-    constructor(private keyValueService: KeyValueService) {}
+    constructor(private readonly keyValueService: KeyValueService) {}
 
     @Query()
     async getKeyValue(@Ctx() ctx: RequestContext, @Args('key') key: string): Promise<any> {
