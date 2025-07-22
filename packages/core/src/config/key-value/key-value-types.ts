@@ -160,3 +160,31 @@ export const KeyValueScopes = {
     userAndChannel: ({ ctx }: { ctx: RequestContext }): string =>
         `user:${ctx.activeUserId || ''}:channel:${ctx.channelId || ''}`,
 };
+
+/**
+ * @description
+ * Result type for key-value set operations, providing detailed feedback
+ * about the success or failure of each operation.
+ *
+ * @docsCategory key-value-storage
+ * @since 3.4.0
+ */
+export interface SetKeyValueResult {
+    /**
+     * @description
+     * The key that was attempted to be set.
+     */
+    key: string;
+
+    /**
+     * @description
+     * Whether the set operation was successful.
+     */
+    result: boolean;
+
+    /**
+     * @description
+     * Error message if the operation failed, null if successful.
+     */
+    error?: string;
+}

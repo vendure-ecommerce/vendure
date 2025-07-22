@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
+import { SetKeyValueResult } from '../../../config/key-value/key-value-types';
 import { KeyValueService } from '../../../service/helpers/key-value/key-value.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -31,16 +32,18 @@ export class KeyValueAdminResolver {
     }
 
     @Mutation()
-    async setKeyValue(@Ctx() ctx: RequestContext, @Args('input') input: KeyValueInput): Promise<boolean> {
-        await this.keyValueService.set(input.key, input.value, ctx);
-        return true;
+    async setKeyValue(
+        @Ctx() ctx: RequestContext,
+        @Args('input') input: KeyValueInput,
+    ): Promise<SetKeyValueResult> {
+        return this.keyValueService.setSafe(input.key, input.value, ctx);
     }
 
     @Mutation()
     async setKeyValues(
         @Ctx() ctx: RequestContext,
         @Args('inputs') inputs: KeyValueInput[],
-    ): Promise<boolean> {
+    ): Promise<SetKeyValueResult[]> {
         const values = inputs.reduce(
             (acc, input) => {
                 acc[input.key] = input.value;
@@ -49,7 +52,6 @@ export class KeyValueAdminResolver {
             {} as Record<string, any>,
         );
 
-        await this.keyValueService.setMany(values, ctx);
-        return true;
+        return this.keyValueService.setManySafe(values, ctx);
     }
 }

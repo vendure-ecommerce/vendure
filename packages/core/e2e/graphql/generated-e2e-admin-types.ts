@@ -2941,9 +2941,9 @@ export type Mutation = {
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
     setDraftOrderShippingMethod: SetOrderShippingMethodResult;
     /** Set a single key-value pair (automatically scoped based on field configuration) */
-    setKeyValue: Scalars['Boolean']['output'];
+    setKeyValue: SetKeyValueResult;
     /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-    setKeyValues: Scalars['Boolean']['output'];
+    setKeyValues: Array<SetKeyValueResult>;
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
@@ -5560,6 +5560,12 @@ export type ServerConfig = {
 };
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
+
+export type SetKeyValueResult = {
+    error?: Maybe<Scalars['String']['output']>;
+    key: Scalars['String']['output'];
+    result: Scalars['Boolean']['output'];
+};
 
 export type SetOrderCustomerInput = {
     customerId: Scalars['ID']['input'];
@@ -11078,13 +11084,15 @@ export type SetKeyValueMutationVariables = Exact<{
     input: KeyValueInput;
 }>;
 
-export type SetKeyValueMutation = { setKeyValue: boolean };
+export type SetKeyValueMutation = { setKeyValue: { key: string; result: boolean; error?: string | null } };
 
 export type SetKeyValuesMutationVariables = Exact<{
     inputs: Array<KeyValueInput> | KeyValueInput;
 }>;
 
-export type SetKeyValuesMutation = { setKeyValues: boolean };
+export type SetKeyValuesMutation = {
+    setKeyValues: Array<{ key: string; result: boolean; error?: string | null }>;
+};
 
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
@@ -33249,6 +33257,14 @@ export const SetKeyValueDocument = {
                                 value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
                             },
                         ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
+                            ],
+                        },
                     },
                 ],
             },
@@ -33291,6 +33307,14 @@ export const SetKeyValuesDocument = {
                                 value: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
                             },
                         ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
+                            ],
+                        },
                     },
                 ],
             },

@@ -1,4 +1,4 @@
-import { CurrencyCode, LanguageCode, mergeConfig } from '@vendure/core';
+import { CurrencyCode, LanguageCode, mergeConfig, Permission } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -13,6 +13,8 @@ import {
     CreateAdministratorMutationVariables,
     CreateChannelMutation,
     CreateChannelMutationVariables,
+    CreateRoleMutation,
+    CreateRoleMutationVariables,
     GetKeyValueQuery,
     GetKeyValueQueryVariables,
     GetKeyValuesQuery,
@@ -22,7 +24,7 @@ import {
     SetKeyValuesMutation,
     SetKeyValuesMutationVariables,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_CHANNEL } from './graphql/shared-definitions';
+import { CREATE_ADMINISTRATOR, CREATE_CHANNEL, CREATE_ROLE } from './graphql/shared-definitions';
 
 describe('KeyValue system', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -52,7 +54,9 @@ describe('KeyValue system', () => {
             >(SET_KEY_VALUE, {
                 input: { key: 'test.globalSetting', value: 'global-value' },
             });
-            expect(setKeyValue).toBe(true);
+            expect(setKeyValue.result).toBe(true);
+            expect(setKeyValue.key).toBe('test.globalSetting');
+            expect(setKeyValue.error).toBeNull();
 
             const { getKeyValue } = await adminClient.query<GetKeyValueQuery, GetKeyValueQueryVariables>(
                 GET_KEY_VALUE,
@@ -324,7 +328,11 @@ describe('KeyValue system', () => {
                     { key: 'test.bulk2', value: 'bulk-value-2' },
                 ],
             });
-            expect(setKeyValues).toBe(true);
+            expect(setKeyValues).toHaveLength(2);
+            expect(setKeyValues[0].result).toBe(true);
+            expect(setKeyValues[0].key).toBe('test.bulk1');
+            expect(setKeyValues[1].result).toBe(true);
+            expect(setKeyValues[1].key).toBe('test.bulk2');
 
             const result = await adminClient.query<GetKeyValuesQuery, GetKeyValuesQueryVariables>(
                 GET_KEY_VALUES,
@@ -372,15 +380,16 @@ describe('KeyValue system', () => {
         it('should validate values according to field config', async () => {
             await adminClient.asSuperAdmin();
 
-            // Try to set invalid theme value
-            try {
-                await adminClient.query<SetKeyValueMutation, SetKeyValueMutationVariables>(SET_KEY_VALUE, {
+            // Try to set invalid theme value - should return structured error result
+            const invalidResult = await adminClient.query<SetKeyValueMutation, SetKeyValueMutationVariables>(
+                SET_KEY_VALUE,
+                {
                     input: { key: 'test.validatedField', value: 'invalid-value' },
-                });
-                expect.fail('Should have thrown validation error');
-            } catch (error) {
-                expect((error as Error).message).toContain('Validation failed');
-            }
+                },
+            );
+            expect(invalidResult.setKeyValue.result).toBe(false);
+            expect(invalidResult.setKeyValue.key).toBe('test.validatedField');
+            expect(invalidResult.setKeyValue.error).toContain('Validation failed');
 
             // Set valid value should work
             const { setKeyValue } = await adminClient.query<
@@ -389,7 +398,8 @@ describe('KeyValue system', () => {
             >(SET_KEY_VALUE, {
                 input: { key: 'test.validatedField', value: 'valid-option' },
             });
-            expect(setKeyValue).toBe(true);
+            expect(setKeyValue.result).toBe(true);
+            expect(setKeyValue.error).toBeNull();
         });
     });
 
@@ -397,14 +407,15 @@ describe('KeyValue system', () => {
         it('should prevent modification of readonly fields', async () => {
             await adminClient.asSuperAdmin();
 
-            try {
-                await adminClient.query<SetKeyValueMutation, SetKeyValueMutationVariables>(SET_KEY_VALUE, {
-                    input: { key: 'test.readonlyField', value: 'attempt-change' },
-                });
-                expect.fail('Should have thrown readonly error');
-            } catch (error) {
-                expect((error as Error).message).toContain('readonly');
-            }
+            const { setKeyValue } = await adminClient.query<
+                SetKeyValueMutation,
+                SetKeyValueMutationVariables
+            >(SET_KEY_VALUE, {
+                input: { key: 'test.readonlyField', value: 'attempt-change' },
+            });
+            expect(setKeyValue.result).toBe(false);
+            expect(setKeyValue.key).toBe('test.readonlyField');
+            expect(setKeyValue.error).toContain('readonly');
         });
     });
 
@@ -413,19 +424,13 @@ describe('KeyValue system', () => {
             await adminClient.asSuperAdmin();
 
             // Create a role with limited permissions (no CreateAdministrator permission)
-            const { createRole } = await adminClient.query(
-                gql`
-                    mutation CreateRole($input: CreateRoleInput!) {
-                        createRole(input: $input) {
-                            id
-                        }
-                    }
-                `,
+            const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
+                CREATE_ROLE,
                 {
                     input: {
                         code: 'limited-role',
                         description: 'Limited permissions role',
-                        permissions: ['Authenticated', 'ReadAdministrator'], // No CreateAdministrator
+                        permissions: [Permission.Authenticated, Permission.ReadAdministrator], // No CreateAdministrator
                     },
                 },
             );
@@ -456,19 +461,16 @@ describe('KeyValue system', () => {
             });
             expect(deniedValue).toBeNull();
 
-            // Try to set admin-only field - should fail silently or return false
-            try {
-                const { setKeyValue } = await adminClient.query<
-                    SetKeyValueMutation,
-                    SetKeyValueMutationVariables
-                >(SET_KEY_VALUE, {
-                    input: { key: 'test.adminOnlyField', value: 'denied-value' },
-                });
-                // The service should throw an error, but if it returns false that's also acceptable
-                expect(setKeyValue).toBe(false);
-            } catch (error) {
-                expect((error as Error).message).toContain('Insufficient permissions');
-            }
+            // Try to set admin-only field - should return structured error result
+            const { setKeyValue } = await adminClient.query<
+                SetKeyValueMutation,
+                SetKeyValueMutationVariables
+            >(SET_KEY_VALUE, {
+                input: { key: 'test.adminOnlyField', value: 'denied-value' },
+            });
+            expect(setKeyValue.result).toBe(false);
+            expect(setKeyValue.key).toBe('test.adminOnlyField');
+            expect(setKeyValue.error).toContain('Insufficient permissions');
         });
 
         it('should allow users with required permissions', async () => {
@@ -481,7 +483,9 @@ describe('KeyValue system', () => {
             >(SET_KEY_VALUE, {
                 input: { key: 'test.adminOnlyField', value: 'admin-value' },
             });
-            expect(setKeyValue).toBe(true);
+            expect(setKeyValue.result).toBe(true);
+            expect(setKeyValue.key).toBe('test.adminOnlyField');
+            expect(setKeyValue.error).toBeNull();
 
             const { getKeyValue } = await adminClient.query<GetKeyValueQuery, GetKeyValueQueryVariables>(
                 GET_KEY_VALUE,
@@ -510,14 +514,15 @@ describe('KeyValue system', () => {
         it('should gracefully handle setting invalid keys', async () => {
             await adminClient.asSuperAdmin();
 
-            try {
-                await adminClient.query<SetKeyValueMutation, SetKeyValueMutationVariables>(SET_KEY_VALUE, {
-                    input: { key: 'invalid.nonExistentKey', value: 'some-value' },
-                });
-                expect.fail('Should have thrown an error for invalid key');
-            } catch (error) {
-                expect((error as Error).message).toContain('not registered');
-            }
+            const { setKeyValue } = await adminClient.query<
+                SetKeyValueMutation,
+                SetKeyValueMutationVariables
+            >(SET_KEY_VALUE, {
+                input: { key: 'invalid.nonExistentKey', value: 'some-value' },
+            });
+            expect(setKeyValue.result).toBe(false);
+            expect(setKeyValue.key).toBe('invalid.nonExistentKey');
+            expect(setKeyValue.error).toContain('not registered');
         });
     });
 
@@ -538,17 +543,24 @@ describe('KeyValue system', () => {
         it('should handle bulk set with one valid, one invalid key', async () => {
             await adminClient.asSuperAdmin();
 
-            try {
-                await adminClient.query<SetKeyValuesMutation, SetKeyValuesMutationVariables>(SET_KEY_VALUES, {
-                    inputs: [
-                        { key: 'test.bulk1', value: 'valid-value' },
-                        { key: 'invalid.nonExistentKey', value: 'invalid-value' },
-                    ],
-                });
-                expect.fail('Should have thrown an error for invalid key in bulk operation');
-            } catch (error) {
-                expect((error as Error).message).toContain('not registered');
-            }
+            const { setKeyValues } = await adminClient.query<
+                SetKeyValuesMutation,
+                SetKeyValuesMutationVariables
+            >(SET_KEY_VALUES, {
+                inputs: [
+                    { key: 'test.bulk1', value: 'valid-value' },
+                    { key: 'invalid.nonExistentKey', value: 'invalid-value' },
+                ],
+            });
+
+            expect(setKeyValues).toHaveLength(2);
+            expect(setKeyValues[0].result).toBe(true);
+            expect(setKeyValues[0].key).toBe('test.bulk1');
+            expect(setKeyValues[0].error).toBeNull();
+
+            expect(setKeyValues[1].result).toBe(false);
+            expect(setKeyValues[1].key).toBe('invalid.nonExistentKey');
+            expect(setKeyValues[1].error).toContain('not registered');
         });
 
         it('should handle bulk operations with permission-restricted keys', async () => {
@@ -577,17 +589,24 @@ describe('KeyValue system', () => {
             });
 
             // Try bulk set with mix of accessible and restricted keys
-            try {
-                await adminClient.query<SetKeyValuesMutation, SetKeyValuesMutationVariables>(SET_KEY_VALUES, {
-                    inputs: [
-                        { key: 'test.globalSetting', value: 'new-global-value' },
-                        { key: 'test.adminOnlyField', value: 'denied-value' },
-                    ],
-                });
-                expect.fail('Should have thrown permission error in bulk operation');
-            } catch (error) {
-                expect((error as Error).message).toContain('Insufficient permissions');
-            }
+            const { setKeyValues } = await adminClient.query<
+                SetKeyValuesMutation,
+                SetKeyValuesMutationVariables
+            >(SET_KEY_VALUES, {
+                inputs: [
+                    { key: 'test.globalSetting', value: 'new-global-value' },
+                    { key: 'test.adminOnlyField', value: 'denied-value' },
+                ],
+            });
+
+            expect(setKeyValues).toHaveLength(2);
+            expect(setKeyValues[0].result).toBe(true);
+            expect(setKeyValues[0].key).toBe('test.globalSetting');
+            expect(setKeyValues[0].error).toBeNull();
+
+            expect(setKeyValues[1].result).toBe(false);
+            expect(setKeyValues[1].key).toBe('test.adminOnlyField');
+            expect(setKeyValues[1].error).toContain('Insufficient permissions');
         });
     });
 });
@@ -606,12 +625,20 @@ const GET_KEY_VALUES = gql`
 
 const SET_KEY_VALUE = gql`
     mutation SetKeyValue($input: KeyValueInput!) {
-        setKeyValue(input: $input)
+        setKeyValue(input: $input) {
+            key
+            result
+            error
+        }
     }
 `;
 
 const SET_KEY_VALUES = gql`
     mutation SetKeyValues($inputs: [KeyValueInput!]!) {
-        setKeyValues(inputs: $inputs)
+        setKeyValues(inputs: $inputs) {
+            key
+            result
+            error
+        }
     }
 `;

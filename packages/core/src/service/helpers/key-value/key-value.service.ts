@@ -10,6 +10,7 @@ import {
     KeyValueFieldConfig,
     KeyValueRegistration,
     KeyValueScopes,
+    SetKeyValueResult,
 } from '../../../config/key-value/key-value-types';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -250,6 +251,93 @@ export class KeyValueService implements OnModuleInit {
                 }
             }
         });
+    }
+
+    /**
+     * @description
+     * Set a value for the specified key with structured result feedback.
+     * This version returns detailed information about the success or failure
+     * of the operation instead of throwing errors.
+     *
+     * @param key - The full key (namespace.field)
+     * @param value - The value to store (must be JSON serializable)
+     * @param ctx - Request context for scoping and permissions
+     * @returns SetKeyValueResult with operation status and error details
+     */
+    async setSafe<T = any>(key: string, value: T, ctx: RequestContext): Promise<SetKeyValueResult> {
+        try {
+            const fieldConfig = this.getFieldConfig(key);
+
+            if (!this.hasPermission(ctx, fieldConfig)) {
+                return {
+                    key,
+                    result: false,
+                    error: 'Insufficient permissions to set key-value',
+                };
+            }
+
+            if (fieldConfig.readonly) {
+                return {
+                    key,
+                    result: false,
+                    error: 'Cannot modify readonly key-value field via API',
+                };
+            }
+
+            // Validate the value
+            await this.validateValue(key, value, ctx);
+
+            const scope = this.generateScope(key, value, ctx, fieldConfig);
+            const repo = this.connection.getRepository(ctx, KeyValueEntry);
+
+            // Find existing entry or create new one
+            const entry = await repo.findOne({
+                where: { key, scope },
+            });
+
+            if (entry) {
+                entry.value = value;
+                await repo.save(entry);
+            } else {
+                await repo.save({
+                    key,
+                    scope,
+                    value,
+                });
+            }
+
+            return {
+                key,
+                result: true,
+            };
+        } catch (error) {
+            return {
+                key,
+                result: false,
+                error: error instanceof Error ? error.message : 'Unknown error occurred',
+            };
+        }
+    }
+
+    /**
+     * @description
+     * Set multiple values with structured result feedback for each operation.
+     * Unlike setMany, this method will not throw errors but will return
+     * detailed results for each key-value pair.
+     *
+     * @param values - Object mapping keys to their values
+     * @param ctx - Request context for scoping and permissions
+     * @returns Array of SetKeyValueResult with operation status for each key
+     */
+    async setManySafe(values: Record<string, any>, ctx: RequestContext): Promise<SetKeyValueResult[]> {
+        const results: SetKeyValueResult[] = [];
+
+        for (const [key, value] of Object.entries(values)) {
+            const result = await this.setSafe(key, value, ctx);
+            results.push(result);
+        }
+
+        return results;
     }
 
     /**
