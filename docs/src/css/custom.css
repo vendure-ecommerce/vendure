@@ -4,10 +4,10 @@
  * work well for content-centric websites.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Public+Sans:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
 
 :root {
-  --ifm-font-family-base: "Inter"
+    --ifm-font-family-base: 'Public Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* You can override the default Infima variables here. */
@@ -36,21 +36,24 @@
     --color-docsearch-border: #b7b7c3;
 
     /* Fonts */
-    --ifm-heading-font-family: 'Plus Jakarta Sans', var(--ifm-font-family-base);
+    --ifm-heading-font-family: 'Public Sans', 'Plus Jakarta Sans', var(--ifm-font-family-base);
     --ifm-heading-font-weight: 700;
+    --ifm-font-family-monospace:
+        'Geist Mono', SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-html[data-theme='dark']{
-    --ifm-background-color: #000212;
-    --ifm-heading-color: #ffffff;
+html[data-theme='dark'] {
+    --ifm-background-color: #09090b;
+    --ifm-heading-color: oklch(98.5% 0 0);
     --ifm-navbar-background-color: transparent;
-    --navbar-background-color-mobile: transparent;
+    --border-color: oklch(26.9% 0 0);
+    --navbar-background-color-mobile: var(--ifm-background-color);
     --ifm-card-background-color: transparent;
-    --ifm-color-content: hsla(0,0%,100%,.7);
+    --ifm-color-content: oklch(91.97% 0.004 286.32);
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+    --ifm-toc-border-color: var(--border-color);
     --color-graphql-comment: #6ea372;
-
     --color-graphql-identifier: rgb(255, 121, 198);
     --color-members-border: #333;
     --docusaurus-highlighted-code-line-bg: rgba(15, 71, 117, 0.5);
@@ -64,8 +67,12 @@ html[data-theme='light'] {
     --ifm-background-color: #ffffff;
 }
 
-
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     letter-spacing: -0.05rem;
 }
 
@@ -76,7 +83,6 @@ h1, h2, h3, h4, h5, h6 {
 .markdown img {
     border-radius: 4px;
 }
-
 
 .members-wrapper {
     border-left: 1px solid var(--color-members-border);
@@ -93,8 +99,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 12px;
     opacity: 0.8;
     color: #afafaf;
-    padding: var(--ifm-menu-link-padding-vertical)
-         var(--ifm-menu-link-padding-horizontal);
+    padding: var(--ifm-menu-link-padding-vertical) var(--ifm-menu-link-padding-horizontal);
 }
 
 .sidebar-section-divider {
