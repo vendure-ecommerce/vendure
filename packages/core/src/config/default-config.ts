@@ -32,6 +32,7 @@ import { DefaultMoneyStrategy } from './entity/default-money-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
+import { cleanOrphanedKeyValuesTask } from './key-value/clean-orphaned-key-values-task';
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
@@ -199,7 +200,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
-        tasks: [cleanSessionsTask],
+        tasks: [cleanSessionsTask, cleanOrphanedKeyValuesTask],
         runTasksInWorkerOnly: true,
     },
     customFields: {
@@ -239,6 +240,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
         Zone: [],
     },
+    keyValueFields: {},
     plugins: [],
     systemOptions: {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),

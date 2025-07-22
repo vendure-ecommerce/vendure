@@ -1,15 +1,19 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
+import ms from 'ms';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { Injector } from '../../../common/injector';
 import { ConfigService } from '../../../config/config.service';
 import {
+    CleanupOrphanedEntriesOptions,
+    CleanupOrphanedEntriesResult,
     KeyValueFieldConfig,
     KeyValueRegistration,
     KeyValueScopes,
+    OrphanedKeyValueEntry,
     SetKeyValueResult,
 } from '../../../config/key-value/key-value-types';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -47,14 +51,14 @@ export class KeyValueService implements OnModuleInit {
     private readonly injector: Injector;
 
     constructor(
-        private connection: TransactionalConnection,
-        private moduleRef: ModuleRef,
-        private configService: ConfigService,
+        private readonly connection: TransactionalConnection,
+        private readonly moduleRef: ModuleRef,
+        private readonly configService: ConfigService,
     ) {
         this.injector = new Injector(this.moduleRef);
     }
 
-    async onModuleInit() {
+    onModuleInit() {
         this.initializeFieldRegistrations();
     }
 
@@ -107,49 +111,6 @@ export class KeyValueService implements OnModuleInit {
         });
 
         return entry?.value as T;
-    }
-
-    /**
-     * @description
-     * Set a value for the specified key. The value is automatically scoped
-     * according to the field's scope configuration.
-     *
-     * @param key - The full key (namespace.field)
-     * @param value - The value to store (must be JSON serializable)
-     * @param ctx - Request context for scoping and permissions
-     */
-    async set<T = any>(key: string, value: T, ctx: RequestContext): Promise<void> {
-        const fieldConfig = this.getFieldConfig(key);
-
-        if (!this.hasPermission(ctx, fieldConfig)) {
-            throw new UserInputError('Insufficient permissions to set key-value');
-        }
-
-        if (fieldConfig.readonly) {
-            throw new UserInputError('Cannot modify readonly key-value field via API');
-        }
-
-        // Validate the value
-        await this.validateValue(key, value, ctx);
-
-        const scope = this.generateScope(key, value, ctx, fieldConfig);
-        const repo = this.connection.getRepository(ctx, KeyValueEntry);
-
-        // Find existing entry or create new one
-        const entry = await repo.findOne({
-            where: { key, scope },
-        });
-
-        if (entry) {
-            entry.value = value;
-            await repo.save(entry);
-        } else {
-            await repo.save({
-                key,
-                scope,
-                value,
-            });
-        }
     }
 
     /**
@@ -209,52 +170,6 @@ export class KeyValueService implements OnModuleInit {
 
     /**
      * @description
-     * Set multiple values in a transaction. Each key is scoped according to
-     * its individual field configuration.
-     *
-     * @param values - Object mapping keys to their values
-     * @param ctx - Request context for scoping and permissions
-     */
-    async setMany(values: Record<string, any>, ctx: RequestContext): Promise<void> {
-        await this.connection.rawConnection.transaction(async manager => {
-            for (const [key, value] of Object.entries(values)) {
-                const fieldConfig = this.getFieldConfig(key);
-
-                if (!this.hasPermission(ctx, fieldConfig)) {
-                    throw new UserInputError(`Insufficient permissions to set key-value: ${key}`);
-                }
-
-                if (fieldConfig.readonly) {
-                    throw new UserInputError(`Cannot modify readonly key-value field: ${key}`);
-                }
-
-                // Validate the value
-                await this.validateValue(key, value, ctx);
-
-                const scope = this.generateScope(key, value, ctx, fieldConfig);
-                const repo = manager.getRepository(KeyValueEntry);
-
-                // Find existing entry or create new one
-                const entry = await repo.findOne({
-                    where: { key, scope },
-                });
-
-                if (entry) {
-                    entry.value = value;
-                    await repo.save(entry);
-                } else {
-                    await repo.save({
-                        key,
-                        scope,
-                        value,
-                    });
-                }
-            }
-        });
-    }
-
-    /**
-     * @description
      * Set a value for the specified key with structured result feedback.
      * This version returns detailed information about the success or failure
      * of the operation instead of throwing errors.
@@ -264,7 +179,7 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns SetKeyValueResult with operation status and error details
      */
-    async setSafe<T = any>(key: string, value: T, ctx: RequestContext): Promise<SetKeyValueResult> {
+    async set<T = any>(key: string, value: T, ctx: RequestContext): Promise<SetKeyValueResult> {
         try {
             const fieldConfig = this.getFieldConfig(key);
 
@@ -329,11 +244,11 @@ export class KeyValueService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns Array of SetKeyValueResult with operation status for each key
      */
-    async setManySafe(values: Record<string, any>, ctx: RequestContext): Promise<SetKeyValueResult[]> {
+    async setMany(values: Record<string, any>, ctx: RequestContext): Promise<SetKeyValueResult[]> {
         const results: SetKeyValueResult[] = [];
 
         for (const [key, value] of Object.entries(values)) {
-            const result = await this.setSafe(key, value, ctx);
+            const result = await this.set(key, value, ctx);
             results.push(result);
         }
 
@@ -391,6 +306,122 @@ export class KeyValueService implements OnModuleInit {
             throw new InternalServerError(`Key-value field not registered: ${key}`);
         }
         return config;
+    }
+
+    /**
+     * @description
+     * Find orphaned key-value entries that no longer have corresponding field definitions.
+     *
+     * @param options - Options for filtering orphaned entries
+     * @returns Array of orphaned entries
+     */
+    async findOrphanedEntries(options: CleanupOrphanedEntriesOptions = {}): Promise<OrphanedKeyValueEntry[]> {
+        const { olderThan = '7d', maxDeleteCount = 1000 } = options;
+
+        // Parse duration to get cutoff date
+        const cutoffDate = this.parseDuration(olderThan);
+
+        const qb = this.connection.rawConnection
+            .getRepository(KeyValueEntry)
+            .createQueryBuilder('entry')
+            .where('entry.updatedAt < :cutoffDate', { cutoffDate })
+            .orderBy('entry.updatedAt', 'ASC')
+            .limit(maxDeleteCount);
+
+        const allEntries = await qb.getMany();
+        const orphanedEntries: OrphanedKeyValueEntry[] = [];
+
+        // Check each entry against registered fields
+        for (const entry of allEntries) {
+            const fieldConfig = this.fieldRegistry.get(entry.key);
+            if (!fieldConfig) {
+                // This entry has no field definition - it's orphaned
+                orphanedEntries.push({
+                    key: entry.key,
+                    scope: entry.scope || '',
+                    updatedAt: entry.updatedAt,
+                    valuePreview: this.getValuePreview(entry.value),
+                });
+            }
+        }
+
+        return orphanedEntries;
+    }
+
+    /**
+     * @description
+     * Clean up orphaned key-value entries from the database.
+     *
+     * @param options - Options for the cleanup operation
+     * @returns Result of the cleanup operation
+     */
+    async cleanupOrphanedEntries(
+        options: CleanupOrphanedEntriesOptions = {},
+    ): Promise<CleanupOrphanedEntriesResult> {
+        const { dryRun = false, batchSize = 100, maxDeleteCount = 1000 } = options;
+
+        // Find orphaned entries first
+        const orphanedEntries = await this.findOrphanedEntries(options);
+
+        if (dryRun) {
+            return {
+                deletedCount: orphanedEntries.length,
+                dryRun: true,
+                deletedEntries: orphanedEntries.slice(0, 10), // Sample for preview
+            };
+        }
+
+        let totalDeleted = 0;
+        const sampleDeletedEntries: OrphanedKeyValueEntry[] = [];
+
+        // Delete in batches
+        for (let i = 0; i < orphanedEntries.length && totalDeleted < maxDeleteCount; i += batchSize) {
+            const batch = orphanedEntries.slice(i, i + batchSize);
+
+            // Extract keys and scopes for deletion
+            const conditions = batch.map(entry => ({ key: entry.key, scope: entry.scope }));
+
+            await this.connection.rawConnection.getRepository(KeyValueEntry).delete(conditions);
+
+            totalDeleted += batch.length;
+
+            // Keep first batch as sample
+            if (i === 0) {
+                sampleDeletedEntries.push(...batch.slice(0, 10));
+            }
+
+            Logger.verbose(`Deleted batch of ${batch.length} orphaned key-value entries`);
+        }
+
+        Logger.info(`Cleanup completed: deleted ${totalDeleted} orphaned key-value entries`);
+
+        return {
+            deletedCount: totalDeleted,
+            dryRun: false,
+            deletedEntries: sampleDeletedEntries,
+        };
+    }
+
+    /**
+     * @description
+     * Parse a duration string (e.g., '7d', '30m', '2h') into a Date object.
+     */
+    private parseDuration(duration: string): Date {
+        const milliseconds = ms(duration);
+        if (!milliseconds) {
+            throw new Error(`Invalid duration format: ${duration}. Use format like '7d', '2h', '30m'`);
+        }
+
+        return new Date(Date.now() - milliseconds);
+    }
+
+    /**
+     * @description
+     * Get a preview of a value for logging purposes, truncating if too large.
+     */
+    private getValuePreview(value: any): string {
+        const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+        return stringValue.length > 100 ? stringValue.substring(0, 100) + '...' : stringValue;
     }
 
     /**

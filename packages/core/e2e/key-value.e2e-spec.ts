@@ -1,4 +1,12 @@
-import { CurrencyCode, LanguageCode, mergeConfig, Permission } from '@vendure/core';
+import {
+    CurrencyCode,
+    KeyValueEntry,
+    KeyValueService,
+    LanguageCode,
+    mergeConfig,
+    Permission,
+    TransactionalConnection,
+} from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -607,6 +615,149 @@ describe('KeyValue system', () => {
             expect(setKeyValues[1].result).toBe(false);
             expect(setKeyValues[1].key).toBe('test.adminOnlyField');
             expect(setKeyValues[1].error).toContain('Insufficient permissions');
+        });
+    });
+
+    describe('Orphaned entries cleanup', () => {
+        let keyValueService: KeyValueService;
+
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+            // Get the KeyValueService directly from the application
+            try {
+                keyValueService = server.app.get(KeyValueService);
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error('Failed to get KeyValueService:', error);
+                // Try getting it from the service module
+                keyValueService = server.app.get('KeyValueService');
+            }
+        });
+
+        it('should identify orphaned entries', async () => {
+            // Insert some orphaned entries directly into the database
+            const connection = server.app.get(TransactionalConnection);
+            const repo = connection.rawConnection.getRepository(KeyValueEntry);
+
+            // Create entries with keys that don't have field definitions
+            await repo.save([
+                {
+                    key: 'orphaned.oldSetting1',
+                    value: 'old-value-1',
+                    scope: '',
+                    updatedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
+                },
+                {
+                    key: 'orphaned.oldSetting2',
+                    value: { complex: 'object', array: [1, 2, 3] },
+                    scope: 'user:123',
+                    updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+                },
+                {
+                    key: 'orphaned.recentSetting',
+                    value: 'recent-value',
+                    scope: '',
+                    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+                },
+            ]);
+
+            // Test finding orphaned entries older than 7 days
+            const orphanedEntries = await keyValueService.findOrphanedEntries({
+                olderThan: '7d',
+                maxDeleteCount: 100,
+            });
+
+            expect(orphanedEntries.length).toBe(2); // Should find the 8-day and 10-day old entries
+            expect(orphanedEntries.map(e => e.key)).toEqual(
+                expect.arrayContaining(['orphaned.oldSetting1', 'orphaned.oldSetting2']),
+            );
+            expect(orphanedEntries.find(e => e.key === 'orphaned.oldSetting1')?.scope).toBe('');
+            expect(orphanedEntries.find(e => e.key === 'orphaned.oldSetting2')?.scope).toBe('user:123');
+            expect(orphanedEntries.find(e => e.key === 'orphaned.oldSetting2')?.valuePreview).toContain(
+                'complex',
+            );
+        });
+
+        it('should perform dry-run cleanup', async () => {
+            const result = await keyValueService.cleanupOrphanedEntries({
+                olderThan: '7d',
+                dryRun: true,
+                maxDeleteCount: 100,
+            });
+
+            expect(result.dryRun).toBe(true);
+            expect(result.deletedCount).toBe(2); // Should find 2 entries to delete
+            expect(result.deletedEntries.length).toBeLessThanOrEqual(10); // Sample entries
+
+            // Verify entries are still in database (dry run shouldn't delete)
+            const connection = server.app.get(TransactionalConnection);
+            const repo = connection.rawConnection.getRepository(KeyValueEntry);
+            const remainingEntries = await repo.find({
+                where: [{ key: 'orphaned.oldSetting1' }, { key: 'orphaned.oldSetting2' }],
+            });
+            expect(remainingEntries.length).toBe(2);
+        });
+
+        it('should actually cleanup orphaned entries', async () => {
+            const result = await keyValueService.cleanupOrphanedEntries({
+                olderThan: '7d',
+                dryRun: false,
+                maxDeleteCount: 100,
+                batchSize: 50,
+            });
+
+            expect(result.dryRun).toBe(false);
+            expect(result.deletedCount).toBe(2);
+            expect(result.deletedEntries.length).toBeLessThanOrEqual(10);
+
+            // Verify entries are actually deleted from database
+            const connection = server.app.get(TransactionalConnection);
+            const repo = connection.rawConnection.getRepository(KeyValueEntry);
+            const remainingEntries = await repo.find({
+                where: [{ key: 'orphaned.oldSetting1' }, { key: 'orphaned.oldSetting2' }],
+            });
+            expect(remainingEntries.length).toBe(0);
+
+            // Recent entry should still exist (not old enough)
+            const recentEntry = await repo.findOne({ where: { key: 'orphaned.recentSetting' } });
+            expect(recentEntry).not.toBeNull();
+        });
+
+        it('should respect age thresholds with ms package formats', async () => {
+            // Create entries of different ages
+            const connection = server.app.get(TransactionalConnection);
+            const repo = connection.rawConnection.getRepository(KeyValueEntry);
+
+            await repo.save([
+                {
+                    key: 'orphaned.veryOld',
+                    value: 'very-old',
+                    scope: '',
+                    updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+                },
+                {
+                    key: 'orphaned.somewhartOld',
+                    value: 'somewhat-old',
+                    scope: '',
+                    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+                },
+            ]);
+
+            // Test different ms package formats
+            const old10d = await keyValueService.findOrphanedEntries({ olderThan: '10d' });
+            expect(old10d.map(e => e.key)).toContain('orphaned.veryOld');
+            expect(old10d.map(e => e.key)).not.toContain('orphaned.somewhartOld');
+
+            const old3d = await keyValueService.findOrphanedEntries({ olderThan: '3 days' });
+            expect(old3d.map(e => e.key)).toContain('orphaned.veryOld');
+            expect(old3d.map(e => e.key)).toContain('orphaned.somewhartOld');
+
+            const old1w = await keyValueService.findOrphanedEntries({ olderThan: '1w' });
+            expect(old1w.map(e => e.key)).toContain('orphaned.veryOld');
+            expect(old1w.map(e => e.key)).not.toContain('orphaned.somewhartOld');
+
+            // Cleanup
+            await keyValueService.cleanupOrphanedEntries({ olderThan: '1d' });
         });
     });
 });

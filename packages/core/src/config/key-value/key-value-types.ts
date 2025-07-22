@@ -188,3 +188,102 @@ export interface SetKeyValueResult {
      */
     error?: string;
 }
+
+/**
+ * @description
+ * Represents an orphaned key-value entry that no longer has a corresponding
+ * field definition in the configuration.
+ *
+ * @docsCategory key-value-storage
+ * @since 3.4.0
+ */
+export interface OrphanedKeyValueEntry {
+    /**
+     * @description
+     * The orphaned key.
+     */
+    key: string;
+
+    /**
+     * @description
+     * The scope of the orphaned entry.
+     */
+    scope: string;
+
+    /**
+     * @description
+     * When the entry was last updated.
+     */
+    updatedAt: Date;
+
+    /**
+     * @description
+     * Preview of the stored value (truncated for large values).
+     */
+    valuePreview: string;
+}
+
+/**
+ * @description
+ * Options for cleaning up orphaned key-value entries.
+ *
+ * @docsCategory key-value-storage
+ * @since 3.4.0
+ */
+export interface CleanupOrphanedEntriesOptions {
+    /**
+     * @description
+     * If true, perform a dry run without actually deleting entries.
+     * @default false
+     */
+    dryRun?: boolean;
+
+    /**
+     * @description
+     * Only delete entries older than this duration.
+     * Examples: '30d', '7d', '1h', '30m'
+     * @default '7d'
+     */
+    olderThan?: string;
+
+    /**
+     * @description
+     * Maximum number of entries to delete in a single operation.
+     * @default 1000
+     */
+    maxDeleteCount?: number;
+
+    /**
+     * @description
+     * Batch size for deletion operations.
+     * @default 100
+     */
+    batchSize?: number;
+}
+
+/**
+ * @description
+ * Result of a cleanup operation for orphaned key-value entries.
+ *
+ * @docsCategory key-value-storage
+ * @since 3.4.0
+ */
+export interface CleanupOrphanedEntriesResult {
+    /**
+     * @description
+     * Number of entries that were (or would be) deleted.
+     */
+    deletedCount: number;
+
+    /**
+     * @description
+     * Whether this was a dry run.
+     */
+    dryRun: boolean;
+
+    /**
+     * @description
+     * Sample of deleted entries (for logging/audit purposes).
+     */
+    deletedEntries: OrphanedKeyValueEntry[];
+}

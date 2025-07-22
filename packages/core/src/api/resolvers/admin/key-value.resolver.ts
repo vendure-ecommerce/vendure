@@ -36,7 +36,7 @@ export class KeyValueAdminResolver {
         @Ctx() ctx: RequestContext,
         @Args('input') input: KeyValueInput,
     ): Promise<SetKeyValueResult> {
-        return this.keyValueService.setSafe(input.key, input.value, ctx);
+        return this.keyValueService.set(input.key, input.value, ctx);
     }
 
     @Mutation()
@@ -52,6 +52,6 @@ export class KeyValueAdminResolver {
             {} as Record<string, any>,
         );
 
-        return this.keyValueService.setManySafe(values, ctx);
+        return this.keyValueService.setMany(values, ctx);
     }
 }

@@ -9,6 +9,7 @@ type SetKeyValueResult {
     error: String
 }
 
+
 extend type Query {
     """
     Get value for a specific key (automatically scoped based on field configuration)
