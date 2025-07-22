@@ -126,8 +126,8 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.systemOptions;
     }
 
-    get keyValueFields(): KeyValueFields | undefined {
-        return this.activeConfig.keyValueFields;
+    get keyValueFields(): KeyValueFields {
+        return this.activeConfig.keyValueFields ?? {};
     }
 
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
