@@ -31,7 +31,7 @@ export class KeyValueEntry extends VendureEntity {
      * The JSON-serialized value stored for this key.
      */
     @Column('json', { nullable: true })
-    value: JsonCompatible<any> | null;
+    value: JsonCompatible<any> | string | number | boolean | null;
 
     /**
      * @description

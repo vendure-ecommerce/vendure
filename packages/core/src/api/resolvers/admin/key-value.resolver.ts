@@ -1,14 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { KeyValueInput } from '@vendure/common/lib/generated-types';
 
 import { SetKeyValueResult } from '../../../config/key-value/key-value-types';
 import { KeyValueService } from '../../../service/helpers/key-value/key-value.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
-
-export class KeyValueInput {
-    key: string;
-    value: any;
-}
 
 /**
  * @description

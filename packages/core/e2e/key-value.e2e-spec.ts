@@ -624,14 +624,7 @@ describe('KeyValue system', () => {
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
             // Get the KeyValueService directly from the application
-            try {
-                keyValueService = server.app.get(KeyValueService);
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('Failed to get KeyValueService:', error);
-                // Try getting it from the service module
-                keyValueService = server.app.get('KeyValueService');
-            }
+            keyValueService = server.app.get(KeyValueService);
         });
 
         it('should identify orphaned entries', async () => {
