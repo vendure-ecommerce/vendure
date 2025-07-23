@@ -98,6 +98,12 @@ jobs:
                   cd $HOME/install/test-app
                   npm install @vendure/dashboard@ci --registry=http://localhost:4873
                   cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts ./vite.config.mts
+                  # Create plugins directory and copy test plugin
+                  mkdir -p src/plugins/test-plugin
+                  cp -rv $GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/* src/plugins/test-plugin/
+                  # Copy and run the setup script
+                  cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js ./setup-test-plugin.js
+                  node setup-test-plugin.js
             - name: Install Playwright
               run: |
                   cd $GITHUB_WORKSPACE
