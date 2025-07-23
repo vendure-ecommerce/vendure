@@ -1,5 +1,5 @@
 import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
-import { FieldInfo, getTypeFieldInfo } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { FieldInfo, getTypeFieldInfo, getOperationVariablesFields } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -250,16 +250,23 @@ function DeleteMutationRowAction({
 }>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { i18n } = useLingui();
+    
+    // Inspect the mutation variables to determine if it expects 'id' or 'ids'
+    const mutationVariables = getOperationVariablesFields(deleteMutation);
+    const hasIdsParameter = mutationVariables.some(field => field.name === 'ids');
+    
     const { mutate: deleteMutationFn } = useMutation({
         mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } }) => {
+        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } | { result: 'DELETED' | 'NOT_DELETED'; message: string }[] }) => {
             const unwrappedResult = Object.values(result)[0];
-            if (unwrappedResult.result === 'DELETED') {
+            // Handle both single result and array of results
+            const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;
+            if (resultToCheck.result === 'DELETED') {
                 refetchPaginatedList();
                 toast.success(i18n.t('Deleted successfully'));
             } else {
                 toast.error(i18n.t('Failed to delete'), {
-                    description: unwrappedResult.message,
+                    description: resultToCheck.message,
                 });
             }
         },
@@ -295,7 +302,15 @@ function DeleteMutationRowAction({
                         <Trans>Cancel</Trans>
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={() => deleteMutationFn({ id: row.original.id })}
+                        onClick={() => {
+                            // Pass variables based on what the mutation expects
+                            if (hasIdsParameter) {
+                                deleteMutationFn({ ids: [row.original.id] });
+                            } else {
+                                // Fallback to single id if we can't determine the format
+                                deleteMutationFn({ id: row.original.id });
+                            }
+                        }}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
                         <Trans>Delete</Trans>

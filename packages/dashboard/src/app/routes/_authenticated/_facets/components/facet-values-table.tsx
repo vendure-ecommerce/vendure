@@ -8,6 +8,7 @@ import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useRef, useState } from 'react';
 import { AddFacetValueDialog } from './add-facet-value-dialog.js';
 import { EditFacetValue } from './edit-facet-value.js';
+import { deleteFacetValuesDocument } from '../facets.graphql.js';
 
 export const facetValueListDocument = graphql(`
     query FacetValueList($options: FacetValueListOptions) {
@@ -41,6 +42,7 @@ export function FacetValuesTable({ facetId, registerRefresher }: Readonly<FacetV
         <>
             <PaginatedListDataTable
                 listQuery={addCustomFields(facetValueListDocument)}
+                deleteMutation={deleteFacetValuesDocument}
                 page={page}
                 itemsPerPage={pageSize}
                 sorting={sorting}
