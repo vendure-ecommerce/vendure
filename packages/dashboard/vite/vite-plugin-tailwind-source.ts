@@ -27,10 +27,26 @@ export function dashboardTailwindSourcePlugin(): Plugin {
                 const { pluginInfo } = loadVendureConfigResult;
                 const dashboardExtensionDirs =
                     pluginInfo
-                        ?.map(
-                            ({ dashboardEntryPath, pluginPath }) =>
-                                dashboardEntryPath && path.join(pluginPath, path.dirname(dashboardEntryPath)),
-                        )
+                        ?.flatMap(({ dashboardEntryPath, sourcePluginPath, pluginPath }) => {
+                            if (!dashboardEntryPath) {
+                                return [];
+                            }
+                            const sourcePaths = [];
+                            if (sourcePluginPath) {
+                                sourcePaths.push(
+                                    path.join(
+                                        path.dirname(sourcePluginPath),
+                                        path.dirname(dashboardEntryPath),
+                                    ),
+                                );
+                            }
+                            if (pluginPath) {
+                                sourcePaths.push(
+                                    path.join(path.dirname(pluginPath), path.dirname(dashboardEntryPath)),
+                                );
+                            }
+                            return sourcePaths;
+                        })
                         .filter(x => x != null) ?? [];
                 const sources = dashboardExtensionDirs
                     .map(extension => {
