@@ -97,13 +97,24 @@ jobs:
                   wait-on http://localhost:4873
                   cd $HOME/install/test-app
                   npm install @vendure/dashboard@ci --registry=http://localhost:4873
-                  cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts ./vite.config.mts
-                  # Create plugins directory and copy test plugin
+            - name: Copy files (Windows)
+              if: runner.os == 'Windows'
+              shell: cmd
+              run: |
+                  mkdir src\plugins\test-plugin 2> NUL
+                  xcopy /Y /I "%GITHUB_WORKSPACE%\.github\workflows\scripts\vite.config.mts" "."
+                  xcopy /Y /I /E "%GITHUB_WORKSPACE%\.github\workflows\scripts\test-plugin\*" "src\plugins\test-plugin\"
+                  xcopy /Y /I "%GITHUB_WORKSPACE%\.github\workflows\scripts\setup-test-plugin.js" "."
+            - name: Copy files (Unix)
+              if: runner.os != 'Windows'
+              shell: bash
+              run: |
                   mkdir -p src/plugins/test-plugin
-                  cp -rv $GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/* src/plugins/test-plugin/
-                  # Copy and run the setup script
-                  cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js ./setup-test-plugin.js
-                  node setup-test-plugin.js
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" ./vite.config.mts
+                  cp -r "$GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/." src/plugins/test-plugin/
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" ./setup-test-plugin.js
+            - name: Run setup script
+              run: node setup-test-plugin.js
             - name: Install Playwright
               run: |
                   cd $GITHUB_WORKSPACE
