@@ -5,36 +5,40 @@ import { Injector } from '../../common/injector';
 
 /**
  * @description
- * A function that determines how a key-value entry should be scoped.
+ * A function that determines how a settings store entry should be scoped.
  * Returns a string that will be used as the scope key for storage isolation.
  *
  * @example
  * ```ts
  * // User-specific scoping
- * const userScope: KeyValueScopeFunction = ({ ctx }) => ctx.activeUserId || '';
+ * const userScope: SettingsStoreScopeFunction = ({ ctx }) => ctx.activeUserId || '';
  *
  * // Channel-specific scoping
- * const channelScope: KeyValueScopeFunction = ({ ctx }) => ctx.channelId || '';
+ * const channelScope: SettingsStoreScopeFunction = ({ ctx }) => ctx.channelId || '';
  *
  * // User and channel scoping
- * const userAndChannelScope: KeyValueScopeFunction = ({ ctx }) =>
+ * const userAndChannelScope: SettingsStoreScopeFunction = ({ ctx }) =>
  *   `${ctx.activeUserId || ''}:${ctx.channelId || ''}`;
  * ```
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export type KeyValueScopeFunction = (params: { key: string; value?: any; ctx: RequestContext }) => string;
+export type SettingsStoreScopeFunction = (params: {
+    key: string;
+    value?: any;
+    ctx: RequestContext;
+}) => string;
 
 /**
  * @description
- * Configuration for a key-value field, defining how it should be stored,
+ * Configuration for a settings store field, defining how it should be stored,
  * scoped, validated, and accessed.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface KeyValueFieldConfig {
+export interface SettingsStoreFieldConfig {
     /**
      * @description
      * The name of the field. This will be combined with the namespace
@@ -47,7 +51,7 @@ export interface KeyValueFieldConfig {
      * Function that determines how this field should be scoped.
      * Defaults to global scoping (no isolation).
      */
-    scope?: KeyValueScopeFunction;
+    scope?: SettingsStoreScopeFunction;
 
     /**
      * @description
@@ -77,12 +81,12 @@ export interface KeyValueFieldConfig {
 
 /**
  * @description
- * Configuration for registering a namespace of key-value fields.
+ * Configuration for registering a namespace of settings store fields.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface KeyValueRegistration {
+export interface SettingsStoreRegistration {
     /**
      * @description
      * The namespace for these fields (e.g., 'dashboard', 'payment').
@@ -94,18 +98,18 @@ export interface KeyValueRegistration {
      * @description
      * Array of field configurations for this namespace.
      */
-    fields: KeyValueFieldConfig[];
+    fields: SettingsStoreFieldConfig[];
 }
 
 /**
  * @description
- * This is how KeyValueFields are defined in the {@link VendureConfig} object.
+ * This is how SettingsStoreFields are defined in the {@link VendureConfig} object.
  *
  * @since 3.4.0
  * @docsCategory configuration
  */
-export type KeyValueFields = {
-    [namespace: string]: KeyValueFieldConfig[];
+export type SettingsStoreFields = {
+    [namespace: string]: SettingsStoreFieldConfig[];
 };
 
 /**
@@ -115,29 +119,29 @@ export type KeyValueFields = {
  * @example
  * ```ts
  * const config: VendureConfig = {
- *   keyValueFields: {
+ *   settingsStoreFields: {
  *     dashboard: [
  *       {
  *         name: 'theme',
- *         scope: KeyValueScopes.user, // User-specific
+ *         scope: SettingsStoreScopes.user, // User-specific
  *       },
  *       {
  *         name: 'currency',
- *         scope: KeyValueScopes.channel, // Channel-specific
+ *         scope: SettingsStoreScopes.channel, // Channel-specific
  *       },
  *       {
  *         name: 'tableFilters',
- *         scope: KeyValueScopes.userAndChannel, // User-specific per channel
+ *         scope: SettingsStoreScopes.userAndChannel, // User-specific per channel
  *       }
  *     ]
  *   }
  * };
  * ```
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export const KeyValueScopes = {
+export const SettingsStoreScopes = {
     /**
      * @description
      * Global scoping - no isolation, single value for all users and channels.
@@ -166,13 +170,13 @@ export const KeyValueScopes = {
 
 /**
  * @description
- * Result type for key-value set operations, providing detailed feedback
+ * Result type for settings store set operations, providing detailed feedback
  * about the success or failure of each operation.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface SetKeyValueResult {
+export interface SetSettingsStoreValueResult {
     /**
      * @description
      * The key that was attempted to be set.
@@ -194,13 +198,13 @@ export interface SetKeyValueResult {
 
 /**
  * @description
- * Represents an orphaned key-value entry that no longer has a corresponding
+ * Represents an orphaned settings store entry that no longer has a corresponding
  * field definition in the configuration.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface OrphanedKeyValueEntry {
+export interface OrphanedSettingsStoreEntry {
     /**
      * @description
      * The orphaned key.
@@ -228,12 +232,12 @@ export interface OrphanedKeyValueEntry {
 
 /**
  * @description
- * Options for cleaning up orphaned key-value entries.
+ * Options for cleaning up orphaned settings store entries.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface CleanupOrphanedEntriesOptions {
+export interface CleanupOrphanedSettingsStoreEntriesOptions {
     /**
      * @description
      * If true, perform a dry run without actually deleting entries.
@@ -266,12 +270,12 @@ export interface CleanupOrphanedEntriesOptions {
 
 /**
  * @description
- * Result of a cleanup operation for orphaned key-value entries.
+ * Result of a cleanup operation for orphaned settings store entries.
  *
- * @docsCategory KeyValueStorage
+ * @docsCategory SettingsStore
  * @since 3.4.0
  */
-export interface CleanupOrphanedEntriesResult {
+export interface CleanupOrphanedSettingsStoreEntriesResult {
     /**
      * @description
      * Number of entries that were (or would be) deleted.
@@ -288,5 +292,5 @@ export interface CleanupOrphanedEntriesResult {
      * @description
      * Sample of deleted entries (for logging/audit purposes).
      */
-    deletedEntries: OrphanedKeyValueEntry[];
+    deletedEntries: OrphanedSettingsStoreEntry[];
 }

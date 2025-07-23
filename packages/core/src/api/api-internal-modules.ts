@@ -26,7 +26,6 @@ import { FacetResolver } from './resolvers/admin/facet.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 import { ImportResolver } from './resolvers/admin/import.resolver';
 import { JobResolver } from './resolvers/admin/job.resolver';
-import { KeyValueAdminResolver } from './resolvers/admin/key-value.resolver';
 import { OrderResolver } from './resolvers/admin/order.resolver';
 import { PaymentMethodResolver } from './resolvers/admin/payment-method.resolver';
 import { ProductOptionResolver } from './resolvers/admin/product-option.resolver';
@@ -36,6 +35,7 @@ import { RoleResolver } from './resolvers/admin/role.resolver';
 import { ScheduledTaskResolver } from './resolvers/admin/scheduled-task.resolver';
 import { SearchResolver } from './resolvers/admin/search.resolver';
 import { SellerResolver } from './resolvers/admin/seller.resolver';
+import { SettingsStoreAdminResolver } from './resolvers/admin/settings-store.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
 import { StockLocationResolver } from './resolvers/admin/stock-location.resolver';
 import { TagResolver } from './resolvers/admin/tag.resolver';
@@ -108,7 +108,7 @@ const adminResolvers = [
     GlobalSettingsResolver,
     ImportResolver,
     JobResolver,
-    KeyValueAdminResolver,
+    SettingsStoreAdminResolver,
     OrderResolver,
     PaymentMethodResolver,
     ProductOptionResolver,

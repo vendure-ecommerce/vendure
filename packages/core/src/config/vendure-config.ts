@@ -34,7 +34,6 @@ import { MoneyStrategy } from './entity/money-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
-import { KeyValueFields } from './key-value';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
@@ -55,6 +54,7 @@ import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { RefundProcess } from './refund/refund-process';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
@@ -1191,13 +1191,13 @@ export interface VendureConfig {
     /**
      * @description
      * Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
-     * and via the {@link KeyValueService}. These differ from custom fields in that they are not associated
+     * and via the {@link SettingsStoreService}. These differ from custom fields in that they are not associated
      * with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
      * require any changes to the database schema.
      *
      * @since 3.4.0
      */
-    keyValueFields?: KeyValueFields;
+    settingsStoreFields?: SettingsStoreFields;
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.

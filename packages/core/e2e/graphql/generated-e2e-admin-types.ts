@@ -2947,6 +2947,10 @@ export type Mutation = {
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
+    /** Set a single key-value pair (automatically scoped based on field configuration) */
+    setSettingsStoreValue: SetSettingsStoreValueResult;
+    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
+    setSettingsStoreValues: Array<SetSettingsStoreValueResult>;
     settlePayment: SettlePaymentResult;
     settleRefund: SettleRefundResult;
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
@@ -3548,6 +3552,14 @@ export type MutationSetOrderCustomFieldsArgs = {
 
 export type MutationSetOrderCustomerArgs = {
     input: SetOrderCustomerInput;
+};
+
+export type MutationSetSettingsStoreValueArgs = {
+    input: SettingsStoreInput;
+};
+
+export type MutationSetSettingsStoreValuesArgs = {
+    inputs: Array<SettingsStoreInput>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -4881,6 +4893,10 @@ export type Query = {
     getKeyValue?: Maybe<Scalars['JSON']['output']>;
     /** Get multiple key-value pairs (each automatically scoped) */
     getKeyValues?: Maybe<Scalars['JSON']['output']>;
+    /** Get value for a specific key (automatically scoped based on field configuration) */
+    getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
+    /** Get multiple key-value pairs (each automatically scoped) */
+    getSettingsStoreValues?: Maybe<Scalars['JSON']['output']>;
     globalSettings: GlobalSettings;
     job?: Maybe<Job>;
     jobBufferSize: Array<JobBufferSize>;
@@ -5017,6 +5033,14 @@ export type QueryGetKeyValueArgs = {
 };
 
 export type QueryGetKeyValuesArgs = {
+    keys: Array<Scalars['String']['input']>;
+};
+
+export type QueryGetSettingsStoreValueArgs = {
+    key: Scalars['String']['input'];
+};
+
+export type QueryGetSettingsStoreValuesArgs = {
     keys: Array<Scalars['String']['input']>;
 };
 
@@ -5578,6 +5602,17 @@ export type SetOrderShippingMethodResult =
     | NoActiveOrderError
     | Order
     | OrderModificationError;
+
+export type SetSettingsStoreValueResult = {
+    error?: Maybe<Scalars['String']['output']>;
+    key: Scalars['String']['output'];
+    result: Scalars['Boolean']['output'];
+};
+
+export type SettingsStoreInput = {
+    key: Scalars['String']['input'];
+    value: Scalars['JSON']['input'];
+};
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -11068,32 +11103,6 @@ export type CancelJobMutation = {
     cancelJob: { id: string; state: JobState; isSettled: boolean; settledAt?: any | null };
 };
 
-export type GetKeyValueQueryVariables = Exact<{
-    key: Scalars['String']['input'];
-}>;
-
-export type GetKeyValueQuery = { getKeyValue?: any | null };
-
-export type GetKeyValuesQueryVariables = Exact<{
-    keys: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-export type GetKeyValuesQuery = { getKeyValues?: any | null };
-
-export type SetKeyValueMutationVariables = Exact<{
-    input: KeyValueInput;
-}>;
-
-export type SetKeyValueMutation = { setKeyValue: { key: string; result: boolean; error?: string | null } };
-
-export type SetKeyValuesMutationVariables = Exact<{
-    inputs: Array<KeyValueInput> | KeyValueInput;
-}>;
-
-export type SetKeyValuesMutation = {
-    setKeyValues: Array<{ key: string; result: boolean; error?: string | null }>;
-};
-
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -12137,6 +12146,34 @@ export type DeleteRoleMutation = { deleteRole: { result: DeletionResult; message
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
 export type LogoutMutation = { logout: { success: boolean } };
+
+export type GetSettingsStoreValueQueryVariables = Exact<{
+    key: Scalars['String']['input'];
+}>;
+
+export type GetSettingsStoreValueQuery = { getSettingsStoreValue?: any | null };
+
+export type GetSettingsStoreValuesQueryVariables = Exact<{
+    keys: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+export type GetSettingsStoreValuesQuery = { getSettingsStoreValues?: any | null };
+
+export type SetSettingsStoreValueMutationVariables = Exact<{
+    input: SettingsStoreInput;
+}>;
+
+export type SetSettingsStoreValueMutation = {
+    setSettingsStoreValue: { key: string; result: boolean; error?: string | null };
+};
+
+export type SetSettingsStoreValuesMutationVariables = Exact<{
+    inputs: Array<SettingsStoreInput> | SettingsStoreInput;
+}>;
+
+export type SetSettingsStoreValuesMutation = {
+    setSettingsStoreValues: Array<{ key: string; result: boolean; error?: string | null }>;
+};
 
 export type GetShippingMethodQueryVariables = Exact<{
     id: Scalars['ID']['input'];
@@ -33149,178 +33186,6 @@ export const CancelJobDocument = {
         },
     ],
 } as unknown as DocumentNode<CancelJobMutation, CancelJobMutationVariables>;
-export const GetKeyValueDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'GetKeyValue' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'key' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'getKeyValue' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'key' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'key' } },
-                            },
-                        ],
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<GetKeyValueQuery, GetKeyValueQueryVariables>;
-export const GetKeyValuesDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'GetKeyValues' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'ListType',
-                            type: {
-                                kind: 'NonNullType',
-                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-                            },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'getKeyValues' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'keys' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
-                            },
-                        ],
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<GetKeyValuesQuery, GetKeyValuesQueryVariables>;
-export const SetKeyValueDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'mutation',
-            name: { kind: 'Name', value: 'SetKeyValue' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'KeyValueInput' } },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'setKeyValue' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SetKeyValueMutation, SetKeyValueMutationVariables>;
-export const SetKeyValuesDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'mutation',
-            name: { kind: 'Name', value: 'SetKeyValues' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'ListType',
-                            type: {
-                                kind: 'NonNullType',
-                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'KeyValueInput' } },
-                            },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'setKeyValues' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'inputs' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SetKeyValuesMutation, SetKeyValuesMutationVariables>;
 export const UpdateOptionGroupDocument = {
     kind: 'Document',
     definitions: [
@@ -37418,6 +37283,181 @@ export const LogoutDocument = {
         },
     ],
 } as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
+export const GetSettingsStoreValueDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetSettingsStoreValue' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'key' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'getSettingsStoreValue' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'key' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'key' } },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetSettingsStoreValueQuery, GetSettingsStoreValueQueryVariables>;
+export const GetSettingsStoreValuesDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetSettingsStoreValues' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'ListType',
+                            type: {
+                                kind: 'NonNullType',
+                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'getSettingsStoreValues' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'keys' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetSettingsStoreValuesQuery, GetSettingsStoreValuesQueryVariables>;
+export const SetSettingsStoreValueDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'SetSettingsStoreValue' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SettingsStoreInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'setSettingsStoreValue' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<SetSettingsStoreValueMutation, SetSettingsStoreValueMutationVariables>;
+export const SetSettingsStoreValuesDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'SetSettingsStoreValues' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'ListType',
+                            type: {
+                                kind: 'NonNullType',
+                                type: {
+                                    kind: 'NamedType',
+                                    name: { kind: 'Name', value: 'SettingsStoreInput' },
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'setSettingsStoreValues' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'inputs' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'key' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'error' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<SetSettingsStoreValuesMutation, SetSettingsStoreValuesMutationVariables>;
 export const GetShippingMethodDocument = {
     kind: 'Document',
     definitions: [

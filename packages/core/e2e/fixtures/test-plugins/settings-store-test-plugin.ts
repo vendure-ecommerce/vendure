@@ -1,38 +1,38 @@
-import { KeyValueScopes, Permission, VendurePlugin } from '@vendure/core';
+import { Permission, SettingsStoreScopes, VendurePlugin } from '@vendure/core';
 
 /**
- * Test plugin that registers various key-value fields for testing different
+ * Test plugin that registers various settings store fields for testing different
  * scoping, validation, and permission scenarios.
  */
 @VendurePlugin({
     configuration: config => {
-        config.keyValueFields = {
-            ...config.keyValueFields,
+        config.settingsStoreFields = {
+            ...config.settingsStoreFields,
             test: [
                 {
                     name: 'globalSetting',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                 },
                 {
                     name: 'userSetting',
-                    scope: KeyValueScopes.user,
+                    scope: SettingsStoreScopes.user,
                 },
                 {
                     name: 'channelSetting',
-                    scope: KeyValueScopes.channel,
+                    scope: SettingsStoreScopes.channel,
                 },
                 {
                     name: 'userAndChannelSetting',
-                    scope: KeyValueScopes.userAndChannel,
+                    scope: SettingsStoreScopes.userAndChannel,
                 },
                 {
                     name: 'readonlyField',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                     readonly: true,
                 },
                 {
                     name: 'validatedField',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                     validate: value => {
                         if (!['valid-option', 'another-option'].includes(value)) {
                             return 'Value must be valid-option or another-option';
@@ -41,19 +41,19 @@ import { KeyValueScopes, Permission, VendurePlugin } from '@vendure/core';
                 },
                 {
                     name: 'complexData',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                 },
                 {
                     name: 'bulk1',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                 },
                 {
                     name: 'bulk2',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                 },
                 {
                     name: 'adminOnlyField',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                     requiresPermission: Permission.CreateAdministrator,
                 },
             ],
@@ -61,4 +61,4 @@ import { KeyValueScopes, Permission, VendurePlugin } from '@vendure/core';
         return config;
     },
 })
-export class KeyValueTestPlugin {}
+export class SettingsStoreTestPlugin {}

@@ -1,5 +1,5 @@
 ---
-title: "KeyValueStorage"
+title: "SettingsStore"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,13 +9,13 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## cleanOrphanedKeyValuesTask
+## cleanOrphanedSettingsStoreTask
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/clean-orphaned-key-values-task.ts" sourceLine="39" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/clean-orphaned-settings-store-task.ts" sourceLine="39" packageName="@vendure/core" since="3.4.0" />
 
-A <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a> that cleans up orphaned key-value entries from the database.
+A <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a> that cleans up orphaned settings store entries from the database.
 Orphaned entries are entries that no longer have corresponding field definitions
-in the key-value configuration.
+in the settings store configuration.
 
 This task can be configured with options for dry-run mode, age thresholds,
 and batch processing settings. Users can override or disable this task entirely
@@ -26,12 +26,12 @@ using the existing ScheduledTask APIs.
 ```ts
 // Override the default task with custom options
 const customCleanupTask = new ScheduledTask({
-  id: 'clean-orphaned-key-values',
-  description: 'Custom orphaned key-values cleanup',
+  id: 'clean-orphaned-settings-store',
+  description: 'Custom orphaned settings store cleanup',
   schedule: cron => cron.every(7).days(),
   async execute({ injector }) {
-    const keyValueService = injector.get(KeyValueService);
-    return keyValueService.cleanupOrphanedEntries({
+    const settingsStoreService = injector.get(SettingsStoreService);
+    return settingsStoreService.cleanupOrphanedEntries({
       olderThan: '30d',
       maxDeleteCount: 500,
       batchSize: 50,

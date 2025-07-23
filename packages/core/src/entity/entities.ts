@@ -19,7 +19,6 @@ import { GlobalSettings } from './global-settings/global-settings.entity';
 import { CustomerHistoryEntry } from './history-entry/customer-history-entry.entity';
 import { HistoryEntry } from './history-entry/history-entry.entity';
 import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
-import { KeyValueEntry } from './key-value-entry/key-value-entry.entity';
 import { FulfillmentLine } from './order-line-reference/fulfillment-line.entity';
 import { OrderLineReference } from './order-line-reference/order-line-reference.entity';
 import { OrderModificationLine } from './order-line-reference/order-modification-line.entity';
@@ -53,6 +52,7 @@ import { Seller } from './seller/seller.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { SettingsStoreEntry } from './settings-store-entry/settings-store-entry.entity';
 import { ShippingLine } from './shipping-line/shipping-line.entity';
 import { ShippingMethodTranslation } from './shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
@@ -100,7 +100,6 @@ export const coreEntitiesMap = {
     FulfillmentLine,
     GlobalSettings,
     HistoryEntry,
-    KeyValueEntry,
     NativeAuthenticationMethod,
     OrderModificationLine,
     Order,
@@ -133,6 +132,7 @@ export const coreEntitiesMap = {
     Role,
     Sale,
     Session,
+    SettingsStoreEntry,
     ShippingLine,
     ShippingMethod,
     ShippingMethodTranslation,

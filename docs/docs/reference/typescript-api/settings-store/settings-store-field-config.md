@@ -1,5 +1,5 @@
 ---
-title: "KeyValueFieldConfig"
+title: "SettingsStoreFieldConfig"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,17 +9,17 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## KeyValueFieldConfig
+## SettingsStoreFieldConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="37" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="37" packageName="@vendure/core" since="3.4.0" />
 
-Configuration for a key-value field, defining how it should be stored,
+Configuration for a settings store field, defining how it should be stored,
 scoped, validated, and accessed.
 
 ```ts title="Signature"
-interface KeyValueFieldConfig {
+interface SettingsStoreFieldConfig {
     name: string;
-    scope?: KeyValueScopeFunction;
+    scope?: SettingsStoreScopeFunction;
     readonly?: boolean;
     requiresPermission?: Array<Permission | string> | Permission | string;
     validate?: (
@@ -40,7 +40,7 @@ The name of the field. This will be combined with the namespace
 to create the full key (e.g., 'dashboard.theme').
 ### scope
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/key-value-storage/key-value-scope-function#keyvaluescopefunction'>KeyValueScopeFunction</a>`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/settings-store/settings-store-scope-function#settingsstorescopefunction'>SettingsStoreScopeFunction</a>`}   />
 
 Function that determines how this field should be scoped.
 Defaults to global scoping (no isolation).

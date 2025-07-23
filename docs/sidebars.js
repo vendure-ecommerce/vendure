@@ -78,7 +78,6 @@ const sidebars = {
                 'guides/developer-guide/configuration/index',
                 'guides/developer-guide/custom-fields/index',
                 'guides/developer-guide/error-handling/index',
-                'guides/developer-guide/key-value-store/index',
                 'guides/developer-guide/events/index',
                 'guides/developer-guide/migrations/index',
                 'guides/developer-guide/plugins/index',
@@ -87,6 +86,7 @@ const sidebars = {
                 'guides/developer-guide/testing/index',
                 'guides/developer-guide/updating/index',
                 'guides/developer-guide/worker-job-queue/index',
+                'guides/developer-guide/settings-store/index',
                 {
                     type: 'html',
                     value: 'Extend',

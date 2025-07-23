@@ -5,8 +5,8 @@ import { DataSourceOptions, getMetadataArgsStorage } from 'typeorm';
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
-import { KeyValueFields } from './key-value/key-value-types';
 import { Logger, VendureLogger } from './logger/vendure-logger';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import {
     ApiOptions,
     AssetOptions,
@@ -126,8 +126,8 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.systemOptions;
     }
 
-    get keyValueFields(): KeyValueFields {
-        return this.activeConfig.keyValueFields ?? {};
+    get settingsStoreFields(): SettingsStoreFields {
+        return this.activeConfig.settingsStoreFields ?? {};
     }
 
     private getCustomFieldsForAllEntities(): Required<CustomFields> {

@@ -1,5 +1,5 @@
 ---
-title: "KeyValueScopes"
+title: "SettingsStoreScopes"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,9 +9,9 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## KeyValueScopes
+## SettingsStoreScopes
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="140" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="140" packageName="@vendure/core" since="3.4.0" />
 
 Pre-built scope functions for common scoping patterns.
 
@@ -19,19 +19,19 @@ Pre-built scope functions for common scoping patterns.
 
 ```ts
 const config: VendureConfig = {
-  keyValueFields: {
+  settingsStoreFields: {
     dashboard: [
       {
         name: 'theme',
-        scope: KeyValueScopes.user, // User-specific
+        scope: SettingsStoreScopes.user, // User-specific
       },
       {
         name: 'currency',
-        scope: KeyValueScopes.channel, // Channel-specific
+        scope: SettingsStoreScopes.channel, // Channel-specific
       },
       {
         name: 'tableFilters',
-        scope: KeyValueScopes.userAndChannel, // User-specific per channel
+        scope: SettingsStoreScopes.userAndChannel, // User-specific per channel
       }
     ]
   }

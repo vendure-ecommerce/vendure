@@ -2947,6 +2947,10 @@ export type Mutation = {
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
+    /** Set a single key-value pair (automatically scoped based on field configuration) */
+    setSettingsStoreValue: SetSettingsStoreValueResult;
+    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
+    setSettingsStoreValues: Array<SetSettingsStoreValueResult>;
     settlePayment: SettlePaymentResult;
     settleRefund: SettleRefundResult;
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
@@ -3548,6 +3552,14 @@ export type MutationSetOrderCustomFieldsArgs = {
 
 export type MutationSetOrderCustomerArgs = {
     input: SetOrderCustomerInput;
+};
+
+export type MutationSetSettingsStoreValueArgs = {
+    input: SettingsStoreInput;
+};
+
+export type MutationSetSettingsStoreValuesArgs = {
+    inputs: Array<SettingsStoreInput>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -4881,6 +4893,10 @@ export type Query = {
     getKeyValue?: Maybe<Scalars['JSON']['output']>;
     /** Get multiple key-value pairs (each automatically scoped) */
     getKeyValues?: Maybe<Scalars['JSON']['output']>;
+    /** Get value for a specific key (automatically scoped based on field configuration) */
+    getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
+    /** Get multiple key-value pairs (each automatically scoped) */
+    getSettingsStoreValues?: Maybe<Scalars['JSON']['output']>;
     globalSettings: GlobalSettings;
     job?: Maybe<Job>;
     jobBufferSize: Array<JobBufferSize>;
@@ -5017,6 +5033,14 @@ export type QueryGetKeyValueArgs = {
 };
 
 export type QueryGetKeyValuesArgs = {
+    keys: Array<Scalars['String']['input']>;
+};
+
+export type QueryGetSettingsStoreValueArgs = {
+    key: Scalars['String']['input'];
+};
+
+export type QueryGetSettingsStoreValuesArgs = {
     keys: Array<Scalars['String']['input']>;
 };
 
@@ -5578,6 +5602,17 @@ export type SetOrderShippingMethodResult =
     | NoActiveOrderError
     | Order
     | OrderModificationError;
+
+export type SetSettingsStoreValueResult = {
+    error?: Maybe<Scalars['String']['output']>;
+    key: Scalars['String']['output'];
+    result: Scalars['Boolean']['output'];
+};
+
+export type SettingsStoreInput = {
+    key: Scalars['String']['input'];
+    value: Scalars['JSON']['input'];
+};
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {

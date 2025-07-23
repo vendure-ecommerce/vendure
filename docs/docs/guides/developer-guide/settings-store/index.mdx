@@ -1,20 +1,20 @@
 ---
-title: 'Key-Value Store'
+title: 'Settings Store'
 showtoc: true
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Key-Value Store
+# Settings Store
 
-The Key-Value Store is a flexible system for storing configuration data with support for scoping, permissions,
+The Settings Store is a flexible system for storing configuration data with support for scoping, permissions,
 and validation. It allows plugins and the core system to store and retrieve arbitrary JSON data with
 fine-grained control over access and isolation.
 
 It provides a robust, secure, and flexible system for managing configuration data in your Vendure 
 application. Use it to store user preferences, plugin settings, feature flags, and any other 
-key - value data your application needs.
+settings data your application needs.
 
 
 :::info
@@ -23,48 +23,48 @@ The APIs in this guide were introduced in Vendure v3.4
 
 ## Overview
 
-The Key-Value Store provides:
+The Settings Store provides:
 
 - **Scoped Storage**: Data can be scoped globally, per-user, per-channel, or with custom scope
 - **Permission Control**: Fields can require specific permissions to access
 - **Validation**: Custom validation functions for field values
 - **GraphQL API**: Admin API for reading and writing values
-- **Service API**: Programmatic access via the [KeyValueService](/reference/typescript-api/services/key-value-service)
+- **Service API**: Programmatic access via the [SettingsStoreService](/reference/typescript-api/services/settings-store-service)
 - **Automatic Cleanup**: Scheduled task to remove orphaned entries
 
-## Key Values vs Custom Fields
+## Settings Store vs Custom Fields
 
-Key values share some similarities to custom fields, but the important differences are:
+Settings fields share some similarities to custom fields, but the important differences are:
 
-- Custom fields are attached to particular Vendure entities. Key values are not.
-- Defining a custom field adds a new column in the database, whereas key values do not.
+- Custom fields are attached to particular Vendure entities. Settings fields are not.
+- Defining a custom field adds a new column in the database, whereas settings fields do not.
 - Custom fields are reflected in corresponding GraphQL APIs and in the Admin UI & Dashboard UIs.
-- Custom fields are statically typed, whereas key values store any kind of JSON-serializable data.
+- Custom fields are statically typed, whereas settings fields store any kind of JSON-serializable data.
 
-Key values are best suited to storing config-like values that are global in scope, or which
+Settings fields are best suited to storing config-like values that are global in scope, or which
 configure data for a particular plugin.
 
-## Defining Key-Value Fields
+## Defining Settings Fields
 
-Key-value fields are defined in your Vendure configuration using the `keyValueFields` option:
+Settings fields are defined in your Vendure configuration using the `settingsStoreFields` option:
 
 <Tabs>
     <TabItem value="basic" label="Basic Example">
 
         ```ts
-        import { VendureConfig, KeyValueScopes } from '@vendure/core';
+        import { VendureConfig, SettingsStoreScopes } from '@vendure/core';
 
         export const config: VendureConfig = {
           // ... other config
-          keyValueFields: {
+          settingsStoreFields: {
             dashboard: [
                 {
                   name: 'theme',
-                  scope: KeyValueScopes.user,
+                  scope: SettingsStoreScopes.user,
                 },
                 {
                   name: 'companyName',
-                  scope: KeyValueScopes.global,
+                  scope: SettingsStoreScopes.global,
                 }
               ]
             }
@@ -75,25 +75,25 @@ Key-value fields are defined in your Vendure configuration using the `keyValueFi
     <TabItem value="advanced" label="Advanced Example">
 
         ```ts
-        import { VendureConfig, KeyValueScopes, Permission } from '@vendure/core';
+        import { VendureConfig, SettingsStoreScopes, Permission } from '@vendure/core';
 
         export const config: VendureConfig = {
           // ... other config
-          keyValueFields: {
+          settingsStoreFields: {
             dashboard: [
               {
                 name: 'theme',
-                scope: KeyValueScopes.user,
+                scope: SettingsStoreScopes.user,
               },
               {
                 name: 'tableFilters',
-                scope: KeyValueScopes.userAndChannel,
+                scope: SettingsStoreScopes.userAndChannel,
               }
             ],
             payment: [
               {
                 name: 'stripeApiKey',
-                scope: KeyValueScopes.global,
+                scope: SettingsStoreScopes.global,
                 readonly: true, // Cannot be modified via GraphQL API
                 requiresPermission: Permission.SuperAdmin,
                 validate: (value, injector, ctx) => {
@@ -106,7 +106,7 @@ Key-value fields are defined in your Vendure configuration using the `keyValueFi
             ui: [
               {
                 name: 'welcomeMessage',
-                scope: KeyValueScopes.channel,
+                scope: SettingsStoreScopes.channel,
                 validate: async (value, injector, ctx) => {
                   if (typeof value !== 'string' || value.length > 500) {
                     return 'Welcome message must be a string with max 500 characters';
@@ -129,42 +129,42 @@ Each field supports the following configuration options:
 | Option               | Type                         | Description                                                 |
 | -------------------- | ---------------------------- | ----------------------------------------------------------- |
 | `name`               | `string`                     | The field name (combined with namespace to create full key) |
-| `scope`              | `KeyValueScopeFunction`      | How the field should be scoped (see scoping section)        |
+| `scope`              | `SettingsStoreScopeFunction`      | How the field should be scoped (see scoping section)        |
 | `readonly`           | `boolean`                    | If true, field cannot be modified via GraphQL API           |
 | `requiresPermission` | `Permission \| Permission[]` | Permissions required to access this field                   |
 | `validate`           | `function`                   | Custom validation function for field values                 |
 
 ### Scoping
 
-The Key-Value Store supports four built-in scoping strategies:
+The Settings Store supports four built-in scoping strategies:
 
 ```ts
-import { KeyValueScopes } from '@vendure/core';
+import { SettingsStoreScopes } from '@vendure/core';
 
 // Global - single value for entire system
-KeyValueScopes.global;
+SettingsStoreScopes.global;
 
 // User-specific - separate values per user
-KeyValueScopes.user;
+SettingsStoreScopes.user;
 
 // Channel-specific - separate values per channel
-KeyValueScopes.channel;
+SettingsStoreScopes.channel;
 
 // User and channel specific - separate values per user per channel
-KeyValueScopes.userAndChannel;
+SettingsStoreScopes.userAndChannel;
 ```
 
 You can also create custom scope functions:
 
 ```ts
-const customScope: KeyValueScopeFunction = ({ key, value, ctx }) => {
+const customScope: SettingsStoreScopeFunction = ({ key, value, ctx }) => {
     // Custom scoping logic
     const env = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
     return `env:${env}`;
 };
 
 export const config: VendureConfig = {
-    keyValueFields: {
+    settingsStoreFields: {
         myNamespace: [
             {
                 name: 'customField',
@@ -179,19 +179,19 @@ export const config: VendureConfig = {
 
 ## GraphQL API
 
-The Key-Value Store provides GraphQL queries and mutations in the Admin API:
+The Settings Store provides GraphQL queries and mutations in the Admin API:
 
 ### Queries
 
 ```graphql
 # Get a single value
-query GetKeyValue($key: String!) {
-    getKeyValue(key: $key)
+query GetSettingsStoreValue($key: String!) {
+    getSettingsStoreValue(key: $key)
 }
 
 # Get multiple values
-query GetKeyValues($keys: [String!]!) {
-    getKeyValues(keys: $keys)
+query GetSettingsStoreValues($keys: [String!]!) {
+    getSettingsStoreValues(keys: $keys)
 }
 ```
 
@@ -202,8 +202,8 @@ arrays, or even deeply-nested objects and arrays.
 
 ```graphql
 # Set a single value
-mutation SetKeyValue($input: KeyValueInput!) {
-    setKeyValue(input: $input) {
+mutation SetSettingsStoreValue($input: SettingsStoreInput!) {
+    setSettingsStoreValue(input: $input) {
         key
         result
         error
@@ -211,8 +211,8 @@ mutation SetKeyValue($input: KeyValueInput!) {
 }
 
 # Set multiple values
-mutation SetKeyValues($inputs: [KeyValueInput!]!) {
-    setKeyValues(inputs: $inputs) {
+mutation SetSettingsStoreValues($inputs: [SettingsStoreInput!]!) {
+    setSettingsStoreValues(inputs: $inputs) {
         key
         result
         error
@@ -221,9 +221,9 @@ mutation SetKeyValues($inputs: [KeyValueInput!]!) {
 ```
 
 :::note
-By default, the Key Value store is not exposed in the Shop API. 
+By default, the Settings Store is not exposed in the Shop API. 
 However, you can expose this functionality via a custom mutations & queries
-that internally use the `KeyValueService` (see next section).
+that internally use the `SettingsStoreService` (see next section).
 :::
 
 ### Usage Examples
@@ -234,8 +234,8 @@ that internally use the `KeyValueService` (see next section).
         ```ts
         // Setting a value
         const result = await adminClient.query(gql`
-            mutation SetKeyValue($input: KeyValueInput!) {
-                setKeyValue(input: $input) {
+            mutation SetSettingsStoreValue($input: SettingsStoreInput!) {
+                setSettingsStoreValue(input: $input) {
                     key
                     result
                     error
@@ -250,8 +250,8 @@ that internally use the `KeyValueService` (see next section).
 
         // Getting a value
         const theme = await adminClient.query(gql`
-            query GetKeyValue($key: String!) {
-                getKeyValue(key: $key)
+            query GetSettingsStoreValue($key: String!) {
+                getSettingsStoreValue(key: $key)
             }
         `, {
             key: 'dashboard.theme'
@@ -264,8 +264,8 @@ that internally use the `KeyValueService` (see next section).
         ```ts
         // Setting multiple values
         const results = await adminClient.query(gql`
-            mutation SetKeyValues($inputs: [KeyValueInput!]!) {
-                setKeyValues(inputs: $inputs) {
+            mutation SetSettingsStoreValues($inputs: [SettingsStoreInput!]!) {
+                setSettingsStoreValues(inputs: $inputs) {
                     key
                     result
                     error
@@ -280,8 +280,8 @@ that internally use the `KeyValueService` (see next section).
 
         // Getting multiple values
         const settings = await adminClient.query(gql`
-            query GetKeyValues($keys: [String!]!) {
-                getKeyValues(keys: $keys)
+            query GetSettingsStoreValues($keys: [String!]!) {
+                getSettingsStoreValues(keys: $keys)
             }
         `, {
             keys: ['dashboard.theme', 'dashboard.language']
@@ -294,28 +294,28 @@ that internally use the `KeyValueService` (see next section).
 
 </Tabs>
 
-## Using the KeyValueService
+## Using the SettingsStoreService
 
-For programmatic access within plugins or services, use the [KeyValueService](/reference/typescript-api/services/key-value-service):
+For programmatic access within plugins or services, use the [SettingsStoreService](/reference/typescript-api/services/settings-store-service):
 
 <Tabs>
     <TabItem value="basic-service" label="Basic Usage">
 
         ```ts
         import { Injectable } from '@nestjs/common';
-        import { KeyValueService, RequestContext } from '@vendure/core';
+        import { SettingsStoreService, RequestContext } from '@vendure/core';
 
         @Injectable()
         export class MyService {
-            constructor(private keyValueService: KeyValueService) {}
+            constructor(private settingsStoreService: SettingsStoreService) {}
 
             async getUserTheme(ctx: RequestContext): Promise<string> {
-                const theme = await this.keyValueService.get<string>('dashboard.theme', ctx);
+                const theme = await this.settingsStoreService.get<string>('dashboard.theme', ctx);
                 return theme || 'light'; // Default fallback
             }
 
             async setUserTheme(ctx: RequestContext, theme: string): Promise<boolean> {
-                const result = await this.keyValueService.set('dashboard.theme', theme, ctx);
+                const result = await this.settingsStoreService.set('dashboard.theme', theme, ctx);
                 return result.result;
             }
         }
@@ -326,7 +326,7 @@ For programmatic access within plugins or services, use the [KeyValueService](/r
 
         ```ts
         import { Injectable } from '@nestjs/common';
-        import { KeyValueService, RequestContext } from '@vendure/core';
+        import { SettingsStoreService, RequestContext } from '@vendure/core';
 
         interface DashboardSettings {
             theme: 'light' | 'dark';
@@ -336,10 +336,10 @@ For programmatic access within plugins or services, use the [KeyValueService](/r
 
         @Injectable()
         export class DashboardService {
-            constructor(private keyValueService: KeyValueService) {}
+            constructor(private settingsStoreService: SettingsStoreService) {}
 
             async getDashboardSettings(ctx: RequestContext): Promise<DashboardSettings> {
-                const settings = await this.keyValueService.getMany([
+                const settings = await this.settingsStoreService.getMany([
                     'dashboard.theme',
                     'dashboard.language',
                     'dashboard.notifications'
@@ -364,7 +364,7 @@ For programmatic access within plugins or services, use the [KeyValueService](/r
                     updates['dashboard.notifications'] = settings.notifications;
                 }
 
-                const results = await this.keyValueService.setMany(updates, ctx);
+                const results = await this.settingsStoreService.setMany(updates, ctx);
 
                 return {
                     success: results.every(r => r.result),
@@ -378,7 +378,7 @@ For programmatic access within plugins or services, use the [KeyValueService](/r
 
 </Tabs>
 
-### KeyValueService Methods
+### SettingsStoreService Methods
 
 | Method                    | Description                                         |
 | ------------------------- | --------------------------------------------------- |
@@ -391,7 +391,7 @@ For programmatic access within plugins or services, use the [KeyValueService](/r
 ## Orphaned Entries Cleanup
 
 When field definitions are removed from your configuration, the corresponding 
-database entries become "orphaned". The Key-Value Store includes an automatic cleanup system to handle this.
+database entries become "orphaned". The Settings Store includes an automatic cleanup system to handle this.
 
 ### Manual Cleanup
 
@@ -399,13 +399,13 @@ You can also perform cleanup manually via the service:
 
 ```ts
 // Find orphaned entries
-const orphanedEntries = await keyValueService.findOrphanedEntries({
+const orphanedEntries = await settingsStoreService.findOrphanedEntries({
     olderThan: '7d',
     maxDeleteCount: 1000,
 });
 
 // Clean them up
-const cleanupResult = await keyValueService.cleanupOrphanedEntries({
+const cleanupResult = await settingsStoreService.cleanupOrphanedEntries({
     olderThan: '7d',
     dryRun: false,
     batchSize: 100,
@@ -425,16 +425,16 @@ const cleanupResult = await keyValueService.cleanupOrphanedEntries({
 ### Plugin Integration
 
 ```ts
-import { VendurePlugin, KeyValueScopes } from '@vendure/core';
+import { VendurePlugin, SettingsStoreScopes } from '@vendure/core';
 
 @VendurePlugin({
     configuration: config => {
-        config.keyValueFields = {
-            ...config.keyValueFields,
+        config.settingsStoreFields = {
+            ...config.settingsStoreFields,
             myPlugin: [
                 {
                     name: 'apiEndpoint',
-                    scope: KeyValueScopes.global,
+                    scope: SettingsStoreScopes.global,
                     requiresPermission: Permission.UpdateSettings,
                     validate: value => {
                         if (typeof value !== 'string' || !value.startsWith('https://')) {
@@ -444,7 +444,7 @@ import { VendurePlugin, KeyValueScopes } from '@vendure/core';
                 },
                 {
                     name: 'userPreferences',
-                    scope: KeyValueScopes.userAndChannel,
+                    scope: SettingsStoreScopes.userAndChannel,
                 },
             ],
         };
@@ -463,13 +463,13 @@ import gql from 'graphql-tag';
 
 const GET_THEME = gql`
     query GetTheme {
-        getKeyValue(key: "dashboard.theme")
+        getSettingsStoreValue(key: "dashboard.theme")
     }
 `;
 
 const SET_THEME = gql`
     mutation SetTheme($theme: String!) {
-        setKeyValue(input: { key: "dashboard.theme", value: $theme }) {
+        setSettingsStoreValue(input: { key: "dashboard.theme", value: $theme }) {
             result
             error
         }
@@ -482,7 +482,7 @@ export function ThemeSelector() {
         refetchQueries: [GET_THEME],
     });
 
-    const currentTheme = data?.getKeyValue || 'light';
+    const currentTheme = data?.getSettingsStoreValue || 'light';
 
     const handleThemeChange = (theme: string) => {
         setTheme({ variables: { theme } });

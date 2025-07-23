@@ -1,14 +1,14 @@
 import { ScheduledTask } from '../../scheduler/scheduled-task';
-import { KeyValueService } from '../../service/helpers/key-value/key-value.service';
+import { SettingsStoreService } from '../../service/helpers/settings-store/settings-store.service';
 import { Logger } from '../logger/vendure-logger';
 
-import { CleanupOrphanedEntriesOptions } from './key-value-types';
+import { CleanupOrphanedSettingsStoreEntriesOptions } from './settings-store-types';
 
 /**
  * @description
- * A {@link ScheduledTask} that cleans up orphaned key-value entries from the database.
+ * A {@link ScheduledTask} that cleans up orphaned settings store entries from the database.
  * Orphaned entries are entries that no longer have corresponding field definitions
- * in the key-value configuration.
+ * in the settings store configuration.
  *
  * This task can be configured with options for dry-run mode, age thresholds,
  * and batch processing settings. Users can override or disable this task entirely
@@ -18,12 +18,12 @@ import { CleanupOrphanedEntriesOptions } from './key-value-types';
  * ```ts
  * // Override the default task with custom options
  * const customCleanupTask = new ScheduledTask({
- *   id: 'clean-orphaned-key-values',
- *   description: 'Custom orphaned key-values cleanup',
+ *   id: 'clean-orphaned-settings-store',
+ *   description: 'Custom orphaned settings store cleanup',
  *   schedule: cron => cron.every(7).days(),
  *   async execute({ injector }) {
- *     const keyValueService = injector.get(KeyValueService);
- *     return keyValueService.cleanupOrphanedEntries({
+ *     const settingsStoreService = injector.get(SettingsStoreService);
+ *     return settingsStoreService.cleanupOrphanedEntries({
  *       olderThan: '30d',
  *       maxDeleteCount: 500,
  *       batchSize: 50,
@@ -33,29 +33,29 @@ import { CleanupOrphanedEntriesOptions } from './key-value-types';
  * ```
  *
  * @since 3.4.0
- * @docsCategory key-value-storage
- * @docsPage KeyValueStorage
+ * @docsCategory SettingsStore
+ * @docsPage SettingsStore
  */
-export const cleanOrphanedKeyValuesTask = new ScheduledTask({
-    id: 'clean-orphaned-key-values',
-    description: 'Clean orphaned key-value entries that no longer have field definitions',
+export const cleanOrphanedSettingsStoreTask = new ScheduledTask({
+    id: 'clean-orphaned-settings-store',
+    description: 'Clean orphaned settings store entries that no longer have field definitions',
     schedule: cron => cron.every(7).days(),
     params: {
         olderThan: '7d',
     },
     async execute({ injector, params }) {
-        const options: CleanupOrphanedEntriesOptions = {
+        const options: CleanupOrphanedSettingsStoreEntriesOptions = {
             olderThan: params.olderThan,
             maxDeleteCount: 1000,
             batchSize: 100,
             dryRun: false,
         };
 
-        const keyValueService = injector.get(KeyValueService);
-        const result = await keyValueService.cleanupOrphanedEntries(options);
+        const settingsStoreService = injector.get(SettingsStoreService);
+        const result = await settingsStoreService.cleanupOrphanedEntries(options);
 
         if (result.dryRun) {
-            Logger.info(`Dry run: would delete ${result.deletedCount} orphaned key-value entries`);
+            Logger.info(`Dry run: would delete ${result.deletedCount} orphaned settings store entries`);
             if (result.deletedEntries.length > 0) {
                 Logger.verbose(
                     `Sample entries that would be deleted: ${result.deletedEntries
@@ -64,7 +64,7 @@ export const cleanOrphanedKeyValuesTask = new ScheduledTask({
                 );
             }
         } else {
-            Logger.info(`Deleted ${result.deletedCount} orphaned key-value entries`);
+            Logger.info(`Deleted ${result.deletedCount} orphaned settings store entries`);
         }
 
         return {

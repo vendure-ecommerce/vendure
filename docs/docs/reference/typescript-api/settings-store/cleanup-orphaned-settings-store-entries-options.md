@@ -1,5 +1,5 @@
 ---
-title: "CleanupOrphanedEntriesOptions"
+title: "CleanupOrphanedSettingsStoreEntriesOptions"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,14 +9,14 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## CleanupOrphanedEntriesOptions
+## CleanupOrphanedSettingsStoreEntriesOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="236" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="236" packageName="@vendure/core" since="3.4.0" />
 
-Options for cleaning up orphaned key-value entries.
+Options for cleaning up orphaned settings store entries.
 
 ```ts title="Signature"
-interface CleanupOrphanedEntriesOptions {
+interface CleanupOrphanedSettingsStoreEntriesOptions {
     dryRun?: boolean;
     olderThan?: string;
     maxDeleteCount?: number;

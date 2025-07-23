@@ -1,5 +1,5 @@
 ---
-title: "SetKeyValueResult"
+title: "SetSettingsStoreValueResult"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,15 +9,15 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## SetKeyValueResult
+## SetSettingsStoreValueResult
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="175" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="175" packageName="@vendure/core" since="3.4.0" />
 
-Result type for key-value set operations, providing detailed feedback
+Result type for settings store set operations, providing detailed feedback
 about the success or failure of each operation.
 
 ```ts title="Signature"
-interface SetKeyValueResult {
+interface SetSettingsStoreValueResult {
     key: string;
     result: boolean;
     error?: string;

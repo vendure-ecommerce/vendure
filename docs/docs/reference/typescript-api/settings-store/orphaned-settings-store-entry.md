@@ -1,5 +1,5 @@
 ---
-title: "OrphanedKeyValueEntry"
+title: "OrphanedSettingsStoreEntry"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,15 +9,15 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## OrphanedKeyValueEntry
+## OrphanedSettingsStoreEntry
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="203" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="203" packageName="@vendure/core" since="3.4.0" />
 
-Represents an orphaned key-value entry that no longer has a corresponding
+Represents an orphaned settings store entry that no longer has a corresponding
 field definition in the configuration.
 
 ```ts title="Signature"
-interface OrphanedKeyValueEntry {
+interface OrphanedSettingsStoreEntry {
     key: string;
     scope: string;
     updatedAt: Date;

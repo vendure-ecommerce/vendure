@@ -10,6 +10,7 @@ import {
     dummyPaymentHandler,
     LanguageCode,
     LogLevel,
+    SettingsStoreScopes,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -61,7 +62,17 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-
+    settingsStoreFields: {
+        MyPlugin: [
+            {
+                name: 'globalVal',
+            },
+            {
+                name: 'userVal',
+                scope: SettingsStoreScopes.user,
+            },
+        ],
+    },
     customFields: {
         Product: [
             {

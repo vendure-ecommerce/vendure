@@ -1,5 +1,5 @@
 ---
-title: "KeyValueRegistration"
+title: "SettingsStoreRegistration"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,16 +9,16 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## KeyValueRegistration
+## SettingsStoreRegistration
 
-<GenerationInfo sourceFile="packages/core/src/config/key-value/key-value-types.ts" sourceLine="85" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="85" packageName="@vendure/core" since="3.4.0" />
 
-Configuration for registering a namespace of key-value fields.
+Configuration for registering a namespace of settings store fields.
 
 ```ts title="Signature"
-interface KeyValueRegistration {
+interface SettingsStoreRegistration {
     namespace: string;
-    fields: KeyValueFieldConfig[];
+    fields: SettingsStoreFieldConfig[];
 }
 ```
 
@@ -32,7 +32,7 @@ The namespace for these fields (e.g., 'dashboard', 'payment').
 Field names will be prefixed with this namespace.
 ### fields
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/key-value-storage/key-value-field-config#keyvaluefieldconfig'>KeyValueFieldConfig</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/settings-store/settings-store-field-config#settingsstorefieldconfig'>SettingsStoreFieldConfig</a>[]`}   />
 
 Array of field configurations for this namespace.
 

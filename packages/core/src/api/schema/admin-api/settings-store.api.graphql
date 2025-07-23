@@ -1,35 +1,34 @@
-input KeyValueInput {
+input SettingsStoreInput {
     key: String!
     value: JSON!
 }
 
-type SetKeyValueResult {
+type SetSettingsStoreValueResult {
     key: String!
     result: Boolean!
     error: String
 }
 
-
 extend type Query {
     """
     Get value for a specific key (automatically scoped based on field configuration)
     """
-    getKeyValue(key: String!): JSON
-    
+    getSettingsStoreValue(key: String!): JSON
+
     """
     Get multiple key-value pairs (each automatically scoped)
     """
-    getKeyValues(keys: [String!]!): JSON
+    getSettingsStoreValues(keys: [String!]!): JSON
 }
 
 extend type Mutation {
     """
     Set a single key-value pair (automatically scoped based on field configuration)
     """
-    setKeyValue(input: KeyValueInput!): SetKeyValueResult!
+    setSettingsStoreValue(input: SettingsStoreInput!): SetSettingsStoreValueResult!
 
     """
     Set multiple key-value pairs in a transaction (each automatically scoped)
     """
-    setKeyValues(inputs: [KeyValueInput!]!): [SetKeyValueResult!]!
+    setSettingsStoreValues(inputs: [SettingsStoreInput!]!): [SetSettingsStoreValueResult!]!
 }

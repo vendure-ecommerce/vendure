@@ -23,7 +23,7 @@ interface VendureConfig {
     authOptions: AuthOptions;
     catalogOptions?: CatalogOptions;
     customFields?: CustomFields;
-    keyValueFields?: KeyValueFields;
+    settingsStoreFields?: SettingsStoreFields;
     dbConnectionOptions: DataSourceOptions;
     defaultChannelToken?: string | null;
     defaultLanguageCode?: LanguageCode;
@@ -71,12 +71,12 @@ Configuration for Products and Collections.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>`} default={`{}`}   />
 
 Defines custom fields which can be used to extend the built-in entities.
-### keyValueFields
+### settingsStoreFields
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/key-value-fields#keyvaluefields'>KeyValueFields</a>`}  since="3.4.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/settings-store-fields#settingsstorefields'>SettingsStoreFields</a>`}  since="3.4.0"  />
 
 Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
-and via the <a href='/reference/typescript-api/services/key-value-service#keyvalueservice'>KeyValueService</a>. These differ from custom fields in that they are not associated
+and via the <a href='/reference/typescript-api/services/settings-store-service#settingsstoreservice'>SettingsStoreService</a>. These differ from custom fields in that they are not associated
 with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
 require any changes to the database schema.
 ### dbConnectionOptions

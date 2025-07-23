@@ -8,22 +8,22 @@ import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { Injector } from '../../../common/injector';
 import { ConfigService } from '../../../config/config.service';
-import {
-    CleanupOrphanedEntriesOptions,
-    CleanupOrphanedEntriesResult,
-    KeyValueFieldConfig,
-    KeyValueRegistration,
-    KeyValueScopes,
-    OrphanedKeyValueEntry,
-    SetKeyValueResult,
-} from '../../../config/key-value/key-value-types';
 import { Logger } from '../../../config/logger/vendure-logger';
+import {
+    CleanupOrphanedSettingsStoreEntriesOptions,
+    CleanupOrphanedSettingsStoreEntriesResult,
+    OrphanedSettingsStoreEntry,
+    SetSettingsStoreValueResult,
+    SettingsStoreFieldConfig,
+    SettingsStoreRegistration,
+    SettingsStoreScopes,
+} from '../../../config/settings-store/settings-store-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { KeyValueEntry } from '../../../entity/key-value-entry/key-value-entry.entity';
+import { SettingsStoreEntry } from '../../../entity/settings-store-entry/settings-store-entry.entity';
 
 /**
  * @description
- * The KeyValueService provides a flexible key-value storage system with support for
+ * The SettingsStoreService provides a flexible settings storage system with support for
  * scoping, permissions, and validation. It allows plugins and the core system to
  * store and retrieve configuration data with fine-grained control over access and isolation.
  *
@@ -34,11 +34,11 @@ import { KeyValueEntry } from '../../../entity/key-value-entry/key-value-entry.e
  * @example
  * ```ts
  * // In a service
- * const userTheme = await this.keyValueService.get('dashboard.theme', ctx);
- * await this.keyValueService.set('dashboard.theme', 'dark', ctx);
+ * const userTheme = await this.settingsStoreService.get('dashboard.theme', ctx);
+ * await this.settingsStoreService.set('dashboard.theme', 'dark', ctx);
  *
  * // Get multiple values
- * const settings = await this.keyValueService.getMany([
+ * const settings = await this.settingsStoreService.getMany([
  *   'dashboard.theme',
  *   'dashboard.tableFilters'
  * ], ctx);
@@ -48,8 +48,8 @@ import { KeyValueEntry } from '../../../entity/key-value-entry/key-value-entry.e
  * @since 3.4.0
  */
 @Injectable()
-export class KeyValueService implements OnModuleInit {
-    private readonly fieldRegistry = new Map<string, KeyValueFieldConfig>();
+export class SettingsStoreService implements OnModuleInit {
+    private readonly fieldRegistry = new Map<string, SettingsStoreFieldConfig>();
     private readonly injector: Injector;
 
     constructor(
@@ -70,23 +70,23 @@ export class KeyValueService implements OnModuleInit {
      * Called during module initialization.
      */
     private initializeFieldRegistrations(): void {
-        const keyValueFields = this.configService.keyValueFields || {};
+        const settingsStoreFields = this.configService.settingsStoreFields || {};
 
-        for (const [namespace, fields] of Object.entries(keyValueFields)) {
+        for (const [namespace, fields] of Object.entries(settingsStoreFields)) {
             this.register({ namespace, fields });
         }
     }
 
     /**
      * @description
-     * Register key-value fields. This is typically called during application
+     * Register settings store fields. This is typically called during application
      * bootstrap when processing the VendureConfig.
      */
-    register(registration: KeyValueRegistration): void {
+    register(registration: SettingsStoreRegistration): void {
         for (const field of registration.fields) {
             const fullKey = `${registration.namespace}.${field.name}`;
             this.fieldRegistry.set(fullKey, field);
-            Logger.debug(`Registered key-value field: ${fullKey}`);
+            Logger.debug(`Registered settings store field: ${fullKey}`);
         }
     }
 
@@ -108,7 +108,7 @@ export class KeyValueService implements OnModuleInit {
 
         const scope = this.generateScope(key, undefined, ctx, fieldConfig);
 
-        const entry = await this.connection.getRepository(ctx, KeyValueEntry).findOne({
+        const entry = await this.connection.getRepository(ctx, SettingsStoreEntry).findOne({
             where: { key, scope },
         });
 
@@ -144,7 +144,7 @@ export class KeyValueService implements OnModuleInit {
         }
 
         // Execute single query for all authorized keys using OR conditions
-        const qb = this.connection.getRepository(ctx, KeyValueEntry).createQueryBuilder('entry');
+        const qb = this.connection.getRepository(ctx, SettingsStoreEntry).createQueryBuilder('entry');
 
         // Build OR conditions for each key/scope pair
         const orConditions = queries
@@ -179,13 +179,13 @@ export class KeyValueService implements OnModuleInit {
      * @param key - The full key (namespace.field)
      * @param value - The value to store (must be JSON serializable)
      * @param ctx - Request context for scoping and permissions
-     * @returns SetKeyValueResult with operation status and error details
+     * @returns SetSettingsStoreValueResult with operation status and error details
      */
     async set<T extends JsonCompatible<any> = JsonCompatible<any>>(
         key: string,
         value: T,
         ctx: RequestContext,
-    ): Promise<SetKeyValueResult> {
+    ): Promise<SetSettingsStoreValueResult> {
         try {
             const fieldConfig = this.getFieldConfig(key);
 
@@ -193,7 +193,7 @@ export class KeyValueService implements OnModuleInit {
                 return {
                     key,
                     result: false,
-                    error: 'Insufficient permissions to set key-value',
+                    error: 'Insufficient permissions to set settings store value',
                 };
             }
 
@@ -201,7 +201,7 @@ export class KeyValueService implements OnModuleInit {
                 return {
                     key,
                     result: false,
-                    error: 'Cannot modify readonly key-value field via API',
+                    error: 'Cannot modify readonly settings store field via API',
                 };
             }
 
@@ -209,7 +209,7 @@ export class KeyValueService implements OnModuleInit {
             await this.validateValue(key, value, ctx);
 
             const scope = this.generateScope(key, value, ctx, fieldConfig);
-            const repo = this.connection.getRepository(ctx, KeyValueEntry);
+            const repo = this.connection.getRepository(ctx, SettingsStoreEntry);
 
             // Find existing entry or create new one
             const entry = await repo.findOne({
@@ -243,18 +243,18 @@ export class KeyValueService implements OnModuleInit {
     /**
      * @description
      * Set multiple values with structured result feedback for each operation.
-     * Unlike setMany, this method will not throw errors but will return
+     * This method will not throw errors but will return
      * detailed results for each key-value pair.
      *
      * @param values - Object mapping keys to their values
      * @param ctx - Request context for scoping and permissions
-     * @returns Array of SetKeyValueResult with operation status for each key
+     * @returns Array of SetSettingsStoreValueResult with operation status for each key
      */
     async setMany(
         values: Record<string, JsonCompatible<any>>,
         ctx: RequestContext,
-    ): Promise<SetKeyValueResult[]> {
-        const results: SetKeyValueResult[] = [];
+    ): Promise<SetSettingsStoreValueResult[]> {
+        const results: SetSettingsStoreValueResult[] = [];
 
         for (const [key, value] of Object.entries(values)) {
             const result = await this.set(key, value, ctx);
@@ -268,7 +268,7 @@ export class KeyValueService implements OnModuleInit {
      * @description
      * Get the field configuration for a key.
      */
-    getFieldDefinition(key: string): KeyValueFieldConfig | undefined {
+    getFieldDefinition(key: string): SettingsStoreFieldConfig | undefined {
         return this.fieldRegistry.get(key);
     }
 
@@ -299,9 +299,9 @@ export class KeyValueService implements OnModuleInit {
         key: string,
         value: any,
         ctx: RequestContext,
-        fieldConfig: KeyValueFieldConfig,
+        fieldConfig: SettingsStoreFieldConfig,
     ): string {
-        const scopeFunction = fieldConfig.scope || KeyValueScopes.global;
+        const scopeFunction = fieldConfig.scope || SettingsStoreScopes.global;
         return scopeFunction({ key, value, ctx });
     }
 
@@ -309,36 +309,38 @@ export class KeyValueService implements OnModuleInit {
      * @description
      * Get field configuration, throwing if not found.
      */
-    private getFieldConfig(key: string): KeyValueFieldConfig {
+    private getFieldConfig(key: string): SettingsStoreFieldConfig {
         const config = this.fieldRegistry.get(key);
         if (!config) {
-            throw new InternalServerError(`Key-value field not registered: ${key}`);
+            throw new InternalServerError(`Settings store field not registered: ${key}`);
         }
         return config;
     }
 
     /**
      * @description
-     * Find orphaned key-value entries that no longer have corresponding field definitions.
+     * Find orphaned settings store entries that no longer have corresponding field definitions.
      *
      * @param options - Options for filtering orphaned entries
      * @returns Array of orphaned entries
      */
-    async findOrphanedEntries(options: CleanupOrphanedEntriesOptions = {}): Promise<OrphanedKeyValueEntry[]> {
+    async findOrphanedEntries(
+        options: CleanupOrphanedSettingsStoreEntriesOptions = {},
+    ): Promise<OrphanedSettingsStoreEntry[]> {
         const { olderThan = '7d', maxDeleteCount = 1000 } = options;
 
         // Parse duration to get cutoff date
         const cutoffDate = this.parseDuration(olderThan);
 
         const qb = this.connection.rawConnection
-            .getRepository(KeyValueEntry)
+            .getRepository(SettingsStoreEntry)
             .createQueryBuilder('entry')
             .where('entry.updatedAt < :cutoffDate', { cutoffDate })
             .orderBy('entry.updatedAt', 'ASC')
             .limit(maxDeleteCount);
 
         const allEntries = await qb.getMany();
-        const orphanedEntries: OrphanedKeyValueEntry[] = [];
+        const orphanedEntries: OrphanedSettingsStoreEntry[] = [];
 
         // Check each entry against registered fields
         for (const entry of allEntries) {
@@ -359,14 +361,14 @@ export class KeyValueService implements OnModuleInit {
 
     /**
      * @description
-     * Clean up orphaned key-value entries from the database.
+     * Clean up orphaned settings store entries from the database.
      *
      * @param options - Options for the cleanup operation
      * @returns Result of the cleanup operation
      */
     async cleanupOrphanedEntries(
-        options: CleanupOrphanedEntriesOptions = {},
-    ): Promise<CleanupOrphanedEntriesResult> {
+        options: CleanupOrphanedSettingsStoreEntriesOptions = {},
+    ): Promise<CleanupOrphanedSettingsStoreEntriesResult> {
         const { dryRun = false, batchSize = 100, maxDeleteCount = 1000 } = options;
 
         // Find orphaned entries first
@@ -381,7 +383,7 @@ export class KeyValueService implements OnModuleInit {
         }
 
         let totalDeleted = 0;
-        const sampleDeletedEntries: OrphanedKeyValueEntry[] = [];
+        const sampleDeletedEntries: OrphanedSettingsStoreEntry[] = [];
 
         // Delete in batches
         for (let i = 0; i < orphanedEntries.length && totalDeleted < maxDeleteCount; i += batchSize) {
@@ -390,7 +392,7 @@ export class KeyValueService implements OnModuleInit {
             // Extract keys and scopes for deletion
             const conditions = batch.map(entry => ({ key: entry.key, scope: entry.scope }));
 
-            await this.connection.rawConnection.getRepository(KeyValueEntry).delete(conditions);
+            await this.connection.rawConnection.getRepository(SettingsStoreEntry).delete(conditions);
 
             totalDeleted += batch.length;
 
@@ -399,10 +401,10 @@ export class KeyValueService implements OnModuleInit {
                 sampleDeletedEntries.push(...batch.slice(0, 10));
             }
 
-            Logger.verbose(`Deleted batch of ${batch.length} orphaned key-value entries`);
+            Logger.verbose(`Deleted batch of ${batch.length} orphaned settings store entries`);
         }
 
-        Logger.info(`Cleanup completed: deleted ${totalDeleted} orphaned key-value entries`);
+        Logger.info(`Cleanup completed: deleted ${totalDeleted} orphaned settings store entries`);
 
         return {
             deletedCount: totalDeleted,
@@ -437,7 +439,7 @@ export class KeyValueService implements OnModuleInit {
      * @description
      * Check if the current user has permission to access a field.
      */
-    private hasPermission(ctx: RequestContext, fieldConfig: KeyValueFieldConfig): boolean {
+    private hasPermission(ctx: RequestContext, fieldConfig: SettingsStoreFieldConfig): boolean {
         // Admin API: check required permissions
         const requiredPermissions = fieldConfig.requiresPermission;
         if (requiredPermissions) {
