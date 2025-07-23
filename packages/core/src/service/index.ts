@@ -21,6 +21,7 @@ export * from './helpers/payment-state-machine/payment-state';
 export * from './helpers/product-price-applicator/product-price-applicator';
 export * from './helpers/refund-state-machine/refund-state';
 export * from './helpers/request-context/request-context.service';
+export * from './helpers/settings-store/settings-store.service';
 export * from './helpers/translatable-saver/translatable-saver';
 export * from './helpers/translator/translator.service';
 export * from './helpers/utils/order-utils';

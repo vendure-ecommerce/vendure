@@ -48,6 +48,7 @@ export * from './seller/seller.entity';
 export * from './session/anonymous-session.entity';
 export * from './session/authenticated-session.entity';
 export * from './session/session.entity';
+export * from './settings-store-entry/settings-store-entry.entity';
 export * from './shipping-line/shipping-line.entity';
 export * from './shipping-method/shipping-method.entity';
 export * from './stock-level/stock-level.entity';

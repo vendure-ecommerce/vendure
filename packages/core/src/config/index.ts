@@ -82,6 +82,8 @@ export * from './session-cache/default-session-cache-strategy';
 export * from './session-cache/in-memory-session-cache-strategy';
 export * from './session-cache/noop-session-cache-strategy';
 export * from './session-cache/session-cache-strategy';
+export * from './settings-store/clean-orphaned-settings-store-task';
+export * from './settings-store/settings-store-types';
 export * from './shipping-method/default-shipping-calculator';
 export * from './shipping-method/default-shipping-eligibility-checker';
 export * from './shipping-method/default-shipping-line-assignment-strategy';

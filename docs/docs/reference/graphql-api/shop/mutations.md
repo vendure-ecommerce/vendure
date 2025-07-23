@@ -22,6 +22,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## addItemsToOrder
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">addItemsToOrder(inputs: [<a href="/reference/graphql-api/shop/input-types#additeminput">AddItemInput</a>!]!): <a href="/reference/graphql-api/shop/object-types#updatemultipleorderitemsresult">UpdateMultipleOrderItemsResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## addPaymentToOrder
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>

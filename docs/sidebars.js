@@ -86,6 +86,7 @@ const sidebars = {
                 'guides/developer-guide/testing/index',
                 'guides/developer-guide/updating/index',
                 'guides/developer-guide/worker-job-queue/index',
+                'guides/developer-guide/settings-store/index',
                 {
                     type: 'html',
                     value: 'Extend',

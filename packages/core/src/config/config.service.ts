@@ -6,6 +6,7 @@ import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import {
     ApiOptions,
     AssetOptions,
@@ -123,6 +124,10 @@ export class ConfigService implements VendureConfig {
 
     get systemOptions(): Required<SystemOptions> {
         return this.activeConfig.systemOptions;
+    }
+
+    get settingsStoreFields(): SettingsStoreFields {
+        return this.activeConfig.settingsStoreFields ?? {};
     }
 
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
