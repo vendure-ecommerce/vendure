@@ -403,7 +403,9 @@ export async function findVendurePluginFiles({
         path.join(outputPath, '**/*.js'),
         // Node modules patterns
         ...packageGlobs.map(pattern => path.join(nodeModulesRoot, pattern)),
-    ];
+    ]
+        .map(glob.convertPathToPattern)
+        .map(p => p.replace(/\\/g, '/'));
 
     logger.debug(`Finding Vendure plugins using patterns: ${patterns.join('\n')}`);
 
