@@ -76,7 +76,7 @@ export type VitePluginVendureDashboardOptions = {
      * @description
      * The path to the directory where the generated GraphQL Tada files will be output.
      */
-    gqlTadaOutputPath?: string;
+    gqlOutputPath?: string;
     tempCompilationDir?: string;
     disableTansStackRouterPlugin?: boolean;
     /**
@@ -134,8 +134,8 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin(),
         uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
-        ...(options.gqlTadaOutputPath
-            ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]
+        ...(options.gqlOutputPath
+            ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlOutputPath, tempDir, packageRoot })]
             : []),
         transformIndexHtmlPlugin(),
     ];

@@ -59,7 +59,7 @@ export default defineConfig({
             // be introspected and the types will be generated in this location.
             // These types can be used in your dashboard extensions to provide
             // type safety when writing queries and mutations.
-            gqlTadaOutputPath: './src/gql',
+            gqlOutputPath: './src/gql',
         }),
     ],
     resolve: {
