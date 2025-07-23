@@ -100,8 +100,8 @@ jobs:
             - name: Copy files (Windows)
               if: runner.os == 'Windows'
               shell: cmd
-              working-directory: $HOME/install/test-app
               run: |
+                  cd %HOME%\install\test-app
                   mkdir src\plugins\test-plugin 2> NUL
                   xcopy /Y /I "%GITHUB_WORKSPACE%\.github\workflows\scripts\vite.config.mts" "."
                   xcopy /Y /I /E "%GITHUB_WORKSPACE%\.github\workflows\scripts\test-plugin\*" "src\plugins\test-plugin\"
@@ -109,16 +109,17 @@ jobs:
             - name: Copy files (Unix)
               if: runner.os != 'Windows'
               shell: bash
-              working-directory: $HOME/install/test-app
               run: |
+                  cd $HOME/install/test-app
                   mkdir -p src/plugins/test-plugin
                   cp "$GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" ./vite.config.mts
                   cp -r "$GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/." src/plugins/test-plugin/
                   cp "$GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" ./setup-test-plugin.js
             - name: Run setup script
               shell: bash
-              working-directory: $HOME/install/test-app
-              run: node setup-test-plugin.js
+              run: |
+                  cd $HOME/install/test-app
+                  node setup-test-plugin.js
             - name: Install Playwright
               run: |
                   cd $GITHUB_WORKSPACE
