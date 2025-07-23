@@ -11,7 +11,7 @@ export default defineConfig({
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
             adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
-            gqlTadaOutputPath: './src/gql',
+            gqlOutputPath: './src/gql',
         }),
     ],
     resolve: {

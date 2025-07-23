@@ -9,8 +9,7 @@ export default defineConfig({
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./dev-config.ts'),
             adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
-            gqlTadaOutputPath: path.resolve(__dirname, './graphql/'),
-            pluginScanPatterns: ['*vendure*'],
+            gqlOutputPath: path.resolve(__dirname, './graphql/'),
         }) as any,
     ],
 });
