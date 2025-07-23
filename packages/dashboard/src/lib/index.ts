@@ -105,7 +105,6 @@ export * from './components/ui/accordion.js';
 export * from './components/ui/alert-dialog.js';
 export * from './components/ui/alert.js';
 export * from './components/ui/aspect-ratio.js';
-export * from './components/ui/avatar.js';
 export * from './components/ui/badge.js';
 export * from './components/ui/breadcrumb.js';
 export * from './components/ui/button.js';
