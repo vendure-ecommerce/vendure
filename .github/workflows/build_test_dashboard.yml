@@ -99,16 +99,15 @@ jobs:
                   npm install @vendure/dashboard@ci --registry=http://localhost:4873
             - name: Copy files (Windows)
               if: runner.os == 'Windows'
-              shell: cmd
+              shell: pwsh
               run: |
-                  cd %HOME%\install\test-app
-                  mkdir src\plugins\test-plugin 2> NUL
-                  xcopy /Y /I "%GITHUB_WORKSPACE%\.github\workflows\scripts\vite.config.mts" "."
-                  xcopy /Y /I /E "%GITHUB_WORKSPACE%\.github\workflows\scripts\test-plugin\*" "src\plugins\test-plugin\"
-                  xcopy /Y /I "%GITHUB_WORKSPACE%\.github\workflows\scripts\setup-test-plugin.js" "."
-            - name: Copy files (Unix)
+                  cd $env:HOME/install/test-app
+                  New-Item -ItemType Directory -Force -Path src/plugins/test-plugin
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" -Destination "./vite.config.mts"
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/*" -Destination "src/plugins/test-plugin/" -Recurse -Force
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" -Destination "./setup-test-plugin.js"
+            - name: Copy files (Unix)  
               if: runner.os != 'Windows'
-              shell: bash
               run: |
                   cd $HOME/install/test-app
                   mkdir -p src/plugins/test-plugin
