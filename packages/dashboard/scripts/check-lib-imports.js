@@ -8,15 +8,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Normalize paths to ensure cross-platform compatibility
+const normalizePath = p => path.normalize(p);
+
 // Check if we're running from the dashboard directory or root directory
-const currentDir = process.cwd();
-const isDashboardDir = currentDir.endsWith('packages/dashboard');
+const currentDir = normalizePath(process.cwd());
+const isDashboardDir = currentDir.endsWith(normalizePath('packages/dashboard'));
 const HOOKS_DIR = isDashboardDir
-    ? path.join(__dirname, '../src/lib/hooks')
-    : path.join(currentDir, 'packages/dashboard/src/lib/hooks');
+    ? normalizePath(path.join(__dirname, '../src/lib/hooks'))
+    : normalizePath(path.join(currentDir, 'packages/dashboard/src/lib/hooks'));
 const DASHBOARD_SRC_DIR = isDashboardDir
-    ? path.join(__dirname, '../src')
-    : path.join(currentDir, 'packages/dashboard/src');
+    ? normalizePath(path.join(__dirname, '../src'))
+    : normalizePath(path.join(currentDir, 'packages/dashboard/src'));
 
 // Required prefix for imports in hook files
 const REQUIRED_PREFIX = '@/vdb';
@@ -26,12 +29,10 @@ const BANNED_IMPORT = '@/vdb/index.js';
 function findHookFiles(dir) {
     const files = [];
 
-    // Since we're now looking directly in the hooks directory,
-    // we can just get all .ts and .tsx files that start with 'use-'
     const items = fs.readdirSync(dir);
 
     for (const item of items) {
-        const fullPath = path.join(dir, item);
+        const fullPath = normalizePath(path.join(dir, item));
         const stat = fs.statSync(fullPath);
 
         if (stat.isFile() && item.startsWith('use-') && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
@@ -49,11 +50,10 @@ function findDashboardFiles(dir) {
         const items = fs.readdirSync(currentDir);
 
         for (const item of items) {
-            const fullPath = path.join(currentDir, item);
+            const fullPath = normalizePath(path.join(currentDir, item));
             const stat = fs.statSync(fullPath);
 
             if (stat.isDirectory()) {
-                // Skip node_modules and other common directories to avoid
                 if (!['node_modules', '.git', 'dist', 'build', '.next'].includes(item)) {
                     scanDirectory(fullPath);
                 }
@@ -76,9 +76,7 @@ function checkFileForBadImports(filePath) {
         const line = lines[i];
         const trimmedLine = line.trim();
 
-        // Check for import statements
         if (trimmedLine.startsWith('import')) {
-            // Check for relative imports that go up directories (../)
             if (trimmedLine.includes('../')) {
                 badImports.push({
                     line: i + 1,
@@ -87,7 +85,6 @@ function checkFileForBadImports(filePath) {
                 });
             }
 
-            // Check for @/ imports that don't start with @/vdb
             if (trimmedLine.includes('@/') && !trimmedLine.includes(REQUIRED_PREFIX)) {
                 badImports.push({
                     line: i + 1,
@@ -110,7 +107,6 @@ function checkFileForBannedImports(filePath) {
         const line = lines[i];
         const trimmedLine = line.trim();
 
-        // Check for import statements
         if (trimmedLine.startsWith('import') && trimmedLine.includes(BANNED_IMPORT)) {
             badImports.push({
                 line: i + 1,
@@ -126,7 +122,6 @@ function checkFileForBannedImports(filePath) {
 function main() {
     console.log('🔍 Checking for import patterns in the dashboard app...\n');
 
-    // Check hook files
     console.log('📁 Checking hook files (use-*.ts/tsx) in src/lib/hooks directory...');
     console.log('✅ Hook file requirements:');
     console.log(`   - All imports must start with ${REQUIRED_PREFIX}`);
@@ -144,7 +139,7 @@ function main() {
     let totalBadImports = 0;
 
     for (const file of hookFiles) {
-        const relativePath = path.relative(process.cwd(), file);
+        const relativePath = normalizePath(path.relative(process.cwd(), file));
         const badImports = checkFileForBadImports(file);
 
         if (badImports.length > 0) {
@@ -170,7 +165,6 @@ function main() {
         console.log(`🎉 All imports in hook files are using ${REQUIRED_PREFIX} prefix`);
     }
 
-    // Check all dashboard files for banned imports
     console.log('\n📁 Checking all dashboard files for banned imports...');
     console.log('✅ Dashboard-wide requirements:');
     console.log(`   - Import from '${BANNED_IMPORT}' is not allowed anywhere`);
@@ -186,7 +180,7 @@ function main() {
     let totalBannedImports = 0;
 
     for (const file of dashboardFiles) {
-        const relativePath = path.relative(process.cwd(), file);
+        const relativePath = normalizePath(path.relative(process.cwd(), file));
         const bannedImports = checkFileForBannedImports(file);
 
         if (bannedImports.length > 0) {
@@ -212,7 +206,6 @@ function main() {
         console.log(`🎉 All dashboard files are free of banned imports`);
     }
 
-    // Exit with error if any issues found
     if (hasBadImports || hasBannedImports) {
         process.exit(1);
     }
