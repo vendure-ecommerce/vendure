@@ -34,13 +34,11 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 Contributions to Vendure are welcome and highly appreciated! Whether you're fixing bugs, adding features, or improving documentation, your help makes Vendure better for everyone.
 
-**[Contribution Guidelines](./CONTRIBUTING.md)** ::: fill this up with some thing meaningful :::
+**[Contribution Guidelines](./CONTRIBUTING.md)** - This is complete guide covering everything from setting up your development environment to submitting your first pull request
 
 **Ready to get started?**
 
-- Check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22contributions%20welcome%22) for good first issues
-
-- Our Contributing Guide covers everything you need: development setup, workflow, testing, and coding standards
+ Check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22contributions%20welcome%22) for good first issues
 
 We're here to help if you have questions, and we're excited to see what you'll build with Vendure!
 
