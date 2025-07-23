@@ -1,0 +1,24 @@
+/**
+ * Typography styles
+ * Font families, sizes, and typography-related styles
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Public+Sans:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
+
+:root {
+    /* Font families */
+    --ifm-font-family-base: 'Public Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    --ifm-heading-font-family: 'Public Sans', 'Plus Jakarta Sans', var(--ifm-font-family-base);
+    --ifm-heading-font-weight: 700;
+    --ifm-font-family-monospace:
+        'Geist Mono', SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+    /* Font sizes */
+    --ifm-code-font-size: 95%;
+
+    --ifm-heading-font-weight: 600;
+}
+
+.markdown h2:not(:first-of-type) {
+    --ifm-h2-vertical-rhythm-top: 5;
+}
