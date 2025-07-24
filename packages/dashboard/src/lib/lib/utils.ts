@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -61,15 +61,17 @@ export function normalizeString(input: string, spaceReplacer = ' '): string {
 
 /**
  * Removes any readonly custom fields from form values before submission.
+ * Also removes localeString and localeText fields from the root customFields object
+ * since they should only exist in the translations array.
  * This prevents errors when submitting readonly custom field values to mutations.
  *
  * @param values - The form values that may contain custom fields
  * @param customFieldConfigs - Array of custom field configurations for the entity
- * @returns The values with readonly custom fields removed
+ * @returns The values with readonly custom fields removed and locale fields properly placed
  */
-export function removeReadonlyCustomFields<T extends Record<string, any>>(
+export function removeReadonlyAndLocalizedCustomFields<T extends Record<string, any>>(
     values: T,
-    customFieldConfigs: Array<{ name: string; readonly?: boolean | null }> = [],
+    customFieldConfigs: Array<{ name: string; readonly?: boolean | null; type?: string }> = [],
 ): T {
     if (!values || !customFieldConfigs?.length) {
         return values;
@@ -83,18 +85,22 @@ export function removeReadonlyCustomFields<T extends Record<string, any>>(
         .filter(config => config.readonly === true)
         .map(config => config.name);
 
-    if (readonlyFieldNames.length === 0) {
-        return result;
-    }
+    // Get locale-specific field names (localeString and localeText)
+    const localeFieldNames = customFieldConfigs
+        .filter(config => config.type === 'localeString' || config.type === 'localeText')
+        .map(config => config.name);
 
-    // Remove readonly fields from main customFields
+    // Combine both types of fields to remove from root customFields
+    const fieldsToRemoveFromRoot = [...readonlyFieldNames, ...localeFieldNames];
+
+    // Remove readonly and locale fields from main customFields
     if (result.customFields && typeof result.customFields === 'object') {
-        for (const fieldName of readonlyFieldNames) {
+        for (const fieldName of fieldsToRemoveFromRoot) {
             delete result.customFields[fieldName];
         }
     }
 
-    // Remove readonly fields from translations customFields
+    // Remove readonly fields from translations customFields (but keep locale fields there)
     if (Array.isArray(result.translations)) {
         for (const translation of result.translations) {
             if (translation?.customFields && typeof translation.customFields === 'object') {
