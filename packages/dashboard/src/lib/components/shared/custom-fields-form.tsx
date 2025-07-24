@@ -1,3 +1,5 @@
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
 import {
     FormControl,
     FormDescription,
@@ -8,20 +10,18 @@ import {
 } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
-import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
-import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useLingui } from '@/vdb/lib/trans.js';
 import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
+import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
 import { Control, ControllerRenderProps } from 'react-hook-form';
 import { Switch } from '../ui/switch.js';
 import { TranslatableFormField } from './translatable-form-field.js';
-import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 
 type CustomFieldConfig = ResultOf<typeof customFieldConfigFragment>;
 
@@ -270,6 +270,7 @@ function FormInputForType({
                         options={options}
                         disabled={isReadonly}
                         nullable={fieldDef.nullable ?? true}
+                        isListField={fieldDef.list ?? false}
                     />
                 );
             }
@@ -282,10 +283,13 @@ function FormInputForType({
             const min = isFloat ? numericFieldDef.floatMin : numericFieldDef.intMin;
             const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
             const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
-            
+
             // Set min value as default if field is empty and min exists
             React.useEffect(() => {
-                if (min !== undefined && (field.value === undefined || field.value === null || field.value === '')) {
+                if (
+                    min !== undefined &&
+                    (field.value === undefined || field.value === null || field.value === '')
+                ) {
                     field.onChange(min);
                 }
             }, [field.value, min, field.onChange]);
@@ -312,24 +316,27 @@ function FormInputForType({
             const min = datetimeFieldDef.datetimeMin;
             const max = datetimeFieldDef.datetimeMax;
             const step = datetimeFieldDef.datetimeStep;
-            
+
             // Set min value as default if field is empty and min exists
             React.useEffect(() => {
-                if (min !== undefined && (field.value === undefined || field.value === null || field.value === '')) {
+                if (
+                    min !== undefined &&
+                    (field.value === undefined || field.value === null || field.value === '')
+                ) {
                     field.onChange(new Date(min));
                 }
             }, [field.value, min, field.onChange]);
-            
+
             if (isReadonly) {
                 // For readonly datetime fields, display as formatted text
                 const dateValue = field.value ? new Date(field.value).toLocaleString() : '';
                 return <Input value={dateValue} disabled readOnly />;
             }
-            
+
             return (
                 <DateTimeInput
                     value={field.value}
-                    onChange={(date) => {
+                    onChange={date => {
                         // Validate against min/max constraints
                         let validatedDate = date;
                         if (min && date < new Date(min)) {

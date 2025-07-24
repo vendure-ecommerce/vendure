@@ -4,6 +4,7 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { StringFieldOption } from '@vendure/common/lib/generated-types';
 import React from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
+import { MultiSelect } from '../shared/multi-select.js';
 
 export interface SelectWithOptionsProps {
     field: ControllerRenderProps<any, any>;
@@ -11,13 +12,13 @@ export interface SelectWithOptionsProps {
     disabled?: boolean;
     placeholder?: React.ReactNode;
     nullable?: boolean;
+    isListField?: boolean;
 }
 
 /**
  * @description
  * A select component that renders options from custom field configuration.
  * It automatically handles localization of option labels based on user settings.
- * For non-nullable fields, it ensures the first option is selected by default if no value is set.
  *
  * @since 3.3.0
  */
@@ -26,7 +27,7 @@ export function SelectWithOptions({
     options,
     disabled,
     placeholder,
-    nullable = true,
+    isListField = false,
 }: SelectWithOptionsProps) {
     const {
         settings: { displayLanguage },
@@ -38,19 +39,37 @@ export function SelectWithOptions({
         return translation?.value ?? label[0]?.value ?? '';
     };
 
-    // For non-nullable fields, ensure we have a valid value
-    // If field value is empty and field is not nullable, set the first option as default
-    React.useEffect(() => {
-        if (!nullable && (!field.value || field.value === '') && options.length > 0) {
-            field.onChange(options[0].value);
-        }
-    }, [field.value, options, nullable, field.onChange]);
+    // Convert options to MultiSelect format
+    const multiSelectItems = options.map(option => ({
+        value: option.value,
+        label: option.label ? getTranslation(option.label) : option.value,
+    }));
 
-    // Determine the current value to display
-    const currentValue = field.value || '';
+    // For list fields, use MultiSelect component
+    if (isListField) {
+        return (
+            <MultiSelect
+                multiple={true}
+                value={field.value || []}
+                onChange={field.onChange}
+                items={multiSelectItems}
+                placeholder={placeholder ? String(placeholder) : 'Select options'}
+                className={disabled ? 'opacity-50 pointer-events-none' : ''}
+            />
+        );
+    }
+
+    // For single fields, use regular Select
+    const currentValue = field.value ?? '';
+
+    const handleValueChange = (value: string) => {
+        if (value) {
+            field.onChange(value);
+        }
+    };
 
     return (
-        <Select value={currentValue} onValueChange={field.onChange} disabled={disabled}>
+        <Select value={currentValue ?? undefined} onValueChange={handleValueChange} disabled={disabled}>
             <SelectTrigger>
                 <SelectValue placeholder={placeholder || <Trans>Select an option</Trans>} />
             </SelectTrigger>
