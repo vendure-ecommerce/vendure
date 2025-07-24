@@ -1932,6 +1932,7 @@ export class OrderService {
                 'lines',
                 'lines.productVariant',
                 'lines.productVariant.productVariantPrices',
+                'lines.featuredAsset',
                 'shippingLines',
                 'surcharges',
                 'customer',
