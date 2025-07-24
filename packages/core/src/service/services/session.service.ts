@@ -20,7 +20,6 @@ import { User } from '../../entity/user/user.entity';
 import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
-import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 
 import { OrderService } from './order.service';
 
@@ -126,7 +125,9 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 invalidated: false,
             }),
         );
-        await this.withTimeout(this.sessionCacheStrategy.set(this.serializeSession(authenticatedSession)));
+        await this.withTimeout(
+            this.sessionCacheStrategy.set(await this.serializeSession(authenticatedSession)),
+        );
         return authenticatedSession;
     }
 
@@ -144,7 +145,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         });
         // save the new session
         const newSession = await this.connection.rawConnection.getRepository(AnonymousSession).save(session);
-        const serializedSession = this.serializeSession(newSession);
+        const serializedSession = await this.serializeSession(newSession);
         await this.withTimeout(this.sessionCacheStrategy.set(serializedSession));
         return serializedSession;
     }
@@ -160,7 +161,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         if (!serializedSession || stale || expired) {
             const session = await this.findSessionByToken(sessionToken);
             if (session) {
-                serializedSession = this.serializeSession(session);
+                serializedSession = await this.serializeSession(session);
                 await this.withTimeout(this.sessionCacheStrategy.set(serializedSession));
                 return serializedSession;
             } else {
@@ -174,7 +175,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * @description
      * Serializes a {@link Session} instance into a simplified plain object suitable for caching.
      */
-    serializeSession(session: AuthenticatedSession | AnonymousSession): CachedSession {
+    async serializeSession(session: AuthenticatedSession | AnonymousSession): Promise<CachedSession> {
         const { sessionCacheTTL } = this.configService.authOptions;
         const sessionCacheTTLSeconds =
             typeof sessionCacheTTL === 'string' ? ms(sessionCacheTTL) / 1000 : sessionCacheTTL;
@@ -195,7 +196,10 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 id: user.id,
                 identifier: user.identifier,
                 verified: user.verified,
-                channelPermissions: getUserChannelsPermissions(user),
+                channelPermissions:
+                    await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
+                        user,
+                    ),
             };
         }
         return serializedSession;
@@ -250,7 +254,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         if (session) {
             session.activeOrder = order;
             await this.connection.getRepository(ctx, Session).save(session, { reload: false });
-            const updatedSerializedSession = this.serializeSession(session);
+            const updatedSerializedSession = await this.serializeSession(session);
             await this.withTimeout(this.sessionCacheStrategy.set(updatedSerializedSession));
             return updatedSerializedSession;
         }
@@ -270,7 +274,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
             if (session) {
                 session.activeOrder = null;
                 await this.connection.getRepository(ctx, Session).save(session);
-                const updatedSerializedSession = this.serializeSession(session);
+                const updatedSerializedSession = await this.serializeSession(session);
                 await this.configService.authOptions.sessionCacheStrategy.set(updatedSerializedSession);
                 return updatedSerializedSession;
             }
@@ -290,7 +294,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         if (session) {
             session.activeChannel = channel;
             await this.connection.rawConnection.getRepository(Session).save(session, { reload: false });
-            const updatedSerializedSession = this.serializeSession(session);
+            const updatedSerializedSession = await this.serializeSession(session);
             await this.withTimeout(this.sessionCacheStrategy.set(updatedSerializedSession));
             return updatedSerializedSession;
         }
