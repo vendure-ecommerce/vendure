@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
+    EntityHydrator,
     EventBus,
     Injector,
     JobQueueService,
@@ -68,7 +69,14 @@ describe('EmailPlugin', () => {
                 }),
             ],
             providers: [MockService],
-        }).compile();
+        })
+            .overrideProvider(EntityHydrator)
+            .useValue({
+                hydrate() {
+                    // noop
+                },
+            })
+            .compile();
 
         Logger.useLogger(testingLogger);
         module.useLogger(new Logger());
