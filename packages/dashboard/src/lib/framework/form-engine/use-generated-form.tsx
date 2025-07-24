@@ -17,6 +17,7 @@ export interface GeneratedFormOptions<
     document?: T;
     varName?: VarName;
     entity: E | null | undefined;
+    customFieldConfig?: any[]; // Add custom field config for validation
     setValues: (
         entity: NonNullable<E>,
     ) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
@@ -37,11 +38,13 @@ export function useGeneratedForm<
     VarName extends keyof VariablesOf<T> | undefined,
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
-    const { document, entity, setValues, onSubmit, varName } = options;
+    const { document, entity, setValues, onSubmit, varName, customFieldConfig } = options;
     const { activeChannel } = useChannel();
-    const availableLanguages = useServerConfig()?.availableLanguages || [];
+    const serverConfig = useServerConfig();
+    const availableLanguages = serverConfig?.availableLanguages || [];
     const updateFields = document ? getOperationVariablesFields(document, varName) : [];
-    const schema = createFormSchemaFromFields(updateFields);
+
+    const schema = createFormSchemaFromFields(updateFields, customFieldConfig);
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
 
@@ -53,7 +56,7 @@ export function useGeneratedForm<
             }
             return result;
         },
-        mode: 'onChange',
+        mode: 'onSubmit',
         defaultValues,
         values: processedEntity
             ? transformRelationFields(updateFields, setValues(processedEntity))
@@ -63,7 +66,18 @@ export function useGeneratedForm<
         event.preventDefault();
     };
     if (onSubmit) {
-        submitHandler = (event: FormEvent) => {
+        submitHandler = async (event: FormEvent) => {
+            event.preventDefault();
+
+            // Trigger validation on ALL fields, not just dirty ones
+            const isValid = await form.trigger();
+
+            if (!isValid) {
+                console.log(`Form invalid!`);
+                event.stopPropagation();
+                return;
+            }
+
             const onSubmitWrapper = (values: any) => {
                 onSubmit(removeEmptyIdFields(values, updateFields));
             };

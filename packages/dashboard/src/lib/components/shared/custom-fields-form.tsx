@@ -274,6 +274,7 @@ function FormInputForType({
                     />
                 );
             }
+
             return <Input {...field} disabled={isReadonly} />;
         }
         case 'float':
@@ -287,10 +288,10 @@ function FormInputForType({
             return (
                 <Input
                     type="number"
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={e => {
                         const value = e.target.valueAsNumber;
-                        field.onChange(value);
+                        field.onChange(isNaN(value) ? undefined : value);
                     }}
                     disabled={isReadonly}
                     min={min}
@@ -306,23 +307,7 @@ function FormInputForType({
             const min = datetimeFieldDef.datetimeMin;
             const max = datetimeFieldDef.datetimeMax;
 
-            return (
-                <DateTimeInput
-                    value={field.value}
-                    onChange={date => {
-                        // Validate against min/max constraints
-                        let validatedDate = date;
-                        if (min && date < new Date(min)) {
-                            validatedDate = new Date(min);
-                        }
-                        if (max && date > new Date(max)) {
-                            validatedDate = new Date(max);
-                        }
-                        field.onChange(validatedDate);
-                    }}
-                    disabled={isReadonly}
-                />
-            );
+            return <DateTimeInput value={field.value} onChange={field.onChange} disabled={isReadonly} />;
         }
         case 'relation':
             if (fieldDef.list) {

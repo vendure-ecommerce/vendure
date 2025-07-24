@@ -307,6 +307,7 @@ export function useDetailPage<
         document,
         varName: 'input',
         entity,
+        customFieldConfig,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
             const filteredValues = removeReadonlyAndLocalizedCustomFields(values, customFieldConfig || []);
