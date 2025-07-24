@@ -143,7 +143,7 @@ function validateStringField(
     const options = (config as StringCustomFieldConfig).options;
     if (options) {
         const validOptions = options.map(o => o.value);
-        if (value === null && (config as StringCustomFieldConfig).nullable === true) {
+        if (value === null && (config as StringCustomFieldConfig).nullable !== false) {
             return;
         }
         if (!validOptions.includes(value)) {
@@ -165,6 +165,7 @@ function validateNumberField(config: IntCustomFieldConfig | FloatCustomFieldConf
         throw new UserInputError('error.field-invalid-number-range-max', { name: config.name, value, max });
     }
 }
+
 function validateDateTimeField(config: DateTimeCustomFieldConfig, value: string): void {
     const { min, max } = config;
     const valueDate = new Date(value);

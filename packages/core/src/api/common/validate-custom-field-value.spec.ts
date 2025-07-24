@@ -3,8 +3,8 @@ import { fail } from 'assert';
 import { describe, expect, it } from 'vitest';
 
 import { Injector } from '../../common/injector';
-import { RequestContext } from './request-context';
 
+import { RequestContext } from './request-context';
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
 describe('validateCustomFieldValue()', () => {
@@ -48,7 +48,7 @@ describe('validateCustomFieldValue()', () => {
     });
 
     describe('string options', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -69,6 +69,28 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate('SMALL'), 'error.field-invalid-string-option');
             await assertThrowsError(validate(''), 'error.field-invalid-string-option');
             await assertThrowsError(validate('bad'), 'error.field-invalid-string-option');
+        });
+
+        it('allows null for a nullable field', () => {
+            expect(validate(null)).not.toThrow();
+        });
+
+        it('throws on null for non-nullable field', async () => {
+            await assertThrowsError(
+                () =>
+                    validateCustomFieldValue(
+                        {
+                            name: 'test',
+                            type: 'string',
+                            nullable: false,
+                            options: [{ value: 'small' }, { value: 'large' }],
+                        },
+                        null,
+                        injector,
+                        ctx,
+                    ),
+                'error.field-invalid-non-nullable',
+            );
         });
     });
 
