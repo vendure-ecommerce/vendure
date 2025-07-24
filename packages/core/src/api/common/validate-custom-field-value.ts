@@ -130,7 +130,7 @@ function validateStringField(
     value: string,
 ): void {
     const { pattern } = config;
-    if (pattern) {
+    if (pattern && value != null) {
         const re = new RegExp(pattern);
         if (!re.test(value)) {
             throw new UserInputError('error.field-invalid-string-pattern', {
@@ -158,10 +158,10 @@ function validateStringField(
 
 function validateNumberField(config: IntCustomFieldConfig | FloatCustomFieldConfig, value: number): void {
     const { min, max } = config;
-    if (min != null && value < min) {
+    if (min != null && value != null && value < min) {
         throw new UserInputError('error.field-invalid-number-range-min', { name: config.name, value, min });
     }
-    if (max != null && max < value) {
+    if (max != null && value != null && max < value) {
         throw new UserInputError('error.field-invalid-number-range-max', { name: config.name, value, max });
     }
 }
@@ -169,14 +169,14 @@ function validateNumberField(config: IntCustomFieldConfig | FloatCustomFieldConf
 function validateDateTimeField(config: DateTimeCustomFieldConfig, value: string): void {
     const { min, max } = config;
     const valueDate = new Date(value);
-    if (min != null && valueDate < new Date(min)) {
+    if (min != null && value != null && valueDate < new Date(min)) {
         throw new UserInputError('error.field-invalid-datetime-range-min', {
             name: config.name,
             value: valueDate.toISOString(),
             min,
         });
     }
-    if (max != null && new Date(max) < valueDate) {
+    if (max != null && value != null && new Date(max) < valueDate) {
         throw new UserInputError('error.field-invalid-datetime-range-max', {
             name: config.name,
             value: valueDate.toISOString(),

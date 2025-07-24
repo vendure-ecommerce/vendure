@@ -22,7 +22,7 @@ describe('validateCustomFieldValue()', () => {
     const ctx = RequestContext.empty();
 
     describe('string & localeString', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -44,6 +44,10 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate(''), 'error.field-invalid-string-pattern');
             await assertThrowsError(validate('foo'), 'error.field-invalid-string-pattern');
             await assertThrowsError(validate(' 1foo'), 'error.field-invalid-string-pattern');
+        });
+
+        it('allows null for nullable field with pattern', async () => {
+            expect(validate(null)).not.toThrow();
         });
     });
 
@@ -95,7 +99,7 @@ describe('validateCustomFieldValue()', () => {
     });
 
     describe('int & float', () => {
-        const validate = (value: number) => () =>
+        const validate = (value: number | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -119,10 +123,14 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate(11), 'error.field-invalid-number-range-max');
             await assertThrowsError(validate(-7), 'error.field-invalid-number-range-min');
         });
+
+        it('allows null for nullable field', async () => {
+            expect(validate(null)).not.toThrow();
+        });
     });
 
     describe('datetime', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -150,6 +158,10 @@ describe('validateCustomFieldValue()', () => {
                 validate('2019-06-01T08:30:00.100'),
                 'error.field-invalid-datetime-range-max',
             );
+        });
+
+        it('allows null for nullable field', async () => {
+            expect(validate(null)).not.toThrow();
         });
     });
 
