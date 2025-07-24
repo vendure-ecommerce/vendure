@@ -148,6 +148,15 @@ async function runDashboardTests() {
             throw new Error('Expected 10 products, but found ' + products.length);
         }
 
+        // Check for the test component from our plugin
+        console.log('Checking for dashboard extensiontest component...');
+        try {
+            await page.waitForSelector('div[data-testid="test-component"]', { timeout: 5000 });
+            console.log('Test component found successfully');
+        } catch (e) {
+            throw new Error('Test component not found - div with data-testid="test-component" is missing');
+        }
+
         console.log('Dashboard tests passed!');
     } catch (error) {
         console.error('Dashboard test failed:', error.message);

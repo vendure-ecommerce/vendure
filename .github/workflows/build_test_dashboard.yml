@@ -41,8 +41,8 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [ubuntu-latest]
-                node-version: [20.x, 22.x, 24.x]
+                os: [ubuntu-latest, windows-latest]
+                node-version: [22.x, 24.x]
             fail-fast: false
         steps:
             - uses: actions/checkout@v4
@@ -86,18 +86,39 @@ jobs:
                   npm publish --no-push --yes --tag ci --registry http://localhost:4873
             - name: Set up new Vendure app
               run: |
-                  mkdir -p $HOME/install
-                  cd $HOME/install
-                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  mkdir -p ~/install
+                  cd ~/install
+                  nohup verdaccio --config ~/.config/verdaccio/config.yaml &
                   wait-on http://localhost:4873
                   npx @vendure/create@latest test-app --ci --use-npm --log-level info
             - name: Install dashboard
               run: |
-                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  nohup verdaccio --config ~/.config/verdaccio/config.yaml &
                   wait-on http://localhost:4873
-                  cd $HOME/install/test-app
+                  cd ~/install/test-app
                   npm install @vendure/dashboard@ci --registry=http://localhost:4873
-                  cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts ./vite.config.mts
+            - name: Copy files (Windows)
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  cd ~/install/test-app
+                  New-Item -ItemType Directory -Force -Path src/plugins/test-plugin
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" -Destination "./vite.config.mts"
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/*" -Destination "src/plugins/test-plugin/" -Recurse -Force
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" -Destination "./setup-test-plugin.js"
+            - name: Copy files (Unix)  
+              if: runner.os != 'Windows'
+              run: |
+                  cd ~/install/test-app
+                  mkdir -p src/plugins/test-plugin
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" ./vite.config.mts
+                  cp -r "$GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/." src/plugins/test-plugin/
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" ./setup-test-plugin.js
+            - name: Run setup script
+              shell: bash
+              run: |
+                  cd ~/install/test-app
+                  node setup-test-plugin.js
             - name: Install Playwright
               run: |
                   cd $GITHUB_WORKSPACE
@@ -106,7 +127,7 @@ jobs:
                   npx playwright install chromium
             - name: Start dashboard and run tests
               run: |
-                  cd $HOME/install/test-app
+                  cd ~/install/test-app
                   # start the dev server in the background
                   npm run dev &
                   DEV_PID=$!

@@ -1,7 +1,7 @@
+import Link from '@docusaurus/Link';
 import Playground from '@site/src/components/Playground';
 import Layout from '@theme/Layout';
 import React from 'react';
-import Link from '@docusaurus/Link';
 
 import styles from './index.module.css';
 
@@ -36,7 +36,10 @@ export default function Home(): JSX.Element {
                 </svg>
                 <h1 className={styles.tagline}>Developer Documentation</h1>
                 <div className={styles.description}>
-                    Build better multichannel commerce experiences faster. Vendure is the headless commerce platform that is built to adapt to your needs. Not the other way round.
+                    Vendure is the headless commerce platform for companies with complex commerce
+                    requirements. Its modular architecture gives you complete control to build exactly what
+                    you need—without compromise—whether scaling B2C, managing B2B workflows, or orchestrating
+                    multi-channel experiences.
                 </div>
             </div>
             <main>

@@ -30,6 +30,7 @@ export async function discoverPlugins({
     // Analyze source files to find local plugins and package imports
     const { localPluginLocations, packageImports } = await analyzeSourceFiles(
         vendureConfigPath,
+        pluginPackageScanner?.nodeModulesRoot ?? guessNodeModulesRoot(vendureConfigPath, logger),
         logger,
         transformTsConfigPathMappings,
     );
@@ -137,6 +138,29 @@ function getDecoratorObjectProps(decorator: any): any[] {
     return [];
 }
 
+async function isSymlinkedLocalPackage(
+    packageName: string,
+    nodeModulesRoot: string,
+): Promise<string | undefined> {
+    try {
+        const packagePath = path.join(nodeModulesRoot, packageName);
+        const stats = await fs.lstat(packagePath);
+        if (stats.isSymbolicLink()) {
+            // Get the real path that the symlink points to
+            const realPath = await fs.realpath(packagePath);
+            // If the real path is within the project directory (i.e. not in some other node_modules),
+            // then it's a local package
+            if (!realPath.includes('node_modules')) {
+                return realPath;
+            }
+        }
+    } catch (e) {
+        // Package doesn't exist or other error - not a local package
+        return undefined;
+    }
+    return undefined;
+}
+
 /**
  * Analyzes TypeScript source files starting from the config file to discover:
  * 1. Local Vendure plugins
@@ -144,6 +168,7 @@ function getDecoratorObjectProps(decorator: any): any[] {
  */
 export async function analyzeSourceFiles(
     vendureConfigPath: string,
+    nodeModulesRoot: string,
     logger: Logger,
     transformTsConfigPathMappings: TransformTsConfigPathMappingsFn,
 ): Promise<{
@@ -186,7 +211,7 @@ export async function analyzeSourceFiles(
             // Track imports to follow
             const importsToFollow: string[] = [];
 
-            function visit(node: ts.Node) {
+            async function visit(node: ts.Node) {
                 // Look for VendurePlugin decorator
                 const vendurePluginClassName = getVendurePluginClassName(node);
                 if (vendurePluginClassName) {
@@ -204,7 +229,20 @@ export async function analyzeSourceFiles(
                         // Track non-local imports (packages)
                         const npmPackageName = getNpmPackageNameFromImport(importPath);
                         if (npmPackageName) {
-                            packageImportsSet.add(npmPackageName);
+                            // Check if this is actually a symlinked local package
+                            const localPackagePath = await isSymlinkedLocalPackage(
+                                npmPackageName,
+                                nodeModulesRoot,
+                            );
+                            if (localPackagePath) {
+                                // If it is local, follow it like a local import
+                                importsToFollow.push(localPackagePath);
+                                logger.debug(
+                                    `Found symlinked local package "${npmPackageName}" at ${localPackagePath}`,
+                                );
+                            } else {
+                                packageImportsSet.add(npmPackageName);
+                            }
                         }
                         // Handle path aliases and local imports
                         const pathAliasImports = getPotentialPathAliasImportPaths(importPath, tsConfigInfo);
@@ -219,10 +257,15 @@ export async function analyzeSourceFiles(
                     }
                 }
 
-                ts.forEachChild(node, visit);
+                // Visit children
+                const promises: Array<Promise<void>> = [];
+                ts.forEachChild(node, child => {
+                    promises.push(visit(child));
+                });
+                await Promise.all(promises);
             }
 
-            visit(sourceFile);
+            await visit(sourceFile);
 
             // Follow imports
             for (const importPath of importsToFollow) {
@@ -232,8 +275,11 @@ export async function analyzeSourceFiles(
                     importPath + '.js',
                     path.join(importPath, 'index.ts'),
                     path.join(importPath, 'index.js'),
+                    importPath,
                 ];
-
+                if (importPath.endsWith('.js')) {
+                    possiblePaths.push(importPath.replace(/.js$/, '.ts'));
+                }
                 // Try each possible path
                 let found = false;
                 for (const possiblePath of possiblePaths) {
@@ -349,19 +395,7 @@ export async function findVendurePluginFiles({
     let nodeModulesRoot = providedNodeModulesRoot;
     const readStart = Date.now();
     if (!nodeModulesRoot) {
-        // If the node_modules root path has not been explicitly
-        // specified, we will try to guess it by resolving the
-        // `@vendure/core` package.
-        try {
-            const coreUrl = import.meta.resolve('@vendure/core');
-            logger.debug(`Found core URL: ${coreUrl}`);
-            const corePath = fileURLToPath(coreUrl);
-            logger.debug(`Found core path: ${corePath}`);
-            nodeModulesRoot = path.join(path.dirname(corePath), '..', '..');
-        } catch (e) {
-            logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
-            nodeModulesRoot = path.dirname(vendureConfigPath);
-        }
+        nodeModulesRoot = guessNodeModulesRoot(vendureConfigPath, logger);
     }
 
     const patterns = [
@@ -369,7 +403,7 @@ export async function findVendurePluginFiles({
         path.join(outputPath, '**/*.js'),
         // Node modules patterns
         ...packageGlobs.map(pattern => path.join(nodeModulesRoot, pattern)),
-    ];
+    ].map(p => p.replace(/\\/g, '/'));
 
     logger.debug(`Finding Vendure plugins using patterns: ${patterns.join('\n')}`);
 
@@ -439,4 +473,22 @@ export async function findVendurePluginFiles({
     );
 
     return potentialPluginFiles;
+}
+
+function guessNodeModulesRoot(vendureConfigPath: string, logger: Logger): string {
+    let nodeModulesRoot: string;
+    // If the node_modules root path has not been explicitly
+    // specified, we will try to guess it by resolving the
+    // `@vendure/core` package.
+    try {
+        const coreUrl = import.meta.resolve('@vendure/core');
+        logger.debug(`Found core URL: ${coreUrl}`);
+        const corePath = fileURLToPath(coreUrl);
+        logger.debug(`Found core path: ${corePath}`);
+        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..');
+    } catch (e) {
+        logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
+        nodeModulesRoot = path.dirname(vendureConfigPath);
+    }
+    return nodeModulesRoot;
 }
