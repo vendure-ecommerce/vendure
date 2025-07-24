@@ -28,9 +28,9 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 - **[Vendure Discord](https://www.vendure.io/community)**: Join our community for support and discussions
 
-## Contributing - For developers?
+## Contributing - For developers
 
-**Want to contribute to vendure?**
+**Want to contribute to Vendure?**
 
 Contributions to Vendure are welcome and highly appreciated! Whether you're fixing bugs, adding features, or improving documentation, your help makes Vendure better for everyone.
 
