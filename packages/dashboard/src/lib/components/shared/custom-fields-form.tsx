@@ -275,15 +275,35 @@ function FormInputForType({
             return <Input {...field} disabled={isReadonly} />;
         }
         case 'float':
-        case 'int':
+        case 'int': {
+            const numericFieldDef = fieldDef as any;
+            const isFloat = fieldDef.type === 'float';
+            const min = isFloat ? numericFieldDef.floatMin : numericFieldDef.intMin;
+            const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
+            const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
+            
+            // Set min value as default if field is empty and min exists
+            React.useEffect(() => {
+                if (min !== undefined && (field.value === undefined || field.value === null || field.value === '')) {
+                    field.onChange(min);
+                }
+            }, [field.value, min, field.onChange]);
+
             return (
                 <Input
                     type="number"
-                    {...field}
+                    value={field.value ?? ''}
+                    onChange={e => {
+                        const value = e.target.valueAsNumber;
+                        field.onChange(isNaN(value) ? undefined : value);
+                    }}
                     disabled={isReadonly}
-                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                    min={min}
+                    max={max}
+                    step={step}
                 />
             );
+        }
         case 'boolean':
             return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
         case 'relation':
