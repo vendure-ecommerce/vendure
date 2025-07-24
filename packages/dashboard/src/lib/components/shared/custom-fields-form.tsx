@@ -8,6 +8,7 @@ import {
 } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
 import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -19,6 +20,7 @@ import React, { useMemo } from 'react';
 import { Control, ControllerRenderProps } from 'react-hook-form';
 import { Switch } from '../ui/switch.js';
 import { TranslatableFormField } from './translatable-form-field.js';
+import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 
 type CustomFieldConfig = ResultOf<typeof customFieldConfigFragment>;
 
@@ -257,8 +259,21 @@ function FormInputForType({
     const isReadonly = fieldDef.readonly ?? false;
 
     switch (fieldDef.type as CustomFieldType) {
-        case 'string':
+        case 'string': {
+            // Check if the field has options (dropdown)
+            const options = (fieldDef as StringCustomFieldConfig).options;
+            if (options && options.length > 0) {
+                return (
+                    <SelectWithOptions
+                        field={field}
+                        options={options}
+                        disabled={isReadonly}
+                        nullable={fieldDef.nullable ?? true}
+                    />
+                );
+            }
             return <Input {...field} disabled={isReadonly} />;
+        }
         case 'float':
         case 'int':
             return (
