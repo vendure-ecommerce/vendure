@@ -38,7 +38,7 @@ Contributions to Vendure are welcome and highly appreciated! Whether you're fixi
 
 **Ready to get started?**
 
- Check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22contributions%20welcome%22) for good first issues
+ Check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for good first issues
 
 We're here to help if you have questions, and we're excited to see what you'll build with Vendure!
 
