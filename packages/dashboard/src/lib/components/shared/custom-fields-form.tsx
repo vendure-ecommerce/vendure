@@ -9,6 +9,7 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
 import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -306,6 +307,42 @@ function FormInputForType({
         }
         case 'boolean':
             return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
+        case 'datetime': {
+            const datetimeFieldDef = fieldDef as any;
+            const min = datetimeFieldDef.datetimeMin;
+            const max = datetimeFieldDef.datetimeMax;
+            const step = datetimeFieldDef.datetimeStep;
+            
+            // Set min value as default if field is empty and min exists
+            React.useEffect(() => {
+                if (min !== undefined && (field.value === undefined || field.value === null || field.value === '')) {
+                    field.onChange(new Date(min));
+                }
+            }, [field.value, min, field.onChange]);
+            
+            if (isReadonly) {
+                // For readonly datetime fields, display as formatted text
+                const dateValue = field.value ? new Date(field.value).toLocaleString() : '';
+                return <Input value={dateValue} disabled readOnly />;
+            }
+            
+            return (
+                <DateTimeInput
+                    value={field.value}
+                    onChange={(date) => {
+                        // Validate against min/max constraints
+                        let validatedDate = date;
+                        if (min && date < new Date(min)) {
+                            validatedDate = new Date(min);
+                        }
+                        if (max && date > new Date(max)) {
+                            validatedDate = new Date(max);
+                        }
+                        field.onChange(validatedDate);
+                    }}
+                />
+            );
+        }
         case 'relation':
             if (fieldDef.list) {
                 return (
