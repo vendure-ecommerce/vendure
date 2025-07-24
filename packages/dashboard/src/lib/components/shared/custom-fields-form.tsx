@@ -1,3 +1,4 @@
+import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
 import {
@@ -258,70 +259,119 @@ function FormInputForType({
     field: ControllerRenderProps<any, any>;
 }) {
     const isReadonly = fieldDef.readonly ?? false;
+    const isList = fieldDef.list ?? false;
 
-    switch (fieldDef.type as CustomFieldType) {
-        case 'string': {
-            // Check if the field has options (dropdown)
-            const options = (fieldDef as StringCustomFieldConfig).options;
-            if (options && options.length > 0) {
+    // Helper function to render individual input components
+    const renderSingleInput = (inputField: ControllerRenderProps<any, any>) => {
+        switch (fieldDef.type as CustomFieldType) {
+            case 'string': {
                 return (
-                    <SelectWithOptions
-                        field={field}
-                        options={options}
+                    <Input
+                        value={inputField.value ?? ''}
+                        onChange={e => inputField.onChange(e.target.value)}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
                         disabled={isReadonly}
-                        nullable={fieldDef.nullable ?? true}
-                        isListField={fieldDef.list ?? false}
                     />
                 );
             }
+            case 'float':
+            case 'int': {
+                const numericFieldDef = fieldDef as any;
+                const isFloat = fieldDef.type === 'float';
+                const min = isFloat ? numericFieldDef.floatMin : numericFieldDef.intMin;
+                const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
+                const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
 
-            return <Input {...field} disabled={isReadonly} />;
+                return (
+                    <Input
+                        type="number"
+                        value={inputField.value ?? ''}
+                        onChange={e => {
+                            const value = e.target.valueAsNumber;
+                            inputField.onChange(isNaN(value) ? undefined : value);
+                        }}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        disabled={isReadonly}
+                        min={min}
+                        max={max}
+                        step={step}
+                    />
+                );
+            }
+            case 'boolean':
+                return <Switch checked={inputField.value} onCheckedChange={inputField.onChange} disabled={isReadonly} />;
+            case 'datetime': {
+                return <DateTimeInput value={inputField.value} onChange={inputField.onChange} disabled={isReadonly} />;
+            }
+            case 'relation':
+                return (
+                    <Input
+                        value={inputField.value ?? ''}
+                        onChange={e => inputField.onChange(e.target.value)}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        disabled={isReadonly}
+                    />
+                );
+            default:
+                return (
+                    <Input
+                        value={inputField.value ?? ''}
+                        onChange={e => inputField.onChange(e.target.value)}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        disabled={isReadonly}
+                    />
+                );
         }
-        case 'float':
-        case 'int': {
-            const numericFieldDef = fieldDef as any;
-            const isFloat = fieldDef.type === 'float';
-            const min = isFloat ? numericFieldDef.floatMin : numericFieldDef.intMin;
-            const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
-            const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
+    };
 
+    // Handle string fields with options (dropdown) - already handles list case with multi-select
+    if (fieldDef.type === 'string') {
+        const options = (fieldDef as StringCustomFieldConfig).options;
+        if (options && options.length > 0) {
             return (
-                <Input
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => {
-                        const value = e.target.valueAsNumber;
-                        field.onChange(isNaN(value) ? undefined : value);
-                    }}
+                <SelectWithOptions
+                    field={field}
+                    options={options}
                     disabled={isReadonly}
-                    min={min}
-                    max={max}
-                    step={step}
+                    nullable={fieldDef.nullable ?? true}
+                    isListField={isList}
                 />
             );
         }
-        case 'boolean':
-            return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
-        case 'datetime': {
-            const datetimeFieldDef = fieldDef as any;
-            const min = datetimeFieldDef.datetimeMin;
-            const max = datetimeFieldDef.datetimeMax;
-
-            return <DateTimeInput value={field.value} onChange={field.onChange} disabled={isReadonly} />;
-        }
-        case 'relation':
-            if (fieldDef.list) {
-                return (
-                    <Input
-                        {...field}
-                        onChange={e => field.onChange(e.target.value.split(','))}
-                        disabled={isReadonly}
-                    />
-                );
-            } else {
-                return <Input {...field} disabled={isReadonly} />;
-            }
-        default:
-            return <Input {...field} disabled={isReadonly} />;
     }
+
+    // For list fields (except string with options which is handled above), wrap with list input
+    if (isList) {
+        const getDefaultValue = () => {
+            switch (fieldDef.type as CustomFieldType) {
+                case 'string':
+                    return '';
+                case 'int':
+                case 'float':
+                    return 0;
+                case 'boolean':
+                    return false;
+                case 'datetime':
+                    return '';
+                default:
+                    return '';
+            }
+        };
+
+        return (
+            <CustomFieldListInput
+                field={field}
+                disabled={isReadonly}
+                renderInput={(index, inputField) => renderSingleInput(inputField)}
+                defaultValue={getDefaultValue()}
+            />
+        );
+    }
+
+    // For non-list fields, render directly
+    return renderSingleInput(field);
 }
