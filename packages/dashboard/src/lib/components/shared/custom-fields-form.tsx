@@ -284,23 +284,13 @@ function FormInputForType({
             const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
             const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
 
-            // Set min value as default if field is empty and min exists
-            React.useEffect(() => {
-                if (
-                    min !== undefined &&
-                    (field.value === undefined || field.value === null || field.value === '')
-                ) {
-                    field.onChange(min);
-                }
-            }, [field.value, min, field.onChange]);
-
             return (
                 <Input
                     type="number"
-                    value={field.value ?? ''}
+                    value={field.value}
                     onChange={e => {
                         const value = e.target.valueAsNumber;
-                        field.onChange(isNaN(value) ? undefined : value);
+                        field.onChange(value);
                     }}
                     disabled={isReadonly}
                     min={min}
@@ -315,23 +305,6 @@ function FormInputForType({
             const datetimeFieldDef = fieldDef as any;
             const min = datetimeFieldDef.datetimeMin;
             const max = datetimeFieldDef.datetimeMax;
-            const step = datetimeFieldDef.datetimeStep;
-
-            // Set min value as default if field is empty and min exists
-            React.useEffect(() => {
-                if (
-                    min !== undefined &&
-                    (field.value === undefined || field.value === null || field.value === '')
-                ) {
-                    field.onChange(new Date(min));
-                }
-            }, [field.value, min, field.onChange]);
-
-            if (isReadonly) {
-                // For readonly datetime fields, display as formatted text
-                const dateValue = field.value ? new Date(field.value).toLocaleString() : '';
-                return <Input value={dateValue} disabled readOnly />;
-            }
 
             return (
                 <DateTimeInput
@@ -347,6 +320,7 @@ function FormInputForType({
                         }
                         field.onChange(validatedDate);
                     }}
+                    disabled={isReadonly}
                 />
             );
         }
