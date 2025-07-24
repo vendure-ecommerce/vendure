@@ -398,6 +398,6 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
     }
 
     private isAuthenticatedSession(session: Session): session is AuthenticatedSession {
-        return session.hasOwnProperty('user');
+        return session.hasOwnProperty('user') && !!(session as AuthenticatedSession).user;
     }
 }
