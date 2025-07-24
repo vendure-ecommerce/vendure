@@ -189,8 +189,13 @@ describe('form-schema-tools', () => {
 
             const schema = createFormSchemaFromFields(fields, customFields, false);
 
-            const validData = { customFields: { releaseDate: '2023-06-15T12:00:00.000Z' } };
-            expect(() => schema.parse(validData)).not.toThrow();
+            // Test with string
+            const validDataString = { customFields: { releaseDate: '2023-06-15T12:00:00.000Z' } };
+            expect(() => schema.parse(validDataString)).not.toThrow();
+
+            // Test with Date object
+            const validDataDate = { customFields: { releaseDate: new Date('2023-06-15T12:00:00.000Z') } };
+            expect(() => schema.parse(validDataDate)).not.toThrow();
 
             const beforeMinData = { customFields: { releaseDate: '2019-12-31T23:59:59.999Z' } };
             expect(() => schema.parse(beforeMinData)).toThrow();
@@ -412,7 +417,16 @@ describe('form-schema-tools', () => {
                 schema.parse({ customFields: { releaseDate: '2019-12-31T23:59:59.999Z' } });
                 expect.fail('Should have thrown validation error');
             } catch (error: any) {
-                // Zod error structure has issues array
+                expect(error.issues).toBeDefined();
+                expect(error.issues.length).toBeGreaterThan(0);
+                expect(error.issues[0].message).toContain('Date must be after');
+            }
+
+            // Test with Date object as well
+            try {
+                schema.parse({ customFields: { releaseDate: new Date('2019-12-31T23:59:59.999Z') } });
+                expect.fail('Should have thrown validation error');
+            } catch (error: any) {
                 expect(error.issues).toBeDefined();
                 expect(error.issues.length).toBeGreaterThan(0);
                 expect(error.issues[0].message).toContain('Date must be after');

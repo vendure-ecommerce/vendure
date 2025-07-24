@@ -91,7 +91,7 @@ export function createFormSchemaFromFields(
                             break;
                         }
                         case 'datetime': {
-                            let zt = z.string();
+                            let zt = z.union([z.string(), z.date()]);
                             if (customField.datetimeMin || customField.datetimeMax) {
                                 const dateMinString = customField.datetimeMin
                                     ? new Date(customField.datetimeMin).toLocaleDateString()
@@ -109,7 +109,7 @@ export function createFormSchemaFromFields(
                                 zt = zt.refine(
                                     val => {
                                         if (!val) return true;
-                                        const date = new Date(val);
+                                        const date = val instanceof Date ? val : new Date(val);
                                         if (
                                             customField.datetimeMin &&
                                             date < new Date(customField.datetimeMin)

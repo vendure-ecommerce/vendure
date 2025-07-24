@@ -56,7 +56,7 @@ export function useGeneratedForm<
             }
             return result;
         },
-        mode: 'onSubmit',
+        mode: 'onChange',
         defaultValues,
         values: processedEntity
             ? transformRelationFields(updateFields, setValues(processedEntity))
