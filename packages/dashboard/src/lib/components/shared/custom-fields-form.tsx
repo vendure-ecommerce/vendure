@@ -1,6 +1,7 @@
 import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
+import { StructFormInput } from '@/vdb/components/data-input/struct-form-input.js';
 import {
     FormControl,
     FormDescription,
@@ -145,6 +146,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
     const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
     const shouldBeFullWidth = fieldDef.ui?.fullWidth === true;
     const containerClassName = shouldBeFullWidth ? 'col-span-2' : '';
+    const isReadonly = fieldDef.readonly ?? false;
 
     // For locale fields, always use TranslatableFormField regardless of custom components
     if (isLocaleField) {
@@ -205,6 +207,71 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
                                 }}
                             />
                         </CustomFieldFormItem>
+                    )}
+                />
+            </div>
+        );
+    }
+
+    // For struct fields, use the special struct component
+    if (fieldDef.type === 'struct') {
+        const isList = fieldDef.list ?? false;
+
+        // Handle struct lists - entire struct objects in a list
+        if (isList) {
+            return (
+                <div className={containerClassName}>
+                    <FormField
+                        control={control}
+                        name={fieldName}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                                <FormControl>
+                                    <CustomFieldListInput
+                                        field={field}
+                                        disabled={isReadonly}
+                                        renderInput={(index, inputField) => (
+                                            <StructFormInput
+                                                field={inputField}
+                                                fieldDef={fieldDef as any}
+                                                control={control}
+                                                getTranslation={getTranslation}
+                                            />
+                                        )}
+                                        defaultValue={{}} // Empty struct object as default
+                                        isFullWidth={true} // Structs should always be full-width
+                                    />
+                                </FormControl>
+                                <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            );
+        }
+
+        // Handle single struct fields
+        return (
+            <div className={containerClassName}>
+                <FormField
+                    control={control}
+                    name={fieldName}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                            <FormControl>
+                                <StructFormInput
+                                    field={field}
+                                    fieldDef={fieldDef as any}
+                                    control={control}
+                                    getTranslation={getTranslation}
+                                />
+                            </FormControl>
+                            <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+                            <FormMessage />
+                        </FormItem>
                     )}
                 />
             </div>
@@ -301,9 +368,21 @@ function FormInputForType({
                 );
             }
             case 'boolean':
-                return <Switch checked={inputField.value} onCheckedChange={inputField.onChange} disabled={isReadonly} />;
+                return (
+                    <Switch
+                        checked={inputField.value}
+                        onCheckedChange={inputField.onChange}
+                        disabled={isReadonly}
+                    />
+                );
             case 'datetime': {
-                return <DateTimeInput value={inputField.value} onChange={inputField.onChange} disabled={isReadonly} />;
+                return (
+                    <DateTimeInput
+                        value={inputField.value}
+                        onChange={inputField.onChange}
+                        disabled={isReadonly}
+                    />
+                );
             }
             case 'relation':
                 return (
@@ -315,6 +394,9 @@ function FormInputForType({
                         disabled={isReadonly}
                     />
                 );
+            case 'struct':
+                // Struct fields need special handling and can't be rendered as simple inputs
+                return null;
             default:
                 return (
                     <Input
@@ -327,6 +409,13 @@ function FormInputForType({
                 );
         }
     };
+
+    // Handle struct fields with special component
+    if (fieldDef.type === 'struct') {
+        // We need access to the control and getTranslation function
+        // This will need to be passed down from the parent component
+        return null; // Placeholder - struct fields are handled differently in the parent
+    }
 
     // Handle string fields with options (dropdown) - already handles list case with multi-select
     if (fieldDef.type === 'string') {

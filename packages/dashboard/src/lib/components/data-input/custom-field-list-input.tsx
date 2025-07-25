@@ -41,6 +41,7 @@ interface SortableItemProps {
     onRemove: (id: string) => void;
     onItemChange: (id: string, value: any) => void;
     field: ControllerRenderProps<any, any>;
+    isFullWidth?: boolean;
 }
 
 function SortableItem({
@@ -51,6 +52,7 @@ function SortableItem({
     onRemove,
     onItemChange,
     field,
+    isFullWidth = false,
 }: Readonly<SortableItemProps>) {
     const { i18n } = useLingui();
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -63,26 +65,70 @@ function SortableItem({
         transition,
     };
 
+    const DragHandle = !disabled && (
+        <div
+            {...attributes}
+            {...listeners}
+            className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
+            title={i18n.t('Drag to reorder')}
+        >
+            <GripVertical className="h-4 w-4" />
+        </div>
+    );
+
+    const RemoveButton = !disabled && (
+        <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemove(itemWithId._id)}
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+            title={i18n.t('Remove item')}
+        >
+            <X className="h-3 w-3" />
+        </Button>
+    );
+
+    if (!isFullWidth) {
+        // Inline layout for single-line inputs
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className={`group relative flex items-center gap-2 p-2 border rounded-lg bg-card hover:bg-accent/50 transition-colors ${
+                    isDragging ? 'opacity-50 shadow-lg' : ''
+                }`}
+            >
+                {DragHandle}
+                <div className="flex-1">
+                    {renderInput(index, {
+                        name: `${field.name}.${index}`,
+                        value: itemWithId.value,
+                        onChange: value => onItemChange(itemWithId._id, value),
+                        onBlur: field.onBlur,
+                        ref: field.ref,
+                    } as ControllerRenderProps<any, any>)}
+                </div>
+                {RemoveButton}
+            </div>
+        );
+    }
+
+    // Full-width layout for complex inputs
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className={`flex items-center gap-2 p-2 border rounded-md bg-gray-50 ${
-                isDragging ? 'opacity-50' : ''
+            className={`group relative border rounded-lg bg-card hover:bg-accent/50 transition-colors ${
+                isDragging ? 'opacity-50 shadow-lg' : ''
             }`}
         >
-            {!disabled && (
-                <div
-                    {...attributes}
-                    {...listeners}
-                    className="cursor-move text-gray-400 hover:text-gray-600"
-                    title={i18n.t('Drag to reorder')}
-                >
-                    <GripVertical className="h-4 w-4" />
-                </div>
-            )}
-
-            <div className="flex-1">
+            <div className="flex items-center justify-between px-3 py-2 border-b">
+                {DragHandle}
+                <div className="flex-1" />
+                {RemoveButton}
+            </div>
+            <div className="p-3">
                 {renderInput(index, {
                     name: `${field.name}.${index}`,
                     value: itemWithId.value,
@@ -91,19 +137,6 @@ function SortableItem({
                     ref: field.ref,
                 } as ControllerRenderProps<any, any>)}
             </div>
-
-            {!disabled && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onRemove(itemWithId._id)}
-                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                    title={i18n.t('Remove item')}
-                >
-                    <X className="h-4 w-4" />
-                </Button>
-            )}
         </div>
     );
 }
@@ -142,7 +175,8 @@ export function CustomFieldListInput({
     disabled,
     renderInput,
     defaultValue,
-}: CustomFieldListInputProps) {
+    isFullWidth = false,
+}: CustomFieldListInputProps & { isFullWidth?: boolean }) {
     const { i18n } = useLingui();
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -213,7 +247,7 @@ export function CustomFieldListInput({
     );
 
     const containerClasses = useMemo(() => {
-        const contentClasses = 'overflow-y-auto resize-y rounded-md bg-background p-1 space-y-1 border';
+        const contentClasses = 'overflow-y-auto resize-y border-b rounded bg-muted/30 bg-background p-1 space-y-1';
 
         if (itemsWithIds.length === 0) {
             return `hidden`;
@@ -244,6 +278,7 @@ export function CustomFieldListInput({
                                 onRemove={handleRemoveItem}
                                 onItemChange={handleItemChange}
                                 field={field}
+                                isFullWidth={isFullWidth}
                             />
                         ))}
                     </SortableContext>

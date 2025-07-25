@@ -3,7 +3,11 @@ import {
     isEnumType,
     isScalarType,
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { StructCustomFieldConfig } from '@vendure/common/lib/generated-types';
+import { ResultOf } from 'gql.tada';
 import { z, ZodRawShape, ZodType, ZodTypeAny } from 'zod';
+
+import { structCustomFieldFragment } from '../../providers/server-config.js';
 
 type CustomFieldConfig = {
     name: string;
@@ -18,6 +22,77 @@ type CustomFieldConfig = {
     list?: boolean;
     nullable?: boolean;
 };
+
+type StructFieldConfig = ResultOf<typeof structCustomFieldFragment>['fields'][number];
+
+function mapGraphQLCustomFieldToConfig(field: StructFieldConfig): CustomFieldConfig {
+    const baseConfig = {
+        name: field.name,
+        type: field.type,
+        list: field.list ?? false,
+        nullable: true, // Default to true since GraphQL fields are nullable by default
+    };
+
+    switch (field.__typename) {
+        case 'StringStructFieldConfig':
+            return {
+                ...baseConfig,
+                pattern: field.pattern ?? undefined,
+            };
+        case 'IntStructFieldConfig':
+            return {
+                ...baseConfig,
+                intMin: field.intMin ?? undefined,
+                intMax: field.intMax ?? undefined,
+            };
+        case 'FloatStructFieldConfig':
+            return {
+                ...baseConfig,
+                floatMin: field.floatMin ?? undefined,
+                floatMax: field.floatMax ?? undefined,
+            };
+        case 'DateTimeStructFieldConfig':
+            return {
+                ...baseConfig,
+                datetimeMin: field.datetimeMin ?? undefined,
+                datetimeMax: field.datetimeMax ?? undefined,
+            };
+        default:
+            return baseConfig;
+    }
+}
+
+function parseDate(dateStr: string | undefined | null): Date | undefined {
+    if (!dateStr) return undefined;
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? undefined : date;
+}
+
+function createDateValidationSchema(minDate: Date | undefined, maxDate: Date | undefined): ZodType {
+    const baseSchema = z.union([z.string(), z.date()]);
+    if (!minDate && !maxDate) return baseSchema;
+
+    const dateMinString = minDate?.toLocaleDateString() ?? '';
+    const dateMaxString = maxDate?.toLocaleDateString() ?? '';
+    const dateMinMessage = minDate ? `Date must be after ${dateMinString}` : '';
+    const dateMaxMessage = maxDate ? `Date must be before ${dateMaxString}` : '';
+
+    return baseSchema.refine(
+        val => {
+            if (!val) return true;
+            const date = val instanceof Date ? val : new Date(val);
+            if (minDate && date < minDate) return false;
+            if (maxDate && date > maxDate) return false;
+            return true;
+        },
+        val => {
+            const date = val instanceof Date ? val : new Date(val);
+            if (minDate && date < minDate) return { message: dateMinMessage };
+            if (maxDate && date > maxDate) return { message: dateMaxMessage };
+            return { message: '' };
+        },
+    );
+}
 
 export function createFormSchemaFromFields(
     fields: FieldInfo[],
@@ -50,6 +125,7 @@ export function createFormSchemaFromFields(
                 for (const customField of filteredCustomFields) {
                     let zodType: ZodType;
                     switch (customField.type) {
+                        case 'localeString':
                         case 'string': {
                             let zt = z.string();
                             if (customField.pattern) {
@@ -106,28 +182,31 @@ export function createFormSchemaFromFields(
                                     ? `Date must be before ${dateMaxString}`
                                     : '';
                                 const message = [dateMinMessage, dateMaxMessage].filter(Boolean).join(', ');
-                                zt = zt.refine(
-                                    val => {
-                                        if (!val) return true;
-                                        const date = val instanceof Date ? val : new Date(val);
-                                        if (
-                                            customField.datetimeMin &&
-                                            date < new Date(customField.datetimeMin)
-                                        ) {
+                                zt = z.union([z.string(), z.date()]).superRefine((val, ctx) => {
+                                    if (!val) return true;
+                                    const date = val instanceof Date ? val : new Date(val);
+                                    if (customField.datetimeMin && customField.datetimeMin !== '') {
+                                        const minDate = new Date(customField.datetimeMin);
+                                        if (date < minDate) {
+                                            ctx.addIssue({
+                                                code: z.ZodIssueCode.custom,
+                                                message: dateMinMessage,
+                                            });
                                             return false;
                                         }
-                                        if (
-                                            customField.datetimeMax &&
-                                            date > new Date(customField.datetimeMax)
-                                        ) {
+                                    }
+                                    if (customField.datetimeMax && customField.datetimeMax !== '') {
+                                        const maxDate = new Date(customField.datetimeMax);
+                                        if (date > maxDate) {
+                                            ctx.addIssue({
+                                                code: z.ZodIssueCode.custom,
+                                                message: dateMaxMessage,
+                                            });
                                             return false;
                                         }
-                                        return true;
-                                    },
-                                    {
-                                        message,
-                                    },
-                                );
+                                    }
+                                    return true;
+                                });
                             }
                             zodType = zt;
                             break;
@@ -137,19 +216,86 @@ export function createFormSchemaFromFields(
                             zodType = zt;
                             break;
                         }
-                        case 'localeString': {
-                            let zt = z.string();
-                            if (customField.pattern) {
-                                zt = zt.regex(new RegExp(customField.pattern), {
-                                    message: `Value must match pattern: ${customField.pattern}`,
-                                });
+                        case 'struct': {
+                            // For struct fields, we need to create a nested object schema
+                            // The actual struct field configuration should have a 'fields' property
+                            const structFieldConfig = customField as StructCustomFieldConfig;
+                            if (structFieldConfig.fields && Array.isArray(structFieldConfig.fields)) {
+                                const nestedSchema: ZodRawShape = {};
+                                for (const structSubField of structFieldConfig.fields) {
+                                    // Create validation for each sub-field of the struct
+                                    const config = mapGraphQLCustomFieldToConfig(
+                                        structSubField as StructFieldConfig,
+                                    );
+                                    let subFieldType: ZodType;
+                                    switch (config.type) {
+                                        case 'string': {
+                                            let zt = z.string();
+                                            if (config.pattern) {
+                                                zt = zt.regex(new RegExp(config.pattern), {
+                                                    message: `Value must match pattern: ${config.pattern}`,
+                                                });
+                                            }
+                                            subFieldType = zt;
+                                            break;
+                                        }
+                                        case 'int': {
+                                            let zt = z.number();
+                                            if (config.intMin !== undefined) {
+                                                zt = zt.min(config.intMin, {
+                                                    message: `Value must be at least ${config.intMin}`,
+                                                });
+                                            }
+                                            if (config.intMax !== undefined) {
+                                                zt = zt.max(config.intMax, {
+                                                    message: `Value must be at most ${config.intMax}`,
+                                                });
+                                            }
+                                            subFieldType = zt;
+                                            break;
+                                        }
+                                        case 'float': {
+                                            let zt = z.number();
+                                            if (config.floatMin !== undefined) {
+                                                zt = zt.min(config.floatMin, {
+                                                    message: `Value must be at least ${config.floatMin}`,
+                                                });
+                                            }
+                                            if (config.floatMax !== undefined) {
+                                                zt = zt.max(config.floatMax, {
+                                                    message: `Value must be at most ${config.floatMax}`,
+                                                });
+                                            }
+                                            subFieldType = zt;
+                                            break;
+                                        }
+                                        case 'datetime': {
+                                            const minDate = parseDate(config.datetimeMin);
+                                            const maxDate = parseDate(config.datetimeMax);
+                                            subFieldType = createDateValidationSchema(minDate, maxDate);
+                                            break;
+                                        }
+                                        default: {
+                                            subFieldType = config.type === 'boolean' ? z.boolean() : z.any();
+                                            break;
+                                        }
+                                    }
+
+                                    // Handle list and nullable for struct sub-fields
+                                    if (config.list) {
+                                        subFieldType = z.array(subFieldType);
+                                    }
+                                    if (config.nullable) {
+                                        subFieldType = subFieldType.optional().nullable();
+                                    }
+
+                                    nestedSchema[config.name] = subFieldType;
+                                }
+                                zodType = z.object(nestedSchema);
+                            } else {
+                                // Fallback if struct doesn't have proper fields configuration
+                                zodType = z.object({}).passthrough();
                             }
-                            zodType = zt;
-                            break;
-                        }
-                        case 'localeText': {
-                            const zt = z.string();
-                            zodType = zt;
                             break;
                         }
                         default: {
