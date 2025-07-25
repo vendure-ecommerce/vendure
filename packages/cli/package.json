@@ -22,7 +22,9 @@
         "build": "rimraf dist && tsc -p ./tsconfig.cli.json && ts-node ./build.ts",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
         "ci": "npm run build",
-        "test": "vitest --config vitest.config.mts --run"
+        "test": "vitest --config vitest.config.mts --run",
+        "e2e": "cross-env PACKAGE=cli vitest --config ../../e2e-common/vitest.config.mts --run",
+        "e2e:watch": "cross-env PACKAGE=cli vitest --config ../../e2e-common/vitest.config.mts"
     },
     "publishConfig": {
         "access": "public"
@@ -48,6 +50,8 @@
     },
     "devDependencies": {
         "@vendure/core": "3.3.7",
+        "@vendure/testing": "3.3.7",
+        "cross-env": "^7.0.3",
         "typescript": "5.8.2"
     }
 }
