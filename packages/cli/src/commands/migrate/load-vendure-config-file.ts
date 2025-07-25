@@ -1,18 +1,12 @@
 import { VendureConfig } from '@vendure/core';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import stripJsonComments from 'strip-json-comments';
 import { register } from 'ts-node';
 
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
 import { selectTsConfigFile } from '../../utilities/ast-utils';
 import { isRunningInTsNode } from '../../utilities/utils';
-
-function stripJsonComments(jsonString: string): string {
-    return jsonString
-        .replace(/\/\*[\s\S]+?\*\//g, '')
-        .replace(/\/\/.*$/gm, '')
-        .replace(/^\s*$[\r\n]/gm, '');
-}
 
 export async function loadVendureConfigFile(
     vendureConfig: VendureConfigRef,
