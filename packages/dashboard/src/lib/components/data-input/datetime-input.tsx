@@ -50,7 +50,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     variant="outline"
                     disabled={disabled}
                     className={cn(
-                        'w-full justify-start text-left font-normal',
+                        'w-full justify-start text-left font-normal shadow-xs',
                         !date && 'text-muted-foreground',
                     )}
                 >

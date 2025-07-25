@@ -89,7 +89,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
     if (!shouldShowTabs) {
         // Single tab view - use the original grid layout
         return (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid @md:grid-cols-2 gap-6">
                 {customFields?.map(fieldDef => (
                     <CustomFieldItem
                         key={fieldDef.name}
@@ -115,7 +115,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
             </TabsList>
             {groupedFields.map(group => (
                 <TabsContent key={group.tabName} value={group.tabName} className="mt-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid @md:grid-cols-2 gap-6">
                         {group.customFields.map(fieldDef => (
                             <CustomFieldItem
                                 key={fieldDef.name}
