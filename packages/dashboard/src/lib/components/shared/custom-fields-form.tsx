@@ -1,5 +1,6 @@
 import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { DefaultRelationInput } from '@/vdb/components/data-input/default-relation-input.js';
 import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
 import { StructFormInput } from '@/vdb/components/data-input/struct-form-input.js';
 import {
@@ -384,16 +385,6 @@ function FormInputForType({
                     />
                 );
             }
-            case 'relation':
-                return (
-                    <Input
-                        value={inputField.value ?? ''}
-                        onChange={e => inputField.onChange(e.target.value)}
-                        onBlur={inputField.onBlur}
-                        name={inputField.name}
-                        disabled={isReadonly}
-                    />
-                );
             case 'struct':
                 // Struct fields need special handling and can't be rendered as simple inputs
                 return null;
@@ -417,6 +408,17 @@ function FormInputForType({
         return null; // Placeholder - struct fields are handled differently in the parent
     }
 
+    // Handle relation fields directly (they handle list/single internally)
+    if (fieldDef.type === 'relation') {
+        return (
+            <DefaultRelationInput
+                fieldDef={fieldDef as any}
+                field={field}
+                disabled={isReadonly}
+            />
+        );
+    }
+
     // Handle string fields with options (dropdown) - already handles list case with multi-select
     if (fieldDef.type === 'string') {
         const options = (fieldDef as StringCustomFieldConfig).options;
@@ -433,7 +435,7 @@ function FormInputForType({
         }
     }
 
-    // For list fields (except string with options which is handled above), wrap with list input
+    // For list fields (except string with options and relations which are handled above), wrap with list input
     if (isList) {
         const getDefaultValue = () => {
             switch (fieldDef.type as CustomFieldType) {
@@ -445,6 +447,8 @@ function FormInputForType({
                 case 'boolean':
                     return false;
                 case 'datetime':
+                    return '';
+                case 'relation':
                     return '';
                 default:
                     return '';
