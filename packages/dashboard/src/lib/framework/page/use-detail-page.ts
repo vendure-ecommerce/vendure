@@ -1,4 +1,4 @@
-import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
+import { removeReadonlyAndLocalizedCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -307,10 +307,10 @@ export function useDetailPage<
         document,
         varName: 'input',
         entity,
+        customFieldConfig,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
-            // Filter out readonly custom fields before submitting
-            const filteredValues = removeReadonlyCustomFields(values, customFieldConfig || []);
+            const filteredValues = removeReadonlyAndLocalizedCustomFields(values, customFieldConfig || []);
 
             if (isNew) {
                 const finalInput = transformCreateInput?.(filteredValues) ?? filteredValues;

@@ -71,7 +71,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
                     className={cn(
                         'w-full justify-between',
                         'min-h-[2.5rem] h-auto',
-                        'flex flex-wrap gap-1 p-1',
+                        'flex flex-wrap gap-1 p-1 shadow-xs',
                         className,
                     )}
                 >

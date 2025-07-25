@@ -3,8 +3,8 @@ import { fail } from 'assert';
 import { describe, expect, it } from 'vitest';
 
 import { Injector } from '../../common/injector';
-import { RequestContext } from './request-context';
 
+import { RequestContext } from './request-context';
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
 describe('validateCustomFieldValue()', () => {
@@ -22,7 +22,7 @@ describe('validateCustomFieldValue()', () => {
     const ctx = RequestContext.empty();
 
     describe('string & localeString', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -45,10 +45,14 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate('foo'), 'error.field-invalid-string-pattern');
             await assertThrowsError(validate(' 1foo'), 'error.field-invalid-string-pattern');
         });
+
+        it('allows null for nullable field with pattern', async () => {
+            expect(validate(null)).not.toThrow();
+        });
     });
 
     describe('string options', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -70,10 +74,32 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate(''), 'error.field-invalid-string-option');
             await assertThrowsError(validate('bad'), 'error.field-invalid-string-option');
         });
+
+        it('allows null for a nullable field', () => {
+            expect(validate(null)).not.toThrow();
+        });
+
+        it('throws on null for non-nullable field', async () => {
+            await assertThrowsError(
+                () =>
+                    validateCustomFieldValue(
+                        {
+                            name: 'test',
+                            type: 'string',
+                            nullable: false,
+                            options: [{ value: 'small' }, { value: 'large' }],
+                        },
+                        null,
+                        injector,
+                        ctx,
+                    ),
+                'error.field-invalid-non-nullable',
+            );
+        });
     });
 
     describe('int & float', () => {
-        const validate = (value: number) => () =>
+        const validate = (value: number | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -97,10 +123,14 @@ describe('validateCustomFieldValue()', () => {
             await assertThrowsError(validate(11), 'error.field-invalid-number-range-max');
             await assertThrowsError(validate(-7), 'error.field-invalid-number-range-min');
         });
+
+        it('allows null for nullable field', async () => {
+            expect(validate(null)).not.toThrow();
+        });
     });
 
     describe('datetime', () => {
-        const validate = (value: string) => () =>
+        const validate = (value: string | null) => () =>
             validateCustomFieldValue(
                 {
                     name: 'test',
@@ -128,6 +158,10 @@ describe('validateCustomFieldValue()', () => {
                 validate('2019-06-01T08:30:00.100'),
                 'error.field-invalid-datetime-range-max',
             );
+        });
+
+        it('allows null for nullable field', async () => {
+            expect(validate(null)).not.toThrow();
         });
     });
 
