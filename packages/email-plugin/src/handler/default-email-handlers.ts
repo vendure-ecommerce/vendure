@@ -31,6 +31,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
     .loadData(async ({ event, injector }) => {
+        await hydrateOrderLines(event.ctx, event.order, injector);
         transformOrderLineAssetUrls(event.ctx, event.order, injector);
         const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);
         return { shippingLines };
@@ -107,6 +108,23 @@ export function transformOrderLineAssetUrls(ctx: RequestContext, order: Order, i
                 line.featuredAsset.preview = toAbsoluteUrl(ctx.req as Request, line.featuredAsset.preview);
             }
         }
+    }
+    return order;
+}
+
+/**
+ * @description
+ * Ensures that the OrderLines are hydrated so that we can use the
+ * `line.featuredAsset` property in the email template.
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email utils
+ */
+export async function hydrateOrderLines(ctx: RequestContext, order: Order, injector: Injector): Promise<Order> {
+    const entityHydrator = injector.get(EntityHydrator);
+
+    for (const line of order.lines || []) {
+        await entityHydrator.hydrate(ctx, line, { relations: ['featuredAsset'] });
     }
     return order;
 }
