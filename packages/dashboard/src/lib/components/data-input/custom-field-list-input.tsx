@@ -8,6 +8,7 @@ import {
     useSensor,
     useSensors,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
     arrayMove,
     SortableContext,
@@ -17,8 +18,13 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Plus, X } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
+
+interface ListItemWithId {
+    _id: string;
+    value: any;
+}
 
 interface CustomFieldListInputProps {
     field: ControllerRenderProps<any, any>;
@@ -28,20 +34,18 @@ interface CustomFieldListInputProps {
 }
 
 interface SortableItemProps {
-    id: string;
+    itemWithId: ListItemWithId;
     index: number;
-    item: any;
     disabled?: boolean;
     renderInput: (index: number, inputField: ControllerRenderProps<any, any>) => React.ReactNode;
-    onRemove: (index: number) => void;
-    onItemChange: (index: number, value: any) => void;
+    onRemove: (id: string) => void;
+    onItemChange: (id: string, value: any) => void;
     field: ControllerRenderProps<any, any>;
 }
 
 function SortableItem({
-    id,
+    itemWithId,
     index,
-    item,
     disabled,
     renderInput,
     onRemove,
@@ -50,7 +54,7 @@ function SortableItem({
 }: Readonly<SortableItemProps>) {
     const { i18n } = useLingui();
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-        id,
+        id: itemWithId._id,
         disabled,
     });
 
@@ -81,8 +85,8 @@ function SortableItem({
             <div className="flex-1">
                 {renderInput(index, {
                     name: `${field.name}.${index}`,
-                    value: item,
-                    onChange: value => onItemChange(index, value),
+                    value: itemWithId.value,
+                    onChange: value => onItemChange(itemWithId._id, value),
                     onBlur: field.onBlur,
                     ref: field.ref,
                 } as ControllerRenderProps<any, any>)}
@@ -93,7 +97,7 @@ function SortableItem({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => onRemove(index)}
+                    onClick={() => onRemove(itemWithId._id)}
                     className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                     title={i18n.t('Remove item')}
                 >
@@ -102,6 +106,35 @@ function SortableItem({
             )}
         </div>
     );
+}
+
+// Generate unique IDs for list items
+function generateId(): string {
+    return `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Convert flat array to array with stable IDs
+function convertToItemsWithIds(values: any[], existingItems?: ListItemWithId[]): ListItemWithId[] {
+    if (!values || values.length === 0) return [];
+
+    return values.map((value, index) => {
+        // Try to reuse existing ID if the value matches and index is within bounds
+        const existingItem = existingItems?.[index];
+        if (existingItem && JSON.stringify(existingItem.value) === JSON.stringify(value)) {
+            return existingItem;
+        }
+
+        // Otherwise create new item with new ID
+        return {
+            _id: generateId(),
+            value,
+        };
+    });
+}
+
+// Convert array with IDs back to flat array
+function convertToFlatArray(itemsWithIds: ListItemWithId[]): any[] {
+    return itemsWithIds.map(item => item.value);
 }
 
 export function CustomFieldListInput({
@@ -118,36 +151,50 @@ export function CustomFieldListInput({
         }),
     );
 
-    const items = field.value || [];
-    const itemIds = items.map((_: any, index: number) => `item-${index}`);
+    // Keep track of items with stable IDs
+    const [itemsWithIds, setItemsWithIds] = useState<ListItemWithId[]>(() =>
+        convertToItemsWithIds(field.value || []),
+    );
+
+    // Update items when field value changes externally (e.g., form reset, initial load)
+    useEffect(() => {
+        const newItems = convertToItemsWithIds(field.value || [], itemsWithIds);
+        if (
+            JSON.stringify(convertToFlatArray(newItems)) !== JSON.stringify(convertToFlatArray(itemsWithIds))
+        ) {
+            setItemsWithIds(newItems);
+        }
+    }, [field.value, itemsWithIds]);
+
+    const itemIds = useMemo(() => itemsWithIds.map(item => item._id), [itemsWithIds]);
 
     const handleAddItem = useCallback(() => {
-        const newArray = [...items, defaultValue ?? ''];
-        field.onChange(newArray);
-    }, [items, defaultValue, field]);
+        const newItem: ListItemWithId = {
+            _id: generateId(),
+            value: defaultValue ?? '',
+        };
+        const newItemsWithIds = [...itemsWithIds, newItem];
+        setItemsWithIds(newItemsWithIds);
+        field.onChange(convertToFlatArray(newItemsWithIds));
+    }, [itemsWithIds, defaultValue, field]);
 
     const handleRemoveItem = useCallback(
-        (index: number) => {
-            const newArray = items.filter((_: any, i: number) => i !== index);
-            field.onChange(newArray);
+        (id: string) => {
+            const newItemsWithIds = itemsWithIds.filter(item => item._id !== id);
+            setItemsWithIds(newItemsWithIds);
+            field.onChange(convertToFlatArray(newItemsWithIds));
         },
-        [items, field],
+        [itemsWithIds, field],
     );
 
     const handleItemChange = useCallback(
-        (index: number, value: any) => {
-            const newArray = [...items];
-            newArray[index] = value;
-            field.onChange(newArray);
+        (id: string, value: any) => {
+            const newItemsWithIds = itemsWithIds.map(item => (item._id === id ? { ...item, value } : item));
+            setItemsWithIds(newItemsWithIds);
+            field.onChange(convertToFlatArray(newItemsWithIds));
         },
-        [items, field],
+        [itemsWithIds, field],
     );
-
-    const [localItems, setLocalItems] = useState(field.value || []);
-
-    useEffect(() => {
-        setLocalItems(field.value || []);
-    }, [field.value]);
 
     const handleDragEnd = useCallback(
         (event: any) => {
@@ -157,25 +204,41 @@ export function CustomFieldListInput({
                 const oldIndex = itemIds.indexOf(active.id);
                 const newIndex = itemIds.indexOf(over.id);
 
-                const newArray = arrayMove(items, oldIndex, newIndex);
-                setLocalItems(newArray);
-                field.onChange(newArray);
+                const newItemsWithIds = arrayMove(itemsWithIds, oldIndex, newIndex);
+                setItemsWithIds(newItemsWithIds);
+                field.onChange(convertToFlatArray(newItemsWithIds));
             }
         },
-        [itemIds, items, field],
+        [itemIds, itemsWithIds, field],
     );
+
+    const containerClasses = useMemo(() => {
+        const contentClasses = 'overflow-y-auto resize-y rounded-md bg-background p-1 space-y-1 border';
+
+        if (itemsWithIds.length === 0) {
+            return `hidden`;
+        } else if (itemsWithIds.length > 5) {
+            return `h-[200px] ${contentClasses}`;
+        } else {
+            return `min-h-[100px] ${contentClasses}`;
+        }
+    }, [itemsWithIds.length]);
 
     return (
         <div className="space-y-2">
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <div className="min-h-[100px] overflow-y-auto space-y-1 resize-y rounded-md border bg-background p-1">
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToVerticalAxis]}
+            >
+                <div className={containerClasses}>
                     <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-                        {localItems.map((item: any, index: number) => (
+                        {itemsWithIds.map((itemWithId, index) => (
                             <SortableItem
-                                key={`item-${index}-${JSON.stringify(item)}`}
-                                id={`item-${index}`}
+                                key={itemWithId._id}
+                                itemWithId={itemWithId}
                                 index={index}
-                                item={item}
                                 disabled={disabled}
                                 renderInput={renderInput}
                                 onRemove={handleRemoveItem}
