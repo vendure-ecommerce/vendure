@@ -1,3 +1,4 @@
+@import 'variables';
 :host {
 }
 
@@ -8,3 +9,7 @@ select.currency {
 input.locale {
     text-transform: uppercase;
 }
+.darkMode{
+    color: var(--clr-global-font-color);
+}
+
