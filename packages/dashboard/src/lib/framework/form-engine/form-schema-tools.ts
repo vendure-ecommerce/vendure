@@ -181,7 +181,6 @@ export function createFormSchemaFromFields(
                                 const dateMaxMessage = customField.datetimeMax
                                     ? `Date must be before ${dateMaxString}`
                                     : '';
-                                const message = [dateMinMessage, dateMaxMessage].filter(Boolean).join(', ');
                                 zt = z.union([z.string(), z.date()]).superRefine((val, ctx) => {
                                     if (!val) return true;
                                     const date = val instanceof Date ? val : new Date(val);

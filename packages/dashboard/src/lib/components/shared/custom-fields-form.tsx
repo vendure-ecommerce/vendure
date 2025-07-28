@@ -46,13 +46,15 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
 
     const customFields = useCustomFieldConfig(entityType);
 
+    const getCustomFieldBaseName = (fieldDef: CustomFieldConfig) => {
+        if (fieldDef.type !== 'relation') {
+            return fieldDef.name;
+        }
+        return fieldDef.list ? fieldDef.name + 'Ids' : fieldDef.name + 'Id';
+    };
+
     const getFieldName = (fieldDef: CustomFieldConfig) => {
-        const name =
-            fieldDef.type === 'relation'
-                ? fieldDef.list
-                    ? fieldDef.name + 'Ids'
-                    : fieldDef.name + 'Id'
-                : fieldDef.name;
+        const name = getCustomFieldBaseName(fieldDef);
         return formPathPrefix ? `${formPathPrefix}.customFields.${name}` : `customFields.${name}`;
     };
 
@@ -142,8 +144,8 @@ interface CustomFieldItemProps {
     ) => string | undefined;
 }
 
-function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: CustomFieldItemProps) {
-    const hasCustomFormComponent = fieldDef.ui && fieldDef.ui.component;
+function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Readonly<CustomFieldItemProps>) {
+    const hasCustomFormComponent = fieldDef.ui?.component;
     const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
     const shouldBeFullWidth = fieldDef.ui?.fullWidth === true;
     const containerClassName = shouldBeFullWidth ? 'col-span-2' : '';
@@ -308,7 +310,12 @@ interface CustomFieldFormItemProps {
     children: React.ReactNode;
 }
 
-function CustomFieldFormItem({ fieldDef, getTranslation, fieldName, children }: CustomFieldFormItemProps) {
+function CustomFieldFormItem({
+    fieldDef,
+    getTranslation,
+    fieldName,
+    children,
+}: Readonly<CustomFieldFormItemProps>) {
     return (
         <FormItem>
             <FormLabel>{getTranslation(fieldDef.label) ?? fieldName}</FormLabel>
@@ -322,27 +329,16 @@ function CustomFieldFormItem({ fieldDef, getTranslation, fieldName, children }: 
 function FormInputForType({
     fieldDef,
     field,
-}: {
+}: Readonly<{
     fieldDef: CustomFieldConfig;
     field: ControllerRenderProps<any, any>;
-}) {
+}>) {
     const isReadonly = fieldDef.readonly ?? false;
     const isList = fieldDef.list ?? false;
 
     // Helper function to render individual input components
     const renderSingleInput = (inputField: ControllerRenderProps<any, any>) => {
         switch (fieldDef.type as CustomFieldType) {
-            case 'string': {
-                return (
-                    <Input
-                        value={inputField.value ?? ''}
-                        onChange={e => inputField.onChange(e.target.value)}
-                        onBlur={inputField.onBlur}
-                        name={inputField.name}
-                        disabled={isReadonly}
-                    />
-                );
-            }
             case 'float':
             case 'int': {
                 const numericFieldDef = fieldDef as any;
@@ -388,6 +384,7 @@ function FormInputForType({
             case 'struct':
                 // Struct fields need special handling and can't be rendered as simple inputs
                 return null;
+            case 'string':
             default:
                 return (
                     <Input
@@ -410,13 +407,7 @@ function FormInputForType({
 
     // Handle relation fields directly (they handle list/single internally)
     if (fieldDef.type === 'relation') {
-        return (
-            <DefaultRelationInput
-                fieldDef={fieldDef as any}
-                field={field}
-                disabled={isReadonly}
-            />
-        );
+        return <DefaultRelationInput fieldDef={fieldDef as any} field={field} disabled={isReadonly} />;
     }
 
     // Handle string fields with options (dropdown) - already handles list case with multi-select
@@ -428,7 +419,6 @@ function FormInputForType({
                     field={field}
                     options={options}
                     disabled={isReadonly}
-                    nullable={fieldDef.nullable ?? true}
                     isListField={isList}
                 />
             );

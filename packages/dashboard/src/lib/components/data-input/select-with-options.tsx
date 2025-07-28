@@ -11,7 +11,6 @@ export interface SelectWithOptionsProps {
     options: StringFieldOption[];
     disabled?: boolean;
     placeholder?: React.ReactNode;
-    nullable?: boolean;
     isListField?: boolean;
 }
 
@@ -28,7 +27,7 @@ export function SelectWithOptions({
     disabled,
     placeholder,
     isListField = false,
-}: SelectWithOptionsProps) {
+}: Readonly<SelectWithOptionsProps>) {
     const {
         settings: { displayLanguage },
     } = useUserSettings();

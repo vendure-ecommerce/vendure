@@ -143,7 +143,7 @@ function SortableItem({
 
 // Generate unique IDs for list items
 function generateId(): string {
-    return `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `item-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 // Convert flat array to array with stable IDs
@@ -247,7 +247,8 @@ export function CustomFieldListInput({
     );
 
     const containerClasses = useMemo(() => {
-        const contentClasses = 'overflow-y-auto resize-y border-b rounded bg-muted/30 bg-background p-1 space-y-1';
+        const contentClasses =
+            'overflow-y-auto resize-y border-b rounded bg-muted/30 bg-background p-1 space-y-1';
 
         if (itemsWithIds.length === 0) {
             return `hidden`;

@@ -10,7 +10,6 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { useLingui } from '@/vdb/lib/trans.js';
 import { structCustomFieldFragment } from '@/vdb/providers/server-config.js';
 import { ResultOf } from 'gql.tada';
 import { CheckIcon, PencilIcon, X } from 'lucide-react';
@@ -35,8 +34,57 @@ interface StructFormInputProps {
     ) => string | undefined;
 }
 
+interface DisplayModeProps {
+    fieldDef: StructCustomFieldConfig;
+    watchedStructValue: Record<string, any>;
+    isReadonly: boolean;
+    setIsEditing: (value: boolean) => void;
+    getTranslation: (
+        input: Array<{ languageCode: string; value: string }> | null | undefined,
+    ) => string | undefined;
+    formatFieldValue: (value: any, structField: StructField) => React.ReactNode;
+}
+
+function DisplayMode({
+    fieldDef,
+    watchedStructValue,
+    isReadonly,
+    setIsEditing,
+    getTranslation,
+    formatFieldValue,
+}: Readonly<DisplayModeProps>) {
+    return (
+        <div className="border rounded-md p-4">
+            <div className="flex justify-end">
+                {!isReadonly && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="h-8 w-8 p-0 -mt-2 -mr-2 text-muted-foreground hover:text-foreground"
+                    >
+                        <PencilIcon className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                    </Button>
+                )}
+            </div>
+            <dl className="grid grid-cols-2 divide-y divide-muted -mt-2">
+                {fieldDef.fields.map(structField => (
+                    <React.Fragment key={structField.name}>
+                        <dt className="text-sm font-medium text-muted-foreground py-2">
+                            {getTranslation(structField.label) ?? structField.name}
+                        </dt>
+                        <dd className="text-sm text-foreground py-2">
+                            {formatFieldValue(watchedStructValue[structField.name], structField)}
+                        </dd>
+                    </React.Fragment>
+                ))}
+            </dl>
+        </div>
+    );
+}
+
 export function StructFormInput({ field, fieldDef, control, getTranslation }: StructFormInputProps) {
-    const { i18n } = useLingui();
     const { formatDate } = useLocalFormat();
     const isReadonly = fieldDef.readonly ?? false;
     const [isEditing, setIsEditing] = useState(false);
@@ -72,37 +120,6 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
         }
     };
 
-    // Compact display mode
-    const DisplayMode = () => (
-        <div className=" border rounded-md p-4">
-            <div className="flex justify-end">
-                {!isReadonly && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsEditing(true)}
-                        className="h-8 w-8 p-0 -mt-2 -mr-2 text-muted-foreground hover:text-foreground"
-                    >
-                        <PencilIcon className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                    </Button>
-                )}
-            </div>
-            <dl className="grid grid-cols-2 divide-y divide-muted -mt-2">
-                {fieldDef.fields.map(structField => (
-                    <React.Fragment key={structField.name}>
-                        <dt className="text-sm font-medium text-muted-foreground py-2">
-                            {getTranslation(structField.label) ?? structField.name}
-                        </dt>
-                        <dd className="text-sm text-foreground py-2">
-                            {formatFieldValue(watchedStructValue[structField.name], structField)}
-                        </dd>
-                    </React.Fragment>
-                ))}
-            </dl>
-        </div>
-    );
-
     // Helper function to render individual struct field inputs
     const renderStructFieldInput = (
         structField: StructField,
@@ -122,7 +139,6 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
                                 field={singleField}
                                 options={stringField.options}
                                 disabled={isReadonly}
-                                nullable={true} // struct sub-fields are typically nullable
                                 isListField={false}
                             />
                         );
@@ -200,7 +216,6 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
                         field={inputField}
                         options={stringField.options}
                         disabled={isReadonly}
-                        nullable={true} // struct sub-fields are typically nullable
                         isListField={isList}
                     />
                 );
@@ -294,5 +309,16 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
         [fieldDef, control, field.name, getTranslation, renderStructFieldInput, isReadonly],
     );
 
-    return isEditing ? EditMode : <DisplayMode />;
+    return isEditing ? (
+        EditMode
+    ) : (
+        <DisplayMode
+            fieldDef={fieldDef}
+            watchedStructValue={watchedStructValue}
+            isReadonly={isReadonly}
+            setIsEditing={setIsEditing}
+            getTranslation={getTranslation}
+            formatFieldValue={formatFieldValue}
+        />
+    );
 }

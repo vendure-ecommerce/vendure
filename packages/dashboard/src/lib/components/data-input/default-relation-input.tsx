@@ -37,35 +37,39 @@ interface StatusBadgeProps {
     variant?: 'orange' | 'green' | 'red' | 'blue';
 }
 
-function StatusBadge({ condition, text, variant = 'orange' }: StatusBadgeProps) {
+function StatusBadge({ condition, text, variant = 'orange' }: Readonly<StatusBadgeProps>) {
     if (!condition) return null;
-    
+
     const colorClasses = {
         orange: 'text-orange-600',
         green: 'bg-green-100 text-green-700',
-        red: 'bg-red-100 text-red-700', 
-        blue: 'bg-blue-100 text-blue-700'
+        red: 'bg-red-100 text-red-700',
+        blue: 'bg-blue-100 text-blue-700',
     };
-    
+
     return (
-        <span className={`ml-2 text-xs ${variant === 'orange' ? colorClasses.orange : `px-1.5 py-0.5 rounded-full ${colorClasses[variant]}`}`}>
+        <span
+            className={`ml-2 text-xs ${variant === 'orange' ? colorClasses.orange : `px-1.5 py-0.5 rounded-full ${colorClasses[variant]}`}`}
+        >
             • {text}
         </span>
     );
 }
 
-function EntityLabel({ 
-    title, 
-    subtitle, 
-    imageUrl, 
-    placeholderLetter, 
-    statusIndicator, 
+function EntityLabel({
+    title,
+    subtitle,
+    imageUrl,
+    placeholderLetter,
+    statusIndicator,
     rounded = false,
-    tooltipText 
-}: EntityLabelProps) {
+    tooltipText,
+}: Readonly<EntityLabelProps>) {
     return (
         <div className="flex items-center gap-3 w-full" title={tooltipText || `${title} (${subtitle})`}>
-            <div className={`w-8 h-8 ${rounded ? 'rounded-full' : 'rounded overflow-hidden'} bg-muted flex-shrink-0`}>
+            <div
+                className={`w-8 h-8 ${rounded ? 'rounded-full' : 'rounded overflow-hidden'} bg-muted flex-shrink-0`}
+            >
                 {imageUrl ? (
                     <img
                         src={imageUrl + '?preset=thumb'}
@@ -81,23 +85,37 @@ function EntityLabel({
                     {title}
                     {statusIndicator}
                 </div>
-                <div className="text-sm text-muted-foreground truncate">
-                    {subtitle}
-                </div>
+                <div className="text-sm text-muted-foreground truncate">{subtitle}</div>
             </div>
         </div>
     );
 }
 
-function createBaseEntityConfig(entityName: string, i18n: any, labelKey: 'name' | 'code' | 'emailAddress' = 'name', searchField: string = 'name') {
+function createBaseEntityConfig(
+    entityName: string,
+    i18n: any,
+    labelKey: 'name' | 'code' | 'emailAddress' = 'name',
+    searchField: string = 'name',
+) {
     return {
-        idKey: 'id' as const,
-        labelKey: labelKey as const,
+        idKey: 'id',
+        labelKey,
         placeholder: i18n.t(`Search ${entityName.toLowerCase()}s...`),
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
         }),
-    };
+    } as const;
+}
+
+function getOrderStateVariant(state: string): StatusBadgeProps['variant'] {
+    switch (state) {
+        case 'Delivered':
+            return 'green';
+        case 'Cancelled':
+            return 'red';
+        default:
+            return 'blue';
+    }
 }
 
 // Entity type mappings from the dev-config.ts - using functions to generate configs
@@ -154,8 +172,10 @@ const createEntityConfigs = (i18n: any) => ({
         label: (item: any) => (
             <EntityLabel
                 title={`${item.firstName} ${item.lastName}`}
-                subtitle={`${item.emailAddress}${item.phoneNumber ? ` • ${item.phoneNumber}` : ''}`}
-                placeholderLetter={item.firstName?.[0]?.toUpperCase() || item.emailAddress?.[0]?.toUpperCase() || 'U'}
+                subtitle={[item.emailAddress, item.phoneNumber].filter(Boolean).join(' • ')}
+                placeholderLetter={
+                    item.firstName?.[0]?.toUpperCase() || item.emailAddress?.[0]?.toUpperCase() || 'U'
+                }
                 rounded
                 statusIndicator={<StatusBadge condition={!item.user?.verified} text="Unverified" />}
                 tooltipText={`${item.firstName} ${item.lastName} (${item.emailAddress})`}
@@ -315,15 +335,22 @@ const createEntityConfigs = (i18n: any) => ({
                 }
             }
         `),
-        label: (item: any) => (
-            <EntityLabel
-                title={item.name}
-                subtitle={`${item.mimeType}${item.width && item.height ? ` • ${item.width}×${item.height}` : ''}${item.fileSize ? ` • ${Math.round(item.fileSize / 1024)}KB` : ''}`}
-                imageUrl={item.preview}
-                placeholderLetter="A"
-                tooltipText={`${item.name} (${item.mimeType}${item.width && item.height ? `, ${item.width}×${item.height}` : ''}${item.fileSize ? `, ${Math.round(item.fileSize / 1024)}KB` : ''})`}
-            />
-        ),
+        label: (item: any) => {
+            const dimensions = item.width && item.height ? `${item.width}×${item.height}` : '';
+            const fileSize = item.fileSize ? `${Math.round(item.fileSize / 1024)}KB` : '';
+            const subtitle = [item.mimeType, dimensions, fileSize].filter(Boolean).join(' • ');
+            const tooltipDetails = [item.mimeType, dimensions, fileSize].filter(Boolean).join(', ');
+
+            return (
+                <EntityLabel
+                    title={item.name}
+                    subtitle={subtitle}
+                    imageUrl={item.preview}
+                    placeholderLetter="A"
+                    tooltipText={`${item.name} (${tooltipDetails})`}
+                />
+            );
+        },
     }),
 
     Order: createRelationSelectorConfig({
@@ -349,14 +376,16 @@ const createEntityConfigs = (i18n: any) => ({
             }
         `),
         label: (item: any) => {
-            const stateVariant = item.state === 'Delivered' ? 'green' : item.state === 'Cancelled' ? 'red' : 'blue';
+            const stateVariant = getOrderStateVariant(item.state);
             return (
                 <EntityLabel
                     title={item.code}
                     subtitle={`${item.customer?.firstName} ${item.customer?.lastName} • ${item.totalWithTax / 100} ${item.currencyCode}`}
                     placeholderLetter="O"
                     rounded
-                    statusIndicator={<StatusBadge condition={true} text={item.state} variant={stateVariant} />}
+                    statusIndicator={
+                        <StatusBadge condition={true} text={item.state} variant={stateVariant} />
+                    }
                     tooltipText={`${item.code} - ${item.customer?.firstName} ${item.customer?.lastName} (${item.totalWithTax / 100} ${item.currencyCode})`}
                 />
             );
@@ -468,16 +497,24 @@ const createEntityConfigs = (i18n: any) => ({
                 }
             }
         `),
-        label: (item: any) => (
-            <EntityLabel
-                title={item.name}
-                subtitle={`${item.couponCode ? `${item.couponCode} • ` : ''}${item.startsAt ? `Starts: ${new Date(item.startsAt).toLocaleDateString()}` : ''}${item.endsAt ? ` • Ends: ${new Date(item.endsAt).toLocaleDateString()}` : ''}`}
-                placeholderLetter="PR"
-                rounded
-                statusIndicator={<StatusBadge condition={!item.enabled} text="Disabled" />}
-                tooltipText={`${item.name}${item.couponCode ? ` (${item.couponCode})` : ''}`}
-            />
-        ),
+        label: (item: any) => {
+            const parts = [
+                item.couponCode,
+                item.startsAt && `Starts: ${new Date(item.startsAt).toLocaleDateString()}`,
+                item.endsAt && `Ends: ${new Date(item.endsAt).toLocaleDateString()}`,
+            ].filter(Boolean);
+
+            return (
+                <EntityLabel
+                    title={item.name}
+                    subtitle={parts.join(' • ')}
+                    placeholderLetter="PR"
+                    rounded
+                    statusIndicator={<StatusBadge condition={!item.enabled} text="Disabled" />}
+                    tooltipText={item.couponCode ? `${item.name} (${item.couponCode})` : item.name}
+                />
+            );
+        },
     }),
 });
 
@@ -487,7 +524,7 @@ interface DefaultRelationInputProps {
     disabled?: boolean;
 }
 
-export function DefaultRelationInput({ fieldDef, field, disabled }: DefaultRelationInputProps) {
+export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<DefaultRelationInputProps>) {
     const { i18n } = useLingui();
     const entityName = fieldDef.entity;
     const ENTITY_CONFIGS = createEntityConfigs(i18n);
