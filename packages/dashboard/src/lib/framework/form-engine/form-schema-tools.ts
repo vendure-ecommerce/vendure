@@ -312,7 +312,8 @@ export function createFormSchemaFromFields(
                         zodType = zodType.optional().nullable();
                     }
 
-                    customFieldsSchema[customField.name] = zodType;
+                    const schemaPropertyName = getGraphQlInputName(customField);
+                    customFieldsSchema[schemaPropertyName] = zodType;
                 }
             }
 
@@ -411,4 +412,12 @@ export function getZodTypeFromField(field: FieldInfo, customFieldConfigs?: Custo
         zodType = zodType.optional().nullable();
     }
     return zodType;
+}
+
+export function getGraphQlInputName(config: { name: string; type: string; list?: boolean }): string {
+    if (config.type === 'relation') {
+        return config.list === true ? `${config.name}Ids` : `${config.name}Id`;
+    } else {
+        return config.name;
+    }
 }

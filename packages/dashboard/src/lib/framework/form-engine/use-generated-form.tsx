@@ -48,6 +48,10 @@ export function useGeneratedForm<
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
 
+    const values = processedEntity
+        ? transformRelationFields(updateFields, setValues(processedEntity))
+        : defaultValues;
+
     const form = useForm({
         resolver: async (values, context, options) => {
             const result = await zodResolver(schema)(values, context, options);
@@ -58,9 +62,7 @@ export function useGeneratedForm<
         },
         mode: 'onChange',
         defaultValues,
-        values: processedEntity
-            ? transformRelationFields(updateFields, setValues(processedEntity))
-            : defaultValues,
+        values,
     });
     let submitHandler = (event: FormEvent) => {
         event.preventDefault();
