@@ -77,39 +77,35 @@ export function removeReadonlyAndLocalizedCustomFields<T extends Record<string, 
         return values;
     }
 
-    // Create a deep copy to avoid mutating the original values
     const result = structuredClone(values);
-
-    // Get readonly field names
     const readonlyFieldNames = customFieldConfigs
         .filter(config => config.readonly === true)
         .map(config => config.name);
-
-    // Get locale-specific field names (localeString and localeText)
     const localeFieldNames = customFieldConfigs
         .filter(config => config.type === 'localeString' || config.type === 'localeText')
         .map(config => config.name);
-
-    // Combine both types of fields to remove from root customFields
     const fieldsToRemoveFromRoot = [...readonlyFieldNames, ...localeFieldNames];
 
-    // Remove readonly and locale fields from main customFields
     if (result.customFields && typeof result.customFields === 'object') {
-        for (const fieldName of fieldsToRemoveFromRoot) {
+        fieldsToRemoveFromRoot.forEach(fieldName => {
             delete result.customFields[fieldName];
-        }
+        });
     }
 
-    // Remove readonly fields from translations customFields (but keep locale fields there)
-    if (Array.isArray(result.translations)) {
-        for (const translation of result.translations) {
-            if (translation?.customFields && typeof translation.customFields === 'object') {
-                for (const fieldName of readonlyFieldNames) {
-                    delete translation.customFields[fieldName];
-                }
-            }
-        }
-    }
-
+    removeReadonlyFromTranslations(result, readonlyFieldNames);
     return result;
+}
+
+function removeReadonlyFromTranslations(entity: Record<string, any>, readonlyFieldNames: string[]): void {
+    if (!Array.isArray(entity.translations)) {
+        return;
+    }
+
+    entity.translations.forEach(translation => {
+        if (translation?.customFields && typeof translation.customFields === 'object') {
+            readonlyFieldNames.forEach(fieldName => {
+                delete translation.customFields[fieldName];
+            });
+        }
+    });
 }

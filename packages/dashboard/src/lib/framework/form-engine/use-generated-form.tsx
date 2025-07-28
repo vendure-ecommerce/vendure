@@ -64,7 +64,7 @@ export function useGeneratedForm<
         defaultValues,
         values,
     });
-    let submitHandler = (event: FormEvent) => {
+    let submitHandler = (event: FormEvent): any => {
         event.preventDefault();
     };
     if (onSubmit) {
