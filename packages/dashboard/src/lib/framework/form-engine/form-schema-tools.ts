@@ -62,12 +62,27 @@ function mapGraphQLCustomFieldToConfig(field: StructFieldConfig): CustomFieldCon
     }
 }
 
+/**
+ * Safely parses a date string into a Date object.
+ * Used for parsing datetime constraints in custom field validation.
+ *
+ * @param dateStr - The date string to parse
+ * @returns Parsed Date object or undefined if invalid
+ */
 function parseDate(dateStr: string | undefined | null): Date | undefined {
     if (!dateStr) return undefined;
     const date = new Date(dateStr);
     return isNaN(date.getTime()) ? undefined : date;
 }
 
+/**
+ * Creates a Zod validation schema for datetime fields with optional min/max constraints.
+ * Supports both string and Date inputs, which is common in form handling.
+ *
+ * @param minDate - Optional minimum date constraint
+ * @param maxDate - Optional maximum date constraint
+ * @returns Zod schema that validates date ranges
+ */
 function createDateValidationSchema(minDate: Date | undefined, maxDate: Date | undefined): ZodType {
     const baseSchema = z.union([z.string(), z.date()]);
     if (!minDate && !maxDate) return baseSchema;
@@ -94,246 +109,242 @@ function createDateValidationSchema(minDate: Date | undefined, maxDate: Date | u
     );
 }
 
+/**
+ * Creates a Zod validation schema for string fields with optional regex pattern validation.
+ * Used for string-type custom fields that may have pattern constraints.
+ *
+ * @param pattern - Optional regex pattern string for validation
+ * @returns Zod string schema with optional pattern validation
+ */
+function createStringValidationSchema(pattern?: string): ZodType {
+    let schema = z.string();
+    if (pattern) {
+        schema = schema.regex(new RegExp(pattern), {
+            message: `Value must match pattern: ${pattern}`,
+        });
+    }
+    return schema;
+}
+
+/**
+ * Creates a Zod validation schema for integer fields with optional min/max constraints.
+ * Used for int-type custom fields that may have numeric range limits.
+ *
+ * @param min - Optional minimum value constraint
+ * @param max - Optional maximum value constraint
+ * @returns Zod number schema with optional range validation
+ */
+function createIntValidationSchema(min?: number, max?: number): ZodType {
+    let schema = z.number();
+    if (min !== undefined) {
+        schema = schema.min(min, {
+            message: `Value must be at least ${min}`,
+        });
+    }
+    if (max !== undefined) {
+        schema = schema.max(max, {
+            message: `Value must be at most ${max}`,
+        });
+    }
+    return schema;
+}
+
+/**
+ * Creates a Zod validation schema for float fields with optional min/max constraints.
+ * Used for float-type custom fields that may have numeric range limits.
+ *
+ * @param min - Optional minimum value constraint
+ * @param max - Optional maximum value constraint
+ * @returns Zod number schema with optional range validation
+ */
+function createFloatValidationSchema(min?: number, max?: number): ZodType {
+    let schema = z.number();
+    if (min !== undefined) {
+        schema = schema.min(min, {
+            message: `Value must be at least ${min}`,
+        });
+    }
+    if (max !== undefined) {
+        schema = schema.max(max, {
+            message: `Value must be at most ${max}`,
+        });
+    }
+    return schema;
+}
+
+/**
+ * Creates a Zod validation schema for a single custom field based on its type and constraints.
+ * This is the main dispatcher that routes different custom field types to their specific
+ * validation schema creators. Handles all standard custom field types in Vendure.
+ *
+ * @param customField - The custom field configuration object
+ * @returns Zod schema appropriate for the custom field type
+ */
+function createCustomFieldValidationSchema(customField: CustomFieldConfig): ZodType {
+    let zodType: ZodType;
+
+    switch (customField.type) {
+        case 'localeString':
+        case 'localeText':
+        case 'string':
+            zodType = createStringValidationSchema(customField.pattern);
+            break;
+        case 'int':
+            zodType = createIntValidationSchema(customField.intMin, customField.intMax);
+            break;
+        case 'float':
+            zodType = createFloatValidationSchema(customField.floatMin, customField.floatMax);
+            break;
+        case 'datetime': {
+            const minDate = parseDate(customField.datetimeMin);
+            const maxDate = parseDate(customField.datetimeMax);
+            zodType = createDateValidationSchema(minDate, maxDate);
+            break;
+        }
+        case 'boolean':
+            zodType = z.boolean();
+            break;
+        default:
+            zodType = z.any();
+            break;
+    }
+
+    return zodType;
+}
+
+/**
+ * Creates a Zod validation schema for struct-type custom fields.
+ * Struct fields contain nested sub-fields, each with their own validation rules.
+ * This recursively processes each sub-field to create a nested object schema.
+ *
+ * @param structFieldConfig - The struct custom field configuration with nested fields
+ * @returns Zod object schema representing the struct with all sub-field validations
+ */
+function createStructFieldSchema(structFieldConfig: StructCustomFieldConfig): ZodType {
+    if (!structFieldConfig.fields || !Array.isArray(structFieldConfig.fields)) {
+        return z.object({}).passthrough();
+    }
+
+    const nestedSchema: ZodRawShape = {};
+    for (const structSubField of structFieldConfig.fields) {
+        const config = mapGraphQLCustomFieldToConfig(structSubField as StructFieldConfig);
+        let subFieldType = createCustomFieldValidationSchema(config);
+
+        // Handle list and nullable for struct sub-fields
+        if (config.list) {
+            subFieldType = z.array(subFieldType);
+        }
+        if (config.nullable) {
+            subFieldType = subFieldType.optional().nullable();
+        }
+
+        nestedSchema[config.name] = subFieldType;
+    }
+
+    return z.object(nestedSchema);
+}
+
+/**
+ * Applies common list and nullable modifiers to a Zod schema based on custom field configuration.
+ * Many custom fields can be configured as lists (arrays) and/or nullable, so this helper
+ * centralizes that logic to avoid duplication.
+ *
+ * @param zodType - The base Zod schema to modify
+ * @param customField - Custom field config containing list/nullable flags
+ * @returns Modified Zod schema with list/nullable modifiers applied
+ */
+function applyListAndNullableModifiers(zodType: ZodType, customField: CustomFieldConfig): ZodType {
+    let modifiedType = zodType;
+
+    if (customField.list) {
+        modifiedType = z.array(modifiedType);
+    }
+    if (customField.nullable !== false) {
+        modifiedType = modifiedType.optional().nullable();
+    }
+
+    return modifiedType;
+}
+
+/**
+ * Processes all custom fields and creates a complete validation schema for the customFields object.
+ * Handles context-aware filtering (translation vs root context) and orchestrates the creation
+ * of validation schemas for all custom field types including complex struct fields.
+ *
+ * @param customFieldConfigs - Array of all custom field configurations
+ * @param isTranslationContext - Whether we're processing fields for translation forms
+ * @returns Zod schema shape for the entire customFields object
+ */
+function processCustomFieldsSchema(
+    customFieldConfigs: CustomFieldConfig[],
+    isTranslationContext: boolean,
+): ZodRawShape {
+    const customFieldsSchema: ZodRawShape = {};
+    const translatableTypes = ['localeString', 'localeText'];
+
+    const filteredCustomFields = customFieldConfigs.filter(cf => {
+        if (isTranslationContext) {
+            return translatableTypes.includes(cf.type);
+        } else {
+            return !translatableTypes.includes(cf.type);
+        }
+    });
+
+    for (const customField of filteredCustomFields) {
+        let zodType: ZodType;
+
+        if (customField.type === 'struct') {
+            zodType = createStructFieldSchema(customField as StructCustomFieldConfig);
+        } else {
+            zodType = createCustomFieldValidationSchema(customField);
+        }
+
+        zodType = applyListAndNullableModifiers(zodType, customField);
+        const schemaPropertyName = getGraphQlInputName(customField);
+        customFieldsSchema[schemaPropertyName] = zodType;
+    }
+
+    return customFieldsSchema;
+}
+
 export function createFormSchemaFromFields(
     fields: FieldInfo[],
     customFieldConfigs?: CustomFieldConfig[],
     isTranslationContext = false,
 ) {
     const schemaConfig: ZodRawShape = {};
+
     for (const field of fields) {
         const isScalar = isScalarType(field.type);
         const isEnum = isEnumType(field.type);
+
         if ((isScalar || isEnum) && field.name !== 'customFields') {
             schemaConfig[field.name] = getZodTypeFromField(field, customFieldConfigs);
         } else if (field.name === 'customFields') {
-            // Special handling for customFields object
-            const customFieldsSchema: ZodRawShape = {};
-
-            if (customFieldConfigs && customFieldConfigs.length > 0) {
-                // Filter custom fields based on context
-                const translatableTypes = ['localeString', 'localeText'];
-                const filteredCustomFields = customFieldConfigs.filter(cf => {
-                    if (isTranslationContext) {
-                        // In translation context, only include translatable types
-                        return translatableTypes.includes(cf.type);
-                    } else {
-                        // In root context, only include non-translatable types
-                        return !translatableTypes.includes(cf.type);
-                    }
-                });
-
-                for (const customField of filteredCustomFields) {
-                    let zodType: ZodType;
-                    switch (customField.type) {
-                        case 'localeString':
-                        case 'string': {
-                            let zt = z.string();
-                            if (customField.pattern) {
-                                zt = zt.regex(new RegExp(customField.pattern), {
-                                    message: `Value must match pattern: ${customField.pattern}`,
-                                });
-                            }
-                            zodType = zt;
-                            break;
-                        }
-                        case 'int': {
-                            let zt = z.number();
-                            if (customField.intMin !== undefined) {
-                                zt = zt.min(customField.intMin, {
-                                    message: `Value must be at least ${customField.intMin}`,
-                                });
-                            }
-                            if (customField.intMax !== undefined) {
-                                zt = zt.max(customField.intMax, {
-                                    message: `Value must be at most ${customField.intMax}`,
-                                });
-                            }
-                            zodType = zt;
-                            break;
-                        }
-                        case 'float': {
-                            let zt = z.number();
-                            if (customField.floatMin !== undefined) {
-                                zt = zt.min(customField.floatMin, {
-                                    message: `Value must be at least ${customField.floatMin}`,
-                                });
-                            }
-                            if (customField.floatMax !== undefined) {
-                                zt = zt.max(customField.floatMax, {
-                                    message: `Value must be at most ${customField.floatMax}`,
-                                });
-                            }
-                            zodType = zt;
-                            break;
-                        }
-                        case 'datetime': {
-                            let zt = z.union([z.string(), z.date()]);
-                            if (customField.datetimeMin || customField.datetimeMax) {
-                                const dateMinString = customField.datetimeMin
-                                    ? new Date(customField.datetimeMin).toLocaleDateString()
-                                    : '';
-                                const dateMaxString = customField.datetimeMax
-                                    ? new Date(customField.datetimeMax).toLocaleDateString()
-                                    : '';
-                                const dateMinMessage = customField.datetimeMin
-                                    ? `Date must be after ${dateMinString}`
-                                    : '';
-                                const dateMaxMessage = customField.datetimeMax
-                                    ? `Date must be before ${dateMaxString}`
-                                    : '';
-                                zt = z.union([z.string(), z.date()]).superRefine((val, ctx) => {
-                                    if (!val) return true;
-                                    const date = val instanceof Date ? val : new Date(val);
-                                    if (customField.datetimeMin && customField.datetimeMin !== '') {
-                                        const minDate = new Date(customField.datetimeMin);
-                                        if (date < minDate) {
-                                            ctx.addIssue({
-                                                code: z.ZodIssueCode.custom,
-                                                message: dateMinMessage,
-                                            });
-                                            return false;
-                                        }
-                                    }
-                                    if (customField.datetimeMax && customField.datetimeMax !== '') {
-                                        const maxDate = new Date(customField.datetimeMax);
-                                        if (date > maxDate) {
-                                            ctx.addIssue({
-                                                code: z.ZodIssueCode.custom,
-                                                message: dateMaxMessage,
-                                            });
-                                            return false;
-                                        }
-                                    }
-                                    return true;
-                                });
-                            }
-                            zodType = zt;
-                            break;
-                        }
-                        case 'boolean': {
-                            const zt = z.boolean();
-                            zodType = zt;
-                            break;
-                        }
-                        case 'struct': {
-                            // For struct fields, we need to create a nested object schema
-                            // The actual struct field configuration should have a 'fields' property
-                            const structFieldConfig = customField as StructCustomFieldConfig;
-                            if (structFieldConfig.fields && Array.isArray(structFieldConfig.fields)) {
-                                const nestedSchema: ZodRawShape = {};
-                                for (const structSubField of structFieldConfig.fields) {
-                                    // Create validation for each sub-field of the struct
-                                    const config = mapGraphQLCustomFieldToConfig(
-                                        structSubField as StructFieldConfig,
-                                    );
-                                    let subFieldType: ZodType;
-                                    switch (config.type) {
-                                        case 'string': {
-                                            let zt = z.string();
-                                            if (config.pattern) {
-                                                zt = zt.regex(new RegExp(config.pattern), {
-                                                    message: `Value must match pattern: ${config.pattern}`,
-                                                });
-                                            }
-                                            subFieldType = zt;
-                                            break;
-                                        }
-                                        case 'int': {
-                                            let zt = z.number();
-                                            if (config.intMin !== undefined) {
-                                                zt = zt.min(config.intMin, {
-                                                    message: `Value must be at least ${config.intMin}`,
-                                                });
-                                            }
-                                            if (config.intMax !== undefined) {
-                                                zt = zt.max(config.intMax, {
-                                                    message: `Value must be at most ${config.intMax}`,
-                                                });
-                                            }
-                                            subFieldType = zt;
-                                            break;
-                                        }
-                                        case 'float': {
-                                            let zt = z.number();
-                                            if (config.floatMin !== undefined) {
-                                                zt = zt.min(config.floatMin, {
-                                                    message: `Value must be at least ${config.floatMin}`,
-                                                });
-                                            }
-                                            if (config.floatMax !== undefined) {
-                                                zt = zt.max(config.floatMax, {
-                                                    message: `Value must be at most ${config.floatMax}`,
-                                                });
-                                            }
-                                            subFieldType = zt;
-                                            break;
-                                        }
-                                        case 'datetime': {
-                                            const minDate = parseDate(config.datetimeMin);
-                                            const maxDate = parseDate(config.datetimeMax);
-                                            subFieldType = createDateValidationSchema(minDate, maxDate);
-                                            break;
-                                        }
-                                        default: {
-                                            subFieldType = config.type === 'boolean' ? z.boolean() : z.any();
-                                            break;
-                                        }
-                                    }
-
-                                    // Handle list and nullable for struct sub-fields
-                                    if (config.list) {
-                                        subFieldType = z.array(subFieldType);
-                                    }
-                                    if (config.nullable) {
-                                        subFieldType = subFieldType.optional().nullable();
-                                    }
-
-                                    nestedSchema[config.name] = subFieldType;
-                                }
-                                zodType = z.object(nestedSchema);
-                            } else {
-                                // Fallback if struct doesn't have proper fields configuration
-                                zodType = z.object({}).passthrough();
-                            }
-                            break;
-                        }
-                        default: {
-                            const zt = z.any();
-                            zodType = zt;
-                            break;
-                        }
-                    }
-
-                    if (customField.list) {
-                        zodType = z.array(zodType);
-                    }
-                    if (customField.nullable !== false) {
-                        zodType = zodType.optional().nullable();
-                    }
-
-                    const schemaPropertyName = getGraphQlInputName(customField);
-                    customFieldsSchema[schemaPropertyName] = zodType;
-                }
-            }
-
+            const customFieldsSchema =
+                customFieldConfigs && customFieldConfigs.length > 0
+                    ? processCustomFieldsSchema(customFieldConfigs, isTranslationContext)
+                    : {};
             schemaConfig[field.name] = z.object(customFieldsSchema).optional();
         } else if (field.typeInfo) {
-            // Detect if we're processing translations to set the correct context
             const isNestedTranslationContext = field.name === 'translations' || isTranslationContext;
             let nestedType: ZodType = createFormSchemaFromFields(
                 field.typeInfo,
                 customFieldConfigs,
                 isNestedTranslationContext,
             );
+
             if (field.nullable) {
                 nestedType = nestedType.optional().nullable();
             }
             if (field.list) {
                 nestedType = z.array(nestedType);
             }
+
             schemaConfig[field.name] = nestedType;
         }
     }
+
     return z.object(schemaConfig);
 }
 
