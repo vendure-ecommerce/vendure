@@ -76,6 +76,83 @@ interface ProductMultiSelectorProps {
     onOpenChange: (open: boolean) => void;
 }
 
+function LoadingState() {
+    return (
+        <div className="text-center text-muted-foreground">
+            <Trans>Loading...</Trans>
+        </div>
+    );
+}
+
+function EmptyState() {
+    return (
+        <div className="text-center text-muted-foreground">
+            <Trans>No items found</Trans>
+        </div>
+    );
+}
+
+function ProductList({
+    items,
+    mode,
+    selectedIds,
+    getItemId,
+    getItemName,
+    toggleSelection,
+}: Readonly<{
+    items: SearchItem[];
+    mode: 'product' | 'variant';
+    selectedIds: Set<string>;
+    getItemId: (item: SearchItem) => string;
+    getItemName: (item: SearchItem) => string;
+    toggleSelection: (item: SearchItem) => void;
+}>) {
+    return (
+        <>
+            {items.map(item => {
+                const itemId = getItemId(item);
+                const isSelected = selectedIds.has(itemId);
+                const asset =
+                    mode === 'product' ? item.productAsset : item.productVariantAsset || item.productAsset;
+
+                return (
+                    <div
+                        key={itemId}
+                        className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                            isSelected
+                                ? 'border-primary bg-primary/5'
+                                : 'border-border hover:border-primary/50'
+                        }`}
+                        onClick={() => toggleSelection(item)}
+                    >
+                        <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0">
+                                <VendureImage
+                                    asset={asset}
+                                    preset="tiny"
+                                    className="w-16 h-16 rounded object-contain bg-secondary/10"
+                                    fallback={<div className="w-16 h-16 rounded bg-secondary/10" />}
+                                />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm">{getItemName(item)}</div>
+                                {mode === 'product' ? (
+                                    <div className="text-xs text-muted-foreground">{item.slug}</div>
+                                ) : (
+                                    <div className="text-xs text-muted-foreground">{item.sku}</div>
+                                )}
+                            </div>
+                            <div className="flex-shrink-0">
+                                <Checkbox checked={isSelected} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </>
+    );
+}
+
 function ProductMultiSelectorDialog({
     mode,
     initialSelectionIds = [],
@@ -208,65 +285,17 @@ function ProductMultiSelectorDialog({
                         {/* Items Grid */}
                         <div className="lg:col-span-2 overflow-auto flex flex-col">
                             <div className="space-y-2 p-2">
-                                {isLoading ? (
-                                    <div className="text-center text-muted-foreground">
-                                        <Trans>Loading...</Trans>
-                                    </div>
-                                ) : items.length === 0 ? (
-                                    <div className="text-center text-muted-foreground">
-                                        <Trans>No items found</Trans>
-                                    </div>
-                                ) : (
-                                    items.map(item => {
-                                        const itemId = getItemId(item);
-                                        const isSelected = selectedIds.has(itemId);
-                                        const asset =
-                                            mode === 'product'
-                                                ? item.productAsset
-                                                : item.productVariantAsset || item.productAsset;
-
-                                        return (
-                                            <div
-                                                key={itemId}
-                                                className={`border rounded-lg p-3 cursor-pointer transition-colors ${
-                                                    isSelected
-                                                        ? 'border-primary bg-primary/5'
-                                                        : 'border-border hover:border-primary/50'
-                                                }`}
-                                                onClick={() => toggleSelection(item)}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className="flex-shrink-0">
-                                                        <VendureImage
-                                                            asset={asset}
-                                                            preset="tiny"
-                                                            className="w-16 h-16 rounded object-contain bg-secondary/10"
-                                                            fallback={
-                                                                <div className="w-16 h-16 rounded bg-secondary/10" />
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="font-medium text-sm">
-                                                            {getItemName(item)}
-                                                        </div>
-                                                        {mode === 'product' ? (
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {item.slug}
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {item.sku}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-shrink-0">
-                                                        <Checkbox checked={isSelected} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })
+                                {isLoading && <LoadingState />}
+                                {!isLoading && items.length === 0 && <EmptyState />}
+                                {!isLoading && items.length > 0 && (
+                                    <ProductList
+                                        items={items}
+                                        mode={mode}
+                                        selectedIds={selectedIds}
+                                        getItemId={getItemId}
+                                        getItemName={getItemName}
+                                        toggleSelection={toggleSelection}
+                                    />
                                 )}
                             </div>
                         </div>
@@ -357,16 +386,16 @@ export const ProductMultiInput: DataInputComponent = ({ value, onChange, ...prop
         [onChange],
     );
 
+    const itemType = mode === 'product' ? 'products' : 'variants';
+    const buttonText =
+        selectedIds.length > 0 ? `Selected ${selectedIds.length} ${itemType}` : `Select ${itemType}`;
+
     return (
         <>
             <div className="space-y-2">
                 <Button variant="outline" onClick={() => setOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    <Trans>
-                        {selectedIds.length > 0
-                            ? `Selected ${selectedIds.length} ${mode === 'product' ? 'products' : 'variants'}`
-                            : `Select ${mode === 'product' ? 'products' : 'variants'}`}
-                    </Trans>
+                    <Trans>{buttonText}</Trans>
                 </Button>
 
                 {selectedIds.length > 0 && (

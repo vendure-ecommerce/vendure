@@ -106,7 +106,7 @@ export function ConfigurableOperationListInput({
                     />
                 );
 
-            case 'select-form-input':
+            case 'select-form-input': {
                 const options = (definition.ui as any)?.options || [];
                 return (
                     <Select
@@ -128,7 +128,7 @@ export function ConfigurableOperationListInput({
                         </SelectContent>
                     </Select>
                 );
-
+            }
             case 'textarea-form-input':
                 return (
                     <Textarea
@@ -148,7 +148,7 @@ export function ConfigurableOperationListInput({
                     />
                 );
 
-            case 'number-form-input':
+            case 'number-form-input': {
                 const ui = definition.ui as any;
                 const isFloat = argType === 'float';
                 return (
@@ -162,7 +162,7 @@ export function ConfigurableOperationListInput({
                         step={ui?.step || (isFloat ? 0.01 : 1)}
                     />
                 );
-
+            }
             case 'currency-form-input':
                 return (
                     <div className="flex items-center">
@@ -192,7 +192,7 @@ export function ConfigurableOperationListInput({
                 );
 
             case 'int':
-            case 'float':
+            case 'float': {
                 const isFloat = argType === 'float';
                 return (
                     <Input
@@ -203,7 +203,7 @@ export function ConfigurableOperationListInput({
                         step={isFloat ? 0.01 : 1}
                     />
                 );
-
+            }
             case 'datetime':
                 return (
                     <DateTimeInput
@@ -363,7 +363,7 @@ export function ConfigurableOperationListInput({
         return (
             <div className="space-y-2">
                 {arrayValue.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                    <div key={index + item} className="flex items-center gap-2 p-2 bg-muted rounded-md">
                         <span className="flex-1">{item}</span>
                     </div>
                 ))}
@@ -376,7 +376,7 @@ export function ConfigurableOperationListInput({
         <div className="space-y-2">
             {/* Existing items */}
             {arrayValue.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
+                <div key={index + item} className="flex items-center gap-2">
                     <div className="flex-1">{renderItemInput(item, index)}</div>
                     <Button
                         variant="outline"
