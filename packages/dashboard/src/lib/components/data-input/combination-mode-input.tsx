@@ -1,13 +1,11 @@
-import { Button } from '@/vdb/components/ui/button.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { DataInputComponent } from '@/vdb/framework/component-registry/component-registry.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
-export const CombinationModeInput: DataInputComponent = ({ value, onChange, ...props }) => {
+export const CombinationModeInput: DataInputComponent = ({ value, onChange, position, ...props }) => {
     const booleanValue = value === 'true' || value === true;
 
-    // For now, we'll assume it's always selectable since we don't have the position context
-    // In the future, this could be enhanced with position-based logic
-    const selectable = true;
+    // Only show for items after the first one
+    const selectable = position !== undefined && position > 0;
 
     const setCombinationModeAnd = () => {
         onChange(true);
@@ -18,33 +16,37 @@ export const CombinationModeInput: DataInputComponent = ({ value, onChange, ...p
     };
 
     if (!selectable) {
-        return (
-            <small className="text-muted-foreground">
-                <Trans>Not applicable</Trans>
-            </small>
-        );
+        return null;
     }
 
     return (
-        <div className="flex" role="group">
-            <Button
-                type="button"
-                variant={booleanValue === true ? 'default' : 'outline'}
-                className="uppercase rounded-r-none border-r-0 text-xs"
-                onClick={setCombinationModeAnd}
-                {...props}
-            >
-                <Trans>AND</Trans>
-            </Button>
-            <Button
-                type="button"
-                variant={booleanValue === false ? 'default' : 'outline'}
-                className="uppercase rounded-l-none text-xs"
-                onClick={setCombinationModeOr}
-                {...props}
-            >
-                <Trans>OR</Trans>
-            </Button>
+        <div className="flex items-center justify-center -mt-4 -mb-4">
+            <div className="bg-muted border px-3 py-1.5 rounded-full flex gap-1.5 text-xs shadow-sm">
+                <button
+                    type="button"
+                    className={`px-2 py-0.5 rounded-full transition-colors ${
+                        booleanValue
+                            ? 'bg-primary text-background'
+                            : 'text-muted-foreground hover:bg-muted-foreground/10'
+                    }`}
+                    onClick={setCombinationModeAnd}
+                    {...props}
+                >
+                    <Trans>AND</Trans>
+                </button>
+                <button
+                    type="button"
+                    className={`px-2 py-0.5 rounded-full transition-colors ${
+                        !booleanValue
+                            ? 'bg-primary text-background'
+                            : 'text-muted-foreground hover:bg-muted-foreground/10'
+                    }`}
+                    onClick={setCombinationModeOr}
+                    {...props}
+                >
+                    <Trans>OR</Trans>
+                </button>
+            </div>
         </div>
     );
 };

@@ -17,6 +17,7 @@ export interface ConfigurableOperationArgInputProps {
     readOnly?: boolean;
     value: string;
     onChange: (value: any) => void;
+    position?: number;
 }
 
 /**
@@ -48,6 +49,7 @@ export function ConfigurableOperationArgInput({
     value,
     onChange,
     readOnly,
+    position,
 }: ConfigurableOperationArgInputProps) {
     const uiComponent = (definition.ui as any)?.component;
     const argType = definition.type as ConfigArgType;
@@ -160,6 +162,7 @@ export function ConfigurableOperationArgInput({
                                 value={value}
                                 onChange={onChange}
                                 readOnly={readOnly}
+                                position={position}
                                 definition={definition}
                                 {...(definition.ui as any)}
                             />

@@ -5,6 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
+import { InputComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -150,12 +151,27 @@ export function ConfigurableOperationMultiSelector({
         onChange(value.filter((_, i) => i !== index));
     };
 
+    const onCombinationModeChange = (index: number, newValue: boolean | string) => {
+        const updatedValue = [...value];
+        const operation = updatedValue[index];
+        if (operation) {
+            const updatedOperation = {
+                ...operation,
+                arguments: operation.arguments.map(arg =>
+                    arg.name === 'combineWithAnd' ? { ...arg, value: newValue.toString() } : arg,
+                ),
+            };
+            updatedValue[index] = updatedOperation;
+            onChange(updatedValue);
+        }
+    };
+
     const hasOperations = value && value.length > 0;
 
     return (
         <div className="space-y-4">
             {hasOperations && (
-                <div className="space-y-3">
+                <div className="space-y-0">
                     {value.map((operation, index) => {
                         const operationDef = operations?.find(
                             (op: ConfigurableOperationDefFragment) => op.code === operation.code,
@@ -163,15 +179,34 @@ export function ConfigurableOperationMultiSelector({
                         if (!operationDef) {
                             return null;
                         }
+                        const hasCombinationMode = operation.arguments.find(arg => arg.name === 'combineWithAnd');
                         return (
-                            <ConfigurableOperationInput
-                                key={index}
-                                operationDefinition={operationDef}
-                                value={operation}
-                                onChange={value => onOperationValueChange(operation, value)}
-                                onRemove={() => onOperationRemove(index)}
-                                position={index}
-                            />
+                            <div key={index}>
+                                {index > 0 && hasCombinationMode ? (
+                                    <div className="my-2">
+                                        <InputComponent
+                                            id="vendure:combinationModeInput"
+                                            value={
+                                                operation.arguments.find(arg => arg.name === 'combineWithAnd')
+                                                    ?.value ?? 'true'
+                                            }
+                                            onChange={(newValue: boolean | string) =>
+                                                onCombinationModeChange(index, newValue)
+                                            }
+                                            position={index}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-4" />
+                                )}
+                                <ConfigurableOperationInput
+                                    operationDefinition={operationDef}
+                                    value={operation}
+                                    onChange={value => onOperationValueChange(operation, value)}
+                                    onRemove={() => onOperationRemove(index)}
+                                    position={index}
+                                />
+                            </div>
                         );
                     })}
                 </div>
