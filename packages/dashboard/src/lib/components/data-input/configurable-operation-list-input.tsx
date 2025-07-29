@@ -49,7 +49,7 @@ export function ConfigurableOperationListInput({
     value,
     onChange,
     readOnly,
-}: EnhancedListInputProps) {
+}: Readonly<EnhancedListInputProps>) {
     const [newItemValue, setNewItemValue] = useState('');
 
     // Parse the current array value
@@ -91,7 +91,8 @@ export function ConfigurableOperationListInput({
 
         const commonProps = {
             value: itemValue,
-            onChange: (val: string) => handleUpdateItem(index, val),
+            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                handleUpdateItem(index, e.target.value),
             disabled: readOnly,
         };
 
@@ -129,13 +130,20 @@ export function ConfigurableOperationListInput({
                 );
 
             case 'textarea-form-input':
-                return <Textarea {...commonProps} placeholder="Enter text..." rows={2} className="bg-background" />;
+                return (
+                    <Textarea
+                        {...commonProps}
+                        placeholder="Enter text..."
+                        rows={2}
+                        className="bg-background"
+                    />
+                );
 
             case 'date-form-input':
                 return (
                     <DateTimeInput
-                        value={itemValue}
-                        onChange={val => handleUpdateItem(index, val)}
+                        value={itemValue ? new Date(itemValue) : new Date()}
+                        onChange={val => handleUpdateItem(index, val.toISOString())}
                         disabled={readOnly}
                     />
                 );
@@ -199,8 +207,8 @@ export function ConfigurableOperationListInput({
             case 'datetime':
                 return (
                     <DateTimeInput
-                        value={itemValue}
-                        onChange={val => handleUpdateItem(index, val)}
+                        value={itemValue ? new Date(itemValue) : new Date()}
+                        onChange={val => handleUpdateItem(index, val.toISOString())}
                         disabled={readOnly}
                     />
                 );
@@ -217,13 +225,14 @@ export function ConfigurableOperationListInput({
 
         const commonProps = {
             value: newItemValue,
-            onChange: (val: string) => setNewItemValue(val),
+            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                setNewItemValue(e.target.value),
             disabled: readOnly,
             onKeyPress: handleKeyPress,
         };
 
         switch (uiComponent) {
-            case 'boolean-form-input':
+            case 'boolean-form-input': {
                 return (
                     <Switch
                         checked={newItemValue === 'true'}
@@ -231,8 +240,8 @@ export function ConfigurableOperationListInput({
                         disabled={readOnly}
                     />
                 );
-
-            case 'select-form-input':
+            }
+            case 'select-form-input': {
                 const options = (definition.ui as any)?.options || [];
                 return (
                     <Select value={newItemValue} onValueChange={setNewItemValue} disabled={readOnly}>
@@ -250,14 +259,21 @@ export function ConfigurableOperationListInput({
                         </SelectContent>
                     </Select>
                 );
-
-            case 'textarea-form-input':
-                return <Textarea {...commonProps} placeholder="Enter text..." rows={2} className="bg-background" />;
-
-            case 'date-form-input':
+            }
+            case 'textarea-form-input': {
+                return (
+                    <Textarea
+                        {...commonProps}
+                        placeholder="Enter text..."
+                        rows={2}
+                        className="bg-background"
+                    />
+                );
+            }
+            case 'date-form-input': {
                 return <DateTimeInput value={newItemValue} onChange={setNewItemValue} disabled={readOnly} />;
-
-            case 'number-form-input':
+            }
+            case 'number-form-input': {
                 const ui = definition.ui as any;
                 const isFloat = argType === 'float';
                 return (
@@ -274,8 +290,8 @@ export function ConfigurableOperationListInput({
                         className="bg-background"
                     />
                 );
-
-            case 'currency-form-input':
+            }
+            case 'currency-form-input': {
                 return (
                     <div className="flex items-center">
                         <span className="mr-2 text-sm text-muted-foreground">$</span>
@@ -292,6 +308,7 @@ export function ConfigurableOperationListInput({
                         />
                     </div>
                 );
+            }
         }
 
         // Fall back to type-based rendering
@@ -304,9 +321,8 @@ export function ConfigurableOperationListInput({
                         disabled={readOnly}
                     />
                 );
-
             case 'int':
-            case 'float':
+            case 'float': {
                 const isFloat = argType === 'float';
                 return (
                     <Input
@@ -320,12 +336,26 @@ export function ConfigurableOperationListInput({
                         className="bg-background"
                     />
                 );
-
-            case 'datetime':
-                return <DateTimeInput value={newItemValue} onChange={setNewItemValue} disabled={readOnly} />;
-
-            default:
-                return <Input type="text" {...commonProps} placeholder="Enter value..." className="bg-background" />;
+            }
+            case 'datetime': {
+                return (
+                    <DateTimeInput
+                        value={newItemValue ? new Date(newItemValue) : new Date()}
+                        onChange={val => setNewItemValue(val.toISOString())}
+                        disabled={readOnly}
+                    />
+                );
+            }
+            default: {
+                return (
+                    <Input
+                        type="text"
+                        {...commonProps}
+                        placeholder="Enter value..."
+                        className="bg-background"
+                    />
+                );
+            }
         }
     };
 

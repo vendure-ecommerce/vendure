@@ -27,7 +27,7 @@ export function ConfigurableOperationInput({
     value,
     onChange,
     onRemove,
-}: ConfigurableOperationInputProps) {
+}: Readonly<ConfigurableOperationInputProps>) {
     const form = useForm({
         defaultValues: {
             ...value,
@@ -92,7 +92,7 @@ export function ConfigurableOperationInput({
                                     {operationDefinition.args
                                         .filter(
                                             arg =>
-                                                (arg.ui as any)?.component !== 'combination-mode-form-input',
+                                                arg.ui?.component !== 'combination-mode-form-input',
                                         )
                                         .map(arg => {
                                             const argValue =

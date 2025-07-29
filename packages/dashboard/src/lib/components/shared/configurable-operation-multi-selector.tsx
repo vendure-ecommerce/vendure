@@ -181,7 +181,7 @@ export function ConfigurableOperationMultiSelector({
                         }
                         const hasCombinationMode = operation.arguments.find(arg => arg.name === 'combineWithAnd');
                         return (
-                            <div key={index}>
+                            <div key={index + operation.code}>
                                 {index > 0 && hasCombinationMode ? (
                                     <div className="my-2">
                                         <InputComponent

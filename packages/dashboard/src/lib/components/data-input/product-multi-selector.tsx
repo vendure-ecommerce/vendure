@@ -82,7 +82,7 @@ function ProductMultiSelectorDialog({
     onSelectionChange,
     open,
     onOpenChange,
-}: ProductMultiSelectorProps) {
+}: Readonly<ProductMultiSelectorProps>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedItems, setSelectedItems] = useState<SearchItem[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -122,17 +122,6 @@ function ProductMultiSelectorDialog({
     const getItemName = useCallback(
         (item: SearchItem): string => {
             return mode === 'product' ? item.productName : item.productVariantName;
-        },
-        [mode],
-    );
-
-    // Get the appropriate image for an item based on mode
-    const getItemImage = useCallback(
-        (item: SearchItem) => {
-            if (mode === 'product') {
-                return item.productAsset?.preview;
-            }
-            return item.productVariantAsset?.preview || item.productAsset?.preview;
         },
         [mode],
     );

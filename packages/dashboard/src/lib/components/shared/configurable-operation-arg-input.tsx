@@ -50,7 +50,7 @@ export function ConfigurableOperationArgInput({
     onChange,
     readOnly,
     position,
-}: ConfigurableOperationArgInputProps) {
+}: Readonly<ConfigurableOperationArgInputProps>) {
     const uiComponent = (definition.ui as any)?.component;
     const argType = definition.type as ConfigArgType;
     const isList = definition.list ?? false;
@@ -58,7 +58,7 @@ export function ConfigurableOperationArgInput({
     // Handle specific UI components first
     if (uiComponent) {
         switch (uiComponent) {
-            case 'product-selector-form-input':
+            case 'product-selector-form-input': {
                 const entityType =
                     (definition.ui as any)?.selectionMode === 'variant' ? 'ProductVariant' : 'Product';
                 const isMultiple = (definition.ui as any)?.multiple ?? false;
@@ -80,8 +80,8 @@ export function ConfigurableOperationArgInput({
                         disabled={readOnly}
                     />
                 );
-
-            case 'customer-group-form-input':
+            }
+            case 'customer-group-form-input': {
                 const isCustomerGroupMultiple = (definition.ui as any)?.multiple ?? false;
                 return (
                     <DefaultRelationInput
@@ -101,11 +101,11 @@ export function ConfigurableOperationArgInput({
                         disabled={readOnly}
                     />
                 );
-
-            case 'facet-value-form-input':
+            }
+            case 'facet-value-form-input': {
                 return <FacetValueInput value={value} onChange={onChange} readOnly={readOnly} />;
-
-            case 'select-form-input':
+            }
+            case 'select-form-input': {
                 return (
                     <SelectInput
                         definition={definition}
@@ -114,8 +114,8 @@ export function ConfigurableOperationArgInput({
                         readOnly={readOnly}
                     />
                 );
-
-            case 'textarea-form-input':
+            }
+            case 'textarea-form-input': {
                 return (
                     <TextareaInput
                         definition={definition}
@@ -124,14 +124,14 @@ export function ConfigurableOperationArgInput({
                         readOnly={readOnly}
                     />
                 );
-
-            case 'date-form-input':
+            }
+            case 'date-form-input': {
                 return <DateTimeInput value={value} onChange={onChange} disabled={readOnly} />;
-
-            case 'boolean-form-input':
+            }
+            case 'boolean-form-input': {
                 return <BooleanInput value={value} onChange={onChange} readOnly={readOnly} />;
-
-            case 'number-form-input':
+            }
+            case 'number-form-input': {
                 return (
                     <NumberInput
                         definition={definition}
@@ -140,8 +140,8 @@ export function ConfigurableOperationArgInput({
                         readOnly={readOnly}
                     />
                 );
-
-            case 'currency-form-input':
+            }
+            case 'currency-form-input': {
                 return (
                     <CurrencyInput
                         definition={definition}
@@ -150,8 +150,8 @@ export function ConfigurableOperationArgInput({
                         readOnly={readOnly}
                     />
                 );
-
-            default:
+            }
+            default: {
                 // Try to use the component registry for other UI components
                 const componentId = UI_COMPONENT_MAP[uiComponent as keyof typeof UI_COMPONENT_MAP];
                 if (componentId) {
@@ -173,7 +173,7 @@ export function ConfigurableOperationArgInput({
                         );
                     }
                 }
-                break;
+            }
         }
     }
 
@@ -237,11 +237,11 @@ function BooleanInput({
     value,
     onChange,
     readOnly,
-}: {
+}: Readonly<{
     value: string;
     onChange: (value: string) => void;
     readOnly?: boolean;
-}) {
+}>) {
     const boolValue = value === 'true';
 
     return (
@@ -261,12 +261,12 @@ function NumberInput({
     value,
     onChange,
     readOnly,
-}: {
+}: Readonly<{
     definition: ConfigurableOperationDefFragment['args'][number];
     value: string;
     onChange: (value: string) => void;
     readOnly?: boolean;
-}) {
+}>) {
     const ui = definition.ui as any;
     const isFloat = (definition.type as ConfigArgType) === 'float';
     const min = ui?.min;
@@ -304,12 +304,12 @@ function CurrencyInput({
     value,
     onChange,
     readOnly,
-}: {
+}: Readonly<{
     definition: ConfigurableOperationDefFragment['args'][number];
     value: string;
     onChange: (value: string) => void;
     readOnly?: boolean;
-}) {
+}>) {
     const numericValue = value ? parseInt(value, 10) : '';
 
     return (
@@ -337,12 +337,12 @@ function SelectInput({
     value,
     onChange,
     readOnly,
-}: {
+}: Readonly<{
     definition: ConfigurableOperationDefFragment['args'][number];
     value: string;
     onChange: (value: string) => void;
     readOnly?: boolean;
-}) {
+}>) {
     const ui = definition.ui as any;
     const options = ui?.options || [];
 
@@ -372,12 +372,12 @@ function TextareaInput({
     value,
     onChange,
     readOnly,
-}: {
+}: Readonly<{
     definition: ConfigurableOperationDefFragment['args'][number];
     value: string;
     onChange: (value: string) => void;
     readOnly?: boolean;
-}) {
+}>) {
     const ui = definition.ui as any;
     const spellcheck = ui?.spellcheck ?? true;
 
