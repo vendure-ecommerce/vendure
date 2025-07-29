@@ -261,6 +261,30 @@ export default function Home(): JSX.Element {
                         <div className={styles.conceptsGrid}>
                             <div className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
+                                    <SettingsIcon />
+                                </div>
+                                <div className={styles.conceptContent}>
+                                    <Link to="/guides/developer-guide/custom-fields/" className={styles.conceptTitle}>
+                                        Custom Fields
+                                    </Link>
+                                    <p className={styles.conceptDescription}>Adding custom data to any Vendure entity.</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
+                                    <PluginIcon />
+                                </div>
+                                <div className={styles.conceptContent}>
+                                    <Link to="/guides/developer-guide/plugins/" className={styles.conceptTitle}>
+                                        Plugins
+                                    </Link>
+                                    <p className={styles.conceptDescription}>The core of Vendure's extensibility.</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <ProductIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
@@ -268,18 +292,6 @@ export default function Home(): JSX.Element {
                                         Products
                                     </Link>
                                     <p className={styles.conceptDescription}>Configure catalog.</p>
-                                </div>
-                            </div>
-
-                            <div className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <CheckoutIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/orders/" className={styles.conceptTitle}>
-                                        Orders
-                                    </Link>
-                                    <p className={styles.conceptDescription}>Business logic of checkout.</p>
                                 </div>
                             </div>
 
@@ -309,32 +321,20 @@ export default function Home(): JSX.Element {
 
                             <div className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
-                                    <SettingsIcon />
+                                    <CheckoutIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/custom-fields/" className={styles.conceptTitle}>
-                                        Custom Fields
+                                    <Link to="/guides/core-concepts/orders/" className={styles.conceptTitle}>
+                                        Orders
                                     </Link>
-                                    <p className={styles.conceptDescription}>Extend entities with custom data.</p>
-                                </div>
-                            </div>
-
-                            <div className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <PluginIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <Link to="/guides/developer-guide/plugins/" className={styles.conceptTitle}>
-                                        Plugins
-                                    </Link>
-                                    <p className={styles.conceptDescription}>Extend functionality with plugins.</p>
+                                    <p className={styles.conceptDescription}>Business logic of checkout.</p>
                                 </div>
                             </div>
                         </div>
                     </section>
 
                     <section className={styles.recipesSection}>
-                        <h2 className={styles.sectionTitle}>Recipes</h2>
+                        <h2 className={styles.sectionTitle}>How-To Guides</h2>
                         <div className={styles.recipesGrid}>
                             <div className={styles.recipeItem}>
                                 <div className={styles.recipeIcon}>

@@ -133,7 +133,7 @@
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    padding: 1rem 0;
+    padding: 0rem 1rem;
 }
 
 .conceptIcon {
@@ -174,14 +174,14 @@
 .recipesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .recipeItem {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
-    padding: 1rem 0;
+    padding: 0rem 1rem;
 }
 
 .recipeIcon {
