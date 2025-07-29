@@ -354,11 +354,11 @@ export default function Home(): JSX.Element {
                                     </svg>
                                 </div>
                                 <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/multi-channel/" className={styles.recipeTitle}>
-                                        Multi-channel
+                                    <Link to="/guides/how-to/publish-plugin/" className={styles.recipeTitle}>
+                                        Publish Plugin
                                     </Link>
                                     <p className={styles.recipeDescription}>
-                                        Build global experience with channels, currencies, and storefronts.
+                                        Learn how to publish your custom plugin to npm.
                                     </p>
                                 </div>
                             </div>
@@ -409,11 +409,11 @@ export default function Home(): JSX.Element {
                                     </svg>
                                 </div>
                                 <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/custom-shipping/" className={styles.recipeTitle}>
-                                        Custom shipping
+                                    <Link to="/guides/how-to/configurable-products/" className={styles.recipeTitle}>
+                                        Configurable Products
                                     </Link>
                                     <p className={styles.recipeDescription}>
-                                        Shipping options tailored to your customers.
+                                        Create products with multiple variants and options.
                                     </p>
                                 </div>
                             </div>
@@ -436,11 +436,11 @@ export default function Home(): JSX.Element {
                                     </svg>
                                 </div>
                                 <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/local-pickup/" className={styles.recipeTitle}>
-                                        Local pickup
+                                    <Link to="/guides/how-to/paginated-list/" className={styles.recipeTitle}>
+                                        Paginated Lists
                                     </Link>
                                     <p className={styles.recipeDescription}>
-                                        Managing in-store order pickup.
+                                        Implement efficient pagination for large datasets.
                                     </p>
                                 </div>
                             </div>
@@ -464,11 +464,11 @@ export default function Home(): JSX.Element {
                                     </svg>
                                 </div>
                                 <div className={styles.recipeContent}>
-                                    <Link to="/guides/extending-the-admin-ui/" className={styles.recipeTitle}>
-                                        Extending admin UI
+                                    <Link to="/guides/how-to/codegen/" className={styles.recipeTitle}>
+                                        Code Generation
                                     </Link>
                                     <p className={styles.recipeDescription}>
-                                        Add new management views to the Admin UI.
+                                        Generate TypeScript types from your GraphQL schema.
                                     </p>
                                 </div>
                             </div>
@@ -492,8 +492,8 @@ export default function Home(): JSX.Element {
                                     </svg>
                                 </div>
                                 <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/marketplace/" className={styles.recipeTitle}>
-                                        Marketplace
+                                    <Link to="/guides/how-to/multi-vendor-marketplaces/" className={styles.recipeTitle}>
+                                        Multi-vendor Marketplaces
                                     </Link>
                                     <p className={styles.recipeDescription}>
                                         Create a marketplace platform where multiple sellers can sell their products.
