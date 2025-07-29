@@ -118,12 +118,21 @@ function ProductList({
                 return (
                     <div
                         key={itemId}
+                        role="checkbox"
+                        tabIndex={0}
+                        aria-checked={isSelected}
                         className={`border rounded-lg p-3 cursor-pointer transition-colors ${
                             isSelected
                                 ? 'border-primary bg-primary/5'
                                 : 'border-border hover:border-primary/50'
                         }`}
                         onClick={() => toggleSelection(item)}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleSelection(item);
+                            }
+                        }}
                     >
                         <div className="flex items-start gap-3">
                             <div className="flex-shrink-0">
