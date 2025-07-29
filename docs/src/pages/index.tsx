@@ -18,7 +18,7 @@ const PlayIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <polygon points="5,3 19,12 5,21"/>
+        <polygon points="5,3 19,12 5,21" />
     </svg>
 );
 
@@ -34,8 +34,8 @@ const CodeIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <polyline points="16,18 22,12 16,6"/>
-        <polyline points="8,6 2,12 8,18"/>
+        <polyline points="16,18 22,12 16,6" />
+        <polyline points="8,6 2,12 8,18" />
     </svg>
 );
 
@@ -51,7 +51,7 @@ const StarIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
     </svg>
 );
 
@@ -68,7 +68,7 @@ const ToolsIcon = () => (
         strokeLinejoin="round"
     >
         {/* eslint-disable-next-line max-len */}
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
     </svg>
 );
 
@@ -84,29 +84,28 @@ const ProductIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 0 1-8 0"/>
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
     </svg>
 );
 
-const CheckoutIcon = () => (
+const OrderListIcon = () => (
     <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
         stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="none"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        height="20"
+        width="20"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M9 12l2 2 4-4"/>
-        <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
-        <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
-        <path d="M12 3v6"/>
-        <path d="M12 15v6"/>
+        <path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"></path>
+        <path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"></path>
+        <path d="M3 5a2 2 0 0 0 2 2h3"></path>
+        <path d="M3 3v13a2 2 0 0 0 2 2h3"></path>
     </svg>
 );
 
@@ -122,10 +121,10 @@ const UsersIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
 );
 
@@ -141,8 +140,8 @@ const PaymentIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-        <line x1="1" y1="10" x2="23" y2="10"/>
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
     </svg>
 );
 
@@ -158,9 +157,9 @@ const SettingsIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <circle cx="12" cy="12" r="3"/>
+        <circle cx="12" cy="12" r="3" />
         {/* eslint-disable-next-line max-len */}
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 -1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 -1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
 );
 
@@ -176,9 +175,112 @@ const PluginIcon = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-        <rect x="7" y="7" width="3" height="9"/>
-        <rect x="14" y="7" width="3" height="5"/>
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        <rect x="7" y="7" width="3" height="9" />
+        <rect x="14" y="7" width="3" height="5" />
+    </svg>
+);
+
+const PublishIcon = () => (
+    <svg
+        stroke="currentColor"
+        fill="currentColor"
+        strokeWidth="0"
+        viewBox="0 0 24 24"
+        height="20"
+        width="20"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path fill="none" d="M0 0h24v24H0V0z" />
+        <path d="M5.59 7.41 10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z" />
+    </svg>
+);
+
+const LightningIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+    </svg>
+);
+
+const ShoppingCartIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M1 3h15l-1 9H4L1 3z" />
+        <path d="M16 8h8" />
+        <circle cx="6" cy="20" r="1" />
+        <circle cx="17" cy="20" r="1" />
+    </svg>
+);
+
+const CompassIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="12" cy="12" r="10" />
+        <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" />
+    </svg>
+);
+
+const CodeGenIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        <rect x="7" y="7" width="3" height="9" />
+        <rect x="14" y="7" width="3" height="5" />
+    </svg>
+);
+
+const MarketplaceIcon = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
     </svg>
 );
 
@@ -223,297 +325,214 @@ export default function Home(): JSX.Element {
             </div>
             <main>
                 <div className={styles.docLayout}>
-                <div className={styles.docContainer}>
-                    <div className={styles.mainCards}>
-                        <Link to="/guides/getting-started/installation/" className={styles.mainCard}>
-                            <div className={styles.cardIcon}>
-                                <PlayIcon />
-                            </div>
-                            <h3 className={styles.cardTitle}>Get Started</h3>
-                            <p className={styles.cardDescription}>
-                                Follow our installation guide and create your first Vendure project.
-                            </p>
-                        </Link>
+                    <div className={styles.docContainer}>
+                        <div className={styles.mainCards}>
+                            <Link to="/guides/getting-started/installation/" className={styles.mainCard}>
+                                <div className={styles.cardIcon}>
+                                    <PlayIcon />
+                                </div>
+                                <h3 className={styles.cardTitle}>Get Started</h3>
+                                <p className={styles.cardDescription}>
+                                    Follow our installation guide and create your first Vendure project.
+                                </p>
+                            </Link>
 
-                        <Link to="/guides/developer-guide/overview/" className={styles.mainCard}>
-                            <div className={styles.cardIcon}>
-                                <StarIcon />
-                            </div>
-                            <h3 className={styles.cardTitle}>Learn Vendure</h3>
-                            <p className={styles.cardDescription}>
-                                Understand Vendure's core concepts and architecture principles.
-                            </p>
-                        </Link>
+                            <Link to="/guides/developer-guide/overview/" className={styles.mainCard}>
+                                <div className={styles.cardIcon}>
+                                    <StarIcon />
+                                </div>
+                                <h3 className={styles.cardTitle}>Learn Vendure</h3>
+                                <p className={styles.cardDescription}>
+                                    Understand Vendure's core concepts and architecture principles.
+                                </p>
+                            </Link>
 
-                        <Link to="/reference/" className={styles.mainCard}>
-                            <div className={styles.cardIcon}>
-                                <CodeIcon />
+                            <Link to="/reference/" className={styles.mainCard}>
+                                <div className={styles.cardIcon}>
+                                    <CodeIcon />
+                                </div>
+                                <h3 className={styles.cardTitle}>API Reference</h3>
+                                <p className={styles.cardDescription}>
+                                    Explore comprehensive GraphQL API documentation and examples.
+                                </p>
+                            </Link>
+                        </div>
+
+                        <section className={styles.conceptsSection}>
+                            <h2 className={styles.sectionTitle}>Core Concepts</h2>
+                            <div className={styles.conceptsGrid}>
+                                <Link
+                                    to="/guides/developer-guide/custom-fields/"
+                                    className={styles.conceptItem}
+                                >
+                                    <div className={styles.conceptIcon}>
+                                        <SettingsIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Custom Fields</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Adding custom data to any Vendure entity.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/developer-guide/plugins/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <PluginIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Plugins</h3>
+                                        <p className={styles.conceptDescription}>
+                                            The core of Vendure's extensibility.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/core-concepts/products/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <ProductIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Products</h3>
+                                        <p className={styles.conceptDescription}>Configure catalog.</p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/core-concepts/customers/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <UsersIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Customers</h3>
+                                        <p className={styles.conceptDescription}>Customer configuration.</p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/core-concepts/payment/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <PaymentIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Payments</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Payment integrations and API.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/core-concepts/orders/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <OrderListIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Orders</h3>
+                                        <p className={styles.conceptDescription}>Business logic of orders.</p>
+                                    </div>
+                                </Link>
                             </div>
-                            <h3 className={styles.cardTitle}>API Reference</h3>
-                            <p className={styles.cardDescription}>
-                                Explore comprehensive GraphQL API documentation and examples.
-                            </p>
-                        </Link>
+                        </section>
+
+                        <section className={styles.recipesSection}>
+                            <h2 className={styles.sectionTitle}>How-To Guides</h2>
+                            <div className={styles.conceptsGrid}>
+                                <Link to="/guides/how-to/publish-plugin/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <PublishIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Publish Plugin</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Learn how to publish your custom plugin to npm.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/how-to/digital-products/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <LightningIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Digital Products</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Sell licenses, services, and other non-physical goods.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    to="/guides/how-to/configurable-products/"
+                                    className={styles.conceptItem}
+                                >
+                                    <div className={styles.conceptIcon}>
+                                        <ShoppingCartIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Configurable Products</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Create products with multiple variants and options.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/how-to/paginated-list/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <CompassIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Paginated Lists</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Implement efficient pagination for large datasets.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link to="/guides/how-to/codegen/" className={styles.conceptItem}>
+                                    <div className={styles.conceptIcon}>
+                                        <CodeGenIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Code Generation</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Generate TypeScript types from your GraphQL schema.
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    to="/guides/how-to/multi-vendor-marketplaces/"
+                                    className={styles.conceptItem}
+                                >
+                                    <div className={styles.conceptIcon}>
+                                        <MarketplaceIcon />
+                                    </div>
+                                    <div className={styles.conceptContent}>
+                                        <h3 className={styles.conceptTitle}>Multi-vendor Marketplaces</h3>
+                                        <p className={styles.conceptDescription}>
+                                            Create a marketplace platform where multiple sellers can sell
+                                            their products.
+                                        </p>
+                                    </div>
+                                </Link>
+                            </div>
+                        </section>
                     </div>
 
-                    <section className={styles.conceptsSection}>
-                        <h2 className={styles.sectionTitle}>Core Concepts</h2>
-                        <div className={styles.conceptsGrid}>
-                            <Link to="/guides/developer-guide/custom-fields/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <SettingsIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Custom Fields
-                                    </h3>
-                                    <p className={styles.conceptDescription}>Adding custom data to any Vendure entity.</p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/developer-guide/plugins/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <PluginIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Plugins
-                                    </h3>
-                                    <p className={styles.conceptDescription}>The core of Vendure's extensibility.</p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/core-concepts/products/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <ProductIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Products
-                                    </h3>
-                                    <p className={styles.conceptDescription}>Configure catalog.</p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/core-concepts/customers/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <UsersIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Customers
-                                    </h3>
-                                    <p className={styles.conceptDescription}>Multi customer configuration.</p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/core-concepts/payment/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <PaymentIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Payments
-                                    </h3>
-                                    <p className={styles.conceptDescription}>Payment integrations and API.</p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/core-concepts/orders/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <CheckoutIcon />
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Orders
-                                    </h3>
-                                    <p className={styles.conceptDescription}>Business logic of checkout.</p>
-                                </div>
-                            </Link>
-                        </div>
-                    </section>
-
-                    <section className={styles.recipesSection}>
-                        <h2 className={styles.sectionTitle}>How-To Guides</h2>
-                        <div className={styles.conceptsGrid}>
-                            <Link to="/guides/how-to/publish-plugin/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Publish Plugin
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Learn how to publish your custom plugin to npm.
-                                    </p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/how-to/digital-products/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Digital Products
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Sell licenses, services, and other non-physical goods.
-                                    </p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/how-to/configurable-products/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M1 3h15l-1 9H4L1 3z"/>
-                                        <path d="M16 8h8"/>
-                                        <circle cx="6" cy="20" r="1"/>
-                                        <circle cx="17" cy="20" r="1"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Configurable Products
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Create products with multiple variants and options.
-                                    </p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/how-to/paginated-list/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                        <polyline points="9,22 9,12 15,12 15,22"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Paginated Lists
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Implement efficient pagination for large datasets.
-                                    </p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/how-to/codegen/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <rect x="7" y="7" width="3" height="9"/>
-                                        <rect x="14" y="7" width="3" height="5"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Code Generation
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Generate TypeScript types from your GraphQL schema.
-                                    </p>
-                                </div>
-                            </Link>
-
-                            <Link to="/guides/how-to/multi-vendor-marketplaces/" className={styles.conceptItem}>
-                                <div className={styles.conceptIcon}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <circle cx="9" cy="21" r="1"/>
-                                        <circle cx="20" cy="21" r="1"/>
-                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                                    </svg>
-                                </div>
-                                <div className={styles.conceptContent}>
-                                    <h3 className={styles.conceptTitle}>
-                                        Multi-vendor Marketplaces
-                                    </h3>
-                                    <p className={styles.conceptDescription}>
-                                        Create a marketplace platform where multiple sellers can sell their products.
-                                    </p>
-                                </div>
-                            </Link>
-                        </div>
-                    </section>
-                </div>
-
-                <div style={{ padding: '2rem 0' }}>
-                    <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Try the API</h2>
-                    <p style={{ textAlign: 'center', marginBottom: '2rem', color: '#666' }}>
-                        Explore Vendure's GraphQL API with this interactive playground.
-                    </p>
-                    <Playground
-                        api={'shop'}
-                        minHeight="800px"
-                        server={'readonlydemo'}
-                        document={`
+                    <div style={{ padding: '2rem 0' }}>
+                        <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Try the API</h2>
+                        <p
+                            style={{
+                                textAlign: 'center',
+                                marginBottom: '2rem',
+                                color: 'var(--ifm-color-content)',
+                            }}
+                        >
+                            Explore Vendure's GraphQL API with this interactive playground.
+                        </p>
+                        <Playground
+                            api={'shop'}
+                            minHeight="800px"
+                            server={'readonlydemo'}
+                            document={`
 query GetProducts {
     products {
         totalItems
@@ -528,9 +547,9 @@ query GetProducts {
         }
     }
 }`}
-                    ></Playground>
+                        ></Playground>
+                    </div>
                 </div>
-            </div>
             </main>
         </Layout>
     );
