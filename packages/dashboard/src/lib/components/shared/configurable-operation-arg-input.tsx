@@ -2,6 +2,7 @@ import { InputComponent } from '@/vdb/framework/component-registry/dynamic-compo
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ConfigArgType } from '@vendure/core';
+import { AffixedInput } from '../data-input/affixed-input.js';
 import { ConfigurableOperationListInput } from '../data-input/configurable-operation-list-input.js';
 import { DateTimeInput } from '../data-input/datetime-input.js';
 import { DefaultRelationInput } from '../data-input/default-relation-input.js';
@@ -274,23 +275,21 @@ function NumberInput({
     const numericValue = value ? parseFloat(value) : '';
 
     return (
-        <div className="flex items-center">
-            {prefix && <span className="mr-2 text-sm text-muted-foreground">{prefix}</span>}
-            <Input
-                type="number"
-                value={numericValue}
-                onChange={e => {
-                    const val = e.target.valueAsNumber;
-                    onChange(isNaN(val) ? '' : val.toString());
-                }}
-                disabled={readOnly}
-                min={min}
-                max={max}
-                step={step}
-                className="flex-1 bg-background"
-            />
-            {suffix && <span className="ml-2 text-sm text-muted-foreground">{suffix}</span>}
-        </div>
+        <AffixedInput
+            type="number"
+            value={numericValue}
+            onChange={e => {
+                const val = e.target.valueAsNumber;
+                onChange(isNaN(val) ? '' : val.toString());
+            }}
+            disabled={readOnly}
+            min={min}
+            max={max}
+            step={step}
+            prefix={prefix}
+            suffix={suffix}
+            className="bg-background"
+        />
     );
 }
 
@@ -311,21 +310,19 @@ function CurrencyInput({
     const numericValue = value ? parseInt(value, 10) : '';
 
     return (
-        <div className="flex items-center">
-            <span className="mr-2 text-sm text-muted-foreground">$</span>
-            <Input
-                type="number"
-                value={numericValue}
-                onChange={e => {
-                    const val = e.target.valueAsNumber;
-                    onChange(isNaN(val) ? '0' : val.toString());
-                }}
-                disabled={readOnly}
-                min={0}
-                step={1}
-                className="flex-1 bg-background"
-            />
-        </div>
+        <AffixedInput
+            type="number"
+            value={numericValue}
+            onChange={e => {
+                const val = e.target.valueAsNumber;
+                onChange(isNaN(val) ? '0' : val.toString());
+            }}
+            disabled={readOnly}
+            min={0}
+            step={1}
+            prefix="$"
+            className="bg-background"
+        />
     );
 }
 
