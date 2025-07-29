@@ -480,6 +480,33 @@ const createEntityConfigs = (i18n: any) => ({
         ),
     }),
 
+    CustomerGroup: createRelationSelectorConfig({
+        ...createBaseEntityConfig('Customer Group', i18n),
+        listQuery: graphql(`
+            query GetCustomerGroupsForRelationSelector($options: CustomerGroupListOptions) {
+                customerGroups(options: $options) {
+                    items {
+                        id
+                        name
+                        customers {
+                            totalItems
+                        }
+                    }
+                    totalItems
+                }
+            }
+        `),
+        label: (item: any) => (
+            <EntityLabel
+                title={item.name}
+                subtitle={`${item.customers?.totalItems || 0} customers`}
+                placeholderLetter="CG"
+                rounded
+                tooltipText={`${item.name} (${item.customers?.totalItems || 0} customers)`}
+            />
+        ),
+    }),
+
     Promotion: createRelationSelectorConfig({
         ...createBaseEntityConfig('Promotion', i18n),
         listQuery: graphql(`

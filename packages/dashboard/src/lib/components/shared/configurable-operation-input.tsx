@@ -1,8 +1,9 @@
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
-import { Trash } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button.js';
+import { Card, CardContent, CardHeader } from '../ui/card.js';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form.js';
 import { ConfigurableOperationArgInput } from './configurable-operation-arg-input.js';
 
@@ -49,46 +50,77 @@ export function ConfigurableOperationInput({
     };
 
     return (
-        <Form {...form}>
-            <div className="space-y-4">
-                <div className="flex flex-row justify-between">
-                    {!hideDescription && (
-                        <div className="font-medium">
-                            {' '}
-                            {interpolateDescription(operationDefinition, value.arguments)}
-                        </div>
-                    )}
+        <Card className="bg-muted/50 shadow-none">
+            <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                        {!hideDescription && (
+                            <div className="font-medium text-sm text-foreground leading-relaxed">
+                                {interpolateDescription(operationDefinition, value.arguments)}
+                            </div>
+                        )}
+
+                        {operationDefinition.code && (
+                            <div className="text-xs text-muted-foreground mt-1 font-mono">
+                                {operationDefinition.code}
+                            </div>
+                        )}
+                    </div>
+
                     {removable !== false && (
-                        <Button variant="outline" size="icon" onClick={onRemove}>
-                            <Trash />
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onRemove}
+                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                            disabled={readonly}
+                        >
+                            <X className="h-3.5 w-3.5" />
                         </Button>
                     )}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                    {operationDefinition.args.map(arg => {
-                        const argValue = value.arguments.find(a => a.name === arg.name)?.value || '';
-                        return (
-                            <FormField
-                                key={arg.name}
-                                name={`args.${arg.name}`}
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel>{arg.label || arg.name}</FormLabel>
-                                        <FormControl>
-                                            <ConfigurableOperationArgInput
-                                                definition={arg}
-                                                value={argValue}
-                                                onChange={value => handleInputChange(arg.name, value)}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        );
-                    })}
-                </div>
-            </div>
-        </Form>
+            </CardHeader>
+
+            {operationDefinition.args && operationDefinition.args.length > 0 && (
+                <CardContent className="pt-0">
+                    <Form {...form}>
+                        <div className="space-y-4">
+                            <div
+                                className={`grid gap-4 ${operationDefinition.args.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}
+                            >
+                                {operationDefinition.args.map(arg => {
+                                    const argValue =
+                                        value.arguments.find(a => a.name === arg.name)?.value || '';
+                                    return (
+                                        <FormField
+                                            key={arg.name}
+                                            name={`args.${arg.name}`}
+                                            render={() => (
+                                                <FormItem className="space-y-2">
+                                                    <FormLabel className="text-sm font-medium text-foreground">
+                                                        {arg.label || arg.name}
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <ConfigurableOperationArgInput
+                                                            definition={arg}
+                                                            value={argValue}
+                                                            onChange={value =>
+                                                                handleInputChange(arg.name, value)
+                                                            }
+                                                            readOnly={readonly}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </Form>
+                </CardContent>
+            )}
+        </Card>
     );
 }
 
