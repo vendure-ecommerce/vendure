@@ -1,3 +1,4 @@
+import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
@@ -31,6 +32,7 @@ inputComponents.set('vendure:numberInput', NumberInput);
 inputComponents.set('vendure:dateTimeInput', DateTimeInput);
 inputComponents.set('vendure:checkboxInput', CheckboxInput);
 inputComponents.set('vendure:facetValueInput', FacetValueInput);
+inputComponents.set('vendure:combinationModeInput', CombinationModeInput);
 
 export function getInputComponent(id: string): DataInputComponent | undefined {
     return globalRegistry.get('inputComponents').get(id);

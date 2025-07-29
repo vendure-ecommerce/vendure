@@ -345,7 +345,7 @@ function SelectInput({
 
     return (
         <Select value={value} onValueChange={onChange} disabled={readOnly}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background mb-0">
                 <SelectValue placeholder="Select an option..." />
             </SelectTrigger>
             <SelectContent>

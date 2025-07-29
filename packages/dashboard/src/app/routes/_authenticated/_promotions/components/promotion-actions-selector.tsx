@@ -6,7 +6,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Separator } from '@/vdb/components/ui/separator.js';
 import { api } from '@/vdb/graphql/api.js';
 import {
     configurableOperationDefFragment,
@@ -71,40 +70,58 @@ export function PromotionActionsSelector({ value, onChange }: Readonly<Promotion
         onChange(value.filter((_, i) => i !== index));
     };
 
+    const hasActions = value && value.length > 0;
+
     return (
-        <div className="flex flex-col gap-2 mt-4">
-            {(value ?? []).map((action, index) => {
-                const actionDef = actions?.find(a => a.code === action.code);
-                if (!actionDef) {
-                    return null;
-                }
-                return (
-                    <div key={index} className="flex flex-col gap-2">
-                        <ConfigurableOperationInput
-                            operationDefinition={actionDef}
-                            value={action}
-                            onChange={value => onOperationValueChange(action, value)}
-                            onRemove={() => onOperationRemove(index)}
-                        />
-                        <Separator className="my-2" />
-                    </div>
-                );
-            })}
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                        <Plus />
-                        <Trans context="Add new promotion action">Add action</Trans>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-96">
-                    {actions?.map(action => (
-                        <DropdownMenuItem key={action.code} onClick={() => onActionSelected(action)}>
-                            {action.description}
-                        </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="space-y-4">
+            {hasActions && (
+                <div className="space-y-3">
+                    {value.map((action, index) => {
+                        const actionDef = actions?.find(a => a.code === action.code);
+                        if (!actionDef) {
+                            return null;
+                        }
+                        return (
+                            <ConfigurableOperationInput
+                                key={index}
+                                operationDefinition={actionDef}
+                                value={action}
+                                onChange={value => onOperationValueChange(action, value)}
+                                onRemove={() => onOperationRemove(index)}
+                                position={index}
+                            />
+                        );
+                    })}
+                </div>
+            )}
+
+            <div className={hasActions ? 'pt-2' : ''}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-auto">
+                            <Plus className="h-4 w-4" />
+                            <Trans context="Add new promotion action">Add action</Trans>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-80" align="start">
+                        <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                            Available Actions
+                        </div>
+                        {actions?.map(action => (
+                            <DropdownMenuItem
+                                key={action.code}
+                                onClick={() => onActionSelected(action)}
+                                className="flex flex-col items-start py-3 cursor-pointer"
+                            >
+                                <div className="font-medium text-sm">{action.description}</div>
+                                <div className="text-xs text-muted-foreground font-mono mt-1">
+                                    {action.code}
+                                </div>
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
     );
 }

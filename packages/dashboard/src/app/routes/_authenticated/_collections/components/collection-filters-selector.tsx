@@ -6,7 +6,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Separator } from '@/vdb/components/ui/separator.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
@@ -53,7 +52,7 @@ export function CollectionFiltersSelector({ value, onChange }: Readonly<Collecti
     };
 
     return (
-        <div className="flex flex-col gap-2 mt-4">
+        <div className="flex flex-col gap-4 mt-4">
             {(value ?? []).map((filter, index) => {
                 const filterDef = filters?.find(f => f.code === filter.code);
                 if (!filterDef) {
@@ -67,25 +66,26 @@ export function CollectionFiltersSelector({ value, onChange }: Readonly<Collecti
                             onChange={value => onOperationValueChange(filter, value)}
                             onRemove={() => onOperationRemove(index)}
                         />
-                        <Separator className="my-2" />
                     </div>
                 );
             })}
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                        <Plus />
-                        <Trans context="Add new collection filter">Add condition</Trans>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-96">
-                    {filters?.map(filter => (
-                        <DropdownMenuItem key={filter.code} onClick={() => onFilterSelected(filter)}>
-                            {filter.description}
-                        </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-auto">
+                            <Plus />
+                            <Trans context="Add new collection filter">Add collection filter</Trans>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-96">
+                        {filters?.map(filter => (
+                            <DropdownMenuItem key={filter.code} onClick={() => onFilterSelected(filter)}>
+                                {filter.description}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
     );
 }

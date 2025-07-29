@@ -79,9 +79,9 @@ export function ShippingCalculatorSelector({ value, onChange }: Readonly<Shippin
                 </div>
             )}
             <DropdownMenu>
-                {!value && (
+                {!value?.code && (
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="outline" className="w-fit">
                             <Plus />
                             <Trans context="Add new promotion action">Select Shipping Calculator</Trans>
                         </Button>

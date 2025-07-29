@@ -82,9 +82,9 @@ export function ShippingEligibilityCheckerSelector({
                 </div>
             )}
             <DropdownMenu>
-                {!value && (
+                {!value?.code && (
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="outline" className="w-fit">
                             <Plus />
                             <Trans context="Add new promotion action">
                                 Select Shipping Eligibility Checker

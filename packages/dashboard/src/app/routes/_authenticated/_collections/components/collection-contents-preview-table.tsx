@@ -61,7 +61,7 @@ export function CollectionContentsPreviewTable({
 
     return (
         <div>
-            <Alert>
+            <Alert className="mb-4">
                 <Eye className="h-4 w-4" />
                 <AlertTitle>Preview</AlertTitle>
                 <AlertDescription>

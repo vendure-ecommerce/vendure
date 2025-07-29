@@ -81,7 +81,7 @@ export function PaymentHandlerSelector({ value, onChange }: Readonly<PaymentHand
             <DropdownMenu>
                 {!value?.code && (
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="outline" className="w-fit">
                             <Plus />
                             <Trans>Select Payment Handler</Trans>
                         </Button>

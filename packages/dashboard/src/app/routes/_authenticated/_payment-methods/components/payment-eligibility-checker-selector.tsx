@@ -84,7 +84,7 @@ export function PaymentEligibilityCheckerSelector({
             <DropdownMenu>
                 {!value?.code && (
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant="outline" className="w-fit">
                             <Plus />
                             <Trans>Select Payment Eligibility Checker</Trans>
                         </Button>

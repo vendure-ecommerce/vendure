@@ -6,7 +6,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Separator } from '@/vdb/components/ui/separator.js';
 import { api } from '@/vdb/graphql/api.js';
 import {
     configurableOperationDefFragment,
@@ -71,40 +70,58 @@ export function PromotionConditionsSelector({ value, onChange }: Readonly<Promot
         onChange(value.filter((_, i) => i !== index));
     };
 
+    const hasConditions = value && value.length > 0;
+
     return (
-        <div className="flex flex-col gap-2 mt-4">
-            {(value ?? []).map((condition, index) => {
-                const conditionDef = conditions?.find(c => c.code === condition.code);
-                if (!conditionDef) {
-                    return null;
-                }
-                return (
-                    <div key={index} className="flex flex-col gap-2">
-                        <ConfigurableOperationInput
-                            operationDefinition={conditionDef}
-                            value={condition}
-                            onChange={value => onOperationValueChange(condition, value)}
-                            onRemove={() => onOperationRemove(index)}
-                        />
-                        <Separator className="my-2" />
-                    </div>
-                );
-            })}
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                        <Plus />
-                        <Trans context="Add new promotion condition">Add condition</Trans>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-96">
-                    {conditions?.map(condition => (
-                        <DropdownMenuItem key={condition.code} onClick={() => onConditionSelected(condition)}>
-                            {condition.description}
-                        </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="space-y-4">
+            {hasConditions && (
+                <div className="space-y-3">
+                    {value.map((condition, index) => {
+                        const conditionDef = conditions?.find(c => c.code === condition.code);
+                        if (!conditionDef) {
+                            return null;
+                        }
+                        return (
+                            <ConfigurableOperationInput
+                                key={index}
+                                operationDefinition={conditionDef}
+                                value={condition}
+                                onChange={value => onOperationValueChange(condition, value)}
+                                onRemove={() => onOperationRemove(index)}
+                                position={index}
+                            />
+                        );
+                    })}
+                </div>
+            )}
+
+            <div className={hasConditions ? 'pt-2' : ''}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-auto">
+                            <Plus className="h-4 w-4" />
+                            <Trans context="Add new promotion condition">Add condition</Trans>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-80" align="start">
+                        <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+                            Available Conditions
+                        </div>
+                        {conditions?.map(condition => (
+                            <DropdownMenuItem
+                                key={condition.code}
+                                onClick={() => onConditionSelected(condition)}
+                                className="flex flex-col items-start py-3 cursor-pointer"
+                            >
+                                <div className="font-medium text-sm">{condition.description}</div>
+                                <div className="text-xs text-muted-foreground font-mono mt-1">
+                                    {condition.code}
+                                </div>
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </div>
     );
 }
