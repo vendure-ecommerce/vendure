@@ -1,3 +1,8 @@
+import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { DefaultRelationInput } from '@/vdb/components/data-input/default-relation-input.js';
+import { SelectWithOptions } from '@/vdb/components/data-input/select-with-options.js';
+import { StructFormInput } from '@/vdb/components/data-input/struct-form-input.js';
 import {
     FormControl,
     FormDescription,
@@ -13,6 +18,7 @@ import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useLingui } from '@/vdb/lib/trans.js';
 import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
+import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
@@ -40,13 +46,15 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
 
     const customFields = useCustomFieldConfig(entityType);
 
+    const getCustomFieldBaseName = (fieldDef: CustomFieldConfig) => {
+        if (fieldDef.type !== 'relation') {
+            return fieldDef.name;
+        }
+        return fieldDef.list ? fieldDef.name + 'Ids' : fieldDef.name + 'Id';
+    };
+
     const getFieldName = (fieldDef: CustomFieldConfig) => {
-        const name =
-            fieldDef.type === 'relation'
-                ? fieldDef.list
-                    ? fieldDef.name + 'Ids'
-                    : fieldDef.name + 'Id'
-                : fieldDef.name;
+        const name = getCustomFieldBaseName(fieldDef);
         return formPathPrefix ? `${formPathPrefix}.customFields.${name}` : `customFields.${name}`;
     };
 
@@ -84,7 +92,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
     if (!shouldShowTabs) {
         // Single tab view - use the original grid layout
         return (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid @md:grid-cols-2 gap-6">
                 {customFields?.map(fieldDef => (
                     <CustomFieldItem
                         key={fieldDef.name}
@@ -110,7 +118,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
             </TabsList>
             {groupedFields.map(group => (
                 <TabsContent key={group.tabName} value={group.tabName} className="mt-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid @md:grid-cols-2 gap-6">
                         {group.customFields.map(fieldDef => (
                             <CustomFieldItem
                                 key={fieldDef.name}
@@ -136,11 +144,12 @@ interface CustomFieldItemProps {
     ) => string | undefined;
 }
 
-function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: CustomFieldItemProps) {
-    const hasCustomFormComponent = fieldDef.ui && fieldDef.ui.component;
+function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Readonly<CustomFieldItemProps>) {
+    const hasCustomFormComponent = fieldDef.ui?.component;
     const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
     const shouldBeFullWidth = fieldDef.ui?.fullWidth === true;
     const containerClassName = shouldBeFullWidth ? 'col-span-2' : '';
+    const isReadonly = fieldDef.readonly ?? false;
 
     // For locale fields, always use TranslatableFormField regardless of custom components
     if (isLocaleField) {
@@ -207,6 +216,71 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
         );
     }
 
+    // For struct fields, use the special struct component
+    if (fieldDef.type === 'struct') {
+        const isList = fieldDef.list ?? false;
+
+        // Handle struct lists - entire struct objects in a list
+        if (isList) {
+            return (
+                <div className={containerClassName}>
+                    <FormField
+                        control={control}
+                        name={fieldName}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                                <FormControl>
+                                    <CustomFieldListInput
+                                        field={field}
+                                        disabled={isReadonly}
+                                        renderInput={(index, inputField) => (
+                                            <StructFormInput
+                                                field={inputField}
+                                                fieldDef={fieldDef as any}
+                                                control={control}
+                                                getTranslation={getTranslation}
+                                            />
+                                        )}
+                                        defaultValue={{}} // Empty struct object as default
+                                        isFullWidth={true} // Structs should always be full-width
+                                    />
+                                </FormControl>
+                                <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            );
+        }
+
+        // Handle single struct fields
+        return (
+            <div className={containerClassName}>
+                <FormField
+                    control={control}
+                    name={fieldName}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                            <FormControl>
+                                <StructFormInput
+                                    field={field}
+                                    fieldDef={fieldDef as any}
+                                    control={control}
+                                    getTranslation={getTranslation}
+                                />
+                            </FormControl>
+                            <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+        );
+    }
+
     // For regular fields without custom components
     return (
         <div className={containerClassName}>
@@ -236,7 +310,12 @@ interface CustomFieldFormItemProps {
     children: React.ReactNode;
 }
 
-function CustomFieldFormItem({ fieldDef, getTranslation, fieldName, children }: CustomFieldFormItemProps) {
+function CustomFieldFormItem({
+    fieldDef,
+    getTranslation,
+    fieldName,
+    children,
+}: Readonly<CustomFieldFormItemProps>) {
     return (
         <FormItem>
             <FormLabel>{getTranslation(fieldDef.label) ?? fieldName}</FormLabel>
@@ -250,40 +329,132 @@ function CustomFieldFormItem({ fieldDef, getTranslation, fieldName, children }: 
 function FormInputForType({
     fieldDef,
     field,
-}: {
+}: Readonly<{
     fieldDef: CustomFieldConfig;
     field: ControllerRenderProps<any, any>;
-}) {
+}>) {
     const isReadonly = fieldDef.readonly ?? false;
+    const isList = fieldDef.list ?? false;
 
-    switch (fieldDef.type as CustomFieldType) {
-        case 'string':
-            return <Input {...field} disabled={isReadonly} />;
-        case 'float':
-        case 'int':
-            return (
-                <Input
-                    type="number"
-                    {...field}
-                    disabled={isReadonly}
-                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                />
-            );
-        case 'boolean':
-            return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
-        case 'relation':
-            if (fieldDef.list) {
+    // Helper function to render individual input components
+    const renderSingleInput = (inputField: ControllerRenderProps<any, any>) => {
+        switch (fieldDef.type as CustomFieldType) {
+            case 'float':
+            case 'int': {
+                const numericFieldDef = fieldDef as any;
+                const isFloat = fieldDef.type === 'float';
+                const min = isFloat ? numericFieldDef.floatMin : numericFieldDef.intMin;
+                const max = isFloat ? numericFieldDef.floatMax : numericFieldDef.intMax;
+                const step = isFloat ? numericFieldDef.floatStep : numericFieldDef.intStep;
+
                 return (
                     <Input
-                        {...field}
-                        onChange={e => field.onChange(e.target.value.split(','))}
+                        type="number"
+                        value={inputField.value ?? ''}
+                        onChange={e => {
+                            const value = e.target.valueAsNumber;
+                            inputField.onChange(isNaN(value) ? undefined : value);
+                        }}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        disabled={isReadonly}
+                        min={min}
+                        max={max}
+                        step={step}
+                    />
+                );
+            }
+            case 'boolean':
+                return (
+                    <Switch
+                        checked={inputField.value}
+                        onCheckedChange={inputField.onChange}
                         disabled={isReadonly}
                     />
                 );
-            } else {
-                return <Input {...field} disabled={isReadonly} />;
+            case 'datetime': {
+                return (
+                    <DateTimeInput
+                        value={inputField.value}
+                        onChange={inputField.onChange}
+                        disabled={isReadonly}
+                    />
+                );
             }
-        default:
-            return <Input {...field} disabled={isReadonly} />;
+            case 'struct':
+                // Struct fields need special handling and can't be rendered as simple inputs
+                return null;
+            case 'string':
+            default:
+                return (
+                    <Input
+                        value={inputField.value ?? ''}
+                        onChange={e => inputField.onChange(e.target.value)}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        disabled={isReadonly}
+                    />
+                );
+        }
+    };
+
+    // Handle struct fields with special component
+    if (fieldDef.type === 'struct') {
+        // We need access to the control and getTranslation function
+        // This will need to be passed down from the parent component
+        return null; // Placeholder - struct fields are handled differently in the parent
     }
+
+    // Handle relation fields directly (they handle list/single internally)
+    if (fieldDef.type === 'relation') {
+        return <DefaultRelationInput fieldDef={fieldDef as any} field={field} disabled={isReadonly} />;
+    }
+
+    // Handle string fields with options (dropdown) - already handles list case with multi-select
+    if (fieldDef.type === 'string') {
+        const options = (fieldDef as StringCustomFieldConfig).options;
+        if (options && options.length > 0) {
+            return (
+                <SelectWithOptions
+                    field={field}
+                    options={options}
+                    disabled={isReadonly}
+                    isListField={isList}
+                />
+            );
+        }
+    }
+
+    // For list fields (except string with options and relations which are handled above), wrap with list input
+    if (isList) {
+        const getDefaultValue = () => {
+            switch (fieldDef.type as CustomFieldType) {
+                case 'string':
+                    return '';
+                case 'int':
+                case 'float':
+                    return 0;
+                case 'boolean':
+                    return false;
+                case 'datetime':
+                    return '';
+                case 'relation':
+                    return '';
+                default:
+                    return '';
+            }
+        };
+
+        return (
+            <CustomFieldListInput
+                field={field}
+                disabled={isReadonly}
+                renderInput={(index, inputField) => renderSingleInput(inputField)}
+                defaultValue={getDefaultValue()}
+            />
+        );
+    }
+
+    // For non-list fields, render directly
+    return renderSingleInput(field);
 }

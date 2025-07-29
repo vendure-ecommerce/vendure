@@ -13,9 +13,11 @@ import { CalendarClock } from 'lucide-react';
 export interface DateTimeInputProps {
     value: Date | string | undefined;
     onChange: (value: Date) => void;
+    disabled?: boolean;
 }
 
 export function DateTimeInput(props: DateTimeInputProps) {
+    const { disabled = false } = props;
     const date = props.value && props.value instanceof Date ? props.value.toISOString() : (props.value ?? '');
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -42,12 +44,13 @@ export function DateTimeInput(props: DateTimeInputProps) {
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={disabled ? undefined : setIsOpen}>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
+                    disabled={disabled}
                     className={cn(
-                        'w-full justify-start text-left font-normal',
+                        'w-full justify-start text-left font-normal shadow-xs',
                         !date && 'text-muted-foreground',
                     )}
                 >
