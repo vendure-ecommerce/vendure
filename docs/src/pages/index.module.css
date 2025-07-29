@@ -48,7 +48,6 @@
 }
 
 .docLayout {
-    background: #fafbfc;
     min-height: 100vh;
 }
 
@@ -58,26 +57,7 @@
     padding: 0 2rem;
 }
 
-.docHeader {
-    padding: 4rem 0 3rem 0;
-    text-align: left;
-}
 
-.docTitle {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #1c1e21;
-    margin-bottom: 1rem;
-    line-height: 1.2;
-}
-
-.docSubtitle {
-    font-size: 1.125rem;
-    color: #656d76;
-    max-width: 600px;
-    line-height: 1.6;
-    margin: 0;
-}
 
 .mainCards {
     display: grid;
@@ -244,12 +224,8 @@
         gap: 24px;
         gap: 24px;
     }
-    .docContainer {
+        .docContainer {
         padding: 0 1rem;
-    }
-
-    .docTitle {
-        font-size: 2.5rem;
     }
 
     .mainCards {
