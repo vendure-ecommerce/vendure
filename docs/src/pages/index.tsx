@@ -259,85 +259,85 @@ export default function Home(): JSX.Element {
                     <section className={styles.conceptsSection}>
                         <h2 className={styles.sectionTitle}>Core Concepts</h2>
                         <div className={styles.conceptsGrid}>
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/developer-guide/custom-fields/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <SettingsIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/developer-guide/custom-fields/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Custom Fields
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>Adding custom data to any Vendure entity.</p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/developer-guide/plugins/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <PluginIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/developer-guide/plugins/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Plugins
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>The core of Vendure's extensibility.</p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/core-concepts/products/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <ProductIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/products/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Products
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>Configure catalog.</p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/core-concepts/customers/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <UsersIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/customers/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Customers
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>Multi customer configuration.</p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/core-concepts/payment/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <PaymentIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/payment/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Payments
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>Payment integrations and API.</p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.conceptItem}>
+                            <Link to="/guides/core-concepts/orders/" className={styles.conceptItem}>
                                 <div className={styles.conceptIcon}>
                                     <CheckoutIcon />
                                 </div>
                                 <div className={styles.conceptContent}>
-                                    <Link to="/guides/core-concepts/orders/" className={styles.conceptTitle}>
+                                    <h3 className={styles.conceptTitle}>
                                         Orders
-                                    </Link>
+                                    </h3>
                                     <p className={styles.conceptDescription}>Business logic of checkout.</p>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </section>
 
                     <section className={styles.recipesSection}>
                         <h2 className={styles.sectionTitle}>How-To Guides</h2>
-                        <div className={styles.recipesGrid}>
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                        <div className={styles.conceptsGrid}>
+                            <Link to="/guides/how-to/publish-plugin/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -353,18 +353,18 @@ export default function Home(): JSX.Element {
                                         <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/publish-plugin/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Publish Plugin
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Learn how to publish your custom plugin to npm.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                            <Link to="/guides/how-to/digital-products/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -379,18 +379,18 @@ export default function Home(): JSX.Element {
                                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/digital-products/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Digital Products
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Sell licenses, services, and other non-physical goods.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                            <Link to="/guides/how-to/configurable-products/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -408,18 +408,18 @@ export default function Home(): JSX.Element {
                                         <circle cx="17" cy="20" r="1"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/configurable-products/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Configurable Products
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Create products with multiple variants and options.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                            <Link to="/guides/how-to/paginated-list/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -435,18 +435,18 @@ export default function Home(): JSX.Element {
                                         <polyline points="9,22 9,12 15,12 15,22"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/paginated-list/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Paginated Lists
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Implement efficient pagination for large datasets.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                            <Link to="/guides/how-to/codegen/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -463,18 +463,18 @@ export default function Home(): JSX.Element {
                                         <rect x="14" y="7" width="3" height="5"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/codegen/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Code Generation
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Generate TypeScript types from your GraphQL schema.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
 
-                            <div className={styles.recipeItem}>
-                                <div className={styles.recipeIcon}>
+                            <Link to="/guides/how-to/multi-vendor-marketplaces/" className={styles.conceptItem}>
+                                <div className={styles.conceptIcon}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -491,15 +491,15 @@ export default function Home(): JSX.Element {
                                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                                     </svg>
                                 </div>
-                                <div className={styles.recipeContent}>
-                                    <Link to="/guides/how-to/multi-vendor-marketplaces/" className={styles.recipeTitle}>
+                                <div className={styles.conceptContent}>
+                                    <h3 className={styles.conceptTitle}>
                                         Multi-vendor Marketplaces
-                                    </Link>
-                                    <p className={styles.recipeDescription}>
+                                    </h3>
+                                    <p className={styles.conceptDescription}>
                                         Create a marketplace platform where multiple sellers can sell their products.
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </section>
                 </div>

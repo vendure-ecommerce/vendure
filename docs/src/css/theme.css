@@ -56,6 +56,9 @@ html[data-theme='dark'] {
     --ifm-footer-background-color: var(--ifm-background-color);
     --color-docsearch-border: #232347;
     --ifm-footer-title-color: #ffffff;
+
+    /* Adjust primary color variants for dark mode */
+    --ifm-color-primary-lightest: rgba(23, 193, 255, 0.1);
 }
 
 /* Light mode specific */

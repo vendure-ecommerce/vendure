@@ -37,7 +37,7 @@
     padding: 12px;
     border-radius: 6px;
     border: 1px solid var(--ifm-color-warning-darkest);
-    background-color: #d99e0022;
+    background-color: var(--ifm-color-warning-lightest);
 }
 
 .description {
@@ -67,8 +67,8 @@
 }
 
 .mainCard {
-    background: white;
-    border: 1px solid #e1e5e9;
+    background: var(--ifm-card-background-color);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 2rem;
     text-decoration: none;
@@ -80,8 +80,8 @@
 }
 
 .mainCard:hover {
-    border-color: #17c1ff;
-    box-shadow: 0 4px 12px rgba(23, 193, 255, 0.15);
+    border-color: var(--ifm-color-primary);
+    box-shadow: 0 2px 16px var(--ifm-color-primary-lightest);
     text-decoration: none;
     color: inherit;
     transform: translateY(-2px);
@@ -91,23 +91,23 @@
     width: 48px;
     height: 48px;
     margin-bottom: 1.5rem;
-    color: #17c1ff;
+    color: var(--ifm-color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(23, 193, 255, 0.1);
+    background: var(--ifm-color-primary-lightest);
     border-radius: 8px;
 }
 
 .cardTitle {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1c1e21;
+    color: var(--ifm-heading-color);
     margin-bottom: 0.75rem;
 }
 
 .cardDescription {
-    color: #656d76;
+    color: var(--ifm-color-content);
     line-height: 1.5;
     flex-grow: 1;
 }
@@ -115,7 +115,7 @@
 .sectionTitle {
     font-size: 2rem;
     font-weight: 700;
-    color: #1c1e21;
+    color: var(--ifm-heading-color);
     margin-bottom: 2rem;
 }
 
@@ -131,16 +131,25 @@
 
 .conceptItem {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
-    padding: 0rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.conceptItem:hover {
+    text-decoration: none;
+    color: inherit;
+    transform: translateY(-1px);
 }
 
 .conceptIcon {
     width: 24px;
     height: 24px;
-    color: #17c1ff;
-    margin-top: 2px;
+    color: var(--ifm-color-primary);
     flex-shrink: 0;
 }
 
@@ -151,68 +160,24 @@
 .conceptTitle {
     font-size: 1rem;
     font-weight: 600;
-    color: #1c1e21;
-    margin-bottom: 0.5rem;
+    color: var(--ifm-heading-color);
+    margin-bottom: 0.25rem;
     text-decoration: none;
 }
 
 .conceptTitle:hover {
-    color: #17c1ff;
     text-decoration: none;
 }
 
 .conceptDescription {
-    color: #656d76;
+    color: var(--ifm-color-content);
     font-size: 0.875rem;
     line-height: 1.4;
+    margin-bottom: 0;
 }
 
 .recipesSection {
     margin-bottom: 4rem;
-}
-
-.recipesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1rem;
-}
-
-.recipeItem {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0rem 1rem;
-}
-
-.recipeIcon {
-    width: 24px;
-    height: 24px;
-    color: #17c1ff;
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.recipeContent {
-    flex: 1;
-}
-
-.recipeTitle {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1c1e21;
-    margin-bottom: 0.5rem;
-    text-decoration: none;
-}
-
-.recipeTitle:hover {
-    color: #17c1ff;
-    text-decoration: none;
-}
-
-.recipeDescription {
-    color: #656d76;
-    font-size: 0.875rem;
-    line-height: 1.4;
 }
 
 @media screen and (max-width: 996px) {
@@ -233,8 +198,7 @@
         gap: 1rem;
     }
 
-    .conceptsGrid,
-    .recipesGrid {
+    .conceptsGrid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
