@@ -502,7 +502,34 @@ export default function Home(): JSX.Element {
                             </div>
                         </div>
                     </section>
-                                </div>
+                </div>
+
+                <div style={{ padding: '2rem 0' }}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Try the API</h2>
+                    <p style={{ textAlign: 'center', marginBottom: '2rem', color: '#666' }}>
+                        Explore Vendure's GraphQL API with this interactive playground.
+                    </p>
+                    <Playground
+                        api={'shop'}
+                        minHeight="800px"
+                        server={'readonlydemo'}
+                        document={`
+query GetProducts {
+    products {
+        totalItems
+        items {
+            id
+            name
+            slug
+            featuredAsset {
+                id
+                preview
+            }
+        }
+    }
+}`}
+                    ></Playground>
+                </div>
             </div>
             </main>
         </Layout>
