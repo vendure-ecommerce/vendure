@@ -37,7 +37,7 @@
     padding: 12px;
     border-radius: 6px;
     border: 1px solid var(--ifm-color-warning-darkest);
-    background-color: #d99e0022;
+    background-color: var(--ifm-color-warning-lightest);
 }
 
 .description {
@@ -45,6 +45,139 @@
     max-width: 600px;
     text-align: center;
     opacity: 0.8;
+}
+
+.docLayout {
+    min-height: 100vh;
+}
+
+.docContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+
+
+.mainCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.mainCard {
+    background: var(--ifm-card-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mainCard:hover {
+    border-color: var(--ifm-color-primary);
+    box-shadow: 0 2px 16px var(--ifm-color-primary-lightest);
+    text-decoration: none;
+    color: inherit;
+    transform: translateY(-2px);
+}
+
+.cardIcon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1.5rem;
+    color: var(--ifm-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ifm-color-primary-lightest);
+    border-radius: 8px;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ifm-heading-color);
+    margin-bottom: 0.75rem;
+}
+
+.cardDescription {
+    color: var(--ifm-color-content);
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ifm-heading-color);
+    margin-bottom: 2rem;
+}
+
+.conceptsSection {
+    margin-bottom: 4rem;
+}
+
+.conceptsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.conceptItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.conceptItem:hover {
+    text-decoration: none;
+    color: inherit;
+    transform: translateY(-1px);
+}
+
+.conceptIcon {
+    width: 24px;
+    height: 24px;
+    color: var(--ifm-color-primary);
+    flex-shrink: 0;
+}
+
+.conceptContent {
+    flex: 1;
+}
+
+.conceptTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ifm-heading-color);
+    margin-bottom: 0.25rem;
+    text-decoration: none;
+}
+
+.conceptTitle:hover {
+    text-decoration: none;
+}
+
+.conceptDescription {
+    color: var(--ifm-color-content);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+.recipesSection {
+    margin-bottom: 4rem;
 }
 
 @media screen and (max-width: 996px) {
@@ -55,6 +188,23 @@
         flex-direction: column;
         gap: 24px;
         gap: 24px;
+    }
+        .docContainer {
+        padding: 0 1rem;
+    }
+
+    .mainCards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .conceptsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .mainCard {
+        padding: 1.5rem;
     }
 }
 
