@@ -222,18 +222,6 @@ export default function Home(): JSX.Element {
                 </div>
             </div>
             <main>
-                <div className={styles.ctaButtons}>
-                    <Link className="button button--secondary" to="/guides/getting-started/installation/">
-                        Get Started
-                    </Link>
-                    <Link className="button button--secondary" to="/guides/developer-guide/overview/">
-                        Learn Vendure
-                    </Link>
-                    <Link className="button button--secondary" to="/reference/">
-                        API Reference
-                    </Link>
-                </div>
-
                 <div className={styles.docLayout}>
                 <div className={styles.docContainer}>
                     <div className={styles.mainCards}>
@@ -241,9 +229,19 @@ export default function Home(): JSX.Element {
                             <div className={styles.cardIcon}>
                                 <PlayIcon />
                             </div>
-                            <h3 className={styles.cardTitle}>Quickstart</h3>
+                            <h3 className={styles.cardTitle}>Get Started</h3>
                             <p className={styles.cardDescription}>
-                                Explore tutorials to get up and running quickly.
+                                Follow our installation guide and create your first Vendure project.
+                            </p>
+                        </Link>
+
+                        <Link to="/guides/developer-guide/overview/" className={styles.mainCard}>
+                            <div className={styles.cardIcon}>
+                                <StarIcon />
+                            </div>
+                            <h3 className={styles.cardTitle}>Learn Vendure</h3>
+                            <p className={styles.cardDescription}>
+                                Understand Vendure's core concepts and architecture principles.
                             </p>
                         </Link>
 
@@ -253,27 +251,7 @@ export default function Home(): JSX.Element {
                             </div>
                             <h3 className={styles.cardTitle}>API Reference</h3>
                             <p className={styles.cardDescription}>
-                                Lookup GraphQL types, queries and mutations.
-                            </p>
-                        </Link>
-
-                        <Link to="/guides/core-concepts/" className={styles.mainCard}>
-                            <div className={styles.cardIcon}>
-                                <StarIcon />
-                            </div>
-                            <h3 className={styles.cardTitle}>Why Vendure</h3>
-                            <p className={styles.cardDescription}>
-                                Learn about product vision and architecture.
-                            </p>
-                        </Link>
-
-                        <Link to="/guides/extending-the-admin-ui/" className={styles.mainCard}>
-                            <div className={styles.cardIcon}>
-                                <ToolsIcon />
-                            </div>
-                            <h3 className={styles.cardTitle}>Build Extensions</h3>
-                            <p className={styles.cardDescription}>
-                                Build plugins and extend the admin dashboard.
+                                Explore comprehensive GraphQL API documentation and examples.
                             </p>
                         </Link>
                     </div>
