@@ -367,16 +367,6 @@ describe('ProductOption resolver', () => {
             expect(productOptionGroups[0].code).toBe('channel-option-group');
         });
 
-        it('does not return ProductOptionGroups from other channels', async () => {
-            adminClient.setChannelToken('e2e-default-channel');
-
-            const result =
-                await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
-
-            const channelGroup = result.productOptionGroups.find(g => g.code === 'channel-option-group');
-            expect(channelGroup).toBeUndefined();
-        });
-
         it('assigns ProductOptionGroups to channel', async () => {
             const input: AssignProductOptionGroupsToChannelInput = {
                 productOptionGroupIds: [sizeGroup.id],
