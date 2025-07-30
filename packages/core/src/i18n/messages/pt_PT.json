@@ -82,6 +82,7 @@
     "PAYMENT_FAILED_ERROR": "O pagamento falhou",
     "PAYMENT_ORDER_MISMATCH_ERROR": "O pagamento e os itens não pertencem a mesma encomenda",
     "PAYMENT_STATE_TRANSITION_ERROR": "Não é possível fazer a transição do pagamento do estado \"{fromState}\" para \"{toState}\"",
+    "PRODUCT_OPTION_GROUP_IN_USE_ERROR": "Não é possível remover o grupo de opções \"{ optionGroupCode }\" pois é utilizado por {productCount, plural, =0 {} one {1 produto} other {# produtos}} {variantCount, plural, =0 {} one {1 variante do produto} other {# variantes do produto}}",
     "PRODUCT_OPTION_IN_USE_ERROR": "Não é possível remover o grupo \"{ optionGroupCode }\" uma vez que está a ser utilizado por {productVariantCount, plural, one {1 variante do produto} other {# variantes do produt}}",
     "QUANTITY_TOO_GREAT_ERROR": "A quantidade especificada é maior que os itens disponíveis",
     "REFUND_ORDER_STATE_ERROR": "Não é possível reembolsar uma encomenda no estado \"{orderState}\"",

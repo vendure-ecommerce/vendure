@@ -86,6 +86,9 @@
     "verification-token-not-recognized": "Token de verificação não reconhecido",
     "unauthorized": "As credenciais não corresponderam. Por favor verifique e tente novamente"
   },
+  "errorResult": {
+    "PRODUCT_OPTION_GROUP_IN_USE_ERROR": "Não é possível remover o ProductOptionGroup \"{ optionGroupCode }\" pois é usado por {productCount, plural, =0 {} one {1 Produto} other {# Produtos}} {variantCount, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}"
+  },
   "message": {
     "asset-to-be-deleted-is-featured": "A seleção {assetCount, plural, one {Asset is} other {Assets are}} apresentado por {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}",
     "country-used-in-addresses": "O país selecionado não pode ser excluído, pois é usado em {count, plural, um {1 Address} outro {# Addresses}}",

@@ -95,6 +95,7 @@
     "PAYMENT_FAILED_ERROR": "Le paiement a échoué",
     "PAYMENT_ORDER_MISMATCH_ERROR": "Le Paiement et les Lignes de Commande n'appartiennent pas à la même Commande",
     "PAYMENT_STATE_TRANSITION_ERROR": "Impossible de changer l'état du Paiement de \"{ fromState }\" à \"{ toState }\"",
+    "PRODUCT_OPTION_GROUP_IN_USE_ERROR": "Impossible de retirer le groupe d'options de produit \"{ optionGroupCode }\" car il est utilisé par {productCount, plural, =0 {} one {1 Produit} other {# Produits}} {variantCount, plural, =0 {} one {1 Variante de Produit} other {# Variantes de Produit}}",
     "PRODUCT_OPTION_IN_USE_ERROR": "Impossible de retirer le groupe d'options de produit \"{ optionGroupCode }\" car il est utilisé par {productVariantCount, plural, one {une Variante de Produit} other {# Variantes de Produit}}. Utilisez l'argument `force` pour le retirer malgré tout",
     "QUANTITY_TOO_GREAT_ERROR": "La quantité spécifiée est supérieure aux Articles de la Commande disponibles",
     "REFUND_AMOUNT_ERROR": "Le montant spécifié dépasse le montant remboursable pour ce paiement",
