@@ -11906,13 +11906,7 @@ export type AssignProductOptionGroupsToChannelMutationVariables = Exact<{
 }>;
 
 export type AssignProductOptionGroupsToChannelMutation = {
-    assignProductOptionGroupsToChannel: Array<{
-        id: string;
-        code: string;
-        name: string;
-        options: Array<{ id: string; code: string; name: string }>;
-        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-    }>;
+    assignProductOptionGroupsToChannel: Array<{ id: string; name: string }>;
 };
 
 export type RemoveProductOptionGroupsFromChannelMutationVariables = Exact<{
@@ -11921,13 +11915,7 @@ export type RemoveProductOptionGroupsFromChannelMutationVariables = Exact<{
 
 export type RemoveProductOptionGroupsFromChannelMutation = {
     removeProductOptionGroupsFromChannel: Array<
-        | {
-              id: string;
-              code: string;
-              name: string;
-              options: Array<{ id: string; code: string; name: string }>;
-              translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-          }
+        | { id: string; name: string }
         | {
               errorCode: ErrorCode;
               message: string;
@@ -36381,46 +36369,7 @@ export const AssignProductOptionGroupsToChannelDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: { kind: 'Name', value: 'ProductOptionGroup' },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'ProductOptionGroup' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductOptionGroup' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'options' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'translations' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -36478,10 +36427,8 @@ export const RemoveProductOptionGroupsFromChannelDocument = {
                                     selectionSet: {
                                         kind: 'SelectionSet',
                                         selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: { kind: 'Name', value: 'ProductOptionGroup' },
-                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                                         ],
                                     },
                                 },
@@ -36505,43 +36452,6 @@ export const RemoveProductOptionGroupsFromChannelDocument = {
                                         ],
                                     },
                                 },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'ProductOptionGroup' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductOptionGroup' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'options' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'translations' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
                     },
