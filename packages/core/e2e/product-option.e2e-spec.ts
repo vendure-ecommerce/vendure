@@ -557,11 +557,11 @@ describe('ProductOption resolver', () => {
 
             expect(removeProductOptionGroupsFromChannel).toEqual([
                 {
-                    errorCode: 'PRODUCT_OPTION_GROUP_IN_USE',
+                    errorCode: 'PRODUCT_OPTION_GROUP_IN_USE_ERROR',
                     message: 'The ProductOptionGroup "channel-option-group" is in use by Products and',
                     optionGroupCode: 'channel-option-group',
                     productCount: 1,
-                    variantCount: 1,
+                    variantCount: 2,
                 },
             ]);
         });
@@ -698,8 +698,7 @@ const GET_PRODUCT_OPTION_GROUPS = gql`
 const ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL = gql`
     mutation AssignProductOptionGroupsToChannel($input: AssignProductOptionGroupsToChannelInput!) {
         assignProductOptionGroupsToChannel(input: $input) {
-            id
-            name
+            ...ProductOptionGroup
         }
     }
     ${PRODUCT_OPTION_GROUP_FRAGMENT}
@@ -709,8 +708,7 @@ const REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL = gql`
     mutation RemoveProductOptionGroupsFromChannel($input: RemoveProductOptionGroupsFromChannelInput!) {
         removeProductOptionGroupsFromChannel(input: $input) {
             ... on ProductOptionGroup {
-                id
-                name
+                ...ProductOptionGroup
             }
             ... on ProductOptionGroupInUseError {
                 errorCode
