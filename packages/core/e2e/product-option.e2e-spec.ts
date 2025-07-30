@@ -525,7 +525,7 @@ describe('ProductOption resolver', () => {
                 Codegen.CreateProductVariantsMutation,
                 Codegen.CreateProductVariantsMutationVariables
             >(CREATE_PRODUCT_VARIANTS, {
-                input: channelOptionGroup.options.map((option, i) => ({
+                input: channelOptionGroup.options.map(option => ({
                     productId: createProduct.id,
                     sku: `VARIANT-${option.code}`,
                     optionIds: [option.id],
