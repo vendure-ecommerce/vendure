@@ -15,6 +15,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 
 import { ErrorResultUnion } from '../../../common';
+import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
@@ -91,6 +92,13 @@ export class ProductOptionResolver {
         @Args() args: MutationCreateProductOptionArgs,
     ): Promise<Translated<ProductOption>> {
         const { input } = args;
+        const productOptionGroup = await this.productOptionGroupService.findOne(
+            ctx,
+            input.productOptionGroupId,
+        );
+        if (!productOptionGroup) {
+            throw new EntityNotFoundError('ProductOptionGroup', input.productOptionGroupId);
+        }
         return this.productOptionService.create(ctx, input.productOptionGroupId, input);
     }
 
