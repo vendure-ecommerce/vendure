@@ -6,6 +6,8 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { extendDetailFormQuery } from '@/vdb/framework/document-extension/extend-detail-form-query.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -16,20 +18,25 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
-import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { api } from '@/vdb/graphql/api.js';
+import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { globalSettingsDocument, updateGlobalSettingsDocument } from './global-settings.graphql.js';
 
+const pageId = 'global-settings';
+
 export const Route = createFileRoute('/_authenticated/_global-settings/global-settings')({
     component: GlobalSettingsPage,
     loader: async ({ context }) => {
-        await context.queryClient.ensureQueryData({
-            queryFn: () => api.query(globalSettingsDocument),
-            queryKey: ['DetailPage', 'globalSettings'],
-        });
+        const { extendedQuery: extendedQueryDocument } = extendDetailFormQuery(
+            addCustomFields(globalSettingsDocument),
+            pageId,
+        );
+        await context.queryClient.ensureQueryData(
+            getDetailQueryOptions(extendedQueryDocument, { id: '' }),
+            {},
+        );
         return {
             breadcrumb: [{ path: '/global-settings', label: <Trans>Global settings</Trans> }],
         };
@@ -45,8 +52,9 @@ function GlobalSettingsPage() {
 
     const { form, submitHandler, entity, isPending } = useDetailPage({
         queryDocument: globalSettingsDocument,
-        entityField: 'globalSettings',
+        entityName: 'GlobalSettings',
         updateDocument: updateGlobalSettingsDocument,
+        pageId,
         setValuesForUpdate: entity => {
             return {
                 id: entity.id,
@@ -78,7 +86,7 @@ function GlobalSettingsPage() {
     });
 
     return (
-        <Page pageId="global-settings" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 <Trans>Global settings</Trans>
             </PageTitle>
