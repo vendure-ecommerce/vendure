@@ -82,6 +82,7 @@
     "PAYMENT_FAILED_ERROR": "Оплата не відбулася",
     "PAYMENT_ORDER_MISMATCH_ERROR": "Оплата і Позиції Замовлення не належать одному і тому ж Замовленню",
     "PAYMENT_STATE_TRANSITION_ERROR": "Неможливо перевести Оплату з \"{ fromState }\" в \"{ toState }\"",
+    "PRODUCT_OPTION_GROUP_IN_USE_ERROR": "Неможливо видалити Групу Опцій Товара \"{ optionGroupCode }\" так як вона використовується {productCount, plural, =0 {} one {1 Товаром} other {# Товарами}} {variantCount, plural, =0 {} one {1 Варіантом Товару} other {# Варіантами Товару}}",
     "PRODUCT_OPTION_IN_USE_ERROR": "Неможливо видалити Групу Опцій Товара \"{ optionGroupCode }\" так як це використовує {productVariantCount, plural, one {1 Варіант Товару} other {# Варіантів Товару}}",
     "QUANTITY_TOO_GREAT_ERROR": "Вказана кількість більше, ніж доступних Позицій Замовлення",
     "REFUND_ORDER_STATE_ERROR": "Неможливо повернути Замовлення у стані \"{ orderState }\"",

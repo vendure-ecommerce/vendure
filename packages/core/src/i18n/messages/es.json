@@ -27,6 +27,9 @@
     "unauthorized": "Las credenciales no concuerdan, por favor comprueba y vuelve a probar",
     "unexpected-password-on-registration": "No proveer conntraseña cuándo `authOptions.requireVerification` está \"true\""
   },
+  "errorResult": {
+    "PRODUCT_OPTION_GROUP_IN_USE_ERROR": "No se puede eliminar el ProductOptionGroup \"{ optionGroupCode }\" ya que está siendo utilizado por {productCount, plural, =0 {} one {1 Producto} other {# Productos}} {variantCount, plural, =0 {} one {1 Variante de Producto} other {# Variantes de Producto}}"
+  },
   "message": {
     "country-used-in-addresses": "El país seleccionado no puede ser eliminado ya que es usado en {count, plural, one {1 Dirección} other {# Direcciones}}",
     "facet-force-deleted": "El valor de faceta fue eliminado, y sus instancias fueron eliminadas en {products, plural, =0 {} one {1 Producto} other {# Productos}}{both, select, both {, } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",

@@ -451,7 +451,7 @@ describe('ProductOption resolver', () => {
                 });
                 expect.fail('Should have thrown an error');
             } catch (error: any) {
-                expect(error.message).toContain('items-cannot-be-removed-from-default-channel');
+                expect(error.message).toEqual('Items cannot be removed from the default Channel');
             }
         });
 
@@ -558,7 +558,8 @@ describe('ProductOption resolver', () => {
             expect(removeProductOptionGroupsFromChannel).toEqual([
                 {
                     errorCode: 'PRODUCT_OPTION_GROUP_IN_USE_ERROR',
-                    message: 'The ProductOptionGroup "channel-option-group" is in use by Products and',
+                    message:
+                        'Cannot remove ProductOptionGroup \"channel-option-group\" as it is used by 1 Product 2 ProductVariants',
                     optionGroupCode: 'channel-option-group',
                     productCount: 1,
                     variantCount: 2,
@@ -588,6 +589,7 @@ describe('ProductOption resolver', () => {
 
             expect(removeProductOptionGroupsFromChannel).toEqual([
                 {
+                    id: 'T_4',
                     name: 'Channel Option Group',
                 },
             ]);
@@ -698,17 +700,18 @@ const GET_PRODUCT_OPTION_GROUPS = gql`
 const ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL = gql`
     mutation AssignProductOptionGroupsToChannel($input: AssignProductOptionGroupsToChannelInput!) {
         assignProductOptionGroupsToChannel(input: $input) {
-            ...ProductOptionGroup
+            id
+            name
         }
     }
-    ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
 
 const REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL = gql`
     mutation RemoveProductOptionGroupsFromChannel($input: RemoveProductOptionGroupsFromChannelInput!) {
         removeProductOptionGroupsFromChannel(input: $input) {
             ... on ProductOptionGroup {
-                ...ProductOptionGroup
+                id
+                name
             }
             ... on ProductOptionGroupInUseError {
                 errorCode
@@ -719,5 +722,4 @@ const REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL = gql`
             }
         }
     }
-    ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
