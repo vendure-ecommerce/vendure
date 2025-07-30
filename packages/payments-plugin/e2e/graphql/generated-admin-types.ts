@@ -278,6 +278,11 @@ export type AssignPaymentMethodsToChannelInput = {
     paymentMethodIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignProductOptionGroupsToChannelInput = {
+    channelId: Scalars['ID']['input'];
+    productOptionGroupIds: Array<Scalars['ID']['input']>;
+};
+
 export type AssignProductVariantsToChannelInput = {
     channelId: Scalars['ID']['input'];
     priceFactor?: InputMaybe<Scalars['Float']['input']>;
@@ -1679,6 +1684,7 @@ export enum ErrorCode {
     PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
     PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
     PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
+    PRODUCT_OPTION_GROUP_IN_USE_ERROR = 'PRODUCT_OPTION_GROUP_IN_USE_ERROR',
     PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
     QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
     REFUND_AMOUNT_ERROR = 'REFUND_AMOUNT_ERROR',
@@ -2205,11 +2211,6 @@ export enum JobState {
     RUNNING = 'RUNNING',
 }
 
-export type KeyValueInput = {
-    key: Scalars['String']['input'];
-    value: Scalars['JSON']['input'];
-};
-
 /**
  * @description
  * Languages in the form of a ISO 639-1 language code with optional
@@ -2694,18 +2695,6 @@ export type MolliePaymentIntentError = ErrorResult & {
 
 export type MolliePaymentIntentInput = {
     /**
-     * By default, pay later methods like Klarna will be immediately captured.
-     * Set this to false when you expect that order fulfillment takes longer than 24 hours.
-     * If set to false, you will need to settle the "Authorized" payment in Vendure manually!
-     * If you fail to do so, the Authorized payment will expire after 28 days.
-     */
-    immediateCapture?: InputMaybe<Scalars['Boolean']['input']>;
-    /**
-     * Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
-     * The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
-     */
-    locale?: InputMaybe<Scalars['String']['input']>;
-    /**
      * Optional preselected Mollie payment method. When this is passed
      * the payment selection step will be skipped.
      */
@@ -2796,6 +2785,8 @@ export type Mutation = {
     assignFacetsToChannel: Array<Facet>;
     /** Assigns PaymentMethods to the specified Channel */
     assignPaymentMethodsToChannel: Array<PaymentMethod>;
+    /** Assigns ProductOptionGroups to the specified Channel */
+    assignProductOptionGroupsToChannel: Array<ProductOptionGroup>;
     /** Assigns ProductVariants to the specified Channel */
     assignProductVariantsToChannel: Array<ProductVariant>;
     /** Assigns all ProductVariants of Product to the specified Channel */
@@ -2995,6 +2986,8 @@ export type Mutation = {
     removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
     /** Removes PaymentMethods from the specified Channel */
     removePaymentMethodsFromChannel: Array<PaymentMethod>;
+    /** Removes ProductOptionGroups from the specified Channel */
+    removeProductOptionGroupsFromChannel: Array<RemoveProductOptionGroupFromChannelResult>;
     /** Removes ProductVariants from the specified Channel */
     removeProductVariantsFromChannel: Array<ProductVariant>;
     /** Removes all ProductVariants of Product from the specified Channel */
@@ -3018,17 +3011,9 @@ export type Mutation = {
     setDraftOrderShippingAddress: Order;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
     setDraftOrderShippingMethod: SetOrderShippingMethodResult;
-    /** Set a single key-value pair (automatically scoped based on field configuration) */
-    setKeyValue: SetKeyValueResult;
-    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-    setKeyValues: Array<SetKeyValueResult>;
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
-    /** Set a single key-value pair (automatically scoped based on field configuration) */
-    setSettingsStoreValue: SetSettingsStoreValueResult;
-    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-    setSettingsStoreValues: Array<SetSettingsStoreValueResult>;
     settlePayment: SettlePaymentResult;
     settleRefund: SettleRefundResult;
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
@@ -3158,6 +3143,10 @@ export type MutationAssignFacetsToChannelArgs = {
 
 export type MutationAssignPaymentMethodsToChannelArgs = {
     input: AssignPaymentMethodsToChannelInput;
+};
+
+export type MutationAssignProductOptionGroupsToChannelArgs = {
+    input: AssignProductOptionGroupsToChannelInput;
 };
 
 export type MutationAssignProductVariantsToChannelArgs = {
@@ -3565,6 +3554,10 @@ export type MutationRemovePaymentMethodsFromChannelArgs = {
     input: RemovePaymentMethodsFromChannelInput;
 };
 
+export type MutationRemoveProductOptionGroupsFromChannelArgs = {
+    input: RemoveProductOptionGroupsFromChannelInput;
+};
+
 export type MutationRemoveProductVariantsFromChannelArgs = {
     input: RemoveProductVariantsFromChannelInput;
 };
@@ -3620,28 +3613,12 @@ export type MutationSetDraftOrderShippingMethodArgs = {
     shippingMethodId: Scalars['ID']['input'];
 };
 
-export type MutationSetKeyValueArgs = {
-    input: KeyValueInput;
-};
-
-export type MutationSetKeyValuesArgs = {
-    inputs: Array<KeyValueInput>;
-};
-
 export type MutationSetOrderCustomFieldsArgs = {
     input: UpdateOrderInput;
 };
 
 export type MutationSetOrderCustomerArgs = {
     input: SetOrderCustomerInput;
-};
-
-export type MutationSetSettingsStoreValueArgs = {
-    input: SettingsStoreInput;
-};
-
-export type MutationSetSettingsStoreValuesArgs = {
-    inputs: Array<SettingsStoreInput>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -4608,6 +4585,14 @@ export type ProductOptionGroup = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionGroupInUseError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String']['output'];
+    optionGroupCode: Scalars['String']['output'];
+    productCount: Scalars['Int']['output'];
+    variantCount: Scalars['Int']['output'];
+};
+
 export type ProductOptionGroupTranslation = {
     createdAt: Scalars['DateTime']['output'];
     id: Scalars['ID']['output'];
@@ -4971,14 +4956,6 @@ export type Query = {
     facetValues: FacetValueList;
     facets: FacetList;
     fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
-    /** Get value for a specific key (automatically scoped based on field configuration) */
-    getKeyValue?: Maybe<Scalars['JSON']['output']>;
-    /** Get multiple key-value pairs (each automatically scoped) */
-    getKeyValues?: Maybe<Scalars['JSON']['output']>;
-    /** Get value for a specific key (automatically scoped based on field configuration) */
-    getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
-    /** Get multiple key-value pairs (each automatically scoped) */
-    getSettingsStoreValues?: Maybe<Scalars['JSON']['output']>;
     globalSettings: GlobalSettings;
     job?: Maybe<Job>;
     jobBufferSize: Array<JobBufferSize>;
@@ -5109,22 +5086,6 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
     options?: InputMaybe<FacetListOptions>;
-};
-
-export type QueryGetKeyValueArgs = {
-    key: Scalars['String']['input'];
-};
-
-export type QueryGetKeyValuesArgs = {
-    keys: Array<Scalars['String']['input']>;
-};
-
-export type QueryGetSettingsStoreValueArgs = {
-    key: Scalars['String']['input'];
-};
-
-export type QueryGetSettingsStoreValuesArgs = {
-    keys: Array<Scalars['String']['input']>;
 };
 
 export type QueryJobArgs = {
@@ -5446,6 +5407,14 @@ export type RemovePaymentMethodsFromChannelInput = {
     paymentMethodIds: Array<Scalars['ID']['input']>;
 };
 
+export type RemoveProductOptionGroupFromChannelResult = ProductOptionGroup | ProductOptionGroupInUseError;
+
+export type RemoveProductOptionGroupsFromChannelInput = {
+    channelId: Scalars['ID']['input'];
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    productOptionGroupIds: Array<Scalars['ID']['input']>;
+};
+
 export type RemoveProductVariantsFromChannelInput = {
     channelId: Scalars['ID']['input'];
     productVariantIds: Array<Scalars['ID']['input']>;
@@ -5672,12 +5641,6 @@ export type ServerConfig = {
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
 
-export type SetKeyValueResult = {
-    error?: Maybe<Scalars['String']['output']>;
-    key: Scalars['String']['output'];
-    result: Scalars['Boolean']['output'];
-};
-
 export type SetOrderCustomerInput = {
     customerId: Scalars['ID']['input'];
     note?: InputMaybe<Scalars['String']['input']>;
@@ -5689,17 +5652,6 @@ export type SetOrderShippingMethodResult =
     | NoActiveOrderError
     | Order
     | OrderModificationError;
-
-export type SetSettingsStoreValueResult = {
-    error?: Maybe<Scalars['String']['output']>;
-    key: Scalars['String']['output'];
-    result: Scalars['Boolean']['output'];
-};
-
-export type SettingsStoreInput = {
-    key: Scalars['String']['input'];
-    value: Scalars['JSON']['input'];
-};
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -6395,14 +6347,6 @@ export type UpdateOrderInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
     id: Scalars['ID']['input'];
 };
-
-/** Union type of all possible errors that can occur when adding or removing items from an Order. */
-export type UpdateOrderItemErrorResult =
-    | InsufficientStockError
-    | NegativeQuantityError
-    | OrderInterceptorError
-    | OrderLimitError
-    | OrderModificationError;
 
 export type UpdateOrderItemsResult =
     | InsufficientStockError

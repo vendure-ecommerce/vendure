@@ -22,8 +22,11 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+
+import { ChannelService } from './channel.service';
 
 /**
  * @description
@@ -40,24 +43,33 @@ export class ProductOptionService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        return this.connection
-            .getRepository(ctx, ProductOption)
-            .find({
-                relations: ['group'],
-                where: { deletedAt: IsNull() },
-            })
-            .then(options => options.map(option => this.translator.translate(option, ctx)));
+        const qb = this.listQueryBuilder.build(
+            ProductOption,
+            {},
+            {
+                relations: ['group', 'channels'],
+                ctx,
+                channelId: ctx.channelId,
+            },
+        );
+
+        qb.andWhere('productOption.deletedAt IS NULL');
+
+        return qb.getMany().then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
-            .getRepository(ctx, ProductOption)
-            .findOne({
-                where: { id, deletedAt: IsNull() },
-                relations: ['group'],
+            .findOneInChannel(ctx, ProductOption, id, ctx.channelId, {
+                relations: ['group', 'channels'],
+                where: {
+                    deletedAt: IsNull(),
+                },
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
@@ -70,13 +82,24 @@ export class ProductOptionService {
         const productOptionGroup =
             group instanceof ProductOptionGroup
                 ? group
-                : await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, group);
+                : await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, group, {
+                      relations: ['channels'],
+                  });
         const option = await this.translatableSaver.create({
             ctx,
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: po => (po.group = productOptionGroup),
+            beforeSave: async po => {
+                po.group = productOptionGroup;
+                // Inherit channels from the parent group
+                if (productOptionGroup.channels && productOptionGroup.channels.length > 0) {
+                    po.channels = productOptionGroup.channels;
+                } else {
+                    // If group has no channels, assign to current channel
+                    await this.channelService.assignToCurrentChannel(po, ctx);
+                }
+            },
         });
         const optionWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,

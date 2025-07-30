@@ -14,6 +14,10 @@ type Mutation {
     updateProductOption(input: UpdateProductOptionInput!): ProductOption!
     "Delete a ProductOption"
     deleteProductOption(id: ID!): DeletionResponse!
+    "Assigns ProductOptionGroups to the specified Channel"
+    assignProductOptionGroupsToChannel(input: AssignProductOptionGroupsToChannelInput!): [ProductOptionGroup!]!
+    "Removes ProductOptionGroups from the specified Channel"
+    removeProductOptionGroupsFromChannel(input: RemoveProductOptionGroupsFromChannelInput!): [RemoveProductOptionGroupFromChannelResult!]!
 }
 
 input ProductOptionGroupTranslationInput {
@@ -56,3 +60,24 @@ input UpdateProductOptionInput {
     code: String
     translations: [ProductOptionGroupTranslationInput!]
 }
+
+input AssignProductOptionGroupsToChannelInput {
+    productOptionGroupIds: [ID!]!
+    channelId: ID!
+}
+
+input RemoveProductOptionGroupsFromChannelInput {
+    productOptionGroupIds: [ID!]!
+    channelId: ID!
+    force: Boolean
+}
+
+type ProductOptionGroupInUseError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    optionGroupCode: String!
+    productCount: Int!
+    variantCount: Int!
+}
+
+union RemoveProductOptionGroupFromChannelResult = ProductOptionGroup | ProductOptionGroupInUseError

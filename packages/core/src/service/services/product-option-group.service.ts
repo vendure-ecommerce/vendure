@@ -1,30 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssignProductOptionGroupsToChannelInput,
     CreateProductOptionGroupInput,
     DeletionResult,
+    Permission,
+    RemoveProductOptionGroupFromChannelResult,
+    RemoveProductOptionGroupsFromChannelInput,
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { FindManyOptions, IsNull, Like } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { Instrument } from '../../common/instrument-decorator';
+import {
+    ErrorResultUnion,
+    ForbiddenError,
+    Instrument,
+    ProductOptionGroupInUseError,
+    UserInputError,
+} from '../../common';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 
+import { ChannelService } from './channel.service';
 import { ProductOptionService } from './product-option.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -42,6 +56,9 @@ export class ProductOptionGroupService {
         private productOptionService: ProductOptionService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
+        private roleService: RoleService,
     ) {}
 
     findAll(
@@ -49,21 +66,24 @@ export class ProductOptionGroupService {
         filterTerm?: string,
         relations?: RelationPaths<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
-        const findOptions: FindManyOptions = {
-            relations: relations ?? ['options'],
-            where: {
-                deletedAt: IsNull(),
+        const qb = this.listQueryBuilder.build(
+            ProductOptionGroup,
+            {},
+            {
+                relations: relations ?? ['options', 'channels'],
+                ctx,
+                channelId: ctx.channelId,
             },
-        };
+        );
+
         if (filterTerm) {
-            findOptions.where = {
-                code: Like(`%${filterTerm}%`),
-                ...findOptions.where,
-            };
+            qb.andWhere('productOptionGroup.code LIKE :term', { term: `%${filterTerm}%` });
         }
-        return this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .find(findOptions)
+
+        qb.andWhere('productOptionGroup.deletedAt IS NULL');
+
+        return qb
+            .getMany()
             .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
@@ -74,13 +94,11 @@ export class ProductOptionGroupService {
         findOneOptions?: { includeSoftDeleted: boolean },
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .findOne({
+            .findOneInChannel(ctx, ProductOptionGroup, id, ctx.channelId, {
+                relations: relations ?? ['options', 'channels'],
                 where: {
-                    id,
                     deletedAt: !findOneOptions?.includeSoftDeleted ? IsNull() : undefined,
                 },
-                relations: relations ?? ['options'],
             })
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
@@ -110,6 +128,9 @@ export class ProductOptionGroupService {
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
+            beforeSave: async g => {
+                await this.channelService.assignToCurrentChannel(g, ctx);
+            },
         });
         const groupWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
@@ -222,5 +243,140 @@ export class ProductOptionGroupService {
             .leftJoin('variant.options', 'option')
             .where('option.groupId = :groupId', { groupId: productOptionGroup.id })
             .getCount();
+    }
+
+    /**
+     * @description
+     * Assigns ProductOptionGroups to the specified Channel
+     */
+    async assignProductOptionGroupsToChannel(
+        ctx: RequestContext,
+        input: AssignProductOptionGroupsToChannelInput,
+    ): Promise<Array<Translated<ProductOptionGroup>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdateCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const groupsToAssign = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .find({ where: { id: In(input.productOptionGroupIds) }, relations: ['options'] });
+
+        const optionsToAssign = groupsToAssign.reduce(
+            (options, group) => [...options, ...group.options],
+            [] as ProductOption[],
+        );
+
+        await Promise.all<any>([
+            ...groupsToAssign.map(async group => {
+                return this.channelService.assignToChannels(ctx, ProductOptionGroup, group.id, [
+                    input.channelId,
+                ]);
+            }),
+            ...optionsToAssign.map(async option =>
+                this.channelService.assignToChannels(ctx, ProductOption, option.id, [input.channelId]),
+            ),
+        ]);
+        return this.connection
+            .findByIdsInChannel(
+                ctx,
+                ProductOptionGroup,
+                groupsToAssign.map(g => g.id),
+                ctx.channelId,
+                { relations: ['options'] },
+            )
+            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
+    }
+
+    /**
+     * @description
+     * Remove ProductOptionGroups from the specified Channel
+     */
+    async removeProductOptionGroupsFromChannel(
+        ctx: RequestContext,
+        input: RemoveProductOptionGroupsFromChannelInput,
+    ): Promise<Array<ErrorResultUnion<RemoveProductOptionGroupFromChannelResult, ProductOptionGroup>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeleteCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
+        }
+        const groupsToRemove = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .find({ where: { id: In(input.productOptionGroupIds) }, relations: ['options'] });
+
+        const results: Array<
+            ErrorResultUnion<RemoveProductOptionGroupFromChannelResult, ProductOptionGroup>
+        > = [];
+
+        for (const group of groupsToRemove) {
+            let productCount = 0;
+            let variantCount = 0;
+
+            // Check if the option group is in use in the target channel
+            const productsUsingGroup = await this.connection
+                .getRepository(ctx, Product)
+                .createQueryBuilder('product')
+                .leftJoin('product.optionGroups', 'optionGroup')
+                .leftJoin('product.channels', 'channel')
+                .where('optionGroup.id = :groupId', { groupId: group.id })
+                .andWhere('channel.id = :channelId', { channelId: input.channelId })
+                .andWhere('product.deletedAt IS NULL')
+                .getCount();
+
+            productCount = productsUsingGroup;
+
+            // Check if any variants are using options from this group in the target channel
+            if (group.options.length) {
+                const variantsUsingOptions = await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .createQueryBuilder('variant')
+                    .leftJoin('variant.options', 'option')
+                    .leftJoin('variant.channels', 'channel')
+                    .where('option.groupId = :groupId', { groupId: group.id })
+                    .andWhere('channel.id = :channelId', { channelId: input.channelId })
+                    .andWhere('variant.deletedAt IS NULL')
+                    .getCount();
+
+                variantCount = variantsUsingOptions;
+            }
+
+            const isInUse = !!(productCount || variantCount);
+            const both = !!(productCount && variantCount) ? 'both' : 'single';
+            let result: Translated<ProductOptionGroup> | undefined;
+
+            if (!isInUse || input.force) {
+                await this.channelService.removeFromChannels(ctx, ProductOptionGroup, group.id, [
+                    input.channelId,
+                ]);
+                await Promise.all(
+                    group.options.map(option =>
+                        this.channelService.removeFromChannels(ctx, ProductOption, option.id, [
+                            input.channelId,
+                        ]),
+                    ),
+                );
+                result = await this.findOne(ctx, group.id);
+                if (result) {
+                    results.push(result);
+                }
+            } else {
+                results.push(
+                    new ProductOptionGroupInUseError({
+                        optionGroupCode: group.code,
+                        productCount,
+                        variantCount,
+                    }),
+                );
+            }
+        }
+
+        return results;
     }
 }

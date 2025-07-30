@@ -24,11 +24,6 @@ export type Scalars = {
 
 export type ActiveOrderResult = NoActiveOrderError | Order;
 
-export type AddItemInput = {
-    productVariantId: Scalars['ID']['input'];
-    quantity: Scalars['Int']['input'];
-};
-
 export type AddPaymentToOrderResult =
     | IneligiblePaymentMethodError
     | NoActiveOrderError
@@ -1689,8 +1684,6 @@ export type MissingPasswordError = ErrorResult & {
 export type Mutation = {
     /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
     addItemToOrder: UpdateOrderItemsResult;
-    /** Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items. */
-    addItemsToOrder: UpdateMultipleOrderItemsResult;
     /** Add a Payment to the Order */
     addPaymentToOrder: AddPaymentToOrderResult;
     /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
@@ -1792,10 +1785,6 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID']['input'];
     quantity: Scalars['Int']['input'];
-};
-
-export type MutationAddItemsToOrderArgs = {
-    inputs: Array<AddItemInput>;
 };
 
 export type MutationAddPaymentToOrderArgs = {
@@ -3379,26 +3368,9 @@ export type UpdateCustomerPasswordResult =
     | PasswordValidationError
     | Success;
 
-/**
- * Returned when multiple items are added to an Order.
- * The errorResults array contains the errors that occurred for each item, if any.
- */
-export type UpdateMultipleOrderItemsResult = {
-    errorResults: Array<UpdateOrderItemErrorResult>;
-    order: Order;
-};
-
 export type UpdateOrderInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
 };
-
-/** Union type of all possible errors that can occur when adding or removing items from an Order. */
-export type UpdateOrderItemErrorResult =
-    | InsufficientStockError
-    | NegativeQuantityError
-    | OrderInterceptorError
-    | OrderLimitError
-    | OrderModificationError;
 
 export type UpdateOrderItemsResult =
     | InsufficientStockError
@@ -3620,55 +3592,6 @@ export type AddItemToOrderMutation = {
         | { errorCode: ErrorCode; message: string; interceptorError: string }
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
-};
-
-export type AddItemsToOrderMutationVariables = Exact<{
-    inputs: Array<AddItemInput> | AddItemInput;
-}>;
-
-export type AddItemsToOrderMutation = {
-    addItemsToOrder: {
-        order: {
-            id: string;
-            code: string;
-            state: string;
-            active: boolean;
-            total: number;
-            totalWithTax: number;
-            currencyCode: CurrencyCode;
-            lines: Array<{
-                id: string;
-                quantity: number;
-                unitPrice: number;
-                unitPriceWithTax: number;
-                linePrice: number;
-                linePriceWithTax: number;
-                productVariant: { id: string };
-                featuredAsset?: { id: string } | null;
-                discounts: Array<{
-                    adjustmentSource: string;
-                    amount: number;
-                    amountWithTax: number;
-                    description: string;
-                    type: AdjustmentType;
-                }>;
-            }>;
-            discounts: Array<{
-                adjustmentSource: string;
-                amount: number;
-                amountWithTax: number;
-                description: string;
-                type: AdjustmentType;
-            }>;
-        };
-        errorResults: Array<
-            | { errorCode: ErrorCode; message: string }
-            | { errorCode: ErrorCode; message: string }
-            | { errorCode: ErrorCode; message: string }
-            | { errorCode: ErrorCode; message: string }
-            | { errorCode: ErrorCode; message: string }
-        >;
-    };
 };
 
 export type SearchProductsShopQueryVariables = Exact<{
@@ -5798,174 +5721,6 @@ export const AddItemToOrderDocument = {
         },
     ],
 } as unknown as DocumentNode<AddItemToOrderMutation, AddItemToOrderMutationVariables>;
-export const AddItemsToOrderDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'mutation',
-            name: { kind: 'Name', value: 'AddItemsToOrder' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'ListType',
-                            type: {
-                                kind: 'NonNullType',
-                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'AddItemInput' } },
-                            },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'addItemsToOrder' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'inputs' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'order' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'FragmentSpread',
-                                                name: { kind: 'Name', value: 'UpdatedOrder' },
-                                            },
-                                        ],
-                                    },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'errorResults' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'InlineFragment',
-                                                typeCondition: {
-                                                    kind: 'NamedType',
-                                                    name: { kind: 'Name', value: 'ErrorResult' },
-                                                },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'errorCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'message' },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'UpdatedOrder' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lines' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'productVariant' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
-                                    },
-                                },
-                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'featuredAsset' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
-                                    },
-                                },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'discounts' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'adjustmentSource' },
-                                            },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'discounts' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'adjustmentSource' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AddItemsToOrderMutation, AddItemsToOrderMutationVariables>;
 export const SearchProductsShopDocument = {
     kind: 'Document',
     definitions: [

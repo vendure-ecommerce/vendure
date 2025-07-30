@@ -4,14 +4,23 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { omit } from '../../common/lib/omit';
 
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { DeletionResult, LanguageCode } from './graphql/generated-e2e-admin-types';
+import {
+    AssignProductOptionGroupsToChannelInput,
+    ChannelFragment,
+    CurrencyCode,
+    DeletionResult,
+    LanguageCode,
+    ProductOptionGroup,
+    RemoveProductOptionGroupsFromChannelInput,
+} from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
+    CREATE_CHANNEL,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
@@ -267,6 +276,185 @@ describe('ProductOption resolver', () => {
             expect(productOptionGroup?.options.findIndex(o => o.code === 'medium')).toBe(-1);
         });
     });
+
+    describe('channels', () => {
+        const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+        let secondChannel: ChannelFragment;
+        let channelOptionGroup: Codegen.ProductOptionGroupFragment;
+
+        beforeAll(async () => {
+            const { createChannel } = await adminClient.query<
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.USD,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+
+            secondChannel = createChannel as ChannelFragment;
+        });
+
+        it('creates ProductOptionGroup in current channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const { createProductOptionGroup } = await adminClient.query<
+                Codegen.CreateProductOptionGroupMutation,
+                Codegen.CreateProductOptionGroupMutationVariables
+            >(CREATE_PRODUCT_OPTION_GROUP, {
+                input: {
+                    code: 'channel-option-group',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Channel Option Group' }],
+                    options: [
+                        {
+                            code: 'channel-option-1',
+                            translations: [{ languageCode: LanguageCode.en, name: 'Channel Option 1' }],
+                        },
+                        {
+                            code: 'channel-option-2',
+                            translations: [{ languageCode: LanguageCode.en, name: 'Channel Option 2' }],
+                        },
+                    ],
+                },
+            });
+
+            expect(createProductOptionGroup.code).toBe('channel-option-group');
+            channelOptionGroup = createProductOptionGroup;
+        });
+
+        it('productOptionGroups list in channel', async () => {
+            const result =
+                await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
+
+            const { productOptionGroups } = result;
+            expect(productOptionGroups.length).toBe(1);
+            expect(productOptionGroups[0].code).toBe('channel-option-group');
+        });
+
+        it('does not return ProductOptionGroups from other channels', async () => {
+            adminClient.setChannelToken('e2e-default-channel');
+
+            const result =
+                await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
+
+            const channelGroup = result.productOptionGroups.find(g => g.code === 'channel-option-group');
+            expect(channelGroup).toBeUndefined();
+        });
+
+        it('assigns ProductOptionGroups to channel', async () => {
+            const input: AssignProductOptionGroupsToChannelInput = {
+                productOptionGroupIds: [sizeGroup.id],
+                channelId: secondChannel.id,
+            };
+
+            const { assignProductOptionGroupsToChannel } = await adminClient.query<
+                Codegen.AssignProductOptionGroupsToChannelMutation,
+                Codegen.AssignProductOptionGroupsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL, {
+                input,
+            });
+
+            expect(assignProductOptionGroupsToChannel).toHaveLength(1);
+            expect(assignProductOptionGroupsToChannel[0].id).toBe(sizeGroup.id);
+        });
+
+        it('returns assigned ProductOptionGroups in target channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const result =
+                await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
+
+            const assignedGroup = result.productOptionGroups.find(g => g.code === 'size');
+            expect(assignedGroup).toBeDefined();
+            expect(assignedGroup?.code).toBe('size');
+        });
+
+        it('removes ProductOptionGroups from channel', async () => {
+            adminClient.setChannelToken('e2e-default-channel');
+
+            const input: RemoveProductOptionGroupsFromChannelInput = {
+                productOptionGroupIds: [sizeGroup.id],
+                channelId: secondChannel.id,
+                force: false,
+            };
+
+            const { removeProductOptionGroupsFromChannel } = await adminClient.query<
+                Codegen.RemoveProductOptionGroupsFromChannelMutation,
+                Codegen.RemoveProductOptionGroupsFromChannelMutationVariables
+            >(REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL, {
+                input,
+            });
+
+            expect(removeProductOptionGroupsFromChannel).toHaveLength(1);
+            expect((removeProductOptionGroupsFromChannel[0] as ProductOptionGroup).id).toBe(sizeGroup.id);
+        });
+
+        it('no longer returns removed ProductOptionGroups in target channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const result =
+                await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
+
+            const removedGroup = result.productOptionGroups.find(g => g.code === 'size');
+            expect(removedGroup).toBeUndefined();
+
+            adminClient.setChannelToken('e2e-default-channel');
+        });
+
+        it('prevents removal from default channel', async () => {
+            try {
+                await adminClient.query<
+                    Codegen.RemoveProductOptionGroupsFromChannelMutation,
+                    Codegen.RemoveProductOptionGroupsFromChannelMutationVariables
+                >(REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL, {
+                    input: {
+                        productOptionGroupIds: [sizeGroup.id],
+                        channelId: 'T_1', // Default channel ID
+                        force: false,
+                    },
+                });
+                expect.fail('Should have thrown an error');
+            } catch (error: any) {
+                expect(error.message).toContain('items-cannot-be-removed-from-default-channel');
+            }
+        });
+
+        it('creates ProductOption that inherits channels from parent group', async () => {
+            adminClient.setChannelToken('e2e-default-channel');
+
+            // First assign the channel option group to default channel
+            await adminClient.query<
+                Codegen.AssignProductOptionGroupsToChannelMutation,
+                Codegen.AssignProductOptionGroupsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL, {
+                input: {
+                    productOptionGroupIds: [channelOptionGroup.id],
+                    channelId: 'T_1',
+                },
+            });
+
+            const { createProductOption } = await adminClient.query<
+                Codegen.CreateProductOptionMutation,
+                Codegen.CreateProductOptionMutationVariables
+            >(CREATE_PRODUCT_OPTION, {
+                input: {
+                    productOptionGroupId: channelOptionGroup.id,
+                    code: 'channel-option-3',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Channel Option 3' }],
+                },
+            });
+
+            expect(createProductOption).toBeDefined();
+            expect(createProductOption.code).toBe('channel-option-3');
+            expect(createProductOption.groupId).toBe(channelOptionGroup.id);
+        });
+    });
 });
 
 const GET_PRODUCT_OPTION_GROUP = gql`
@@ -327,4 +515,40 @@ const DELETE_PRODUCT_OPTION = gql`
             message
         }
     }
+`;
+
+const GET_PRODUCT_OPTION_GROUPS = gql`
+    query GetProductOptionGroups($filterTerm: String) {
+        productOptionGroups(filterTerm: $filterTerm) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
+const ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL = gql`
+    mutation AssignProductOptionGroupsToChannel($input: AssignProductOptionGroupsToChannelInput!) {
+        assignProductOptionGroupsToChannel(input: $input) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
+const REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL = gql`
+    mutation RemoveProductOptionGroupsFromChannel($input: RemoveProductOptionGroupsFromChannelInput!) {
+        removeProductOptionGroupsFromChannel(input: $input) {
+            ... on ProductOptionGroup {
+                ...ProductOptionGroup
+            }
+            ... on ProductOptionGroupInUseError {
+                errorCode
+                message
+                optionGroupCode
+                productCount
+                variantCount
+            }
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
