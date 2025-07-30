@@ -1,20 +1,23 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
-    DeletionResult,
+    MutationAssignProductOptionGroupsToChannelArgs,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
+    MutationRemoveProductOptionGroupsFromChannelArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
     QueryProductOptionGroupArgs,
     QueryProductOptionGroupsArgs,
+    RemoveProductOptionGroupFromChannelResult,
 } from '@vendure/common/lib/generated-types';
 
+import { ErrorResultUnion } from '../../../common';
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
@@ -110,5 +113,25 @@ export class ProductOptionResolver {
         @Args() { id }: MutationDeleteProductOptionArgs,
     ): Promise<DeletionResponse> {
         return this.productOptionService.delete(ctx, id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async assignProductOptionGroupsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignProductOptionGroupsToChannelArgs,
+    ): Promise<ProductOptionGroup[]> {
+        return this.productOptionGroupService.assignProductOptionGroupsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async removeProductOptionGroupsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveProductOptionGroupsFromChannelArgs,
+    ): Promise<Array<ErrorResultUnion<RemoveProductOptionGroupFromChannelResult, ProductOptionGroup>>> {
+        return this.productOptionGroupService.removeProductOptionGroupsFromChannel(ctx, args.input);
     }
 }
