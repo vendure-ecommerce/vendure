@@ -229,7 +229,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                         name={fieldName}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                                <FormLabel>{getTranslation(fieldDef.label) ?? fieldDef.name}</FormLabel>
                                 <FormControl>
                                     <CustomFieldListInput
                                         field={field}
@@ -263,7 +263,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                     name={fieldName}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                            <FormLabel>{getTranslation(fieldDef.label) ?? fieldDef.name}</FormLabel>
                             <FormControl>
                                 <StructFormInput
                                     field={field}
@@ -291,7 +291,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                     <CustomFieldFormItem
                         fieldDef={fieldDef}
                         getTranslation={getTranslation}
-                        fieldName={field.name}
+                        fieldName={fieldDef.name}
                     >
                         <FormInputForType fieldDef={fieldDef} field={field} />
                     </CustomFieldFormItem>
