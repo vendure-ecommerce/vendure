@@ -9,7 +9,7 @@ import {
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { In, IsNull } from 'typeorm';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -261,7 +261,10 @@ export class ProductOptionGroupService {
         }
         const groupsToAssign = await this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .find({ where: { id: In(input.productOptionGroupIds) }, relations: ['options'] });
+            .createQueryBuilder('productOptionGroup')
+            .leftJoinAndSelect('productOptionGroup.options', 'options', 'options.deletedAt IS NULL')
+            .where('productOptionGroup.id IN (:...ids)', { ids: input.productOptionGroupIds })
+            .getMany();
 
         const optionsToAssign = groupsToAssign.reduce(
             (options, group) => [...options, ...group.options],
@@ -309,7 +312,10 @@ export class ProductOptionGroupService {
         }
         const groupsToRemove = await this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .find({ where: { id: In(input.productOptionGroupIds) }, relations: ['options'] });
+            .createQueryBuilder('productOptionGroup')
+            .leftJoinAndSelect('productOptionGroup.options', 'options', 'options.deletedAt IS NULL')
+            .where('productOptionGroup.id IN (:...ids)', { ids: input.productOptionGroupIds })
+            .getMany();
 
         const results: Array<
             ErrorResultUnion<RemoveProductOptionGroupFromChannelResult, ProductOptionGroup>
@@ -320,7 +326,7 @@ export class ProductOptionGroupService {
             let variantCount = 0;
 
             // Check if the option group is in use in the target channel
-            const productsUsingGroup = await this.connection
+            productCount = await this.connection
                 .getRepository(ctx, Product)
                 .createQueryBuilder('product')
                 .leftJoin('product.optionGroups', 'optionGroup')
@@ -330,11 +336,9 @@ export class ProductOptionGroupService {
                 .andWhere('product.deletedAt IS NULL')
                 .getCount();
 
-            productCount = productsUsingGroup;
-
             // Check if any variants are using options from this group in the target channel
             if (group.options.length) {
-                const variantsUsingOptions = await this.connection
+                variantCount = await this.connection
                     .getRepository(ctx, ProductVariant)
                     .createQueryBuilder('variant')
                     .leftJoin('variant.options', 'option')
@@ -343,12 +347,9 @@ export class ProductOptionGroupService {
                     .andWhere('channel.id = :channelId', { channelId: input.channelId })
                     .andWhere('variant.deletedAt IS NULL')
                     .getCount();
-
-                variantCount = variantsUsingOptions;
             }
 
             const isInUse = !!(productCount || variantCount);
-            const both = !!(productCount && variantCount) ? 'both' : 'single';
             let result: Translated<ProductOptionGroup> | undefined;
 
             if (!isInUse || input.force) {
