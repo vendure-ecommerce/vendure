@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
-    ConfigService,
     Logger,
     PluginCommonModule,
     ProcessContext,
@@ -110,10 +109,7 @@ export interface DashboardPluginOptions {
 export class DashboardPlugin implements NestModule {
     private static options: DashboardPluginOptions | undefined;
 
-    constructor(
-        private configService: ConfigService,
-        private processContext: ProcessContext,
-    ) {}
+    constructor(private readonly processContext: ProcessContext) {}
 
     /**
      * @description
