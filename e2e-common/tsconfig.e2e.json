@@ -1,17 +1,21 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "types": ["node"],
-    "lib": ["es2015"],
-    "useDefineForClassFields": false,
-    "skipLibCheck": true,
-    "inlineSourceMap": false,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "allowJs": false,
-    "diagnostics": false
-  }
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../dist/out-tsc",
+        "rootDir": "..",
+        "module": "commonjs",
+        "types": ["vitest/globals", "node"],
+        "lib": ["es2015"],
+        "useDefineForClassFields": false,
+        "skipLibCheck": true,
+        "inlineSourceMap": false,
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "allowJs": true
+    },
+    "include": ["**/*.ts", "../packages/**/*.e2e-spec.ts"],
+    "exclude": ["node_modules", "**/*.js"]
 }

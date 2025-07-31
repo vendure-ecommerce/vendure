@@ -1,23 +1,23 @@
-import { mergeConfig } from '@vendure/core';
+import { mergeConfig } from "@vendure/core";
 import {
-    MysqlInitializer,
-    PostgresInitializer,
-    registerInitializer,
-    SqljsInitializer,
-    testConfig as defaultTestConfig,
-} from '@vendure/testing';
-import fs from 'fs-extra';
-import path from 'path';
-import { DataSourceOptions } from 'typeorm';
+  MysqlInitializer,
+  PostgresInitializer,
+  registerInitializer,
+  SqljsInitializer,
+  testConfig as defaultTestConfig,
+} from "@vendure/testing";
+import fs from "fs-extra";
+import path from "path";
+import { DataSourceOptions } from "typeorm";
 
-import { getPackageDir } from './get-package-dir';
+import { getPackageDir } from "./get-package-dir";
 
 declare global {
-    namespace NodeJS {
-        interface Global {
-            e2eServerPortsUsed: number[];
-        }
+  namespace NodeJS {
+    interface Global {
+      e2eServerPortsUsed: number[];
     }
+  }
 }
 
 /**
@@ -25,26 +25,31 @@ declare global {
  * e2e tests because on the first run (and always in CI) the sqlite databases
  * need to be generated, which can take a while.
  */
-export const TEST_SETUP_TIMEOUT_MS = process.env.E2E_DEBUG ? 1800 * 1000 : 120000;
+export const TEST_SETUP_TIMEOUT_MS = process.env.E2E_DEBUG
+  ? 1800 * 1000
+  : 180000;
 
 const packageDir = getPackageDir();
 
-registerInitializer('sqljs', new SqljsInitializer(path.join(packageDir, '__data__')));
-registerInitializer('postgres', new PostgresInitializer());
-registerInitializer('mysql', new MysqlInitializer());
-registerInitializer('mariadb', new MysqlInitializer());
+registerInitializer(
+  "sqljs",
+  new SqljsInitializer(path.join(packageDir, "__data__"))
+);
+registerInitializer("postgres", new PostgresInitializer());
+registerInitializer("mysql", new MysqlInitializer());
+registerInitializer("mariadb", new MysqlInitializer());
 
 export const testConfig = () => {
-    const index = getIndexOfTestFileInParentDir();
-    return mergeConfig(defaultTestConfig, {
-        apiOptions: {
-            port: 3010 + index,
-        },
-        importExportOptions: {
-            importAssetsDir: path.join(packageDir, 'fixtures/assets'),
-        },
-        dbConnectionOptions: getDbConfig(),
-    });
+  const index = getIndexOfTestFileInParentDir();
+  return mergeConfig(defaultTestConfig, {
+    apiOptions: {
+      port: 3010 + index,
+    },
+    importExportOptions: {
+      importAssetsDir: path.join(packageDir, "fixtures/assets"),
+    },
+    dbConnectionOptions: getDbConfig(),
+  });
 };
 
 /**
@@ -53,11 +58,11 @@ export const testConfig = () => {
  * port number.
  */
 function getIndexOfTestFileInParentDir() {
-    const testFilePath = getCallerFilename(2);
-    const parentDir = path.dirname(testFilePath);
-    const files = fs.readdirSync(parentDir);
-    const index = files.indexOf(path.basename(testFilePath));
-    return index;
+  const testFilePath = getCallerFilename(2);
+  const parentDir = path.dirname(testFilePath);
+  const files = fs.readdirSync(parentDir);
+  const index = files.indexOf(path.basename(testFilePath));
+  return index;
 }
 
 /**
@@ -65,59 +70,59 @@ function getIndexOfTestFileInParentDir() {
  * @param depth
  */
 function getCallerFilename(depth: number): string {
-    let stack: any;
-    let file: any;
-    let frame: any;
+  let stack: any;
+  let file: any;
+  let frame: any;
 
-    const pst = Error.prepareStackTrace;
-    Error.prepareStackTrace = (_, _stack) => {
-        Error.prepareStackTrace = pst;
-        return _stack;
-    };
+  const pst = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, _stack) => {
+    Error.prepareStackTrace = pst;
+    return _stack;
+  };
 
-    stack = new Error().stack;
-    stack = stack.slice(depth + 1);
+  stack = new Error().stack;
+  stack = stack.slice(depth + 1);
 
-    do {
-        frame = stack.shift();
-        file = frame && frame.getFileName();
-    } while (stack.length && file === 'module.js');
+  do {
+    frame = stack.shift();
+    file = frame && frame.getFileName();
+  } while (stack.length && file === "module.js");
 
-    return file;
+  return file;
 }
 
 function getDbConfig(): DataSourceOptions {
-    const dbType = process.env.DB || 'sqljs';
-    switch (dbType) {
-        case 'postgres':
-            return {
-                synchronize: true,
-                type: 'postgres',
-                host: '127.0.0.1',
-                port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
-                username: 'vendure',
-                password: 'password',
-            };
-        case 'mariadb':
-            return {
-                synchronize: true,
-                type: 'mariadb',
-                host: '127.0.0.1',
-                port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
-                username: 'vendure',
-                password: 'password',
-            };
-        case 'mysql':
-            return {
-                synchronize: true,
-                type: 'mysql',
-                host: '127.0.0.1',
-                port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
-                username: 'vendure',
-                password: 'password',
-            };
-        case 'sqljs':
-        default:
-            return defaultTestConfig.dbConnectionOptions;
-    }
+  const dbType = process.env.DB || "sqljs";
+  switch (dbType) {
+    case "postgres":
+      return {
+        synchronize: true,
+        type: "postgres",
+        host: "127.0.0.1",
+        port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
+        username: "vendure",
+        password: "password",
+      };
+    case "mariadb":
+      return {
+        synchronize: true,
+        type: "mariadb",
+        host: "127.0.0.1",
+        port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
+        username: "vendure",
+        password: "password",
+      };
+    case "mysql":
+      return {
+        synchronize: true,
+        type: "mysql",
+        host: "127.0.0.1",
+        port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
+        username: "vendure",
+        password: "password",
+      };
+    case "sqljs":
+    default:
+      return defaultTestConfig.dbConnectionOptions;
+  }
 }
