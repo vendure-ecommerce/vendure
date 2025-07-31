@@ -17,6 +17,7 @@ import {
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
+import { NavItemWrapper } from './nav-item-wrapper.js';
 
 // Utility to sort items & sections by the optional `order` prop (ascending) and then alphabetically by title
 function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
@@ -85,53 +86,63 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton tooltip={item.title} asChild isActive={location.pathname === item.url}>
-                        <Link to={item.url}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            tooltip={item.title}
+                            asChild
+                            isActive={location.pathname === item.url}
+                        >
+                            <Link to={item.url}>
+                                {item.icon && <item.icon />}
+                                <span>{item.title}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </NavItemWrapper>
             );
         }
 
         return (
-            <Collapsible
-                key={item.title}
-                asChild
-                defaultOpen={item.defaultOpen}
-                className="group/collapsible"
-            >
-                <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <SidebarMenuSub>
-                            {item.items?.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton
-                                        asChild
-                                        isActive={
-                                            location.pathname === subItem.url ||
-                                            location.pathname.startsWith(`${subItem.url}/`)
-                                        }
+            <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+                <Collapsible asChild defaultOpen={item.defaultOpen} className="group/collapsible">
+                    <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={item.title}>
+                                {item.icon && <item.icon />}
+                                <span>{item.title}</span>
+                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <SidebarMenuSub>
+                                {item.items?.map(subItem => (
+                                    <NavItemWrapper
+                                        key={subItem.title}
+                                        locationId={subItem.id}
+                                        order={subItem.order}
+                                        parentLocationId={item.id}
                                     >
-                                        <Link to={subItem.url}>
-                                            <span>{subItem.title}</span>
-                                        </Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            ))}
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </SidebarMenuItem>
-            </Collapsible>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                isActive={
+                                                    location.pathname === subItem.url ||
+                                                    location.pathname.startsWith(`${subItem.url}/`)
+                                                }
+                                            >
+                                                <Link to={subItem.url}>
+                                                    <span>{subItem.title}</span>
+                                                </Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    </NavItemWrapper>
+                                ))}
+                            </SidebarMenuSub>
+                        </CollapsibleContent>
+                    </SidebarMenuItem>
+                </Collapsible>
+            </NavItemWrapper>
         );
     };
 
@@ -139,53 +150,67 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const renderBottomSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton tooltip={item.title} asChild isActive={location.pathname === item.url}>
-                        <Link to={item.url}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                <NavItemWrapper key={item.title} locationId={item.id} order={item.order}>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            tooltip={item.title}
+                            asChild
+                            isActive={location.pathname === item.url}
+                        >
+                            <Link to={item.url}>
+                                {item.icon && <item.icon />}
+                                <span>{item.title}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </NavItemWrapper>
             );
         }
         return (
-            <Collapsible
-                key={item.title}
-                asChild
-                open={openBottomSectionId === item.id}
-                onOpenChange={isOpen => handleBottomSectionToggle(item.id, isOpen)}
-                className="group/collapsible"
-            >
-                <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <SidebarMenuSub>
-                            {item.items?.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton
-                                        asChild
-                                        isActive={
-                                            location.pathname === subItem.url ||
-                                            location.pathname.startsWith(`${subItem.url}/`)
-                                        }
+            <NavItemWrapper key={item.title} locationId={item.id} order={item.order}>
+                <Collapsible
+                    asChild
+                    open={openBottomSectionId === item.id}
+                    onOpenChange={isOpen => handleBottomSectionToggle(item.id, isOpen)}
+                    className="group/collapsible"
+                >
+                    <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={item.title}>
+                                {item.icon && <item.icon />}
+                                <span>{item.title}</span>
+                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <SidebarMenuSub>
+                                {item.items?.map(subItem => (
+                                    <NavItemWrapper
+                                        key={subItem.title}
+                                        locationId={subItem.id}
+                                        order={subItem.order}
+                                        parentLocationId={item.id}
                                     >
-                                        <Link to={subItem.url}>
-                                            <span>{subItem.title}</span>
-                                        </Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            ))}
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </SidebarMenuItem>
-            </Collapsible>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                isActive={
+                                                    location.pathname === subItem.url ||
+                                                    location.pathname.startsWith(`${subItem.url}/`)
+                                                }
+                                            >
+                                                <Link to={subItem.url}>
+                                                    <span>{subItem.title}</span>
+                                                </Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    </NavItemWrapper>
+                                ))}
+                            </SidebarMenuSub>
+                        </CollapsibleContent>
+                    </SidebarMenuItem>
+                </Collapsible>
+            </NavItemWrapper>
         );
     };
 
