@@ -10,8 +10,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { z } from 'zod';
+import { useLoginExtensions } from '../../framework/extension-api/use-login-extensions.js';
 import { LogoMark } from '../shared/logo-mark.js';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form.js';
+import { Separator } from '../ui/separator.js';
 
 export interface LoginFormProps extends React.ComponentProps<'div'> {
     loginError?: string;
@@ -19,7 +21,7 @@ export interface LoginFormProps extends React.ComponentProps<'div'> {
     onFormSubmit?: (username: string, password: string) => void;
 }
 
-type RemoteLoginImage = {
+export type RemoteLoginImage = {
     urls: { regular: string };
     location: { name: string };
     user: { name: string; links: { html: string } };
@@ -32,6 +34,7 @@ const formSchema = z.object({
 
 export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ...props }: LoginFormProps) {
     const [remoteLoginImage, setRemoteLoginImage] = React.useState<RemoteLoginImage | null>(null);
+    const loginExtensions = useLoginExtensions();
 
     React.useEffect(() => {
         if (!uiConfig.loginImageUrl) {
@@ -66,17 +69,39 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                         >
                             <div className="flex flex-col gap-6">
                                 <div className="flex flex-col items-start  space-y-4">
-                                    {!uiConfig.hideVendureBranding && (
-                                        <LogoMark className="text-vendure-brand h-6 w-auto" />
+                                    {loginExtensions.logo ? (
+                                        <>
+                                            <loginExtensions.logo.component />
+                                            {loginExtensions.beforeForm && (
+                                                <>
+                                                    <loginExtensions.beforeForm.component />
+                                                    <Separator className="w-full" />
+                                                </>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {!uiConfig.hideVendureBranding && (
+                                                <LogoMark className="text-vendure-brand h-6 w-auto" />
+                                            )}
+                                            <div>
+                                                <h1 className="text-2xl font-medium">
+                                                    <Trans>Welcome back!</Trans>
+                                                </h1>
+                                                <p className="text-muted-foreground text-balance">
+                                                    Login to your Vendure store
+                                                </p>
+                                            </div>
+                                            {loginExtensions.beforeForm && (
+                                                <>
+                                                    <Separator className="w-full" />
+                                                    <div className="w-full">
+                                                        <loginExtensions.beforeForm.component />
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
                                     )}
-                                    <div>
-                                        <h1 className="text-2xl font-medium">
-                                            <Trans>Welcome back!</Trans>
-                                        </h1>
-                                        <p className="text-muted-foreground text-balance">
-                                            Login to your Vendure store
-                                        </p>
-                                    </div>
                                 </div>
                                 <FormField
                                     control={form.control}
@@ -117,7 +142,6 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                         </FormItem>
                                     )}
                                 />
-
                                 <Button type="submit" disabled={isVerifying}>
                                     {isVerifying && (
                                         <>
@@ -128,44 +152,55 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     {!isVerifying && <span>Login</span>}
                                 </Button>
                             </div>
+                            {loginExtensions.afterForm && (
+                                <>
+                                    <Separator className="w-full my-4" />
+
+                                    <loginExtensions.afterForm.component />
+                                </>
+                            )}
                         </form>
                     </Form>
-                    <div className="bg-muted relative hidden md:block lg:min-h-[500px]">
-                        {remoteLoginImage && (
-                            <>
+                    {loginExtensions.loginImage ? (
+                        <loginExtensions.loginImage.component />
+                    ) : (
+                        <div className="bg-muted relative hidden md:block lg:min-h-[500px]">
+                            {remoteLoginImage && (
+                                <>
+                                    <img
+                                        src={remoteLoginImage.urls.regular}
+                                        alt="Image"
+                                        className="absolute inset-0 h-full w-full object-cover"
+                                    />
+                                    <div className="absolute h-full w-full top-0 left-0 flex items-end justify-start bg-gradient-to-b from-transparent to-black/80 p-4 ">
+                                        <div>
+                                            <p className="text-lg font-medium text-white">
+                                                {remoteLoginImage.location.name}
+                                            </p>
+                                            <p className="text-sm text-white/80">
+                                                By
+                                                <a
+                                                    className="mx-1 underline"
+                                                    href={remoteLoginImage.user.links.html}
+                                                    target="_blank"
+                                                >
+                                                    {remoteLoginImage.user.name}
+                                                </a>
+                                                on Unsplash
+                                            </p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            {uiConfig.loginImageUrl && (
                                 <img
-                                    src={remoteLoginImage.urls.regular}
-                                    alt="Image"
+                                    src={uiConfig.loginImageUrl}
+                                    alt="Login image"
                                     className="absolute inset-0 h-full w-full object-cover"
                                 />
-                                <div className="absolute h-full w-full top-0 left-0 flex items-end justify-start bg-gradient-to-b from-transparent to-black/80 p-4 ">
-                                    <div>
-                                        <p className="text-lg font-medium text-white">
-                                            {remoteLoginImage.location.name}
-                                        </p>
-                                        <p className="text-sm text-white/80">
-                                            By
-                                            <a
-                                                className="mx-1 underline"
-                                                href={remoteLoginImage.user.links.html}
-                                                target="_blank"
-                                            >
-                                                {remoteLoginImage.user.name}
-                                            </a>
-                                            on Unsplash
-                                        </p>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        {uiConfig.loginImageUrl && (
-                            <img
-                                src={uiConfig.loginImageUrl}
-                                alt="Login image"
-                                className="absolute inset-0 h-full w-full object-cover"
-                            />
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

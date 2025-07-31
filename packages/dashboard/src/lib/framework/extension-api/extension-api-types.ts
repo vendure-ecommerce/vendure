@@ -5,6 +5,7 @@ import {
     DashboardCustomFormComponents,
     DashboardDataTableExtensionDefinition,
     DashboardDetailFormExtensionDefinition,
+    DashboardLoginExtensions,
     DashboardNavSectionDefinition,
     DashboardPageBlockDefinition,
     DashboardRouteDefinition,
@@ -64,4 +65,9 @@ export interface DashboardExtension {
      */
     dataTables?: DashboardDataTableExtensionDefinition[];
     detailForms?: DashboardDetailFormExtensionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the login page with custom components.
+     */
+    login?: DashboardLoginExtensions;
 }
