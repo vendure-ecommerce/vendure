@@ -9,7 +9,7 @@ import {
     RemoveProductOptionGroupsFromChannelInput,
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -21,6 +21,7 @@ import {
     ProductOptionGroupInUseError,
     UserInputError,
 } from '../../common';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -62,33 +63,29 @@ export class ProductOptionGroupService {
         private roleService: RoleService,
     ) {}
 
-    findAll(
+    async findAll(
         ctx: RequestContext,
-        filterTerm?: string,
+        options?: ListQueryOptions<ProductOptionGroup>,
         relations?: RelationPaths<ProductOptionGroup>,
-    ): Promise<Array<Translated<ProductOptionGroup>>> {
-        const qb = this.listQueryBuilder.build(
-            ProductOptionGroup,
-            {},
-            {
+    ): Promise<PaginatedList<Translated<ProductOptionGroup>>> {
+        return this.listQueryBuilder
+            .build(ProductOptionGroup, options, {
                 relations: relations ?? ['options', 'channels'],
-                ctx,
                 channelId: ctx.channelId,
-            },
-        );
-
-        if (filterTerm) {
-            qb.andWhere('productOptionGroup.code LIKE :term', { term: `%${filterTerm}%` });
-        }
-
-        qb.andWhere('productOptionGroup.deletedAt IS NULL');
-
-        return qb
-            .getMany()
-            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
+                where: { deletedAt: IsNull() },
+                ctx,
+            })
+            .getManyAndCount()
+            .then(([groups, totalItems]) => {
+                const items = groups.map(group => this.translator.translate(group, ctx, ['options']));
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
-    findOne(
+    async findOne(
         ctx: RequestContext,
         id: ID,
         relations?: RelationPaths<ProductOptionGroup>,
