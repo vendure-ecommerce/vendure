@@ -47,20 +47,29 @@ export interface DashboardPluginOptions {
  *
  * ## Installation
  *
- * `yarn add \@vendure/dashboard-plugin`
+ * `npm install \@vendure/dashboard`
  *
- * or
+ * ## Usage
  *
- * `npm install \@vendure/dashboard-plugin`
+ * First you need to set up compilation of the Dashboard, using the Vite configuration
+ * described in the [Dashboard Getting Started Guide](/guides/extending-the-dashboard/getting-started/)
+ *
+ * Once set up, you run `npx vite build` to build the production version of the dashboard app.
+ *
+ * The built app files will be output to the location specified by `build.outDir` in your Vite
+ * config file. This should then be passed to the `appDir` init option, as in the example below:
  *
  * @example
  * ```ts
- * import { DashboardPlugin } from '\@vendure/dashboard-plugin';
+ * import { DashboardPlugin } from '\@vendure/dashboard/plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     DashboardPlugin.init({ route: 'dashboard' }),
+ *     DashboardPlugin.init({
+ *       route: 'dashboard',
+ *       appDir: './dist/dashboard',
+ *     }),
  *   ],
  * };
  * ```
