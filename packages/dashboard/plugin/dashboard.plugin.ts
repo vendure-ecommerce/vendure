@@ -37,7 +37,7 @@ export interface DashboardPluginOptions {
      * The path to the dashboard UI app dist directory. By default, the built-in dashboard UI
      * will be served. This can be overridden with a custom build of the dashboard.
      */
-    app?: string;
+    appDir: string;
 }
 
 /**
@@ -126,8 +126,8 @@ export class DashboardPlugin implements NestModule {
             );
             return;
         }
-        const { route, app } = DashboardPlugin.options;
-        const dashboardPath = app || this.getDashboardPath();
+        const { route, appDir } = DashboardPlugin.options;
+        const dashboardPath = appDir || this.getDashboardPath();
 
         Logger.info('Creating dashboard middleware', loggerCtx);
         consumer.apply(this.createStaticServer(dashboardPath)).forRoutes(route);
