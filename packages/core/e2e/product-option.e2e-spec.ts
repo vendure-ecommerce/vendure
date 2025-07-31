@@ -367,6 +367,21 @@ describe('ProductOption resolver', () => {
             expect(productOptionGroups[0].code).toBe('channel-option-group');
         });
 
+        it(
+            'throws when attempting to assign empty productOptionGroupIds array',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<
+                    Codegen.AssignProductOptionGroupsToChannelMutation,
+                    Codegen.AssignProductOptionGroupsToChannelMutationVariables
+                >(ASSIGN_PRODUCT_OPTION_GROUPS_TO_CHANNEL, {
+                    input: {
+                        productOptionGroupIds: [],
+                        channelId: secondChannel.id,
+                    },
+                });
+            }, 'Product option group ids cannot be empty'),
+        );
+
         it('assigns ProductOptionGroups to channel', async () => {
             const input: AssignProductOptionGroupsToChannelInput = {
                 productOptionGroupIds: [sizeGroup.id],
@@ -394,6 +409,23 @@ describe('ProductOption resolver', () => {
             expect(assignedGroup).toBeDefined();
             expect(assignedGroup?.code).toBe('size');
         });
+
+        it(
+            'throws when attempting to remove empty productOptionGroupIds array',
+            assertThrowsWithMessage(async () => {
+                adminClient.setChannelToken('e2e-default-channel');
+                await adminClient.query<
+                    Codegen.RemoveProductOptionGroupsFromChannelMutation,
+                    Codegen.RemoveProductOptionGroupsFromChannelMutationVariables
+                >(REMOVE_PRODUCT_OPTION_GROUPS_FROM_CHANNEL, {
+                    input: {
+                        productOptionGroupIds: [],
+                        channelId: secondChannel.id,
+                        force: false,
+                    },
+                });
+            }, 'Product option group ids cannot be empty'),
+        );
 
         it('removes ProductOptionGroups from channel', async () => {
             adminClient.setChannelToken('e2e-default-channel');
