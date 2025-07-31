@@ -34,7 +34,52 @@ function ProductIdWidgetComponent() {
 }
 ```
 
-## Theme Variables Location
+## Customizing Theme Colors
+
+You can customize the dashboard theme colors by modifying the `theme` configuration in your `vite.config.mts` file. Here's an example showing how to change the primary brand colors:
+
+```typescript
+// vite.config.mts
+import { vendureDashboardPlugin } from "@vendure/dashboard/plugin";
+import { defineConfig } from "vite";
+// ...other imports
+
+
+export default defineConfig({
+  plugins: [
+    vendureDashboardPlugin({
+      vendureConfigPath: "./src/vendure-config.ts",
+      adminUiConfig: { apiHost: "http://localhost", apiPort: 3000 },
+      gqlOutputPath: "./src/gql",
+
+      // Theme section
+      theme: {
+        light: {
+          // Change the primary brand color to blue
+          primary: "oklch(0.55 0.18 240)",
+          "primary-foreground": "oklch(0.98 0.01 240)",
+          
+          // Update the brand colors to match
+          brand: "#2563eb", // Blue-600
+          "brand-lighter": "#93c5fd", // Blue-300
+        },
+        dark: {
+          // Corresponding dark mode colors
+          primary: "oklch(0.65 0.16 240)",
+          "primary-foreground": "oklch(0.12 0.03 240)",
+          
+          // Same brand colors work for both themes
+          brand: "#2563eb",
+          "brand-lighter": "#93c5fd",
+        },
+      },
+
+    }),
+  ],
+});
+```
+
+## Theme Variables Location - for development
 
 All theme variables are defined in `packages/dashboard/vite/vite-plugin-theme.ts`. This is where you can customize colors, typography, spacing, and border radius.
 
