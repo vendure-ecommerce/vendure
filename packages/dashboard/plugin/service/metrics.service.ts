@@ -92,7 +92,7 @@ export class MetricsService {
                 entries,
             });
         }
-        await this.cacheService.set(cacheKey, metrics, { ttl: 1000 * 60 * 60 * 24 });
+        await this.cacheService.set(cacheKey, metrics, { ttl: 1000 * 60 * 60 * 2 }); // 2 hours
         return metrics;
     }
 
