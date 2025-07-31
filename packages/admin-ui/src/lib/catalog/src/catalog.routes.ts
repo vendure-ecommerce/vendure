@@ -107,6 +107,15 @@ export const createRoutes = (pageService: PageService): Route[] => [
         children: pageService.getPageTabRoutes('collection-list'),
     },
     {
+        path: 'option-groups',
+        component: PageComponent,
+        data: {
+            locationId: 'option-group-list',
+            breadcrumb: _('breadcrumb.option-groups'),
+        },
+        children: pageService.getPageTabRoutes('option-group-list' as any),
+    },
+    {
         path: 'collections/:id',
         component: PageComponent,
         data: {

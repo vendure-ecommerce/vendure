@@ -1,0 +1,14 @@
+@import 'variables';
+
+:host {
+    display: block;
+}
+
+.text-muted {
+    color: var(--color-text-300);
+}
+
+vdr-chip {
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
