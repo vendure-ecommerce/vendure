@@ -74,7 +74,7 @@ export function LocationWrapper({ children, identifier }: Readonly<LocationWrapp
         return (
             <div
                 className={cn(
-                    `ring-2 transition-all delay-50 relative`,
+                    `ring-2 p-2 transition-all delay-50 relative`,
                     isHovered || isPopoverOpen ? 'ring-dev-mode' : 'ring-transparent',
                     isPageWrapper ? 'ring-inset' : '',
                     identifier ? 'rounded-md' : 'rounded-xl',
