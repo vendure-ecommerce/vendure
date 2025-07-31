@@ -13,17 +13,18 @@ import {
     Permission,
     QueryFacetArgs,
     QueryFacetsArgs,
+    QueryFacetValueArgs,
     QueryFacetValuesArgs,
     RemoveFacetFromChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { EntityNotFoundError } from '../../../common/error/errors';
 import { ErrorResultUnion } from '../../../common/error/error-result';
+import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { ConfigService } from '../../../config/config.service';
-import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { FacetService } from '../../../service/services/facet.service';
 import { RequestContext } from '../../common/request-context';
@@ -58,6 +59,15 @@ export class FacetResolver {
         @Relations(Facet) relations: RelationPaths<Facet>,
     ): Promise<Translated<Facet> | undefined> {
         return this.facetService.findOne(ctx, args.id, relations);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct, Permission.ReadFacet)
+    facetValue(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryFacetValueArgs,
+    ): Promise<Translated<FacetValue> | undefined> {
+        return this.facetValueService.findOne(ctx, args.id);
     }
 
     @Query()

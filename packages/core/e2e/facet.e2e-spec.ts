@@ -23,6 +23,8 @@ import {
     CREATE_FACET,
     GET_FACET_LIST,
     GET_FACET_LIST_SIMPLE,
+    GET_FACET_VALUE,
+    GET_FACET_VALUES,
     GET_FACET_WITH_VALUES,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_FACET,
@@ -194,6 +196,41 @@ describe('Facet resolver', () => {
             },
         });
         expect(result.facet?.valueList.totalItems).toBe(2);
+    });
+
+    it('facetValues list query', async () => {
+        const result = await adminClient.query<
+            Codegen.GetFacetValuesQuery,
+            Codegen.GetFacetValuesQueryVariables
+        >(GET_FACET_VALUES, {
+            options: {
+                filter: {
+                    facetId: { eq: speakerTypeFacet.id },
+                },
+            },
+        });
+
+        expect(result.facetValues.totalItems).toBe(3);
+        expect(result.facetValues.items.length).toBe(3);
+        expect(result.facetValues.items.map(v => v.code).sort()).toEqual(['compact', 'hi-fi', 'pc']);
+        expect(result.facetValues.items.every(v => v.facet.id === speakerTypeFacet.id)).toBe(true);
+    });
+
+    it('facetValue single query', async () => {
+        const pcFacetValue = speakerTypeFacet.values.find(v => v.code === 'pc')!;
+        const result = await adminClient.query<
+            Codegen.GetFacetValueQuery,
+            Codegen.GetFacetValueQueryVariables
+        >(GET_FACET_VALUE, {
+            id: pcFacetValue.id,
+        });
+
+        expect(result.facetValue).toBeDefined();
+        expect(result.facetValue!.id).toBe(pcFacetValue.id);
+        expect(result.facetValue!.code).toBe('pc');
+        expect(result.facetValue!.name).toBe('PC Speakers');
+        expect(result.facetValue!.facet.id).toBe(speakerTypeFacet.id);
+        expect(result.facetValue!.facet.name).toBe('Speaker Category');
     });
 
     it('product.facetValues resolver omits private facets in shop-api', async () => {

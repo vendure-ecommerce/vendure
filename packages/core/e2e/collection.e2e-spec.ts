@@ -79,7 +79,8 @@ describe('Collection resolver', () => {
             },
         });
         assets = assetsResult.assets.items;
-        const facetValuesResult = await adminClient.query<Codegen.GetFacetValuesQuery>(GET_FACET_VALUES);
+        const facetValuesResult =
+            await adminClient.query<Codegen.GetFacetWithFacetValuesQuery>(GET_FACET_VALUES);
         facetValues = facetValuesResult.facets.items.reduce(
             (values, facet) => [...values, ...facet.values],
             [] as FacetValueFragment[],
@@ -2453,7 +2454,7 @@ export const MOVE_COLLECTION = gql`
 `;
 
 const GET_FACET_VALUES = gql`
-    query GetFacetValues {
+    query GetFacetWithFacetValues {
         facets {
             items {
                 values {
