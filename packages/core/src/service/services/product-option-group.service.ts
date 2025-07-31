@@ -259,6 +259,9 @@ export class ProductOptionGroupService {
         if (!hasPermission) {
             throw new ForbiddenError();
         }
+        if (input.productOptionGroupIds.length === 0) {
+            throw new UserInputError('error.product-option-group-ids-cannot-be-empty');
+        }
         const groupsToAssign = await this.connection
             .getRepository(ctx, ProductOptionGroup)
             .createQueryBuilder('productOptionGroup')
@@ -305,6 +308,9 @@ export class ProductOptionGroupService {
         ]);
         if (!hasPermission) {
             throw new ForbiddenError();
+        }
+        if (input.productOptionGroupIds.length === 0) {
+            throw new UserInputError('error.product-option-group-ids-cannot-be-empty');
         }
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (idsAreEqual(input.channelId, defaultChannel.id)) {

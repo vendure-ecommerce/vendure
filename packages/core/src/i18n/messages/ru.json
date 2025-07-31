@@ -39,6 +39,7 @@
     "products-cannot-be-removed-from-default-channel": "Товары не могут быть удалены из Канала по умолчанию",
     "product-id-or-slug-must-be-provided": "Необходимо указать либо идентификатор Товара, либо уникальный строковый идентификатор",
     "product-id-slug-mismatch": "Предоставленный идентификатор и уникальный строковый идентификатор относятся к разным Товарам",
+    "product-option-group-ids-cannot-be-empty": "Идентификаторы групп опций товара не могут быть пустыми",
     "product-variant-option-ids-not-compatible": "Идентификаторы параметров Варианта Товара должны включать один идентификатор параметра из каждой группы: {groupNames}",
     "product-variant-options-combination-already-exists": "Вариант Товара с выбранными опциями уже существует: {variantName}",
     "promotion-channels-can-only-be-changed-from-default-channel": "Каналы Промоакций могут быть изменены только из Канала по умолчанию.",

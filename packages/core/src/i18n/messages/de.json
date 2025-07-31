@@ -40,6 +40,7 @@
     "products-cannot-be-removed-from-default-channel": "Produkte können nicht aus dem Standardkanal entfernt werden",
     "product-id-or-slug-must-be-provided": "Entweder eine Produkt-ID oder Slug müssen angegeben werden",
     "product-id-slug-mismatch": "Die angegebene ID und Slug verweisen zu unterschiedlichen Produkten",
+    "product-option-group-ids-cannot-be-empty": "Produktoptionsgruppen-IDs dürfen nicht leer sein",
     "product-variant-option-ids-not-compatible": "Die optionIds einer Produktvariante müssen eine optionId aus jeder dieser Gruppen enthalten: {groupNames}",
     "product-variant-options-combination-already-exists": "Eine Produktvariante mit den gewählten Optionen existiert bereits: {variantName}",
     "promotion-channels-can-only-be-changed-from-default-channel": "Werbeaktionskanäle können nur vom Standardkanal aus geändert werden",
