@@ -58,6 +58,7 @@ import {
     removeProductsFromChannelBulkAction,
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductOptionGroupListComponent } from './components/product-option-group-list/product-option-group-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import {
@@ -108,6 +109,7 @@ const CATALOG_COMPONENTS = [
     CreateProductOptionGroupDialogComponent,
     ProductVariantQuickJumpComponent,
     CreateFacetValueDialogComponent,
+    ProductOptionGroupListComponent,
 ];
 
 @NgModule({
@@ -284,6 +286,13 @@ export class CatalogModule {
                     },
                 ],
             }),
+        });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'option-group-list' as any,
+            tab: _('catalog.option-groups'),
+            route: '',
+            component: ProductOptionGroupListComponent,
         });
         CatalogModule.hasRegisteredTabsAndBulkActions = true;
     }
