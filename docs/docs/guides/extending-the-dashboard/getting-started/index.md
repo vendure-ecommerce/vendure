@@ -142,7 +142,7 @@ Now that you have the dashboard up and running, you can start extending it:
 - [Page Blocks](/guides/extending-the-dashboard/page-blocks/) - Add custom blocks to existing pages
 - [Action Bar Items](/guides/extending-the-dashboard/action-bar-items/) - Add custom buttons to page action bars
 - [Tech Stack](/guides/extending-the-dashboard/tech-stack/) - Learn about the technologies used in the dashboard
-- [Dashboard Theming](/guides/extending-the-dashboard/themeing)
+- [Dashboard Theming](/guides/extending-the-dashboard/theming) - Customize the look and feel of the dashboard
 - [CMS Tutorial](/guides/extending-the-dashboard/cms-tutorial/) - Complete tutorial showing how to build a CMS plugin with custom pages and forms
 
 ## Still to come
