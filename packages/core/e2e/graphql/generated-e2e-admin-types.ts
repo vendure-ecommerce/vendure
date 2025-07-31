@@ -2751,6 +2751,8 @@ export type Mutation = {
     createDraftOrder: Order;
     /** Create a new Facet */
     createFacet: Facet;
+    /** Create a single FacetValue */
+    createFacetValue: FacetValue;
     /** Create one or more FacetValues */
     createFacetValues: Array<FacetValue>;
     /** Create existing PaymentMethod */
@@ -2972,6 +2974,8 @@ export type Mutation = {
     updateCustomerNote: HistoryEntry;
     /** Update an existing Facet */
     updateFacet: Facet;
+    /** Update a single FacetValue */
+    updateFacetValue: FacetValue;
     /** Update one or more FacetValues */
     updateFacetValues: Array<FacetValue>;
     updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3151,6 +3155,10 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
     input: CreateFacetInput;
+};
+
+export type MutationCreateFacetValueArgs = {
+    input: CreateFacetValueInput;
 };
 
 export type MutationCreateFacetValuesArgs = {
@@ -3618,6 +3626,10 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
     input: UpdateFacetInput;
+};
+
+export type MutationUpdateFacetValueArgs = {
+    input: UpdateFacetValueInput;
 };
 
 export type MutationUpdateFacetValuesArgs = {
@@ -9421,6 +9433,36 @@ export type UpdateFacetMutation = {
             translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
             facet: { id: string; name: string };
         }>;
+    };
+};
+
+export type CreateFacetValueMutationVariables = Exact<{
+    input: CreateFacetValueInput;
+}>;
+
+export type CreateFacetValueMutation = {
+    createFacetValue: {
+        id: string;
+        languageCode: LanguageCode;
+        code: string;
+        name: string;
+        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+        facet: { id: string; name: string };
+    };
+};
+
+export type UpdateFacetValueMutationVariables = Exact<{
+    input: UpdateFacetValueInput;
+}>;
+
+export type UpdateFacetValueMutation = {
+    updateFacetValue: {
+        id: string;
+        languageCode: LanguageCode;
+        code: string;
+        name: string;
+        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+        facet: { id: string; name: string };
     };
 };
 
@@ -25786,6 +25828,164 @@ export const UpdateFacetDocument = {
         },
     ],
 } as unknown as DocumentNode<UpdateFacetMutation, UpdateFacetMutationVariables>;
+export const CreateFacetValueDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'CreateFacetValue' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'CreateFacetValueInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createFacetValue' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FacetValue' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'FacetValue' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FacetValue' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'translations' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'facet' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<CreateFacetValueMutation, CreateFacetValueMutationVariables>;
+export const UpdateFacetValueDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UpdateFacetValue' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateFacetValueInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updateFacetValue' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FacetValue' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'FacetValue' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FacetValue' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'translations' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'facet' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UpdateFacetValueMutation, UpdateFacetValueMutationVariables>;
 export const GetCustomerListDocument = {
     kind: 'Document',
     definitions: [

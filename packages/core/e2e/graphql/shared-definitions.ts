@@ -126,6 +126,24 @@ export const UPDATE_FACET = gql`
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
 
+export const CREATE_FACET_VALUE = gql`
+    mutation CreateFacetValue($input: CreateFacetValueInput!) {
+        createFacetValue(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
+export const UPDATE_FACET_VALUE = gql`
+    mutation UpdateFacetValue($input: UpdateFacetValueInput!) {
+        updateFacetValue(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
 export const GET_CUSTOMER_LIST = gql`
     query GetCustomerList($options: CustomerListOptions) {
         customers(options: $options) {
