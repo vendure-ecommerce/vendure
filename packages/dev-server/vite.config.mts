@@ -1,4 +1,4 @@
-import { vendureDashboardPlugin } from '@vendure/dashboard/plugin';
+import { vendureDashboardPlugin } from '@vendure/dashboard/vite';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';

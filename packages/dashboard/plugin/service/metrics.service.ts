@@ -18,9 +18,9 @@ import {
     MetricCalculation,
     OrderCountMetric,
     OrderTotalMetric,
-} from '../config/metrics-strategies';
-import { loggerCtx } from '../constants';
-import { MetricInterval, MetricSummary, MetricSummaryEntry, MetricSummaryInput } from '../types';
+} from '../config/metrics-strategies.js';
+import { loggerCtx } from '../constants.js';
+import { MetricInterval, MetricSummary, MetricSummaryEntry, MetricSummaryInput } from '../types.js';
 
 export type MetricData = {
     date: Date;

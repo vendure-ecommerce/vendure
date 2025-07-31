@@ -1,7 +1,7 @@
 import { RequestContext } from '@vendure/core';
 
-import { MetricData } from '../service/metrics.service';
-import { MetricInterval, MetricSummaryEntry, MetricType } from '../types';
+import { MetricData } from '../service/metrics.service.js';
+import { MetricInterval, MetricSummaryEntry, MetricType } from '../types.js';
 
 /**
  * Calculate your metric data based on the given input.
@@ -67,6 +67,7 @@ export class OrderCountMetric implements MetricCalculation {
         };
     }
 }
+
 /**
  * Calculates order total
  */

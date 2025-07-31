@@ -13,10 +13,10 @@ import { rateLimit } from 'express-rate-limit';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { adminApiExtensions } from './api/api-extensions';
-import { MetricsResolver } from './api/metrics.resolver';
-import { DEFAULT_APP_PATH, loggerCtx } from './constants';
-import { MetricsService } from './service/metrics.service';
+import { adminApiExtensions } from './api/api-extensions.js';
+import { MetricsResolver } from './api/metrics.resolver.js';
+import { DEFAULT_APP_PATH, loggerCtx } from './constants.js';
+import { MetricsService } from './service/metrics.service.js';
 
 /**
  * @description

@@ -12,7 +12,7 @@ import {
     SettingsStoreScopes,
     VendureConfig,
 } from '@vendure/core';
-import { DashboardPlugin } from '@vendure/dashboard-plugin';
+import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import { TelemetryPlugin } from '@vendure/telemetry-plugin';
