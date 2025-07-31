@@ -224,6 +224,49 @@ input UpdateProductCustomFieldsInput {
 }"
 `;
 
+exports[`addGraphQLCustomFields() > handles deprecated custom fields 1`] = `
+"type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+scalar JSON
+
+scalar DateTime
+
+type ProductCustomFields {
+  available: Boolean
+  oldField: String @deprecated
+  legacyField: Int @deprecated(reason: "Use newField instead")
+}"
+`;
+
+exports[`addGraphQLCustomFields() > handles deprecated custom fields with translations 1`] = `
+"type Product {
+  id: ID
+  translations: [ProductTranslation!]!
+  customFields: ProductCustomFields
+}
+
+type ProductTranslation {
+  id: ID
+  customFields: ProductTranslationCustomFields
+}
+
+scalar JSON
+
+scalar DateTime
+
+type ProductCustomFields {
+  available: Boolean
+  oldName: String @deprecated(reason: "Use name instead")
+}
+
+type ProductTranslationCustomFields {
+  oldName: String @deprecated(reason: "Use name instead")
+}"
+`;
+
 exports[`addGraphQLCustomFields() > publicOnly = true 1`] = `
 "type Product {
   id: ID
