@@ -1,6 +1,11 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import React, { createContext, useEffect, useRef, useState } from 'react';
+import { api } from '../graphql/api.js';
+import {
+    getSettingsStoreValueDocument,
+    setSettingsStoreValueDocument,
+} from '../graphql/settings-store-operations.js';
 import { Theme } from './theme-provider.js';
 
 export interface TableSettings {
@@ -57,6 +62,7 @@ export interface UserSettingsContextType {
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'vendure-user-settings';
+const SETTINGS_STORE_KEY = 'vendure.dashboard.userSettings';
 
 interface UserSettingsProviderProps {
     queryClient?: QueryClient;
@@ -78,7 +84,49 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     };
 
     const [settings, setSettings] = useState<UserSettings>(loadSettings);
+    const [serverSettings, setServerSettings] = useState<UserSettings | null>(null);
+    const [isReady, setIsReady] = useState(false);
     const previousContentLanguage = useRef(settings.contentLanguage);
+
+    // Load settings from server on mount
+    const { data: serverSettingsResponse, isSuccess: serverSettingsLoaded } = useQuery({
+        queryKey: ['user-settings', SETTINGS_STORE_KEY],
+        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY }),
+        retry: false,
+        staleTime: 0,
+    });
+
+    // Mutation to save settings to server
+    const saveToServerMutation = useMutation({
+        mutationFn: (settingsToSave: UserSettings) =>
+            api.mutate(setSettingsStoreValueDocument, {
+                input: { key: SETTINGS_STORE_KEY, value: settingsToSave },
+            }),
+        onError: error => {
+            console.error('Failed to save user settings to server:', error);
+        },
+    });
+
+    // Initialize settings from server if available
+    useEffect(() => {
+        if (serverSettingsLoaded && !isReady) {
+            try {
+                const serverSettingsData =
+                    serverSettingsResponse?.getSettingsStoreValue as UserSettings | null;
+                if (serverSettingsData) {
+                    // Server has settings, use them
+                    const mergedSettings = { ...defaultSettings, ...serverSettingsData };
+                    setSettings(mergedSettings);
+                    setServerSettings(mergedSettings);
+                    setIsReady(true);
+                }
+            } catch (e) {
+                console.error('Failed to parse server settings:', e);
+                setServerSettings(settings);
+                setIsReady(true);
+            }
+        }
+    }, [serverSettingsLoaded, serverSettingsResponse, settings, isReady]);
 
     // Save settings to localStorage whenever they change
     useEffect(() => {
@@ -89,10 +137,22 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         }
     }, [settings]);
 
+    // Save to server when settings differ from server state
+    useEffect(() => {
+        if (isReady && serverSettings) {
+            const serverDiffers = JSON.stringify(serverSettings) !== JSON.stringify(settings);
+
+            if (serverDiffers) {
+                saveToServerMutation.mutate(settings);
+                setServerSettings(settings);
+            }
+        }
+    }, [settings, serverSettings, isReady, saveToServerMutation]);
+
     // Invalidate all queries when content language changes
     useEffect(() => {
         if (queryClient && settings.contentLanguage !== previousContentLanguage.current) {
-            queryClient.invalidateQueries();
+            void queryClient.invalidateQueries();
             previousContentLanguage.current = settings.contentLanguage;
         }
     }, [settings.contentLanguage, queryClient]);
