@@ -312,6 +312,27 @@ export const GET_STOCK_MOVEMENT = gql`
     }
     ${VARIANT_WITH_STOCK_FRAGMENT}
 `;
+
+export const GET_STOCK_MOVEMENT_BY_TYPE = gql`
+    query GetStockMovementByType($id: ID!, $type: StockMovementType!) {
+        product(id: $id) {
+            id
+            variants {
+                stockMovements(options: { type: $type }) {
+                    items {
+                        ... on StockMovement {
+                            id
+                            type
+                            quantity
+                        }
+                    }
+                    totalItems
+                }
+            }
+        }
+    }
+`;
+
 export const GET_RUNNING_JOBS = gql`
     query GetRunningJobs($options: JobListOptions) {
         jobs(options: $options) {

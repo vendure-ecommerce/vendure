@@ -9761,6 +9761,30 @@ export type GetStockMovementQuery = {
     } | null;
 };
 
+export type GetStockMovementByTypeQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+    type: StockMovementType;
+}>;
+
+export type GetStockMovementByTypeQuery = {
+    product?: {
+        id: string;
+        variants: Array<{
+            stockMovements: {
+                totalItems: number;
+                items: Array<
+                    | { id: string; type: StockMovementType; quantity: number }
+                    | { id: string; type: StockMovementType; quantity: number }
+                    | { id: string; type: StockMovementType; quantity: number }
+                    | { id: string; type: StockMovementType; quantity: number }
+                    | { id: string; type: StockMovementType; quantity: number }
+                    | { id: string; type: StockMovementType; quantity: number }
+                >;
+            };
+        }>;
+    } | null;
+};
+
 export type GetRunningJobsQueryVariables = Exact<{
     options?: InputMaybe<JobListOptions>;
 }>;
@@ -27294,6 +27318,142 @@ export const GetStockMovementDocument = {
         },
     ],
 } as unknown as DocumentNode<GetStockMovementQuery, GetStockMovementQueryVariables>;
+export const GetStockMovementByTypeDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetStockMovementByType' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'type' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'StockMovementType' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'product' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'variants' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'stockMovements' },
+                                                arguments: [
+                                                    {
+                                                        kind: 'Argument',
+                                                        name: { kind: 'Name', value: 'options' },
+                                                        value: {
+                                                            kind: 'ObjectValue',
+                                                            fields: [
+                                                                {
+                                                                    kind: 'ObjectField',
+                                                                    name: { kind: 'Name', value: 'type' },
+                                                                    value: {
+                                                                        kind: 'Variable',
+                                                                        name: { kind: 'Name', value: 'type' },
+                                                                    },
+                                                                },
+                                                            ],
+                                                        },
+                                                    },
+                                                ],
+                                                selectionSet: {
+                                                    kind: 'SelectionSet',
+                                                    selections: [
+                                                        {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'items' },
+                                                            selectionSet: {
+                                                                kind: 'SelectionSet',
+                                                                selections: [
+                                                                    {
+                                                                        kind: 'InlineFragment',
+                                                                        typeCondition: {
+                                                                            kind: 'NamedType',
+                                                                            name: {
+                                                                                kind: 'Name',
+                                                                                value: 'StockMovement',
+                                                                            },
+                                                                        },
+                                                                        selectionSet: {
+                                                                            kind: 'SelectionSet',
+                                                                            selections: [
+                                                                                {
+                                                                                    kind: 'Field',
+                                                                                    name: {
+                                                                                        kind: 'Name',
+                                                                                        value: 'id',
+                                                                                    },
+                                                                                },
+                                                                                {
+                                                                                    kind: 'Field',
+                                                                                    name: {
+                                                                                        kind: 'Name',
+                                                                                        value: 'type',
+                                                                                    },
+                                                                                },
+                                                                                {
+                                                                                    kind: 'Field',
+                                                                                    name: {
+                                                                                        kind: 'Name',
+                                                                                        value: 'quantity',
+                                                                                    },
+                                                                                },
+                                                                            ],
+                                                                        },
+                                                                    },
+                                                                ],
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'totalItems' },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetStockMovementByTypeQuery, GetStockMovementByTypeQueryVariables>;
 export const GetRunningJobsDocument = {
     kind: 'Document',
     definitions: [
