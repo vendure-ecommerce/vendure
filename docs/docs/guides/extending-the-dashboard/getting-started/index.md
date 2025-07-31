@@ -37,7 +37,7 @@ npm install @vendure/dashboard
 Then create a `vite.config.mts` file in the root of your project with the following content:
 
 ```ts title="vite.config.mts"
-import { vendureDashboardPlugin } from '@vendure/dashboard/plugin';
+import { vendureDashboardPlugin } from '@vendure/dashboard/vite';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
 import { resolve, join } from 'path';

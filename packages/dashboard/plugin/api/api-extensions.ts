@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const metricsApiExtensions = gql`
+export const adminApiExtensions = gql`
     type MetricSummary {
         interval: MetricInterval!
         type: MetricType!
@@ -31,7 +31,3 @@ export const metricsApiExtensions = gql`
         metricSummary(input: MetricSummaryInput): [MetricSummary!]!
     }
 `;
-
-export function getApiExtensions(compatibilityMode: boolean) {
-    return compatibilityMode ? undefined : metricsApiExtensions;
-}
