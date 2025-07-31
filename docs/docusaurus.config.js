@@ -52,9 +52,6 @@ const config = {
                 theme: {
                     customCss: [
                         require.resolve('./src/css/custom.css'),
-                        require.resolve('./src/css/layout.css'),
-                        require.resolve('./src/css/overrides.css'),
-                        require.resolve('./src/css/code-blocks.css'),
                     ],
                 },
             }),

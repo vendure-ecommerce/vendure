@@ -1,6 +1,8 @@
+import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { ProductMultiInput } from '@/vdb/components/data-input/product-multi-selector.js';
 import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { DataInputComponent } from '../component-registry/component-registry.js';
@@ -31,6 +33,8 @@ inputComponents.set('vendure:numberInput', NumberInput);
 inputComponents.set('vendure:dateTimeInput', DateTimeInput);
 inputComponents.set('vendure:checkboxInput', CheckboxInput);
 inputComponents.set('vendure:facetValueInput', FacetValueInput);
+inputComponents.set('vendure:combinationModeInput', CombinationModeInput);
+inputComponents.set('vendure:productMultiInput', ProductMultiInput);
 
 export function getInputComponent(id: string): DataInputComponent | undefined {
     return globalRegistry.get('inputComponents').get(id);
@@ -54,7 +58,7 @@ export function addInputComponent({
     pageId: string;
     blockId: string;
     field: string;
-    component: React.ComponentType<{ value: any; onChange: (value: any) => void; [key: string]: any }>;
+    component: DataInputComponent;
 }) {
     const inputComponents = globalRegistry.get('inputComponents');
 

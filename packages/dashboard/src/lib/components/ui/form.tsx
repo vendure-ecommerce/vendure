@@ -3,12 +3,12 @@ import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 import {
     Controller,
-    FormProvider,
-    useFormContext,
-    useFormState,
     type ControllerProps,
     type FieldPath,
     type FieldValues,
+    FormProvider,
+    useFormContext,
+    useFormState,
 } from 'react-hook-form';
 
 import { Label } from '@/vdb/components/ui/label.js';
@@ -112,7 +112,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
         <p
             data-slot="form-description"
             id={formDescriptionId}
-            className={cn('text-muted-foreground text-sm', className)}
+            className={cn('text-muted-foreground text-xs', className)}
             {...props}
         />
     );

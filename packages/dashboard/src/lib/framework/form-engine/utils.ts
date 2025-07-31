@@ -10,7 +10,7 @@ import { FieldInfo } from '../document-introspection/get-document-structure.js';
  */
 export function transformRelationFields<E extends Record<string, any>>(fields: FieldInfo[], entity: E): E {
     // Create a shallow copy to avoid mutating the original entity
-    const processedEntity = { ...entity };
+    const processedEntity = { ...entity, customFields: { ...(entity.customFields ?? {}) } };
 
     // Skip processing if there are no custom fields
     if (!entity.customFields || !processedEntity.customFields) {
@@ -44,16 +44,10 @@ export function transformRelationFields<E extends Record<string, any>>(fields: F
             // For single fields, the accessor is the field name without the "Id" suffix
             const propertyAccessorKey = customField.name.replace(/Id$/, '');
             const relationValue = entity.customFields[propertyAccessorKey];
-
-            if (relationValue) {
-                const relationIdValue = relationValue.id;
-                if (relationIdValue) {
-                    processedEntity.customFields[relationField] = relationIdValue;
-                }
-            }
+            processedEntity.customFields[relationField] = relationValue?.id;
+            delete processedEntity.customFields[propertyAccessorKey];
         }
     }
-
     return processedEntity;
 }
 

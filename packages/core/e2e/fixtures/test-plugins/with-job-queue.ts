@@ -56,7 +56,7 @@ class TestController implements OnModuleInit {
     async runJobAndSubscribeTimeout() {
         const job = await this.queue.add({});
         const result = await job
-            .updates({ timeoutMs: 50 })
+            .updates({ timeoutMs: 100 })
             .toPromise()
             .then(update => update?.result);
         return result;

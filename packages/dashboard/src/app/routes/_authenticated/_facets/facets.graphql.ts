@@ -132,3 +132,12 @@ export const deleteFacetsDocument = graphql(`
         }
     }
 `);
+
+export const deleteFacetValuesDocument = graphql(`
+    mutation DeleteFacetValues($ids: [ID!]!) {
+        deleteFacetValues(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

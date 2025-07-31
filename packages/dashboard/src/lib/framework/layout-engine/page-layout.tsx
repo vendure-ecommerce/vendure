@@ -242,7 +242,7 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
 }
 
 export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNode }>) {
-    return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
+    return <div className="grid @md:grid-cols-2 gap-6 items-start mb-6">{children}</div>;
 }
 
 /**
@@ -412,11 +412,19 @@ export function PageBlock({
     blockId,
     column,
 }: Readonly<PageBlockProps>) {
-    const contextValue = useMemo(() => ({ blockId, title, description, column }), [blockId, title, description, column]);
+    const contextValue = useMemo(
+        () => ({
+            blockId,
+            title,
+            description,
+            column,
+        }),
+        [blockId, title, description, column],
+    );
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <Card className={cn('w-full', className)}>
+                <Card className={cn('@container  w-full', className)}>
                     {title || description ? (
                         <CardHeader>
                             {title && <CardTitle>{title}</CardTitle>}
