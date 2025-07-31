@@ -6,7 +6,7 @@ The Vendure dashboard uses a modern theming system based on **CSS custom propert
 
 The dashboard also uses the same theming methodology as [shadcn/ui](https://ui.shadcn.com/docs/theming)
 
-It also uses the [schadcn theme provider implementation](https://ui.shadcn.com/docs/dark-mode/vite) for Vite
+It also uses the [shadcn theme provider implementation](https://ui.shadcn.com/docs/dark-mode/vite) for Vite
 
 ## Using Themes in Your Components
 
