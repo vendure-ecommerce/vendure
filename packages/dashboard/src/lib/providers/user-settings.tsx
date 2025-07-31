@@ -1,6 +1,7 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { Theme } from './theme-provider.js';
+import { QueryClient } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
+import React, { createContext, useEffect, useRef, useState } from 'react';
+import { Theme } from './theme-provider.js';
 
 export interface TableSettings {
     columnVisibility?: Record<string, boolean>;
@@ -57,7 +58,12 @@ export const UserSettingsContext = createContext<UserSettingsContextType | undef
 
 const STORAGE_KEY = 'vendure-user-settings';
 
-export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+interface UserSettingsProviderProps {
+    queryClient?: QueryClient;
+    children: React.ReactNode;
+}
+
+export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ queryClient, children }) => {
     // Load settings from localStorage or use defaults
     const loadSettings = (): UserSettings => {
         try {
@@ -72,6 +78,7 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
     };
 
     const [settings, setSettings] = useState<UserSettings>(loadSettings);
+    const previousContentLanguage = useRef(settings.contentLanguage);
 
     // Save settings to localStorage whenever they change
     useEffect(() => {
@@ -81,6 +88,14 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
             console.error('Failed to save user settings to localStorage', e);
         }
     }, [settings]);
+
+    // Invalidate all queries when content language changes
+    useEffect(() => {
+        if (queryClient && settings.contentLanguage !== previousContentLanguage.current) {
+            queryClient.invalidateQueries();
+            previousContentLanguage.current = settings.contentLanguage;
+        }
+    }, [settings.contentLanguage, queryClient]);
 
     // Settings updaters
     const updateSetting = <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => {
