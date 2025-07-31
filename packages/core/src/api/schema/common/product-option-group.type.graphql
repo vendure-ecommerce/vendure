@@ -36,3 +36,8 @@ type ProductOptionTranslation {
     languageCode: LanguageCode!
     name: String!
 }
+
+type ProductOptionGroupList implements PaginatedList {
+    items: [ProductOptionGroup!]!
+    totalItems: Int!
+}

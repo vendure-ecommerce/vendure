@@ -2628,6 +2628,11 @@ export type ProductOptionGroup = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionGroupList = PaginatedList & {
+    items: Array<ProductOptionGroup>;
+    totalItems: Scalars['Int']['output'];
+};
+
 export type ProductOptionGroupTranslation = {
     createdAt: Scalars['DateTime']['output'];
     id: Scalars['ID']['output'];

@@ -4515,12 +4515,49 @@ export type ProductOptionGroup = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionGroupFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ProductOptionGroupInUseError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String']['output'];
     optionGroupCode: Scalars['String']['output'];
     productCount: Scalars['Int']['output'];
     variantCount: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupList = PaginatedList & {
+    items: Array<ProductOptionGroup>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionGroupFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionGroupSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionGroupSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -4907,7 +4944,7 @@ export type Query = {
     /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
     product?: Maybe<Product>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
-    productOptionGroups: Array<ProductOptionGroup>;
+    productOptionGroups: ProductOptionGroupList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
     /** List ProductVariants either all or for the specific product. */
@@ -5068,7 +5105,7 @@ export type QueryProductOptionGroupArgs = {
 };
 
 export type QueryProductOptionGroupsArgs = {
-    filterTerm?: InputMaybe<Scalars['String']['input']>;
+    options?: InputMaybe<ProductOptionGroupListOptions>;
 };
 
 export type QueryProductVariantArgs = {
@@ -11888,17 +11925,20 @@ export type DeleteProductOptionMutation = {
 };
 
 export type GetProductOptionGroupsQueryVariables = Exact<{
-    filterTerm?: InputMaybe<Scalars['String']['input']>;
+    options?: InputMaybe<ProductOptionGroupListOptions>;
 }>;
 
 export type GetProductOptionGroupsQuery = {
-    productOptionGroups: Array<{
-        id: string;
-        code: string;
-        name: string;
-        options: Array<{ id: string; code: string; name: string }>;
-        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-    }>;
+    productOptionGroups: {
+        totalItems: number;
+        items: Array<{
+            id: string;
+            code: string;
+            name: string;
+            options: Array<{ id: string; code: string; name: string }>;
+            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+        }>;
+    };
 };
 
 export type AssignProductOptionGroupsToChannelMutationVariables = Exact<{
@@ -36264,8 +36304,11 @@ export const GetProductOptionGroupsDocument = {
             variableDefinitions: [
                 {
                     kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'filterTerm' } },
-                    type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
+                    type: {
+                        kind: 'NamedType',
+                        name: { kind: 'Name', value: 'ProductOptionGroupListOptions' },
+                    },
                 },
             ],
             selectionSet: {
@@ -36277,17 +36320,27 @@ export const GetProductOptionGroupsDocument = {
                         arguments: [
                             {
                                 kind: 'Argument',
-                                name: { kind: 'Name', value: 'filterTerm' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'filterTerm' } },
+                                name: { kind: 'Name', value: 'options' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
                             },
                         ],
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
                                 {
-                                    kind: 'FragmentSpread',
-                                    name: { kind: 'Name', value: 'ProductOptionGroup' },
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'ProductOptionGroup' },
+                                            },
+                                        ],
+                                    },
                                 },
+                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
                             ],
                         },
                     },
