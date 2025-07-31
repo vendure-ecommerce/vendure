@@ -45,7 +45,7 @@
     "@swc/core": "^1.4.6",
     "@types/klaw-sync": "^6.0.5",
     "@types/node": "^20.11.19",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.2.0",
     "conventional-changelog-core": "^7.0.0",
     "cross-env": "^7.0.3",
     "find": "^0.3.0",

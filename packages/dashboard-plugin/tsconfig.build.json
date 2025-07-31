@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "composite": false,
+        "incremental": false,
+        "paths": {}
+    },
+    "include": ["src/**/*"],
+    "exclude": ["**/*.spec.ts", "e2e/**"]
+}

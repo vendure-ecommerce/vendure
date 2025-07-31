@@ -1,10 +1,10 @@
 {
-    "name": "@vendure/admin-ui-plugin",
+    "name": "@vendure/dashboard-plugin",
     "version": "3.3.7",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "files": [
-        "lib/**/*"
+        "dist/**/*"
     ],
     "repository": {
         "type": "git",
@@ -12,7 +12,7 @@
     },
     "license": "GPL-3.0-or-later",
     "scripts": {
-        "build": "rimraf lib && node -r ts-node/register build.ts && npm run compile",
+        "build": "rimraf dist && tsc -p ./tsconfig.build.json",
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "lint": "eslint --fix .",
         "compile": "tsc -p ./tsconfig.build.json"
@@ -25,9 +25,9 @@
     "devDependencies": {
         "@types/express": "^5.0.1",
         "@types/fs-extra": "^11.0.4",
-        "@vendure/admin-ui": "3.3.7",
         "@vendure/common": "3.3.7",
         "@vendure/core": "3.3.7",
+        "@vendure/dashboard": "3.3.7",
         "express": "^5.1.0",
         "rimraf": "^5.0.5",
         "typescript": "5.8.2"
