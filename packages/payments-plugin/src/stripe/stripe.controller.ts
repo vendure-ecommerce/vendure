@@ -111,8 +111,6 @@ export class StripeController {
                 // Orders can switch channels (e.g., global to UK store), causing lookups by the original
                 // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
                 // See https://github.com/vendure-ecommerce/vendure/issues/3072
-                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-                const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
 
                 // First use the channel specific context to transition the order state, which is the default behavior
                 // prior to issue: https://github.com/vendure-ecommerce/vendure/issues/3072
@@ -125,6 +123,9 @@ export class StripeController {
                 // If the channel specific context fails, try to use the default channel context
                 // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
+                    const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                    const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
+                    
                     transitionToStateResult = await this.orderService.transitionToState(
                         ctxWithDefaultChannel,
                         orderId,
