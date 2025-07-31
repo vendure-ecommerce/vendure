@@ -185,6 +185,7 @@ const result: PossibleTypesResultData = {
             'OrderList',
             'PaymentMethodList',
             'ProductList',
+            'ProductOptionGroupList',
             'ProductVariantList',
             'PromotionList',
             'ProvinceList',

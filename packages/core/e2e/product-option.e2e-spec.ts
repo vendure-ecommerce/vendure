@@ -363,8 +363,8 @@ describe('ProductOption resolver', () => {
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
 
             const { productOptionGroups } = result;
-            expect(productOptionGroups.length).toBe(1);
-            expect(productOptionGroups[0].code).toBe('channel-option-group');
+            expect(productOptionGroups.items.length).toBe(1);
+            expect(productOptionGroups.items[0].code).toBe('channel-option-group');
         });
 
         it(
@@ -405,7 +405,7 @@ describe('ProductOption resolver', () => {
             const result =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
 
-            const assignedGroup = result.productOptionGroups.find(g => g.code === 'size');
+            const assignedGroup = result.productOptionGroups.items.find(g => g.code === 'size');
             expect(assignedGroup).toBeDefined();
             expect(assignedGroup?.code).toBe('size');
         });
@@ -453,7 +453,7 @@ describe('ProductOption resolver', () => {
             const result =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
 
-            const removedGroup = result.productOptionGroups.find(g => g.code === 'size');
+            const removedGroup = result.productOptionGroups.items.find(g => g.code === 'size');
             expect(removedGroup).toBeUndefined();
 
             adminClient.setChannelToken('e2e-default-channel');
@@ -595,7 +595,9 @@ describe('ProductOption resolver', () => {
             // Verify option group is still there
             const before =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
-            expect(before.productOptionGroups.find(g => g.code === 'channel-option-group')).toBeDefined();
+            expect(
+                before.productOptionGroups.items.find(g => g.code === 'channel-option-group'),
+            ).toBeDefined();
 
             adminClient.setChannelToken('e2e-default-channel');
             const { removeProductOptionGroupsFromChannel } = await adminClient.query<
@@ -619,14 +621,18 @@ describe('ProductOption resolver', () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const after =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
-            expect(after.productOptionGroups.find(g => g.code === 'channel-option-group')).toBeUndefined();
+            expect(
+                after.productOptionGroups.items.find(g => g.code === 'channel-option-group'),
+            ).toBeUndefined();
         });
 
         it('re-assigning to channel after removal', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const before =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
-            expect(before.productOptionGroups.find(g => g.code === 'channel-option-group')).toBeUndefined();
+            expect(
+                before.productOptionGroups.items.find(g => g.code === 'channel-option-group'),
+            ).toBeUndefined();
 
             adminClient.setChannelToken('e2e-default-channel');
             const { assignProductOptionGroupsToChannel } = await adminClient.query<
@@ -645,7 +651,9 @@ describe('ProductOption resolver', () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const after =
                 await adminClient.query<Codegen.GetProductOptionGroupsQuery>(GET_PRODUCT_OPTION_GROUPS);
-            expect(after.productOptionGroups.find(g => g.code === 'channel-option-group')).toBeDefined();
+            expect(
+                after.productOptionGroups.items.find(g => g.code === 'channel-option-group'),
+            ).toBeDefined();
         });
     });
 });
@@ -711,9 +719,12 @@ const DELETE_PRODUCT_OPTION = gql`
 `;
 
 const GET_PRODUCT_OPTION_GROUPS = gql`
-    query GetProductOptionGroups($filterTerm: String) {
-        productOptionGroups(filterTerm: $filterTerm) {
-            ...ProductOptionGroup
+    query GetProductOptionGroups($options: ProductOptionGroupListOptions) {
+        productOptionGroups(options: $options) {
+            items {
+                ...ProductOptionGroup
+            }
+            totalItems
         }
     }
     ${PRODUCT_OPTION_GROUP_FRAGMENT}

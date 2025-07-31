@@ -13,6 +13,7 @@ import {
     QueryProductOptionGroupsArgs,
     RemoveProductOptionGroupFromChannelResult,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ErrorResultUnion } from '../../../common';
 import { EntityNotFoundError } from '../../../common/error/errors';
@@ -40,8 +41,8 @@ export class ProductOptionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductOptionGroupsArgs,
         @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
-    ): Promise<Array<Translated<ProductOptionGroup>>> {
-        return this.productOptionGroupService.findAll(ctx, args.filterTerm || undefined);
+    ): Promise<PaginatedList<Translated<ProductOptionGroup>>> {
+        return this.productOptionGroupService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
