@@ -1,33 +1,33 @@
 import gql from 'graphql-tag';
 
 export const adminApiExtensions = gql`
-    type MetricSummary {
-        interval: MetricInterval!
-        type: MetricType!
+    type DashboardMetricSummary {
+        interval: DashboardMetricInterval!
+        type: DashboardMetricType!
         title: String!
-        entries: [MetricSummaryEntry!]!
+        entries: [DashboardMetricSummaryEntry!]!
     }
-    enum MetricInterval {
+    enum DashboardMetricInterval {
         Daily
     }
-    enum MetricType {
+    enum DashboardMetricType {
         OrderCount
         OrderTotal
         AverageOrderValue
     }
-    type MetricSummaryEntry {
+    type DashboardMetricSummaryEntry {
         label: String!
         value: Float!
     }
-    input MetricSummaryInput {
-        interval: MetricInterval!
-        types: [MetricType!]!
+    input DashboardMetricSummaryInput {
+        interval: DashboardMetricInterval!
+        types: [DashboardMetricType!]!
         refresh: Boolean
     }
     extend type Query {
         """
-        Get metrics for the given interval and metric types.
+        Get dashboard metrics for the given interval and metric types.
         """
-        metricSummary(input: MetricSummaryInput): [MetricSummary!]!
+        dashboardMetricSummary(input: DashboardMetricSummaryInput): [DashboardMetricSummary!]!
     }
 `;

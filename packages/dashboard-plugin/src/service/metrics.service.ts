@@ -20,7 +20,12 @@ import {
     OrderTotalMetric,
 } from '../config/metrics-strategies';
 import { loggerCtx } from '../constants';
-import { MetricInterval, MetricSummary, MetricSummaryEntry, MetricSummaryInput } from '../types';
+import {
+    DashboardMetricInterval,
+    DashboardMetricSummary,
+    DashboardMetricSummaryEntry,
+    DashboardMetricSummaryInput,
+} from '../types';
 
 export type MetricData = {
     date: Date;
@@ -44,8 +49,8 @@ export class MetricsService {
 
     async getMetrics(
         ctx: RequestContext,
-        { interval, types, refresh }: MetricSummaryInput,
-    ): Promise<MetricSummary[]> {
+        { interval, types, refresh }: DashboardMetricSummaryInput,
+    ): Promise<DashboardMetricSummary[]> {
         // Set 23:59:59.999 as endDate
         const endDate = endOfDay(new Date());
         // Check if we have cached result
@@ -60,7 +65,7 @@ export class MetricsService {
             )
             .digest('base64');
         const cacheKey = `MetricsService:${hash}`;
-        const cachedMetricList = await this.cacheService.get<MetricSummary[]>(cacheKey);
+        const cachedMetricList = await this.cacheService.get<DashboardMetricSummary[]>(cacheKey);
         if (cachedMetricList && refresh !== true) {
             Logger.verbose(`Returning cached metrics for channel ${ctx.channel.token}`, loggerCtx);
             return cachedMetricList;
@@ -73,14 +78,14 @@ export class MetricsService {
             loggerCtx,
         );
         const data = await this.loadData(ctx, interval, endDate);
-        const metrics: MetricSummary[] = [];
+        const metrics: DashboardMetricSummary[] = [];
         for (const type of types) {
             const metric = this.metricCalculations.find(m => m.type === type);
             if (!metric) {
                 continue;
             }
             // Calculate entry (month or week)
-            const entries: MetricSummaryEntry[] = [];
+            const entries: DashboardMetricSummaryEntry[] = [];
             data.forEach(dataPerTick => {
                 entries.push(metric.calculateEntry(ctx, interval, dataPerTick));
             });
@@ -98,7 +103,7 @@ export class MetricsService {
 
     async loadData(
         ctx: RequestContext,
-        interval: MetricInterval,
+        interval: DashboardMetricInterval,
         endDate: Date,
     ): Promise<Map<number, MetricData>> {
         let nrOfEntries: number;
@@ -108,7 +113,7 @@ export class MetricsService {
         let getTickNrFn: typeof getMonth | typeof getISOWeek;
         let maxTick: number;
         switch (interval) {
-            case MetricInterval.Daily: {
+            case DashboardMetricInterval.Daily: {
                 nrOfEntries = 30;
                 backInTimeAmount = { days: nrOfEntries };
                 getTickNrFn = getDayOfYear;
