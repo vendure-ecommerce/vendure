@@ -30,7 +30,7 @@ export function MetricsWidget() {
     });
 
     const chartData = useMemo(() => {
-        const entry = data?.metricSummary.at(0);
+        const entry = data?.dashboardMetricSummary.at(0);
         if (!entry) {
             return undefined;
         }
