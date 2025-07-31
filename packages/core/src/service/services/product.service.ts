@@ -16,7 +16,7 @@ import { FindOptionsUtils, In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -388,17 +388,16 @@ export class ProductService {
         const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
             where: { id: optionGroupId },
-            relations: ['product'],
+            relations: ['channels'],
         });
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (optionGroup.product) {
-            const translated = this.translator.translate(optionGroup.product, ctx);
-            throw new UserInputError('error.product-option-group-already-assigned', {
-                groupCode: optionGroup.code,
-                productName: translated.name,
-            });
+
+        // Check if the option group is already assigned to this product
+        const alreadyAssigned = product.optionGroups.some(og => idsAreEqual(og.id, optionGroupId));
+        if (alreadyAssigned) {
+            return assertFound(this.findOne(ctx, productId));
         }
 
         if (Array.isArray(product.optionGroups)) {

@@ -1276,20 +1276,27 @@ describe('Product resolver', () => {
             ),
         );
 
-        it(
-            'addOptionGroupToProduct errors if the OptionGroup is already assigned to another Product',
-            assertThrowsWithMessage(
-                () =>
-                    adminClient.query<
-                        Codegen.AddOptionGroupToProductMutation,
-                        Codegen.AddOptionGroupToProductMutationVariables
-                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                        optionGroupId: 'T_1',
-                        productId: 'T_2',
-                    }),
-                'The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"',
-            ),
-        );
+        it('addOptionGroupToProduct allows sharing option groups between products', async () => {
+            // First verify the option group is already on product T_1
+            const { product: laptop } = await adminClient.query<
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_1' });
+
+            expect(laptop?.optionGroups.some(og => og.id === 'T_1')).toBe(true);
+
+            // Now add the same option group to another product
+            const result = await adminClient.query<
+                Codegen.AddOptionGroupToProductMutation,
+                Codegen.AddOptionGroupToProductMutationVariables
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                optionGroupId: 'T_1',
+                productId: 'T_2',
+            });
+
+            expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_1');
+        });
 
         it(
             'addOptionGroupToProduct errors with an invalid optionGroupId',

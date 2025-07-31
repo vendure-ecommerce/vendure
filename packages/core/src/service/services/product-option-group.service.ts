@@ -3,6 +3,7 @@ import {
     AssignProductOptionGroupsToChannelInput,
     CreateProductOptionGroupInput,
     DeletionResult,
+    LanguageCode,
     Permission,
     RemoveProductOptionGroupFromChannelResult,
     RemoveProductOptionGroupsFromChannelInput,
@@ -103,19 +104,35 @@ export class ProductOptionGroupService {
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
 
+    async findByCode(
+        ctx: RequestContext,
+        code: string,
+        languageCode: LanguageCode,
+    ): Promise<Translated<ProductOptionGroup> | undefined> {
+        const relations = ['translations', 'options', 'channels'];
+        const group = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
+            where: { code, deletedAt: IsNull() },
+            relations,
+        });
+
+        if (group) {
+            return this.translator.translate(group, ctx, ['options']);
+        }
+        return undefined;
+    }
+
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .find({
-                relations: ['options'],
-                where: {
-                    product: { id },
-                    deletedAt: IsNull(),
-                },
-                order: {
-                    id: 'ASC',
-                },
-            })
+            .createQueryBuilder('optionGroup')
+            .leftJoinAndSelect('optionGroup.translations', 'groupTranslations')
+            .leftJoinAndSelect('optionGroup.options', 'options')
+            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .leftJoin('optionGroup.products', 'product')
+            .where('product.id = :productId', { productId: id })
+            .andWhere('optionGroup.deletedAt IS NULL')
+            .orderBy('optionGroup.id', 'ASC')
+            .getMany()
             .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
@@ -167,7 +184,7 @@ export class ProductOptionGroupService {
         const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
-            relations: ['options', 'product'],
+            relations: ['options', 'products'],
         });
         const deletedOptionGroup = new ProductOptionGroup(optionGroup);
         const inUseByActiveProducts = await this.isInUseByOtherProducts(ctx, optionGroup, productId);
