@@ -15,12 +15,6 @@ export default ({ mode }: { mode: string }) => {
 
     process.env.IS_LOCAL_DEV = adminApiHost.includes('localhost') ? 'true' : 'false';
 
-    console.log('Admin API Connection Info', {
-        adminApiHost,
-        adminApiPort,
-        isLocalDev: process.env.IS_LOCAL_DEV,
-    });
-
     const vendureConfigPath = process.env.VITEST
         ? // This should always be used for running the tests
           './sample-vendure-config.ts'
@@ -31,6 +25,7 @@ export default ({ mode }: { mode: string }) => {
         test: {
             globals: true,
             environment: 'jsdom',
+            exclude: ['./plugin/**/*', '**/node_modules/**/*'],
         },
         plugins: [
             vendureDashboardPlugin({
