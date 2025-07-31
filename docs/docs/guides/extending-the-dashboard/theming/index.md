@@ -2,15 +2,11 @@
 title: 'Dashboard Theming'
 ---
 
-The Vendure dashboard uses a modern theming system based on **CSS custom properties** and **Tailwind CSS**. This guide shows you how to customize the colors and styles by modifying the theme variables in the Vite plugin.
+The Vendure dashboard uses a modern theming system based on **CSS custom properties** and [Tailwind CSS](https://tailwindcss.com/) . This guide shows you how to customize the colors and styles by modifying the theme variables in the Vite plugin.
 
-## Overview
+The dashboard also uses the same theming methodology as [shadcn/ui](https://ui.shadcn.com/docs/theming)
 
-The dashboard theming system is built on:
-
-- **CSS Custom Properties** - For dynamic theme switching and customization
-- **Tailwind CSS** - For utility-first styling with `cssVariables: true`
-- **Vite Plugin System** - For theme injection and processing
+It also uses the [schadcn theme provider implementation](https://ui.shadcn.com/docs/dark-mode/vite) for Vite
 
 ## Using Themes in Your Components
 
@@ -18,7 +14,7 @@ The Vendure dashboard provides a simple way to access theme variables in your co
 
 ### Using Tailwind Classes
 
-The easiest way to use theme colors is through Tailwind CSS classes:
+The easiest way to use theme colors is through Tailwind variable CSS classes:
 
 ```tsx
 function ProductIdWidgetComponent() {
@@ -79,28 +75,15 @@ export default defineConfig({
 });
 ```
 
-## Theme Variables Location - for development
+## Inspecting element colors in the browser
 
-All theme variables are defined in `packages/dashboard/vite/vite-plugin-theme.ts`. This is where you can customize colors, typography, spacing, and border radius.
+To identify the exact color values used by dashboard elements, you can use your browser's developer tools:
 
-### Example: Changing Background Colors
+- Right-click on any element and select "Inspect" to open the developer panel.
+- Navigate to the **Styles** tab.
+- From there, you can examine the CSS properties and see the actual color values (hex codes, RGB values, or CSS custom properties) being applied to that element.
 
-```typescript
-const defaultVariables: ThemeVariables = {
-    light: {
-        background: 'oklch(0.98 0.005 230)', // Ice blue background
-        foreground: 'oklch(0.25 0.05 230)',  // Deep navy text
-        card: 'oklch(0.99 0.003 230)',       // Very light ice blue cards
-        // ... other variables
-    },
-    dark: {
-        background: 'oklch(0.15 0.03 230)',  // Dark navy background
-        foreground: 'oklch(0.92 0.01 230)',  // Light ice blue text
-        card: 'oklch(0.18 0.04 230)',        // Slightly lighter navy cards
-        // ... other variables
-    }
-};
-```
+![inspection-gif](show-colour-value-inspection.gif)
 
 ## Available Theme Variables
 
@@ -108,90 +91,90 @@ The dashboard defines comprehensive theme variables that are automatically avail
 
 ### Core Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--background` | Main background | `oklch(0.98 0.005 300)` | `oklch(0.12 0.05 300)` |
-| `--foreground` | Main text color | `oklch(0.25 0.08 300)` | `oklch(0.90 0.02 300)` |
-| `--card` | Card background | `oklch(0.99 0.003 300)` | `oklch(0.18 0.04 300)` |
-| `--card-foreground` | Card text | `oklch(0.25 0.08 300)` | `oklch(0.90 0.02 300)` |
-| `--popover` | Popover background | `oklch(0.99 0.003 300)` | `oklch(0.18 0.04 300)` |
-| `--popover-foreground` | Popover text | `oklch(0.25 0.08 300)` | `oklch(0.90 0.02 300)` |
+| Variable | Description |
+|----------|-------------|
+| `--background` | Main background |
+| `--foreground` | Main text color |
+| `--card` | Card background |
+| `--card-foreground` | Card text |
+| `--popover` | Popover background |
+| `--popover-foreground` | Popover text |
 
 ### Interactive Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--primary` | Primary brand color | `oklch(0.50 0.18 300)` | `oklch(0.60 0.16 300)` |
-| `--primary-foreground` | Text on primary | `oklch(0.95 0.01 300)` | `oklch(0.15 0.03 300)` |
-| `--secondary` | Secondary actions | `oklch(0.92 0.03 300)` | `oklch(0.25 0.04 300)` |
-| `--secondary-foreground` | Text on secondary | `oklch(0.30 0.05 300)` | `oklch(0.85 0.02 300)` |
-| `--accent` | Accent elements | `oklch(0.92 0.03 300)` | `oklch(0.25 0.04 300)` |
-| `--accent-foreground` | Text on accent | `oklch(0.30 0.05 300)` | `oklch(0.85 0.02 300)` |
+| Variable | Description |
+|----------|-------------|
+| `--primary` | Primary brand color |
+| `--primary-foreground` | Text on primary |
+| `--secondary` | Secondary actions |
+| `--secondary-foreground` | Text on secondary |
+| `--accent` | Accent elements |
+| `--accent-foreground` | Text on accent |
 
 ### Semantic Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--destructive` | Error/danger actions | `oklch(0.65 0.20 25)` | `oklch(0.55 0.18 25)` |
-| `--destructive-foreground` | Text on destructive | `oklch(0.95 0.01 300)` | `oklch(0.15 0.03 300)` |
-| `--success` | Success states | `oklch(0.65 0.15 140)` | `oklch(0.55 0.12 140)` |
-| `--success-foreground` | Text on success | `oklch(0.95 0.01 300)` | `oklch(0.15 0.03 300)` |
-| `--muted` | Muted elements | `oklch(0.94 0.015 300)` | `oklch(0.22 0.03 300)` |
-| `--muted-foreground` | Muted text | `oklch(0.55 0.03 300)` | `oklch(0.65 0.02 300)` |
+| Variable | Description |
+|----------|-------------|
+| `--destructive` | Error/danger actions |
+| `--destructive-foreground` | Text on destructive |
+| `--success` | Success states |
+| `--success-foreground` | Text on success |
+| `--muted` | Muted elements |
+| `--muted-foreground` | Muted text |
 
 ### Border and Input Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--border` | Border color | `oklch(0.85 0.02 300)` | `oklch(0.30 0.03 300)` |
-| `--input` | Input background | `oklch(0.99 0.003 300)` | `oklch(0.18 0.04 300)` |
-| `--ring` | Focus ring color | `oklch(0.50 0.18 300)` | `oklch(0.60 0.16 300)` |
+| Variable | Description |
+|----------|-------------|
+| `--border` | Border color |
+| `--input` | Input background |
+| `--ring` | Focus ring color |
 
 ### Chart Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--chart-1` | Chart color 1 | `oklch(0.55 0.14 225)` | `oklch(0.65 0.12 225)` |
-| `--chart-2` | Chart color 2 | `oklch(0.60 0.16 310)` | `oklch(0.70 0.14 310)` |
-| `--chart-3` | Chart color 3 | `oklch(0.65 0.18 140)` | `oklch(0.75 0.16 140)` |
-| `--chart-4` | Chart color 4 | `oklch(0.70 0.20 60)` | `oklch(0.80 0.18 60)` |
-| `--chart-5` | Chart color 5 | `oklch(0.60 0.16 310)` | `oklch(0.70 0.14 310)` |
+| Variable | Description |
+|----------|-------------|
+| `--chart-1` | Chart color 1 |
+| `--chart-2` | Chart color 2 |
+| `--chart-3` | Chart color 3 |
+| `--chart-4` | Chart color 4 |
+| `--chart-5` | Chart color 5 |
 
 ### Sidebar Colors
 
-| Variable | Description | Light Theme | Dark Theme |
-|----------|-------------|-------------|------------|
-| `--sidebar` | Sidebar background | `oklch(0.96 0.01 300)` | `oklch(0.15 0.03 300)` |
-| `--sidebar-foreground` | Sidebar text | `oklch(0.30 0.05 300)` | `oklch(0.85 0.02 300)` |
-| `--sidebar-primary` | Sidebar primary | `oklch(0.50 0.18 300)` | `oklch(0.60 0.16 300)` |
-| `--sidebar-primary-foreground` | Text on sidebar primary | `oklch(0.95 0.01 300)` | `oklch(0.15 0.03 300)` |
-| `--sidebar-accent` | Sidebar accent | `oklch(0.90 0.02 300)` | `oklch(0.25 0.04 300)` |
-| `--sidebar-accent-foreground` | Text on sidebar accent | `oklch(0.35 0.06 300)` | `oklch(0.80 0.02 300)` |
-| `--sidebar-border` | Sidebar border | `oklch(0.88 0.02 300)` | `oklch(0.28 0.03 300)` |
-| `--sidebar-ring` | Sidebar focus ring | `oklch(0.50 0.18 300)` | `oklch(0.60 0.16 300)` |
+| Variable | Description |
+|----------|-------------|
+| `--sidebar` | Sidebar background |
+| `--sidebar-foreground` | Sidebar text |
+| `--sidebar-primary` | Sidebar primary |
+| `--sidebar-primary-foreground` | Text on sidebar primary |
+| `--sidebar-accent` | Sidebar accent |
+| `--sidebar-accent-foreground` | Text on sidebar accent |
+| `--sidebar-border` | Sidebar border |
+| `--sidebar-ring` | Sidebar focus ring |
 
 ### Brand Colors
 
-| Variable | Description | Value |
-|----------|-------------|-------|
-| `--brand` | Primary brand color | `#8b5cf6` |
-| `--brand-lighter` | Lighter brand variant | `#a78bfa` |
-| `--brand-darker` | Darker brand variant | `#7c3aed` |
+| Variable | Description |
+|----------|-------------|
+| `--brand` | Primary brand color |
+| `--brand-lighter` | Lighter brand variant |
+| `--brand-darker` | Darker brand variant |
 
-| Variable | Description | Value |
-|----------|-------------|-------|
-| `dev-mode` | Dev-mode ring | `hsl(204, 76%, 62%)` |
-| `dev-mode-foreground` | Dev-mode foreground | `hsl(0 0% 98%)` |
+| Variable | Description |
+|----------|-------------|
+| `dev-mode` | Dev-mode ring |
+| `dev-mode-foreground` | Dev-mode foreground |
 
 ### Typography
 
-| Variable | Description | Value |
-|----------|-------------|-------|
-| `--font-sans` | Sans-serif font | `Inter, system-ui, sans-serif` |
-| `--font-mono` | Monospace font | `Geist Mono, monospace` |
+| Variable | Description |
+|----------|-------------|
+| `--font-sans` | Sans-serif font |
+| `--font-mono` | Monospace font |
 
 ### Border Radius
 
-| Variable | Description | Value |
-|----------|-------------|-------|
-| `--radius` | Base border radius | `1rem` |
+| Variable | Description |
+|----------|-------------|
+| `--radius` | Base border radius |
