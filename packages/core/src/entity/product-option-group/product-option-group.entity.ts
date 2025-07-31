@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -31,7 +31,7 @@ export class ProductOptionGroup
 
     name: LocaleString;
 
-    @Column()
+    @Column({ unique: true })
     code: string;
 
     @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
@@ -40,9 +40,8 @@ export class ProductOptionGroup
     @OneToMany(type => ProductOption, option => option.group)
     options: ProductOption[];
 
-    @Index()
-    @ManyToOne(type => Product, product => product.optionGroups)
-    product: Product;
+    @ManyToMany(type => Product, product => product.optionGroups)
+    products: Product[];
 
     @Column(type => CustomProductOptionGroupFields)
     customFields: CustomProductOptionGroupFields;
