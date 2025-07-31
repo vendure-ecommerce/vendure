@@ -46,6 +46,7 @@
     "product-id-or-slug-must-be-provided": "L'id du Produit ou le slug doit être fourni",
     "product-id-slug-mismatch": "L'id et le slug fournis font référence à des Produits différents",
     "product-option-group-already-assigned": "Le groupe d'options de produit \"{ groupCode }\" est déjà attribué au produit \"{ productName }\"",
+    "product-option-group-ids-cannot-be-empty": "Les identifiants des groupes d'options de produit ne peuvent pas être vides",
     "product-variant-option-ids-not-compatible": "Les optionIds de la Variante de Produit doivent inclure un optionId de chaque groupe : {groupNames}",
     "product-variant-options-combination-already-exists": "Une Variante de Produit avec les options sélectionnées existe déjà : {variantName}",
     "promotion-channels-can-only-be-changed-from-default-channel": "Les canaux de promotion peuvent uniquement être modifiés à partir du Canal par défaut",
