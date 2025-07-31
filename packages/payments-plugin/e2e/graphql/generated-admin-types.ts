@@ -319,6 +319,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1323,6 +1325,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1504,6 +1508,34 @@ export type CustomerSortParameter = {
     updatedAt?: InputMaybe<SortOrder>;
 };
 
+export enum DashboardMetricInterval {
+    Daily = 'Daily',
+}
+
+export type DashboardMetricSummary = {
+    entries: Array<DashboardMetricSummaryEntry>;
+    interval: DashboardMetricInterval;
+    title: Scalars['String']['output'];
+    type: DashboardMetricType;
+};
+
+export type DashboardMetricSummaryEntry = {
+    label: Scalars['String']['output'];
+    value: Scalars['Float']['output'];
+};
+
+export type DashboardMetricSummaryInput = {
+    interval: DashboardMetricInterval;
+    refresh?: InputMaybe<Scalars['Boolean']['input']>;
+    types: Array<DashboardMetricType>;
+};
+
+export enum DashboardMetricType {
+    AverageOrderValue = 'AverageOrderValue',
+    OrderCount = 'OrderCount',
+    OrderTotal = 'OrderTotal',
+}
+
 /** Operators for filtering on a list of Date fields */
 export type DateListOperators = {
     inList: Scalars['DateTime']['input'];
@@ -1528,6 +1560,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1864,6 +1898,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2071,6 +2107,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2204,11 +2242,6 @@ export enum JobState {
     RETRYING = 'RETRYING',
     RUNNING = 'RUNNING',
 }
-
-export type KeyValueInput = {
-    key: Scalars['String']['input'];
-    value: Scalars['JSON']['input'];
-};
 
 /**
  * @description
@@ -2544,6 +2577,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2559,6 +2594,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2833,6 +2870,8 @@ export type Mutation = {
     createDraftOrder: Order;
     /** Create a new Facet */
     createFacet: Facet;
+    /** Create a single FacetValue */
+    createFacetValue: FacetValue;
     /** Create one or more FacetValues */
     createFacetValues: Array<FacetValue>;
     createMolliePaymentIntent: MolliePaymentIntentResult;
@@ -3018,10 +3057,6 @@ export type Mutation = {
     setDraftOrderShippingAddress: Order;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
     setDraftOrderShippingMethod: SetOrderShippingMethodResult;
-    /** Set a single key-value pair (automatically scoped based on field configuration) */
-    setKeyValue: SetKeyValueResult;
-    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-    setKeyValues: Array<SetKeyValueResult>;
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
@@ -3059,6 +3094,8 @@ export type Mutation = {
     updateCustomerNote: HistoryEntry;
     /** Update an existing Facet */
     updateFacet: Facet;
+    /** Update a single FacetValue */
+    updateFacetValue: FacetValue;
     /** Update one or more FacetValues */
     updateFacetValues: Array<FacetValue>;
     updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3238,6 +3275,10 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
     input: CreateFacetInput;
+};
+
+export type MutationCreateFacetValueArgs = {
+    input: CreateFacetValueInput;
 };
 
 export type MutationCreateFacetValuesArgs = {
@@ -3620,14 +3661,6 @@ export type MutationSetDraftOrderShippingMethodArgs = {
     shippingMethodId: Scalars['ID']['input'];
 };
 
-export type MutationSetKeyValueArgs = {
-    input: KeyValueInput;
-};
-
-export type MutationSetKeyValuesArgs = {
-    inputs: Array<KeyValueInput>;
-};
-
 export type MutationSetOrderCustomFieldsArgs = {
     input: UpdateOrderInput;
 };
@@ -3717,6 +3750,10 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
     input: UpdateFacetInput;
+};
+
+export type MutationUpdateFacetValueArgs = {
+    input: UpdateFacetValueInput;
 };
 
 export type MutationUpdateFacetValuesArgs = {
@@ -4963,18 +5000,17 @@ export type Query = {
     customerGroup?: Maybe<CustomerGroup>;
     customerGroups: CustomerGroupList;
     customers: CustomerList;
+    /** Get dashboard metrics for the given interval and metric types. */
+    dashboardMetricSummary: Array<DashboardMetricSummary>;
     /** Returns a list of eligible shipping methods for the draft Order */
     eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
     /** Returns all configured EntityDuplicators. */
     entityDuplicators: Array<EntityDuplicatorDefinition>;
     facet?: Maybe<Facet>;
+    facetValue?: Maybe<FacetValue>;
     facetValues: FacetValueList;
     facets: FacetList;
     fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
-    /** Get value for a specific key (automatically scoped based on field configuration) */
-    getKeyValue?: Maybe<Scalars['JSON']['output']>;
-    /** Get multiple key-value pairs (each automatically scoped) */
-    getKeyValues?: Maybe<Scalars['JSON']['output']>;
     /** Get value for a specific key (automatically scoped based on field configuration) */
     getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
     /** Get multiple key-value pairs (each automatically scoped) */
@@ -5095,11 +5131,19 @@ export type QueryCustomersArgs = {
     options?: InputMaybe<CustomerListOptions>;
 };
 
+export type QueryDashboardMetricSummaryArgs = {
+    input?: InputMaybe<DashboardMetricSummaryInput>;
+};
+
 export type QueryEligibleShippingMethodsForDraftOrderArgs = {
     orderId: Scalars['ID']['input'];
 };
 
 export type QueryFacetArgs = {
+    id: Scalars['ID']['input'];
+};
+
+export type QueryFacetValueArgs = {
     id: Scalars['ID']['input'];
 };
 
@@ -5109,14 +5153,6 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
     options?: InputMaybe<FacetListOptions>;
-};
-
-export type QueryGetKeyValueArgs = {
-    key: Scalars['String']['input'];
-};
-
-export type QueryGetKeyValuesArgs = {
-    keys: Array<Scalars['String']['input']>;
 };
 
 export type QueryGetSettingsStoreValueArgs = {
@@ -5399,6 +5435,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5672,12 +5710,6 @@ export type ServerConfig = {
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
 
-export type SetKeyValueResult = {
-    error?: Maybe<Scalars['String']['output']>;
-    key: Scalars['String']['output'];
-    result: Scalars['Boolean']['output'];
-};
-
 export type SetOrderCustomerInput = {
     customerId: Scalars['ID']['input'];
     note?: InputMaybe<Scalars['String']['input']>;
@@ -5931,6 +5963,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5981,6 +6015,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6206,6 +6242,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;

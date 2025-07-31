@@ -1,8 +1,8 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
+import { DashboardMetricSummary, DashboardMetricSummaryInput } from '@vendure/common/lib/generated-types';
 import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
 
 import { MetricsService } from '../service/metrics.service';
-import { DashboardMetricSummary, DashboardMetricSummaryInput } from '../types';
 
 @Resolver()
 export class MetricsResolver {

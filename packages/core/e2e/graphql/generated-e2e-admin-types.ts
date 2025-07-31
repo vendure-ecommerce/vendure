@@ -315,6 +315,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1319,6 +1321,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1500,6 +1504,34 @@ export type CustomerSortParameter = {
     updatedAt?: InputMaybe<SortOrder>;
 };
 
+export enum DashboardMetricInterval {
+    Daily = 'Daily',
+}
+
+export type DashboardMetricSummary = {
+    entries: Array<DashboardMetricSummaryEntry>;
+    interval: DashboardMetricInterval;
+    title: Scalars['String']['output'];
+    type: DashboardMetricType;
+};
+
+export type DashboardMetricSummaryEntry = {
+    label: Scalars['String']['output'];
+    value: Scalars['Float']['output'];
+};
+
+export type DashboardMetricSummaryInput = {
+    interval: DashboardMetricInterval;
+    refresh?: InputMaybe<Scalars['Boolean']['input']>;
+    types: Array<DashboardMetricType>;
+};
+
+export enum DashboardMetricType {
+    AverageOrderValue = 'AverageOrderValue',
+    OrderCount = 'OrderCount',
+    OrderTotal = 'OrderTotal',
+}
+
 /** Operators for filtering on a list of Date fields */
 export type DateListOperators = {
     inList: Scalars['DateTime']['input'];
@@ -1524,6 +1556,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1859,6 +1893,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2066,6 +2102,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2534,6 +2572,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2549,6 +2589,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -4876,6 +4918,8 @@ export type Query = {
     customerGroup?: Maybe<CustomerGroup>;
     customerGroups: CustomerGroupList;
     customers: CustomerList;
+    /** Get dashboard metrics for the given interval and metric types. */
+    dashboardMetricSummary: Array<DashboardMetricSummary>;
     /** Returns a list of eligible shipping methods for the draft Order */
     eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
     /** Returns all configured EntityDuplicators. */
@@ -5002,6 +5046,10 @@ export type QueryCustomerGroupsArgs = {
 
 export type QueryCustomersArgs = {
     options?: InputMaybe<CustomerListOptions>;
+};
+
+export type QueryDashboardMetricSummaryArgs = {
+    input?: InputMaybe<DashboardMetricSummaryInput>;
 };
 
 export type QueryEligibleShippingMethodsForDraftOrderArgs = {
@@ -5300,6 +5348,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5826,6 +5876,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5876,6 +5928,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6101,6 +6155,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;

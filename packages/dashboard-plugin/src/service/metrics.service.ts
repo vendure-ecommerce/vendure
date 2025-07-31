@@ -1,4 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import {
+    DashboardMetricInterval,
+    DashboardMetricSummary,
+    DashboardMetricSummaryEntry,
+    DashboardMetricSummaryInput,
+} from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { CacheService, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
 import { createHash } from 'crypto';
@@ -20,12 +26,6 @@ import {
     OrderTotalMetric,
 } from '../config/metrics-strategies';
 import { loggerCtx } from '../constants';
-import {
-    DashboardMetricInterval,
-    DashboardMetricSummary,
-    DashboardMetricSummaryEntry,
-    DashboardMetricSummaryInput,
-} from '../types';
 
 export type MetricData = {
     date: Date;
