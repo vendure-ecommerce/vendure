@@ -65,8 +65,6 @@ export function ChannelSwitcher() {
         ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
         : channels;
 
-    console.log(displayChannel);
-
     return (
         <>
             <SidebarMenu>
