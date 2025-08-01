@@ -105,11 +105,6 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
           )
         : availableOptions;
 
-    // Remove exact match check - allow creating duplicates with unique codes
-    // const exactMatch = filteredOptions.find(o =>
-    //     o.name.toLowerCase() === search.toLowerCase()
-    // );
-
     const handleSelect = useCallback((option: Option) => {
         onSelect(option);
         setSearch('');
@@ -174,6 +169,10 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
             } else if (search.trim()) {
                 handleCreateNew();
             }
+        } else if (e.key === 'Tab') {
+            setShowDropdown(false);
+            setCommandValue('');
+        }
     }, [search, handleCreateNew, showDropdown, commandValue, allValues, filteredOptions, handleSelect]);
 
     return (

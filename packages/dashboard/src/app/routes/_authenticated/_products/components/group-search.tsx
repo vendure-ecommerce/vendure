@@ -142,6 +142,10 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
             } else if (search.trim()) {
                 handleCreateNew();
             }
+        } else if (e.key === 'Tab') {
+            setShowDropdown(false);
+            setCommandValue('');
+        }
     }, [search, handleCreateNew, showDropdown, commandValue, allValues, availableGroups, handleSelect]);
 
     return (
