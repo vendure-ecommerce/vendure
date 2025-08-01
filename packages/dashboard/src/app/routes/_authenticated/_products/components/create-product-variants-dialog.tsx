@@ -16,6 +16,7 @@ import { normalizeString } from '@/vdb/lib/utils.js';
 import { useMutation } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
+
 import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
 
 const createProductOptionsMutation = graphql(`
@@ -28,6 +29,16 @@ const createProductOptionsMutation = graphql(`
                 code
                 name
             }
+        }
+    }
+`);
+
+const createProductOptionMutationDocument = graphql(`
+    mutation CreateProductOption($input: CreateProductOptionInput!) {
+        createProductOption(input: $input) {
+            id
+            code
+            name
         }
     }
 `);
@@ -74,6 +85,10 @@ export function CreateProductVariantsDialog({
         mutationFn: api.mutate(createProductOptionsMutation),
     });
 
+    const createProductOptionMutation = useMutation({
+        mutationFn: api.mutate(createProductOptionMutationDocument),
+    });
+
     const addOptionGroupToProductMutation = useMutation({
         mutationFn: api.mutate(addOptionGroupToProductDocument),
     });
@@ -86,36 +101,81 @@ export function CreateProductVariantsDialog({
         if (!variantData || !activeChannel?.defaultLanguageCode) return;
 
         try {
-            // 1. Create option groups and their options
-            const createdOptionGroups = await Promise.all(
-                variantData.optionGroups.map(async optionGroup => {
-                    const result = await createOptionGroupMutation.mutateAsync({
-                        input: {
-                            code: normalizeString(optionGroup.name, '-'),
-                            translations: [
-                                {
-                                    languageCode: activeChannel.defaultLanguageCode,
-                                    name: optionGroup.name,
-                                },
-                            ],
-                            options: optionGroup.values.map(value => ({
-                                code: normalizeString(value.value, '-'),
+            // Keep track of all option groups (both created and existing)
+            const allOptionGroups: Array<{ id: string; name: string; options: Array<{ id: string; name: string }> }> = [];
+
+            // 1. Separate groups by creation need (based on ID presence)
+            const groupsToCreate = variantData.optionGroups.filter(g => !g.id);
+            const existingGroups = variantData.optionGroups.filter(g => g.id);
+
+            // 2. Create new option groups with their new options
+            if (groupsToCreate.length > 0) {
+                const createdGroups = await Promise.all(
+                    groupsToCreate.map(async group => {
+                        const newOptions = group.options.filter(o => !o.id);
+                        const result = await createOptionGroupMutation.mutateAsync({
+                            input: {
+                                code: group.code || normalizeString(group.name, '-'),
                                 translations: [
                                     {
                                         languageCode: activeChannel.defaultLanguageCode,
-                                        name: value.value,
+                                        name: group.name,
                                     },
                                 ],
-                            })),
-                        },
-                    });
-                    return result.createProductOptionGroup;
-                }),
-            );
+                                options: newOptions.map(option => ({
+                                    code: option.code || normalizeString(option.name, '-'),
+                                    translations: [
+                                        {
+                                            languageCode: activeChannel.defaultLanguageCode,
+                                            name: option.name,
+                                        },
+                                    ],
+                                })),
+                            },
+                        });
+                        return result.createProductOptionGroup;
+                    }),
+                );
+                allOptionGroups.push(...createdGroups);
+            }
 
-            // 2. Add option groups to product
+            // 3. Handle existing groups - create new options if needed
+            for (const group of existingGroups) {
+                const newOptions = group.options.filter(o => !o.id);
+                const existingOptions = group.options.filter(o => o.id);
+
+                const createdOptions = [];
+                if (newOptions.length > 0) {
+                    // Create new options in existing group
+                    const results = await Promise.all(
+                        newOptions.map(option =>
+                            createProductOptionMutation.mutateAsync({
+                                input: {
+                                    productOptionGroupId: group.id!,
+                                    code: option.code || normalizeString(option.name, '-'),
+                                    translations: [
+                                        {
+                                            languageCode: activeChannel.defaultLanguageCode,
+                                            name: option.name,
+                                        },
+                                    ],
+                                },
+                            })
+                        )
+                    );
+                    createdOptions.push(...results.map(r => r.createProductOption));
+                }
+
+                allOptionGroups.push({
+                    id: group.id!,
+                    name: group.name,
+                    options: [...existingOptions as any, ...createdOptions],
+                });
+            }
+
+            // 4. Assign all option groups to product
             await Promise.all(
-                createdOptionGroups.map(group =>
+                allOptionGroups.map(group =>
                     addOptionGroupToProductMutation.mutateAsync({
                         productId,
                         optionGroupId: group.id,
@@ -123,7 +183,7 @@ export function CreateProductVariantsDialog({
                 ),
             );
 
-            // 3. Create variants
+            // 5. Create variants with proper option mapping
             const variantsToCreate = variantData.variants
                 .filter(variant => variant.enabled)
                 .map(variant => {
@@ -135,23 +195,25 @@ export function CreateProductVariantsDialog({
                         sku: variant.sku,
                         price: Number(variant.price),
                         stockOnHand: Number(variant.stock),
-                        optionIds: variant.options.map(option => {
-                            const optionGroup = createdOptionGroups.find(g => g.name === option.name);
+                        optionIds: variant.options.map(variantOption => {
+                            const optionGroup = allOptionGroups.find(g => g.name === variantOption.name);
                             if (!optionGroup) {
-                                throw new Error(`Could not find option group ${option.name}`);
+                                throw new Error(`Could not find option group ${variantOption.name}`);
                             }
-                            const createdOption = optionGroup.options.find(o => o.name === option.value);
-                            if (!createdOption) {
+                            const option = optionGroup.options.find(o =>
+                                o.name === variantOption.value || o.id === variantOption.id
+                            );
+                            if (!option) {
                                 throw new Error(
-                                    `Could not find option ${option.value} in group ${option.name}`,
+                                    `Could not find option ${variantOption.value} in group ${variantOption.name}`,
                                 );
                             }
-                            return createdOption.id;
+                            return option.id;
                         }),
                         translations: [
                             {
                                 languageCode: activeChannel.defaultLanguageCode,
-                                name: name,
+                                name,
                             },
                         ],
                     };
