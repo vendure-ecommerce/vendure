@@ -44,20 +44,20 @@ const searchProductOptionGroupsDocument = graphql(`
 export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }: GroupSearchProps) {
     const [search, setSearch] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [commandValue, setCommandValue] = useState<string>('');
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const debouncedSearch = useDebounce(search, 300);
+    const debouncedSearch = useDebounce(search, 150);
     const { i18n } = useLingui();
 
     const { data, isLoading } = useQuery({
         queryKey: ['optionGroups', debouncedSearch],
         queryFn: () => api.query(searchProductOptionGroupsDocument, {
             options: {
-                filter: { name: { contains: debouncedSearch } },
-                take: 10
+                filter: debouncedSearch ? { name: { contains: debouncedSearch } } : undefined,
+                take: 30
             }
-        }),
-        enabled: !!debouncedSearch && debouncedSearch.length > 0
+        })
     });
 
     useEffect(() => {
@@ -80,10 +80,6 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
         )
     );
 
-    const exactMatch = availableGroups.find(g =>
-        g.name.toLowerCase() === search.toLowerCase()
-    );
-
     const handleSelect = useCallback((group: OptionGroup) => {
         onSelect(group);
         setSearch('');
@@ -92,45 +88,89 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
 
     const handleCreateNew = useCallback(() => {
         if (search.trim()) {
+            const baseCode = normalizeString(search.trim(), '-');
+            let code = baseCode;
+            let counter = 2;
+
+            // Check if code already exists in API groups or selected groups
+            const allExistingCodes = new Set([
+                ...existingGroups.map(group => group.code),
+                ...(selectedGroups?.map(group => group.code) || [])
+            ]);
+
+            // Generate unique code
+            while (allExistingCodes.has(code)) {
+                code = `${baseCode}-${counter}`;
+                counter++;
+            }
+
             handleSelect({
                 name: search.trim(),
-                code: normalizeString(search.trim(), '-')
+                code
             });
         }
-    }, [search, handleSelect]);
+    }, [search, handleSelect, existingGroups, selectedGroups]);
+
+    // Build list of all possible values for navigation
+    const allValues = [
+        ...availableGroups.map(g => g.code),
+        ...(search ? [`create-${search}`] : [])
+    ];
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'ArrowDown' && showDropdown) {
+        if (e.key === 'ArrowDown' && showDropdown && allValues.length > 0) {
             e.preventDefault();
-            // Focus first command item
-            const firstItem = containerRef.current?.querySelector('[role="option"]') as HTMLElement;
-            firstItem?.focus();
-        } else if (e.key === 'Enter' && !exactMatch && search.trim()) {
+            const currentIndex = allValues.indexOf(commandValue);
+            const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % allValues.length;
+            setCommandValue(allValues[nextIndex]);
+        } else if (e.key === 'ArrowUp' && showDropdown && allValues.length > 0) {
             e.preventDefault();
-            handleCreateNew();
-        } else if (e.key === 'Escape') {
-            setShowDropdown(false);
-        }
-    }, [search, exactMatch, handleCreateNew, showDropdown]);
+            const currentIndex = allValues.indexOf(commandValue);
+            const prevIndex = currentIndex === -1 ? allValues.length - 1 : (currentIndex - 1 + allValues.length) % allValues.length;
+            setCommandValue(allValues[prevIndex]);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (commandValue) {
+                if (commandValue === `create-${search}`) {
+                    handleCreateNew();
+                } else {
+                    const selectedGroup = availableGroups.find(g => g.code === commandValue);
+                    if (selectedGroup) {
+                        handleSelect(selectedGroup);
+                    }
+                }
+            } else if (search.trim()) {
+                handleCreateNew();
+            }
+    }, [search, handleCreateNew, showDropdown, commandValue, allValues, availableGroups, handleSelect]);
 
     return (
-        <div className="relative" ref={containerRef}>
+        <div
+            className="relative"
+            ref={containerRef}
+        >
             <Input
                 ref={inputRef}
                 placeholder={placeholder || i18n.t('Search or create option group...')}
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
-                    setShowDropdown(e.target.value.length > 0);
+                    setShowDropdown(true);
+                    setCommandValue('');
                 }}
-                onFocus={() => setShowDropdown(search.length > 0)}
+                onFocus={() => setShowDropdown(true)}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 autoComplete="off"
             />
 
-            {showDropdown && search && (
-                <Command className="absolute top-full h-auto left-0 right-0 mt-1 border rounded-md bg-background shadow-lg z-50" shouldFilter={false}>
+            {showDropdown && (
+                <Command
+                    className="absolute top-full h-auto left-0 right-0 mt-1 border rounded-md bg-background shadow-lg z-50"
+                    shouldFilter={false}
+                    value={commandValue}
+                    onValueChange={setCommandValue}
+                >
                     <CommandList className="max-h-60 overflow-auto">
                         {isLoading && (
                             <div className="flex items-center justify-center p-4 text-muted-foreground">
@@ -139,14 +179,14 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
                             </div>
                         )}
 
-                        {!isLoading && search && (
+                        {!isLoading && (
                             <>
                                 {availableGroups.length > 0 && (
                                     <CommandGroup heading={i18n.t('Existing option groups')}>
                                         {availableGroups.map(group => (
                                             <CommandItem
                                                 key={group.id}
-                                                value={group.name}
+                                                value={group.code}
                                                 onSelect={() => handleSelect(group)}
                                             >
                                                 <div>
@@ -158,7 +198,7 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
                                     </CommandGroup>
                                 )}
 
-                                {!exactMatch && (
+                                {search && (
                                     <CommandGroup heading={i18n.t('Create new')}>
                                         <CommandItem
                                             value={`create-${search}`}
@@ -170,17 +210,14 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
                                                 <div className="font-medium">
                                                     <Trans>Create "{search}"</Trans>
                                                 </div>
-                                                <div className="text-xs">
-                                                    {i18n.t('Code: {code}', { code: normalizeString(search, '-') })}
-                                                </div>
                                             </div>
                                         </CommandItem>
                                     </CommandGroup>
                                 )}
 
-                                {availableGroups.length === 0 && !search && (
+                                {!search && availableGroups.length === 0 && (
                                     <CommandEmpty>
-                                        <Trans>Type to search option groups</Trans>
+                                        <Trans>No option groups available</Trans>
                                     </CommandEmpty>
                                 )}
 

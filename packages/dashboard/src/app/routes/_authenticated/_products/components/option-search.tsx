@@ -31,14 +31,14 @@ interface OptionSearchProps {
 }
 
 const searchProductOptionsDocument = graphql(`
-    query SearchProductOptions($groupId: ID!) {
-        productOptionGroup(id: $groupId) {
-            id
-            options {
+    query SearchProductOptions($options: ProductOptionListOptions) {
+        productOptions(options: $options) {
+            items {
                 id
                 name
                 code
             }
+            totalItems
         }
     }
 `);
@@ -46,18 +46,25 @@ const searchProductOptionsDocument = graphql(`
 export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ groupId, groupName, onSelect, selectedOptions, placeholder, disabled }, ref) => {
     const [search, setSearch] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [commandValue, setCommandValue] = useState<string>('');
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const debouncedSearch = useDebounce(search, 300);
+    const debouncedSearch = useDebounce(search, 150);
     const { i18n } = useLingui();
 
     // Expose focus method via ref
-    useImperativeHandle(ref, () => inputRef.current!, []);
+    useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
 
     const { data, isLoading } = useQuery({
-        queryKey: ['productOptions', groupId],
+        queryKey: ['productOptions', groupId, debouncedSearch],
         queryFn: () => api.query(searchProductOptionsDocument, {
-            groupId: groupId!
+            options: {
+                filter: {
+                    groupId: { eq: groupId },
+                    name: { contains: debouncedSearch },
+                },
+                take: 30
+            }
         }),
         enabled: !!groupId
     });
@@ -73,13 +80,21 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const allOptions = data?.productOptionGroup?.options || [];
+    const allOptions = data?.productOptions?.items || [];
 
     // Filter out already selected options
     const availableOptions = allOptions.filter(
-        option => !selectedOptions?.some(selected =>
-            selected.id ? selected.id === option.id : selected.name === option.name
-        )
+        option => !selectedOptions?.some(selected => {
+            if (selected.id && option.id) {
+                // Both have IDs - compare IDs
+                return selected.id === option.id;
+            } else if (!selected.id && !option.id) {
+                // Both are new - compare code (which is unique)
+                return selected.code === option.code;
+            }
+            // One has ID, one doesn't - they're different
+            return false;
+        })
     );
 
     // Filter options based on search
@@ -90,9 +105,10 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
           )
         : availableOptions;
 
-    const exactMatch = filteredOptions.find(o =>
-        o.name.toLowerCase() === search.toLowerCase()
-    );
+    // Remove exact match check - allow creating duplicates with unique codes
+    // const exactMatch = filteredOptions.find(o =>
+    //     o.name.toLowerCase() === search.toLowerCase()
+    // );
 
     const handleSelect = useCallback((option: Option) => {
         onSelect(option);
@@ -104,45 +120,87 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
 
     const handleCreateNew = useCallback(() => {
         if (search.trim()) {
+            const baseCode = normalizeString(search.trim(), '-');
+            let code = baseCode;
+            let counter = 2;
+
+            // Check if code already exists in API options or selected options
+            const allExistingCodes = new Set([
+                ...allOptions.map(opt => opt.code),
+                ...(selectedOptions?.map(opt => opt.code) || [])
+            ]);
+
+            // Generate unique code
+            while (allExistingCodes.has(code)) {
+                code = `${baseCode}-${counter}`;
+                counter++;
+            }
+
             handleSelect({
                 name: search.trim(),
-                code: normalizeString(search.trim(), '-')
+                code
             });
         }
-    }, [search, handleSelect]);
+    }, [search, handleSelect, allOptions, selectedOptions]);
+
+    // Build list of all possible values for navigation
+    const allValues = [
+        ...filteredOptions.map(o => o.code),
+        ...(search ? [`create-${search}`] : [])
+    ];
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'ArrowDown' && showDropdown) {
+        if (e.key === 'ArrowDown' && showDropdown && allValues.length > 0) {
             e.preventDefault();
-            // Focus first command item
-            const firstItem = containerRef.current?.querySelector('[role="option"]') as HTMLElement;
-            firstItem?.focus();
-        } else if (e.key === 'Enter' && !exactMatch && search.trim()) {
+            const currentIndex = allValues.indexOf(commandValue);
+            const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % allValues.length;
+            setCommandValue(allValues[nextIndex]);
+        } else if (e.key === 'ArrowUp' && showDropdown && allValues.length > 0) {
             e.preventDefault();
-            handleCreateNew();
-        } else if (e.key === 'Escape') {
-            setShowDropdown(false);
-        }
-    }, [search, exactMatch, handleCreateNew, showDropdown]);
+            const currentIndex = allValues.indexOf(commandValue);
+            const prevIndex = currentIndex === -1 ? allValues.length - 1 : (currentIndex - 1 + allValues.length) % allValues.length;
+            setCommandValue(allValues[prevIndex]);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (commandValue) {
+                if (commandValue === `create-${search}`) {
+                    handleCreateNew();
+                } else {
+                    const selectedOption = filteredOptions.find(o => o.code === commandValue);
+                    if (selectedOption) {
+                        handleSelect(selectedOption);
+                    }
+                }
+            } else if (search.trim()) {
+                handleCreateNew();
+            }
+    }, [search, handleCreateNew, showDropdown, commandValue, allValues, filteredOptions, handleSelect]);
 
     return (
         <div className="relative" ref={containerRef}>
             <Input
                 ref={inputRef}
-                placeholder={placeholder || i18n.t('Add {groupName} option...', { groupName })}
+                placeholder={placeholder || i18n.t(`Add option...`)}
                 value={search}
                 onChange={(e) => {
                     setSearch(e.target.value);
-                    setShowDropdown(e.target.value.length > 0);
+                    setShowDropdown(true);
+                    setCommandValue('');
                 }}
-                onFocus={() => setShowDropdown(search.length > 0)}
+                onFocus={() => setShowDropdown(true)}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 autoComplete="off"
+                name="option-search"
             />
 
-            {showDropdown && search && (
-                <Command className="absolute top-full h-auto left-0 right-0 mt-1 border rounded-md bg-background shadow-lg z-50" shouldFilter={false}>
+            {showDropdown && (
+                <Command
+                    className="absolute top-full h-auto left-0 right-0 mt-1 border rounded-md bg-background shadow-lg z-50"
+                    shouldFilter={false}
+                    value={commandValue}
+                    onValueChange={setCommandValue}
+                >
                     <CommandList className="max-h-60 overflow-auto">
                         {isLoading && groupId && (
                             <div className="flex items-center justify-center p-4 text-muted-foreground">
@@ -158,7 +216,7 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
                                         {filteredOptions.map(option => (
                                             <CommandItem
                                                 key={option.id}
-                                                value={option.name}
+                                                value={option.code}
                                                 onSelect={() => handleSelect(option)}
                                             >
                                                 <div>
@@ -170,7 +228,7 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
                                     </CommandGroup>
                                 )}
 
-                                {search && !exactMatch && (
+                                {search && (
                                     <CommandGroup heading={i18n.t('Create new')}>
                                         <CommandItem
                                             value={`create-${search}`}
@@ -185,9 +243,6 @@ export const OptionSearch = forwardRef<HTMLInputElement, OptionSearchProps>(({ g
                                                     ) : (
                                                         <Trans>Add "{search}"</Trans>
                                                     )}
-                                                </div>
-                                                <div className="text-xs">
-                                                    {i18n.t('Code: {code}', { code: normalizeString(search, '-') })}
                                                 </div>
                                             </div>
                                         </CommandItem>
