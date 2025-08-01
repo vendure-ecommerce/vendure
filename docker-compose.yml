@@ -79,7 +79,7 @@ services:
         volumes:
             - keycloak_data:/opt/keycloak/data
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
         container_name: elasticsearch
         environment:
             - discovery.type=single-node

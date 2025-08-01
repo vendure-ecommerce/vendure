@@ -17,11 +17,3 @@ To verify that the solution works correctly, you can run the E2E tests for the `
 ```bash
 npm run e2e -- --scope=@vendure/core
 ```
-
-This will run all e2e tests in the Vendure monorepo.
-
-npm run e2e -- --scope=@vendure/core
-
-```
-
-```
