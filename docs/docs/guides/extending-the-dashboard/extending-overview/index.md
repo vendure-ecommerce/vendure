@@ -75,7 +75,7 @@ Form handling in the dashboard is powered by [react-hook-form](https://react-hoo
 
 ```tsx
 import { useForm } from 'react-hook-form';
-import { FormFieldWrapper, Input, Button } from '@vendure/dashboard';
+import { Form, FormFieldWrapper, Input, Button } from '@vendure/dashboard';
 
 function MyForm() {
     const form = useForm({
@@ -90,21 +90,23 @@ function MyForm() {
     };
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormFieldWrapper
-                control={form.control}
-                name="name"
-                label="Name"
-                render={({ field }) => <Input {...field} />}
-            />
-            <FormFieldWrapper
-                control={form.control}
-                name="email"
-                label="Email"
-                render={({ field }) => <Input type="email" {...field} />}
-            />
-            <Button type="submit">Submit</Button>
-        </form>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormFieldWrapper
+                    control={form.control}
+                    name="name"
+                    label="Name"
+                    render={({ field }) => <Input {...field} />}
+                />
+                <FormFieldWrapper
+                    control={form.control}
+                    name="email"
+                    label="Email"
+                    render={({ field }) => <Input type="email" {...field} />}
+                />
+                <Button type="submit">Submit</Button>
+            </form>
+        </Form>
     );
 }
 ```

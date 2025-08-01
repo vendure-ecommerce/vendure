@@ -4,7 +4,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 > [!IMPORTANT]
 > **We're introducing our new React-based Admin Dashboard**</br>
-> Check out our beta preview now: [v3.4.0 release notes](https://github.com/vendure-ecommerce/vendure/releases/tag/v3.4.0)</br>
+> Check out the preview now: [v3.4.0 release notes](https://github.com/vendure-ecommerce/vendure/releases/tag/v3.4.0)</br>
 > We're phasing out our Angular-based Admin UI with support until June 2026:
 > [Read more here](https://vendure.io/blog/2025/02/vendure-react-admin-ui)
 

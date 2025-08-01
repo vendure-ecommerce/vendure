@@ -238,7 +238,7 @@ The dashboard provides several button variants you can use:
 
 To find the `pageId` for your action bar items:
 
-1. Enable [Dev Mode](/guides/extending-the-dashboard/getting-started/#dev-mode) in the dashboard
+1. Enable [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode) in the dashboard
 2. Navigate to the page where you want to add your action
 3. The page ID will be shown in the dev mode overlay
 4. Use this ID in your action bar item configuration

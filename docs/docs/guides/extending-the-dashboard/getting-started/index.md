@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 The `@vendure/dashboard` package is currently **RC.1** (release candiate) and can be used in production. There won't be any _major_ breaking API changes anymore. **The official release is targeted for the end of August 2025.**
 :::
 
-Our new React-based dashboard is currently in beta, and you can try it out now!
+Our new React-based dashboard is currently in the release candidate phase, and you can try it out now!
 
 The goal of the new dashboard:
 
@@ -18,7 +18,7 @@ The goal of the new dashboard:
 - Modern, AI-ready stack using React, Tailwind & Shadcn.
 - Built-in type-safety with zero extra configuration
 
-Because the dashboard is in beta, not all planned features are available yet. However, enough has been implemented that
+Because the dashboard is in the release candidate phase, not all planned features are available yet. However, enough has been implemented that
 you can try it out and give us feedback.
 
 ## Installation & Setup
@@ -54,7 +54,7 @@ export default defineConfig({
             // and custom fields that are configured.
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
             // Points to the location of your Vendure server.
-            uiConfig: { host: 'http://localhost', port: 3000 },
+            api: { host: 'http://localhost', port: 3000 },
             // When you start the Vite server, your Admin API schema will
             // be introspected and the types will be generated in this location.
             // These types can be used in your dashboard extensions to provide
@@ -149,9 +149,7 @@ We hope this gives you a taste of what is possible with the new dashboard.
 
 We're still working to bring feature-parity with the existing Admin UI - so support for things like:
 
-- bulk actions,
 - history timeline components
-- theming & branding
-- translations
+- translations of the dashboard itself
 
 The final release (expected Q3 2025) will also include much more extensive documentation & guides.
