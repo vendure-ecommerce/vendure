@@ -8,11 +8,11 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
+import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 import { Asset } from './asset-gallery.js';
 
 export type AssetBulkActionContext = {
@@ -37,65 +37,13 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<A
     const { pageId } = usePage();
     const pageBlock = usePageBlock();
     const blockId = pageBlock?.blockId;
-    const [position, setPosition] = useState({ bottom: '2.5rem', left: '50%' });
-    const [isPositioned, setIsPositioned] = useState(false);
-
-    useEffect(() => {
-        if (selection.length === 0) return;
-
-        const updatePosition = () => {
-            // Find the asset gallery container
-            const galleryContainer = document.querySelector('[data-asset-gallery]')?.closest('div') as HTMLElement;
-            if (!galleryContainer) return;
-            console.log(`galleryContainer`, galleryContainer);
-
-            const containerRect = galleryContainer.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            
-            // Check if container bottom is visible in viewport
-            const containerBottom = containerRect.bottom;
-            const isContainerFullyVisible = containerBottom <= viewportHeight - 80; // 80px buffer for the menu
-            
-            if (isContainerFullyVisible) {
-                // Position relative to container bottom
-                const containerLeft = containerRect.left;
-                const containerWidth = containerRect.width;
-                const centerX = containerLeft + (containerWidth / 2);
-                
-                setPosition({
-                    bottom: `${viewportHeight - containerBottom + 10}px`,
-                    left: `${centerX}px`
-                });
-            } else {
-                // Position relative to viewport bottom, centered in container
-                const containerLeft = containerRect.left;
-                const containerWidth = containerRect.width;
-                const centerX = containerLeft + (containerWidth / 2);
-                
-                setPosition({
-                    bottom: '2.5rem',
-                    left: `${centerX}px`
-                });
-            }
-            
-            setIsPositioned(true);
-        };
-
-        updatePosition();
-        window.addEventListener('scroll', updatePosition);
-        window.addEventListener('resize', updatePosition);
-
-        return () => {
-            window.removeEventListener('scroll', updatePosition);
-            window.removeEventListener('resize', updatePosition);
-        };
-    }, [selection.length]);
-
-    if (selection.length === 0) {
-        return null;
-    }
     
-    if (!isPositioned) {
+    const { position, shouldShow } = useFloatingBulkActions({
+        selectionCount: selection.length,
+        containerSelector: '[data-asset-gallery]'
+    });
+
+    if (!shouldShow) {
         return null;
     }
 

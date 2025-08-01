@@ -9,12 +9,13 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react';
+import { useRef } from 'react';
 
 interface DataTableBulkActionsProps<TData> {
     table: Table<TData>;
@@ -32,9 +33,6 @@ export function DataTableBulkActions<TData>({
     // Cache to store selected items across page changes
     const selectedItemsCache = useRef<Map<string, TData>>(new Map());
     const selectedRowIds = Object.keys(table.getState().rowSelection);
-    const tableRef = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState({ bottom: '2.5rem', left: '50%' });
-    const [isPositioned, setIsPositioned] = useState(false);
 
     // Get selection from cache instead of trying to get from table
     const selection = selectedRowIds
@@ -56,61 +54,13 @@ export function DataTableBulkActions<TData>({
         })
         .filter((item): item is TData => item !== undefined);
 
-    useEffect(() => {
-        if (selection.length === 0) return;
+    const { position, shouldShow } = useFloatingBulkActions({
+        selectionCount: selection.length,
+        containerSelector: '[data-table-root], .data-table-container, table',
+        bottomOffset: 40,
+    });
 
-        const updatePosition = () => {
-            // Find the table container (look for common table container classes)
-            const tableContainer = document.querySelector('[data-table-root], .data-table-container, table')?.closest('div') as HTMLElement;
-            if (!tableContainer) return;
-
-            const containerRect = tableContainer.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            
-            // Check if container bottom is visible in viewport
-            const containerBottom = containerRect.bottom;
-            const isContainerFullyVisible = containerBottom <= viewportHeight - 80; // 80px buffer for the menu
-            
-            if (isContainerFullyVisible) {
-                // Position relative to container bottom
-                const containerLeft = containerRect.left;
-                const containerWidth = containerRect.width;
-                const centerX = containerLeft + (containerWidth / 2);
-                
-                setPosition({
-                    bottom: `${viewportHeight - containerBottom + 40}px`,
-                    left: `${centerX}px`
-                });
-            } else {
-                // Position relative to viewport bottom, centered in container
-                const containerLeft = containerRect.left;
-                const containerWidth = containerRect.width;
-                const centerX = containerLeft + (containerWidth / 2);
-                
-                setPosition({
-                    bottom: '2.5rem',
-                    left: `${centerX}px`
-                });
-            }
-            
-            setIsPositioned(true);
-        };
-
-        updatePosition();
-        window.addEventListener('scroll', updatePosition);
-        window.addEventListener('resize', updatePosition);
-
-        return () => {
-            window.removeEventListener('scroll', updatePosition);
-            window.removeEventListener('resize', updatePosition);
-        };
-    }, [selection.length]);
-
-    if (selection.length === 0) {
-        return null;
-    }
-    
-    if (!isPositioned) {
+    if (!shouldShow) {
         return null;
     }
     const extendedBulkActions = pageId ? getBulkActions(pageId, blockId) : [];
