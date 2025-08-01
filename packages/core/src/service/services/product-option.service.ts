@@ -49,23 +49,28 @@ export class ProductOptionService {
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
-    findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        const qb = this.listQueryBuilder.build(
-            ProductOption,
-            {},
-            {
-                relations: ['group', 'channels'],
+    async findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductOption>,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.listQueryBuilder
+            .build(ProductOption, options, {
+                relations: relations ?? ['group', 'channels'],
                 ctx,
                 channelId: ctx.channelId,
-            },
-        );
-
-        qb.andWhere('productOption.deletedAt IS NULL');
-
-        return qb.getMany().then(options => options.map(option => this.translator.translate(option, ctx)));
+                where: { deletedAt: IsNull() },
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['group'])),
+                    totalItems,
+                };
+            });
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
+    async findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .findOneInChannel(ctx, ProductOption, id, ctx.channelId, {
                 relations: ['group', 'channels'],
@@ -80,7 +85,7 @@ export class ProductOptionService {
      * @description
      * Returns all ProductOptions belonging to the ProductOptionGroup with the given id.
      */
-    findByGroupIdList(
+    async findByGroupIdList(
         ctx: RequestContext,
         groupId: ID,
         options?: ListQueryOptions<ProductOption>,
@@ -190,6 +195,53 @@ export class ProductOptionService {
         await this.eventBus.publish(new ProductOptionEvent(ctx, deletedProductOption, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
+        };
+    }
+
+    /**
+     * @description
+     * Deletes multiple ProductOptions.
+     */
+    async deleteMultiple(ctx: RequestContext, ids: ID[]): Promise<DeletionResponse> {
+        const deletedProductOptions = [];
+        const failedDeletions = [];
+
+        for (const id of ids) {
+            const productOption = await this.connection.findOneInChannel(
+                ctx,
+                ProductOption,
+                id,
+                ctx.channelId,
+            );
+            if (!productOption) {
+                failedDeletions.push(id);
+                continue;
+            }
+            const result = await this.delete(ctx, id);
+            if (result.result === DeletionResult.DELETED) {
+                deletedProductOptions.push(id);
+            } else {
+                failedDeletions.push(id);
+            }
+        }
+
+        if (failedDeletions.length === ids.length) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.product-options-cannot-be-deleted', {
+                    count: failedDeletions.length,
+                }),
+            };
+        }
+
+        return {
+            result: DeletionResult.DELETED,
+            message: failedDeletions.length
+                ? ctx.translate('message.product-options-partially-deleted', {
+                      deletedCount: deletedProductOptions.length,
+                      notDeletedCount: failedDeletions.length,
+                  })
+                : undefined,
         };
     }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
     AssignProductOptionGroupsToChannelInput,
     CreateProductOptionGroupInput,
+    DeletionResponse,
     DeletionResult,
     LanguageCode,
     Permission,
@@ -399,5 +400,138 @@ export class ProductOptionGroupService {
         }
 
         return results;
+    }
+
+    /**
+     * @description
+     * Deletes a ProductOptionGroup and all its associated ProductOptions.
+     */
+    async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
+            relations: ['options', 'channels'],
+            channelId: ctx.channelId,
+        });
+        const deletedOptionGroup = new ProductOptionGroup(optionGroup);
+
+        // Check if the option group is in use by products
+        const productCount = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .leftJoin('product.optionGroups', 'optionGroup')
+            .where('optionGroup.id = :groupId', { groupId: id })
+            .andWhere('product.deletedAt IS NULL')
+            .getCount();
+
+        // Check if any variants are using options from this group
+        let variantCount = 0;
+        if (optionGroup.options && optionGroup.options.length > 0) {
+            variantCount = await this.connection
+                .getRepository(ctx, ProductVariant)
+                .createQueryBuilder('variant')
+                .leftJoin('variant.options', 'option')
+                .where('option.groupId = :groupId', { groupId: id })
+                .andWhere('variant.deletedAt IS NULL')
+                .getCount();
+        }
+
+        const isInUse = !!(productCount || variantCount);
+        const both = !!(productCount && variantCount) ? 'both' : 'single';
+        const i18nVars = {
+            products: productCount,
+            variants: variantCount,
+            both,
+            optionGroupCode: optionGroup.code,
+        };
+        let message = '';
+        let result: DeletionResult;
+
+        if (!isInUse) {
+            // Delete all associated options first
+            for (const option of optionGroup.options || []) {
+                await this.productOptionService.delete(ctx, option.id);
+            }
+            await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
+            await this.eventBus.publish(new ProductOptionGroupEvent(ctx, deletedOptionGroup, 'deleted', id));
+            result = DeletionResult.DELETED;
+        } else if (force) {
+            // Force delete: remove all associations and delete
+            // First, remove the option group from all products
+            const products = await this.connection
+                .getRepository(ctx, Product)
+                .createQueryBuilder('product')
+                .leftJoinAndSelect('product.optionGroups', 'optionGroup')
+                .where('optionGroup.id = :groupId', { groupId: id })
+                .getMany();
+
+            for (const product of products) {
+                product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
+                await this.connection.getRepository(ctx, Product).save(product, { reload: false });
+            }
+
+            // Delete all associated options (this will handle variants)
+            for (const option of optionGroup.options || []) {
+                await this.productOptionService.delete(ctx, option.id);
+            }
+
+            await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
+            await this.eventBus.publish(new ProductOptionGroupEvent(ctx, deletedOptionGroup, 'deleted', id));
+            message = ctx.translate('message.product-option-group-force-deleted', i18nVars);
+            result = DeletionResult.DELETED;
+        } else {
+            message = ctx.translate('message.product-option-group-used', i18nVars);
+            result = DeletionResult.NOT_DELETED;
+        }
+
+        return {
+            result,
+            message,
+        };
+    }
+
+    /**
+     * @description
+     * Deletes multiple ProductOptionGroups.
+     */
+    async deleteMultiple(ctx: RequestContext, ids: ID[], force: boolean = false): Promise<DeletionResponse> {
+        const deletedGroups = [];
+        const failedDeletions = [];
+
+        for (const id of ids) {
+            const optionGroup = await this.connection.findOneInChannel(
+                ctx,
+                ProductOptionGroup,
+                id,
+                ctx.channelId,
+            );
+            if (!optionGroup) {
+                failedDeletions.push(id);
+                continue;
+            }
+            const result = await this.delete(ctx, id, force);
+            if (result.result === DeletionResult.DELETED) {
+                deletedGroups.push(id);
+            } else {
+                failedDeletions.push(id);
+            }
+        }
+
+        if (failedDeletions.length === ids.length) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.product-option-groups-cannot-be-deleted', {
+                    count: failedDeletions.length,
+                }),
+            };
+        }
+
+        return {
+            result: DeletionResult.DELETED,
+            message: failedDeletions.length
+                ? ctx.translate('message.product-option-groups-partially-deleted', {
+                      deletedCount: deletedGroups.length,
+                      notDeletedCount: failedDeletions.length,
+                  })
+                : undefined,
+        };
     }
 }
