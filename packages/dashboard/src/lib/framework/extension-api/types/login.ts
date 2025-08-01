@@ -2,12 +2,11 @@ import type React from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Defines a custom logo component for the login page.
  *
  * @docsCategory extensions
- * @since 3.3.0
+ * @docsPage Login
+ * @since 3.4.0
  */
 export interface LoginLogoExtension {
     /**
@@ -19,12 +18,11 @@ export interface LoginLogoExtension {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Defines content to display before the login form.
  *
  * @docsCategory extensions
- * @since 3.3.0
+ * @docsPage Login
+ * @since 3.4.0
  */
 export interface LoginBeforeFormExtension {
     /**
@@ -36,12 +34,11 @@ export interface LoginBeforeFormExtension {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Defines content to display after the login form.
  *
  * @docsCategory extensions
- * @since 3.3.0
+ * @docsPage Login
+ * @since 3.4.0
  */
 export interface LoginAfterFormExtension {
     /**
@@ -53,12 +50,11 @@ export interface LoginAfterFormExtension {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Defines a custom login image component that replaces the default image panel.
  *
  * @docsCategory extensions
- * @since 3.3.0
+ * @docsPage Login
+ * @since 3.4.0
  */
 export interface LoginImageExtension {
     /**
@@ -70,12 +66,11 @@ export interface LoginImageExtension {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Defines all available login page extensions.
  *
  * @docsCategory extensions
- * @since 3.3.0
+ * @docsPage Login
+ * @since 3.4.0
  */
 export interface DashboardLoginExtensions {
     /**
