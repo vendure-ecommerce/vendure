@@ -56,96 +56,118 @@
                         <input
                             id="code"
                             type="text"
-
+                            [readonly]="!(updatePermission | hasPermission)"
                             formControlName="code"
-                            [readonly]="!(isNew$ | async)"
                         />
                     </vdr-form-field>
-                    <section formGroupName="customFields" *ngIf="customFields.length">
-                        <label>{{ 'common.custom-fields' | translate }}</label>
-                        <vdr-tabbed-custom-fields
-                            entityName="ProductOptionGroup"
-                            [customFields]="customFields"
-                            [customFieldsFormGroup]="detailForm.get(['productOptionGroup', 'customFields'])"
-                        ></vdr-tabbed-custom-fields>
-                    </section>
                 </div>
             </vdr-card>
 
-            <vdr-card [title]="'catalog.product-options' | translate">
+            <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
+                <vdr-tabbed-custom-fields
+                    entityName="ProductOptionGroup"
+                    [customFields]="customFields"
+                    [customFieldsFormGroup]="detailForm.get('productOptionGroup.customFields')"
+                    [readonly]="!(updatePermission | hasPermission)"
+                />
+            </vdr-card>
+
+            <vdr-custom-detail-component-host
+                locationId="product-option-group-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            ></vdr-custom-detail-component-host>
+
+            <vdr-card
+                *ngIf="!(isNew$ | async)"
+                [title]="'catalog.product-options' | translate"
+                [paddingX]="false"
+            >
                 <ng-template vdrCardControls>
                     <input
                         type="text"
+                        class="mr-3"
                         [formControl]="filterControl"
                         [placeholder]="'common.filter-by-name' | translate"
-                        class="form-control"
                     />
-                    <button
-                        class="btn btn-sm btn-secondary ms-auto"
-                        *vdrIfPermissions="['CreateCatalog', 'CreateProductOption']"
-                        (click)="addProductOption()"
-                        [disabled]="(isNew$ | async)"
-                    >
-                        <clr-icon shape="plus"></clr-icon>
-                        {{ 'catalog.add-option' | translate }}
-                    </button>
                 </ng-template>
 
-                <div class="mt-3">
-                    <table class="table table-sm">
+                <ng-container *ngIf="options$ | async as filteredOptions">
+                    <table class="product-options-list table" formArrayName="options">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>{{ 'common.name' | translate }}</th>
                                 <th>{{ 'common.code' | translate }}</th>
-                                <th *ngIf="customOptionFields.length">{{ 'common.custom-fields' | translate }}</th>
+                                <ng-container *ngIf="customOptionFields.length">
+                                    <th>{{ 'common.custom-fields' | translate }}</th>
+                                </ng-container>
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody formGroupName="options">
-                            <tr *ngFor="let option of options$ | async" [formGroupName]="option.id">
-                                <td>
+                        <tbody>
+                            <tr
+                                class="product-option"
+                                *ngFor="
+                                let option of filteredOptions
+| paginate
+: {
+currentPage: currentPage,
+itemsPerPage: itemsPerPage,
+totalItems: totalItems,
+};
+let i = index"
+                                [formGroup]="detailForm.get(['options', option.id])"
+                            >
+                                <td class="align-middle">
+                                    <vdr-entity-info [entity]="value"></vdr-entity-info>
+                                </td>
+                                <td class="align-middle">
                                     <input
                                         type="text"
                                         formControlName="name"
-                                        class="form-control"
+                                        [readonly]="!(updatePermission | hasPermission)"
                                         (input)="updateOptionCode(option.code, $event.target.value, option.id)"
                                     />
                                 </td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        formControlName="code"
-                                        class="form-control"
-                                        [readonly]="option.id !== 'new'"
-                                    />
+                                <td class="align-middle">
+                                    <input type="text" formControlName="code" />
                                 </td>
-                                <td *ngIf="customOptionFields.length">
-                                    <vdr-tabbed-custom-fields
-                                        entityName="ProductOption"
-                                        [customFields]="customOptionFields"
-                                        [customFieldsFormGroup]="detailForm.get(['options', option.id, 'customFields'])"
-                                        [compact]="true"
-                                    ></vdr-tabbed-custom-fields>
-                                </td>
-                                <td class="text-right">
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-link"
-                                        *vdrIfPermissions="['DeleteCatalog', 'DeleteProductOption']"
-                                        (click)="deleteProductOption(option.id)"
-                                    >
-                                        <clr-icon shape="trash" class="is-danger"></clr-icon>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="(options$ | async)?.length === 0">
-                                <td colspan="4" class="text-center text-muted">
-                                    {{ 'common.no-results' | translate }}
+                                <td class="align-middle">
+                                    <vdr-dropdown>
+                                        <button type="button" class="icon-button" vdrDropdownTrigger>
+                                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                        </button>
+                                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                                            <button
+                                                type="button"
+                                                class="delete-button"
+                                                (click)="deleteProductOption(option.id)"
+                                                [disabled]="!(updatePermission | hasPermission)"
+                                                vdrDropdownItem
+                                            >
+                                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                                {{ 'common.delete' | translate }}
+                                            </button>
+                                        </vdr-dropdown-menu>
+                                    </vdr-dropdown>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                    <div class="pagination-wrapper">
+                        <vdr-items-per-page-controls
+                            [itemsPerPage]="itemsPerPage"
+                            (itemsPerPageChange)="setItemsPerPage($event)"
+                        ></vdr-items-per-page-controls>
+                        <vdr-pagination-controls
+                            [currentPage]="currentPage"
+                            [itemsPerPage]="itemsPerPage"
+                            [totalItems]="totalItems"
+                            (pageChange)="setCurrentPage($event)"
+                        ></vdr-pagination-controls>
+                    </div>
+                </ng-container>
             </vdr-card>
         </vdr-page-block>
     </vdr-page-detail-layout>
