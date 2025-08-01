@@ -5,6 +5,7 @@ import {
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
+    SettingsStoreScopes,
     VendurePlugin,
 } from '@vendure/core';
 import express from 'express';
@@ -104,6 +105,15 @@ export interface DashboardPluginOptions {
         resolvers: [MetricsResolver],
     },
     providers: [MetricsService],
+    configuration: config => {
+        config.settingsStoreFields['vendure.dashboard'] = [
+            {
+                name: 'userSettings',
+                scope: SettingsStoreScopes.user,
+            },
+        ];
+        return config;
+    },
     compatibility: '^3.0.0',
 })
 export class DashboardPlugin implements NestModule {
