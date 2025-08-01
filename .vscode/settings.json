@@ -16,7 +16,8 @@
         "stellate-plugin",
         "testing",
         "ui-devkit",
-        "repo"
+        "repo",
+        "dashboard"
     ],
     "conventionalCommits.gitmoji": false,
     "typescript.tsdk": "node_modules/typescript/lib",

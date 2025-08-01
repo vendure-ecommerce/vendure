@@ -28,7 +28,7 @@ function HealthchecksPage() {
         queryKey: ['healthchecks'],
         queryFn: async () => {
             const schemeAndHost =
-                uiConfig.apiHost + (uiConfig.apiPort !== 'auto' ? `:${uiConfig.apiPort}` : '');
+                uiConfig.api.host + (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '');
 
             const res = await fetch(`${schemeAndHost}/health`);
             return res.json() as Promise<HealthcheckResponse>;
