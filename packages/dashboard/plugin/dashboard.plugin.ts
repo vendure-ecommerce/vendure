@@ -29,7 +29,7 @@ export interface DashboardPluginOptions {
      * @description
      * The route to the Dashboard UI.
      *
-     * @default 'dashboard'
+     * @default 'insights'
      */
     route: string;
     /**
@@ -67,7 +67,7 @@ export interface DashboardPluginOptions {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     DashboardPlugin.init({
- *       route: 'dashboard',
+ *       route: 'insights',
  *       appDir: './dist/dashboard',
  *     }),
  *   ],

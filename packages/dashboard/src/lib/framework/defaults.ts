@@ -18,8 +18,8 @@ export function registerDefaults() {
     setNavMenuConfig({
         sections: [
             {
-                id: 'dashboard',
-                title: 'Dashboard',
+                id: 'insights',
+                title: 'Insights',
                 placement: 'top',
                 icon: LayoutDashboardIcon,
                 url: '/',

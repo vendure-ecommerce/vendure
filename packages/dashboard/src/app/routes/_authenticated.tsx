@@ -15,7 +15,7 @@ export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
         }
     },
     loader: () => ({
-        breadcrumb: 'Dashboard',
+        breadcrumb: 'Insights',
     }),
     component: AuthLayout,
 });
