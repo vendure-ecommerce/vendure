@@ -1,6 +1,7 @@
 import {
     BulkAction,
     DashboardActionBarItem,
+    DashboardLoginExtensions,
     DashboardPageBlockDefinition,
     DashboardWidgetDefinition,
 } from '@/vdb/framework/extension-api/types/index.js';
@@ -26,4 +27,5 @@ export interface GlobalRegistryContents {
     bulkActionsRegistry: Map<string, BulkAction[]>;
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
     detailQueryDocumentRegistry: Map<string, DocumentNode[]>;
+    loginExtensions: DashboardLoginExtensions;
 }

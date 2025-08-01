@@ -11,8 +11,10 @@
 }
 
 /* Markdown content */
-.markdown img {
-    border-radius: 4px;
+.theme-doc-markdown.markdown img {
+    border-radius: 0.7rem;
+    border: 0.5rem solid var(--ifm-color-emphasis-100);
+    outline: 1px solid var(--ifm-color-emphasis-200);
 }
 
 /* Members documentation */
@@ -49,6 +51,23 @@
 
 .limited-height-code-block pre.prism-code {
     max-height: 800px;
+}
+
+/* Make copy button always visible instead of only on hover */
+.theme-code-block:not(:hover) button[title="Copy code to clipboard"] {
+    opacity: 1 !important;
+}
+
+/* Alternative selector for copy button visibility */
+div[class*="codeBlockContainer"] button[aria-label*="Copy"] {
+    opacity: 1 !important;
+}
+
+/* Ensure copy button is always visible on code blocks */
+pre[class*="prism-code"] button,
+.prism-code button,
+[class*="codeBlock"] button {
+    opacity: 1 !important;
 }
 
 /* GraphQL code blocks */

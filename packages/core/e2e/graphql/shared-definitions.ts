@@ -9,6 +9,7 @@ import {
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
     CUSTOMER_GROUP_FRAGMENT,
+    FACET_VALUE_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
     FULFILLMENT_FRAGMENT,
     GLOBAL_SETTINGS_FRAGMENT,
@@ -123,6 +124,24 @@ export const UPDATE_FACET = gql`
         }
     }
     ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
+export const CREATE_FACET_VALUE = gql`
+    mutation CreateFacetValue($input: CreateFacetValueInput!) {
+        createFacetValue(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
+export const UPDATE_FACET_VALUE = gql`
+    mutation UpdateFacetValue($input: UpdateFacetValueInput!) {
+        updateFacetValue(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
 `;
 
 export const GET_CUSTOMER_LIST = gql`
@@ -1062,6 +1081,27 @@ export const GET_FACET_WITH_VALUES = gql`
         }
     }
     ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
+export const GET_FACET_VALUES = gql`
+    query GetFacetValues($options: FacetValueListOptions) {
+        facetValues(options: $options) {
+            items {
+                ...FacetValue
+            }
+            totalItems
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
+export const GET_FACET_VALUE = gql`
+    query GetFacetValue($id: ID!) {
+        facetValue(id: $id) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
 `;
 
 export const GET_PROMOTION = gql`

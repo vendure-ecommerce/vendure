@@ -36,7 +36,7 @@ export class StripeController {
         private requestContextService: RequestContextService,
         private connection: TransactionalConnection,
         private channelService: ChannelService,
-    ) {}
+    ) { }
 
     @Post('stripe')
     async webhook(
@@ -111,18 +111,29 @@ export class StripeController {
                 // Orders can switch channels (e.g., global to UK store), causing lookups by the original
                 // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
                 // See https://github.com/vendure-ecommerce/vendure/issues/3072
-                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-                const ctxWithDefaultChannel = await this.createContext(
-                    defaultChannel.token,
-                    languageCode,
-                    request,
-                );
-                const transitionToStateResult = await this.orderService.transitionToState(
-                    ctxWithDefaultChannel,
+
+                // First use the channel specific context to transition the order state, which is the default behavior
+                // prior to issue: https://github.com/vendure-ecommerce/vendure/issues/3072
+                let transitionToStateResult = await this.orderService.transitionToState(
+                    ctx,
                     orderId,
                     'ArrangingPayment',
                 );
 
+                // If the channel specific context fails, try to use the default channel context
+                // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
+                if (transitionToStateResult instanceof OrderStateTransitionError) {
+                    const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                    const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
+                    
+                    transitionToStateResult = await this.orderService.transitionToState(
+                        ctxWithDefaultChannel,
+                        orderId,
+                        'ArrangingPayment',
+                    );
+                }
+
+                // If the order is still not in the ArrangingPayment state, log an error
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
                     Logger.error(
                         `Error transitioning order ${orderCode} to ArrangingPayment state: ${transitionToStateResult.message}`,

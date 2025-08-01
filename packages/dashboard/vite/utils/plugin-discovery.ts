@@ -485,7 +485,7 @@ function guessNodeModulesRoot(vendureConfigPath: string, logger: Logger): string
         logger.debug(`Found core URL: ${coreUrl}`);
         const corePath = fileURLToPath(coreUrl);
         logger.debug(`Found core path: ${corePath}`);
-        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..');
+        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
     } catch (e) {
         logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
         nodeModulesRoot = path.dirname(vendureConfigPath);

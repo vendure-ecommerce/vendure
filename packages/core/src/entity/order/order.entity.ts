@@ -88,6 +88,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * This is governed by the {@link OrderPlacedStrategy}.
      */
     @Column({ nullable: true })
+    @Index()
     orderPlacedAt?: Date;
 
     @Index()
@@ -291,9 +292,10 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * @description
      * A summary of the taxes being applied to this Order.
      */
-    @Calculated({ relations: ['lines'] })
+    @Calculated({ relations: ['lines', 'surcharges'] })
     get taxSummary(): OrderTaxSummary[] {
         this.throwIfLinesNotJoined('taxSummary');
+        this.throwIfSurchargesNotJoined('taxSummary');
         const taxRateMap = new Map<
             string,
             { rate: number; base: number; tax: number; description: string }
@@ -350,6 +352,16 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             const errorMessage = [
                 `The property "${propertyName}" on the Order entity requires the Order.lines relation to be joined.`,
                 "This can be done with the EntityHydratorService: `await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })`",
+            ];
+
+            throw new InternalServerError(errorMessage.join('\n'));
+        }
+    }
+    private throwIfSurchargesNotJoined(propertyName: keyof Order) {
+        if (this.surcharges == null) {
+            const errorMessage = [
+                `The property "${propertyName}" on the Order entity requires the Order.surcharges relation to be joined.`,
+                "This can be done with the EntityHydratorService: `await entityHydratorService.hydrate(ctx, order, { relations: ['surcharges'] })`",
             ];
 
             throw new InternalServerError(errorMessage.join('\n'));

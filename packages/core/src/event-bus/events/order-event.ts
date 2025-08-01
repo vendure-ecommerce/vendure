@@ -1,6 +1,10 @@
-import { RequestContext } from '../../api/common/request-context';
-import { Order } from '../../entity';
-import { VendureEvent } from '../vendure-event';
+import { ModifyOrderInput } from '@vendure/common/lib/generated-types';
+
+import { RequestContext } from '../../api';
+import { Customer, Order } from '../../entity';
+import { VendureEntityEvent } from '../vendure-entity-event';
+
+type OrderInputTypes = Customer | ModifyOrderInput | { customFields: any };
 
 /**
  * @description
@@ -10,12 +14,23 @@ import { VendureEvent } from '../vendure-event';
  * @docsCategory events
  * @docsPage Event Types
  */
-export class OrderEvent extends VendureEvent {
+export class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
     constructor(
-        public ctx: RequestContext,
-        public order: Order,
-        public type: 'created' | 'updated' | 'deleted',
+        ctx: RequestContext,
+        order: Order,
+        type: 'created' | 'updated' | 'deleted',
+        input?: OrderInputTypes,
     ) {
-        super();
+        super(order, type, ctx, input);
+    }
+
+    /**
+     * Return a customer field to become compatible with the
+     * deprecated old version of CustomerEvent
+     * @deprecated Use `entity` instead
+     * @since 3.4.0
+     */
+    get order(): Order {
+        return this.entity;
     }
 }

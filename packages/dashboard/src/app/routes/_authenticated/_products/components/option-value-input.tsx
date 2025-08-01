@@ -47,7 +47,7 @@ export function OptionValueInput({
 
     const handleAddValue = () => {
         if (newValue.trim() && !fields.some(f => f.value === newValue.trim())) {
-            append({ value: newValue.trim(), id: crypto.randomUUID() });
+            append({ value: newValue.trim(), id: Date.now().toString() });
             setNewValue('');
         }
     };

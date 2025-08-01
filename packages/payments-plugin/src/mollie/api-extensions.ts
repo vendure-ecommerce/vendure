@@ -1,7 +1,6 @@
 import { gql } from 'graphql-tag';
 
 const commonSchemaExtensions = gql`
-
     input MolliePaymentIntentInput {
         """
         The code of the Vendure payment method to use for the payment.
@@ -24,6 +23,18 @@ const commonSchemaExtensions = gql`
         orders that are not active orders.
         """
         orderId: String
+        """
+        By default, pay later methods like Klarna will be immediately captured.
+        Set this to false when you expect that order fulfillment takes longer than 24 hours.
+        If set to false, you will need to settle the "Authorized" payment in Vendure manually!
+        If you fail to do so, the Authorized payment will expire after 28 days.
+        """
+        immediateCapture: Boolean
+        """
+        Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
+        The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
+        """
+        locale: String
     }
 
     type MolliePaymentIntent {
@@ -40,12 +51,10 @@ const commonSchemaExtensions = gql`
     extend type Mutation {
         createMolliePaymentIntent(input: MolliePaymentIntentInput!): MolliePaymentIntentResult!
     }
-
 `;
 
 export const shopApiExtensions = gql`
-
-   ${commonSchemaExtensions}
+    ${commonSchemaExtensions}
 
     type MollieAmount {
         value: String
@@ -76,10 +85,9 @@ export const shopApiExtensions = gql`
 `;
 
 export const adminApiExtensions = gql`
-    
-        ${commonSchemaExtensions}
+    ${commonSchemaExtensions}
 
-        extend enum ErrorCode {
-            ORDER_PAYMENT_STATE_ERROR
-        }
+    extend enum ErrorCode {
+        ORDER_PAYMENT_STATE_ERROR
+    }
 `;

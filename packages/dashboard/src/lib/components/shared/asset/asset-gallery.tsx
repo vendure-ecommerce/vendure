@@ -232,7 +232,7 @@ export function AssetGallery({
     };
 
     return (
-        <div className={`flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
+        <div className={`relative flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
             {showHeader && (
                 <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
                     <div className="relative flex-grow flex items-center gap-2">
@@ -291,7 +291,7 @@ export function AssetGallery({
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
+                <div data-asset-gallery className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
                     {isLoading ? (
                         <div className="col-span-full flex justify-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />

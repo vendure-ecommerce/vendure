@@ -168,8 +168,8 @@ function DashboardPage() {
     }, [layoutWidth, editMode, widgets]);
 
     return (
-        <Page pageId="dashboard">
-            <PageTitle>Dashboard</PageTitle>
+        <Page pageId="insights">
+            <PageTitle>Insights</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
                     <Button variant="outline" onClick={() => setEditMode(prev => !prev)}>

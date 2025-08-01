@@ -39,6 +39,7 @@ class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     @Column({ default: true })
     active: boolean;
     @Column({ nullable: true })
+    @Index()
     orderPlacedAt?: Date;
     @Index()
     @ManyToOne(type => Customer, customer => customer.orders)

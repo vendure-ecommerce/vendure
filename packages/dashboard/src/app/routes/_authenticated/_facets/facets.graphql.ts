@@ -141,3 +141,43 @@ export const deleteFacetValuesDocument = graphql(`
         }
     }
 `);
+
+export const facetValueDetailDocument = graphql(`
+    query FacetValueDetail($id: ID!) {
+        facetValue(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            code
+            languageCode
+            translations {
+                id
+                languageCode
+                name
+            }
+            facet {
+                id
+                name
+                code
+            }
+            customFields
+        }
+    }
+`);
+
+export const createFacetValueDocument = graphql(`
+    mutation CreateFacetValue($input: CreateFacetValueInput!) {
+        createFacetValue(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateFacetValueDocument = graphql(`
+    mutation UpdateFacetValue($input: UpdateFacetValueInput!) {
+        updateFacetValue(input: $input) {
+            id
+        }
+    }
+`);

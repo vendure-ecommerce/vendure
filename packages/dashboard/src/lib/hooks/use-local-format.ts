@@ -77,15 +77,30 @@ export function useLocalFormat() {
             if (diffSeconds < 60) {
                 return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'seconds');
             } else if (diffSeconds < 3600) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'minutes');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 60) * -1),
+                    'minutes',
+                );
             } else if (diffSeconds < 86400) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'hours');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 3600) * -1),
+                    'hours',
+                );
             } else if (diffSeconds < 2592000) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'days');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 86400) * -1),
+                    'days',
+                );
             } else if (diffSeconds < 31536000) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'months');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 2592000) * -1),
+                    'months',
+                );
             } else {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'years');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 31536000) * -1),
+                    'years',
+                );
             }
         },
         [locale],

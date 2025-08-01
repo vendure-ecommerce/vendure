@@ -10,7 +10,6 @@ import {
     RequestContext,
 } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -18,6 +17,8 @@ import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
 /* eslint-disable */
+import { StripeCheckoutTestPlugin } from './fixtures/stripe-checkout-test.plugin';
+import { StripeServiceExportTestPlugin } from './fixtures/stripe-service-export-test.plugin';
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
 import {
     CreatePaymentMethodMutation,
@@ -25,8 +26,11 @@ import {
 } from './graphql/generated-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
-import { CREATE_STRIPE_PAYMENT_INTENT, setShipping } from './payment-helpers';
-import { StripeCheckoutTestPlugin } from './stripe-checkout-test.plugin';
+import {
+    CREATE_CUSTOM_STRIPE_PAYMENT_INTENT,
+    CREATE_STRIPE_PAYMENT_INTENT,
+    setShipping,
+} from './payment-helpers';
 
 export let clientSecret: string;
 
@@ -46,6 +50,7 @@ export let clientSecret: string;
             }),
             StripePlugin.init({}),
             StripeCheckoutTestPlugin,
+            StripeServiceExportTestPlugin,
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
@@ -99,5 +104,10 @@ export let clientSecret: string;
     await setShipping(shopClient);
     const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
     clientSecret = createStripePaymentIntent;
+
+    // Showcasing the custom intent creation
+    const { createCustomStripePaymentIntent } = await shopClient.query(CREATE_CUSTOM_STRIPE_PAYMENT_INTENT);
+    Logger.debug('Result of createCustomStripePaymentIntent:', createCustomStripePaymentIntent);
+
     Logger.info('http://localhost:3050/checkout', 'Stripe DevServer');
 })();

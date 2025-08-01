@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1014" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1035" packageName="@vendure/core" since="1.3.0" />
 
 Options relating to the internal handling of entities.
 
