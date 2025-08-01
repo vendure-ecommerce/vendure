@@ -1,18 +1,9 @@
 import { HistoryEntry, HistoryEntryItem } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
-import {
-    HistoryTimeline,
-    useHistoryTimeline,
-} from '@/vdb/components/shared/history-timeline/history-timeline.js';
+import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/vdb/components/ui/dropdown-menu.js';
-import { Separator } from '@/vdb/components/ui/separator.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import {
     ArrowRightToLine,
@@ -22,11 +13,7 @@ import {
     ChevronUp,
     CreditCardIcon,
     Edit3,
-    MoreVerticalIcon,
-    PencilIcon,
-    RefreshCcw,
     SquarePen,
-    TrashIcon,
     Truck,
     UserX,
 } from 'lucide-react';
@@ -56,7 +43,29 @@ export function OrderHistory({
     onDeleteNote,
 }: Readonly<OrderHistoryProps>) {
     const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
-    const { editNote, deleteNote } = useHistoryTimeline();
+    const [noteEditorOpen, setNoteEditorOpen] = useState(false);
+    const [noteEditorNote, setNoteEditorNote] = useState<{
+        noteId: string;
+        note: string;
+        isPrivate: boolean;
+    }>({
+        noteId: '',
+        note: '',
+        isPrivate: true,
+    });
+
+    const handleEditNote = (noteId: string, note: string, isPrivate: boolean) => {
+        setNoteEditorNote({ noteId, note, isPrivate });
+        setNoteEditorOpen(true);
+    };
+
+    const handleDeleteNote = (noteId: string) => {
+        onDeleteNote?.(noteId);
+    };
+
+    const handleNoteEditorSave = (noteId: string, note: string, isPrivate: boolean) => {
+        onUpdateNote?.(noteId, note, isPrivate);
+    };
 
     const isPrimaryEvent = (entry: HistoryEntryItem) => {
         // Based on Angular component's isFeatured method
@@ -229,7 +238,7 @@ export function OrderHistory({
             <div className="mb-4">
                 <HistoryNoteInput onAddNote={onAddNote} />
             </div>
-            <HistoryTimeline onEditNote={onUpdateNote} onDeleteNote={onDeleteNote}>
+            <HistoryTimeline>
                 {groupedEntries.map((group, groupIndex) => {
                     if (group.type === 'primary') {
                         const entry = group.entry;
@@ -242,6 +251,8 @@ export function OrderHistory({
                                 title={getTitle(entry)}
                                 isPrimary={true}
                                 customer={order.customer}
+                                onEditNote={handleEditNote}
+                                onDeleteNote={handleDeleteNote}
                             >
                                 {entry.type === 'ORDER_NOTE' && (
                                     <div className="space-y-2">
@@ -253,36 +264,6 @@ export function OrderHistory({
                                             >
                                                 {entry.isPublic ? 'Public' : 'Private'}
                                             </Badge>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                                        <MoreVerticalIcon className="h-3 w-3" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onClick={() =>
-                                                            editNote(
-                                                                entry.id,
-                                                                entry.data.note,
-                                                                !entry.isPublic,
-                                                            )
-                                                        }
-                                                        className="cursor-pointer"
-                                                    >
-                                                        <PencilIcon className="mr-2 h-4 w-4" />
-                                                        <Trans>Edit</Trans>
-                                                    </DropdownMenuItem>
-                                                    <Separator className="my-1" />
-                                                    <DropdownMenuItem
-                                                        onClick={() => deleteNote(entry.id)}
-                                                        className="cursor-pointer text-red-600 focus:text-red-600"
-                                                    >
-                                                        <TrashIcon className="mr-2 h-4 w-4" />
-                                                        <span>Delete</span>
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
                                         </div>
                                     </div>
                                 )}
@@ -307,39 +288,33 @@ export function OrderHistory({
                                         </Trans>
                                     </p>
                                 )}
-                                {entry.type === 'ORDER_FULFILLMENT_TRANSITION' && entry.data.from !== 'Created' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Fulfillment #{entry.data.fulfillmentId} from {entry.data.from} to {entry.data.to}
-                                        </Trans>
-                                    </p>
-                                )}
+                                {entry.type === 'ORDER_FULFILLMENT_TRANSITION' &&
+                                    entry.data.from !== 'Created' && (
+                                        <p className="text-xs text-muted-foreground">
+                                            <Trans>
+                                                Fulfillment #{entry.data.fulfillmentId} from {entry.data.from}{' '}
+                                                to {entry.data.to}
+                                            </Trans>
+                                        </p>
+                                    )}
                                 {entry.type === 'ORDER_FULFILLMENT' && (
                                     <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Fulfillment #{entry.data.fulfillmentId} created
-                                        </Trans>
+                                        <Trans>Fulfillment #{entry.data.fulfillmentId} created</Trans>
                                     </p>
                                 )}
                                 {entry.type === 'ORDER_MODIFIED' && (
                                     <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Order modification #{entry.data.modificationId}
-                                        </Trans>
+                                        <Trans>Order modification #{entry.data.modificationId}</Trans>
                                     </p>
                                 )}
                                 {entry.type === 'ORDER_CUSTOMER_UPDATED' && (
                                     <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Customer information updated
-                                        </Trans>
+                                        <Trans>Customer information updated</Trans>
                                     </p>
                                 )}
                                 {entry.type === 'ORDER_CANCELLATION' && (
                                     <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Order cancelled
-                                        </Trans>
+                                        <Trans>Order cancelled</Trans>
                                     </p>
                                 )}
                             </HistoryEntry>
@@ -362,6 +337,8 @@ export function OrderHistory({
                                         title={getTitle(entry)}
                                         isPrimary={false}
                                         customer={order.customer}
+                                        onEditNote={handleEditNote}
+                                        onDeleteNote={handleDeleteNote}
                                     >
                                         {entry.type === 'ORDER_NOTE' && (
                                             <div className="space-y-1">
@@ -393,43 +370,38 @@ export function OrderHistory({
                                         {entry.type === 'ORDER_REFUND_TRANSITION' && (
                                             <p className="text-xs text-muted-foreground">
                                                 <Trans>
-                                                    Refund #{entry.data.refundId} transitioned to {entry.data.to}
+                                                    Refund #{entry.data.refundId} transitioned to{' '}
+                                                    {entry.data.to}
                                                 </Trans>
                                             </p>
                                         )}
-                                        {entry.type === 'ORDER_FULFILLMENT_TRANSITION' && entry.data.from !== 'Created' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Fulfillment #{entry.data.fulfillmentId} from {entry.data.from} to {entry.data.to}
-                                                </Trans>
-                                            </p>
-                                        )}
+                                        {entry.type === 'ORDER_FULFILLMENT_TRANSITION' &&
+                                            entry.data.from !== 'Created' && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    <Trans>
+                                                        Fulfillment #{entry.data.fulfillmentId} from{' '}
+                                                        {entry.data.from} to {entry.data.to}
+                                                    </Trans>
+                                                </p>
+                                            )}
                                         {entry.type === 'ORDER_FULFILLMENT' && (
                                             <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Fulfillment #{entry.data.fulfillmentId} created
-                                                </Trans>
+                                                <Trans>Fulfillment #{entry.data.fulfillmentId} created</Trans>
                                             </p>
                                         )}
                                         {entry.type === 'ORDER_MODIFIED' && (
                                             <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Order modification #{entry.data.modificationId}
-                                                </Trans>
+                                                <Trans>Order modification #{entry.data.modificationId}</Trans>
                                             </p>
                                         )}
                                         {entry.type === 'ORDER_CUSTOMER_UPDATED' && (
                                             <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Customer information updated
-                                                </Trans>
+                                                <Trans>Customer information updated</Trans>
                                             </p>
                                         )}
                                         {entry.type === 'ORDER_CANCELLATION' && (
                                             <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Order cancelled
-                                                </Trans>
+                                                <Trans>Order cancelled</Trans>
                                             </p>
                                         )}
                                     </HistoryEntry>
@@ -462,6 +434,15 @@ export function OrderHistory({
                     }
                 })}
             </HistoryTimeline>
+            <HistoryNoteEditor
+                key={noteEditorNote.noteId}
+                note={noteEditorNote.note}
+                onNoteChange={handleNoteEditorSave}
+                open={noteEditorOpen}
+                onOpenChange={setNoteEditorOpen}
+                noteId={noteEditorNote.noteId}
+                isPrivate={noteEditorNote.isPrivate}
+            />
         </div>
     );
 }

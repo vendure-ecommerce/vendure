@@ -1,4 +1,15 @@
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { HistoryEntryDate } from './history-entry-date.js';
 
 export interface HistoryEntryItem {
@@ -27,6 +38,8 @@ interface HistoryEntryProps {
     children: React.ReactNode;
     isPrimary?: boolean;
     customer?: OrderCustomer | null;
+    onEditNote?: (noteId: string, note: string, isPrivate: boolean) => void;
+    onDeleteNote?: (noteId: string) => void;
 }
 
 export function HistoryEntry({
@@ -37,6 +50,8 @@ export function HistoryEntry({
     children,
     isPrimary = true,
     customer,
+    onEditNote,
+    onDeleteNote,
 }: Readonly<HistoryEntryProps>) {
     const getIconColor = (type: string) => {
         // Check for success states (payment settled, order delivered)
@@ -97,7 +112,57 @@ export function HistoryEntry({
                             >
                                 {title}
                             </h4>
-                            <div className="mt-1">{children}</div>
+                            <div className="mt-1">
+                                {entry.type === 'ORDER_NOTE' ? (
+                                    <div className={`space-y-${isPrimary ? '2' : '1'}`}>
+                                        <p className={`${isPrimary ? 'text-sm' : 'text-xs'} text-foreground`}>
+                                            {entry.data.note}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <Badge
+                                                variant={entry.isPublic ? 'outline' : 'secondary'}
+                                                className="text-xs"
+                                            >
+                                                {entry.isPublic ? 'Public' : 'Private'}
+                                            </Badge>
+                                            {isPrimary && onEditNote && onDeleteNote && (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                                            <MoreVerticalIcon className="h-3 w-3" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                            onClick={() => {
+                                                                onEditNote(
+                                                                    entry.id,
+                                                                    entry.data.note,
+                                                                    !entry.isPublic,
+                                                                );
+                                                            }}
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <PencilIcon className="mr-2 h-4 w-4" />
+                                                            <Trans>Edit</Trans>
+                                                        </DropdownMenuItem>
+                                                        <Separator className="my-1" />
+                                                        <DropdownMenuItem
+                                                            onClick={() => onDeleteNote(entry.id)}
+                                                            className="cursor-pointer text-red-600 focus:text-red-600"
+                                                        >
+                                                            <TrashIcon className="mr-2 h-4 w-4" />
+                                                            <span>Delete</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    children
+                                )}
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-2 ml-4 flex-shrink-0">

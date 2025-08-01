@@ -25,7 +25,7 @@ export function HistoryNoteInput({ onAddNote }: Readonly<HistoryNoteInputProps>)
                     placeholder="Add a note..."
                     value={note}
                     onChange={e => setNote(e.target.value)}
-                    className="min-h-[50px] resize-none border-0 bg-background/50 focus:bg-background transition-colors text-sm"
+                    className="min-h-[50px] resize-none bg-background/50 focus:bg-background transition-colors text-sm"
                 />
                 <div className="flex items-center justify-between">
                     <HistoryNoteCheckbox value={noteIsPrivate} onChange={setNoteIsPrivate} />
