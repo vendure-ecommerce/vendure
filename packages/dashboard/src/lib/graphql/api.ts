@@ -3,12 +3,10 @@ import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
-import { ApiConfig } from '../../../vite/vite-plugin-ui-config.js';
-
-const apiConfig = uiConfig.api as Required<ApiConfig>;
-
 const API_URL =
-    apiConfig.host + (apiConfig.port !== 'auto' ? `:${apiConfig.port}` : '') + `/${apiConfig.adminApiPath}`;
+    uiConfig.api.host +
+    (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '') +
+    `/${uiConfig.api.adminApiPath}`;
 
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;

@@ -108,6 +108,25 @@ export interface UiConfigPluginOptions {
 }
 
 /**
+ * @description
+ * The resolved UI configuration with all defaults applied.
+ * This is the type of the configuration object available at runtime.
+ */
+export interface ResolvedUiConfig {
+    /**
+     * @description
+     * API connection settings with all defaults applied
+     */
+    api: Required<ApiConfig>;
+    /**
+     * @description
+     * Internationalization settings with all defaults applied.
+     * Note: defaultLocale remains optional as it can be undefined.
+     */
+    i18n: Required<Omit<I18nConfig, 'defaultLocale'>> & Pick<I18nConfig, 'defaultLocale'>;
+}
+
+/**
  * This Vite plugin scans the configured plugins for any dashboard extensions and dynamically
  * generates an import statement for each one, wrapped up in a `runDashboardExtensions()`
  * function which can then be imported and executed in the Dashboard app.

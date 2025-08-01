@@ -11,12 +11,9 @@ import {
     defaultLanguage,
     defaultLocale,
 } from '../constants.js';
-import { UiConfigPluginOptions } from '../vite-plugin-ui-config.js';
+import { ResolvedUiConfig, UiConfigPluginOptions } from '../vite-plugin-ui-config.js';
 
-export function getUiConfig(
-    config: VendureConfig,
-    pluginOptions: UiConfigPluginOptions,
-): UiConfigPluginOptions {
+export function getUiConfig(config: VendureConfig, pluginOptions: UiConfigPluginOptions): ResolvedUiConfig {
     const { authOptions, apiOptions } = config;
 
     // Merge API configuration with defaults
