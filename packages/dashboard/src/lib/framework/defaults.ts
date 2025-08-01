@@ -29,7 +29,6 @@ export function registerDefaults() {
                 id: 'catalog',
                 title: 'Catalog',
                 icon: SquareTerminal,
-                defaultOpen: true,
                 placement: 'top',
                 order: 200,
                 items: [
@@ -69,7 +68,6 @@ export function registerDefaults() {
                 id: 'sales',
                 title: 'Sales',
                 icon: ShoppingCart,
-                defaultOpen: true,
                 placement: 'top',
                 order: 300,
                 items: [
@@ -85,7 +83,6 @@ export function registerDefaults() {
                 id: 'customers',
                 title: 'Customers',
                 icon: Users,
-                defaultOpen: false,
                 placement: 'top',
                 order: 400,
                 items: [
@@ -107,7 +104,6 @@ export function registerDefaults() {
                 id: 'marketing',
                 title: 'Marketing',
                 icon: Mail,
-                defaultOpen: false,
                 placement: 'top',
                 order: 500,
                 items: [
@@ -123,7 +119,6 @@ export function registerDefaults() {
                 id: 'system',
                 title: 'System',
                 icon: Terminal,
-                defaultOpen: false,
                 placement: 'bottom',
                 order: 200,
                 items: [
@@ -151,7 +146,6 @@ export function registerDefaults() {
                 id: 'settings',
                 title: 'Settings',
                 icon: Settings2,
-                defaultOpen: false,
                 placement: 'bottom',
                 order: 100,
                 items: [

@@ -14,7 +14,7 @@ import {
     NavMenuSection,
     NavMenuSectionPlacement,
 } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 import { NavItemWrapper } from './nav-item-wrapper.js';
@@ -30,9 +30,65 @@ function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
 }
 
 export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
-    const location = useLocation();
-    // State to track which bottom section is currently open
-    const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);
+    const router = useRouter();
+    const routerState = useRouterState();
+    const currentPath = routerState.location.pathname;
+    const basePath = router.basepath || '';
+
+    // Helper to check if a path is active
+    const isPathActive = React.useCallback(
+        (itemUrl: string) => {
+            // Remove basepath prefix from current path for comparison
+            const normalizedCurrentPath = basePath ? currentPath.replace(new RegExp(`^${basePath}`), '') : currentPath;
+            
+            // Ensure normalized path starts with /
+            const cleanPath = normalizedCurrentPath.startsWith('/') ? normalizedCurrentPath : `/${normalizedCurrentPath}`;
+            
+            // Special handling for root path
+            if (itemUrl === '/') {
+                return cleanPath === '/' || cleanPath === '';
+            }
+            
+            // For other paths, check exact match or prefix match
+            return cleanPath === itemUrl || cleanPath.startsWith(`${itemUrl}/`);
+        },
+        [currentPath, basePath],
+    );
+
+    // Helper to find sections containing active routes
+    const findActiveSections = React.useCallback(
+        (sections: Array<NavMenuSection | NavMenuItem>) => {
+            const activeTopSections = new Set<string>();
+            let activeBottomSection: string | null = null;
+
+            for (const section of sections) {
+                if ('items' in section && section.items) {
+                    const hasActiveItem = section.items.some(item => isPathActive(item.url));
+                    if (hasActiveItem) {
+                        if (section.placement === 'top') {
+                            activeTopSections.add(section.id);
+                        } else if (section.placement === 'bottom' && !activeBottomSection) {
+                            activeBottomSection = section.id;
+                        }
+                    }
+                }
+            }
+
+            return { activeTopSections, activeBottomSection };
+        },
+        [isPathActive],
+    );
+
+    // Initialize state with active sections on mount
+    const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(() => {
+        const { activeBottomSection } = findActiveSections(items);
+        return activeBottomSection;
+    });
+
+    const [openTopSectionIds, setOpenTopSectionIds] = React.useState<Set<string>>(() => {
+        const { activeTopSections } = findActiveSections(items);
+        return activeTopSections;
+    });
 
     // Helper to build a sorted list of sections for a given placement, memoized for stability
     const getSortedSections = React.useCallback(
@@ -53,6 +109,17 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const topSections = React.useMemo(() => getSortedSections('top'), [getSortedSections]);
     const bottomSections = React.useMemo(() => getSortedSections('bottom'), [getSortedSections]);
 
+    // Handle top section open/close (only one section open at a time)
+    const handleTopSectionToggle = (sectionId: string, isOpen: boolean) => {
+        if (isOpen) {
+            // When opening a section, close all others
+            setOpenTopSectionIds(new Set([sectionId]));
+        } else {
+            // When closing a section, remove it from the set
+            setOpenTopSectionIds(new Set());
+        }
+    };
+
     // Handle bottom section open/close
     const handleBottomSectionToggle = (sectionId: string, isOpen: boolean) => {
         if (isOpen) {
@@ -62,25 +129,17 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
         }
     };
 
-    // Auto-open the bottom section that contains the current route
+    // Update open sections when route changes (for client-side navigation)
     React.useEffect(() => {
-        const currentPath = location.pathname;
+        const { activeTopSections, activeBottomSection } = findActiveSections(items);
 
-        // Check if the current path is in any bottom section
-        for (const section of bottomSections) {
-            const matchingItem =
-                'items' in section
-                    ? section.items?.find(
-                          item => currentPath === item.url || currentPath.startsWith(`${item.url}/`),
-                      )
-                    : null;
+        // Replace open sections with only the active one
+        setOpenTopSectionIds(activeTopSections);
 
-            if (matchingItem) {
-                setOpenBottomSectionId(section.id);
-                return;
-            }
+        if (activeBottomSection) {
+            setOpenBottomSectionId(activeBottomSection);
         }
-    }, [location.pathname, bottomSections]);
+    }, [currentPath, items, findActiveSections]);
 
     // Render a top navigation section
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
@@ -91,7 +150,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                         <SidebarMenuButton
                             tooltip={item.title}
                             asChild
-                            isActive={location.pathname === item.url}
+                            isActive={isPathActive(item.url)}
                         >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
@@ -105,7 +164,12 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
 
         return (
             <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
-                <Collapsible asChild defaultOpen={item.defaultOpen} className="group/collapsible">
+                <Collapsible
+                    asChild
+                    open={openTopSectionIds.has(item.id)}
+                    onOpenChange={isOpen => handleTopSectionToggle(item.id, isOpen)}
+                    className="group/collapsible"
+                >
                     <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
                             <SidebarMenuButton tooltip={item.title}>
@@ -126,10 +190,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                         <SidebarMenuSubItem>
                                             <SidebarMenuSubButton
                                                 asChild
-                                                isActive={
-                                                    location.pathname === subItem.url ||
-                                                    location.pathname.startsWith(`${subItem.url}/`)
-                                                }
+                                                isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
                                                     <span>{subItem.title}</span>
@@ -155,7 +216,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                         <SidebarMenuButton
                             tooltip={item.title}
                             asChild
-                            isActive={location.pathname === item.url}
+                            isActive={isPathActive(item.url)}
                         >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
@@ -194,10 +255,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                         <SidebarMenuSubItem>
                                             <SidebarMenuSubButton
                                                 asChild
-                                                isActive={
-                                                    location.pathname === subItem.url ||
-                                                    location.pathname.startsWith(`${subItem.url}/`)
-                                                }
+                                                isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
                                                     <span>{subItem.title}</span>
