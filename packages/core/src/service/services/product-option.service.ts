@@ -6,11 +6,13 @@ import {
     DeletionResult,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { Instrument } from '../../common/instrument-decorator';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -72,6 +74,33 @@ export class ProductOptionService {
                 },
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
+    }
+
+    /**
+     * @description
+     * Returns all ProductOptions belonging to the ProductOptionGroup with the given id.
+     */
+    findByGroupIdList(
+        ctx: RequestContext,
+        groupId: ID,
+        options?: ListQueryOptions<ProductOption>,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.listQueryBuilder
+            .build(ProductOption, options, {
+                ctx,
+                relations: relations ?? ['group'],
+                channelId: ctx.channelId,
+                entityAlias: 'productOption',
+            })
+            .andWhere('productOption.groupId = :groupId', { groupId })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['group'])),
+                    totalItems,
+                };
+            });
     }
 
     async create(
