@@ -3,7 +3,12 @@ import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
-const API_URL = uiConfig.apiHost + (uiConfig.apiPort !== 'auto' ? `:${uiConfig.apiPort}` : '') + '/admin-api';
+import { ApiConfig } from '../../../vite/vite-plugin-ui-config.js';
+
+const apiConfig = uiConfig.api as Required<ApiConfig>;
+
+const API_URL =
+    apiConfig.host + (apiConfig.port !== 'auto' ? `:${apiConfig.port}` : '') + `/${apiConfig.adminApiPath}`;
 
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;
@@ -16,7 +21,7 @@ const awesomeClient = new AwesomeGraphQLClient({
         const headers = new Headers(options.headers);
 
         if (channelToken) {
-            headers.set('vendure-token', channelToken);
+            headers.set(uiConfig.api.channelTokenKey, channelToken);
         }
 
         // Get the content language from user settings and add as query parameter

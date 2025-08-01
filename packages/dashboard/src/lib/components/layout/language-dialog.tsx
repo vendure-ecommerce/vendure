@@ -4,13 +4,15 @@ import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
+import type { I18nConfig, UiConfigPluginOptions } from '../../../../vite/vite-plugin-ui-config.js';
 import { Button } from '../ui/button.js';
 import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog.js';
 import { Label } from '../ui/label.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
 
 export function LanguageDialog() {
-    const { availableLocales, availableLanguages } = uiConfig;
+    const { i18n } = uiConfig as Required<UiConfigPluginOptions>;
+    const { availableLocales, availableLanguages } = i18n as Required<I18nConfig>;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
     const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();

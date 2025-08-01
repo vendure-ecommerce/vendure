@@ -7,6 +7,6 @@ declare module 'virtual:dashboard-extensions' {
 }
 
 declare module 'virtual:vendure-ui-config' {
-    import { AdminUiConfig } from '@vendure/core';
-    export const uiConfig: AdminUiConfig;
+    import { UiConfigPluginOptions } from '../../vite/vite-plugin-ui-config.js';
+    export const uiConfig: UiConfigPluginOptions;
 }
