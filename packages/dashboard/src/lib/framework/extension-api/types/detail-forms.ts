@@ -58,6 +58,10 @@ export interface DashboardDetailFormDisplayComponent {
     component: DataDisplayComponent;
 }
 
+/**
+ * @description
+ * Allows you to extend existing detail forms with custom GraphQL queries, input components, and display components.
+ */
 export interface DashboardDetailFormExtensionDefinition {
     /**
      * @description

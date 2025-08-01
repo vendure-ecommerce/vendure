@@ -43,7 +43,15 @@ export type BulkActionComponent<Item extends { id: string } & Record<string, any
  * @since 3.4.0
  */
 export type BulkAction = {
+    /**
+     * @description
+     * Optional order number to control the position of this bulk action in the dropdown.
+     */
     order?: number;
+    /**
+     * @description
+     * The React component that will be rendered as the bulk action item.
+     */
     component: BulkActionComponent<any>;
 };
 

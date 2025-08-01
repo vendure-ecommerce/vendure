@@ -10,7 +10,15 @@ import { CustomFormComponentInputProps } from '../../form-engine/custom-form-com
  * @since 3.4.0
  */
 export interface DashboardCustomFormComponent {
+    /**
+     * @description
+     * A unique identifier for the custom form component.
+     */
     id: string;
+    /**
+     * @description
+     * The React component that will be rendered as the custom form input.
+     */
     component: React.FunctionComponent<CustomFormComponentInputProps>;
 }
 
