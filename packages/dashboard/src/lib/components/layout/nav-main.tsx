@@ -29,6 +29,13 @@ function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
     return orderA - orderB;
 }
 
+/**
+ * Escapes special regex characters in a string to be used as a literal pattern
+ */
+function escapeRegexChars(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
     const router = useRouter();
     const routerState = useRouterState();
@@ -39,7 +46,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const isPathActive = React.useCallback(
         (itemUrl: string) => {
             // Remove basepath prefix from current path for comparison
-            const normalizedCurrentPath = basePath ? currentPath.replace(new RegExp(`^${basePath}`), '') : currentPath;
+            const normalizedCurrentPath = basePath ? currentPath.replace(new RegExp(`^${escapeRegexChars(basePath)}`), '') : currentPath;
             
             // Ensure normalized path starts with /
             const cleanPath = normalizedCurrentPath.startsWith('/') ? normalizedCurrentPath : `/${normalizedCurrentPath}`;
