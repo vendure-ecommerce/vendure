@@ -150,7 +150,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const renderBottomSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <NavItemWrapper key={item.title} locationId={item.id} order={item.order}>
+                <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             tooltip={item.title}
@@ -167,7 +167,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
             );
         }
         return (
-            <NavItemWrapper key={item.title} locationId={item.id} order={item.order}>
+            <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
                 <Collapsible
                     asChild
                     open={openBottomSectionId === item.id}
@@ -218,7 +218,6 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
         <>
             {/* Top sections */}
             <SidebarGroup>
-                <SidebarGroupLabel>Platform</SidebarGroupLabel>
                 <SidebarMenu>{topSections.map(renderTopSection)}</SidebarMenu>
             </SidebarGroup>
 

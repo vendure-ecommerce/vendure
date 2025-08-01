@@ -92,7 +92,6 @@ export * from './components/shared/paginated-list-data-table.js';
 export * from './components/shared/permission-guard.js';
 export * from './components/shared/product-variant-selector.js';
 export * from './components/shared/remove-from-channel-bulk-action.js';
-export * from './components/shared/rich-text-editor.js';
 export * from './components/shared/role-code-label.js';
 export * from './components/shared/role-selector.js';
 export * from './components/shared/seller-selector.js';

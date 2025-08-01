@@ -1,9 +1,8 @@
-import { BubbleMenu, Editor, EditorContent, useCurrentEditor, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import ListItem from '@tiptap/extension-list-item';
 import TextStyle from '@tiptap/extension-text-style';
+import { BubbleMenu, Editor, EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
-import { useEffect, useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { Button } from '../ui/button.js';
 
 // define your extension array
@@ -27,6 +26,8 @@ export interface RichTextInputProps {
 }
 
 export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>) {
+    const isInternalUpdate = useRef(false);
+
     const editor = useEditor({
         parseOptions: {
             preserveWhitespace: 'full',
@@ -34,6 +35,7 @@ export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>)
         extensions: extensions,
         content: value,
         onUpdate: ({ editor }) => {
+            isInternalUpdate.current = true;
             onChange(editor.getHTML());
         },
         editorProps: {
@@ -44,11 +46,15 @@ export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>)
     });
 
     useLayoutEffect(() => {
-        if (editor) {
-            const { from, to } = editor.state.selection;
-            editor.commands.setContent(value, false);
-            editor.commands.setTextSelection({ from, to });
+        if (editor && !isInternalUpdate.current) {
+            const currentContent = editor.getHTML();
+            if (currentContent !== value) {
+                const { from, to } = editor.state.selection;
+                editor.commands.setContent(value, false);
+                editor.commands.setTextSelection({ from, to });
+            }
         }
+        isInternalUpdate.current = false;
     }, [value, editor]);
 
     if (!editor) {
