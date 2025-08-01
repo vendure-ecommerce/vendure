@@ -2778,6 +2778,18 @@ export type ProductOption = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    groupId?: InputMaybe<IdOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ProductOptionGroup = Node & {
     __typename?: 'ProductOptionGroup';
     code: Scalars['String']['output'];
@@ -2786,9 +2798,15 @@ export type ProductOptionGroup = Node & {
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
+    /** Returns a paginated, sortable, filterable list of the ProductOptionGroup's options. */
+    optionList: ProductOptionList;
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProductOptionGroupOptionListArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
 };
 
 export type ProductOptionGroupList = PaginatedList & {
@@ -2804,6 +2822,34 @@ export type ProductOptionGroupTranslation = {
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
     updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProductOptionList = PaginatedList & {
+    __typename?: 'ProductOptionList';
+    items: Array<ProductOption>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    groupId?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionTranslation = {
