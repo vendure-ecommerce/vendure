@@ -100,7 +100,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
             <Collapsible
                 key={item.title}
                 asChild
-                defaultOpen={item.defaultOpen}
+                defaultOpen={item.defaultOpen ?? false}
                 className="group/collapsible"
             >
                 <SidebarMenuItem>
