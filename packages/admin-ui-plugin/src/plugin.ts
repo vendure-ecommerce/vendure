@@ -79,7 +79,7 @@ export interface AdminUiPluginOptions {
     adminUiConfig?: Partial<AdminUiConfig>;
     /**
      * @description
-     * If you are running the AdminUiPlugin at the same time as the new {@link DashboardPlugin}, you should
+     * If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
      * set this to `true` in order to avoid a conflict caused by both plugins defining the same
      * schema extensions.
      *

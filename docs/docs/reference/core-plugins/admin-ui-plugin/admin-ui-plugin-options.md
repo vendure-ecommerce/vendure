@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiPluginOptions
 
-<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="44" packageName="@vendure/admin-ui-plugin" />
+<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="36" packageName="@vendure/admin-ui-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>.
 
@@ -65,7 +65,7 @@ for specifying the Vendure GraphQL API host, available UI languages, etc.
 
 <MemberInfo kind="property" type={`boolean`}  since="3.4.0"  />
 
-If you are running the AdminUiPlugin at the same time as the new {@link DashboardPlugin}, you should
+If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
 set this to `true` in order to avoid a conflict caused by both plugins defining the same
 schema extensions.
 
