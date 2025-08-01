@@ -130,7 +130,7 @@ export class ProductOptionResolver {
         const productOptionGroupId = input[0]?.productOptionGroupId;
         const productOptionGroup = await this.productOptionGroupService.findOne(ctx, productOptionGroupId);
         if (!productOptionGroup) {
-            throw new EntityNotFoundError('ProductOptionGroup', input.productOptionGroupId);
+            throw new EntityNotFoundError('ProductOptionGroup', productOptionGroupId);
         }
         const productOptions: Array<Translated<ProductOption>> = [];
         for (const productOption of input) {
