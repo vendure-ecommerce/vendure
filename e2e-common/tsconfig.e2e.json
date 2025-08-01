@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "outDir": "../e2e-temp",
     "types": ["node"],
     "lib": ["es2015"],
     "useDefineForClassFields": false,
