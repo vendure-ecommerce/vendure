@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/ca
 import { Label } from '@/vdb/components/ui/label.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { GroupSearch, type OptionGroup } from './group-search.js';
@@ -24,6 +24,7 @@ interface OptionGroupSearchInputProps {
 
 export function OptionGroupSearchInput({ value, onChange, disabled }: OptionGroupSearchInputProps) {
     const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
+    const [showNewGroupSearch, setShowNewGroupSearch] = useState(false);
     const optionSearchRefs = useRef<Array<HTMLInputElement | null>>([]);
 
     const handleAddGroup = (group: OptionGroup) => {
@@ -35,6 +36,8 @@ export function OptionGroupSearchInput({ value, onChange, disabled }: OptionGrou
         onChange([...value, newGroup]);
         // Expand the newly added group
         setExpandedGroups(new Set([...expandedGroups, newGroupIndex]));
+        // Hide the search input
+        setShowNewGroupSearch(false);
         // Focus the option search input after the component updates
         setTimeout(() => {
             const optionSearchInput = optionSearchRefs.current[newGroupIndex];
@@ -84,7 +87,7 @@ export function OptionGroupSearchInput({ value, onChange, disabled }: OptionGrou
             {/* Selected option groups */}
             {value.map((group, groupIndex) => (
                 <Card
-                    key={group.id || groupIndex}
+                    key={group.id || `new-group-${groupIndex}-${group.name}`}
                     className={cn('transition-all', expandedGroups.has(groupIndex) ? '' : 'hover:shadow-md')}
                 >
                     <CardHeader className="pb-3">
@@ -128,7 +131,7 @@ export function OptionGroupSearchInput({ value, onChange, disabled }: OptionGrou
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {group.options.map((option, optionIndex) => (
                                         <Badge
-                                            key={option.id || optionIndex}
+                                            key={option.id || `new-option-${groupIndex}-${optionIndex}-${option.name}`}
                                             variant="secondary"
                                             className="flex items-center gap-1 pr-1"
                                         >
@@ -168,15 +171,47 @@ export function OptionGroupSearchInput({ value, onChange, disabled }: OptionGrou
                 </Card>
             ))}
 
-            {/* Add option group */}
-            <Card className="border-dashed">
-                <CardContent className="pt-6">
-                    <Label className="text-sm font-medium mb-2 block">
-                        <Trans>Add Option Group</Trans>
-                    </Label>
-                    <GroupSearch onSelect={handleAddGroup} selectedGroups={value} disabled={disabled} />
-                </CardContent>
-            </Card>
+            {/* Add option group search - shown when button is clicked */}
+            {showNewGroupSearch && (
+                <Card className="border-dashed">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <Label className="text-sm font-medium">
+                                <Trans>Add Option Group</Trans>
+                            </Label>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowNewGroupSearch(false)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <GroupSearch
+                            onSelect={handleAddGroup}
+                            selectedGroups={value}
+                            disabled={disabled}
+                        />
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Add option group button */}
+            <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowNewGroupSearch(true)}
+                disabled={disabled || showNewGroupSearch}
+            >
+                <Plus className="mr-2 h-4 w-4" />
+                {value.length === 0 ? (
+                    <Trans>Add First Option</Trans>
+                ) : (
+                    <Trans>Add Option Group</Trans>
+                )}
+            </Button>
         </div>
     );
 }
