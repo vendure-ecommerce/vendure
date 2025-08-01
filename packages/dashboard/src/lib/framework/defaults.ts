@@ -125,7 +125,7 @@ export function registerDefaults() {
                 icon: Terminal,
                 defaultOpen: false,
                 placement: 'bottom',
-                order: 100,
+                order: 200,
                 items: [
                     {
                         id: 'job-queue',
@@ -153,7 +153,7 @@ export function registerDefaults() {
                 icon: Settings2,
                 defaultOpen: false,
                 placement: 'bottom',
-                order: 200,
+                order: 100,
                 items: [
                     {
                         id: 'sellers',
