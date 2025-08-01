@@ -140,6 +140,7 @@ const sidebars = {
             },
             items: [
                 'guides/extending-the-dashboard/getting-started/index',
+                'guides/extending-the-dashboard/extending-overview/index',
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
