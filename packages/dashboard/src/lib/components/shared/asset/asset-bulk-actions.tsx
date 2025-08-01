@@ -12,6 +12,7 @@ import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Asset } from './asset-gallery.js';
 
 export type AssetBulkActionContext = {
@@ -34,9 +35,67 @@ interface AssetBulkActionsProps {
 
 export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<AssetBulkActionsProps>) {
     const { pageId } = usePage();
-    const { blockId } = usePageBlock();
+    const pageBlock = usePageBlock();
+    const blockId = pageBlock?.blockId;
+    const [position, setPosition] = useState({ bottom: '2.5rem', left: '50%' });
+    const [isPositioned, setIsPositioned] = useState(false);
+
+    useEffect(() => {
+        if (selection.length === 0) return;
+
+        const updatePosition = () => {
+            // Find the asset gallery container
+            const galleryContainer = document.querySelector('[data-asset-gallery]')?.closest('div') as HTMLElement;
+            if (!galleryContainer) return;
+            console.log(`galleryContainer`, galleryContainer);
+
+            const containerRect = galleryContainer.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            
+            // Check if container bottom is visible in viewport
+            const containerBottom = containerRect.bottom;
+            const isContainerFullyVisible = containerBottom <= viewportHeight - 80; // 80px buffer for the menu
+            
+            if (isContainerFullyVisible) {
+                // Position relative to container bottom
+                const containerLeft = containerRect.left;
+                const containerWidth = containerRect.width;
+                const centerX = containerLeft + (containerWidth / 2);
+                
+                setPosition({
+                    bottom: `${viewportHeight - containerBottom + 10}px`,
+                    left: `${centerX}px`
+                });
+            } else {
+                // Position relative to viewport bottom, centered in container
+                const containerLeft = containerRect.left;
+                const containerWidth = containerRect.width;
+                const centerX = containerLeft + (containerWidth / 2);
+                
+                setPosition({
+                    bottom: '2.5rem',
+                    left: `${centerX}px`
+                });
+            }
+            
+            setIsPositioned(true);
+        };
+
+        updatePosition();
+        window.addEventListener('scroll', updatePosition);
+        window.addEventListener('resize', updatePosition);
+
+        return () => {
+            window.removeEventListener('scroll', updatePosition);
+            window.removeEventListener('resize', updatePosition);
+        };
+    }, [selection.length]);
 
     if (selection.length === 0) {
+        return null;
+    }
+    
+    if (!isPositioned) {
         return null;
     }
 
@@ -62,13 +121,21 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<A
     allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
-        <div className="flex items-center gap-2 px-2 py-1 mb-2 bg-muted/50 rounded-md border">
+        <div
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-white shadow-2xl rounded-md border z-50"
+            style={{ 
+                height: 'auto', 
+                maxHeight: '60px',
+                bottom: position.bottom,
+                left: position.left
+            }}
+        >
             <span className="text-sm text-muted-foreground">
                 <Trans>{selection.length} selected</Trans>
             </span>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8">
+                    <Button variant="outline" size="sm" className="h-8 shadow-none">
                         <Trans>With selected...</Trans>
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
