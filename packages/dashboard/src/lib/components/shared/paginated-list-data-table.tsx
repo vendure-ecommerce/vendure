@@ -3,14 +3,12 @@ import {
     getObjectPathToPaginatedList
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
-import { api } from '@/vdb/graphql/api.js';
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDebounce } from '@uidotdev/usehooks';
-
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
     ColumnSort,
@@ -18,7 +16,9 @@ import {
     Table
 } from '@tanstack/react-table';
 import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
+import { useDebounce } from '@uidotdev/usehooks';
 import React from 'react';
+
 import { getColumnVisibility } from '../data-table/data-table-utils.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 
@@ -191,7 +191,7 @@ export interface PaginatedListDataTableProps<
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
+    defaultColumnOrder?: Array<keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>>;
     defaultVisibility?: Partial<Record<AllItemFieldKeys<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
@@ -203,10 +203,10 @@ export interface PaginatedListDataTableProps<
     onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => void;
     onColumnVisibilityChange?: (table: Table<any>, columnVisibility: VisibilityState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
-    rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    rowActions?: Array<RowAction<PaginatedListItemFields<T>>>;
     bulkActions?: BulkAction[];
     disableViewOptions?: boolean;
-    transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
+    transformData?: (data: Array<PaginatedListItemFields<T>>) => Array<PaginatedListItemFields<T>>;
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     /**
      * Register a function that allows you to assign a refresh function for

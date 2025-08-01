@@ -2769,6 +2769,8 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOptionGroup */
     createProductOptionGroup: ProductOptionGroup;
+    /** Create one or more ProductOptions */
+    createProductOptions: Array<ProductOption>;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
     createProductVariants: Array<Maybe<ProductVariant>>;
     createPromotion: CreatePromotionResult;
@@ -2837,6 +2839,12 @@ export type Mutation = {
     deleteProduct: DeletionResponse;
     /** Delete a ProductOption */
     deleteProductOption: DeletionResponse;
+    /** Delete an existing ProductOptionGroup */
+    deleteProductOptionGroup: DeletionResponse;
+    /** Delete multiple existing ProductOptionGroups */
+    deleteProductOptionGroups: DeletionResponse;
+    /** Delete multiple ProductOptions */
+    deleteProductOptions: DeletionResponse;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
     /** Delete multiple ProductVariants */
@@ -2986,10 +2994,12 @@ export type Mutation = {
     updatePaymentMethod: PaymentMethod;
     /** Update an existing Product */
     updateProduct: Product;
-    /** Create a new ProductOption within a ProductOptionGroup */
+    /** Update one ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
+    /** Update one or more ProductOptions within a ProductOptionGroup */
+    updateProductOptions: Array<ProductOption>;
     /** Update an existing ProductVariant */
     updateProductVariant: ProductVariant;
     /** Update existing ProductVariants */
@@ -3183,6 +3193,10 @@ export type MutationCreateProductOptionGroupArgs = {
     input: CreateProductOptionGroupInput;
 };
 
+export type MutationCreateProductOptionsArgs = {
+    input: Array<CreateProductOptionInput>;
+};
+
 export type MutationCreateProductVariantsArgs = {
     input: Array<CreateProductVariantInput>;
 };
@@ -3330,6 +3344,20 @@ export type MutationDeleteProductArgs = {
 
 export type MutationDeleteProductOptionArgs = {
     id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteProductOptionGroupArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteProductOptionGroupsArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    ids: Array<Scalars['ID']['input']>;
+};
+
+export type MutationDeleteProductOptionsArgs = {
+    ids: Array<Scalars['ID']['input']>;
 };
 
 export type MutationDeleteProductVariantArgs = {
@@ -3652,6 +3680,10 @@ export type MutationUpdateProductOptionArgs = {
 
 export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
+};
+
+export type MutationUpdateProductOptionsArgs = {
+    input: Array<UpdateProductOptionInput>;
 };
 
 export type MutationUpdateProductVariantArgs = {
@@ -4522,7 +4554,6 @@ export type ProductOptionGroup = Node & {
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
-    /** Returns a paginated, sortable, filterable list of the ProductOptionGroup's options. */
     optionList: ProductOptionList;
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
@@ -4990,6 +5021,7 @@ export type Query = {
     product?: Maybe<Product>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     productOptionGroups: ProductOptionGroupList;
+    productOptions: ProductOptionList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
     /** List ProductVariants either all or for the specific product. */
@@ -5151,6 +5183,10 @@ export type QueryProductOptionGroupArgs = {
 
 export type QueryProductOptionGroupsArgs = {
     options?: InputMaybe<ProductOptionGroupListOptions>;
+};
+
+export type QueryProductOptionsArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
 };
 
 export type QueryProductVariantArgs = {

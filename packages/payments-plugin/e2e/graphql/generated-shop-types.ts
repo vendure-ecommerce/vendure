@@ -2704,7 +2704,6 @@ export type ProductOptionGroup = Node & {
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
-    /** Returns a paginated, sortable, filterable list of the ProductOptionGroup's options. */
     optionList: ProductOptionList;
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;

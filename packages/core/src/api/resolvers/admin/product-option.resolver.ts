@@ -4,13 +4,19 @@ import {
     MutationAssignProductOptionGroupsToChannelArgs,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
+    MutationCreateProductOptionsArgs,
     MutationDeleteProductOptionArgs,
+    MutationDeleteProductOptionGroupArgs,
+    MutationDeleteProductOptionGroupsArgs,
+    MutationDeleteProductOptionsArgs,
     MutationRemoveProductOptionGroupsFromChannelArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
+    MutationUpdateProductOptionsArgs,
     Permission,
     QueryProductOptionGroupArgs,
     QueryProductOptionGroupsArgs,
+    QueryProductOptionsArgs,
     RemoveProductOptionGroupFromChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
@@ -53,6 +59,16 @@ export class ProductOptionResolver {
         @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(ctx, args.id);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionsArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.productOptionService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Transaction()
@@ -105,6 +121,27 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
+    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
+    async createProductOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateProductOptionsArgs,
+    ): Promise<Array<Translated<ProductOption>>> {
+        const { input } = args;
+        const productOptionGroupId = input[0]?.productOptionGroupId;
+        const productOptionGroup = await this.productOptionGroupService.findOne(ctx, productOptionGroupId);
+        if (!productOptionGroup) {
+            throw new EntityNotFoundError('ProductOptionGroup', input.productOptionGroupId);
+        }
+        const productOptions: Array<Translated<ProductOption>> = [];
+        for (const productOption of input) {
+            const res = await this.productOptionService.create(ctx, productOptionGroup, productOption);
+            productOptions.push(res);
+        }
+        return productOptions;
+    }
+
+    @Transaction()
+    @Mutation()
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async updateProductOption(
         @Ctx() ctx: RequestContext,
@@ -112,6 +149,18 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOption>> {
         const { input } = args;
         return this.productOptionService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async updateProductOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateProductOptionsArgs,
+    ): Promise<Array<Translated<ProductOption>>> {
+        const { input } = args;
+        // @ts-ignore - is ok
+        return Promise.all(input.map(option => this.productOptionService.update(ctx, option)));
     }
 
     @Transaction()
@@ -142,5 +191,35 @@ export class ProductOptionResolver {
         @Args() args: MutationRemoveProductOptionGroupsFromChannelArgs,
     ): Promise<Array<ErrorResultUnion<RemoveProductOptionGroupFromChannelResult, ProductOptionGroup>>> {
         return this.productOptionGroupService.removeProductOptionGroupsFromChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOptionGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductOptionGroupArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionGroupService.delete(ctx, args.id, args.force || false);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOptionGroups(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductOptionGroupsArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionGroupService.deleteMultiple(ctx, args.ids, args.force || false);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductOptionsArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionService.deleteMultiple(ctx, args.ids);
     }
 }
