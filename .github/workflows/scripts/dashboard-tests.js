@@ -70,7 +70,7 @@ async function runDashboardTests() {
         console.log('Verifying successful login...');
 
         // Wait for dashboard elements to appear with a more robust approach
-        const dashboardSelectors = ['h1:has-text("Dashboard")'];
+        const dashboardSelectors = ['h1:has-text("Insights")'];
 
         // Try to wait for any dashboard element to appear
         let dashboardElement = null;
