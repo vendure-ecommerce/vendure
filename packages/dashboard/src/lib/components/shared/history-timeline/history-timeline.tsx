@@ -43,10 +43,12 @@ export function HistoryTimeline({ children, onEditNote, onDeleteNote }: Readonly
 
     return (
         <HistoryTimelineContext.Provider value={{ editNote, deleteNote }}>
-            <ScrollArea className=" pr-4">
+            <ScrollArea className="pr-2">
                 <div className="relative">
-                    <div className="absolute left-5 top-0 bottom-[44px] w-0.5 bg-gray-200" />
-                    {children}
+                    <div className="absolute left-6 top-6 bottom-0 w-px bg-gradient-to-b from-border via-border/50 to-transparent" />
+                    <div className="space-y-0.5">
+                        {children}
+                    </div>
                 </div>
             </ScrollArea>
             <HistoryNoteEditor
