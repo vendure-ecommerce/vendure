@@ -10,6 +10,7 @@ import { DocumentNode } from 'graphql';
  * The pageId is already defined in the detail form extension, so only the blockId and field are needed.
  *
  * @docsCategory extensions
+ * @docsPage DetailForms
  * @since 3.4.0
  */
 export interface DashboardDetailFormInputComponent {
@@ -37,6 +38,7 @@ export interface DashboardDetailFormInputComponent {
  * The pageId is already defined in the detail form extension, so only the blockId and field are needed.
  *
  * @docsCategory extensions
+ * @docsPage DetailForms
  * @since 3.4.0
  */
 export interface DashboardDetailFormDisplayComponent {
@@ -60,7 +62,12 @@ export interface DashboardDetailFormDisplayComponent {
 
 /**
  * @description
- * Allows you to extend existing detail forms with custom GraphQL queries, input components, and display components.
+ * Allows you to extend existing detail forms (e.g. on the product detail or customer detail pages)
+ * with custom GraphQL queries, input components, and display components.
+ *
+ * @since 3.4.0
+ * @docsPage DetailForms
+ * @docsCategory extensions
  */
 export interface DashboardDetailFormExtensionDefinition {
     /**
@@ -70,7 +77,8 @@ export interface DashboardDetailFormExtensionDefinition {
     pageId: string;
     /**
      * @description
-     * Extends the GraphQL query used to fetch data for the detail page, allowing you to add additional fields that can be used by custom input or display components.
+     * Extends the GraphQL query used to fetch data for the detail page, allowing you to add additional
+     * fields that can be used by custom input or display components.
      */
     extendDetailDocument?: string | DocumentNode | (() => DocumentNode | string);
     /**

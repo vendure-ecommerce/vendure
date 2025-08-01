@@ -9,11 +9,10 @@ export interface ActionBarButtonState {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Allows you to define custom action bar items for any page in the dashboard.
  *
  * @docsCategory extensions
+ * @docsPage Layout
  * @since 3.3.0
  */
 export interface DashboardActionBarItem {
@@ -59,13 +58,12 @@ export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | '
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * The location of a page block in the dashboard. The location can be found by turning on
  * "developer mode" in the dashboard user menu (bottom left corner) and then
  * clicking the `< />` icon when hovering over a page block.
  *
  * @docsCategory extensions
+ * @docsPage Layout
  * @since 3.3.0
  */
 export type PageBlockLocation = {
@@ -76,12 +74,11 @@ export type PageBlockLocation = {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * This allows you to insert a custom component into a specific location
  * on any page in the dashboard.
  *
  * @docsCategory extensions
+ * @docsPage Layout
  * @since 3.3.0
  */
 export interface DashboardPageBlockDefinition {
