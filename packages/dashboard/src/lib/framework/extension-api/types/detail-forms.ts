@@ -66,6 +66,7 @@ export interface DashboardDetailFormExtensionDefinition {
     pageId: string;
     /**
      * @description
+     * Extends the GraphQL query used to fetch data for the detail page, allowing you to add additional fields that can be used by custom input or display components.
      */
     extendDetailDocument?: string | DocumentNode | (() => DocumentNode | string);
     /**
