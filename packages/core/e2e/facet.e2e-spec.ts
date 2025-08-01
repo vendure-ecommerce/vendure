@@ -6,6 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { RequestContext } from '../src/api/common/request-context';
+import { FacetService } from '../src/service/services/facet.service';
 
 import { FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -38,6 +40,7 @@ describe('Facet resolver', () => {
 
     let brandFacet: FacetWithValuesFragment;
     let speakerTypeFacet: FacetWithValuesFragment;
+    let facetService: FacetService;
 
     beforeAll(async () => {
         await server.init({
@@ -45,6 +48,8 @@ describe('Facet resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
+        facetService = server.app.get(FacetService);
+        expect(facetService).toBeDefined();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -148,6 +153,7 @@ describe('Facet resolver', () => {
         const result = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
 
         const { items } = result.facets;
+
         expect(items.length).toBe(2);
         expect(items[0].name).toBe('category');
         expect(items[1].name).toBe('Speaker Category');
@@ -462,6 +468,21 @@ describe('Facet resolver', () => {
         let secondChannel: ChannelFragment;
         let createdFacet: Codegen.CreateFacetMutation['createFacet'];
 
+        function createFacetValueWithCode(code: string) {
+            return adminClient.query<
+                Codegen.CreateFacetValuesMutation,
+                Codegen.CreateFacetValuesMutationVariables
+            >(CREATE_FACET_VALUES, {
+                input: [
+                    {
+                        code,
+                        facetId: 'T_1',
+                        translations: [{ languageCode: LanguageCode.en, name: `Test facet value - ${code}` }],
+                    },
+                ],
+            });
+        }
+
         beforeAll(async () => {
             const { createChannel } = await adminClient.query<
                 Codegen.CreateChannelMutation,
@@ -757,6 +778,39 @@ describe('Facet resolver', () => {
                 await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
         });
+
+        it('findByCode retrieves channel specific FacetValues', async () => {
+            const ctx1 = RequestContext.deserialize({
+                _channel: { code: E2E_DEFAULT_CHANNEL_TOKEN },
+                _languageCode: LanguageCode.en,
+            } as any);
+            const ctx2 = RequestContext.deserialize({
+                _channel: { code: SECOND_CHANNEL_TOKEN },
+                _languageCode: LanguageCode.en,
+            } as any);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { createFacetValues: facetValues1 } = await createFacetValueWithCode('iphones');
+            const fv1 = facetValues1[0].code;
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { createFacetValues: facetValues2 } = await createFacetValueWithCode('ipads');
+            const fv2 = facetValues2[0].code;
+
+            expect(fv1).toBe('iphones');
+            expect(fv2).toBe('ipads');
+
+            const facet = await facetService.findOne(ctx1, 1);
+            expect(facet).toBeDefined();
+
+            const facet1 = await facetService.findByCode(ctx1, facet!.code, LanguageCode.en);
+            expect(facet1?.values.find(v => v.code === fv1)).toBeDefined();
+            expect(facet1?.values.find(v => v.code === fv2)).not.toBeDefined();
+
+            const facet2 = await facetService.findByCode(ctx2, facet!.code, LanguageCode.en);
+            expect(facet2?.values.find(v => v.code === fv1)).not.toBeDefined();
+            expect(facet2?.values.find(v => v.code === fv2)).toBeDefined();
+        });
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/715
@@ -817,6 +871,25 @@ describe('Facet resolver', () => {
         });
     });
 });
+
+export const GET_FACET_BY_CODE = gql`
+    query GetFacetWithValueList($id: ID!, $options: FacetValueListOptions) {
+        facet(id: $id) {
+            id
+            languageCode
+            isPrivate
+            code
+            name
+            valueList(options: $options) {
+                items {
+                    ...FacetValue
+                }
+                totalItems
+            }
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
 
 export const GET_FACET_WITH_VALUE_LIST = gql`
     query GetFacetWithValueList($id: ID!, $options: FacetValueListOptions) {
