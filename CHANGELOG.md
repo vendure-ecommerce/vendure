@@ -1,3 +1,30 @@
+## <small>3.3.8 (2025-08-01)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fixed tracking code not showing in order history (#3402) ([6002c21](https://github.com/vendure-ecommerce/vendure/commit/6002c21)), closes [#3402](https://github.com/vendure-ecommerce/vendure/issues/3402)
+* **cli** Replace regex solution with robust stirp-json-comments package (#3694) ([26a9e03](https://github.com/vendure-ecommerce/vendure/commit/26a9e03)), closes [#3694](https://github.com/vendure-ecommerce/vendure/issues/3694)
+* **core** Account for refund status when calculating order coverage (#3719) ([1400bbc](https://github.com/vendure-ecommerce/vendure/commit/1400bbc)), closes [#3719](https://github.com/vendure-ecommerce/vendure/issues/3719) [#3670](https://github.com/vendure-ecommerce/vendure/issues/3670)
+* **core** More reliable job subscriber timeout handling ([5e124d5](https://github.com/vendure-ecommerce/vendure/commit/5e124d5))
+* **dashboard** Correct detection of tailwind classes in plugins ([86da88a](https://github.com/vendure-ecommerce/vendure/commit/86da88a))
+* **dashboard** Fix custom field label ([45d4b3c](https://github.com/vendure-ecommerce/vendure/commit/45d4b3c))
+* **dashboard** Fix custom fields in GlobalSettings detail ([bcd55b8](https://github.com/vendure-ecommerce/vendure/commit/bcd55b8))
+* **dashboard** Fix npm package discovery ([1fc6f85](https://github.com/vendure-ecommerce/vendure/commit/1fc6f85))
+* **dashboard** Fix plugin detection on Windows ([bbb8c48](https://github.com/vendure-ecommerce/vendure/commit/bbb8c48))
+* **dashboard** Temporarily remove shadcn avatar ([10d5ebc](https://github.com/vendure-ecommerce/vendure/commit/10d5ebc))
+* **email-plugin** Hydrate lines.featureAsset on order-confirmation email (#3690) ([20c05db](https://github.com/vendure-ecommerce/vendure/commit/20c05db)), closes [#3690](https://github.com/vendure-ecommerce/vendure/issues/3690)
+* **payments-plugin** Include metadata in createPayment of Stripe handler (#3692) ([d415dd0](https://github.com/vendure-ecommerce/vendure/commit/d415dd0)), closes [#3692](https://github.com/vendure-ecommerce/vendure/issues/3692)
+
+#### Features
+
+* **dashboard** Full support for configurable operations UI (#3702) ([8e0c5b4](https://github.com/vendure-ecommerce/vendure/commit/8e0c5b4)), closes [#3702](https://github.com/vendure-ecommerce/vendure/issues/3702)
+* **dashboard** Full support for custom fields in detail forms (#3695) ([38d6f73](https://github.com/vendure-ecommerce/vendure/commit/38d6f73)), closes [#3695](https://github.com/vendure-ecommerce/vendure/issues/3695)
+* **dashboard** Implement add facet value ([4b24f24](https://github.com/vendure-ecommerce/vendure/commit/4b24f24))
+* **dashboard** Implement delete facet value ([c7db965](https://github.com/vendure-ecommerce/vendure/commit/c7db965))
+* **dashboard** Job list improvements ([d5c39cf](https://github.com/vendure-ecommerce/vendure/commit/d5c39cf))
+* **dashboard** Update theme to use OKLCH color space and new shadcn theme (#3688) ([199cbd1](https://github.com/vendure-ecommerce/vendure/commit/199cbd1)), closes [#3688](https://github.com/vendure-ecommerce/vendure/issues/3688)
+
 ## <small>3.3.7 (2025-07-18)</small>
 
 
