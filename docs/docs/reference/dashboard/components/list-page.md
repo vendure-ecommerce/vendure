@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="69" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="76" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -30,7 +30,7 @@ Parameters
 
 ## ListPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="30" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="31" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -56,6 +56,7 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     bulkActions?: BulkAction[];
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 ```
 
@@ -148,7 +149,12 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
 
 ### bulkActions
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/components/data-table-bulk-actions#bulkaction'>BulkAction</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/data-table#bulkaction'>BulkAction</a>[]`}   />
+
+
+### registerRefresher
+
+<MemberInfo kind="property" type={`PaginatedListRefresherRegisterFn`}   />
 
 
 

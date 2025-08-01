@@ -31,5 +31,9 @@ const userAndChannelScope: SettingsStoreScopeFunction = ({ ctx }) =>
 ```
 
 ```ts title="Signature"
-type SettingsStoreScopeFunction = (params: { key: string; value?: any; ctx: RequestContext }) => string
+type SettingsStoreScopeFunction = (params: {
+    key: string;
+    value?: any;
+    ctx: RequestContext;
+}) => string
 ```

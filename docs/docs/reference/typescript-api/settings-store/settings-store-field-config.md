@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SettingsStoreFieldConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="37" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="41" packageName="@vendure/core" since="3.4.0" />
 
 Configuration for a settings store field, defining how it should be stored,
 scoped, validated, and accessed.

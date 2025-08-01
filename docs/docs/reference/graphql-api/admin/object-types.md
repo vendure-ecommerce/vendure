@@ -3713,20 +3713,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#order">Order</a> | <a href="/reference/graphql-api/admin/object-types#emailaddressconflicterror">EmailAddressConflictError</a></div>
 </div>
 
-## SetKeyValueResult
-
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SetKeyValueResult</span> &#123;</div>
-<div class="graphql-code-line ">key: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">result: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
-
-<div class="graphql-code-line ">error: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
 ## SetOrderShippingMethodResult
 
 <div class="graphql-code-block">

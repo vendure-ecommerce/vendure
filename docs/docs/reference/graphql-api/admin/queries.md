@@ -205,6 +205,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## facetValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">facetValue(id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## facetValues
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
@@ -227,30 +236,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
 <div class="graphql-code-line ">fulfillmentHandlers: [<a href="/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
-## getKeyValue
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Get value for a specific key (automatically scoped based on field configuration)</div>
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
-<div class="graphql-code-line ">getKeyValue(key: <a href="/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
-## getKeyValues
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Get multiple key-value pairs (each automatically scoped)</div>
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
-<div class="graphql-code-line ">getKeyValues(keys: [<a href="/reference/graphql-api/admin/object-types#string">String</a>!]!): <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
