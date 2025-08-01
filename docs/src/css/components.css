@@ -11,9 +11,10 @@
 }
 
 /* Markdown content */
-.markdown img {
-    border-radius: 0.5rem;
-    border: 0.5rem solid var(--ifm-color-emphasis-300);
+.theme-doc-markdown.markdown img {
+    border-radius: 0.7rem;
+    border: 0.5rem solid var(--ifm-color-emphasis-100);
+    outline: 1px solid var(--ifm-color-emphasis-200);
 }
 
 /* Members documentation */
