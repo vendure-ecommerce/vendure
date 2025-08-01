@@ -1,3 +1,54 @@
+## 3.4.0 (2025-08-01)
+
+
+#### Fixes
+
+* **cli** Standardise flag names ([a63ac07](https://github.com/vendure-ecommerce/vendure/commit/a63ac07))
+* **core** Fix relation constraints in OrderModification ([87fc929](https://github.com/vendure-ecommerce/vendure/commit/87fc929))
+* **core** Product by slug query filters on channel (#3591) ([78608cc](https://github.com/vendure-ecommerce/vendure/commit/78608cc)), closes [#3591](https://github.com/vendure-ecommerce/vendure/issues/3591)
+* **dashboard** Add "ring offeset" padding on devmode on hover ring (#3707) ([a2e3a10](https://github.com/vendure-ecommerce/vendure/commit/a2e3a10)), closes [#3707](https://github.com/vendure-ecommerce/vendure/issues/3707)
+* **dashboard** Add missing order property to nav menu items (#3705) ([6ffa048](https://github.com/vendure-ecommerce/vendure/commit/6ffa048)), closes [#3705](https://github.com/vendure-ecommerce/vendure/issues/3705)
+* **dashboard** Fix detection of node_modules ([55e012b](https://github.com/vendure-ecommerce/vendure/commit/55e012b))
+* **dashboard** Fix dev mode styling in dark mode ([092b432](https://github.com/vendure-ecommerce/vendure/commit/092b432))
+* **dashboard** Fix editing of order history entries ([74f149a](https://github.com/vendure-ecommerce/vendure/commit/74f149a))
+* **dashboard** Fix heading for collection contents ([971ecca](https://github.com/vendure-ecommerce/vendure/commit/971ecca))
+* **dashboard** Fix intersecting borders and inconsistent rounded corners (#3717) ([ae7828f](https://github.com/vendure-ecommerce/vendure/commit/ae7828f)), closes [#3717](https://github.com/vendure-ecommerce/vendure/issues/3717)
+* **dashboard** Improved facet value editing ([16c2e5e](https://github.com/vendure-ecommerce/vendure/commit/16c2e5e))
+* **dashboard** Multiple style & functionality fixes ([cca25e2](https://github.com/vendure-ecommerce/vendure/commit/cca25e2))
+* **dashboard** Remove use of crypto.randomUUID in option input (#3618) ([61bed48](https://github.com/vendure-ecommerce/vendure/commit/61bed48)), closes [#3618](https://github.com/vendure-ecommerce/vendure/issues/3618)
+* **payments-plugin** improve order state transition handling for channel-specific contexts and default channel as a fallback (#3420) ([4f29f0a](https://github.com/vendure-ecommerce/vendure/commit/4f29f0a)), closes [#3420](https://github.com/vendure-ecommerce/vendure/issues/3420)
+
+#### Features
+
+* **cli** Non-interactive mode and new structure (#3606) ([7d9f03b](https://github.com/vendure-ecommerce/vendure/commit/7d9f03b)), closes [#3606](https://github.com/vendure-ecommerce/vendure/issues/3606)
+* **core** Add `addItemsToOrder` mutation to add multiple items to cart (#3500) ([84a8cbe](https://github.com/vendure-ecommerce/vendure/commit/84a8cbe)), closes [#3500](https://github.com/vendure-ecommerce/vendure/issues/3500)
+* **core** Add facetValue query to Admin API ([fae3c51](https://github.com/vendure-ecommerce/vendure/commit/fae3c51))
+* **core** Add single facetValue create/update mutations to Admin API ([4db0d51](https://github.com/vendure-ecommerce/vendure/commit/4db0d51))
+* **core** Add support for deprecating custom fields with @deprecated directive (#3582) ([6fb399f](https://github.com/vendure-ecommerce/vendure/commit/6fb399f)), closes [#3582](https://github.com/vendure-ecommerce/vendure/issues/3582)
+* **core** Add trustProxy option to ApiOptions (#3567) ([f248719](https://github.com/vendure-ecommerce/vendure/commit/f248719)), closes [#3567](https://github.com/vendure-ecommerce/vendure/issues/3567)
+* **core** Improve OrderEvent and publish for order modify (#3594) ([5a27b14](https://github.com/vendure-ecommerce/vendure/commit/5a27b14)), closes [#3594](https://github.com/vendure-ecommerce/vendure/issues/3594)
+* **core** Merge custom fields on updating order lines (#3673) ([ead7bfa](https://github.com/vendure-ecommerce/vendure/commit/ead7bfa)), closes [#3673](https://github.com/vendure-ecommerce/vendure/issues/3673)
+* **core** SettingsStore for global & scoped config settings (#3684) ([5aa01cc](https://github.com/vendure-ecommerce/vendure/commit/5aa01cc)), closes [#3684](https://github.com/vendure-ecommerce/vendure/issues/3684)
+* **core** Throw error on taxSummary if surcharges relation is not loaded (#3569) ([068176c](https://github.com/vendure-ecommerce/vendure/commit/068176c)), closes [#3569](https://github.com/vendure-ecommerce/vendure/issues/3569)
+* **dashboard** Add customizable login extensions API (#3704) ([866afcb](https://github.com/vendure-ecommerce/vendure/commit/866afcb)), closes [#3704](https://github.com/vendure-ecommerce/vendure/issues/3704)
+* **dashboard** Add DashboardPlugin as part of dashboard package (#3711) ([49d449f](https://github.com/vendure-ecommerce/vendure/commit/49d449f)), closes [#3711](https://github.com/vendure-ecommerce/vendure/issues/3711)
+* **dashboard** Add dev mode info to nav menu ([867655e](https://github.com/vendure-ecommerce/vendure/commit/867655e))
+* **dashboard** Dashboard persistent settings (#3712) ([17c27ff](https://github.com/vendure-ecommerce/vendure/commit/17c27ff)), closes [#3712](https://github.com/vendure-ecommerce/vendure/issues/3712)
+* **dashboard** Implement content language handling ([b635d23](https://github.com/vendure-ecommerce/vendure/commit/b635d23))
+* **elasticsearch-plugin** Extend ElasticSearch to also support groupBySKU for multi-vendor store scenarios (#3528) ([ec1cc5e](https://github.com/vendure-ecommerce/vendure/commit/ec1cc5e)), closes [#3528](https://github.com/vendure-ecommerce/vendure/issues/3528)
+* **payments-plugin** Export StripeService to support more payment flows (#3624) ([829ab2c](https://github.com/vendure-ecommerce/vendure/commit/829ab2c)), closes [#3624](https://github.com/vendure-ecommerce/vendure/issues/3624)
+* **payments-plugin** Migrate Mollie to Payments API (#3603) ([d0db5cb](https://github.com/vendure-ecommerce/vendure/commit/d0db5cb)), closes [#3603](https://github.com/vendure-ecommerce/vendure/issues/3603)
+
+#### Perf
+
+* **core** Add indexes on date cols for orders & job items (#3614) ([ceb5279](https://github.com/vendure-ecommerce/vendure/commit/ceb5279)), closes [#3614](https://github.com/vendure-ecommerce/vendure/issues/3614)
+
+
+### BREAKING CHANGE
+
+* If you are using the `MolliePlugin`, you should install @mollie/api-client@4.3.3 as the plugin has been updated to use the latest Mollie features.
+* Indexes have been added on the columns `orderPlacedAt` in the Order table, and `createdAt` in the JobItem table (for those using the DefaultJobQueuePlugin). This will require a non-destructive DB migration be performed to add these indexes to your schema. 
+* With the introduction of the new SettingsStore feature, a non-destructive database migration will be required to set up the new table that will store the settings data.
 ## <small>3.3.8 (2025-08-01)</small>
 
 
