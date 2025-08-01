@@ -303,6 +303,20 @@ export class ProductOptionGroupDetailComponent
             );
     }
 
+    protected setCurrentPage(newPage: number) {
+        this.currentPage = newPage;
+        this.fetchProductOptions(this.currentPage, this.itemsPerPage, this.filterControl.value);
+    }
+
+    protected setItemsPerPage(itemsPerPage: number) {
+        this.itemsPerPage = itemsPerPage;
+        this.fetchProductOptions(this.currentPage, this.itemsPerPage, this.filterControl.value);
+    }
+
+    private fetchProductOptions(currentPage: number, itemsPerPage: number, filterTerm?: string | null) {
+        //
+    }
+
     protected setFormValues(
         productOptionGroup: ProductOptionGroupWithOptionsFragment,
         languageCode: LanguageCode,
