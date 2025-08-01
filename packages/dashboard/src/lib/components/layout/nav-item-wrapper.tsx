@@ -65,7 +65,7 @@ export function NavItemWrapper({
             <div
                 className={cn(
                     'ring-2 ring-transparent rounded-md transition-all delay-50 relative',
-                    isHovered || isPopoverOpen ? 'ring-dev-mode ring-offset-1' : '',
+                    isHovered || isPopoverOpen ? 'ring-dev-mode ring-offset-1 ring-offset-background' : '',
                 )}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
