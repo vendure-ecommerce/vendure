@@ -181,6 +181,7 @@ export const PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT = gql`
         name
         translations {
             id
+            languageCode
             name
         }
         options {
@@ -189,6 +190,7 @@ export const PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT = gql`
             name
             code
             translations {
+                languageCode
                 name
             }
         }

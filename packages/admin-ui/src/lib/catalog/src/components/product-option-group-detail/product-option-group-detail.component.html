@@ -1,0 +1,152 @@
+<vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                [disabled]="isNew$ | async"
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="languageCode$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+        </vdr-ab-left>
+
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="product-option-group-detail" />
+            <button
+                class="btn btn-primary"
+                *ngIf="isNew$ | async; else updateButton"
+                (click)="create()"
+                [disabled]="detailForm.pristine || detailForm.invalid"
+            >
+                {{ 'common.create' | translate }}
+            </button>
+            <ng-template #updateButton>
+                <button
+                    *vdrIfPermissions="updatePermission"
+                    class="btn btn-primary"
+                    (click)="save()"
+                    [disabled]="detailForm.pristine || detailForm.invalid"
+                >
+                    {{ 'common.update' | translate }}
+                </button>
+            </ng-template>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
+
+<form [formGroup]="detailForm" class="mt-3">
+    <vdr-page-detail-layout>
+        <vdr-page-detail-sidebar formGroupName="productOptionGroup">
+            <vdr-card>
+                <vdr-page-entity-info *ngIf="entity$ | async as entity" [entity]="entity" />
+            </vdr-card>
+        </vdr-page-detail-sidebar>
+
+        <vdr-page-block>
+            <vdr-card formGroupName="productOptionGroup">
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            (input)="updateCode(entity?.value, $event.target.value)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'common.code' | translate" for="code">
+                        <input
+                            id="code"
+                            type="text"
+
+                            formControlName="code"
+                            [readonly]="!(isNew$ | async)"
+                        />
+                    </vdr-form-field>
+                    <section formGroupName="customFields" *ngIf="customFields.length">
+                        <label>{{ 'common.custom-fields' | translate }}</label>
+                        <vdr-tabbed-custom-fields
+                            entityName="ProductOptionGroup"
+                            [customFields]="customFields"
+                            [customFieldsFormGroup]="detailForm.get(['productOptionGroup', 'customFields'])"
+                        ></vdr-tabbed-custom-fields>
+                    </section>
+                </div>
+            </vdr-card>
+
+            <vdr-card [title]="'catalog.product-options' | translate">
+                <ng-template vdrCardControls>
+                    <input
+                        type="text"
+                        [formControl]="filterControl"
+                        [placeholder]="'common.filter-by-name' | translate"
+                        class="form-control"
+                    />
+                    <button
+                        class="btn btn-sm btn-secondary ms-auto"
+                        *vdrIfPermissions="['CreateCatalog', 'CreateProductOption']"
+                        (click)="addProductOption()"
+                        [disabled]="(isNew$ | async)"
+                    >
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'catalog.add-option' | translate }}
+                    </button>
+                </ng-template>
+
+                <div class="mt-3">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>{{ 'common.name' | translate }}</th>
+                                <th>{{ 'common.code' | translate }}</th>
+                                <th *ngIf="customOptionFields.length">{{ 'common.custom-fields' | translate }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody formGroupName="options">
+                            <tr *ngFor="let option of options$ | async" [formGroupName]="option.id">
+                                <td>
+                                    <input
+                                        type="text"
+                                        formControlName="name"
+                                        class="form-control"
+                                        (input)="updateOptionCode(option.code, $event.target.value, option.id)"
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        formControlName="code"
+                                        class="form-control"
+                                        [readonly]="option.id !== 'new'"
+                                    />
+                                </td>
+                                <td *ngIf="customOptionFields.length">
+                                    <vdr-tabbed-custom-fields
+                                        entityName="ProductOption"
+                                        [customFields]="customOptionFields"
+                                        [customFieldsFormGroup]="detailForm.get(['options', option.id, 'customFields'])"
+                                        [compact]="true"
+                                    ></vdr-tabbed-custom-fields>
+                                </td>
+                                <td class="text-right">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-link"
+                                        *vdrIfPermissions="['DeleteCatalog', 'DeleteProductOption']"
+                                        (click)="deleteProductOption(option.id)"
+                                    >
+                                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="(options$ | async)?.length === 0">
+                                <td colspan="4" class="text-center text-muted">
+                                    {{ 'common.no-results' | translate }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </vdr-card>
+        </vdr-page-block>
+    </vdr-page-detail-layout>
+</form>

@@ -8,6 +8,7 @@ import {
     detailComponentWithResolver,
     GetFacetDetailDocument,
     GetProductDetailDocument,
+    GetProductOptionGroupDocument,
     GetProductVariantDetailDocument,
     PageService,
     SharedModule,
@@ -36,6 +37,7 @@ import { CollectionTreeNodeComponent } from './components/collection-tree/collec
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
 import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 import { CreateFacetValueDialogComponent } from './components/create-facet-value-dialog/create-facet-value-dialog.component';
+import { CreateProductOptionDialogComponent } from './components/create-product-option-dialog/create-product-option-dialog.component';
 import { CreateProductOptionGroupDialogComponent } from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
 import { CreateProductVariantDialogComponent } from './components/create-product-variant-dialog/create-product-variant-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
@@ -58,6 +60,7 @@ import {
     removeProductsFromChannelBulkAction,
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductOptionGroupDetailComponent } from './components/product-option-group-detail/product-option-group-detail.component';
 import { ProductOptionGroupListComponent } from './components/product-option-group-list/product-option-group-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
@@ -106,10 +109,12 @@ const CATALOG_COMPONENTS = [
     ProductDetailComponent,
     ProductVariantDetailComponent,
     CreateProductVariantDialogComponent,
+    CreateProductOptionDialogComponent,
     CreateProductOptionGroupDialogComponent,
     ProductVariantQuickJumpComponent,
     CreateFacetValueDialogComponent,
     ProductOptionGroupListComponent,
+    ProductOptionGroupDetailComponent,
 ];
 
 @NgModule({
@@ -293,6 +298,23 @@ export class CatalogModule {
             tab: _('catalog.option-groups'),
             route: '',
             component: ProductOptionGroupListComponent,
+        });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'option-group-detail' as any,
+            tab: _('catalog.option-group'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: ProductOptionGroupDetailComponent,
+                query: GetProductOptionGroupDocument,
+                entityKey: 'productOptionGroup',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-option-group'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         CatalogModule.hasRegisteredTabsAndBulkActions = true;
     }

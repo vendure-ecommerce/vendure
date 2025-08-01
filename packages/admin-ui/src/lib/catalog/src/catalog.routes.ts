@@ -116,6 +116,24 @@ export const createRoutes = (pageService: PageService): Route[] => [
         children: pageService.getPageTabRoutes('option-group-list' as any),
     },
     {
+        path: 'option-groups/create',
+        component: PageComponent,
+        data: {
+            locationId: 'option-group-detail',
+            breadcrumb: { label: _('breadcrumb.option-groups'), link: ['../', 'option-groups'] },
+        },
+        children: pageService.getPageTabRoutes('option-group-detail' as any),
+    },
+    {
+        path: 'option-groups/:id',
+        component: PageComponent,
+        data: {
+            locationId: 'option-group-detail',
+            breadcrumb: { label: _('breadcrumb.option-groups'), link: ['../', 'option-groups'] },
+        },
+        children: pageService.getPageTabRoutes('option-group-detail' as any),
+    },
+    {
         path: 'collections/:id',
         component: PageComponent,
         data: {
