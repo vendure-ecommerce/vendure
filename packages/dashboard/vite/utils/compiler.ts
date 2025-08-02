@@ -154,6 +154,7 @@ async function compileTypeScript({
         target: ts.ScriptTarget.ES2020,
         module: ts.ModuleKind.CommonJS,
         moduleResolution: ts.ModuleResolutionKind.Node10, // More explicit CJS resolution
+        jsx: ts.JsxEmit.ReactJSX, // Emit React JSX optimized for production
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         esModuleInterop: true,
