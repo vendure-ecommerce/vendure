@@ -581,7 +581,7 @@ export class OrderService {
         } else {
             return result.order;
         }
-    }
+    }   
 
     /**
      * @description
@@ -600,30 +600,39 @@ export class OrderService {
         items: Array<{
             productVariantId: ID;
             quantity: number;
-            customFields?: { [key: string]: any };
+            customFields?: Record<string, any>;
         }>,
         relations?: RelationPaths<Order>,
     ): Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        if (order.state !== 'Modifying') {
+            await this.orderStateMachine.transition(ctx, order, 'Modify');
+        }
+
         const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
         const updatedOrderLines: OrderLine[] = [];
+
         addItem: for (const item of items) {
             const { productVariantId, quantity, customFields } = item;
+
             const existingOrderLine = await this.orderModifier.getExistingOrderLine(
                 ctx,
                 order,
                 productVariantId,
                 customFields,
             );
+
             const validationError =
                 this.assertQuantityIsPositive(quantity) ||
                 this.assertAddingItemsState(order) ||
                 this.assertNotOverOrderItemsLimit(order, quantity) ||
                 this.assertNotOverOrderLineItemsLimit(existingOrderLine, quantity);
+
             if (validationError) {
                 errorResults.push(validationError);
                 continue;
             }
+
             const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
                 relations: ['product'],
                 where: {
@@ -632,9 +641,11 @@ export class OrderService {
                 },
                 loadEagerRelations: false,
             });
-            if (variant.product.enabled === false) {
+
+            if (!variant.product.enabled) {
                 throw new EntityNotFoundError('ProductVariant', productVariantId);
             }
+
             const existingQuantityInOtherLines = summate(
                 order.lines.filter(
                     l =>
@@ -643,6 +654,7 @@ export class OrderService {
                 ),
                 'quantity',
             );
+
             const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
                 ctx,
                 variant,
@@ -650,50 +662,59 @@ export class OrderService {
                 existingOrderLine?.quantity,
                 existingQuantityInOtherLines,
             );
+
             if (correctedQuantity === 0) {
                 errorResults.push(
-                    new InsufficientStockError({ order, quantityAvailable: correctedQuantity }),
+                    new InsufficientStockError({
+                        quantityAvailable: correctedQuantity,
+                        order,
+                    }),
                 );
                 continue;
             }
-            const { orderInterceptors } = this.configService.orderOptions;
-            for (const interceptor of orderInterceptors) {
-                if (interceptor.willAddItemToOrder) {
-                    const error = await interceptor.willAddItemToOrder(ctx, order, {
-                        productVariant: variant,
-                        quantity: correctedQuantity,
-                        customFields,
-                    });
-                    if (error) {
-                        errorResults.push(new OrderInterceptorError({ interceptorError: error }));
-                        continue addItem;
-                    }
-                }
-            }
+
             const orderLine = await this.orderModifier.getOrCreateOrderLine(
                 ctx,
                 order,
                 productVariantId,
                 customFields,
             );
+            if (customFields != null) {
+                const mergedCustomFields = {
+                    ...(orderLine.customFields ?? {}),
+                    ...customFields,
+                };
+                orderLine.customFields = mergedCustomFields;
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    OrderLine,
+                    { customFields: mergedCustomFields },
+                    orderLine,
+                );
+            }
+
             if (correctedQuantity < quantity) {
-                const newQuantity = (existingOrderLine ? existingOrderLine?.quantity : 0) + correctedQuantity;
+                const newQuantity = (existingOrderLine?.quantity ?? 0) + correctedQuantity;
                 await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
             } else {
                 await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
             }
+
             updatedOrderLines.push(orderLine);
+
             const quantityWasAdjustedDown = correctedQuantity < quantity;
             if (quantityWasAdjustedDown) {
                 errorResults.push(
-                    new InsufficientStockError({ quantityAvailable: correctedQuantity, order }),
+                    new InsufficientStockError({
+                        quantityAvailable: correctedQuantity,
+                        order,
+                    }),
                 );
                 continue;
             }
         }
+
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
-        // for any InsufficientStockError errors, we want to make sure we use the final updatedOrder
-        // after having applied all price adjustments
         for (const [i, errorResult] of Object.entries(errorResults)) {
             if (errorResult.__typename === 'InsufficientStockError') {
                 errorResults[+i] = new InsufficientStockError({
@@ -702,11 +723,13 @@ export class OrderService {
                 });
             }
         }
+
         return {
             order: updatedOrder,
             errorResults,
         };
     }
+
 
     /**
      * @description
