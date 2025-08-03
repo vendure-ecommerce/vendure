@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import ts from 'typescript';
 import { PluginOption } from 'vite';
 
 import { PathAdapter } from './types.js';
@@ -86,6 +87,12 @@ export type VitePluginVendureDashboardOptions = {
      * the location based on the location of the `@vendure/core` package.
      */
     pluginPackageScanner?: PackageScannerConfig;
+    /**
+     * @description
+     * Custom TypeScript transformers to apply during compilation of the Vendure config.
+     * This allows you to customize the TypeScript compilation process for advanced use cases.
+     */
+    customTransformers?: ts.CustomTransformers;
 } & UiConfigPluginOptions &
     ThemeVariablesPluginOptions;
 
@@ -129,6 +136,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             outputPath: tempDir,
             pathAdapter: options.pathAdapter,
             pluginPackageScanner: options.pluginPackageScanner,
+            customTransformers: options.customTransformers,
         }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
