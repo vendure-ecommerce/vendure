@@ -80,10 +80,10 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         }),
     ).href.replace(/.ts$/, '.js');
 
-    // Create package.json with type commonjs
+    // Create package.json with type module
     await fs.writeFile(
         path.join(outputPath, 'package.json'),
-        JSON.stringify({ type: 'commonjs', private: true }, null, 2),
+        JSON.stringify({ type: 'module', private: true }, null, 2),
     );
 
     // Find the exported config symbol
@@ -152,8 +152,8 @@ async function compileTypeScript({
 
     const compilerOptions: ts.CompilerOptions = {
         target: ts.ScriptTarget.ES2020,
-        module: ts.ModuleKind.CommonJS,
-        moduleResolution: ts.ModuleResolutionKind.Node10, // More explicit CJS resolution
+        module: ts.ModuleKind.NodeNext,
+        moduleResolution: ts.ModuleResolutionKind.NodeNext, // Modern Node.js module resolution for ES modules, support commonjs, esm, etc.
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
         esModuleInterop: true,
