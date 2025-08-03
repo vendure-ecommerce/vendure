@@ -594,25 +594,33 @@ export class OrderService {
      *
      * @since 3.1.0
      */
+
     async addItemsToOrder(
-        ctx: RequestContext,
-        orderId: ID,
-        items: Array<{
-            productVariantId: ID;
-            quantity: number;
-            customFields?: Record<string, any>;
-        }>,
+    ctx: RequestContext,
+    orderId: ID,
+    items: Array<{
+        productVariantId: ID;
+        quantity: number;
+        customFields?: Record<string, any>;
+    }>,
         relations?: RelationPaths<Order>,
     ): Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
+        const order = await this.getOrderOrThrow(ctx, orderId, relations);
+
+        // StateChecking Happens here Early 
         if (order.state !== 'Modifying') {
-            await this.orderStateMachine.transition(ctx, order, 'Modify');
+            const canTransition = await this.orderStateMachine.canTransition(order.state, 'Modify');
+            if (canTransition) {
+                await this.orderStateMachine.transition(ctx, order, 'Modify');
+            } else {
+                throw new IllegalOperationError('Cannot add items unless order is in Modifying state');
+            }
         }
 
         const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
         const updatedOrderLines: OrderLine[] = [];
 
-        addItem: for (const item of items) {
+        for (const item of items) {
             const { productVariantId, quantity, customFields } = item;
 
             const existingOrderLine = await this.orderModifier.getExistingOrderLine(
@@ -679,6 +687,7 @@ export class OrderService {
                 productVariantId,
                 customFields,
             );
+
             if (customFields != null) {
                 const mergedCustomFields = {
                     ...(orderLine.customFields ?? {}),
@@ -693,42 +702,27 @@ export class OrderService {
                 );
             }
 
-            if (correctedQuantity < quantity) {
-                const newQuantity = (existingOrderLine?.quantity ?? 0) + correctedQuantity;
-                await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
-            } else {
-                await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
-            }
-
+            const newQuantity = (existingOrderLine?.quantity ?? 0) + correctedQuantity;
+            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
             updatedOrderLines.push(orderLine);
 
-            const quantityWasAdjustedDown = correctedQuantity < quantity;
-            if (quantityWasAdjustedDown) {
+            if (correctedQuantity < quantity) {
                 errorResults.push(
                     new InsufficientStockError({
                         quantityAvailable: correctedQuantity,
                         order,
                     }),
                 );
-                continue;
             }
         }
 
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
-        for (const [i, errorResult] of Object.entries(errorResults)) {
-            if (errorResult.__typename === 'InsufficientStockError') {
-                errorResults[+i] = new InsufficientStockError({
-                    quantityAvailable: errorResult.quantityAvailable,
-                    order: updatedOrder,
-                });
-            }
-        }
-
+        const updatedOrder = await this.getOrderOrThrow(ctx, orderId, relations);
         return {
             order: updatedOrder,
             errorResults,
         };
     }
+
 
 
     /**
