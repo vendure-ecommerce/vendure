@@ -117,36 +117,60 @@ export function GroupSearch({ onSelect, selectedGroups, placeholder, disabled }:
         ...(search ? [`create-${search}`] : [])
     ];
 
-    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'ArrowDown' && showDropdown && allValues.length > 0) {
-            e.preventDefault();
-            const currentIndex = allValues.indexOf(commandValue);
-            const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % allValues.length;
-            setCommandValue(allValues[nextIndex]);
-        } else if (e.key === 'ArrowUp' && showDropdown && allValues.length > 0) {
-            e.preventDefault();
-            const currentIndex = allValues.indexOf(commandValue);
-            const prevIndex = currentIndex === -1 ? allValues.length - 1 : (currentIndex - 1 + allValues.length) % allValues.length;
-            setCommandValue(allValues[prevIndex]);
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (commandValue) {
-                if (commandValue === `create-${search}`) {
-                    handleCreateNew();
-                } else {
-                    const selectedGroup = availableGroups.find(g => g.code === commandValue);
-                    if (selectedGroup) {
-                        handleSelect(selectedGroup);
-                    }
-                }
-            } else if (search.trim()) {
-                handleCreateNew();
-            }
-        } else if (e.key === 'Tab') {
-            setShowDropdown(false);
-            setCommandValue('');
+    const handleArrowNavigation = useCallback((direction: 'up' | 'down') => {
+        if (!showDropdown || allValues.length === 0) return;
+
+        const currentIndex = allValues.indexOf(commandValue);
+        let nextIndex: number;
+
+        if (direction === 'down') {
+            nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % allValues.length;
+        } else {
+            nextIndex = currentIndex === -1 ? allValues.length - 1 : (currentIndex - 1 + allValues.length) % allValues.length;
         }
-    }, [search, handleCreateNew, showDropdown, commandValue, allValues, availableGroups, handleSelect]);
+
+        setCommandValue(allValues[nextIndex]);
+    }, [showDropdown, commandValue, allValues]);
+
+    const handleEnterKey = useCallback(() => {
+        if (commandValue === `create-${search}`) {
+            handleCreateNew();
+            return;
+        }
+
+        if (commandValue) {
+            const selectedGroup = availableGroups.find(g => g.code === commandValue);
+            if (selectedGroup) {
+                handleSelect(selectedGroup);
+            }
+            return;
+        }
+
+        if (search.trim()) {
+            handleCreateNew();
+        }
+    }, [commandValue, search, handleCreateNew, availableGroups, handleSelect]);
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                handleArrowNavigation('down');
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                handleArrowNavigation('up');
+                break;
+            case 'Enter':
+                e.preventDefault();
+                handleEnterKey();
+                break;
+            case 'Tab':
+                setShowDropdown(false);
+                setCommandValue('');
+                break;
+        }
+    }, [handleArrowNavigation, handleEnterKey]);
 
     return (
         <div
