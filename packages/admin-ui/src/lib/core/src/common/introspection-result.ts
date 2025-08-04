@@ -255,6 +255,13 @@ const result: PossibleTypesResultData = {
         UpdateChannelResult: ['Channel', 'LanguageNotAvailableError'],
         UpdateCustomerResult: ['Customer', 'EmailAddressConflictError'],
         UpdateGlobalSettingsResult: ['ChannelDefaultLanguageError', 'GlobalSettings'],
+        UpdateOrderItemErrorResult: [
+            'InsufficientStockError',
+            'NegativeQuantityError',
+            'OrderInterceptorError',
+            'OrderLimitError',
+            'OrderModificationError',
+        ],
         UpdateOrderItemsResult: [
             'InsufficientStockError',
             'NegativeQuantityError',
