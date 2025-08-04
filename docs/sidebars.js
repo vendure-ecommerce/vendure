@@ -141,6 +141,7 @@ const sidebars = {
             items: [
                 'guides/extending-the-dashboard/getting-started/index',
                 'guides/extending-the-dashboard/extending-overview/index',
+
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
@@ -156,6 +157,7 @@ const sidebars = {
                         'guides/extending-the-dashboard/custom-form-components/relation-selectors',
                     ],
                 },
+                'guides/extending-the-dashboard/deployment/index',
                 'guides/extending-the-dashboard/tech-stack/index',
             ],
         },
