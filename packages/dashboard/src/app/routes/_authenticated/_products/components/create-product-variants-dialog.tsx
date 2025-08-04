@@ -19,6 +19,8 @@ import { useCallback, useState } from 'react';
 
 import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
 
+type VariantOption = VariantConfiguration['variants'][number]['options'][number];
+
 const createProductOptionsMutation = graphql(`
     mutation CreateOptionGroups($input: CreateProductOptionGroupInput!) {
         createProductOptionGroup(input: $input) {
@@ -97,6 +99,53 @@ export function CreateProductVariantsDialog({
         mutationFn: api.mutate(createProductVariantsDocument),
     });
 
+    // Helper function to find option ID for a variant option
+    function findOptionId(
+        variantOption: VariantOption,
+        allOptionGroups: Array<{ id: string; name: string; options: Array<{ id: string; name: string }> }>
+    ): string {
+        const optionGroup = allOptionGroups.find(g => g.name === variantOption.name);
+        if (!optionGroup) {
+            throw new Error(`Could not find option group ${variantOption.name}`);
+        }
+        const option = optionGroup.options.find(o =>
+            o.name === variantOption.value || o.id === variantOption.id
+        );
+        if (!option) {
+            throw new Error(
+                `Could not find option ${variantOption.value} in group ${variantOption.name}`,
+            );
+        }
+        return option.id;
+    }
+
+    // Helper function to map variant data to create input
+    function mapVariantToCreateInput(
+        variant: VariantConfiguration['variants'][0],
+        allOptionGroups: Array<{ id: string; name: string; options: Array<{ id: string; name: string }> }>,
+        defaultLanguageCode: any
+    ) {
+        const name = variant.options.length
+            ? `${productName} ${variant.options.map(option => option.value).join(' ')}`
+            : productName;
+
+        return {
+            productId,
+            sku: variant.sku,
+            price: Number(variant.price),
+            stockOnHand: Number(variant.stock),
+            optionIds: variant.options.map(variantOption =>
+                findOptionId(variantOption, allOptionGroups)
+            ),
+            translations: [
+                {
+                    languageCode: defaultLanguageCode,
+                    name,
+                },
+            ],
+        };
+    }
+
     async function handleCreateVariants() {
         if (!variantData || !activeChannel?.defaultLanguageCode) return;
 
@@ -141,6 +190,7 @@ export function CreateProductVariantsDialog({
 
             // 3. Handle existing groups - create new options if needed
             for (const group of existingGroups) {
+                if (!group.id) continue; // Skip groups without ID (should not happen due to filter)
                 const newOptions = group.options.filter(o => !o.id);
                 const existingOptions = group.options.filter(o => o.id);
 
@@ -151,7 +201,7 @@ export function CreateProductVariantsDialog({
                         newOptions.map(option =>
                             createProductOptionMutation.mutateAsync({
                                 input: {
-                                    productOptionGroupId: group.id!,
+                                    productOptionGroupId: group.id,
                                     code: option.code || normalizeString(option.name, '-'),
                                     translations: [
                                         {
@@ -167,9 +217,9 @@ export function CreateProductVariantsDialog({
                 }
 
                 allOptionGroups.push({
-                    id: group.id!,
+                    id: group.id,
                     name: group.name,
-                    options: [...existingOptions as any, ...createdOptions],
+                    options: [...existingOptions, ...createdOptions],
                 });
             }
 
@@ -186,44 +236,16 @@ export function CreateProductVariantsDialog({
             // 5. Create variants with proper option mapping
             const variantsToCreate = variantData.variants
                 .filter(variant => variant.enabled)
-                .map(variant => {
-                    const name = variant.options.length
-                        ? `${productName} ${variant.options.map(option => option.value).join(' ')}`
-                        : productName;
-                    return {
-                        productId,
-                        sku: variant.sku,
-                        price: Number(variant.price),
-                        stockOnHand: Number(variant.stock),
-                        optionIds: variant.options.map(variantOption => {
-                            const optionGroup = allOptionGroups.find(g => g.name === variantOption.name);
-                            if (!optionGroup) {
-                                throw new Error(`Could not find option group ${variantOption.name}`);
-                            }
-                            const option = optionGroup.options.find(o =>
-                                o.name === variantOption.value || o.id === variantOption.id
-                            );
-                            if (!option) {
-                                throw new Error(
-                                    `Could not find option ${variantOption.value} in group ${variantOption.name}`,
-                                );
-                            }
-                            return option.id;
-                        }),
-                        translations: [
-                            {
-                                languageCode: activeChannel.defaultLanguageCode,
-                                name,
-                            },
-                        ],
-                    };
-                });
+                .map(variant => mapVariantToCreateInput(
+                    variant,
+                    allOptionGroups,
+                    activeChannel.defaultLanguageCode
+                ));
 
             await createProductVariantsMutation.mutateAsync({ input: variantsToCreate });
             setOpen(false);
             onSuccess?.();
         } catch (error) {
-            console.error('Error creating variants:', error);
             // Handle error (show toast notification, etc.)
         }
     }
@@ -260,7 +282,7 @@ export function CreateProductVariantsDialog({
                     <DialogFooter>
                         <Button
                             type="button"
-                            onClick={handleCreateVariants}
+                            onClick={() => void handleCreateVariants()}
                             disabled={
                                 !variantData ||
                                 createOptionGroupMutation.isPending ||
