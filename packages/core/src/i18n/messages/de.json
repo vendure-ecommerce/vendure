@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "Die Produktoptionsgruppe \"{optionGroupCode}\" wurde gelöscht und von {products, plural, =0 {} one {1 Produkt} other {# Produkten}}{both, select, both { und } single {} other {}}{variants, plural, =0 {} one {1 Produktvariante} other {# Produktvarianten}} entfernt",
 		"product-option-group-used": "Die Produktoptionsgruppe \"{optionGroupCode}\" wird von {products, plural, =0 {} one {1 Produkt} other {# Produkten}}{both, select, both { und } single {} other {}}{variants, plural, =0 {} one {1 Produktvariante} other {# Produktvarianten}} verwendet",
 		"product-option-group-used-by-products": "Die Produktoptionsgruppe \"{code}\" kann nicht entfernt werden, da sie von {count, plural, =0 {} one {1 anderen Produkt} other {# anderen Produkten}} verwendet wird",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 Produktoptionsgruppe konnte nicht gelöscht werden} other {# Produktoptionsgruppen konnten nicht gelöscht werden}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 Produktoptionsgruppe wurde gelöscht} other {# Produktoptionsgruppen wurden gelöscht}}, aber {notDeletedCount, plural, one {1 konnte nicht gelöscht werden} other {# konnten nicht gelöscht werden}}",
 		"product-option-used": "Die Option \"{code}\" kann nicht gelöscht werden, da sie von {count, plural, =0 {} one {1 Produktvariante} other {# Produktvarianten}} verwendet wird",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 Produktoption konnte nicht gelöscht werden} other {# Produktoptionen konnten nicht gelöscht werden}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 Produktoption wurde gelöscht} other {# Produktoptionen wurden gelöscht}}, aber {notDeletedCount, plural, one {1 konnte nicht gelöscht werden} other {# konnten nicht gelöscht werden}}",
 		"zone-used-in-channels": "Die ausgewählte Zone kann nicht gelöscht werden, da sie als Standard in den folgenden Kanälen verwendet wird: { channelCodes }",
 		"zone-used-in-tax-rates": "Die ausgewählte Zone kann nicht gelöscht werden, da sie in den folgenden Steuersätzen verwendet wird: { taxRateNames }"
 	}

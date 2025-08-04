@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "O Grupo de Opções de Produto \"{optionGroupCode}\" foi eliminado e removido de {products, plural, =0 {} one {1 Produto} other {# Produtos}}{both, select, both { e } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
 		"product-option-group-used": "O Grupo de Opções de Produto \"{optionGroupCode}\" está a ser utilizado por {products, plural, =0 {} one {1 Produto} other {# Produtos}}{both, select, both { e } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
 		"product-option-group-used-by-products": "Não é possível remover o Grupo de Opções de Produto \"{code}\" pois está a ser utilizado por {count, plural, =0 {} one {1 outro Produto} other {# outros Produtos}}",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 grupo de opções de produto não pôde ser eliminado} other {# grupos de opções de produto não puderam ser eliminados}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 grupo de opções de produto foi eliminado} other {# grupos de opções de produto foram eliminados}}, mas {notDeletedCount, plural, one {1 não pôde ser eliminado} other {# não puderam ser eliminados}}",
 		"product-option-used": "Não é possível eliminar a opção \"{code}\" pois está a ser utilizada por {count, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 opção de produto não pôde ser eliminada} other {# opções de produto não puderam ser eliminadas}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 opção de produto foi eliminada} other {# opções de produto foram eliminadas}}, mas {notDeletedCount, plural, one {1 não pôde ser eliminada} other {# não puderam ser eliminadas}}",
 		"zone-used-in-channels": "A região seleccionada não pode ser eliminada porque é utilizada como padrão nos seguintes canais: {channelCodes}",
 		"zone-used-in-tax-rates": "A região seleccionada não pode ser eliminada, porque é utilizada nos seguintes impostos: {taxRateNames}"
 	}

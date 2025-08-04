@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "Le Groupe d'Options de Produit \"{optionGroupCode}\" a été supprimé et retiré de {products, plural, =0 {} one {1 Produit} other {# Produits}}{both, select, both { et } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produit} other {# Variantes de Produit}}",
 		"product-option-group-used": "Le Groupe d'Options de Produit \"{optionGroupCode}\" est utilisé par {products, plural, =0 {} one {1 Produit} other {# Produits}}{both, select, both { et } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produit} other {# Variantes de Produit}}",
 		"product-option-group-used-by-products": "Impossible de supprimer le Groupe d'Options de Produit \"{code}\" car il est utilisé par {count, plural, =0 {} one {1 autre Produit} other {# autres Produits}}",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 groupe d'options de produit n'a pas pu être supprimé} other {# groupes d'options de produit n'ont pas pu être supprimés}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 groupe d'options de produit a été supprimé} other {# groupes d'options de produit ont été supprimés}}, mais {notDeletedCount, plural, one {1 n'a pas pu être supprimé} other {# n'ont pas pu être supprimés}}",
 		"product-option-used": "Impossible de supprimer l'option \"{code}\" car elle est utilisée par {count, plural, =0 {} one {1 Variante de Produit} other {# Variantes de Produit}}",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 option de produit n'a pas pu être supprimée} other {# options de produit n'ont pas pu être supprimées}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 option de produit a été supprimée} other {# options de produit ont été supprimées}}, mais {notDeletedCount, plural, one {1 n'a pas pu être supprimée} other {# n'ont pas pu être supprimées}}",
 		"zone-used-in-channels": "La Zone sélectionnée ne peut pas être supprimée car elle est utilisée comme défaut dans les Canaux suivants : { channelCodes }",
 		"zone-used-in-tax-rates": "La Zone sélectionnée ne peut pas être supprimée car elle est utilisée dans les Taux Fiscaux suivants : { taxRateNames }"
 	}

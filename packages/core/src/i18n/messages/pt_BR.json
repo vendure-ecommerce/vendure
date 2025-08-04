@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "O Grupo de Opções de Produto \"{optionGroupCode}\" foi excluído e removido de {products, plural, =0 {} one {1 Produto} other {# Produtos}}{both, select, both { e } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
 		"product-option-group-used": "O Grupo de Opções de Produto \"{optionGroupCode}\" está sendo usado por {products, plural, =0 {} one {1 Produto} other {# Produtos}}{both, select, both { e } single {} other {}}{variants, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
 		"product-option-group-used-by-products": "Não é possível remover o Grupo de Opções de Produto \"{code}\" pois está sendo usado por {count, plural, =0 {} one {1 outro Produto} other {# outros Produtos}}",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 grupo de opções de produto não pôde ser excluído} other {# grupos de opções de produto não puderam ser excluídos}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 grupo de opções de produto foi excluído} other {# grupos de opções de produto foram excluídos}}, mas {notDeletedCount, plural, one {1 não pôde ser excluído} other {# não puderam ser excluídos}}",
 		"product-option-used": "Não é possível excluir a opção \"{code}\" pois está sendo usada por {count, plural, =0 {} one {1 Variante de Produto} other {# Variantes de Produto}}",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 opção de produto não pôde ser excluída} other {# opções de produto não puderam ser excluídas}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 opção de produto foi excluída} other {# opções de produto foram excluídas}}, mas {notDeletedCount, plural, one {1 não pôde ser excluída} other {# não puderam ser excluídas}}",
 		"zone-used-in-channels": "A zona selecionada não pode ser excluída, pois foi usada como padrão nos seguintes canais: { channelCodes }",
 		"zone-used-in-tax-rates": "A zona selecionada não pode ser excluída, pois é usada nos seguintes TaxRates: { taxRateNames }"
 	}

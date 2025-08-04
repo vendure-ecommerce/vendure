@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "El Grupo de Opciones de Producto \"{optionGroupCode}\" fue eliminado y removido de {products, plural, =0 {} one {1 Producto} other {# Productos}}{both, select, both { y } single {} other {}}{variants, plural, =0 {} one {1 Variante de Producto} other {# Variantes de Producto}}",
 		"product-option-group-used": "El Grupo de Opciones de Producto \"{optionGroupCode}\" está siendo utilizado por {products, plural, =0 {} one {1 Producto} other {# Productos}}{both, select, both { y } single {} other {}}{variants, plural, =0 {} one {1 Variante de Producto} other {# Variantes de Producto}}",
 		"product-option-group-used-by-products": "No se puede eliminar el Grupo de Opciones de Producto \"{code}\" ya que está siendo utilizado por {count, plural, =0 {} one {1 otro Producto} other {# otros Productos}}",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 grupo de opciones de producto no pudo ser eliminado} other {# grupos de opciones de producto no pudieron ser eliminados}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 grupo de opciones de producto fue eliminado} other {# grupos de opciones de producto fueron eliminados}}, pero {notDeletedCount, plural, one {1 no pudo ser eliminado} other {# no pudieron ser eliminados}}",
 		"product-option-used": "No se puede eliminar la opción \"{code}\" ya que está siendo utilizada por {count, plural, =0 {} one {1 Variante de Producto} other {# Variantes de Producto}}",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 opción de producto no pudo ser eliminada} other {# opciones de producto no pudieron ser eliminadas}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 opción de producto fue eliminada} other {# opciones de producto fueron eliminadas}}, pero {notDeletedCount, plural, one {1 no pudo ser eliminada} other {# no pudieron ser eliminadas}}",
 		"zone-used-in-channels": "",
 		"zone-used-in-tax-rates": "La zona seleccionada no se puede eliminar, es usada por estas Tasas de impuestos: { taxRateNames }"
 	}

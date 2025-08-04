@@ -191,7 +191,11 @@
 		"product-option-group-force-deleted": "The ProductOptionGroup \"{optionGroupCode}\" was deleted and removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { and } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
 		"product-option-group-used": "The ProductOptionGroup \"{optionGroupCode}\" is used by {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { and } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
 		"product-option-group-used-by-products": "Cannot remove the ProductOptionGroup \"{code}\" as it is being used by {count, plural, =0 {} one {1 other Product} other {# other Products}}",
+		"product-option-groups-cannot-be-deleted": "{count, plural, one {1 product option group could not be deleted} other {# product option groups could not be deleted}}",
+		"product-option-groups-partially-deleted": "{deletedCount, plural, one {1 product option group was deleted} other {# product option groups were deleted}}, but {notDeletedCount, plural, one {1 could not be deleted} other {# could not be deleted}}",
 		"product-option-used": "Cannot delete the option \"{code}\" as it is being used by {count, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
+		"product-options-cannot-be-deleted": "{count, plural, one {1 product option could not be deleted} other {# product options could not be deleted}}",
+		"product-options-partially-deleted": "{deletedCount, plural, one {1 product option was deleted} other {# product options were deleted}}, but {notDeletedCount, plural, one {1 could not be deleted} other {# could not be deleted}}",
 		"zone-used-in-channels": "The selected Zone cannot be deleted as it used as a default in the following Channels: { channelCodes }",
 		"zone-used-in-tax-rates": "The selected Zone cannot be deleted as it is used in the following TaxRates: { taxRateNames }"
 	}
