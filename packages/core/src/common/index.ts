@@ -1,5 +1,6 @@
 export * from './async-queue';
 export * from './calculated-decorator';
+export * from './decorators/override.decorator';
 export * from './error/error-result';
 export * from './error/errors';
 export * from './error/generated-graphql-admin-errors';
