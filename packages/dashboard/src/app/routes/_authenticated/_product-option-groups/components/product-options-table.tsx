@@ -33,6 +33,36 @@ export interface ProductOptionsTableProps {
     registerRefresher?: (refresher: () => void) => void;
 }
 
+interface ProductOptionActionsProps {
+    productOptionId: string;
+    onEditSuccess: () => void;
+}
+
+function ProductOptionActions({ productOptionId, onEditSuccess }: ProductOptionActionsProps) {
+    const [open, setOpen] = useState(false);
+
+    const handleSuccess = () => {
+        setOpen(false);
+        onEditSuccess();
+    };
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                    <Trans>Edit</Trans>
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+                <EditProductOption
+                    productOptionId={productOptionId}
+                    onSuccess={handleSuccess}
+                />
+            </PopoverContent>
+        </Popover>
+    );
+}
+
 export function ProductOptionsTable({ groupId, registerRefresher }: Readonly<ProductOptionsTableProps>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
@@ -87,28 +117,12 @@ export function ProductOptionsTable({ groupId, registerRefresher }: Readonly<Pro
                 additionalColumns={{
                     productOptionActions: {
                         header: 'Actions',
-                        cell: ({ row }) => {
-                            const [open, setOpen] = useState(false);
-                            const productOption = row.original;
-                            return (
-                                <Popover open={open} onOpenChange={setOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button type="button" variant="outline" size="sm">
-                                            <Trans>Edit</Trans>
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-80">
-                                        <EditProductOption
-                                            productOptionId={productOption.id}
-                                            onSuccess={() => {
-                                                setOpen(false);
-                                                refreshRef.current?.();
-                                            }}
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            );
-                        },
+                        cell: ({ row }) => (
+                            <ProductOptionActions
+                                productOptionId={row.original.id}
+                                onEditSuccess={refreshRef.current}
+                            />
+                        )
                     },
                 }}
             />

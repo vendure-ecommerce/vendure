@@ -43,7 +43,7 @@ input ProductOptionGroupTranslationInput {
 input CreateProductOptionGroupInput {
     code: String!
     translations: [ProductOptionGroupTranslationInput!]!
-    options: [CreateGroupOptionInput!]!
+    options: [CreateGroupOptionInput!]
 }
 
 input UpdateProductOptionGroupInput {

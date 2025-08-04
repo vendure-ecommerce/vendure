@@ -32,7 +32,7 @@ function FacetListPage() {
             deleteMutation={deleteProductOptionGroupDocument}
             customizeColumns={{
                 name: {
-                    header: 'Product Option Group  Name',
+                    header: 'Product Option Group Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 optionList: {
