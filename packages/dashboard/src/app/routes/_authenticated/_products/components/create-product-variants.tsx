@@ -1,5 +1,4 @@
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
-import { Button } from '@/vdb/components/ui/button.js';
 import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
@@ -9,7 +8,6 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
