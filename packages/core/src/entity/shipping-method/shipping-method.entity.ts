@@ -1,5 +1,4 @@
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
@@ -103,6 +102,7 @@ export class ShippingMethod
      * to prevent circular references which cause the JSON.stringify() to fail.
      */
     protected toJSON(): any {
-        return omit(this, ['allCheckers', 'allCalculators'] as any);
+        const { allCheckers, allCalculators, ...rest } = this;
+        return rest;
     }
 }
