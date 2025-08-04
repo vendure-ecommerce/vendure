@@ -62,29 +62,6 @@ export const PRODUCT_OPTION_FRAGMENT = gql`
     }
 `;
 
-export const PRODUCT_OPTION_GROUP_WITH_OPTION_LIST_FRAGMENT = gql`
-    fragment ProductOptionGroupWithOptionList on ProductOptionGroup {
-        id
-        createdAt
-        updatedAt
-        code
-        languageCode
-        name
-        translations {
-            id
-            languageCode
-            name
-        }
-        optionList(options: $productOptionListOptions) {
-            totalItems
-            items {
-                ...ProductOption
-            }
-        }
-    }
-    ${PRODUCT_OPTION_FRAGMENT}
-`;
-
 export const PRODUCT_VARIANT_PRICE_FRAGMENT = gql`
     fragment ProductVariantPrice on ProductVariantPrice {
         price
@@ -915,16 +892,4 @@ export const DELETE_TAG = gql`
             result
         }
     }
-`;
-
-export const GET_PRODUCT_OPTION_LIST = gql`
-    query GetProductOptionList($options: ProductOptionListOptions) {
-        productOptions(options: $options) {
-            items {
-                ...ProductOption
-            }
-            totalItems
-        }
-    }
-    ${PRODUCT_OPTION_FRAGMENT}
 `;

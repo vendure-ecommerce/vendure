@@ -9,6 +9,7 @@ import {
     PageService,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
+
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
@@ -105,33 +106,6 @@ export const createRoutes = (pageService: PageService): Route[] => [
             breadcrumb: _('breadcrumb.collections'),
         },
         children: pageService.getPageTabRoutes('collection-list'),
-    },
-    {
-        path: 'option-groups',
-        component: PageComponent,
-        data: {
-            locationId: 'option-group-list',
-            breadcrumb: _('breadcrumb.option-groups'),
-        },
-        children: pageService.getPageTabRoutes('option-group-list' as any),
-    },
-    {
-        path: 'option-groups/create',
-        component: PageComponent,
-        data: {
-            locationId: 'option-group-detail',
-            breadcrumb: { label: _('breadcrumb.option-groups'), link: ['../', 'option-groups'] },
-        },
-        children: pageService.getPageTabRoutes('option-group-detail' as any),
-    },
-    {
-        path: 'option-groups/:id',
-        component: PageComponent,
-        data: {
-            locationId: 'option-group-detail',
-            breadcrumb: { label: _('breadcrumb.option-groups'), link: ['../', 'option-groups'] },
-        },
-        children: pageService.getPageTabRoutes('option-group-detail' as any),
     },
     {
         path: 'collections/:id',
