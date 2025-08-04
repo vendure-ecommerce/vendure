@@ -101,11 +101,6 @@ function ProductOptionGroupDetailPage() {
                 </PageActionBarRight>
             </PageActionBar>
             <PageLayout>
-                <PageBlock column="side" blockId="privacy">
-                    <div>
-                        Hello there
-                    </div>
-                </PageBlock>
                 <PageBlock column="main" blockId="main-form">
                     <DetailFormGrid>
                         <TranslatableFormFieldWrapper

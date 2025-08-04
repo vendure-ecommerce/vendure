@@ -189,7 +189,7 @@ export class ProductOptionGroupService {
         if (0 < inUseByActiveProducts) {
             return {
                 result: DeletionResult.NOT_DELETED,
-                message: ctx.translate('message.product-option-group-used', {
+                message: ctx.translate('message.product-option-group-used-by-products', {
                     code: optionGroup.code,
                     count: inUseByActiveProducts,
                 }),
