@@ -45,8 +45,8 @@ export class ProductOptionService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
-        private channelService: ChannelService,
-        private listQueryBuilder: ListQueryBuilder,
+        private readonly channelService: ChannelService,
+        private readonly listQueryBuilder: ListQueryBuilder,
     ) {}
 
     async findAll(

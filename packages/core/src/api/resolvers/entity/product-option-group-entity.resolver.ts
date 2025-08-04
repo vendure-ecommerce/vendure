@@ -16,9 +16,9 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver('ProductOptionGroup')
 export class ProductOptionGroupEntityResolver {
     constructor(
-        private productOptionGroupService: ProductOptionGroupService,
-        private productOptionService: ProductOptionService,
-        private localeStringHydrator: LocaleStringHydrator,
+        private readonly productOptionGroupService: ProductOptionGroupService,
+        private readonly productOptionService: ProductOptionService,
+        private readonly localeStringHydrator: LocaleStringHydrator,
     ) {}
 
     @ResolveField()

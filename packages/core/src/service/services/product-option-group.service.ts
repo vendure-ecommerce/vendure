@@ -59,9 +59,9 @@ export class ProductOptionGroupService {
         private productOptionService: ProductOptionService,
         private eventBus: EventBus,
         private translator: TranslatorService,
-        private channelService: ChannelService,
-        private listQueryBuilder: ListQueryBuilder,
-        private roleService: RoleService,
+        private readonly channelService: ChannelService,
+        private readonly listQueryBuilder: ListQueryBuilder,
+        private readonly roleService: RoleService,
     ) {}
 
     async findAll(
@@ -435,7 +435,7 @@ export class ProductOptionGroupService {
         }
 
         const isInUse = !!(productCount || variantCount);
-        const both = !!(productCount && variantCount) ? 'both' : 'single';
+        const both = productCount && variantCount ? 'both' : 'single';
         const i18nVars = {
             products: productCount,
             variants: variantCount,
