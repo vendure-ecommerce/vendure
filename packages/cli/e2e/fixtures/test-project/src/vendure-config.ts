@@ -11,6 +11,7 @@ export const config: VendureConfig = {
         type: 'sqlite',
         database: path.join(__dirname, '../test.db'),
         synchronize: false,
+        logging: false,
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
     authOptions: {
