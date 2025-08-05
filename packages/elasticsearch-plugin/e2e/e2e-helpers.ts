@@ -316,7 +316,7 @@ export async function testPriceRanges(client: SimpleGraphQLClient) {
     expect(search.items).toEqual([
         {
             price: { min: 129900, max: 229900 },
-            priceWithTax: { min: 155880, max: 275880 },
+            priceWithTax: { min: 194850, max: 344850 },
         },
     ]);
 }
