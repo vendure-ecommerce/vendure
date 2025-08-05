@@ -26,6 +26,7 @@ export interface UserSettings {
     devMode: boolean;
     hasSeenOnboarding: boolean;
     tableSettings?: Record<string, TableSettings>;
+    widgetLayout?: Record<string, { x: number; y: number; w: number; h: number }>;
 }
 
 const defaultSettings: UserSettings = {
@@ -57,6 +58,7 @@ export interface UserSettingsContextType {
         key: K,
         value: TableSettings[K],
     ) => void;
+    setWidgetLayout: (layoutConfig: Record<string, { x: number; y: number; w: number; h: number }>) => void;
 }
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
@@ -182,6 +184,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
                 },
             }));
         },
+        setWidgetLayout: layoutConfig => updateSetting('widgetLayout', layoutConfig),
     };
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;

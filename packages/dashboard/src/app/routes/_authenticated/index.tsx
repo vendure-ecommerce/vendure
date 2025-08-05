@@ -1,6 +1,6 @@
 import { Button } from '@/vdb/components/ui/button.js';
-import { GridLayout } from '@/vdb/components/ui/grid-layout.js';
 import type { GridLayout as GridLayoutType } from '@/vdb/components/ui/grid-layout.js';
+import { GridLayout } from '@/vdb/components/ui/grid-layout.js';
 import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
@@ -14,6 +14,7 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { useUserSettings } from '@/vdb/index.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -65,38 +66,47 @@ function DashboardPage() {
     const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
 
+    const { settings, setWidgetLayout } = useUserSettings();
+
     useEffect(() => {
+        const savedLayouts = settings.widgetLayout || {};
+        
         const initialWidgets = Array.from(getDashboardWidgetRegistry().entries()).reduce(
             (acc: DashboardWidgetInstance[], [id, widget]) => {
                 const defaultSize = {
                     w: widget.defaultSize.w ?? 4, // Default 4 columns
                     h: widget.defaultSize.h ?? 3, // Default 3 rows
                 };
-                
+
                 // Use minSize if specified, otherwise fall back to defaultSize
                 const minSize = {
                     w: widget.minSize?.w ?? defaultSize.w,
                     h: widget.minSize?.h ?? defaultSize.h,
                 };
+
+                // Check if we have a saved layout for this widget
+                const savedLayout = savedLayouts[id];
                 
                 const layout = {
-                    w: defaultSize.w,
-                    h: defaultSize.h,
-                    x: widget.defaultSize.x ?? 0,
-                    y: widget.defaultSize.y ?? 0,
+                    w: savedLayout?.w ?? defaultSize.w,
+                    h: savedLayout?.h ?? defaultSize.h,
+                    x: savedLayout?.x ?? widget.defaultSize.x ?? 0,
+                    y: savedLayout?.y ?? widget.defaultSize.y ?? 0,
                     minW: minSize.w,
                     minH: minSize.h,
                     maxW: widget.maxSize?.w,
                     maxH: widget.maxSize?.h,
                 };
 
-                // Always find the next available position to avoid overlaps
-                const pos = findNextPosition(acc, {
-                    w: defaultSize.w,
-                    h: defaultSize.h,
-                });
-                layout.x = pos.x;
-                layout.y = pos.y;
+                // Only find next position if we don't have a saved layout
+                if (!savedLayout) {
+                    const pos = findNextPosition(acc, {
+                        w: layout.w,
+                        h: layout.h,
+                    });
+                    layout.x = pos.x;
+                    layout.y = pos.y;
+                }
 
                 return [
                     ...acc,
@@ -111,15 +121,29 @@ function DashboardPage() {
         );
 
         setWidgets(initialWidgets);
-    }, []);
+    }, [settings.widgetLayout]);
 
     const handleLayoutChange = (layouts: GridLayoutType[]) => {
-        setWidgets(prev =>
-            prev.map((widget, i) => ({
+        setWidgets(prev => {
+            const updatedWidgets = prev.map((widget, i) => ({
                 ...widget,
                 layout: layouts[i] || widget.layout,
-            })),
-        );
+            }));
+            
+            // Save layout to user settings
+            const layoutConfig: Record<string, { x: number; y: number; w: number; h: number }> = {};
+            updatedWidgets.forEach(widget => {
+                layoutConfig[widget.widgetId] = {
+                    x: widget.layout.x,
+                    y: widget.layout.y,
+                    w: widget.layout.w,
+                    h: widget.layout.h,
+                };
+            });
+            setWidgetLayout(layoutConfig);
+            
+            return updatedWidgets;
+        });
     };
 
     const renderWidget = (widget: DashboardWidgetInstance) => {
@@ -127,9 +151,7 @@ function DashboardPage() {
         if (!definition) return null;
         const WidgetComponent = definition.component;
 
-        return (
-            <WidgetComponent key={widget.id} id={widget.id} config={widget.config} />
-        );
+        return <WidgetComponent key={widget.id} id={widget.id} config={widget.config} />;
     };
 
     return (
@@ -161,10 +183,17 @@ function DashboardPage() {
                                 className="min-h-[400px]"
                                 gutter={10}
                             >
-                                {widgets.map(widget => renderWidget(widget)).filter(Boolean) as React.ReactElement[]}
+                                {
+                                    widgets
+                                        .map(widget => renderWidget(widget))
+                                        .filter(Boolean) as React.ReactElement[]
+                                }
                             </GridLayout>
                         ) : (
-                            <div className="flex items-center justify-center text-muted-foreground" style={{ height: '400px' }}>
+                            <div
+                                className="flex items-center justify-center text-muted-foreground"
+                                style={{ height: '400px' }}
+                            >
                                 No widgets available
                             </div>
                         )}
