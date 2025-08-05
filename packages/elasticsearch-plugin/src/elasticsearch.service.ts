@@ -69,8 +69,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             while (attempts < connectionAttempts) {
                 attempts++;
                 try {
-                    const pingResult = await this.client.ping({}, { requestTimeout: 1000 });
-                    if (pingResult) {
+                    const pingResult = await this.client.ping({}, { requestTimeout: 1000, meta: true });
+                    if (pingResult.body) {
                         Logger.verbose('Ping to Elasticsearch successful', loggerCtx);
                         return resolve();
                     }
