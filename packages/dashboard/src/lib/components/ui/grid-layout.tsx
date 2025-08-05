@@ -197,8 +197,35 @@ export function GridLayout({
     gutter = 10,
 }: GridLayoutProps) {
     const [showGrid, setShowGrid] = useState(false);
-    const maxRow = Math.max(...layouts.map(l => l.y + l.h), 4); // Minimum 4 rows
-    const containerHeight = maxRow * rowHeight + (maxRow - 1) * gutter;
+    const [isMobile, setIsMobile] = useState(false);
+    
+    // Detect mobile screen size
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+    
+    // Transform layouts for mobile - stack widgets vertically in full width
+    const mobileLayouts = React.useMemo(() => {
+        if (!isMobile) return layouts;
+        
+        return layouts.map((layout, index) => ({
+            ...layout,
+            x: 0,
+            y: layouts.slice(0, index).reduce((sum, l) => sum + l.h, 0),
+            w: cols, // Full width
+        }));
+    }, [layouts, isMobile, cols]);
+    
+    const effectiveLayouts = isMobile ? mobileLayouts : layouts;
+    const effectiveGutter = isMobile ? 5 : gutter; // Smaller gutter on mobile
+    const maxRow = Math.max(...effectiveLayouts.map(l => l.y + l.h), 4); // Minimum 4 rows
+    const containerHeight = maxRow * rowHeight + (maxRow - 1) * effectiveGutter;
 
     // Helper function to check if two layouts overlap
     const layoutsOverlap = (a: GridLayout, b: GridLayout): boolean => {
@@ -241,7 +268,7 @@ export function GridLayout({
     };
 
     const handleItemLayoutChange = useCallback((newLayout: GridLayout) => {
-        if (onLayoutChange) {
+        if (onLayoutChange && !isMobile) { // Disable layout changes on mobile
             const newLayouts = [...layouts];
             const draggedIndex = layouts.findIndex(l => l.i === newLayout.i);
             
@@ -268,7 +295,7 @@ export function GridLayout({
             
             onLayoutChange(newLayouts);
         }
-    }, [layouts, onLayoutChange, cols]);
+    }, [layouts, onLayoutChange, cols, isMobile]);
 
     const handleInteractionStart = useCallback(() => {
         setShowGrid(true);
@@ -285,11 +312,11 @@ export function GridLayout({
         const gridCells = [];
         for (let row = 0; row < maxRow; row++) {
             for (let col = 0; col < cols; col++) {
-                const colWidth = `calc((100% - ${gutter * (cols - 1)}px) / ${cols})`;
+                const colWidth = `calc((100% - ${effectiveGutter * (cols - 1)}px) / ${cols})`;
                 const cellStyle: React.CSSProperties = {
                     position: 'absolute',
-                    left: `calc(${col} * (${colWidth} + ${gutter}px))`,
-                    top: `calc(${row} * (${rowHeight}px + ${gutter}px))`,
+                    left: `calc(${col} * (${colWidth} + ${effectiveGutter}px))`,
+                    top: `calc(${row} * (${rowHeight}px + ${effectiveGutter}px))`,
                     width: colWidth,
                     height: `${rowHeight}px`,
                     pointerEvents: 'none',
@@ -323,21 +350,21 @@ export function GridLayout({
             }}
         >
             {children.map((child, index) => {
-                const layout = layouts[index];
+                const layout = effectiveLayouts[index];
                 if (!layout) return null;
 
                 return (
                     <GridItem
                         key={layout.i}
                         layout={layout}
-                        isDraggable={isDraggable}
-                        isResizable={isResizable}
+                        isDraggable={isDraggable && !isMobile} // Disable dragging on mobile
+                        isResizable={isResizable && !isMobile} // Disable resizing on mobile
                         onLayoutChange={handleItemLayoutChange}
                         onInteractionStart={handleInteractionStart}
                         onInteractionEnd={handleInteractionEnd}
                         cols={cols}
                         rowHeight={rowHeight}
-                        gutter={gutter}
+                        gutter={effectiveGutter}
                     >
                         {child}
                     </GridItem>
