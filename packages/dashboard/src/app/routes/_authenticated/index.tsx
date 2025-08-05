@@ -16,7 +16,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { useUserSettings } from '@/vdb/index.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
@@ -66,6 +66,7 @@ function DashboardPage() {
     const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
+    const prevEditModeRef = useRef(editMode);
 
     const { settings, setWidgetLayout } = useUserSettings();
 
@@ -127,7 +128,8 @@ function DashboardPage() {
     
     // Save layout when edit mode is turned off
     useEffect(() => {
-        if (!editMode && isInitialized && widgets.length > 0) {
+        // Only save when transitioning from edit mode ON to OFF
+        if (prevEditModeRef.current && !editMode && isInitialized && widgets.length > 0) {
             const layoutConfig: Record<string, { x: number; y: number; w: number; h: number }> = {};
             widgets.forEach(widget => {
                 layoutConfig[widget.widgetId] = {
@@ -139,6 +141,9 @@ function DashboardPage() {
             });
             setWidgetLayout(layoutConfig);
         }
+        
+        // Update the ref for next render
+        prevEditModeRef.current = editMode;
     }, [editMode, isInitialized, widgets, setWidgetLayout]);
 
     const handleLayoutChange = (layouts: GridLayoutType[]) => {

@@ -89,6 +89,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     const [serverSettings, setServerSettings] = useState<UserSettings | null>(null);
     const [isReady, setIsReady] = useState(false);
     const previousContentLanguage = useRef(settings.contentLanguage);
+    const saveInProgressRef = useRef(false);
 
     // Load settings from server on mount
     const { data: serverSettingsResponse, isSuccess: serverSettingsLoaded } = useQuery({
@@ -104,8 +105,14 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
             api.mutate(setSettingsStoreValueDocument, {
                 input: { key: SETTINGS_STORE_KEY, value: settingsToSave },
             }),
+        onSuccess: (_, settingsSaved) => {
+            // Only update serverSettings after successful save
+            setServerSettings(settingsSaved);
+            saveInProgressRef.current = false;
+        },
         onError: error => {
             console.error('Failed to save user settings to server:', error);
+            saveInProgressRef.current = false;
         },
     });
 
@@ -120,6 +127,10 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
                     const mergedSettings = { ...defaultSettings, ...serverSettingsData };
                     setSettings(mergedSettings);
                     setServerSettings(mergedSettings);
+                    setIsReady(true);
+                } else {
+                    // Server has no settings, use local settings
+                    setServerSettings(settings);
                     setIsReady(true);
                 }
             } catch (e) {
@@ -141,12 +152,13 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 
     // Save to server when settings differ from server state
     useEffect(() => {
-        if (isReady && serverSettings) {
+        if (isReady && serverSettings && !saveInProgressRef.current) {
             const serverDiffers = JSON.stringify(serverSettings) !== JSON.stringify(settings);
 
             if (serverDiffers) {
+                saveInProgressRef.current = true;
                 saveToServerMutation.mutate(settings);
-                setServerSettings(settings);
+                // Don't update serverSettings here - wait for mutation success
             }
         }
     }, [settings, serverSettings, isReady, saveToServerMutation]);
