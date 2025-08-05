@@ -65,6 +65,7 @@ const findNextPosition = (
 function DashboardPage() {
     const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     const { settings, setWidgetLayout } = useUserSettings();
 
@@ -121,16 +122,19 @@ function DashboardPage() {
         );
 
         setWidgets(initialWidgets);
+        setIsInitialized(true);
     }, [settings.widgetLayout]);
 
     const handleLayoutChange = (layouts: GridLayoutType[]) => {
+        if (!isInitialized) return; // Don't save during initialization
+        
         setWidgets(prev => {
             const updatedWidgets = prev.map((widget, i) => ({
                 ...widget,
                 layout: layouts[i] || widget.layout,
             }));
             
-            // Save layout to user settings
+            // Save layout to user settings only after initialization
             const layoutConfig: Record<string, { x: number; y: number; w: number; h: number }> = {};
             updatedWidgets.forEach(widget => {
                 layoutConfig[widget.widgetId] = {
