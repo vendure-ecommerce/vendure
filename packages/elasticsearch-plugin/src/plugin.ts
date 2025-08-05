@@ -76,7 +76,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * | ElasticSearch  | v8.15.3  |
  * | @elastic/elastisearch  | v8.15.3  |
  * | @vendure/elasticsearch-plugin | v3.1.8 |
- * | Last updated | Mar 15, 2025 |
+ * | Last updated | Aug 5, 2025 |
  *
  * With ElasticSearch v8+, basic authentication, SSL, and TLS are enabled by default and may result in your client and plugin not being able to connect to
  * ElasticSearch successfully if your client is not configured appropriately. You must also set ```xpack.license.self_generated.type=basic``` if you are
