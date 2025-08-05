@@ -1,4 +1,6 @@
 import { Button } from '@/vdb/components/ui/button.js';
+import { GridLayout } from '@/vdb/components/ui/grid-layout.js';
+import type { GridLayout as GridLayoutType } from '@/vdb/components/ui/grid-layout.js';
 import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
@@ -13,11 +15,7 @@ import {
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Responsive as ResponsiveGridLayout } from 'react-grid-layout';
-
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
@@ -27,13 +25,11 @@ const findNextPosition = (
     existingWidgets: DashboardWidgetInstance[],
     newWidgetSize: { w: number; h: number },
 ) => {
-    // Create a set of all occupied cells
     const occupied = new Set();
     let maxExistingRow = 0;
 
     existingWidgets.forEach(widget => {
         const { x, y, w, h } = widget.layout;
-        // Track the maximum row used by existing widgets
         maxExistingRow = Math.max(maxExistingRow, y + h);
 
         for (let i = x; i < x + w; i++) {
@@ -43,16 +39,13 @@ const findNextPosition = (
         }
     });
 
-    // Search up to 3 rows past the last occupied row
     const maxSearchRows = maxExistingRow + 3;
 
-    // Find first position where the widget fits
     for (let y = 0; y < maxSearchRows; y++) {
-        for (let x = 0; x < 12 - (newWidgetSize.w || 1); x++) {
+        for (let x = 0; x <= 12 - newWidgetSize.w; x++) {
             let fits = true;
-            // Check if all cells needed for this widget are free
-            for (let i = x; i < x + (newWidgetSize.w || 1); i++) {
-                for (let j = y; j < y + (newWidgetSize.h || 1); j++) {
+            for (let i = x; i < x + newWidgetSize.w; i++) {
+                for (let j = y; j < y + newWidgetSize.h; j++) {
                     if (occupied.has(`${i},${j}`)) {
                         fits = false;
                         break;
@@ -65,50 +58,35 @@ const findNextPosition = (
             }
         }
     }
-    // If no space found, place it in the next row after all existing widgets
     return { x: 0, y: maxExistingRow };
 };
 
 function DashboardPage() {
     const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
-    const [layoutWidth, setLayoutWidth] = useState<number | undefined>(undefined);
-    const layoutRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!layoutRef.current) return;
-
-        const resizeObserver = new ResizeObserver(entries => {
-            for (const entry of entries) {
-                setLayoutWidth(entry.contentRect.width);
-            }
-        });
-
-        resizeObserver.observe(layoutRef.current);
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
 
     useEffect(() => {
         const initialWidgets = Array.from(getDashboardWidgetRegistry().entries()).reduce(
             (acc: DashboardWidgetInstance[], [id, widget]) => {
+                const defaultSize = {
+                    w: widget.defaultSize.w ?? 4, // Default 4 columns
+                    h: widget.defaultSize.h ?? 3, // Default 3 rows
+                };
+                
                 const layout = {
-                    ...widget.defaultSize,
+                    w: defaultSize.w,
+                    h: defaultSize.h,
                     x: widget.defaultSize.x ?? 0,
                     y: widget.defaultSize.y ?? 0,
                 };
 
-                // If x or y is not set, find the next available position
-                if (widget.defaultSize.x === undefined || widget.defaultSize.y === undefined) {
-                    const pos = findNextPosition(acc, {
-                        w: widget.defaultSize.w || 1,
-                        h: widget.defaultSize.h || 1,
-                    });
-                    layout.x = pos.x;
-                    layout.y = pos.y;
-                }
+                // Always find the next available position to avoid overlaps
+                const pos = findNextPosition(acc, {
+                    w: defaultSize.w,
+                    h: defaultSize.h,
+                });
+                layout.x = pos.x;
+                layout.y = pos.y;
 
                 return [
                     ...acc,
@@ -122,50 +100,28 @@ function DashboardPage() {
             [],
         );
 
+        console.log('Initial widgets:', initialWidgets.map(w => ({ id: w.id, layout: w.layout })));
         setWidgets(initialWidgets);
     }, []);
 
-    const handleLayoutChange = (layout: ReactGridLayout.Layout[]) => {
+    const handleLayoutChange = (layouts: GridLayoutType[]) => {
         setWidgets(prev =>
             prev.map((widget, i) => ({
                 ...widget,
-                layout: layout[i],
+                layout: layouts[i] || widget.layout,
             })),
         );
     };
 
-    const memoizedLayoutGrid = useMemo(() => {
-        return (
-            layoutWidth && (
-                <ResponsiveGridLayout
-                    className="overflow-hidden"
-                    key={layoutWidth}
-                    width={layoutWidth}
-                    layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
-                    onLayoutChange={handleLayoutChange}
-                    cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
-                    rowHeight={100}
-                    isDraggable={editMode}
-                    isResizable={editMode}
-                    autoSize={true}
-                    innerRef={layoutRef}
-                    transformScale={0.9}
-                >
-                    {widgets.map(widget => {
-                        const definition = getDashboardWidget(widget.widgetId);
-                        if (!definition) return null;
-                        const WidgetComponent = definition.component;
+    const renderWidget = (widget: DashboardWidgetInstance) => {
+        const definition = getDashboardWidget(widget.widgetId);
+        if (!definition) return null;
+        const WidgetComponent = definition.component;
 
-                        return (
-                            <div key={widget.id}>
-                                <WidgetComponent id={widget.id} config={widget.config} />
-                            </div>
-                        );
-                    })}
-                </ResponsiveGridLayout>
-            )
+        return (
+            <WidgetComponent key={widget.id} id={widget.id} config={widget.config} />
         );
-    }, [layoutWidth, editMode, widgets]);
+    };
 
     return (
         <Page pageId="insights">
@@ -184,8 +140,25 @@ function DashboardPage() {
             </PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="widgets">
-                    <div ref={layoutRef} className="h-full w-full">
-                        {memoizedLayoutGrid}
+                    <div className="w-full">
+                        {widgets.length > 0 ? (
+                            <GridLayout
+                                layouts={widgets.map(w => ({ ...w.layout, i: w.id }))}
+                                onLayoutChange={handleLayoutChange}
+                                cols={12}
+                                rowHeight={100}
+                                isDraggable={editMode}
+                                isResizable={editMode}
+                                className="min-h-[400px]"
+                                gutter={10}
+                            >
+                                {widgets.map(widget => renderWidget(widget))}
+                            </GridLayout>
+                        ) : (
+                            <div className="flex items-center justify-center text-muted-foreground" style={{ height: '400px' }}>
+                                No widgets available
+                            </div>
+                        )}
                     </div>
                 </FullWidthPageBlock>
             </PageLayout>
