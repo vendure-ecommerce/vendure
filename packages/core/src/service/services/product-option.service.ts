@@ -166,7 +166,7 @@ export class ProductOptionService {
      *   be soft-deleted.
      * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
      */
-    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+    async delete(ctx: RequestContext, id: ID, force = false): Promise<DeletionResponse> {
         const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
         const deletedProductOption = new ProductOption(productOption);
         const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
@@ -195,53 +195,6 @@ export class ProductOptionService {
         await this.eventBus.publish(new ProductOptionEvent(ctx, deletedProductOption, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
-        };
-    }
-
-    /**
-     * @description
-     * Deletes multiple ProductOptions.
-     */
-    async deleteMultiple(ctx: RequestContext, ids: ID[]): Promise<DeletionResponse> {
-        const deletedProductOptions = [];
-        const failedDeletions = [];
-
-        for (const id of ids) {
-            const productOption = await this.connection.findOneInChannel(
-                ctx,
-                ProductOption,
-                id,
-                ctx.channelId,
-            );
-            if (!productOption) {
-                failedDeletions.push(id);
-                continue;
-            }
-            const result = await this.delete(ctx, id);
-            if (result.result === DeletionResult.DELETED) {
-                deletedProductOptions.push(id);
-            } else {
-                failedDeletions.push(id);
-            }
-        }
-
-        if (failedDeletions.length === ids.length) {
-            return {
-                result: DeletionResult.NOT_DELETED,
-                message: ctx.translate('message.product-options-cannot-be-deleted', {
-                    count: failedDeletions.length,
-                }),
-            };
-        }
-
-        return {
-            result: DeletionResult.DELETED,
-            message: failedDeletions.length
-                ? ctx.translate('message.product-options-partially-deleted', {
-                      deletedCount: deletedProductOptions.length,
-                      notDeletedCount: failedDeletions.length,
-                  })
-                : undefined,
         };
     }
 

@@ -15,7 +15,7 @@ type Mutation {
     "Delete an existing ProductOptionGroup"
     deleteProductOptionGroup(id: ID!, force: Boolean): DeletionResponse!
     "Delete multiple existing ProductOptionGroups"
-    deleteProductOptionGroups(ids: [ID!]!, force: Boolean): DeletionResponse!
+    deleteProductOptionGroups(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
     "Create a new ProductOption within a ProductOptionGroup"
     createProductOption(input: CreateProductOptionInput!): ProductOption!
     "Create one or more ProductOptions"
@@ -27,7 +27,7 @@ type Mutation {
     "Delete a ProductOption"
     deleteProductOption(id: ID!): DeletionResponse!
     "Delete multiple ProductOptions"
-    deleteProductOptions(ids: [ID!]!): DeletionResponse!
+    deleteProductOptions(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
     "Assigns ProductOptionGroups to the specified Channel"
     assignProductOptionGroupsToChannel(input: AssignProductOptionGroupsToChannelInput!): [ProductOptionGroup!]!
     "Removes ProductOptionGroups from the specified Channel"

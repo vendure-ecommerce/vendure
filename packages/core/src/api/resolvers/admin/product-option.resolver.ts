@@ -209,8 +209,10 @@ export class ProductOptionResolver {
     async deleteProductOptionGroups(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteProductOptionGroupsArgs,
-    ): Promise<DeletionResponse> {
-        return this.productOptionGroupService.deleteMultiple(ctx, args.ids, args.force || false);
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(
+            args.ids.map(id => this.productOptionGroupService.delete(ctx, id, args.force || false)),
+        );
     }
 
     @Transaction()
@@ -219,7 +221,11 @@ export class ProductOptionResolver {
     async deleteProductOptions(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteProductOptionsArgs,
-    ): Promise<DeletionResponse> {
-        return this.productOptionService.deleteMultiple(ctx, args.ids);
+    ): Promise<DeletionResponse[]> {
+        const results: DeletionResponse[] = [];
+        for (const id of args.ids) {
+            results.push(await this.productOptionService.delete(ctx, id, args.force || false));
+        }
+        return results;
     }
 }

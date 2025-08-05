@@ -59,14 +59,14 @@ function ProductOptionGroupDetailPage() {
                     name: translation.name,
                     customFields: (translation as any).customFields,
                 })),
-                values: [],
+                options: [],
                 customFields: entity.customFields,
             };
         },
         transformCreateInput: values => {
             return {
                 ...values,
-                values: [],
+                options: [],
             };
         },
         params: { id: params.id },
@@ -86,7 +86,7 @@ function ProductOptionGroupDetailPage() {
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
-            <PageTitle>{creatingNewEntity ? <Trans>New product option group</Trans> : (entity?.name ?? '')}</PageTitle>
+            <PageTitle>{creatingNewEntity ? <Trans>New option group</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
                     <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
@@ -94,7 +94,7 @@ function ProductOptionGroupDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

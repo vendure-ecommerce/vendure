@@ -2936,9 +2936,9 @@ export type Mutation = {
     /** Delete an existing ProductOptionGroup */
     deleteProductOptionGroup: DeletionResponse;
     /** Delete multiple existing ProductOptionGroups */
-    deleteProductOptionGroups: DeletionResponse;
+    deleteProductOptionGroups: Array<DeletionResponse>;
     /** Delete multiple ProductOptions */
-    deleteProductOptions: DeletionResponse;
+    deleteProductOptions: Array<DeletionResponse>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
     /** Delete multiple ProductVariants */
@@ -3465,6 +3465,7 @@ export type MutationDeleteProductOptionGroupsArgs = {
 };
 
 export type MutationDeleteProductOptionsArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
     ids: Array<Scalars['ID']['input']>;
 };
 
