@@ -175,6 +175,7 @@ export default function CopyMarkdownButton() {
             ) : (
                 <>
                     <IconCopy className={styles.icon} />
+                    <span className={styles.tooltip}>Copy as MD</span>
                 </>
             )}
         </button>
