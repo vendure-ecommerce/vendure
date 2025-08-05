@@ -124,19 +124,12 @@ function DashboardPage() {
         setWidgets(initialWidgets);
         setIsInitialized(true);
     }, [settings.widgetLayout]);
-
-    const handleLayoutChange = (layouts: GridLayoutType[]) => {
-        if (!isInitialized) return; // Don't save during initialization
-        
-        setWidgets(prev => {
-            const updatedWidgets = prev.map((widget, i) => ({
-                ...widget,
-                layout: layouts[i] || widget.layout,
-            }));
-            
-            // Save layout to user settings only after initialization
+    
+    // Save layout when edit mode is turned off
+    useEffect(() => {
+        if (!editMode && isInitialized && widgets.length > 0) {
             const layoutConfig: Record<string, { x: number; y: number; w: number; h: number }> = {};
-            updatedWidgets.forEach(widget => {
+            widgets.forEach(widget => {
                 layoutConfig[widget.widgetId] = {
                     x: widget.layout.x,
                     y: widget.layout.y,
@@ -145,9 +138,16 @@ function DashboardPage() {
                 };
             });
             setWidgetLayout(layoutConfig);
-            
-            return updatedWidgets;
-        });
+        }
+    }, [editMode, isInitialized, widgets, setWidgetLayout]);
+
+    const handleLayoutChange = (layouts: GridLayoutType[]) => {
+        setWidgets(prev =>
+            prev.map((widget, i) => ({
+                ...widget,
+                layout: layouts[i] || widget.layout,
+            })),
+        );
     };
 
     const renderWidget = (widget: DashboardWidgetInstance) => {
@@ -163,13 +163,11 @@ function DashboardPage() {
             <PageTitle>Insights</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
-                    <Button variant="outline" onClick={() => setEditMode(prev => !prev)}>
-                        Edit Mode
-                        {editMode ? (
-                            <span className="text-xs text-destructive">ON</span>
-                        ) : (
-                            <span className="text-xs text-muted-foreground">OFF</span>
-                        )}
+                    <Button 
+                        variant={editMode ? "default" : "outline"} 
+                        onClick={() => setEditMode(prev => !prev)}
+                    >
+                        {editMode ? "Save Layout" : "Edit Layout"}
                     </Button>
                 </PageActionBarRight>
             </PageActionBar>
