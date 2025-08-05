@@ -11,6 +11,7 @@ import { deleteProductOptionsDocument } from '../product-option-groups.graphql.j
 
 import { AddProductOptionDialog } from './add-product-option-dialog.js';
 import { EditProductOption } from './edit-product-option.js';
+import { DeleteProductOptionsBulkAction } from "./product-option-group-bulk-actions.js";
 
 export const productOptionListDocument = graphql(`
     query ProductOptionList($options: ProductOptionListOptions) {
@@ -125,6 +126,12 @@ export function ProductOptionsTable({ groupId, registerRefresher }: Readonly<Pro
                         )
                     },
                 }}
+                bulkActions={[
+                    {
+                        order: 400,
+                        component: DeleteProductOptionsBulkAction,
+                    }
+                ]}
             />
             <div className="mt-4">
                 <AddProductOptionDialog

@@ -14,6 +14,7 @@ import {
     assignProductOptionGroupsToChannelDocument,
     deleteProductOptionGroupsDocument,
     removeProductOptionGroupsFromChannelDocument,
+    deleteProductOptionsDocument,
 } from '../product-option-groups.graphql.js';
 
 export const DeleteProductOptionGroupsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
@@ -21,6 +22,18 @@ export const DeleteProductOptionGroupsBulkAction: BulkActionComponent<any> = ({ 
         <DeleteBulkAction
             mutationDocument={deleteProductOptionGroupsDocument}
             entityName="product option groups"
+            requiredPermissions={['DeleteCatalog', 'DeleteProduct']}
+            selection={selection}
+            table={table}
+        />
+    );
+};
+
+export const DeleteProductOptionsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+    return (
+        <DeleteBulkAction
+            mutationDocument={deleteProductOptionsDocument}
+            entityName="product options"
             requiredPermissions={['DeleteCatalog', 'DeleteProduct']}
             selection={selection}
             table={table}
