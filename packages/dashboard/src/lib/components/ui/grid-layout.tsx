@@ -8,6 +8,10 @@ export interface GridLayout {
     w: number;
     h: number;
     i: string;
+    minW?: number;
+    minH?: number;
+    maxW?: number;
+    maxH?: number;
 }
 
 export interface GridLayoutProps {
@@ -112,10 +116,16 @@ function GridItem({
                 const newW = Math.round(dragStart.x + deltaX / colWidth);
                 const newH = Math.round(dragStart.y + deltaY / rowHeight);
                 
+                // Apply min/max constraints
+                const minW = layout.minW ?? 1;
+                const minH = layout.minH ?? 1;
+                const maxW = layout.maxW ?? (cols - layout.x);
+                const maxH = layout.maxH ?? 999;
+                
                 onLayoutChange({
                     ...layout,
-                    w: Math.max(1, Math.min(cols - layout.x, newW)),
-                    h: Math.max(1, newH),
+                    w: Math.max(minW, Math.min(maxW, Math.min(cols - layout.x, newW))),
+                    h: Math.max(minH, Math.min(maxH, newH)),
                 });
             }
         };
@@ -190,28 +200,86 @@ export function GridLayout({
     const maxRow = Math.max(...layouts.map(l => l.y + l.h), 4); // Minimum 4 rows
     const containerHeight = maxRow * rowHeight + (maxRow - 1) * gutter;
 
+    // Helper function to check if two layouts overlap
+    const layoutsOverlap = (a: GridLayout, b: GridLayout): boolean => {
+        return !(
+            a.x + a.w <= b.x || // a is left of b
+            b.x + b.w <= a.x || // b is left of a
+            a.y + a.h <= b.y || // a is above b
+            b.y + b.h <= a.y    // b is above a
+        );
+    };
+
+    // Helper function to find the next available position for a widget
+    const findNextAvailablePosition = (
+        widget: GridLayout,
+        occupiedLayouts: GridLayout[],
+        draggedWidget?: GridLayout
+    ): GridLayout => {
+        const sortedLayouts = [...occupiedLayouts]
+            .filter(l => l.i !== widget.i && (!draggedWidget || l.i !== draggedWidget.i))
+            .sort((a, b) => a.y === b.y ? a.x - b.x : a.y - b.y);
+
+        // Try to place widget in rows, starting from its current position
+        for (let y = widget.y; y < 100; y++) { // Max 100 rows
+            for (let x = 0; x <= cols - widget.w; x++) {
+                const testLayout = { ...widget, x, y };
+                
+                // Check if this position overlaps with any other widget
+                const hasOverlap = sortedLayouts.some(layout => layoutsOverlap(testLayout, layout));
+                
+                // Also check overlap with dragged widget if provided
+                if (!hasOverlap && (!draggedWidget || !layoutsOverlap(testLayout, draggedWidget))) {
+                    return testLayout;
+                }
+            }
+        }
+        
+        // Fallback: place at the bottom
+        const maxY = Math.max(...sortedLayouts.map(l => l.y + l.h), 0);
+        return { ...widget, x: 0, y: maxY };
+    };
+
     const handleItemLayoutChange = useCallback((newLayout: GridLayout) => {
         if (onLayoutChange) {
-            const newLayouts = layouts.map(l => 
-                l.i === newLayout.i ? newLayout : l
-            );
+            const newLayouts = [...layouts];
+            const draggedIndex = layouts.findIndex(l => l.i === newLayout.i);
+            
+            if (draggedIndex === -1) return;
+            
+            // Update the dragged widget's position
+            newLayouts[draggedIndex] = newLayout;
+            
+            // Find widgets that overlap with the new position
+            const overlappingWidgets: number[] = [];
+            
+            for (let i = 0; i < newLayouts.length; i++) {
+                if (i !== draggedIndex && layoutsOverlap(newLayout, newLayouts[i])) {
+                    overlappingWidgets.push(i);
+                }
+            }
+            
+            // Move overlapping widgets to new positions
+            for (const index of overlappingWidgets) {
+                const widgetToMove = newLayouts[index];
+                const newPosition = findNextAvailablePosition(widgetToMove, newLayouts, newLayout);
+                newLayouts[index] = newPosition;
+            }
+            
             onLayoutChange(newLayouts);
         }
-    }, [layouts, onLayoutChange]);
+    }, [layouts, onLayoutChange, cols]);
 
     const handleInteractionStart = useCallback(() => {
-        console.log('handleInteractionStart called'); // Debug log
         setShowGrid(true);
     }, []);
 
     const handleInteractionEnd = useCallback(() => {
-        console.log('handleInteractionEnd called'); // Debug log
         setShowGrid(false);
     }, []);
 
     // Create grid overlay
     const renderGridOverlay = () => {
-        console.log('renderGridOverlay called, showGrid:', showGrid); // Debug log
         if (!showGrid) return null;
         
         const gridCells = [];
@@ -239,7 +307,6 @@ export function GridLayout({
             }
         }
         
-        console.log('Grid cells created:', gridCells.length); // Debug log
         return gridCells;
     };
 

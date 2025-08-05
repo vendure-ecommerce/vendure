@@ -73,11 +73,21 @@ function DashboardPage() {
                     h: widget.defaultSize.h ?? 3, // Default 3 rows
                 };
                 
+                // Use minSize if specified, otherwise fall back to defaultSize
+                const minSize = {
+                    w: widget.minSize?.w ?? defaultSize.w,
+                    h: widget.minSize?.h ?? defaultSize.h,
+                };
+                
                 const layout = {
                     w: defaultSize.w,
                     h: defaultSize.h,
                     x: widget.defaultSize.x ?? 0,
                     y: widget.defaultSize.y ?? 0,
+                    minW: minSize.w,
+                    minH: minSize.h,
+                    maxW: widget.maxSize?.w,
+                    maxH: widget.maxSize?.h,
                 };
 
                 // Always find the next available position to avoid overlaps
@@ -100,7 +110,6 @@ function DashboardPage() {
             [],
         );
 
-        console.log('Initial widgets:', initialWidgets.map(w => ({ id: w.id, layout: w.layout })));
         setWidgets(initialWidgets);
     }, []);
 
@@ -152,7 +161,7 @@ function DashboardPage() {
                                 className="min-h-[400px]"
                                 gutter={10}
                             >
-                                {widgets.map(widget => renderWidget(widget))}
+                                {widgets.map(widget => renderWidget(widget)).filter(Boolean) as React.ReactElement[]}
                             </GridLayout>
                         ) : (
                             <div className="flex items-center justify-center text-muted-foreground" style={{ height: '400px' }}>
