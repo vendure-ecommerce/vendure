@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import IconCopy from '@theme/Icon/Copy';
 import IconSuccess from '@theme/Icon/Success';
+import React, { useState } from 'react';
 import styles from './styles.module.css';
 
 export default function CopyMarkdownButton() {
     const [copied, setCopied] = useState(false);
 
-            const handleCopy = async () => {
+    const handleCopy = async () => {
         try {
             // Try multiple selectors to find the content area
             const selectors = [
@@ -15,7 +15,7 @@ export default function CopyMarkdownButton() {
                 'main[class*="docMainContainer"] .theme-doc-markdown',
                 'article',
                 '.markdown',
-                '[class*="docItemContainer"]'
+                '[class*="docItemContainer"]',
             ];
 
             let contentElement = null;
@@ -30,51 +30,13 @@ export default function CopyMarkdownButton() {
                 // Extract content as markdown with proper formatting
                 let content = extractMarkdownContent(contentElement);
 
-
-
                 // Ensure proper spacing after H1 headers
                 content = content.replace(/(# [^\n]+)/g, '$1\n');
 
-                // Try to copy to clipboard with fallback
-                try {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(content);
-                    } else {
-                        // Fallback for older browsers
-                        const textArea = document.createElement('textarea');
-                        textArea.value = content;
-                        textArea.style.position = 'fixed';
-                        textArea.style.left = '-999999px';
-                        textArea.style.top = '-999999px';
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                    }
-
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                } catch (clipboardError) {
-                    // Try fallback method
-                    try {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = content;
-                        textArea.style.position = 'fixed';
-                        textArea.style.left = '-999999px';
-                        textArea.style.top = '-999999px';
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                                                document.execCommand('copy');
-                        document.body.removeChild(textArea);
-
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                    } catch (fallbackError) {
-                        alert('Failed to copy content to clipboard. Please try again.');
-                    }
-                }
+                // Copy to clipboard using modern API
+                await navigator.clipboard.writeText(content);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
             } else {
                 alert('Could not find page content to copy.');
             }
@@ -83,26 +45,26 @@ export default function CopyMarkdownButton() {
         }
     };
 
-    const extractMarkdownContent = (element) => {
+    const extractMarkdownContent = element => {
         let markdown = '';
 
         // Process elements in DOM order
-        const walker = document.createTreeWalker(
-            element,
-            NodeFilter.SHOW_ELEMENT,
-            {
-                acceptNode: function(node) {
-                    const tagName = node.tagName.toLowerCase();
-                    if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'pre', 'blockquote'].includes(tagName)) {
-                        return NodeFilter.FILTER_ACCEPT;
-                    }
-                    return NodeFilter.FILTER_SKIP;
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, {
+            acceptNode: function (node) {
+                const tagName = node.tagName.toLowerCase();
+                if (
+                    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'pre', 'blockquote', 'a'].includes(
+                        tagName,
+                    )
+                ) {
+                    return NodeFilter.FILTER_ACCEPT;
                 }
-            }
-        );
+                return NodeFilter.FILTER_SKIP;
+            },
+        });
 
         let currentNode;
-        while (currentNode = walker.nextNode()) {
+        while ((currentNode = walker.nextNode())) {
             const tagName = currentNode.tagName.toLowerCase();
             const textContent = currentNode.textContent.trim();
 
@@ -143,13 +105,22 @@ export default function CopyMarkdownButton() {
                 case 'blockquote':
                     markdown += `> ${textContent}\n\n`;
                     break;
+                case 'a':
+                    const href = currentNode.getAttribute('href');
+                    const linkText = textContent;
+                    if (href && linkText) {
+                        markdown += `[${linkText}](${href})`;
+                    } else if (linkText) {
+                        markdown += linkText;
+                    }
+                    break;
             }
         }
 
         return markdown.replace(/\n{3,}/g, '\n\n').trim();
     };
 
-    const processList = (listElement) => {
+    const processList = listElement => {
         let result = '';
         const items = listElement.querySelectorAll('li');
         items.forEach(item => {
@@ -158,7 +129,7 @@ export default function CopyMarkdownButton() {
         return result + '\n';
     };
 
-    const processTable = (tableElement) => {
+    const processTable = tableElement => {
         let result = '';
         const rows = tableElement.querySelectorAll('tr');
 
@@ -178,7 +149,7 @@ export default function CopyMarkdownButton() {
         return result + '\n';
     };
 
-    const processTableRow = (rowElement) => {
+    const processTableRow = rowElement => {
         let result = '|';
         const cells = rowElement.querySelectorAll('th, td');
         cells.forEach(cell => {
@@ -187,7 +158,7 @@ export default function CopyMarkdownButton() {
         return result + '\n';
     };
 
-    const getCodeLanguage = (codeElement) => {
+    const getCodeLanguage = codeElement => {
         if (!codeElement) return '';
         const className = codeElement.className || '';
         const match = className.match(/language-(\w+)/);
@@ -195,11 +166,7 @@ export default function CopyMarkdownButton() {
     };
 
     return (
-        <button
-            className={styles.copyButton}
-            onClick={handleCopy}
-            title="Copy page content as markdown"
-        >
+        <button className={styles.copyButton} onClick={handleCopy} title="Copy page content as markdown">
             {copied ? (
                 <>
                     <IconSuccess className={styles.icon} />
