@@ -136,12 +136,12 @@ function createStringValidationSchema(pattern?: string): ZodType {
  */
 function createIntValidationSchema(min?: number, max?: number): ZodType {
     let schema = z.number();
-    if (min !== undefined) {
+    if (min != null) {
         schema = schema.min(min, {
             message: `Value must be at least ${min}`,
         });
     }
-    if (max !== undefined) {
+    if (max != null) {
         schema = schema.max(max, {
             message: `Value must be at most ${max}`,
         });
@@ -159,12 +159,12 @@ function createIntValidationSchema(min?: number, max?: number): ZodType {
  */
 function createFloatValidationSchema(min?: number, max?: number): ZodType {
     let schema = z.number();
-    if (min !== undefined) {
+    if (min != null) {
         schema = schema.min(min, {
             message: `Value must be at least ${min}`,
         });
     }
-    if (max !== undefined) {
+    if (max != null) {
         schema = schema.max(max, {
             message: `Value must be at most ${max}`,
         });
