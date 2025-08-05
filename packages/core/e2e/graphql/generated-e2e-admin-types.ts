@@ -12192,6 +12192,18 @@ export type RemoveProductOptionGroupsFromChannelMutation = {
     >;
 };
 
+export type GetProductWithOptionGroupsQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type GetProductWithOptionGroupsQuery = {
+    product?: {
+        id: string;
+        name: string;
+        optionGroups: Array<{ id: string; code: string; name: string }>;
+    } | null;
+};
+
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
     productId: Scalars['ID']['input'];
     optionGroupId: Scalars['ID']['input'];
@@ -37096,6 +37108,61 @@ export const RemoveProductOptionGroupsFromChannelDocument = {
     RemoveProductOptionGroupsFromChannelMutation,
     RemoveProductOptionGroupsFromChannelMutationVariables
 >;
+export const GetProductWithOptionGroupsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetProductWithOptionGroups' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'product' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'optionGroups' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetProductWithOptionGroupsQuery, GetProductWithOptionGroupsQueryVariables>;
 export const RemoveOptionGroupFromProductDocument = {
     kind: 'Document',
     definitions: [
