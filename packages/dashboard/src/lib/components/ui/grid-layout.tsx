@@ -28,6 +28,8 @@ interface GridItemProps {
     isDraggable?: boolean;
     isResizable?: boolean;
     onLayoutChange?: (layout: GridLayout) => void;
+    onInteractionStart?: () => void;
+    onInteractionEnd?: () => void;
     cols?: number;
     rowHeight?: number;
     gutter?: number;
@@ -39,6 +41,8 @@ function GridItem({
     isDraggable = false,
     isResizable = false,
     onLayoutChange,
+    onInteractionStart,
+    onInteractionEnd,
     cols = 12,
     rowHeight = 100,
     gutter = 10,
@@ -57,26 +61,28 @@ function GridItem({
         if (!rect) return;
         
         setIsDragging(true);
+        onInteractionStart?.();
         setDragStart({
             x: layout.x,
             y: layout.y,
             mouseX: e.clientX,
             mouseY: e.clientY,
         });
-    }, [isDraggable, isResizing, layout.x, layout.y]);
+    }, [isDraggable, isResizing, layout.x, layout.y, onInteractionStart]);
 
     const handleResizeStart = useCallback((e: React.MouseEvent) => {
         if (!isResizable) return;
         e.preventDefault();
         e.stopPropagation();
         setIsResizing(true);
+        onInteractionStart?.();
         setDragStart({
             x: layout.w,
             y: layout.h,
             mouseX: e.clientX,
             mouseY: e.clientY,
         });
-    }, [isResizable, layout.w, layout.h]);
+    }, [isResizable, layout.w, layout.h, onInteractionStart]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -115,6 +121,9 @@ function GridItem({
         };
 
         const handleMouseUp = () => {
+            if (isDragging || isResizing) {
+                onInteractionEnd?.();
+            }
             setIsDragging(false);
             setIsResizing(false);
         };
@@ -127,7 +136,7 @@ function GridItem({
                 document.removeEventListener('mouseup', handleMouseUp);
             };
         }
-    }, [isDragging, isResizing, dragStart, layout, onLayoutChange, cols, rowHeight]);
+    }, [isDragging, isResizing, dragStart, layout, onLayoutChange, onInteractionEnd, cols, rowHeight]);
 
     const colWidth = `calc((100% - ${gutter * (cols - 1)}px) / ${cols})`;
     const style: React.CSSProperties = {
@@ -136,7 +145,7 @@ function GridItem({
         top: `calc(${layout.y} * (${rowHeight}px + ${gutter}px))`,
         width: `calc(${layout.w} * ${colWidth} + ${(layout.w - 1) * gutter}px)`,
         height: `calc(${layout.h} * ${rowHeight}px + ${(layout.h - 1) * gutter}px)`,
-        zIndex: isDragging || isResizing ? 1000 : 1,
+        zIndex: isDragging || isResizing ? 1000 : 10, // Normal widgets above grid (10), active widget much higher (1000)
     };
 
     return (
@@ -177,6 +186,7 @@ export function GridLayout({
     className,
     gutter = 10,
 }: GridLayoutProps) {
+    const [showGrid, setShowGrid] = useState(false);
     const maxRow = Math.max(...layouts.map(l => l.y + l.h), 4); // Minimum 4 rows
     const containerHeight = maxRow * rowHeight + (maxRow - 1) * gutter;
 
@@ -188,6 +198,50 @@ export function GridLayout({
             onLayoutChange(newLayouts);
         }
     }, [layouts, onLayoutChange]);
+
+    const handleInteractionStart = useCallback(() => {
+        console.log('handleInteractionStart called'); // Debug log
+        setShowGrid(true);
+    }, []);
+
+    const handleInteractionEnd = useCallback(() => {
+        console.log('handleInteractionEnd called'); // Debug log
+        setShowGrid(false);
+    }, []);
+
+    // Create grid overlay
+    const renderGridOverlay = () => {
+        console.log('renderGridOverlay called, showGrid:', showGrid); // Debug log
+        if (!showGrid) return null;
+        
+        const gridCells = [];
+        for (let row = 0; row < maxRow; row++) {
+            for (let col = 0; col < cols; col++) {
+                const colWidth = `calc((100% - ${gutter * (cols - 1)}px) / ${cols})`;
+                const cellStyle: React.CSSProperties = {
+                    position: 'absolute',
+                    left: `calc(${col} * (${colWidth} + ${gutter}px))`,
+                    top: `calc(${row} * (${rowHeight}px + ${gutter}px))`,
+                    width: colWidth,
+                    height: `${rowHeight}px`,
+                    pointerEvents: 'none',
+                    zIndex: 0, // Behind widgets but above background
+                    boxSizing: 'border-box',
+                };
+                
+                gridCells.push(
+                    <div
+                        key={`grid-${row}-${col}`}
+                        style={cellStyle}
+                        className="transition-opacity duration-200 border-2 border-dashed border-primary bg-primary/10"
+                    />
+                );
+            }
+        }
+        
+        console.log('Grid cells created:', gridCells.length); // Debug log
+        return gridCells;
+    };
 
     return (
         <div
@@ -212,6 +266,8 @@ export function GridLayout({
                         isDraggable={isDraggable}
                         isResizable={isResizable}
                         onLayoutChange={handleItemLayoutChange}
+                        onInteractionStart={handleInteractionStart}
+                        onInteractionEnd={handleInteractionEnd}
                         cols={cols}
                         rowHeight={rowHeight}
                         gutter={gutter}
@@ -220,6 +276,7 @@ export function GridLayout({
                     </GridItem>
                 );
             })}
+            {renderGridOverlay()}
         </div>
     );
 }
