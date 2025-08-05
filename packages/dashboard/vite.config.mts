@@ -2,6 +2,7 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
+
 import { vendureDashboardPlugin } from './vite/vite-plugin-vendure-dashboard.js';
 
 /**
@@ -30,7 +31,7 @@ export default ({ mode }: { mode: string }) => {
         plugins: [
             vendureDashboardPlugin({
                 vendureConfigPath: pathToFileURL(vendureConfigPath),
-                adminUiConfig: { apiHost: adminApiHost, apiPort: adminApiPort },
+                api: { host: adminApiHost, port: adminApiPort },
                 gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
             }) as any,
