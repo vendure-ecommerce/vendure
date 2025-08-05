@@ -1,9 +1,8 @@
-import React from 'react';
 import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import React from 'react';
 
 import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
 import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
-import { CustomerGroupInput } from '@/vdb/components/data-input/customer-group-input.js';
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
 import { DefaultRelationInput } from '@/vdb/components/data-input/default-relation-input.js';
 import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
@@ -16,7 +15,36 @@ import { Switch } from '@/vdb/components/ui/switch.js';
 import { Textarea } from '@/vdb/components/ui/textarea.js';
 
 import { UniversalFieldDefinition } from './universal-field-definition.js';
-import { ValueMode, transformValue } from './value-transformers.js';
+import { transformValue, ValueMode } from './value-transformers.js';
+
+/**
+ * Custom hook to handle value transformation between native and JSON string modes
+ * Eliminates duplication across form input components
+ */
+function useValueTransformation(
+    field: { value: any; onChange: (value: any) => void },
+    fieldDef: UniversalFieldDefinition,
+    valueMode: ValueMode,
+) {
+    const transformedValue = React.useMemo(() => {
+        return valueMode === 'json-string'
+            ? transformValue(field.value, fieldDef, valueMode, 'parse')
+            : field.value;
+    }, [field.value, fieldDef, valueMode]);
+
+    const handleChange = React.useCallback(
+        (newValue: any) => {
+            const serializedValue =
+                valueMode === 'json-string'
+                    ? transformValue(newValue, fieldDef, valueMode, 'serialize')
+                    : newValue;
+            field.onChange(serializedValue);
+        },
+        [field.onChange, fieldDef, valueMode],
+    );
+
+    return { transformedValue, handleChange };
+}
 
 export interface DirectFormComponentProps {
     fieldDef: UniversalFieldDefinition;
@@ -29,17 +57,19 @@ export interface DirectFormComponentProps {
     };
     valueMode: ValueMode;
     disabled?: boolean;
-    position?: number;
 }
 
 /**
  * Text input wrapper for config args
  */
 const TextFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        // For both modes, text values are stored as strings
-        field.onChange(e.target.value);
-    }, [field.onChange]);
+    const handleChange = React.useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            // For both modes, text values are stored as strings
+            field.onChange(e.target.value);
+        },
+        [field.onChange],
+    );
 
     const value = field.value || '';
 
@@ -51,7 +81,7 @@ const TextFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fi
             onBlur={field.onBlur}
             name={field.name}
             disabled={disabled}
-            className={valueMode === 'json-string' ? "bg-background" : undefined}
+            className={valueMode === 'json-string' ? 'bg-background' : undefined}
         />
     );
 };
@@ -68,15 +98,18 @@ const NumberFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
     const prefix = ui?.prefix;
     const suffix = ui?.suffix;
 
-    const handleChange = React.useCallback((newValue: number | '') => {
-        if (valueMode === 'json-string') {
-            // For config args, store as string
-            field.onChange(newValue === '' ? '' : newValue.toString());
-        } else {
-            // For custom fields, store as number or undefined
-            field.onChange(newValue === '' ? undefined : newValue);
-        }
-    }, [field.onChange, valueMode]);
+    const handleChange = React.useCallback(
+        (newValue: number | '') => {
+            if (valueMode === 'json-string') {
+                // For config args, store as string
+                field.onChange(newValue === '' ? '' : newValue.toString());
+            } else {
+                // For custom fields, store as number or undefined
+                field.onChange(newValue === '' ? undefined : newValue);
+            }
+        },
+        [field.onChange, valueMode],
+    );
 
     // Parse current value to number
     const numericValue = React.useMemo(() => {
@@ -93,7 +126,7 @@ const NumberFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
             <AffixedInput
                 type="number"
                 value={numericValue}
-                onChange={(e) => {
+                onChange={e => {
                     const val = e.target.valueAsNumber;
                     handleChange(isNaN(val) ? '' : val);
                 }}
@@ -112,7 +145,7 @@ const NumberFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
         <Input
             type="number"
             value={numericValue}
-            onChange={(e) => {
+            onChange={e => {
                 const val = e.target.valueAsNumber;
                 handleChange(isNaN(val) ? '' : val);
             }}
@@ -130,9 +163,6 @@ const NumberFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
  * Boolean input wrapper
  */
 const BooleanFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const previousValue = React.useRef<any>(field.value);
-    const isUpdating = React.useRef(false);
-
     // Parse the current value to boolean
     const currentValue = React.useMemo(() => {
         if (valueMode === 'json-string') {
@@ -142,121 +172,44 @@ const BooleanFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled,
         }
     }, [field.value, valueMode]);
 
-    // Create change handler with debounce logic
-    const handleChange = React.useCallback((newValue: boolean) => {
-        // Prevent recursive updates
-        if (isUpdating.current) {
-            return;
-        }
-
-        // Check if value actually changed
-        const currentBool = valueMode === 'json-string' 
-            ? (previousValue.current === 'true' || previousValue.current === true)
-            : Boolean(previousValue.current);
-            
-        if (currentBool === newValue) {
-            return;
-        }
-
-        isUpdating.current = true;
-        
-        try {
-            const newFieldValue = valueMode === 'json-string' ? newValue.toString() : newValue;
-            previousValue.current = newFieldValue;
-            field.onChange(newFieldValue);
-        } finally {
-            // Use setTimeout to reset the flag after the current call stack
-            setTimeout(() => {
-                isUpdating.current = false;
-            }, 0);
-        }
-    }, [field.onChange, valueMode]);
-
-    // Update previous value when field value changes externally
-    React.useEffect(() => {
-        if (!isUpdating.current) {
-            previousValue.current = field.value;
-        }
-    }, [field.value]);
-
-    return (
-        <Switch
-            checked={currentValue}
-            onCheckedChange={handleChange}
-            disabled={disabled}
-        />
+    // Simple change handler - directly call field.onChange
+    const handleChange = React.useCallback(
+        (newValue: boolean) => {
+            if (valueMode === 'json-string') {
+                field.onChange(newValue.toString());
+            } else {
+                field.onChange(newValue);
+            }
+        },
+        [field.onChange, valueMode],
     );
+
+    return <Switch checked={currentValue} onCheckedChange={handleChange} disabled={disabled} />;
 };
 
 /**
  * Currency input wrapper (uses MoneyInput)
  */
 const CurrencyFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = React.useMemo(() => {
-        return valueMode === 'json-string' 
-            ? transformValue(field.value, fieldDef, valueMode, 'parse')
-            : field.value;
-    }, [field.value, fieldDef, valueMode]);
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
 
-    const handleChange = React.useCallback((newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    }, [field.onChange, fieldDef, valueMode]);
-
-    return (
-        <MoneyInput
-            value={transformedValue}
-            onChange={handleChange}
-            disabled={disabled}
-        />
-    );
+    return <MoneyInput value={transformedValue} onChange={handleChange} disabled={disabled} />;
 };
 
 /**
  * Date input wrapper
  */
 const DateFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = React.useMemo(() => {
-        return valueMode === 'json-string' 
-            ? transformValue(field.value, fieldDef, valueMode, 'parse')
-            : field.value;
-    }, [field.value, fieldDef, valueMode]);
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
 
-    const handleChange = React.useCallback((newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    }, [field.onChange, fieldDef, valueMode]);
-
-    return (
-        <DateTimeInput
-            value={transformedValue}
-            onChange={handleChange}
-            disabled={disabled}
-        />
-    );
+    return <DateTimeInput value={transformedValue} onChange={handleChange} disabled={disabled} />;
 };
 
 /**
  * Select input wrapper
  */
 const SelectFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = React.useMemo(() => {
-        return valueMode === 'json-string' 
-            ? transformValue(field.value, fieldDef, valueMode, 'parse')
-            : field.value;
-    }, [field.value, fieldDef, valueMode]);
-
-    const handleChange = React.useCallback((newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    }, [field.onChange, fieldDef, valueMode]);
-
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
     const options = fieldDef.ui?.options || [];
 
     return (
@@ -265,13 +218,13 @@ const SelectFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
                 <SelectValue placeholder="Select an option..." />
             </SelectTrigger>
             <SelectContent>
-                {options.map((option) => (
+                {options.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                         {typeof option.label === 'string'
                             ? option.label
                             : Array.isArray(option.label)
-                            ? option.label[0]?.value || option.value
-                            : option.value}
+                              ? option.label[0]?.value || option.value
+                              : option.value}
                     </SelectItem>
                 ))}
             </SelectContent>
@@ -283,22 +236,14 @@ const SelectFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, 
  * Textarea input wrapper
  */
 const TextareaFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = React.useMemo(() => {
-        return valueMode === 'json-string' 
-            ? transformValue(field.value, fieldDef, valueMode, 'parse')
-            : field.value;
-    }, [field.value, fieldDef, valueMode]);
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
 
-    const handleChange = React.useCallback((newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    }, [field.onChange, fieldDef, valueMode]);
-
-    const handleTextareaChange = React.useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        handleChange(e.target.value);
-    }, [handleChange]);
+    const handleTextareaChange = React.useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            handleChange(e.target.value);
+        },
+        [handleChange],
+    );
 
     return (
         <Textarea
@@ -316,26 +261,23 @@ const TextareaFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled
 /**
  * Product selector wrapper (uses DefaultRelationInput)
  */
-const ProductSelectorFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = valueMode === 'json-string' 
-        ? transformValue(field.value, fieldDef, valueMode, 'parse')
-        : field.value;
-
-    const handleChange = (newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    };
-
+const ProductSelectorFormInput: React.FC<DirectFormComponentProps> = ({
+    field,
+    disabled,
+    fieldDef,
+    valueMode,
+}) => {
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
     const entityType = fieldDef.ui?.selectionMode === 'variant' ? 'ProductVariant' : 'Product';
 
     return (
         <DefaultRelationInput
-            fieldDef={{
-                entity: entityType,
-                list: fieldDef.list,
-            } as any}
+            fieldDef={
+                {
+                    entity: entityType,
+                    list: fieldDef.list,
+                } as any
+            }
             field={{
                 ...field,
                 value: transformedValue,
@@ -349,24 +291,22 @@ const ProductSelectorFormInput: React.FC<DirectFormComponentProps> = ({ field, d
 /**
  * Customer group input wrapper
  */
-const CustomerGroupFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = valueMode === 'json-string' 
-        ? transformValue(field.value, fieldDef, valueMode, 'parse')
-        : field.value;
-
-    const handleChange = (newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    };
+const CustomerGroupFormInput: React.FC<DirectFormComponentProps> = ({
+    field,
+    disabled,
+    fieldDef,
+    valueMode,
+}) => {
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
 
     return (
         <DefaultRelationInput
-            fieldDef={{
-                entity: 'CustomerGroup',
-                list: fieldDef.list,
-            } as any}
+            fieldDef={
+                {
+                    entity: 'CustomerGroup',
+                    list: fieldDef.list,
+                } as any
+            }
             field={{
                 ...field,
                 value: transformedValue,
@@ -381,22 +321,14 @@ const CustomerGroupFormInput: React.FC<DirectFormComponentProps> = ({ field, dis
  * Password input wrapper (uses regular Input with type="password")
  */
 const PasswordFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled, fieldDef, valueMode }) => {
-    const transformedValue = React.useMemo(() => {
-        return valueMode === 'json-string' 
-            ? transformValue(field.value, fieldDef, valueMode, 'parse')
-            : field.value;
-    }, [field.value, fieldDef, valueMode]);
+    const { transformedValue, handleChange } = useValueTransformation(field, fieldDef, valueMode);
 
-    const handleChange = React.useCallback((newValue: any) => {
-        const serializedValue = valueMode === 'json-string'
-            ? transformValue(newValue, fieldDef, valueMode, 'serialize')
-            : newValue;
-        field.onChange(serializedValue);
-    }, [field.onChange, fieldDef, valueMode]);
-
-    const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        handleChange(e.target.value);
-    }, [handleChange]);
+    const handleInputChange = React.useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            handleChange(e.target.value);
+        },
+        [handleChange],
+    );
 
     return (
         <Input
@@ -406,7 +338,7 @@ const PasswordFormInput: React.FC<DirectFormComponentProps> = ({ field, disabled
             onBlur={field.onBlur}
             name={field.name}
             disabled={disabled}
-            className={valueMode === 'json-string' ? "bg-background" : undefined}
+            className={valueMode === 'json-string' ? 'bg-background' : undefined}
         />
     );
 };
@@ -421,30 +353,18 @@ export const DIRECT_FORM_COMPONENT_MAP: Record<DefaultFormComponentId, React.FC<
     'customer-group-form-input': CustomerGroupFormInput,
     'date-form-input': DateFormInput,
     'facet-value-form-input': ({ field, disabled }) => (
-        <FacetValueInput
-            value={field.value}
-            onChange={field.onChange}
-            readOnly={disabled}
-        />
+        <FacetValueInput value={field.value} onChange={field.onChange} readOnly={disabled} />
     ),
     'json-editor-form-input': TextareaFormInput, // Fallback to textarea for now
     'html-editor-form-input': ({ field, disabled }) => (
-        <RichTextInput
-            value={field.value}
-            onChange={field.onChange}
-            disabled={disabled}
-        />
+        <RichTextInput value={field.value} onChange={field.onChange} disabled={disabled} />
     ),
     'number-form-input': NumberFormInput,
     'password-form-input': PasswordFormInput,
     'product-selector-form-input': ProductSelectorFormInput,
     'relation-form-input': ProductSelectorFormInput, // Uses same relation logic
     'rich-text-form-input': ({ field, disabled }) => (
-        <RichTextInput
-            value={field.value}
-            onChange={field.onChange}
-            disabled={disabled}
-        />
+        <RichTextInput value={field.value} onChange={field.onChange} disabled={disabled} />
     ),
     'select-form-input': SelectFormInput,
     'text-form-input': TextFormInput,
@@ -458,11 +378,7 @@ export const DIRECT_FORM_COMPONENT_MAP: Record<DefaultFormComponentId, React.FC<
         />
     ),
     'combination-mode-form-input': ({ field, disabled }) => (
-        <CombinationModeInput
-            value={field.value}
-            onChange={field.onChange}
-            disabled={disabled}
-        />
+        <CombinationModeInput value={field.value} onChange={field.onChange} disabled={disabled} />
     ),
     'struct-form-input': TextareaFormInput, // Fallback for now
 };
@@ -470,6 +386,8 @@ export const DIRECT_FORM_COMPONENT_MAP: Record<DefaultFormComponentId, React.FC<
 /**
  * Get a direct form component by ID
  */
-export function getDirectFormComponent(componentId: DefaultFormComponentId): React.FC<DirectFormComponentProps> | undefined {
+export function getDirectFormComponent(
+    componentId: DefaultFormComponentId,
+): React.FC<DirectFormComponentProps> | undefined {
     return DIRECT_FORM_COMPONENT_MAP[componentId];
 }

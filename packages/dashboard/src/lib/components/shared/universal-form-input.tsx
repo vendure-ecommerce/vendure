@@ -75,7 +75,6 @@ export function UniversalFormInput({
                     field={field}
                     valueMode={valueMode}
                     disabled={isReadonly}
-                    position={position}
                 />
             );
         }

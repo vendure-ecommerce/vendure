@@ -22,10 +22,11 @@ const extensions = [
 
 export interface RichTextInputProps {
     value: string;
+    disabled?: boolean;
     onChange: (value: string) => void;
 }
 
-export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>) {
+export function RichTextInput({ value, onChange, disabled }: Readonly<RichTextInputProps>) {
     const isInternalUpdate = useRef(false);
 
     const editor = useEditor({
@@ -34,13 +35,16 @@ export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>)
         },
         extensions: extensions,
         content: value,
+        editable: !disabled,
         onUpdate: ({ editor }) => {
-            isInternalUpdate.current = true;
-            onChange(editor.getHTML());
+            if (!disabled) {
+                isInternalUpdate.current = true;
+                onChange(editor.getHTML());
+            }
         },
         editorProps: {
             attributes: {
-                class: 'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/10 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-h-[500px] overflow-y-auto',
+                class: `border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/10 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-h-[500px] overflow-y-auto ${disabled ? 'cursor-not-allowed opacity-50' : ''}`,
             },
         },
     });
@@ -57,6 +61,13 @@ export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>)
         isInternalUpdate.current = false;
     }, [value, editor]);
 
+    // Update editor's editable state when disabled prop changes
+    useLayoutEffect(() => {
+        if (editor) {
+            editor.setEditable(!disabled);
+        }
+    }, [disabled, editor]);
+
     if (!editor) {
         return null;
     }
@@ -64,13 +75,13 @@ export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>)
     return (
         <>
             <EditorContent editor={editor} />
-            <CustomBubbleMenu editor={editor} />
+            <CustomBubbleMenu editor={editor} disabled={disabled} />
         </>
     );
 }
 
-function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
-    if (!editor) return null;
+function CustomBubbleMenu({ editor, disabled }: { editor: Editor | null; disabled?: boolean }) {
+    if (!editor || disabled) return null;
     return (
         <BubbleMenu editor={editor}>
             <div className="flex items-center gap-2 bg-background p-2 rounded-md border">
@@ -80,6 +91,7 @@ function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
                     size="icon"
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     className={editor.isActive('bold') ? 'bg-accent' : ''}
+                    disabled={disabled}
                 >
                     <BoldIcon className="w-4 h-4" />
                 </Button>
@@ -89,6 +101,7 @@ function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
                     size="icon"
                     onClick={() => editor.chain().focus().toggleItalic().run()}
                     className={editor.isActive('italic') ? 'bg-accent' : ''}
+                    disabled={disabled}
                 >
                     <ItalicIcon className="w-4 h-4" />
                 </Button>
@@ -98,6 +111,7 @@ function CustomBubbleMenu({ editor }: { editor: Editor | null }) {
                     size="icon"
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     className={editor.isActive('strike') ? 'bg-accent' : ''}
+                    disabled={disabled}
                 >
                     <StrikethroughIcon className="w-4 h-4" />
                 </Button>
