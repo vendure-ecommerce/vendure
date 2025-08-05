@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/_product-option-groups/pro
         pageId,
         queryDocument: productOptionGroupDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/product-option-groups', label: 'Product Option Groups' }, isNew ? <Trans>New Product Option Group</Trans> : entity?.name];
+            return [{ path: '/product-option-groups', label: 'Option Groups' }, isNew ? <Trans>New Option Group</Trans> : entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

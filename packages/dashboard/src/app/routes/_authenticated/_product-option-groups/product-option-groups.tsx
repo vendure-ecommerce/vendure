@@ -20,19 +20,19 @@ import { deleteProductOptionGroupDocument, productOptionGroupListDocument } from
 
 export const Route = createFileRoute('/_authenticated/_product-option-groups/product-option-groups')({
     component: FacetListPage,
-    loader: () => ({ breadcrumb: () => <Trans>Product Option Groups</Trans> }),
+    loader: () => ({ breadcrumb: () => <Trans>Option Groups</Trans> }),
 });
 
 function FacetListPage() {
     return (
         <ListPage
             pageId="product-option-groups-list"
-            title="Product Option Groups"
+            title="Option Groups"
             listQuery={productOptionGroupListDocument}
             deleteMutation={deleteProductOptionGroupDocument}
             customizeColumns={{
                 name: {
-                    header: 'Product Option Group Name',
+                    header: 'Group Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 optionList: {
@@ -112,7 +112,7 @@ function FacetListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Product Option Group</Trans>
+                            <Trans>New Option Group</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

@@ -46,7 +46,7 @@ export function registerDefaults() {
                     },
                     {
                         id: 'product-option-groups',
-                        title: 'Product Option Groups',
+                        title: 'Option Groups',
                         url: '/product-option-groups',
                         order: 300,
                     },
