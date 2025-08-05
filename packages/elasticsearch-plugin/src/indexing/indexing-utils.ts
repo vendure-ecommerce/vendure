@@ -109,8 +109,10 @@ export async function createIndices(
 export async function deleteIndices(client: Client, prefix: string) {
     try {
         const index = await getIndexNameByAlias(client, prefix + VARIANT_INDEX_NAME);
-        await client.indices.delete({ index });
-        Logger.verbose(`Deleted index "${index}"`, loggerCtx);
+        if (index) {
+            await client.indices.delete({ index });
+            Logger.verbose(`Deleted index "${index}"`, loggerCtx);
+        }
     } catch (e: any) {
         Logger.error(e, loggerCtx);
     }
@@ -152,7 +154,8 @@ export async function getIndexNameByAlias(client: Client, aliasName: string) {
         const alias = await client.indices.getAlias({
             name: aliasName,
         });
-        return Object.keys(alias.body)[0];
+        const keys = Object.keys(alias);
+        return keys.at(0)
     } else {
         return aliasName;
     }
