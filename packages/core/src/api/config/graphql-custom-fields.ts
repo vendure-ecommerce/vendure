@@ -758,7 +758,7 @@ function getDeprecationDirective(field: CustomFieldConfig): string {
 
     if (typeof field.deprecated === 'string') {
         // Escape quotes in the deprecation reason
-        const escapedReason = field.deprecated.replace(/"/g, '\\"');
+        const escapedReason = (field.deprecated as string).replace(/"/g, '\\"');
         return `@deprecated(reason: "${escapedReason}")`;
     }
 

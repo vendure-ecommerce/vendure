@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
@@ -11,17 +11,19 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { filter } from 'rxjs/operators';
 import { FindOptionsUtils, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -33,6 +35,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductOptionGroupChangeEvent } from '../../event-bus/events/product-option-group-change-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
@@ -53,7 +56,7 @@ import { ProductVariantService } from './product-variant.service';
  */
 @Injectable()
 @Instrument()
-export class ProductService {
+export class ProductService implements OnModuleInit {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
     constructor(
@@ -70,6 +73,18 @@ export class ProductService {
         private translator: TranslatorService,
         private productOptionGroupService: ProductOptionGroupService,
     ) {}
+
+    /**
+     * @internal
+     */
+    async onModuleInit() {
+        this.eventBus
+            .ofType(ProductVariantEvent)
+            .pipe(filter(event => event.type === 'deleted'))
+            .subscribe(async event => {
+                await this.removeOrphanedOptionGroups(event.ctx, event.entity);
+            });
+    }
 
     async findAll(
         ctx: RequestContext,
@@ -388,17 +403,16 @@ export class ProductService {
         const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
             where: { id: optionGroupId },
-            relations: ['product'],
+            relations: ['channels'],
         });
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (optionGroup.product) {
-            const translated = this.translator.translate(optionGroup.product, ctx);
-            throw new UserInputError('error.product-option-group-already-assigned', {
-                groupCode: optionGroup.code,
-                productName: translated.name,
-            });
+
+        // Check if the option group is already assigned to this product
+        const alreadyAssigned = product.optionGroups.some(og => idsAreEqual(og.id, optionGroupId));
+        if (alreadyAssigned) {
+            return assertFound(this.findOne(ctx, productId));
         }
 
         if (Array.isArray(product.optionGroups)) {
@@ -475,5 +489,61 @@ export class ProductService {
             throw new EntityNotFoundError('Product', productId);
         }
         return product;
+    }
+
+    /**
+     * @description
+     * Removes option groups that have become orphaned (no longer used by any active variants)
+     * after variant deletion. This is called when ProductVariantEvent with type 'deleted' is emitted.
+     */
+    private async removeOrphanedOptionGroups(
+        ctx: RequestContext,
+        deletedVariants: ProductVariant[],
+    ): Promise<void> {
+        // Group deleted variants by product
+        const variantsByProduct = new Map<ID, ProductVariant[]>();
+        for (const variant of deletedVariants) {
+            if (!variant.productId) continue;
+
+            const variants = variantsByProduct.get(variant.productId) || [];
+            variants.push(variant);
+            variantsByProduct.set(variant.productId, variants);
+        }
+
+        // Process each affected product
+        for (const [productId, variants] of variantsByProduct) {
+            try {
+                const product = await this.getProductWithOptionGroups(ctx, productId);
+
+                // Check each option group to see if it's still in use
+                for (const optionGroup of product.optionGroups) {
+                    const isGroupInUse = product.variants.some(
+                        variant =>
+                            variant.deletedAt == null &&
+                            variant.options.some(option => idsAreEqual(option.groupId, optionGroup.id)),
+                    );
+
+                    if (!isGroupInUse) {
+                        // Remove the option group from the product
+                        product.optionGroups = product.optionGroups.filter(
+                            og => !idsAreEqual(og.id, optionGroup.id),
+                        );
+                        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
+
+                        // Emit event for the removal
+                        await this.eventBus.publish(
+                            new ProductOptionGroupChangeEvent(ctx, product, optionGroup.id, 'removed'),
+                        );
+                    }
+                }
+            } catch (error) {
+                // Log error but don't fail - this is a cleanup operation
+                // and shouldn't break the main deletion flow
+                Logger.error(
+                    `Failed to cleanup option groups for product ${productId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    ProductService.name,
+                );
+            }
+        }
     }
 }

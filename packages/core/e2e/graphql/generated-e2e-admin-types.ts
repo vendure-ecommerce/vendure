@@ -274,6 +274,11 @@ export type AssignPaymentMethodsToChannelInput = {
     paymentMethodIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignProductOptionGroupsToChannelInput = {
+    channelId: Scalars['ID']['input'];
+    productOptionGroupIds: Array<Scalars['ID']['input']>;
+};
+
 export type AssignProductVariantsToChannelInput = {
     channelId: Scalars['ID']['input'];
     priceFactor?: InputMaybe<Scalars['Float']['input']>;
@@ -315,6 +320,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -864,7 +871,7 @@ export type CreateProductInput = {
 export type CreateProductOptionGroupInput = {
     code: Scalars['String']['input'];
     customFields?: InputMaybe<Scalars['JSON']['input']>;
-    options: Array<CreateGroupOptionInput>;
+    options?: InputMaybe<Array<CreateGroupOptionInput>>;
     translations: Array<ProductOptionGroupTranslationInput>;
 };
 
@@ -1319,6 +1326,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1524,6 +1533,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1674,6 +1685,7 @@ export enum ErrorCode {
     PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
     PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
     PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
+    PRODUCT_OPTION_GROUP_IN_USE_ERROR = 'PRODUCT_OPTION_GROUP_IN_USE_ERROR',
     PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
     QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
     REFUND_AMOUNT_ERROR = 'REFUND_AMOUNT_ERROR',
@@ -1859,6 +1871,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2066,6 +2080,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2534,6 +2550,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2549,6 +2567,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2714,6 +2734,8 @@ export type Mutation = {
     assignFacetsToChannel: Array<Facet>;
     /** Assigns PaymentMethods to the specified Channel */
     assignPaymentMethodsToChannel: Array<PaymentMethod>;
+    /** Assigns ProductOptionGroups to the specified Channel */
+    assignProductOptionGroupsToChannel: Array<ProductOptionGroup>;
     /** Assigns ProductVariants to the specified Channel */
     assignProductVariantsToChannel: Array<ProductVariant>;
     /** Assigns all ProductVariants of Product to the specified Channel */
@@ -2763,6 +2785,8 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOptionGroup */
     createProductOptionGroup: ProductOptionGroup;
+    /** Create one or more ProductOptions */
+    createProductOptions: Array<ProductOption>;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
     createProductVariants: Array<Maybe<ProductVariant>>;
     createPromotion: CreatePromotionResult;
@@ -2831,6 +2855,12 @@ export type Mutation = {
     deleteProduct: DeletionResponse;
     /** Delete a ProductOption */
     deleteProductOption: DeletionResponse;
+    /** Delete an existing ProductOptionGroup */
+    deleteProductOptionGroup: DeletionResponse;
+    /** Delete multiple existing ProductOptionGroups */
+    deleteProductOptionGroups: Array<DeletionResponse>;
+    /** Delete multiple ProductOptions */
+    deleteProductOptions: Array<DeletionResponse>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
     /** Delete multiple ProductVariants */
@@ -2914,6 +2944,8 @@ export type Mutation = {
     removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
     /** Removes PaymentMethods from the specified Channel */
     removePaymentMethodsFromChannel: Array<PaymentMethod>;
+    /** Removes ProductOptionGroups from the specified Channel */
+    removeProductOptionGroupsFromChannel: Array<RemoveProductOptionGroupFromChannelResult>;
     /** Removes ProductVariants from the specified Channel */
     removeProductVariantsFromChannel: Array<ProductVariant>;
     /** Removes all ProductVariants of Product from the specified Channel */
@@ -2984,10 +3016,12 @@ export type Mutation = {
     updatePaymentMethod: PaymentMethod;
     /** Update an existing Product */
     updateProduct: Product;
-    /** Create a new ProductOption within a ProductOptionGroup */
+    /** Update one ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
+    /** Update one or more ProductOptions within a ProductOptionGroup */
+    updateProductOptions: Array<ProductOption>;
     /** Update an existing ProductVariant */
     updateProductVariant: ProductVariant;
     /** Update existing ProductVariants */
@@ -3075,6 +3109,10 @@ export type MutationAssignFacetsToChannelArgs = {
 
 export type MutationAssignPaymentMethodsToChannelArgs = {
     input: AssignPaymentMethodsToChannelInput;
+};
+
+export type MutationAssignProductOptionGroupsToChannelArgs = {
+    input: AssignProductOptionGroupsToChannelInput;
 };
 
 export type MutationAssignProductVariantsToChannelArgs = {
@@ -3179,6 +3217,10 @@ export type MutationCreateProductOptionArgs = {
 
 export type MutationCreateProductOptionGroupArgs = {
     input: CreateProductOptionGroupInput;
+};
+
+export type MutationCreateProductOptionsArgs = {
+    input: Array<CreateProductOptionInput>;
 };
 
 export type MutationCreateProductVariantsArgs = {
@@ -3328,6 +3370,21 @@ export type MutationDeleteProductArgs = {
 
 export type MutationDeleteProductOptionArgs = {
     id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteProductOptionGroupArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteProductOptionGroupsArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    ids: Array<Scalars['ID']['input']>;
+};
+
+export type MutationDeleteProductOptionsArgs = {
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    ids: Array<Scalars['ID']['input']>;
 };
 
 export type MutationDeleteProductVariantArgs = {
@@ -3480,6 +3537,10 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 
 export type MutationRemovePaymentMethodsFromChannelArgs = {
     input: RemovePaymentMethodsFromChannelInput;
+};
+
+export type MutationRemoveProductOptionGroupsFromChannelArgs = {
+    input: RemoveProductOptionGroupsFromChannelInput;
 };
 
 export type MutationRemoveProductVariantsFromChannelArgs = {
@@ -3658,6 +3719,10 @@ export type MutationUpdateProductOptionArgs = {
 
 export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
+};
+
+export type MutationUpdateProductOptionsArgs = {
+    input: Array<UpdateProductOptionInput>;
 };
 
 export type MutationUpdateProductVariantArgs = {
@@ -4509,6 +4574,18 @@ export type ProductOption = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    groupId?: InputMaybe<IdOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ProductOptionGroup = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
@@ -4516,9 +4593,59 @@ export type ProductOptionGroup = Node & {
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
+    optionList: ProductOptionList;
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProductOptionGroupOptionListArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
+};
+
+export type ProductOptionGroupFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ProductOptionGroupInUseError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String']['output'];
+    optionGroupCode: Scalars['String']['output'];
+    productCount: Scalars['Int']['output'];
+    variantCount: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupList = PaginatedList & {
+    items: Array<ProductOptionGroup>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionGroupFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionGroupSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionGroupSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -4541,6 +4668,33 @@ export type ProductOptionInUseError = ErrorResult & {
     message: Scalars['String']['output'];
     optionGroupCode: Scalars['String']['output'];
     productVariantCount: Scalars['Int']['output'];
+};
+
+export type ProductOptionList = PaginatedList & {
+    items: Array<ProductOption>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    groupId?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionTranslation = {
@@ -4910,7 +5064,8 @@ export type Query = {
     /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
     product?: Maybe<Product>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
-    productOptionGroups: Array<ProductOptionGroup>;
+    productOptionGroups: ProductOptionGroupList;
+    productOptions: ProductOptionList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
     /** List ProductVariants either all or for the specific product. */
@@ -5083,7 +5238,11 @@ export type QueryProductOptionGroupArgs = {
 };
 
 export type QueryProductOptionGroupsArgs = {
-    filterTerm?: InputMaybe<Scalars['String']['input']>;
+    options?: InputMaybe<ProductOptionGroupListOptions>;
+};
+
+export type QueryProductOptionsArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
 };
 
 export type QueryProductVariantArgs = {
@@ -5300,6 +5459,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5345,6 +5506,14 @@ export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModifi
 export type RemovePaymentMethodsFromChannelInput = {
     channelId: Scalars['ID']['input'];
     paymentMethodIds: Array<Scalars['ID']['input']>;
+};
+
+export type RemoveProductOptionGroupFromChannelResult = ProductOptionGroup | ProductOptionGroupInUseError;
+
+export type RemoveProductOptionGroupsFromChannelInput = {
+    channelId: Scalars['ID']['input'];
+    force?: InputMaybe<Scalars['Boolean']['input']>;
+    productOptionGroupIds: Array<Scalars['ID']['input']>;
 };
 
 export type RemoveProductVariantsFromChannelInput = {
@@ -5826,6 +5995,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5876,6 +6047,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6101,6 +6274,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -11974,6 +12149,60 @@ export type DeleteProductOptionMutationVariables = Exact<{
 
 export type DeleteProductOptionMutation = {
     deleteProductOption: { result: DeletionResult; message?: string | null };
+};
+
+export type GetProductOptionGroupsQueryVariables = Exact<{
+    options?: InputMaybe<ProductOptionGroupListOptions>;
+}>;
+
+export type GetProductOptionGroupsQuery = {
+    productOptionGroups: {
+        totalItems: number;
+        items: Array<{
+            id: string;
+            code: string;
+            name: string;
+            options: Array<{ id: string; code: string; name: string }>;
+            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+        }>;
+    };
+};
+
+export type AssignProductOptionGroupsToChannelMutationVariables = Exact<{
+    input: AssignProductOptionGroupsToChannelInput;
+}>;
+
+export type AssignProductOptionGroupsToChannelMutation = {
+    assignProductOptionGroupsToChannel: Array<{ id: string; name: string }>;
+};
+
+export type RemoveProductOptionGroupsFromChannelMutationVariables = Exact<{
+    input: RemoveProductOptionGroupsFromChannelInput;
+}>;
+
+export type RemoveProductOptionGroupsFromChannelMutation = {
+    removeProductOptionGroupsFromChannel: Array<
+        | { id: string; name: string }
+        | {
+              errorCode: ErrorCode;
+              message: string;
+              optionGroupCode: string;
+              productCount: number;
+              variantCount: number;
+          }
+    >;
+};
+
+export type GetProductWithOptionGroupsQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type GetProductWithOptionGroupsQuery = {
+    product?: {
+        id: string;
+        name: string;
+        optionGroups: Array<{ id: string; code: string; name: string }>;
+    } | null;
 };
 
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
@@ -36658,6 +36887,283 @@ export const DeleteProductOptionDocument = {
         },
     ],
 } as unknown as DocumentNode<DeleteProductOptionMutation, DeleteProductOptionMutationVariables>;
+export const GetProductOptionGroupsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetProductOptionGroups' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
+                    type: {
+                        kind: 'NamedType',
+                        name: { kind: 'Name', value: 'ProductOptionGroupListOptions' },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'productOptionGroups' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'options' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'ProductOptionGroup' },
+                                            },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'ProductOptionGroup' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProductOptionGroup' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'options' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'translations' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetProductOptionGroupsQuery, GetProductOptionGroupsQueryVariables>;
+export const AssignProductOptionGroupsToChannelDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'AssignProductOptionGroupsToChannel' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'NamedType',
+                            name: { kind: 'Name', value: 'AssignProductOptionGroupsToChannelInput' },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'assignProductOptionGroupsToChannel' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    AssignProductOptionGroupsToChannelMutation,
+    AssignProductOptionGroupsToChannelMutationVariables
+>;
+export const RemoveProductOptionGroupsFromChannelDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'RemoveProductOptionGroupsFromChannel' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'NamedType',
+                            name: { kind: 'Name', value: 'RemoveProductOptionGroupsFromChannelInput' },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'removeProductOptionGroupsFromChannel' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ProductOptionGroup' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ProductOptionGroupInUseError' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'optionGroupCode' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'productCount' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'variantCount' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    RemoveProductOptionGroupsFromChannelMutation,
+    RemoveProductOptionGroupsFromChannelMutationVariables
+>;
+export const GetProductWithOptionGroupsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetProductWithOptionGroups' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'product' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'optionGroups' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetProductWithOptionGroupsQuery, GetProductWithOptionGroupsQueryVariables>;
 export const RemoveOptionGroupFromProductDocument = {
     kind: 'Document',
     definitions: [

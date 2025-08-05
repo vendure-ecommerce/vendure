@@ -334,12 +334,12 @@ export class ProductDataService {
         });
     }
 
-    getProductOptionGroups(filterTerm?: string) {
+    getProductOptionGroups(options?: Codegen.ProductOptionGroupListOptions) {
         return this.baseDataService.query<
             Codegen.GetProductOptionGroupsQuery,
             Codegen.GetProductOptionGroupsQueryVariables
         >(GET_PRODUCT_OPTION_GROUPS, {
-            filterTerm,
+            options,
         });
     }
 

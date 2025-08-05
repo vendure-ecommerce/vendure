@@ -9,6 +9,7 @@ import {
     PageService,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
+
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
