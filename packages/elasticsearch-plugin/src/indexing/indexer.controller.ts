@@ -490,7 +490,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     },
                 });
 
-                if (originalVariantAliasExist.body) {
+                if (originalVariantAliasExist.body && originalVariantIndexName) {
                     await this.client.indices.delete({
                         index: [originalVariantIndexName],
                     });
