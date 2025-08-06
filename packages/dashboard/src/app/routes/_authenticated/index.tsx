@@ -14,7 +14,7 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
-import { useUserSettings } from '@/vdb/index.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState, useRef } from 'react';
 
