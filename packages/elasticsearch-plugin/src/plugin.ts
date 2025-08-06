@@ -63,11 +63,25 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * to support a wide range of use-cases such as indexing of custom properties, fine control over search index configuration, and to leverage
  * advanced Elasticsearch features like spacial search.
  *
- * ## Installation
+ * **ElasticSearch v9.1.0 is supported**
  *
- * **Requires Elasticsearch v7.0 < required Elasticsearch version < 7.10 **
- * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
- * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519).
+ * **Important information about versions and ElasticSearch security:**
+ * The version of ElasticSearch that is deployed, the version of the JS library @elastic/elasticsearch installed in your Vendure project and the version
+ * of the JS library @elastic/elasticsearch used in the @vendure/elasticsearch-plugin must all match to avoid any issues. ElasticSearch does not allow @latest
+ * in its repository so these versions must be updated regularly.
+ * | Package  | Version |
+ * | ------------- | ------------- |
+ * | ElasticSearch  | v9.1.0  |
+ * | @elastic/elasticsearch  | v9.1.0  |
+ * | @vendure/elasticsearch-plugin | v3.5.0  |
+ * | Last updated | Aug 5, 2025 |
+ *
+ * With ElasticSearch v8+, basic authentication, SSL, and TLS are enabled by default and may result in your client and plugin not being able to connect to
+ * ElasticSearch successfully if your client is not configured appropriately. You must also set ```xpack.license.self_generated.type=basic``` if you are
+ * using the free Community Edition of ElasticSearch.
+ *
+ * Review the ElasticSearch docker [example](<https://github.com/vendure-ecommerce/vendure/blob/master/docker-compose.yml>) here for development
+ * and testing without authentication and security enabled. Refer to ElasticSearch documentation to enable authentication and security in production.
  *
  * `yarn add \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
  *

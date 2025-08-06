@@ -25,7 +25,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@elastic/elasticsearch": "~7.9.1",
+        "@elastic/elasticsearch": "9.1.0",
         "deepmerge": "^4.2.2",
         "fast-deep-equal": "^3.1.3"
     },
