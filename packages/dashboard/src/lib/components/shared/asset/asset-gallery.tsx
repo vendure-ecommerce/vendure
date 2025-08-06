@@ -89,6 +89,7 @@ export interface AssetGalleryProps {
     className?: string;
     onFilesDropped?: (files: File[]) => void;
     bulkActions?: AssetBulkAction[];
+    displayBulkActions?: boolean;
 }
 
 export function AssetGallery({
@@ -102,6 +103,7 @@ export function AssetGallery({
     className = '',
     onFilesDropped,
     bulkActions,
+    displayBulkActions = true,
 }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
@@ -272,7 +274,9 @@ export function AssetGallery({
             )}
 
             {/* Bulk actions bar */}
-            <AssetBulkActions selection={selected} bulkActions={bulkActions} refetch={refetch} />
+            {displayBulkActions ? (
+                <AssetBulkActions selection={selected} bulkActions={bulkActions} refetch={refetch} />
+            ) : null}
 
             <div
                 {...getRootProps()}
@@ -291,7 +295,10 @@ export function AssetGallery({
                     </div>
                 )}
 
-                <div data-asset-gallery className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
+                <div
+                    data-asset-gallery
+                    className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1"
+                >
                     {isLoading ? (
                         <div className="col-span-full flex justify-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
