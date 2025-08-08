@@ -14,6 +14,7 @@ export interface UserChannelPermissions {
 
 /**
  * Returns an array of Channels and permissions on those Channels for the given User.
+ * @deprecated See `RolePermissionResolverStrategy`
  */
 export function getUserChannelsPermissions(user: User): UserChannelPermissions[] {
     return getChannelPermissions(user.roles);
