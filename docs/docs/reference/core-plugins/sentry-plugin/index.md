@@ -87,7 +87,7 @@ tracing and profiling, with the following environment variables:
 
 The sample rate for tracing should be between 0 and 1. The sample rate for profiling should be between 0 and 1.
 
-By default, both are set to 1.0. **Please change in production to a lower value.**
+By default, both are set to `undefined`, which means that tracing and profiling are disabled.
 
 ## Instrumenting your own code
 
