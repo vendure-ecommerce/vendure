@@ -846,6 +846,11 @@ export class WebsiteContentService {
 
 ## Frontend Implementation
 
+## Data Fetching
+
+NEVER use Apollo Client or any other fetching library. We expose our own API client via `import { api } from '@/vdb/graphql/api.js';`
+The API Client must be combined with Tanstack Query, mostly `useQuery` or `useMutation`.
+
 ### Integration with App Layout
 
 Based on the current dashboard structure, the command palette should be integrated into the main app layout to be available globally. Here's how to modify the existing `app-layout.tsx`:
@@ -859,7 +864,7 @@ import { useKeyboardShortcuts } from '@/vdb/hooks/use-keyboard-shortcuts.js';
 export function AppLayout() {
     const { settings } = useUserSettings();
     const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useKeyboardShortcuts();
-    
+
     return (
         <SearchProvider>
             <SidebarProvider>
@@ -883,9 +888,9 @@ export function AppLayout() {
                     </div>
                 </SidebarInset>
                 <PrereleasePopup />
-                
+
                 {/* Global Command Palette */}
-                <CommandPalette 
+                <CommandPalette
                     isOpen={isCommandPaletteOpen}
                     onOpenChange={setIsCommandPaletteOpen}
                 />
@@ -1013,15 +1018,10 @@ export const useQuickActions = () => {
         const currentContextActions = getContextActions(
             location.pathname,
             // Extract entity type from route
-            location.pathname.split('/')[1]
+            location.pathname.split('/')[1],
         );
 
-        return [
-            ...builtInGlobalActions,
-            ...globalActions,
-            ...currentContextActions,
-            ...contextActions,
-        ];
+        return [...builtInGlobalActions, ...globalActions, ...currentContextActions, ...contextActions];
     }, [location.pathname, globalActions, contextActions]);
 
     return {
@@ -1057,7 +1057,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
     const [isSearching, setIsSearching] = useState(false);
 
     return (
-        <SearchContext.Provider 
+        <SearchContext.Provider
             value={{
                 isCommandPaletteOpen,
                 setIsCommandPaletteOpen,
@@ -1100,17 +1100,17 @@ export const useGlobalSearch = () => {
                 query: debouncedQuery,
                 types: [], // All types by default
                 limit: 20,
-            }
+            },
         },
         skip: !debouncedQuery || debouncedQuery.length < 2,
-        onCompleted: (data) => {
+        onCompleted: data => {
             setSearchResults(data.globalSearch.items);
             setIsSearching(false);
         },
         onError: () => {
             setSearchResults([]);
             setIsSearching(false);
-        }
+        },
     });
 
     // Update loading state
@@ -1126,6 +1126,7 @@ export const useGlobalSearch = () => {
     };
 };
 ```
+
     };
 
     // Register custom actions from extensions
@@ -1142,7 +1143,9 @@ export const useGlobalSearch = () => {
         contextActions: [...getContextActions(location.pathname), ...contextActions],
         registerCustomAction,
     };
+
 };
+
 ```
 
 ### Integration Points
@@ -1391,7 +1394,7 @@ packages/dashboard/src/lib/components/global-search/
 ├── use-search-shortcuts.ts
 └── use-quick-actions.ts
 
-```
+````
 
 ### Files to Modify
 
@@ -1446,7 +1449,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER search_vector_update
     BEFORE INSERT OR UPDATE ON search_index
     FOR EACH ROW EXECUTE FUNCTION update_search_vector();
-```
+````
 
 ## Configuration Examples
 

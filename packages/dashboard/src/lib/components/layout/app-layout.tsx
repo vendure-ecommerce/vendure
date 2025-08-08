@@ -2,6 +2,9 @@ import { AppSidebar } from '@/vdb/components/layout/app-sidebar.js';
 import { DevModeIndicator } from '@/vdb/components/layout/dev-mode-indicator.js';
 import { GeneratedBreadcrumbs } from '@/vdb/components/layout/generated-breadcrumbs.js';
 import { PrereleasePopup } from '@/vdb/components/layout/prerelease-popup.js';
+import { CommandPalette } from '@/vdb/components/global-search/command-palette.js';
+import { SearchTrigger } from '@/vdb/components/global-search/search-trigger.js';
+import { useKeyboardShortcuts } from '@/vdb/components/global-search/hooks/use-keyboard-shortcuts.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/vdb/components/ui/sidebar.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -10,6 +13,8 @@ import { Alerts } from '../shared/alerts.js';
 
 export function AppLayout() {
     const { settings } = useUserSettings();
+    const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useKeyboardShortcuts();
+    
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -23,6 +28,7 @@ export function AppLayout() {
                                 <GeneratedBreadcrumbs />
                             </div>
                             <div className="flex items-center justify-end gap-2">
+                                <SearchTrigger />
                                 {settings.devMode && <DevModeIndicator />}
                                 <Alerts />
                             </div>
@@ -32,6 +38,12 @@ export function AppLayout() {
                 </div>
             </SidebarInset>
             <PrereleasePopup />
+            
+            {/* Global Command Palette */}
+            <CommandPalette 
+                isOpen={isCommandPaletteOpen}
+                onOpenChange={setIsCommandPaletteOpen}
+            />
         </SidebarProvider>
     );
 }
