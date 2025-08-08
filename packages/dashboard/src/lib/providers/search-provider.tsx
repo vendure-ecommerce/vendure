@@ -2,7 +2,7 @@ import { createContext, useContext, useState, ReactNode, useCallback } from 'rea
 
 export interface SearchResult {
     id: string;
-    type: SearchResultType;
+    type: SearchResultType | string; // Allow both enum and string for flexibility
     title: string;
     subtitle?: string;
     description?: string;

@@ -8,6 +8,7 @@ import {
 import { DocumentNode } from 'graphql';
 import React from 'react';
 
+import { QuickActionDefinition } from '../../components/global-search/quick-actions-registry.js';
 import { DataDisplayComponent, DataInputComponent } from '../component-registry/component-registry.js';
 import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
 import { CustomFormComponentInputProps } from '../form-engine/custom-form-component.js';
@@ -28,4 +29,5 @@ export interface GlobalRegistryContents {
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
     detailQueryDocumentRegistry: Map<string, DocumentNode[]>;
     loginExtensions: DashboardLoginExtensions;
+    searchQuickActions: Map<string, QuickActionDefinition>;
 }

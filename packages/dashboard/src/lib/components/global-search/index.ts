@@ -17,3 +17,9 @@ export { RecentSearches } from './recent-searches.js';
 export { useGlobalSearch } from './hooks/use-global-search.js';
 export { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts.js';
 export { useQuickActions } from './hooks/use-quick-actions.js';
+
+// Registry (for centralized action management)
+export * from './quick-actions-registry.js';
+
+// Legacy context exports (now from registry)
+export type { QuickActionDefinition as QuickAction, QuickActionContext } from './quick-actions-registry.js';

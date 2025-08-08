@@ -1,10 +1,10 @@
 import { CommandItem, CommandShortcut } from '@/vdb/components/ui/command.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
-import { QuickAction } from '@/vdb/providers/search-provider.js';
+import { QuickActionDefinition } from './quick-actions-registry.js';
 import * as Icons from 'lucide-react';
 
 interface QuickActionItemProps {
-    action: QuickAction;
+    action: QuickActionDefinition;
     onSelect: (actionId: string) => void;
 }
 
@@ -28,11 +28,7 @@ export function QuickActionItem({ action, onSelect }: QuickActionItemProps) {
             <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
                     <span className="font-medium">{action.label}</span>
-                    {action.isContextAware && (
-                        <Badge variant="secondary" className="text-xs">
-                            Context
-                        </Badge>
-                    )}
+                    {/* Context badge removed since visibility is now determined by the visible function */}
                 </div>
                 {action.description && (
                     <p className="text-xs text-muted-foreground">{action.description}</p>

@@ -2,6 +2,7 @@ import { CommandGroup } from '@/vdb/components/ui/command.js';
 import { QuickActionItem } from './quick-action-item.js';
 import { useQuickActions } from './hooks/use-quick-actions.js';
 import { useMemo } from 'react';
+import { QuickActionDefinition } from './quick-actions-registry.js';
 
 interface QuickActionsListProps {
     searchQuery: string;
