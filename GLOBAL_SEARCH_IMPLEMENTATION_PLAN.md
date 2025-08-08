@@ -846,6 +846,55 @@ export class WebsiteContentService {
 
 ## Frontend Implementation
 
+### Integration with App Layout
+
+Based on the current dashboard structure, the command palette should be integrated into the main app layout to be available globally. Here's how to modify the existing `app-layout.tsx`:
+
+```typescript
+// packages/dashboard/src/lib/components/layout/app-layout.tsx
+import { CommandPalette } from '@/vdb/components/search/command-palette.js';
+import { SearchProvider } from '@/vdb/providers/search-provider.js';
+import { useKeyboardShortcuts } from '@/vdb/hooks/use-keyboard-shortcuts.js';
+
+export function AppLayout() {
+    const { settings } = useUserSettings();
+    const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useKeyboardShortcuts();
+    
+    return (
+        <SearchProvider>
+            <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                    <div className="container mx-auto">
+                        <header className="border-b border-border flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                            <div className="flex items-center justify-between gap-2 px-4 w-full">
+                                <div className="flex items-center justify-start gap-2">
+                                    <SidebarTrigger className="-ml-1" />
+                                    <Separator orientation="vertical" className="mr-2 h-4" />
+                                    <GeneratedBreadcrumbs />
+                                </div>
+                                <div className="flex items-center justify-end gap-2">
+                                    {settings.devMode && <DevModeIndicator />}
+                                    <Alerts />
+                                </div>
+                            </div>
+                        </header>
+                        <Outlet />
+                    </div>
+                </SidebarInset>
+                <PrereleasePopup />
+                
+                {/* Global Command Palette */}
+                <CommandPalette 
+                    isOpen={isCommandPaletteOpen}
+                    onOpenChange={setIsCommandPaletteOpen}
+                />
+            </SidebarProvider>
+        </SearchProvider>
+    );
+}
+```
+
 ### Search Component Structure
 
 ```
@@ -948,6 +997,135 @@ export const useQuickActions = () => {
         }
 
         return actions;
+    };
+
+    // Register custom actions (from defineDashboardExtensions)
+    const registerAction = useCallback((action: QuickAction) => {
+        if (action.isContextAware) {
+            setContextActions(prev => [...prev, action]);
+        } else {
+            setGlobalActions(prev => [...prev, action]);
+        }
+    }, []);
+
+    // Get all available actions for current context
+    const getAvailableActions = useMemo(() => {
+        const currentContextActions = getContextActions(
+            location.pathname,
+            // Extract entity type from route
+            location.pathname.split('/')[1]
+        );
+
+        return [
+            ...builtInGlobalActions,
+            ...globalActions,
+            ...currentContextActions,
+            ...contextActions,
+        ];
+    }, [location.pathname, globalActions, contextActions]);
+
+    return {
+        actions: getAvailableActions,
+        registerAction,
+    };
+};
+```
+
+### Search Hooks and Context
+
+```typescript
+// packages/dashboard/src/lib/providers/search-provider.tsx
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+interface SearchContextType {
+    isCommandPaletteOpen: boolean;
+    setIsCommandPaletteOpen: (open: boolean) => void;
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+    searchResults: SearchResult[];
+    setSearchResults: (results: SearchResult[]) => void;
+    isSearching: boolean;
+    setIsSearching: (searching: boolean) => void;
+}
+
+const SearchContext = createContext<SearchContextType | undefined>(undefined);
+
+export const SearchProvider = ({ children }: { children: ReactNode }) => {
+    const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+
+    return (
+        <SearchContext.Provider 
+            value={{
+                isCommandPaletteOpen,
+                setIsCommandPaletteOpen,
+                searchQuery,
+                setSearchQuery,
+                searchResults,
+                setSearchResults,
+                isSearching,
+                setIsSearching,
+            }}
+        >
+            {children}
+        </SearchContext.Provider>
+    );
+};
+
+export const useSearchContext = () => {
+    const context = useContext(SearchContext);
+    if (!context) {
+        throw new Error('useSearchContext must be used within SearchProvider');
+    }
+    return context;
+};
+```
+
+```typescript
+// packages/dashboard/src/lib/hooks/use-global-search.ts
+import { useQuery } from '@apollo/client';
+import { useDebounce } from '@/vdb/hooks/use-debounce.js';
+import { useSearchContext } from '@/vdb/providers/search-provider.js';
+import { globalSearchDocument } from '@/vdb/graphql/search.js';
+
+export const useGlobalSearch = () => {
+    const { searchQuery, setSearchResults, setIsSearching } = useSearchContext();
+    const debouncedQuery = useDebounce(searchQuery, 300);
+
+    const { data, loading, error } = useQuery(globalSearchDocument, {
+        variables: {
+            input: {
+                query: debouncedQuery,
+                types: [], // All types by default
+                limit: 20,
+            }
+        },
+        skip: !debouncedQuery || debouncedQuery.length < 2,
+        onCompleted: (data) => {
+            setSearchResults(data.globalSearch.items);
+            setIsSearching(false);
+        },
+        onError: () => {
+            setSearchResults([]);
+            setIsSearching(false);
+        }
+    });
+
+    // Update loading state
+    React.useEffect(() => {
+        setIsSearching(loading);
+    }, [loading, setIsSearching]);
+
+    return {
+        results: data?.globalSearch.items || [],
+        loading,
+        error,
+        totalCount: data?.globalSearch.totalItems || 0,
+    };
+};
+```
     };
 
     // Register custom actions from extensions
