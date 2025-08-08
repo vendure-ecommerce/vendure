@@ -1,9 +1,7 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./lib"
-  },
-  "files": [
-    "./index.ts"
-  ]
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist"
+    },
+    "files": ["./index.ts", "./instrument.ts"]
 }
