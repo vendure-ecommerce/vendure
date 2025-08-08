@@ -9,6 +9,7 @@ import {
     registerLayoutExtensions,
     registerLoginExtensions,
     registerNavigationExtensions,
+    registerQuickActionsExtensions,
     registerWidgetExtensions,
 } from './logic/index.js';
 
@@ -61,8 +62,12 @@ export function defineDashboardExtension(extension: DashboardExtension) {
         // Register login extensions
         registerLoginExtensions(extension.login);
 
+        // Register quick actions extensions
+        registerQuickActionsExtensions(extension.quickActions);
+
         // Execute extension source change callbacks
         const callbacks = globalRegistry.get('extensionSourceChangeCallbacks');
+
         if (callbacks.size) {
             for (const callback of callbacks) {
                 callback();
