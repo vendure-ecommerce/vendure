@@ -1,8 +1,6 @@
 import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
 import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
 import { api } from '@/vdb/graphql/api.js';
-import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useQuery } from '@tanstack/react-query';
 import { endOfDay, endOfMonth, startOfDay, startOfMonth, subDays, subMonths } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -139,9 +137,9 @@ export function OrdersSummaryWidget() {
                 </Tabs>
             }
         >
-            <div className="flex flex-col gap-4 items-center justify-center text-center">
-                <div className="flex flex-col gap-2">
-                    <p className="text-lg text-muted-foreground">Total Orders</p>
+            <div className="flex flex-col lg:gap-4 items-center justify-center text-center">
+                <div className="flex flex-col lg:gap-2">
+                    <p className="lg:text-lg text-muted-foreground">Total Orders</p>
                     <p className="text-3xl font-semibold">
                         <AnimatedNumber
                             animationConfig={{ mass: 0.5, stiffness: 90, damping: 10 }}
@@ -150,8 +148,8 @@ export function OrdersSummaryWidget() {
                     </p>
                     <PercentageChange value={orderChange} />
                 </div>
-                <div className="flex flex-col gap-2">
-                    <p className="text-lg text-muted-foreground">Total Revenue</p>
+                <div className="flex flex-col lg:gap-2">
+                    <p className="lg:text-lg text-muted-foreground">Total Revenue</p>
                     <p className="text-3xl font-semibold">
                         <AnimatedCurrency
                             animationConfig={{ mass: 0.2, stiffness: 90, damping: 10 }}

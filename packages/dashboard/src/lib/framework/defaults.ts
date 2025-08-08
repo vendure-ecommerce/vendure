@@ -231,6 +231,7 @@ export function registerDefaults() {
         name: 'Metrics Widget',
         component: MetricsWidget,
         defaultSize: { w: 12, h: 6, x: 0, y: 0 },
+        minSize: { w: 6, h: 4 },
     });
 
     registerDashboardWidget({
