@@ -7,6 +7,16 @@
     "files": [
         "dist/**/*"
     ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./preload": {
+            "types": "./dist/instrument.d.ts",
+            "default": "./dist/instrument.js"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/vendure-ecommerce/vendure"
