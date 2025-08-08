@@ -123,7 +123,14 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .limit(take)
             .offset(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.defaultCurrencyCode)));
+            .then(res =>
+                res.map(r =>
+                    mapToSearchResult(
+                        r,
+                        this.options.indexCurrencyCode ? r.si_currencyCode : ctx.channel.defaultCurrencyCode,
+                    ),
+                ),
+            );
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -259,6 +266,10 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
 
+        if (this.options.indexCurrencyCode) {
+            qb.andWhere('si.currencyCode = :currencyCode', { currencyCode: ctx.currencyCode });
+        }
+
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
             qb.addSelect('BIT_OR(si.enabled)', 'productEnabled');
@@ -272,7 +283,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
      * "MIN" function in this case to all other columns than the productId.
      */
     private createMysqlSelect(groupByProduct: boolean): string {
-        return getFieldsToSelect(this.options.indexStockStatus)
+        return getFieldsToSelect(this.options.indexStockStatus, this.options.indexCurrencyCode)
             .map(col => {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
