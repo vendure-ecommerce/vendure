@@ -39,7 +39,7 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Merchant ID' }],
             description: [{ languageCode: LanguageCode.en, value: 'Merchant identifier' }],
-            ui: { component: 'text-form-input' },
+            ui: { component: 'test-input' },
             required: true,
         },
         environment: {
@@ -396,7 +396,7 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
                 type: 'text',
                 label: [{ languageCode: LanguageCode.en, value: 'Specifications' }],
                 description: [{ languageCode: LanguageCode.en, value: 'Product specifications (long text)' }],
-                ui: { fullWidth: true },
+                ui: { fullWidth: false, component: 'test-input' },
             },
             {
                 name: 'warrantyInfo',
@@ -616,5 +616,6 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
 
         return config;
     },
+    dashboard: './dashboard/index.tsx',
 })
 export class FieldTestPlugin {}

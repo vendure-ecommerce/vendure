@@ -1,6 +1,4 @@
-import type React from 'react';
-
-import { CustomFormComponentInputProps } from '../../form-engine/custom-form-component.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 
 /**
  * @description
@@ -21,7 +19,7 @@ export interface DashboardCustomFormComponent {
      * @description
      * The React component that will be rendered as the custom form input.
      */
-    component: React.FunctionComponent<CustomFormComponentInputProps>;
+    component: DashboardFormComponent;
 }
 
 /**

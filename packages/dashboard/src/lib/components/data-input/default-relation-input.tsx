@@ -5,6 +5,9 @@ import { ControllerRenderProps } from 'react-hook-form';
 import { MultiRelationInput, SingleRelationInput } from './relation-input.js';
 import { createRelationSelectorConfig } from './relation-selector.js';
 
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isRelationCustomFieldConfig } from '@/vdb/framework/form-engine/utils.js';
+
 interface PlaceholderIconProps {
     letter: string;
     className?: string;
@@ -551,8 +554,18 @@ interface DefaultRelationInputProps {
     disabled?: boolean;
 }
 
-export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<DefaultRelationInputProps>) {
+export function DefaultRelationInput({
+    fieldDef,
+    value,
+    onChange,
+    onBlur,
+    name,
+    disabled,
+}: Readonly<DashboardFormComponentProps>) {
     const { i18n } = useLingui();
+    if (!fieldDef || !isRelationCustomFieldConfig(fieldDef)) {
+        return null;
+    }
     const entityName = fieldDef.entity;
     const ENTITY_CONFIGS = createEntityConfigs(i18n);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
@@ -562,10 +575,10 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
         console.warn(`No relation selector config found for entity: ${entityName}`);
         return (
             <input
-                value={field.value ?? ''}
-                onChange={e => field.onChange(e.target.value)}
-                onBlur={field.onBlur}
-                name={field.name}
+                value={value ?? ''}
+                onChange={e => onChange(e.target.value)}
+                onBlur={onBlur}
+                name={name}
                 disabled={disabled}
                 placeholder={`Enter ${entityName} ID`}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -578,8 +591,8 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
     if (isList) {
         return (
             <MultiRelationInput
-                value={field.value ?? []}
-                onChange={field.onChange}
+                value={value ?? []}
+                onChange={onChange}
                 config={config}
                 disabled={disabled}
                 selectorLabel={<Trans>Select {entityName.toLowerCase()}s</Trans>}
@@ -588,8 +601,8 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
     } else {
         return (
             <SingleRelationInput
-                value={field.value ?? ''}
-                onChange={field.onChange}
+                value={value ?? ''}
+                onChange={onChange}
                 config={config}
                 disabled={disabled}
                 selectorLabel={<Trans>Select {entityName.toLowerCase()}</Trans>}
