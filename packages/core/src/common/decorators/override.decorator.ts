@@ -30,16 +30,32 @@
  */
 export function Override(): MethodDecorator {
     return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-        const parent = Object.getPrototypeOf(target);
-        if (!parent || typeof parent[propertyKey] !== 'function') {
-            const className = target.constructor.name;
+        const isStatic = typeof target === 'function';
+        const parentPrototype = Object.getPrototypeOf(target);
 
-            const parentConstructor = parent?.constructor as { name: string } | undefined;
-            const parentClassName = parentConstructor?.name ?? '[No Superclass]';
+        // Check if the method exists on the parent
+        if (!parentPrototype || typeof parentPrototype[propertyKey] !== 'function') {
+            // If not, construct a helpful error message
+            let className = '[AnonymousClass]';
+            if (isStatic && typeof (target as { name: string }).name === 'string') {
+                className = (target as { name: string }).name;
+            } else if (!isStatic && typeof target.constructor.name === 'string') {
+                className = target.constructor.name;
+            }
+
+            let superclassName = 'Object';
+            const parentConstructor = isStatic ? parentPrototype : parentPrototype.constructor;
+            if (parentConstructor && typeof (parentConstructor as { name: string }).name === 'string') {
+                const name = (parentConstructor as { name: string }).name;
+                if (name && name !== 'Function') {
+                    superclassName = name;
+                }
+            }
+
             throw new Error(
                 `The method "${String(
                     propertyKey,
-                )}" in class "${className}" is marked with @Override but does not override any method in the superclass "${parentClassName}".`,
+                )}" in class "${className}" is marked with @Override but does not override any method in the superclass "${superclassName}".`,
             );
         }
     };

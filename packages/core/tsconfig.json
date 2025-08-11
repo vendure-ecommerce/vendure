@@ -7,9 +7,8 @@
         "removeComments": true,
         "strictPropertyInitialization": false,
         "sourceMap": true,
-        "allowJs": true,
-        "outDir": "lib"
+        "allowJs": true
     },
-    "include": ["**/*.ts"],
-    "exclude": ["node_modules", "lib"]
+    "include": ["src", "test", "typings.d.ts"],
+    "exclude": ["node_modules", "dist"]
 }
