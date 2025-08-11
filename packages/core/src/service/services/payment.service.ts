@@ -215,6 +215,12 @@ export class PaymentService {
         fromState: PaymentState,
         toState: PaymentState,
     ) {
+        // This is the original, problematic code that we are replacing.
+        // if (fromState === toState) {
+        //     const transitionError = ctx.translate('error.cannot-transition-to-same-state', { fromState });
+        //     return new PaymentStateTransitionError({ transitionError, fromState, toState });
+        // }
+        // This is the new, correct code.
         if (fromState === toState) {
             // in case metadata was changed
             await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
