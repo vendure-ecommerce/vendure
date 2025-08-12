@@ -1,7 +1,6 @@
 import { VendureConfig } from '@vendure/core';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import stripJsonComments from 'strip-json-comments';
 import { register } from 'ts-node';
 
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
@@ -18,7 +17,7 @@ export async function loadVendureConfigFile(
         if (providedTsConfigPath) {
             tsConfigPath = providedTsConfigPath;
         } else {
-            const tsConfigFile = await selectTsConfigFile();
+            const tsConfigFile = selectTsConfigFile();
             tsConfigPath = path.join(process.cwd(), tsConfigFile);
         }
 
@@ -33,6 +32,7 @@ export async function loadVendureConfigFile(
         }
 
         try {
+            const { default: stripJsonComments } = await import('strip-json-comments');
             tsConfigJson = JSON.parse(stripJsonComments(tsConfigFileContent));
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
@@ -47,8 +47,7 @@ export async function loadVendureConfigFile(
         });
 
         if (compilerOptions.paths) {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const tsConfigPaths = require('tsconfig-paths');
+            const tsConfigPaths = await import('tsconfig-paths');
             tsConfigPaths.register({
                 baseUrl: './',
                 paths: compilerOptions.paths,
@@ -59,7 +58,7 @@ export async function loadVendureConfigFile(
     if (!exportedVarName) {
         throw new Error('Could not find the exported variable name in the VendureConfig file');
     }
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const config = require(vendureConfig.sourceFile.getFilePath())[exportedVarName];
+    const configModule = await import(vendureConfig.sourceFile.getFilePath());
+    const config = configModule[exportedVarName];
     return config;
 }
