@@ -130,7 +130,7 @@
     "no-selection": "Sin selección",
     "no-stock-locations-available-on-current-channel": "No hay un almacén disponible en el canal seleccionado. Configura al menos un almacén antes de añadir productos",
     "notify-bulk-delete-products-success": "Eliminados {count, plural, one {1 producto} other {{count} productos}}",
-    "notify-remove-facets-from-channel-success": "{count, plural, one {1 faceta eliminada} other {{count} facetas eliminadas}} de { channelCode }",
+    "notify-remove-facets-from-channel-success": "{count, plural, one {1 faceta eliminada} other {{count} facetas eliminadas}} de { channelCode } con éxito",
     "notify-remove-product-from-channel-error": "No fue posible eliminar el producto del canal",
     "notify-remove-product-from-channel-success": "Producto eliminado del canal con éxito",
     "notify-remove-variant-from-channel-error": "No fue posible eliminar la variante de producto del canal",
