@@ -169,7 +169,7 @@
     "root-collection": "Colección principal",
     "run-pending-search-index-updates": "ïndice de búsqueda: ejecutar {count, plural, one {1 actualización pendiente} other {{count} actualizaciones pendientes}}",
     "running-search-index-updates": "Ejecutando {count, plural, one {1 actualización} other {{count} actualizaciones}} del índice de búsqueda",
-    "search-asset-name-or-tag": "Buscar por nombre o etiqueta de recurso",
+    "search-asset-name-or-tag": "Buscar por nombre o etiqueta del recurso",
     "search-for-term": "Buscar por término",
     "search-product-name-or-code": "Buscar por nombre o código de producto",
     "select-product": "Seleccionar producto",
