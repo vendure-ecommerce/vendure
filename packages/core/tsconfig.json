@@ -1,12 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "declaration": true,
-    "removeComments": true,
-    "strictPropertyInitialization": false,
-    "sourceMap": true,
-    "allowJs": true
-  }
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "declaration": true,
+        "removeComments": true,
+        "strictPropertyInitialization": false,
+        "sourceMap": true,
+        "allowJs": true
+    },
+    "include": ["src", "test", "typings.d.ts"],
+    "exclude": ["node_modules", "dist"]
 }
