@@ -7,6 +7,7 @@ import { VendurePlugin } from '../vendure-plugin';
 import { ChannelRolePermissionResolverStrategy } from './config/channel-role-permission-resolver-strategy';
 import { CHANNELROLE_PLUGIN_OPTIONS } from './constants';
 import { ChannelRole } from './entities/channel-role.entity';
+import { ChannelRoleResolver } from './resolvers/channel-role.resolver';
 import { ChannelRoleService } from './services/channel-role.service';
 
 export interface ChannelRoleOptions {}
@@ -87,15 +88,27 @@ export interface ChannelRoleOptions {}
                 channelId: ID!
                 roleId: ID!
             }
-            extend input CreateAdministratorInput {
+            input CreateChannelAdministratorInput {
+                firstName: String!
+                lastName: String!
+                emailAddress: String!
+                password: String!
                 channelRoles: [ChannelRoleInput!]!
-                # Sadly we cant just overwrite it like this :-(
-                # roleIds: [ID!] @deprecated(reason: "Use \`channelRoles\` due to ChannelRolePlugin")
             }
-            extend input UpdateAdministratorInput {
+            input UpdateChannelAdministratorInput {
+                id: ID!
+                firstName: String
+                lastName: String
+                emailAddress: String
+                password: String
                 channelRoles: [ChannelRoleInput!]
             }
+            extend type Mutation {
+                createChannelAdministrator(input: CreateChannelAdministratorInput!): Administrator!
+                updateChannelAdministrator(input: UpdateChannelAdministratorInput!): Administrator!
+            }
         `,
+        resolvers: [ChannelRoleResolver],
     },
     compatibility: '^3.0.0',
 })
