@@ -1,5 +1,6 @@
 import { join } from 'path';
 
+export const DASHBOARD_PLUGIN_OPTIONS = Symbol('DASHBOARD_PLUGIN_OPTIONS');
 export const DEFAULT_APP_PATH = join(__dirname, 'dist');
 export const loggerCtx = 'DashboardPlugin';
 export const defaultLanguage = 'en';
