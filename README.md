@@ -50,7 +50,7 @@ Visit our [Getting Started guide](https://docs.vendure.io/guides/getting-started
 
 ## Upgrades & Plugins 
 
-New updates get released on a bi-weekly cadence, checkout our [release notes](https://github.com/vendure-ecommerce/vendure/releases) to keep up-to-date with the latest releases.
+New updates get released on a bi-weekly cadence, check out our [release notes](https://github.com/vendure-ecommerce/vendure/releases) to keep up-to-date with the latest releases.
 
 Have a look at all of our [ready-made Vendure plugins](https://vendure.io/plugins?page=1).
 
