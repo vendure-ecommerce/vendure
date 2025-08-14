@@ -44,7 +44,7 @@ Whether you're building a B2B platform, multi-vendor marketplace, or D2C storefr
 
 ## Getting Started
 
-Visit our **[Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/)** to get Vendure up and running locally in _less than 2 minutes_ with a single command.
+Visit our [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/) to get Vendure up and running locally in _less than 2 minutes_ with a single command.
 
 **Need Help?** Our community is here to help, join [our Discord](https://www.vendure.io/community) for support and discussions!
 
@@ -60,7 +60,7 @@ Contributions to Vendure are welcome and highly appreciated! Whether you're fixi
 
 Our **[Contribution Guide](./CONTRIBUTING.md)** is covering everything from setting up your development environment to submitting your first pull request.
 
-**Ready to get started?** Check out our [the issues](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for a good first task to start!
+**Ready to get started?** Check out [these issues](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for a good first task to start!
 
 ## License
 
