@@ -1,20 +1,10 @@
-import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { ConfigArgType } from '@vendure/core';
+import { FormControlAdapter } from '@/vdb/framework/form-engine/form-control-adapter.js';
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isCustomFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
+import { ControllerRenderProps } from 'react-hook-form';
 import { Button } from '../ui/button.js';
-import { Input } from '../ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
-import { Switch } from '../ui/switch.js';
-import { Textarea } from '../ui/textarea.js';
-import { DateTimeInput } from './datetime-input.js';
-
-export interface EnhancedListInputProps {
-    definition: ConfigurableOperationDefFragment['args'][number];
-    value: string;
-    onChange: (value: string) => void;
-    readOnly?: boolean;
-}
 
 /**
  * A dynamic array input component for configurable operation arguments that handle lists of values.
@@ -45,12 +35,14 @@ export interface EnhancedListInputProps {
  * />
  */
 export function ConfigurableOperationListInput({
-    definition,
+    fieldDef,
     value,
     onChange,
-    readOnly,
-}: Readonly<EnhancedListInputProps>) {
+}: Readonly<DashboardFormComponentProps>) {
     const [newItemValue, setNewItemValue] = useState('');
+    if (!fieldDef || isCustomFieldConfig(fieldDef)) {
+        return null;
+    }
 
     // Parse the current array value
     const arrayValue = parseArrayValue(value);
@@ -77,327 +69,78 @@ export function ConfigurableOperationListInput({
         handleArrayChange(newArray);
     };
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleAddItem();
-        }
-    };
-
-    // Render individual item input based on the underlying type
-    const renderItemInput = (itemValue: string, index: number) => {
-        const argType = definition.type as ConfigArgType;
-        const uiComponent = (definition.ui as any)?.component;
-
-        const commonProps = {
-            value: itemValue,
-            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                handleUpdateItem(index, e.target.value),
-            disabled: readOnly,
-        };
-
-        switch (uiComponent) {
-            case 'boolean-form-input':
-                return (
-                    <Switch
-                        checked={itemValue === 'true'}
-                        onCheckedChange={checked => handleUpdateItem(index, checked.toString())}
-                        disabled={readOnly}
-                    />
-                );
-
-            case 'select-form-input': {
-                const options = (definition.ui as any)?.options || [];
-                return (
-                    <Select
-                        value={itemValue}
-                        onValueChange={val => handleUpdateItem(index, val)}
-                        disabled={readOnly}
-                    >
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {options.map((option: any) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {typeof option.label === 'string'
-                                        ? option.label
-                                        : option.label?.[0]?.value || option.value}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                );
-            }
-            case 'textarea-form-input':
-                return (
-                    <Textarea
-                        {...commonProps}
-                        placeholder="Enter text..."
-                        rows={2}
-                        className="bg-background"
-                    />
-                );
-
-            case 'date-form-input':
-                return (
-                    <DateTimeInput
-                        value={itemValue ? new Date(itemValue) : new Date()}
-                        onChange={val => handleUpdateItem(index, val.toISOString())}
-                        disabled={readOnly}
-                    />
-                );
-
-            case 'number-form-input': {
-                const ui = definition.ui as any;
-                const isFloat = argType === 'float';
-                return (
-                    <Input
-                        type="number"
-                        value={itemValue}
-                        onChange={e => handleUpdateItem(index, e.target.value)}
-                        disabled={readOnly}
-                        min={ui?.min}
-                        max={ui?.max}
-                        step={ui?.step || (isFloat ? 0.01 : 1)}
-                    />
-                );
-            }
-            case 'currency-form-input':
-                return (
-                    <div className="flex items-center">
-                        <span className="mr-2 text-sm text-muted-foreground">$</span>
-                        <Input
-                            type="number"
-                            value={itemValue}
-                            onChange={e => handleUpdateItem(index, e.target.value)}
-                            disabled={readOnly}
-                            min={0}
-                            step={1}
-                            className="flex-1"
-                        />
-                    </div>
-                );
-        }
-
-        // Fall back to type-based rendering
-        switch (argType) {
-            case 'boolean':
-                return (
-                    <Switch
-                        checked={itemValue === 'true'}
-                        onCheckedChange={checked => handleUpdateItem(index, checked.toString())}
-                        disabled={readOnly}
-                    />
-                );
-
-            case 'int':
-            case 'float': {
-                const isFloat = argType === 'float';
-                return (
-                    <Input
-                        type="number"
-                        value={itemValue}
-                        onChange={e => handleUpdateItem(index, e.target.value)}
-                        disabled={readOnly}
-                        step={isFloat ? 0.01 : 1}
-                    />
-                );
-            }
-            case 'datetime':
-                return (
-                    <DateTimeInput
-                        value={itemValue ? new Date(itemValue) : new Date()}
-                        onChange={val => handleUpdateItem(index, val.toISOString())}
-                        disabled={readOnly}
-                    />
-                );
-
-            default:
-                return <Input type="text" {...commonProps} placeholder="Enter value..." />;
-        }
-    };
-
-    // Render new item input (similar logic but for newItemValue)
-    const renderNewItemInput = () => {
-        const argType = definition.type as ConfigArgType;
-        const uiComponent = (definition.ui as any)?.component;
-
-        const commonProps = {
-            value: newItemValue,
-            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                setNewItemValue(e.target.value),
-            disabled: readOnly,
-            onKeyPress: handleKeyPress,
-        };
-
-        switch (uiComponent) {
-            case 'boolean-form-input': {
-                return (
-                    <Switch
-                        checked={newItemValue === 'true'}
-                        onCheckedChange={checked => setNewItemValue(checked.toString())}
-                        disabled={readOnly}
-                    />
-                );
-            }
-            case 'select-form-input': {
-                const options = (definition.ui as any)?.options || [];
-                return (
-                    <Select value={newItemValue} onValueChange={setNewItemValue} disabled={readOnly}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select value..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {options.map((option: any) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {typeof option.label === 'string'
-                                        ? option.label
-                                        : option.label?.[0]?.value || option.value}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                );
-            }
-            case 'textarea-form-input': {
-                return (
-                    <Textarea
-                        {...commonProps}
-                        placeholder="Enter text..."
-                        rows={2}
-                        className="bg-background"
-                    />
-                );
-            }
-            case 'date-form-input': {
-                return <DateTimeInput value={newItemValue} onChange={setNewItemValue} disabled={readOnly} />;
-            }
-            case 'number-form-input': {
-                const ui = definition.ui as any;
-                const isFloat = argType === 'float';
-                return (
-                    <Input
-                        type="number"
-                        value={newItemValue}
-                        onChange={e => setNewItemValue(e.target.value)}
-                        disabled={readOnly}
-                        min={ui?.min}
-                        max={ui?.max}
-                        step={ui?.step || (isFloat ? 0.01 : 1)}
-                        placeholder="Enter number..."
-                        onKeyPress={handleKeyPress}
-                        className="bg-background"
-                    />
-                );
-            }
-            case 'currency-form-input': {
-                return (
-                    <div className="flex items-center">
-                        <span className="mr-2 text-sm text-muted-foreground">$</span>
-                        <Input
-                            type="number"
-                            value={newItemValue}
-                            onChange={e => setNewItemValue(e.target.value)}
-                            disabled={readOnly}
-                            min={0}
-                            step={1}
-                            placeholder="Enter amount..."
-                            onKeyPress={handleKeyPress}
-                            className="flex-1 bg-background"
-                        />
-                    </div>
-                );
-            }
-        }
-
-        // Fall back to type-based rendering
-        switch (argType) {
-            case 'boolean':
-                return (
-                    <Switch
-                        checked={newItemValue === 'true'}
-                        onCheckedChange={checked => setNewItemValue(checked.toString())}
-                        disabled={readOnly}
-                    />
-                );
-            case 'int':
-            case 'float': {
-                const isFloat = argType === 'float';
-                return (
-                    <Input
-                        type="number"
-                        value={newItemValue}
-                        onChange={e => setNewItemValue(e.target.value)}
-                        disabled={readOnly}
-                        step={isFloat ? 0.01 : 1}
-                        placeholder="Enter number..."
-                        onKeyPress={handleKeyPress}
-                        className="bg-background"
-                    />
-                );
-            }
-            case 'datetime': {
-                return (
-                    <DateTimeInput
-                        value={newItemValue ? new Date(newItemValue) : new Date()}
-                        onChange={val => setNewItemValue(val.toISOString())}
-                        disabled={readOnly}
-                    />
-                );
-            }
-            default: {
-                return (
-                    <Input
-                        type="text"
-                        {...commonProps}
-                        placeholder="Enter value..."
-                        className="bg-background"
-                    />
-                );
-            }
-        }
-    };
-
-    if (readOnly) {
-        return (
-            <div className="space-y-2">
-                {arrayValue.map((item, index) => (
-                    <div key={index + item} className="flex items-center gap-2 p-2 bg-muted rounded-md">
-                        <span className="flex-1">{item}</span>
-                    </div>
-                ))}
-                {arrayValue.length === 0 && <div className="text-sm text-muted-foreground">No items</div>}
-            </div>
-        );
-    }
+    // Unified input renderer - eliminates duplication between item and new item inputs
+    // const renderInput = (currentValue: string, onValueChange: (value: string) => void) => {
+    //     const uiComponent = fieldDef.ui?.component;
+    //
+    //     const field = {
+    //         value: currentValue,
+    //         onChange: onValueChange,
+    //         disabled: false,
+    //         onBlur: () => {},
+    //         name: fieldDef.name,
+    //         ref: () => {},
+    //     } satisfies ControllerRenderProps<any, any>;
+    //
+    //     // Component-based rendering (UI overrides)
+    //     switch (uiComponent) {
+    //         case 'boolean-form-input':
+    //             return <BooleanInput fieldDef={fieldDef} {...field} />;
+    //         case 'select-form-input':
+    //             return <SelectWithOptions fieldDef={fieldDef} {...field} />;
+    //         case 'textarea-form-input':
+    //             return <TextareaInput {...field} fieldDef={fieldDef} />;
+    //         case 'date-form-input':
+    //             return <DateTimeInput fieldDef={fieldDef} {...field} />;
+    //         case 'number-form-input':
+    //             return <NumberInput {...field} fieldDef={fieldDef} />;
+    //         case 'currency-form-input':
+    //             return <MoneyInput {...field} fieldDef={fieldDef} />;
+    //         case 'facet-value-form-input':
+    //             return <FacetValueInput {...field} fieldDef={fieldDef} />;
+    //     }
+    //
+    //     return <DefaultInputForType fieldDef={fieldDef} {...field} />;
+    // };
 
     return (
         <div className="space-y-2">
             {/* Existing items */}
-            {arrayValue.map((item, index) => (
-                <div key={index + item} className="flex items-center gap-2">
-                    <div className="flex-1">{renderItemInput(item, index)}</div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRemoveItem(index)}
-                        disabled={readOnly}
-                        type="button"
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
-                </div>
-            ))}
+            {arrayValue.map((item, index) => {
+                const field = {
+                    value: item,
+                    onChange: handleUpdateItem,
+                    disabled: false,
+                    onBlur: () => {},
+                    name: fieldDef.name,
+                    ref: () => {},
+                } satisfies ControllerRenderProps<any, any>;
+
+                return (
+                    <div key={index + item} className="flex items-center gap-2">
+                        <div className="flex-1">
+                            <FormControlAdapter field={field} fieldDef={fieldDef} valueMode="native" />
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRemoveItem(index)}
+                            type="button"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
+                );
+            })}
 
             {/* Add new item */}
             <div className="flex items-center gap-2 p-2 border border-dashed rounded-md">
-                <div className="flex-1">{renderNewItemInput()}</div>
+                {/* <div className="flex-1">{renderInput(newItemValue, setNewItemValue)}</div>*/}
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={handleAddItem}
-                    disabled={readOnly || !newItemValue.trim()}
+                    disabled={!newItemValue.trim()}
                     type="button"
                 >
                     <Plus className="h-4 w-4" />

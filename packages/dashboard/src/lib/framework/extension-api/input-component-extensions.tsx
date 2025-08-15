@@ -1,43 +1,38 @@
-import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
-import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
-import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
-import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
-import { ProductMultiInput } from '@/vdb/components/data-input/product-multi-selector.js';
-import { Checkbox } from '@/vdb/components/ui/checkbox.js';
-import { Input } from '@/vdb/components/ui/input.js';
-import { DataInputComponent } from '../component-registry/component-registry.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
-globalRegistry.register('inputComponents', new Map<string, DataInputComponent>());
-
-// Create component functions for built-in components
-const TextInput: DataInputComponent = props => (
-    <Input {...props} onChange={e => props.onChange(e.target.value)} />
-);
-const NumberInput: DataInputComponent = props => (
-    <Input {...props} onChange={e => props.onChange(e.target.valueAsNumber)} type="number" />
-);
-const CheckboxInput: DataInputComponent = props => (
-    <Checkbox
-        {...props}
-        checked={props.value === 'true' || props.value === true}
-        onCheckedChange={value => props.onChange(value)}
-    />
-);
+globalRegistry.register('inputComponents', new Map<string, DashboardFormComponent>());
 
 // Register built-in input components
 const inputComponents = globalRegistry.get('inputComponents');
-inputComponents.set('vendure:moneyInput', MoneyInput);
-inputComponents.set('vendure:textInput', TextInput);
-inputComponents.set('vendure:numberInput', NumberInput);
-inputComponents.set('vendure:dateTimeInput', DateTimeInput);
-inputComponents.set('vendure:checkboxInput', CheckboxInput);
-inputComponents.set('vendure:facetValueInput', FacetValueInput);
-inputComponents.set('vendure:combinationModeInput', CombinationModeInput);
-inputComponents.set('vendure:productMultiInput', ProductMultiInput);
+// inputComponents.set('vendure:money-input', MoneyInput);
+// inputComponents.set('vendure:text-input', TextInput);
+// inputComponents.set('vendure:number-input', NumberInput);
+// inputComponents.set('vendure:number-form-input', NumberInput);
+// inputComponents.set('vendure:date-time-input', DateTimeInput);
+// inputComponents.set('vendure:date-form-input', DateTimeInput);
+// inputComponents.set('vendure:checkbox-input', CheckboxInput);
+// inputComponents.set('vendure:facet-value-input', FacetValueInput);
+// inputComponents.set('vendure:combination-mode-input', CombinationModeInput);
+// inputComponents.set('vendure:product-multi-input', ProductMultiInput);
+// inputComponents.set('vendure:boolean-form-input', BooleanInput);
+// inputComponents.set('vendure:currency-form-input', MoneyInput);
+// inputComponents.set('vendure:customer-group-form-input', CustomerGroupInput);
+// inputComponents.set('vendure:facet-value-form-input', FacetValueInput);
+// inputComponents.set('vendure:json-editor-form-input', TextareaInput);
+// inputComponents.set('vendure:textarea-form-input', TextareaInput);
+// inputComponents.set('vendure:html-editor-form-input', RichTextInput);
+// inputComponents.set('vendure:rich-text-form-input', RichTextInput);
+// inputComponents.set('vendure:password-form-input', PasswordInput);
+// inputComponents.set('vendure:product-selector-form-input', DefaultRelationInput);
+// inputComponents.set('vendure:relation-form-input', DefaultRelationInput);
+// inputComponents.set('vendure:select-form-input', SelectWithOptions);
+// inputComponents.set('vendure:product-multi-form-input', ProductMultiInput);
+// inputComponents.set('vendure:combination-mode-form-input', CombinationModeInput);
 
-export function getInputComponent(id: string): DataInputComponent | undefined {
-    return globalRegistry.get('inputComponents').get(id);
+export function getInputComponent(id: string): DashboardFormComponent | undefined {
+    const inputComponent = globalRegistry.get('inputComponents').get(id);
+    return inputComponent;
 }
 
 /**
@@ -58,7 +53,7 @@ export function addInputComponent({
     pageId: string;
     blockId: string;
     field: string;
-    component: DataInputComponent;
+    component: DashboardFormComponent;
 }) {
     const inputComponents = globalRegistry.get('inputComponents');
 
@@ -70,4 +65,20 @@ export function addInputComponent({
         console.warn(`Input component with key "${key}" is already registered and will be overwritten.`);
     }
     inputComponents.set(key, component);
+}
+
+export function addCustomFieldInputComponent({
+    id,
+    component,
+}: {
+    id: string;
+    component: DashboardFormComponent;
+}) {
+    const inputComponents = globalRegistry.get('inputComponents');
+
+    if (inputComponents.has(id)) {
+        // eslint-disable-next-line no-console
+        console.warn(`Input component with key "${id}" is already registered and will be overwritten.`);
+    }
+    inputComponents.set(id, component);
 }

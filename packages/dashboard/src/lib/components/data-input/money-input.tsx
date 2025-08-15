@@ -1,11 +1,18 @@
-import { DataInputComponentProps } from '@/vdb/framework/component-registry/component-registry.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AffixedInput } from './affixed-input.js';
 
-// Original component
-function MoneyInputInternal({ value, currency, onChange }: DataInputComponentProps) {
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+
+export interface MoneyInputProps extends DashboardFormComponentProps {
+    currency?: string;
+}
+
+export function MoneyInput(props: Readonly<MoneyInputProps>) {
+    const { value, onChange, currency, ...rest } = props;
+    const readOnly = isReadonlyField(props.fieldDef);
     const {
         settings: { displayLanguage, displayLocale },
     } = useUserSettings();
@@ -52,6 +59,8 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
             type="text"
             className="bg-background"
             value={displayValue}
+            disabled={readOnly}
+            {...rest}
             onChange={e => {
                 const inputValue = e.target.value;
                 // Allow empty input
@@ -77,8 +86,8 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
                     }
                 }
             }}
-            onBlur={e => {
-                const inputValue = e.target.value;
+            onBlur={() => {
+                const inputValue = displayValue;
                 if (inputValue === '') {
                     onChange(0);
                     setDisplayValue('0');
@@ -96,11 +105,4 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
             suffix={!shouldPrefix ? currencySymbol : undefined}
         />
     );
-}
-
-// Wrapper that makes it compatible with DataInputComponent
-export function MoneyInput(props: { value: any; onChange: (value: any) => void; [key: string]: any }) {
-    const { value, onChange, ...rest } = props;
-    const currency = rest.currency || 'USD'; // Default currency if none provided
-    return <MoneyInputInternal value={value} currency={currency} onChange={onChange} />;
 }

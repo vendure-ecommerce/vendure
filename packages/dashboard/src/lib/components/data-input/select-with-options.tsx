@@ -1,15 +1,12 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isReadonlyField, isStringFieldWithOptions } from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { StringFieldOption } from '@vendure/common/lib/generated-types';
 import React from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
 import { MultiSelect } from '../shared/multi-select.js';
 
-export interface SelectWithOptionsProps {
-    field: ControllerRenderProps<any, any>;
-    options: StringFieldOption[];
-    disabled?: boolean;
+export interface SelectWithOptionsProps extends DashboardFormComponentProps {
     placeholder?: React.ReactNode;
     isListField?: boolean;
 }
@@ -22,12 +19,14 @@ export interface SelectWithOptionsProps {
  * @since 3.3.0
  */
 export function SelectWithOptions({
-    field,
-    options,
-    disabled,
+    value,
+    onChange,
+    fieldDef,
     placeholder,
     isListField = false,
+    disabled,
 }: Readonly<SelectWithOptionsProps>) {
+    const readOnly = disabled || isReadonlyField(fieldDef);
     const {
         settings: { displayLanguage },
     } = useUserSettings();
@@ -37,6 +36,10 @@ export function SelectWithOptions({
         const translation = label.find(t => t.languageCode === displayLanguage);
         return translation?.value ?? label[0]?.value ?? '';
     };
+    if (!fieldDef || !isStringFieldWithOptions(fieldDef)) {
+        return null;
+    }
+    const options = fieldDef.options ?? [];
 
     // Convert options to MultiSelect format
     const multiSelectItems = options.map(option => ({
@@ -49,26 +52,26 @@ export function SelectWithOptions({
         return (
             <MultiSelect
                 multiple={true}
-                value={field.value || []}
-                onChange={field.onChange}
+                value={value || []}
+                onChange={onChange}
                 items={multiSelectItems}
                 placeholder={placeholder ? String(placeholder) : 'Select options'}
-                className={disabled ? 'opacity-50 pointer-events-none' : ''}
+                className={readOnly ? 'opacity-50 pointer-events-none' : ''}
             />
         );
     }
 
     // For single fields, use regular Select
-    const currentValue = field.value ?? '';
+    const currentValue = value ?? '';
 
     const handleValueChange = (value: string) => {
         if (value) {
-            field.onChange(value);
+            onChange(value);
         }
     };
 
     return (
-        <Select value={currentValue ?? undefined} onValueChange={handleValueChange} disabled={disabled}>
+        <Select value={currentValue ?? undefined} onValueChange={handleValueChange} disabled={readOnly}>
             <SelectTrigger>
                 <SelectValue placeholder={placeholder || <Trans>Select an option</Trans>} />
             </SelectTrigger>

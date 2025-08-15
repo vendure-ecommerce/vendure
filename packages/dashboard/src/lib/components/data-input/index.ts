@@ -8,9 +8,9 @@ export * from './rich-text-input.js';
 export * from './select-with-options.js';
 
 // Enhanced configurable operation input components
+export * from '../shared/product-multi-selector.js';
 export * from './configurable-operation-list-input.js';
-export * from './customer-group-selector-input.js';
-export * from './product-selector-input.js';
+export * from './customer-group-input.js';
 
 // Relation selector components
 export * from './relation-input.js';

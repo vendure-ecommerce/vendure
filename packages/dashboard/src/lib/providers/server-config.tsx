@@ -124,6 +124,7 @@ export const structCustomFieldFragment = graphql(
             ...CustomFieldConfig
             fields {
                 ... on StructField {
+                    __typename
                     name
                     type
                     list

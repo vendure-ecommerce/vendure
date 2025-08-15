@@ -149,7 +149,7 @@ export * from './framework/alert/alert-extensions.js';
 export * from './framework/alert/alert-item.js';
 export * from './framework/alert/alerts-indicator.js';
 export * from './framework/component-registry/component-registry.js';
-export * from './framework/component-registry/dynamic-component.js';
+export * from './framework/component-registry/display-component.js';
 export * from './framework/dashboard-widget/base-widget.js';
 export * from './framework/dashboard-widget/latest-orders-widget/latest-orders-widget.graphql.js';
 export * from './framework/dashboard-widget/metrics-widget/chart.js';

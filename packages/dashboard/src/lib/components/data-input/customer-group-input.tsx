@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { CustomerGroupChip } from '../shared/customer-group-chip.js';
 import { CustomerGroupSelector } from '../shared/customer-group-selector.js';
 
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+
 const customerGroupsDocument = graphql(`
     query GetCustomerGroups($options: CustomerGroupListOptions) {
         customerGroups(options: $options) {
@@ -20,14 +22,8 @@ export interface CustomerGroup {
     name: string;
 }
 
-export interface CustomerGroupInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    readOnly?: boolean;
-}
-
-export function CustomerGroupInput(props: CustomerGroupInputProps) {
-    const ids = decodeIds(props.value);
+export function CustomerGroupInput({ value, onChange, disabled }: Readonly<DashboardFormComponentProps>) {
+    const ids = decodeIds(value);
     const { data: groups } = useQuery({
         queryKey: ['customerGroups', ids],
         queryFn: () =>
@@ -42,12 +38,12 @@ export function CustomerGroupInput(props: CustomerGroupInputProps) {
 
     const onValueSelectHandler = (value: CustomerGroup) => {
         const newIds = new Set([...ids, value.id]);
-        props.onChange(JSON.stringify(Array.from(newIds)));
+        onChange(JSON.stringify(Array.from(newIds)));
     };
 
     const onValueRemoveHandler = (id: string) => {
         const newIds = new Set(ids.filter(existingId => existingId !== id));
-        props.onChange(JSON.stringify(Array.from(newIds)));
+        onChange(JSON.stringify(Array.from(newIds)));
     };
 
     return (
@@ -58,7 +54,7 @@ export function CustomerGroupInput(props: CustomerGroupInputProps) {
                 ))}
             </div>
 
-            <CustomerGroupSelector onSelect={onValueSelectHandler} readOnly={props.readOnly} />
+            <CustomerGroupSelector onSelect={onValueSelectHandler} readOnly={disabled} />
         </div>
     );
 }

@@ -1,5 +1,9 @@
-import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
-import { FieldInfo, getTypeFieldInfo, getOperationVariablesFields } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { DisplayComponent } from '@/vdb/framework/component-registry/display-component.js';
+import {
+    FieldInfo,
+    getOperationVariablesFields,
+    getTypeFieldInfo,
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -250,14 +254,21 @@ function DeleteMutationRowAction({
 }>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { i18n } = useLingui();
-    
+
     // Inspect the mutation variables to determine if it expects 'id' or 'ids'
     const mutationVariables = getOperationVariablesFields(deleteMutation);
     const hasIdsParameter = mutationVariables.some(field => field.name === 'ids');
-    
+
     const { mutate: deleteMutationFn } = useMutation({
         mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } | { result: 'DELETED' | 'NOT_DELETED'; message: string }[] }) => {
+        onSuccess: (result: {
+            [key: string]:
+                | { result: 'DELETED' | 'NOT_DELETED'; message: string }
+                | {
+                      result: 'DELETED' | 'NOT_DELETED';
+                      message: string;
+                  }[];
+        }) => {
             const unwrappedResult = Object.values(result)[0];
             // Handle both single result and array of results
             const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;

@@ -1,6 +1,5 @@
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { configArgToUniversal } from './universal-field-definition.js';
-import { UniversalFormInput } from './universal-form-input.js';
+import { FormControlAdapter } from '../../framework/form-engine/form-control-adapter.js';
 
 export interface ConfigurableOperationArgInputProps {
     definition: ConfigurableOperationDefFragment['args'][number];
@@ -14,13 +13,10 @@ export function ConfigurableOperationArgInput({
     definition,
     value,
     onChange,
-    readOnly,
-    position,
 }: Readonly<ConfigurableOperationArgInputProps>) {
-    const universalFieldDef = configArgToUniversal(definition);
     return (
-        <UniversalFormInput
-            fieldDef={universalFieldDef}
+        <FormControlAdapter
+            fieldDef={definition}
             field={{
                 value,
                 onChange,
@@ -29,8 +25,6 @@ export function ConfigurableOperationArgInput({
                 ref: () => {},
             }}
             valueMode="json-string"
-            disabled={readOnly}
-            position={position}
         />
     );
 }
