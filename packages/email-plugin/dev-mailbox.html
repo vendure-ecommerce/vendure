@@ -156,12 +156,9 @@
     }
 
     function escapeHTMLEntities(value) {
-        return value
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#39;");
+        const str = String(value ?? '');
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return str.replace(/[&<>"']/g, (ch) => map[ch]);
     }
 
     function renderList(items) {
