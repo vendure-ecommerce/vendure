@@ -41,19 +41,19 @@ type QueryData = {
 
 /**
  * ConfigurableOperationSelector - A reusable component for selecting a single configurable operation
- * 
+ *
  * This component provides a standardized interface for selecting configurable operations such as:
  * - Payment method handlers
- * - Payment eligibility checkers  
+ * - Payment eligibility checkers
  * - Shipping calculators
  * - Shipping eligibility checkers
- * 
+ *
  * Features:
  * - Displays the selected operation with its configuration form
  * - Provides a dropdown to select from available operations
  * - Handles operation selection with default argument values
  * - Supports removal of selected operations
- * 
+ *
  * @example
  * ```tsx
  * <ConfigurableOperationSelector
@@ -75,6 +75,7 @@ export function ConfigurableOperationSelector({
     buttonText,
     emptyText = 'No options found',
 }: Readonly<ConfigurableOperationSelectorProps>) {
+    console.log(`ConfigurableOperationSelector`, value);
     const { data } = useQuery<QueryData>({
         queryKey: [queryKey],
         queryFn: () => api.query(queryDocument),
@@ -122,7 +123,7 @@ export function ConfigurableOperationSelector({
                     <ConfigurableOperationInput
                         operationDefinition={operationDef}
                         value={value}
-                        onChange={value => onOperationValueChange(value)}
+                        onChange={v => onOperationValueChange(v)}
                         onRemove={() => onOperationRemove()}
                     />
                 </div>

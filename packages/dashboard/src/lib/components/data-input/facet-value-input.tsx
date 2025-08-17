@@ -1,4 +1,4 @@
-import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
@@ -22,7 +22,7 @@ const facetValuesDocument = graphql(`
     }
 `);
 
-export function FacetValueInput({ value, onChange, disabled }: Readonly<DashboardFormComponentProps>) {
+export const FacetValueInput: DashboardFormComponent = ({ value, onChange, disabled }) => {
     const ids = decodeIds(value);
     const { data } = useQuery({
         queryKey: ['facetValues', ids],
@@ -60,9 +60,16 @@ export function FacetValueInput({ value, onChange, disabled }: Readonly<Dashboar
             <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={disabled} />
         </div>
     );
-}
+};
 
-function decodeIds(idsString: string): string[] {
+FacetValueInput.metadata = {
+    isListInput: true,
+};
+
+function decodeIds(idsString: string | string[]): string[] {
+    if (Array.isArray(idsString)) {
+        return idsString;
+    }
     try {
         return JSON.parse(idsString);
     } catch (error) {

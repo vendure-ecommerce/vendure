@@ -1,12 +1,16 @@
-import { DataInputComponent } from '@/vdb/framework/component-registry/component-registry.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { Trans } from '@/vdb/lib/trans.js';
 
 export type CombinationModeInputProps = DashboardFormComponentProps & {
-    position: number;
+    position?: number;
 };
 
-export const CombinationModeInput = ({ value, onChange, position, ...props }: Readonly<CombinationModeInputProps>) => {
+export const CombinationModeInput = ({
+    value,
+    onChange,
+    position,
+    ...props
+}: Readonly<CombinationModeInputProps>) => {
     const booleanValue = value === 'true' || value === true;
 
     // Only show for items after the first one

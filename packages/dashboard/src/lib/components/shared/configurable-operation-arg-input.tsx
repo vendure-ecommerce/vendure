@@ -6,7 +6,6 @@ export interface ConfigurableOperationArgInputProps {
     readOnly?: boolean;
     value: string;
     onChange: (value: any) => void;
-    position?: number;
 }
 
 export function ConfigurableOperationArgInput({

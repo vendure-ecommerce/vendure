@@ -1,3 +1,15 @@
+import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
+import { DefaultRelationInput } from '@/vdb/components/data-input/default-relation-input.js';
+import {
+    CustomerGroupInput,
+    FacetValueInput,
+    MoneyInput,
+    ProductMultiInput,
+    RichTextInput,
+    SelectWithOptions,
+} from '@/vdb/components/data-input/index.js';
+import { PasswordInput } from '@/vdb/components/data-input/password-input.js';
+import { TextareaInput } from '@/vdb/components/data-input/textarea-input.js';
 import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
@@ -5,32 +17,27 @@ globalRegistry.register('inputComponents', new Map<string, DashboardFormComponen
 
 // Register built-in input components
 const inputComponents = globalRegistry.get('inputComponents');
-// inputComponents.set('vendure:money-input', MoneyInput);
-// inputComponents.set('vendure:text-input', TextInput);
-// inputComponents.set('vendure:number-input', NumberInput);
-// inputComponents.set('vendure:number-form-input', NumberInput);
-// inputComponents.set('vendure:date-time-input', DateTimeInput);
-// inputComponents.set('vendure:date-form-input', DateTimeInput);
-// inputComponents.set('vendure:checkbox-input', CheckboxInput);
-// inputComponents.set('vendure:facet-value-input', FacetValueInput);
-// inputComponents.set('vendure:combination-mode-input', CombinationModeInput);
-// inputComponents.set('vendure:product-multi-input', ProductMultiInput);
-// inputComponents.set('vendure:boolean-form-input', BooleanInput);
-// inputComponents.set('vendure:currency-form-input', MoneyInput);
-// inputComponents.set('vendure:customer-group-form-input', CustomerGroupInput);
-// inputComponents.set('vendure:facet-value-form-input', FacetValueInput);
-// inputComponents.set('vendure:json-editor-form-input', TextareaInput);
-// inputComponents.set('vendure:textarea-form-input', TextareaInput);
-// inputComponents.set('vendure:html-editor-form-input', RichTextInput);
-// inputComponents.set('vendure:rich-text-form-input', RichTextInput);
-// inputComponents.set('vendure:password-form-input', PasswordInput);
-// inputComponents.set('vendure:product-selector-form-input', DefaultRelationInput);
-// inputComponents.set('vendure:relation-form-input', DefaultRelationInput);
-// inputComponents.set('vendure:select-form-input', SelectWithOptions);
-// inputComponents.set('vendure:product-multi-form-input', ProductMultiInput);
-// inputComponents.set('vendure:combination-mode-form-input', CombinationModeInput);
+inputComponents.set('facet-value-input', FacetValueInput);
+inputComponents.set('combination-mode-input', CombinationModeInput);
+inputComponents.set('product-multi-input', ProductMultiInput);
+inputComponents.set('currency-form-input', MoneyInput);
+inputComponents.set('customer-group-form-input', CustomerGroupInput);
+inputComponents.set('facet-value-form-input', FacetValueInput);
+inputComponents.set('json-editor-form-input', TextareaInput);
+inputComponents.set('textarea-form-input', TextareaInput);
+inputComponents.set('html-editor-form-input', RichTextInput);
+inputComponents.set('rich-text-form-input', RichTextInput);
+inputComponents.set('password-form-input', PasswordInput);
+inputComponents.set('product-selector-form-input', DefaultRelationInput);
+inputComponents.set('relation-form-input', DefaultRelationInput);
+inputComponents.set('select-form-input', SelectWithOptions);
+inputComponents.set('product-multi-form-input', ProductMultiInput);
+inputComponents.set('combination-mode-form-input', CombinationModeInput);
 
-export function getInputComponent(id: string): DashboardFormComponent | undefined {
+export function getInputComponent(id: string | undefined): DashboardFormComponent | undefined {
+    if (!id) {
+        return undefined;
+    }
     const inputComponent = globalRegistry.get('inputComponents').get(id);
     return inputComponent;
 }

@@ -67,6 +67,19 @@ export type DashboardFormComponentProps<
 };
 
 /**
+ * @description
+ * Metadata which can be defined on a {@link DashboardFormComponent} which
+ * provides additional information about how the dashboard should render the
+ * component.
+ */
+export type DashboardFormComponentMetadata = {
+    isListInput?: boolean;
+    isFullWidth?: boolean;
+};
+
+/**
  * THE single form component type for the entire dashboard
  */
-export type DashboardFormComponent = React.ComponentType<DashboardFormComponentProps>;
+export type DashboardFormComponent = React.ComponentType<DashboardFormComponentProps> & {
+    metadata?: DashboardFormComponentMetadata;
+};

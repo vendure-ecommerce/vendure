@@ -2,7 +2,6 @@ import { ControllerRenderProps } from 'react-hook-form';
 
 import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
 import { StructFormInput } from '@/vdb/components/data-input/struct-form-input.js';
-import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 
 import { getInputComponent } from '@/vdb/framework/extension-api/input-component-extensions.js';
 import { ConfigurableFieldDef } from '@/vdb/framework/form-engine/form-engine-types.js';
@@ -31,26 +30,42 @@ export interface FormControlAdapterProps {
 export function FormControlAdapter({ fieldDef, field, valueMode }: Readonly<FormControlAdapterProps>) {
     const isList = fieldDef.list ?? false;
     const isReadonly = isCustomFieldConfig(fieldDef) ? fieldDef.readonly === true : false;
-    const componentId = fieldDef.ui?.component;
+    const componentId = fieldDef.ui?.component as string | undefined;
 
     const fieldWithTransform = useMemo(() => {
-        field.value = transformValue(field.value, fieldDef, valueMode, 'parse');
         const fieldOnChange = field.onChange.bind(field);
-        field.onChange = (newValue: any) => {
-            const serializedValue = transformValue(newValue, fieldDef, valueMode, 'serialize');
-            fieldOnChange(serializedValue);
+        const transformedField: FormControlAdapterProps['field'] = {
+            ...field,
+            value: transformValue(field.value, fieldDef, valueMode, 'parse'),
+            onChange: (newValue: any) => {
+                const serializedValue = transformValue(newValue, fieldDef, valueMode, 'serialize');
+                fieldOnChange(serializedValue);
+            },
         };
-        return field;
-    }, [field]);
+        return transformedField;
+    }, [field.name, field.value, field.onChange, fieldDef, valueMode]);
+
+    const CustomComponent = getInputComponent(componentId);
+
+    if (CustomComponent) {
+        if (!isList && CustomComponent?.metadata?.isListInput !== true) {
+            return <CustomComponent {...fieldWithTransform} fieldDef={fieldDef} />;
+        }
+
+        if (isList && CustomComponent?.metadata?.isListInput === true) {
+            return <CustomComponent {...fieldWithTransform} fieldDef={fieldDef} />;
+        }
+
+        // The custom component is not correctly configured for list fields
+        // eslint-disable-next-line no-console
+        console.warn([
+            `Custom component ${componentId} is not correctly configured for the ${fieldDef.name} field:`,
+            `The component ${CustomComponent.metadata?.isListInput === true ? 'is' : 'is not'} configured as a list input, but the field ${isList ? 'is' : 'is not'} a list field.`,
+        ]);
+    }
 
     // For non-list, non-struct fields - handle component lookup simply
     if (!isList && fieldDef.type !== 'struct') {
-        if (componentId) {
-            const customComponent = getInputComponent(componentId);
-            if (customComponent) {
-                return <CustomFormComponent {...fieldWithTransform} fieldDef={fieldDef} />;
-            }
-        }
         return <DefaultInputForType {...fieldWithTransform} fieldDef={fieldDef} />;
     }
 
@@ -65,7 +80,6 @@ export function FormControlAdapter({ fieldDef, field, valueMode }: Readonly<Form
                         <StructFormInput {...fieldWithTransform} fieldDef={fieldDef} />
                     )}
                     defaultValue={{}}
-                    isFullWidth={true}
                 />
             );
         }

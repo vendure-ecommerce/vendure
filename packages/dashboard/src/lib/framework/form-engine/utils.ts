@@ -153,12 +153,20 @@ export function isStringCustomFieldConfig(input: ConfigurableFieldDef): input is
  * String custom field that has options (select dropdown)
  */
 export function isStringFieldWithOptions(input: ConfigurableFieldDef): input is StringCustomFieldConfig {
-    return (
+    const isCustomFieldWithOptions =
         input.type === 'string' &&
         isCustomFieldConfig(input) &&
         input.hasOwnProperty('options') &&
-        Array.isArray((input as any).options)
-    );
+        Array.isArray((input as any).options);
+    if (isCustomFieldWithOptions) {
+        return true;
+    }
+    const isConfigArgWithOptions =
+        input.type === 'string' && isConfigurableArgDef(input) && Array.isArray(input.ui?.options);
+    if (isConfigArgWithOptions) {
+        return true;
+    }
+    return false;
 }
 
 /**

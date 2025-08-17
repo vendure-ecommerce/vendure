@@ -208,7 +208,6 @@ export function ConfigurableOperationMultiSelector({
                                     value={operation}
                                     onChange={value => onOperationValueChange(operation, value)}
                                     onRemove={() => onOperationRemove(index)}
-                                    position={index}
                                 />
                             </div>
                         );

@@ -1,5 +1,8 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
-import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import {
+    DashboardFormComponentProps,
+    StringCustomFieldConfig,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField, isStringFieldWithOptions } from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -39,7 +42,8 @@ export function SelectWithOptions({
     if (!fieldDef || !isStringFieldWithOptions(fieldDef)) {
         return null;
     }
-    const options = fieldDef.options ?? [];
+    const options: NonNullable<StringCustomFieldConfig['options']> =
+        fieldDef.options ?? fieldDef.ui.options ?? [];
 
     // Convert options to MultiSelect format
     const multiSelectItems = options.map(option => ({
@@ -72,7 +76,7 @@ export function SelectWithOptions({
 
     return (
         <Select value={currentValue ?? undefined} onValueChange={handleValueChange} disabled={readOnly}>
-            <SelectTrigger>
+            <SelectTrigger className="mb-0">
                 <SelectValue placeholder={placeholder || <Trans>Select an option</Trans>} />
             </SelectTrigger>
             <SelectContent>

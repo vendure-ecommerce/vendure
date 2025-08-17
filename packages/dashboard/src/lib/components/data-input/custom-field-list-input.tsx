@@ -147,7 +147,7 @@ function generateId(): string {
 
 // Convert flat array to array with stable IDs
 function convertToItemsWithIds(values: any[], existingItems?: ListItemWithId[]): ListItemWithId[] {
-    if (!values || values.length === 0) return [];
+    if (!values || !Array.isArray(values) || values.length === 0) return [];
 
     return values.map((value, index) => {
         // Try to reuse existing ID if the value matches and index is within bounds
@@ -169,12 +169,7 @@ function convertToFlatArray(itemsWithIds: ListItemWithId[]): any[] {
     return itemsWithIds.map(item => item.value);
 }
 
-export function CustomFieldListInput({
-    renderInput,
-    defaultValue,
-    isFullWidth = false,
-    ...fieldProps
-}: CustomFieldListInputProps & { isFullWidth?: boolean }) {
+export const CustomFieldListInput = ({ renderInput, defaultValue, ...fieldProps }: CustomFieldListInputProps) => {
     const { value, onChange, disabled } = fieldProps;
     const { i18n } = useLingui();
     const sensors = useSensors(
@@ -278,7 +273,6 @@ export function CustomFieldListInput({
                                 onRemove={handleRemoveItem}
                                 onItemChange={handleItemChange}
                                 field={fieldProps}
-                                isFullWidth={isFullWidth}
                             />
                         ))}
                     </SortableContext>
@@ -293,4 +287,4 @@ export function CustomFieldListInput({
             )}
         </div>
     );
-}
+};
