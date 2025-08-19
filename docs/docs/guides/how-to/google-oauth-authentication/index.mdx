@@ -9,29 +9,27 @@ import TabItem from '@theme/TabItem';
 The complete source of the following example plugin can be found here: [example-plugins/google-auth-plugin](https://github.com/vendure-ecommerce/examples/tree/master/examples/shop-google-auth)
 :::
 
-Google OAuth authentication allows customers to sign in using their Google accounts, providing a seamless experience that eliminates the need for password-based registration.
+**Google OAuth authentication** allows customers to sign in using their Google accounts, providing a seamless experience that eliminates the need for password-based registration.
 
-This is particularly valuable for consumer-facing stores where users prefer the convenience and security of Google's authentication system, or for B2B platforms where organizations use Google Workspace.
+This is particularly valuable for **consumer-facing stores** where users prefer the convenience and security of Google's authentication system, or for **B2B platforms** where organizations use Google Workspace.
 
-This guide shows you how to add Google OAuth support to your Vendure store using a custom [AuthenticationStrategy](/reference/typescript-api/auth/authentication-strategy/) and Google Identity Services.
+This guide shows you how to **add Google OAuth support** to your Vendure store using a custom [AuthenticationStrategy](/reference/typescript-api/auth/authentication-strategy/) and Google Identity Services.
 
-## Creating the Plugin​
+An **AuthenticationStrategy** in Vendure defines how users can log in to your store. Learn more about [authentication in Vendure](/guides/core-concepts/auth/).
 
-[​](#creating-the-plugin)
+## Creating the Plugin
 
-First, use the Vendure CLI to create a new plugin for Google authentication:
+**First, use the Vendure CLI** to create a new plugin for Google authentication:
 
 ```bash
 npx vendure add -p GoogleAuthPlugin
 ```
 
-This creates a basic plugin structure with the necessary files.
+This creates a basic [plugin](/guides/developer-guide/plugins/) structure with the necessary files.
 
-## Installing Dependencies​
+## Installing Dependencies
 
-[​](#installing-dependencies)
-
-Google authentication requires the Google Auth Library for token verification:
+**Google authentication requires** the Google Auth Library for token verification:
 
 ```bash
 npm install google-auth-library
@@ -39,11 +37,9 @@ npm install google-auth-library
 
 This library handles ID token verification securely on the server side, ensuring the tokens received from Google are authentic.
 
-## Creating the Authentication Strategy​
+## Creating the Authentication Strategy
 
-[​](#creating-the-authentication-strategy)
-
-Now create the Google authentication strategy. Unlike traditional OAuth flows that use authorization codes, Google Identity Services provides ID tokens directly, which we verify server-side:
+**Now create the Google authentication strategy.** Unlike traditional OAuth flows that use authorization codes, Google Identity Services provides **ID tokens directly**, which we verify server-side:
 
 ```ts title="src/plugins/google-auth-plugin/google-auth-strategy.ts"
 import {
@@ -154,129 +150,93 @@ Key differences from other OAuth flows:
 - **Email Verification**: We respect Google's email verification status
 - **Fallback Names**: Provides defaults if Google profile lacks name information
 
-## Registering the Strategy​
+## Registering the Strategy
 
-[​](#registering-the-strategy)
-
-Create the plugin configuration files to register your authentication strategy:
-
-```ts title="src/plugins/google-auth-plugin/constants.ts"
-export const SHOP_GOOGLE_AUTH_PLUGIN_OPTIONS = Symbol('SHOP_GOOGLE_AUTH_PLUGIN_OPTIONS');
-export const loggerCtx = 'ShopGoogleAuthPlugin';
-```
-
-```ts title="src/plugins/google-auth-plugin/types.ts"
-import { Injector, RequestContext, User } from '@vendure/core';
-
-/**
- * The plugin can be configured using the following options:
- */
-export interface PluginInitOptions {
-  googleClientId?: string;
-  onUserCreated?: (ctx: RequestContext, injector: Injector, user: User) => void;
-  onUserFound?: (ctx: RequestContext, injector: Injector, user: User) => void;
-}
-```
-
-Now update the generated plugin file to register your authentication strategy:
+**Now update the generated plugin file** to register your authentication strategy:
 
 ```ts title="src/plugins/google-auth-plugin/google-auth-plugin.plugin.ts"
-import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
-import { SHOP_GOOGLE_AUTH_PLUGIN_OPTIONS } from './constants';
 import { GoogleAuthStrategy } from './google-auth-strategy';
-import { PluginInitOptions } from './types';
+
+export interface GoogleAuthPluginOptions {
+  googleClientId: string;
+}
 
 @VendurePlugin({
   imports: [PluginCommonModule],
-  providers: [
-    { provide: SHOP_GOOGLE_AUTH_PLUGIN_OPTIONS, useFactory: () => ShopGoogleAuthPlugin.options },
-  ],
   configuration: (config) => {
-    const options = ShopGoogleAuthPlugin.options;
-
-    if (options.googleClientId) {
-      config.authOptions.shopAuthenticationStrategy.push(new GoogleAuthStrategy(options));
+    const options = GoogleAuthPlugin.options;
+    
+    if (options?.googleClientId) {
+      config.authOptions.shopAuthenticationStrategy.push(
+        new GoogleAuthStrategy({ googleClientId: options.googleClientId })
+      );
     }
     return config;
   },
-  compatibility: '^3.0.0',
 })
-export class ShopGoogleAuthPlugin {
-  static options: PluginInitOptions;
+export class GoogleAuthPlugin {
+  static options: GoogleAuthPluginOptions;
 
-  static init(options: PluginInitOptions): Type<ShopGoogleAuthPlugin> {
+  static init(options: GoogleAuthPluginOptions) {
     this.options = options;
-    return ShopGoogleAuthPlugin;
+    return GoogleAuthPlugin;
   }
 }
 ```
 
-## Adding to Vendure Config​
+## Adding to Vendure Config
 
-[​](#adding-to-vendure-config)
-
-Add the plugin to your Vendure configuration:
+**Add the plugin** to your Vendure configuration:
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
-import { ShopGoogleAuthPlugin } from './plugins/google-auth-plugin/google-auth-plugin.plugin';
+import { GoogleAuthPlugin } from './plugins/google-auth-plugin/google-auth-plugin.plugin';
 
 export const config: VendureConfig = {
   // ... other config
   plugins: [
     // ... other plugins
-    ShopGoogleAuthPlugin.init({
+    GoogleAuthPlugin.init({
       googleClientId: process.env.GOOGLE_CLIENT_ID!,
-      onUserCreated: (ctx, injector, user) => {
-        // Optional: Custom logic when new users are created
-        console.log(`New Google user created: ${user.identifier}`);
-      },
-      onUserFound: (ctx, injector, user) => {
-        // Optional: Custom logic when existing users sign in
-        console.log(`Existing Google user logged in: ${user.identifier}`);
-      },
     }),
   ],
   // ... rest of config
 };
 ```
 
-## Setting up Google OAuth App​
+## Setting up Google OAuth App
 
-[​](#setting-up-google-oauth-app)
+**Before you can test the integration,** you need to create a Google OAuth 2.0 Client:
 
-Before you can test the integration, you need to create a Google OAuth 2.0 Client:
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Navigate to **APIs & Services → Credentials**
-4. Click **"Create Credentials" → "OAuth 2.0 Client ID"**
-5. Select **"Web application"** as the application type
-6. Configure the client:
+1. **Go to** the [Google Cloud Console](https://console.cloud.google.com/)
+2. **Create a new project** or select an existing one
+3. **Navigate to** **APIs & Services → Credentials**
+4. **Click** **"Create Credentials" → "OAuth 2.0 Client ID"**
+5. **Select** **"Web application"** as the application type
+6. **Configure the client:**
    - **Name**: Your app name (e.g., "My Vendure Store")
    - **Authorized JavaScript origins**: `http://localhost:3001`
    - **Authorized redirect URIs**: `http://localhost:3001/sign-in`
 
 :::note
-The localhost URLs shown here are for local development only. In production, replace `localhost:3001` with your actual domain (e.g., `https://mystore.com`).
+The **localhost URLs** shown here are for **local development only.** In production, replace `localhost:3001` with your actual domain (e.g., `https://mystore.com`).
 :::
 
-7. Click **"Create"** and copy the Client ID
+7. **Click "Create"** and copy the Client ID
 
-Add the client ID to your environment:
+**Add the client ID** to your environment:
 
 ```bash title=".env"
 GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 ```
 
-## Frontend Integration​
+## Frontend Integration
 
-[​](#frontend-integration)
+### Creating the Sign-in Component
 
-### Installing Google Identity Services
-
-For the frontend, we'll use Google's official Identity Services library, which provides a secure and user-friendly sign-in experience:
+**For the frontend,** we'll use Google's official Identity Services library, which provides a **secure and user-friendly sign-in experience:**
 
 ```typescript title="components/GoogleSignInButton.tsx"
 'use client';
@@ -374,7 +334,7 @@ export function GoogleSignInButton() {
 
 ### Creating the Authentication Function
 
-Create a server action to handle the Google authentication:
+**Create a server action** to handle the Google authentication:
 
 ```typescript title="actions/auth.ts"
 'use server';
@@ -436,25 +396,23 @@ export async function authenticateWithGoogle(token: string) {
 }
 ```
 
-Add your Google Client ID to the frontend environment:
+**Add your Google Client ID** to the frontend environment:
 
 ```bash title=".env.local"
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 VENDURE_API_ENDPOINT=http://localhost:3000/shop-api
 ```
 
-The Google Identity Services flow works as follows:
+**The Google Identity Services flow works as follows:**
 
-1. User clicks "Continue with Google" → Google popup appears
-2. User signs in with Google → Google returns an ID token
-3. Frontend sends the token to Vendure → Vendure verifies token with Google
-4. If valid, Vendure creates/finds customer → User is logged in
+1. **User clicks "Continue with Google"** → Google popup appears
+2. **User signs in with Google** → Google returns an ID token  
+3. **Frontend sends the token to Vendure** → Vendure verifies token with Google
+4. **If valid, Vendure creates/finds customer** → User is logged in
 
-## Using the GraphQL API​
+## Using the GraphQL API
 
-[​](#using-the-graphql-api)
-
-Once your plugin is running, Google authentication will be available in your shop API:
+**Once your plugin is running,** Google authentication will be **available in your shop API:**
 
 <Tabs>
 <TabItem value="Mutation" label="Mutation" default>
@@ -512,11 +470,9 @@ mutation AuthenticateWithGoogle {
 </TabItem>
 </Tabs>
 
-## Customer Data Management​
+## Customer Data Management
 
-[​](#customer-data-management)
-
-Google-authenticated customers are managed like any other Vendure [Customer](/reference/typescript-api/entities/customer/):
+**Google-authenticated customers** are managed like any other Vendure [Customer](/reference/typescript-api/entities/customer/):
 
 - **Email**: Uses the user's actual Google email address
 - **Verification**: Inherits Google's email verification status
@@ -524,100 +480,14 @@ Google-authenticated customers are managed like any other Vendure [Customer](/re
 - **Profile**: First and last names from Google profile, with fallbacks
 - **Security**: No password stored - authentication handled entirely by Google
 
-This means Google users work seamlessly with Vendure's [order management](/guides/core-concepts/orders/), [promotions](/guides/core-concepts/promotions/), and all customer workflows.
+This means **Google users work seamlessly** with Vendure's [order management](/guides/core-concepts/orders/), [promotions](/guides/core-concepts/promotions/), and all customer workflows.
 
-## Advanced Configuration​
+## Testing the Integration
 
-[​](#advanced-configuration)
-
-### Custom User Handling
-
-You can customize how Google users are processed using the plugin options:
-
-```typescript
-ShopGoogleAuthPlugin.init({
-  googleClientId: process.env.GOOGLE_CLIENT_ID!,
-  onUserCreated: async (ctx, injector, user) => {
-    // Send welcome email to new Google users
-    const emailService = injector.get(EmailService);
-    await emailService.send(ctx, 'welcome-google-user', {
-      recipient: user.identifier,
-      variables: {
-        name: `${user.firstName} ${user.lastName}`
-      }
-    });
-  },
-  onUserFound: async (ctx, injector, user) => {
-    // Log returning user activity
-    const logger = injector.get(Logger);
-    logger.info(`Returning Google user: ${user.identifier}`, 'GoogleAuth');
-  },
-});
-```
-
-### Production Considerations
-
-For production deployments:
-
-1. **HTTPS Required**: Google OAuth requires HTTPS in production
-2. **Domain Verification**: Update Google Cloud Console with production domains
-3. **Error Handling**: Implement comprehensive error handling for network failures
-4. **Rate Limiting**: Consider implementing rate limits for authentication attempts
-5. **Monitoring**: Log authentication events for security monitoring
-
-```typescript
-// Enhanced error handling
-try {
-  const ticket = await this.client.verifyIdToken({
-    idToken: data.token,
-    audience: this.options.googleClientId,
-  });
-} catch (error) {
-  if (error.message.includes('Token used too early')) {
-    // Handle clock skew
-    this.logger.warn('Google token timestamp issue', 'GoogleAuthStrategy');
-  } else if (error.message.includes('Invalid token signature')) {
-    // Handle token tampering
-    this.logger.error('Potentially malicious token detected', 'GoogleAuthStrategy');
-  }
-  return false;
-}
-```
-
-## Testing the Integration​
-
-[​](#testing-the-integration)
-
-To test your Google OAuth integration:
+**To test your Google OAuth integration:**
 
 1. **Start your Vendure server** with the plugin configured
-2. **Navigate to your storefront** and locate the Google sign-in button
-3. **Click "Continue with Google"** and complete the OAuth flow
+2. **Navigate to your storefront** and click "Continue with Google"  
+3. **Complete the Google OAuth flow** when prompted
 4. **Verify customer creation** in the Vendure Admin UI
 5. **Test repeat logins** to ensure existing customers are found correctly
-6. **Check session persistence** across page reloads and browser sessions
-
-For debugging, monitor the server logs for Google authentication events and check the browser's network tab for any authentication failures.
-
-## Troubleshooting​
-
-[​](#troubleshooting)
-
-Common issues and solutions:
-
-**"Origin not allowed" error**:
-- Verify the JavaScript origins in Google Cloud Console match your development URL exactly
-- Ensure no trailing slashes in the origin URL
-- Check that you're using the correct Client ID
-
-**Token verification failures**:
-- Confirm the Google Client ID matches between frontend and backend
-- Ensure system clocks are synchronized (Google tokens are time-sensitive)
-- Verify the `google-auth-library` package is properly installed
-
-**Customer creation issues**:
-- Check that email addresses from Google are valid
-- Ensure fallback names are provided for profiles without names
-- Verify database permissions for customer creation
-
-The Google authentication plugin provides a secure, user-friendly way to handle customer authentication while maintaining full integration with Vendure's customer management system.
