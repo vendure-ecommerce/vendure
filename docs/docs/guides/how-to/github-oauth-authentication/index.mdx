@@ -39,9 +39,16 @@ export interface GitHubAuthData {
   state: string;
 }
 
+export interface GitHubAuthOptions {
+  clientId: string;
+  clientSecret: string;
+}
+
 export class GitHubAuthenticationStrategy implements AuthenticationStrategy<GitHubAuthData> {
   readonly name = 'github';
   private externalAuthenticationService: ExternalAuthenticationService;
+
+  constructor(private options: GitHubAuthOptions) {}
 
   init(injector: Injector) {
     // Get the service we'll use to create/find customer accounts
@@ -69,8 +76,8 @@ export class GitHubAuthenticationStrategy implements AuthenticationStrategy<GitH
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: this.options.clientId,
+        client_secret: this.options.clientSecret,
         code,
         state,
       }),
@@ -132,16 +139,23 @@ Now update the generated plugin file to register your authentication strategy:
 ```ts title="src/plugins/github-auth-plugin/github-auth-plugin.plugin.ts"
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
-import { GitHubAuthenticationStrategy } from './github-auth-strategy';
+import { GitHubAuthenticationStrategy, GitHubAuthOptions } from './github-auth-strategy';
 
 @VendurePlugin({
   imports: [PluginCommonModule],
   configuration: config => {
-    config.authOptions.shopAuthenticationStrategy.push(new GitHubAuthenticationStrategy());
+    config.authOptions.shopAuthenticationStrategy.push(new GitHubAuthenticationStrategy(GitHubAuthPlugin.options));
     return config;
   },
 })
-export class GitHubAuthPlugin {}
+export class GitHubAuthPlugin {
+  static options: GitHubAuthOptions;
+
+  static init(options: GitHubAuthOptions) {
+    this.options = options;
+    return GitHubAuthPlugin;
+  }
+}
 ```
 
 ## Adding to Vendure Config
@@ -156,7 +170,10 @@ export const config: VendureConfig = {
   // ... other config
   plugins: [
     // ... other plugins
-    GitHubAuthPlugin,
+    GitHubAuthPlugin.init({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
   ],
   // ... rest of config
 };
