@@ -30,7 +30,7 @@ This creates a basic plugin structure with the necessary files.
 Now create the GitHub authentication strategy. This handles the OAuth flow and creates customer accounts using GitHub profile data:
 
 ```ts title="src/plugins/github-auth-plugin/github-auth-strategy.ts"
-import { AuthenticationStrategy, ExternalAuthenticationService, Injector, RequestContext } from '@vendure/core';
+import { AuthenticationStrategy, ExternalAuthenticationService, Injector, RequestContext, User } from '@vendure/core';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 
@@ -65,7 +65,7 @@ export class GitHubAuthenticationStrategy implements AuthenticationStrategy<GitH
     `;
   }
 
-  async authenticate(ctx: RequestContext, data: GitHubAuthData): Promise<any> {
+  async authenticate(ctx: RequestContext, data: GitHubAuthData): Promise<User | false> {
     const { code, state } = data;
 
     // Step 1: Exchange the authorization code for an access token
@@ -110,7 +110,7 @@ export class GitHubAuthenticationStrategy implements AuthenticationStrategy<GitH
 
     if (existingCustomer) {
       // User exists, log them in
-      return { apiType: 'shop', user: existingCustomer };
+      return existingCustomer;
     }
 
     // Step 4: Create a new customer account for first-time GitHub users
@@ -123,7 +123,7 @@ export class GitHubAuthenticationStrategy implements AuthenticationStrategy<GitH
       lastName: user.name?.split(' ').slice(1).join(' ') || '',
     });
 
-    return { apiType: 'shop', user: newCustomer };
+    return newCustomer;
   }
 }
 ```
