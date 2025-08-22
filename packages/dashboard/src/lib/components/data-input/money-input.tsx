@@ -5,6 +5,7 @@ import { AffixedInput } from './affixed-input.js';
 
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 export interface MoneyInputProps extends DashboardFormComponentProps {
     currency?: string;
@@ -12,6 +13,8 @@ export interface MoneyInputProps extends DashboardFormComponentProps {
 
 export function MoneyInput(props: Readonly<MoneyInputProps>) {
     const { value, onChange, currency, ...rest } = props;
+    const { activeChannel } = useChannel();
+    const activeCurrency = currency ?? activeChannel?.defaultCurrencyCode;
     const readOnly = isReadonlyField(props.fieldDef);
     const {
         settings: { displayLanguage, displayLocale },
@@ -26,33 +29,35 @@ export function MoneyInput(props: Readonly<MoneyInputProps>) {
 
     // Determine if the currency symbol should be a prefix based on locale
     const shouldPrefix = useMemo(() => {
-        if (!currency) return false;
+        if (!activeCurrency) {
+            return false;
+        }
         const locale = displayLocale || displayLanguage.replace(/_/g, '-');
         const parts = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
         const NaNString = parts.find(p => p.type === 'nan')?.value ?? 'NaN';
         const localised = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).format(undefined as any);
         return localised.indexOf(NaNString) > 0;
-    }, [currency, displayLocale, displayLanguage]);
+    }, [activeCurrency, displayLocale, displayLanguage]);
 
     // Get the currency symbol
     const currencySymbol = useMemo(() => {
-        if (!currency) return '';
+        if (!activeCurrency) return '';
         const locale = displayLocale || displayLanguage.replace(/_/g, '-');
         const parts = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
-        return parts.find(p => p.type === 'currency')?.value ?? currency;
-    }, [currency, displayLocale, displayLanguage]);
+        return parts.find(p => p.type === 'currency')?.value ?? activeCurrency;
+    }, [activeCurrency, displayLocale, displayLanguage]);
 
     return (
         <AffixedInput
