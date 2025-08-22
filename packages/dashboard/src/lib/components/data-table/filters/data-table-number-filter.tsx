@@ -73,6 +73,9 @@ export function DataTableNumberFilter({
         if (mode === 'money') {
             return (
                 <MoneyInput
+                    ref={() => {}}
+                    onBlur={() => {}}
+                    name="amount"
                     value={parseFloat(value) || 0}
                     onChange={newValue => onChange(newValue.toString())}
                     currency={activeChannel?.defaultCurrencyCode ?? 'USD'}
