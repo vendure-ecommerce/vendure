@@ -560,6 +560,7 @@ export function DefaultRelationInput({
     onChange,
     onBlur,
     name,
+    ref,
     disabled,
 }: Readonly<DashboardFormComponentProps>) {
     const { i18n } = useLingui();
@@ -591,6 +592,9 @@ export function DefaultRelationInput({
     if (isList) {
         return (
             <MultiRelationInput
+                onBlur={onBlur}
+                name={name}
+                ref={ref}
                 value={value ?? []}
                 onChange={onChange}
                 config={config}
@@ -601,6 +605,9 @@ export function DefaultRelationInput({
     } else {
         return (
             <SingleRelationInput
+                onBlur={onBlur}
+                name={name}
+                ref={ref}
                 value={value ?? ''}
                 onChange={onChange}
                 config={config}

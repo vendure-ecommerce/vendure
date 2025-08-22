@@ -91,6 +91,8 @@ export function FormControlAdapter({ fieldDef, field, valueMode }: Readonly<Form
     if (isList) {
         if (valueMode === 'json-string') {
             return <ConfigurableOperationListInput {...fieldWithTransform} fieldDef={fieldDef} />;
+        } else if (fieldDef.type === 'relation') {
+            return <DefaultInputForType {...fieldWithTransform} fieldDef={fieldDef} />;
         } else {
             // Simple default values
             const getDefaultValue = () => {
