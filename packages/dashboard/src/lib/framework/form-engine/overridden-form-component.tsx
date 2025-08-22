@@ -1,9 +1,9 @@
 import {
     DataDisplayComponent,
-    DataInputComponent,
     useComponentRegistry,
 } from '@/vdb/framework/component-registry/component-registry.js';
 import { generateInputComponentKey } from '@/vdb/framework/extension-api/input-component-extensions.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
@@ -34,7 +34,7 @@ export function OverriddenFormComponent({ fieldName, field, children }: Readonly
     const pageBlock = usePageBlock({ optional: true });
     const componentRegistry = useComponentRegistry();
     let DisplayComponent: DataDisplayComponent | undefined;
-    let InputComponent: DataInputComponent | undefined;
+    let InputComponent: DashboardFormComponent | undefined;
     if (page.pageId && pageBlock?.blockId) {
         const customInputComponentKey = generateInputComponentKey(page.pageId, pageBlock.blockId, fieldName);
         DisplayComponent = componentRegistry.getDisplayComponent(customInputComponentKey);

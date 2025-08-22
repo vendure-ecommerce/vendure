@@ -18,9 +18,6 @@ export interface DataDisplayComponentProps {
 }
 
 export type DataDisplayComponent = React.ComponentType<DataDisplayComponentProps>;
-
-// REPLACED: All input component interfaces now use the single DashboardFormComponent
-export type DataInputComponent = DashboardFormComponent;
 export type { DashboardFormComponentProps as DataInputComponentProps };
 
 // Component registry hook that uses the global registry
@@ -29,7 +26,7 @@ export function useComponentRegistry() {
         getDisplayComponent: (id: string): DataDisplayComponent | undefined => {
             return getDisplayComponent(id);
         },
-        getInputComponent: (id: string): DataInputComponent | undefined => {
+        getInputComponent: (id: string): DashboardFormComponent | undefined => {
             return getInputComponent(id);
         },
     };
