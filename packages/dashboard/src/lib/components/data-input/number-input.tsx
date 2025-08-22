@@ -4,7 +4,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
-export function NumberInput({ fieldDef, onChange,...fieldProps }: Readonly<DashboardFormComponentProps>) {
+export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<DashboardFormComponentProps>) {
     const readOnly = fieldProps.disabled || isReadonlyField(fieldDef);
     const isFloat = fieldDef ? fieldDef.type === 'float' : false;
     const min = fieldDef?.ui?.min;
@@ -20,9 +20,9 @@ export function NumberInput({ fieldDef, onChange,...fieldProps }: Readonly<Dashb
     if (shouldUseAffixedInput) {
         return (
             <AffixedInput
+                {...fieldProps}
                 type="number"
                 onChange={handleChange}
-                {...fieldProps}
                 min={min}
                 max={max}
                 step={step}

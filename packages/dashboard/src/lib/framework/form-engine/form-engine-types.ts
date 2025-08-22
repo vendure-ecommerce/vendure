@@ -73,7 +73,13 @@ export type DashboardFormComponentProps<
  * component.
  */
 export type DashboardFormComponentMetadata = {
-    isListInput?: boolean;
+    /**
+     * @description
+     * Defines whether this form component is designed to handle list inputs.
+     * If set to `'dynamic'`, it means the component has internal logic that can
+     * handle both lists and single values.
+     */
+    isListInput?: boolean | 'dynamic';
     isFullWidth?: boolean;
 };
 

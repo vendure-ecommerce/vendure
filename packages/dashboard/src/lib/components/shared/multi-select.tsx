@@ -63,7 +63,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
 
     const renderTrigger = () => {
         if (multiple) {
-            const selectedValues = value as string[];
+            const selectedValues: string[] = typeof value === 'string' ? [value] : value;
             return (
                 <Button
                     variant="outline"

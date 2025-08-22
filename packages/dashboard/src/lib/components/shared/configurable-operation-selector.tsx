@@ -75,7 +75,6 @@ export function ConfigurableOperationSelector({
     buttonText,
     emptyText = 'No options found',
 }: Readonly<ConfigurableOperationSelectorProps>) {
-    console.log(`ConfigurableOperationSelector`, value);
     const { data } = useQuery<QueryData>({
         queryKey: [queryKey],
         queryFn: () => api.query(queryDocument),

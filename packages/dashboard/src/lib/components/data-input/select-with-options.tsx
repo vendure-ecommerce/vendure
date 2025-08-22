@@ -1,5 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import {
+    DashboardFormComponent,
     DashboardFormComponentProps,
     StringCustomFieldConfig,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
@@ -52,7 +53,7 @@ export function SelectWithOptions({
     }));
 
     // For list fields, use MultiSelect component
-    if (isListField) {
+    if (isListField || fieldDef?.list === true) {
         return (
             <MultiSelect
                 multiple={true}
@@ -89,3 +90,7 @@ export function SelectWithOptions({
         </Select>
     );
 }
+
+(SelectWithOptions as DashboardFormComponent).metadata = {
+    isListInput: 'dynamic',
+};

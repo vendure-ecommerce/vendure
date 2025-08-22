@@ -56,12 +56,14 @@ export function FormControlAdapter({ fieldDef, field, valueMode }: Readonly<Form
             return <CustomComponent {...fieldWithTransform} fieldDef={fieldDef} />;
         }
 
-        // The custom component is not correctly configured for list fields
-        // eslint-disable-next-line no-console
-        console.warn([
-            `Custom component ${componentId} is not correctly configured for the ${fieldDef.name} field:`,
-            `The component ${CustomComponent.metadata?.isListInput === true ? 'is' : 'is not'} configured as a list input, but the field ${isList ? 'is' : 'is not'} a list field.`,
-        ]);
+        if (CustomComponent?.metadata?.isListInput !== 'dynamic') {
+            // The custom component is not correctly configured for list fields
+            // eslint-disable-next-line no-console
+            console.warn([
+                `Custom component ${componentId} is not correctly configured for the ${fieldDef.name} field:`,
+                `The component ${CustomComponent.metadata?.isListInput === true ? 'is' : 'is not'} configured as a list input, but the field ${isList ? 'is' : 'is not'} a list field.`,
+            ]);
+        }
     }
 
     // For non-list, non-struct fields - handle component lookup simply

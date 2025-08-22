@@ -38,7 +38,16 @@ export function AffixedInput({ prefix, suffix, className = '', ...props }: Reado
                     {prefix}
                 </span>
             )}
-            <Input {...props} className={className} style={style} disabled={readOnly} />
+            <Input
+                value={props.value}
+                onChange={props.onChange}
+                onBlur={props.onBlur}
+                type={props.type}
+                ref={props.ref}
+                className={className}
+                style={style}
+                disabled={readOnly}
+            />
             {suffix && (
                 <span ref={suffixRef} className="absolute right-3 text-muted-foreground whitespace-nowrap">
                     {suffix}

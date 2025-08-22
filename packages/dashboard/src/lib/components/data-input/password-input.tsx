@@ -4,5 +4,13 @@ import { Input } from '../ui/input.js';
 
 export function PasswordInput(props: Readonly<DashboardFormComponentProps>) {
     const readOnly = props.disabled || isReadonlyField(props.fieldDef);
-    return <Input type="password" {...props} disabled={readOnly} />;
+    return (
+        <Input
+            type="password"
+            ref={props.ref}
+            value={props.value}
+            onChange={e => props.onChange(e.target.value)}
+            disabled={readOnly}
+        />
+    );
 }
