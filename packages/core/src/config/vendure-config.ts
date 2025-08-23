@@ -215,7 +215,7 @@ export interface ApiOptions {
      * Pass a [custom cache](https://www.apollographql.com/docs/apollo-server/performance/caching) for server-side caching to the Apollo server,
      * which is the underlying GraphQL server used by Vendure.
      *
-     * @default undefined
+     * @default 'bounded'
      * @since 3.5.0
      */
     cache?: KeyValueCache<string> | 'bounded';
