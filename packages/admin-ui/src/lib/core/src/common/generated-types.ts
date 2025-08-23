@@ -2264,6 +2264,11 @@ export enum JobState {
   RUNNING = 'RUNNING'
 }
 
+export type KeyValueInput = {
+  key: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
+};
+
 /**
  * @description
  * Languages in the form of a ISO 639-1 language code with optional
@@ -3005,10 +3010,18 @@ export type Mutation = {
   setDraftOrderShippingAddress: Order;
   /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
   setDraftOrderShippingMethod: SetOrderShippingMethodResult;
+  /** Set a single key-value pair (automatically scoped based on field configuration) */
+  setKeyValue: SetKeyValueResult;
+  /** Set multiple key-value pairs in a transaction (each automatically scoped) */
+  setKeyValues: Array<SetKeyValueResult>;
   setMainNavExpanded: Scalars['Boolean']['output'];
   setOrderCustomFields?: Maybe<Order>;
   /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
   setOrderCustomer?: Maybe<Order>;
+  /** Set a single key-value pair (automatically scoped based on field configuration) */
+  setSettingsStoreValue: SetSettingsStoreValueResult;
+  /** Set multiple key-value pairs in a transaction (each automatically scoped) */
+  setSettingsStoreValues: Array<SetSettingsStoreValueResult>;
   setUiLanguage: LanguageCode;
   setUiLocale?: Maybe<Scalars['String']['output']>;
   setUiTheme: Scalars['String']['output'];
@@ -3743,6 +3756,16 @@ export type MutationSetDraftOrderShippingMethodArgs = {
 };
 
 
+export type MutationSetKeyValueArgs = {
+  input: KeyValueInput;
+};
+
+
+export type MutationSetKeyValuesArgs = {
+  inputs: Array<KeyValueInput>;
+};
+
+
 export type MutationSetMainNavExpandedArgs = {
   expanded: Scalars['Boolean']['input'];
 };
@@ -3755,6 +3778,16 @@ export type MutationSetOrderCustomFieldsArgs = {
 
 export type MutationSetOrderCustomerArgs = {
   input: SetOrderCustomerInput;
+};
+
+
+export type MutationSetSettingsStoreValueArgs = {
+  input: SettingsStoreInput;
+};
+
+
+export type MutationSetSettingsStoreValuesArgs = {
+  inputs: Array<SettingsStoreInput>;
 };
 
 
@@ -5198,6 +5231,14 @@ export type Query = {
   facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
+  /** Get value for a specific key (automatically scoped based on field configuration) */
+  getKeyValue?: Maybe<Scalars['JSON']['output']>;
+  /** Get multiple key-value pairs (each automatically scoped) */
+  getKeyValues?: Maybe<Scalars['JSON']['output']>;
+  /** Get value for a specific key (automatically scoped based on field configuration) */
+  getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
+  /** Get multiple key-value pairs (each automatically scoped) */
+  getSettingsStoreValues?: Maybe<Scalars['JSON']['output']>;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobBufferSize: Array<JobBufferSize>;
@@ -5348,6 +5389,26 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
+};
+
+
+export type QueryGetKeyValueArgs = {
+  key: Scalars['String']['input'];
+};
+
+
+export type QueryGetKeyValuesArgs = {
+  keys: Array<Scalars['String']['input']>;
+};
+
+
+export type QueryGetSettingsStoreValueArgs = {
+  key: Scalars['String']['input'];
+};
+
+
+export type QueryGetSettingsStoreValuesArgs = {
+  keys: Array<Scalars['String']['input']>;
 };
 
 
@@ -5938,6 +5999,13 @@ export type ServerConfig = {
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
 
+export type SetKeyValueResult = {
+  __typename?: 'SetKeyValueResult';
+  error?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  result: Scalars['Boolean']['output'];
+};
+
 export type SetOrderCustomerInput = {
   customerId: Scalars['ID']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
@@ -5945,6 +6013,18 @@ export type SetOrderCustomerInput = {
 };
 
 export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
+
+export type SetSettingsStoreValueResult = {
+  __typename?: 'SetSettingsStoreValueResult';
+  error?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  result: Scalars['Boolean']['output'];
+};
+
+export type SettingsStoreInput = {
+  key: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
+};
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -6668,6 +6748,9 @@ export type UpdateOrderInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   id: Scalars['ID']['input'];
 };
+
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult = InsufficientStockError | NegativeQuantityError | OrderInterceptorError | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderInterceptorError | OrderLimitError | OrderModificationError;
 

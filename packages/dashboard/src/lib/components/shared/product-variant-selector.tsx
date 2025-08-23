@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/command.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
-import { assetFragment } from '@/vdb/graphql/fragments.js';
+import { AssetFragment, assetFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
@@ -28,6 +28,13 @@ const productVariantListDocument = graphql(
                     featuredAsset {
                         ...Asset
                     }
+                    price
+                    priceWithTax
+                    product {
+                        featuredAsset {
+                            ...Asset
+                        }
+                    }
                 }
                 totalItems
             }
@@ -37,15 +44,22 @@ const productVariantListDocument = graphql(
 );
 
 export interface ProductVariantSelectorProps {
-    onProductVariantIdChange: (productVariantId: string) => void;
+    onProductVariantSelect: (variant: {
+        productVariantId: string;
+        productVariantName: string;
+        sku: string;
+        productAsset: AssetFragment | null;
+        price?: number;
+        priceWithTax?: number;
+    }) => void;
 }
 
-export function ProductVariantSelector({ onProductVariantIdChange }: Readonly<ProductVariantSelectorProps>) {
+export function ProductVariantSelector({ onProductVariantSelect }: Readonly<ProductVariantSelectorProps>) {
     const [search, setSearch] = useState('');
     const [open, setOpen] = useState(false);
     const debouncedSearch = useDebounce(search, 500);
 
-    const { data, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ['productVariants', debouncedSearch],
         staleTime: 1000 * 60 * 5,
         enabled: debouncedSearch.length > 0,
@@ -85,7 +99,17 @@ export function ProductVariantSelector({ onProductVariantIdChange }: Readonly<Pr
                                     key={variant.id}
                                     value={variant.id}
                                     onSelect={() => {
-                                        onProductVariantIdChange(variant.id);
+                                        onProductVariantSelect({
+                                            productVariantId: variant.id,
+                                            productVariantName: variant.name,
+                                            sku: variant.sku,
+                                            productAsset:
+                                                variant.featuredAsset ??
+                                                variant.product.featuredAsset ??
+                                                null,
+                                            price: variant.price,
+                                            priceWithTax: variant.priceWithTax,
+                                        });
                                         setOpen(false);
                                     }}
                                     className="flex items-center gap-2 p-2"

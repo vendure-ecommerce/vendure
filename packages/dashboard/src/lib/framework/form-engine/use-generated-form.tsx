@@ -7,7 +7,7 @@ import { useChannel } from '../../hooks/use-channel.js';
 import { useServerConfig } from '../../hooks/use-server-config.js';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
-import { transformRelationFields } from './utils.js';
+import { removeEmptyIdFields, transformRelationFields } from './utils.js';
 
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
@@ -17,6 +17,7 @@ export interface GeneratedFormOptions<
     document?: T;
     varName?: VarName;
     entity: E | null | undefined;
+    customFieldConfig?: any[]; // Add custom field config for validation
     setValues: (
         entity: NonNullable<E>,
     ) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
@@ -37,13 +38,19 @@ export function useGeneratedForm<
     VarName extends keyof VariablesOf<T> | undefined,
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
-    const { document, entity, setValues, onSubmit, varName } = options;
+    const { document, entity, setValues, onSubmit, varName, customFieldConfig } = options;
     const { activeChannel } = useChannel();
-    const availableLanguages = useServerConfig()?.availableLanguages || [];
+    const serverConfig = useServerConfig();
+    const availableLanguages = serverConfig?.availableLanguages || [];
     const updateFields = document ? getOperationVariablesFields(document, varName) : [];
-    const schema = createFormSchemaFromFields(updateFields);
+
+    const schema = createFormSchemaFromFields(updateFields, customFieldConfig);
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
+
+    const values = processedEntity
+        ? transformRelationFields(updateFields, setValues(processedEntity))
+        : defaultValues;
 
     const form = useForm({
         resolver: async (values, context, options) => {
@@ -55,16 +62,28 @@ export function useGeneratedForm<
         },
         mode: 'onChange',
         defaultValues,
-        values: processedEntity
-            ? transformRelationFields(updateFields, setValues(processedEntity))
-            : defaultValues,
+        values,
     });
-    let submitHandler = (event: FormEvent) => {
+    let submitHandler = (event: FormEvent): any => {
         event.preventDefault();
     };
     if (onSubmit) {
-        submitHandler = (event: FormEvent) => {
-            form.handleSubmit(onSubmit as any)(event);
+        submitHandler = async (event: FormEvent) => {
+            event.preventDefault();
+
+            // Trigger validation on ALL fields, not just dirty ones
+            const isValid = await form.trigger();
+
+            if (!isValid) {
+                console.log(`Form invalid!`);
+                event.stopPropagation();
+                return;
+            }
+
+            const onSubmitWrapper = (values: any) => {
+                onSubmit(removeEmptyIdFields(values, updateFields));
+            };
+            form.handleSubmit(onSubmitWrapper)(event);
         };
     }
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageActionBar
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="261" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="275" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -20,45 +20,48 @@ It should be used in conjunction with the <a href='/reference/dashboard/componen
 as direct children.
 
 ```ts title="Signature"
-function PageActionBar(props: { children: React.ReactNode }): void
+function PageActionBar(props: Readonly<{ children: React.ReactNode }>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`{ children: React.ReactNode }`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{ children: React.ReactNode }&#62;`} />
 
 
 
 ## PageActionBarLeft
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="287" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="297" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 ```ts title="Signature"
-function PageActionBarLeft(props: { children: React.ReactNode }): void
+function PageActionBarLeft(props: Readonly<{ children: React.ReactNode }>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`{ children: React.ReactNode }`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{ children: React.ReactNode }&#62;`} />
 
 
 
 ## PageActionBarRight
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="299" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="311" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 ```ts title="Signature"
-function PageActionBarRight(props: { children: React.ReactNode }): void
+function PageActionBarRight(props: Readonly<{
+    children: React.ReactNode;
+    dropdownMenuItems?: InlineDropdownItem[];
+}>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`{ children: React.ReactNode }`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{     children: React.ReactNode;     dropdownMenuItems?: InlineDropdownItem[]; }&#62;`} />
 

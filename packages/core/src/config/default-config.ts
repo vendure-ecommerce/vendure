@@ -50,6 +50,7 @@ import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
 import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
+import { cleanOrphanedSettingsStoreTask } from './settings-store/clean-orphaned-settings-store-task';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
@@ -87,6 +88,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             origin: true,
             credentials: true,
         },
+        trustProxy: false,
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
@@ -200,7 +202,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
-        tasks: [cleanSessionsTask],
+        tasks: [cleanSessionsTask, cleanOrphanedSettingsStoreTask],
         runTasksInWorkerOnly: true,
     },
     customFields: {
@@ -240,6 +242,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
         Zone: [],
     },
+    settingsStoreFields: {},
     plugins: [],
     systemOptions: {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),

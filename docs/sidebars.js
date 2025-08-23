@@ -86,6 +86,7 @@ const sidebars = {
                 'guides/developer-guide/testing/index',
                 'guides/developer-guide/updating/index',
                 'guides/developer-guide/worker-job-queue/index',
+                'guides/developer-guide/settings-store/index',
                 {
                     type: 'html',
                     value: 'Extend',
@@ -139,10 +140,13 @@ const sidebars = {
             },
             items: [
                 'guides/extending-the-dashboard/getting-started/index',
-                'guides/extending-the-dashboard/cms-tutorial/index',
+                'guides/extending-the-dashboard/extending-overview/index',
+
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
+                'guides/extending-the-dashboard/theming/index',
+                'guides/extending-the-dashboard/cms-tutorial/index',
                 {
                     type: 'category',
                     label: 'Custom Form Elements',
@@ -153,6 +157,7 @@ const sidebars = {
                         'guides/extending-the-dashboard/custom-form-components/relation-selectors',
                     ],
                 },
+                'guides/extending-the-dashboard/deployment/index',
                 'guides/extending-the-dashboard/tech-stack/index',
             ],
         },

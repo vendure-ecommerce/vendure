@@ -11,26 +11,26 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="73" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="76" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
 ```ts title="Signature"
-function ListPage<T extends TypedDocumentNode<U, V>, U extends Record<string, any> = any, V extends ListQueryOptionsShape = ListQueryOptionsShape, AC extends AdditionalColumns<T> = AdditionalColumns<T>>(props: ListPageProps<T, U, V, AC>): void
+function ListPage<T extends TypedDocumentNode<U, V>, U extends Record<string, any> = any, V extends ListQueryOptionsShape = ListQueryOptionsShape, AC extends AdditionalColumns<T> = AdditionalColumns<T>>(props: Readonly<ListPageProps<T, U, V, AC>>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`<a href='/reference/dashboard/components/list-page#listpageprops'>ListPageProps</a>&#60;T, U, V, AC&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;<a href='/reference/dashboard/components/list-page#listpageprops'>ListPageProps</a>&#60;T, U, V, AC&#62;&#62;`} />
 
 
 
 ## ListPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="35" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="31" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -55,6 +55,8 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
     rowActions?: RowAction<ListQueryFields<T>>[];
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    bulkActions?: BulkAction[];
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 ```
 
@@ -143,6 +145,16 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
 ### setTableOptions
 
 <MemberInfo kind="property" type={`(table: TableOptions&#60;any&#62;) =&#62; TableOptions&#60;any&#62;`}   />
+
+
+### bulkActions
+
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/data-table#bulkaction'>BulkAction</a>[]`}   />
+
+
+### registerRefresher
+
+<MemberInfo kind="property" type={`PaginatedListRefresherRegisterFn`}   />
 
 
 

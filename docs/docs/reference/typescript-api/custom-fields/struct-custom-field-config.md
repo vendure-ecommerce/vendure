@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StructCustomFieldConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="215" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="224" packageName="@vendure/core" since="3.1.0" />
 
 Configures a "struct" custom field.
 

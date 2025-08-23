@@ -52,11 +52,17 @@ function assertNoNameConflictsWithEntity(entity: Type<any>, customFields: Custom
 function assertNoDuplicatedCustomFieldNames(entityName: string, customFields: CustomFieldConfig[]): string[] {
     const nameCounts = customFields
         .map(f => f.name)
-        .reduce((hash, name) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            hash[name] ? hash[name]++ : (hash[name] = 1);
-            return hash;
-        }, {} as { [name: string]: number });
+        .reduce(
+            (hash, name) => {
+                if (hash[name]) {
+                    hash[name]++;
+                } else {
+                    hash[name] = 1;
+                }
+                return hash;
+            },
+            {} as { [name: string]: number },
+        );
     return Object.entries(nameCounts)
         .filter(([name, count]) => 1 < count)
         .map(([name, count]) => `${entityName} entity has duplicated custom field name: "${name}"`);

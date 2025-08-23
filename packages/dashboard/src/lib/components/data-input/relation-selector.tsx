@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/pop
 import { getQueryName } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import type { DocumentNode } from 'graphql';
@@ -27,17 +28,25 @@ export interface RelationSelectorConfig<T = any> {
     /** Number of items to load per page */
     pageSize?: number;
     /** Placeholder text for the search input */
-    placeholder?: string;
+    placeholder?: React.ReactNode;
     /** Whether to enable multi-select mode */
     multiple?: boolean;
     /** Custom filter function for search */
     buildSearchFilter?: (searchTerm: string) => any;
+    /** Custom filter function for fetching by IDs */
+    buildIdsFilter?: (ids: string[]) => any;
     /** Custom label renderer function for rich display */
     label?: (item: T) => React.ReactNode;
 }
 
 export interface RelationSelectorProps<T = any> {
     config: RelationSelectorConfig<T>;
+    /**
+     * @description
+     * The label for the selector trigger. Default is
+     * "Select item" for single select and "Select items" for multi select.
+     */
+    selectorLabel?: React.ReactNode;
     value?: string | string[];
     onChange: (value: string | string[]) => void;
     disabled?: boolean;
@@ -96,6 +105,19 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
             [config.labelKey]: { contains: term },
         }));
 
+    // Build the default IDs filter if none provided
+    const buildIdsFilter = React.useCallback(
+        (ids: string[]) => {
+            if (config.buildIdsFilter) {
+                return config.buildIdsFilter(ids);
+            }
+            return {
+                [config.idKey]: { in: ids },
+            };
+        },
+        [config.idKey, config.buildIdsFilter],
+    );
+
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, error } = useInfiniteQuery({
         queryKey: ['relationSelector', getQueryName(config.listQuery), debouncedSearch],
         queryFn: async ({ pageParam = 0 }) => {
@@ -125,6 +147,30 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
 
     const items = data?.pages.flatMap(page => page?.items ?? []) ?? [];
 
+    // Function to fetch items by IDs
+    const fetchItemsByIds = React.useCallback(
+        async (ids: string[]): Promise<T[]> => {
+            if (ids.length === 0) return [];
+
+            const variables: any = {
+                options: {
+                    take: ids.length,
+                    filter: buildIdsFilter(ids),
+                },
+            };
+
+            try {
+                const response = (await api.query(config.listQuery, variables)) as any;
+                const result = response[getQueryName(config.listQuery)];
+                return result?.items ?? [];
+            } catch (error) {
+                console.error('Error fetching items by IDs:', error);
+                return [];
+            }
+        },
+        [buildIdsFilter, config.listQuery],
+    );
+
     return {
         items,
         isLoading,
@@ -134,6 +180,7 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
         error,
         searchTerm,
         setSearchTerm,
+        fetchItemsByIds,
     };
 }
 
@@ -146,21 +193,107 @@ export function RelationSelector<T>({
     onChange,
     disabled,
     className,
+    selectorLabel,
 }: Readonly<RelationSelectorProps<T>>) {
     const [open, setOpen] = useState(false);
     const [selectedItemsCache, setSelectedItemsCache] = useState<T[]>([]);
+    const fetchedIdsRef = React.useRef<Set<string>>(new Set());
+    const fetchingIdsRef = React.useRef<Set<string>>(new Set());
     const isMultiple = config.multiple ?? false;
 
-    const { items, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, searchTerm, setSearchTerm } =
-        useRelationSelector(config);
+    const {
+        items,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        searchTerm,
+        setSearchTerm,
+        fetchItemsByIds,
+    } = useRelationSelector(config);
+
+    // Store a stable reference to fetchItemsByIds
+    const fetchItemsByIdsRef = React.useRef(fetchItemsByIds);
+    fetchItemsByIdsRef.current = fetchItemsByIds;
 
     // Normalize value to always be an array for easier handling
     const selectedIds = React.useMemo(() => {
         if (isMultiple) {
             return Array.isArray(value) ? value : value ? [value] : [];
         }
-        return value ? [String(value)] : [];
+        // For single select, ensure we only have at most one ID
+        const singleValue = Array.isArray(value) ? value[0] : value;
+        return singleValue ? [String(singleValue)] : [];
     }, [value, isMultiple]);
+
+    // Fetch selected items by IDs on mount and when selectedIds change
+    React.useEffect(() => {
+        const fetchSelectedItems = async () => {
+            if (selectedIds.length === 0) {
+                setSelectedItemsCache([]);
+                fetchedIdsRef.current.clear();
+                fetchingIdsRef.current.clear();
+                return;
+            }
+
+            // Find which selected IDs we haven't fetched yet and aren't currently fetching
+            const missingIds = selectedIds.filter(
+                id => !fetchedIdsRef.current.has(id) && !fetchingIdsRef.current.has(id),
+            );
+
+            if (missingIds.length > 0) {
+                // Mark these IDs as being fetched
+                missingIds.forEach(id => fetchingIdsRef.current.add(id));
+
+                try {
+                    const fetchedItems = await fetchItemsByIdsRef.current(missingIds);
+
+                    // Mark these IDs as fetched and remove from fetching
+                    missingIds.forEach(id => {
+                        fetchedIdsRef.current.add(id);
+                        fetchingIdsRef.current.delete(id);
+                    });
+
+                    setSelectedItemsCache(prev => {
+                        if (!isMultiple) {
+                            // For single select, replace the entire cache
+                            return fetchedItems;
+                        }
+                        // For multi-select, filter and append
+                        const stillSelected = prev.filter(item =>
+                            selectedIds.includes(String(item[config.idKey])),
+                        );
+                        return [...stillSelected, ...fetchedItems];
+                    });
+                } catch (error) {
+                    // Remove from fetching set on error
+                    missingIds.forEach(id => fetchingIdsRef.current.delete(id));
+                    console.error('Error fetching items by IDs:', error);
+                }
+            } else {
+                // Just filter out items that are no longer selected
+                setSelectedItemsCache(prev => {
+                    if (!isMultiple) {
+                        // For single select, if no items need fetching but we have a selection,
+                        // keep only items that are in the current selection
+                        return prev.filter(item => selectedIds.includes(String(item[config.idKey])));
+                    }
+                    // For multi-select, normal filtering
+                    return prev.filter(item => selectedIds.includes(String(item[config.idKey])));
+                });
+            }
+
+            // Clean up fetched IDs that are no longer selected
+            const selectedIdsSet = new Set(selectedIds);
+            for (const fetchedId of fetchedIdsRef.current) {
+                if (!selectedIdsSet.has(fetchedId)) {
+                    fetchedIdsRef.current.delete(fetchedId);
+                }
+            }
+        };
+
+        fetchSelectedItems();
+    }, [selectedIds, config.idKey, isMultiple]);
 
     const handleSelect = (item: T) => {
         const itemId = String(item[config.idKey]);
@@ -182,10 +315,20 @@ export function RelationSelector<T>({
                 }
             });
 
+            // Mark the item as fetched to prevent duplicate fetching
+            if (!isCurrentlySelected) {
+                fetchedIdsRef.current.add(itemId);
+            } else {
+                fetchedIdsRef.current.delete(itemId);
+            }
+
             onChange(newSelectedIds);
         } else {
             // For single select, update cache with the new item
             setSelectedItemsCache([item]);
+            // Mark as fetched for single select too
+            fetchedIdsRef.current.clear();
+            fetchedIdsRef.current.add(itemId);
             onChange(itemId);
             setOpen(false);
             setSearchTerm('');
@@ -214,34 +357,17 @@ export function RelationSelector<T>({
         }
     };
 
-    // Clean up cache when selectedIds change externally (e.g., form reset)
-    React.useEffect(() => {
-        setSelectedItemsCache(prev => prev.filter(item => selectedIds.includes(String(item[config.idKey]))));
-    }, [selectedIds, config.idKey]);
-
-    // Populate cache with items from search results that are selected but not yet cached
-    React.useEffect(() => {
-        const itemsToAdd = items.filter(item => {
-            const itemId = String(item[config.idKey]);
-            const isSelected = selectedIds.includes(itemId);
-            const isAlreadyCached = selectedItemsCache.some(
-                cachedItem => String(cachedItem[config.idKey]) === itemId,
-            );
-            return isSelected && !isAlreadyCached;
-        });
-
-        if (itemsToAdd.length > 0) {
-            setSelectedItemsCache(prev => [...prev, ...itemsToAdd]);
-        }
-    }, [items, selectedIds, selectedItemsCache, config.idKey]);
-
     // Get selected items for display from cache, filtered by current selection
     const selectedItems = React.useMemo(() => {
-        return selectedItemsCache.filter(item => selectedIds.includes(String(item[config.idKey])));
-    }, [selectedItemsCache, selectedIds, config.idKey]);
+        const filteredItems = selectedItemsCache.filter(item =>
+            selectedIds.includes(String(item[config.idKey])),
+        );
+        // For single select, ensure we only display one item
+        return isMultiple ? filteredItems : filteredItems.slice(0, 1);
+    }, [selectedItemsCache, selectedIds, config.idKey, isMultiple]);
 
     return (
-        <div className={className}>
+        <div className={cn('overflow-auto', className)}>
             {/* Display selected items */}
             {selectedItems.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -251,9 +377,9 @@ export function RelationSelector<T>({
                         return (
                             <div
                                 key={itemId}
-                                className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm"
+                                className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm max-w-full min-w-0"
                             >
-                                <span>{label}</span>
+                                <div className="min-w-0 flex-1">{label}</div>
                                 {!disabled && (
                                     <button
                                         type="button"
@@ -278,10 +404,10 @@ export function RelationSelector<T>({
                             {isMultiple
                                 ? selectedItems.length > 0
                                     ? `Add more (${selectedItems.length} selected)`
-                                    : 'Select items'
+                                    : (selectorLabel ?? <Trans>Select items</Trans>)
                                 : selectedItems.length > 0
                                   ? 'Change selection'
-                                  : 'Select item'}
+                                  : (selectorLabel ?? <Trans>Select item</Trans>)}
                         </Trans>
                     </Button>
                 </PopoverTrigger>

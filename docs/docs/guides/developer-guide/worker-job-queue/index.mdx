@@ -430,7 +430,8 @@ by early cancellation:
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, Product, TransactionalConnection,
-    SerializedRequestContext, RequestContext, Job, JobState } from '@vendure/core';
+    SerializedRequestContext, RequestContext } from '@vendure/core';
+import { JobState } from '@vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
 @Injectable()

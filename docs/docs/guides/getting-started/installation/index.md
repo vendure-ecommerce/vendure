@@ -1,5 +1,5 @@
 ---
-title: "Installation"
+title: 'Installation'
 sidebar_position: 1
 ---
 
@@ -8,12 +8,12 @@ import TabItem from '@theme/TabItem';
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/en/) **v20** or above, with support for **even-numbered Node.js versions**. (Odd-numbered versions should still work but are not officially supported.)
+- [Node.js](https://nodejs.org/en/) **v20**, **v22** and **v24** - these versions are tested and supported. (Odd-numbered versions above v20 should still work but are not officially supported.)
 
 ### Optional
 
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed, then SQLite will be used for your database.
-* If you want to use an existing MySQL, MariaDB, or Postgres server as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend the quick start option, which handles the database for you**.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed, then SQLite will be used for your database.
+- If you want to use an existing MySQL, MariaDB, or Postgres server as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend the quick start option, which handles the database for you**.
 
 ## @vendure/create
 
@@ -43,9 +43,9 @@ And that's it! After a minute or two, you'll have a **fully-functional Vendure s
 
 Once the installation is done, your terminal will output a message indicating a successful installation with:
 
-* The URL to access the **Admin UI**
-* Your admin log-in credentials
-* The project file path
+- The URL to access the **Admin UI**
+- Your admin log-in credentials
+- The project file path
 
 Proceed to the [Start the server](#start-the-server) section below to run your Vendure server.
 
@@ -102,9 +102,9 @@ npm run dev
 
 You should now be able to access:
 
-* The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
-* The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
-* The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
+- The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
+- The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
+- The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
 Congratulations! 🥳 You now have a fully-functional Vendure server running locally.
 
@@ -115,8 +115,8 @@ If you are new to GraphQL, you should also check out our [Introducing GraphQL gu
 :::tip
 Open the Admin UI at [http://localhost:3000/admin](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
 
-* **username**: superadmin
-* **password**: superadmin
+- **username**: superadmin
+- **password**: superadmin
 
 :::
 
@@ -126,14 +126,14 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
 
 ### Troubleshooting
 
-* If you encounter any issues during installation, you can get a more detailed output by setting the log level to `verbose`:
+- If you encounter any issues during installation, you can get a more detailed output by setting the log level to `verbose`:
 
-   ```sh
-   npx @vendure/create my-shop --log-level verbose
-   ```
+    ```sh
+    npx @vendure/create my-shop --log-level verbose
+    ```
 
-* The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
-* If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
+- The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
+- If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
 
 ## Set up a storefront
 

@@ -37,7 +37,7 @@ export function OptionValueInput({
     groupIndex,
     disabled = false,
 }: Readonly<OptionValueInputProps>) {
-    const { control, watch } = useFormContext<FormValues>();
+    const { control } = useFormContext<FormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `optionGroups.${groupIndex}.values`,
@@ -47,7 +47,7 @@ export function OptionValueInput({
 
     const handleAddValue = () => {
         if (newValue.trim() && !fields.some(f => f.value === newValue.trim())) {
-            append({ value: newValue.trim(), id: crypto.randomUUID() });
+            append({ value: newValue.trim(), id: Date.now().toString() });
             setNewValue('');
         }
     };

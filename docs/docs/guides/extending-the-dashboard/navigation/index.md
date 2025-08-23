@@ -310,7 +310,7 @@ Common icons for navigation sections:
 :::info Discovering Section IDs
 To see what navigation sections are available, you can:
 
-1. Enable [Dev Mode](/guides/extending-the-dashboard/getting-started/#dev-mode) in the dashboard
+1. Enable [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode) in the dashboard
 2. Examine the navigation sidebar to see section IDs
 3. Look at other plugins' navigation configuration for examples
    :::

@@ -50,6 +50,7 @@ export function AssetPickerDialog({
                         multiSelect="manual"
                         initialSelectedAssets={initialSelectedAssets}
                         fixedHeight={true}
+                        displayBulkActions={false}
                     />
                 </div>
 

@@ -7,6 +7,7 @@ import {
     ListQueryOptionsShape,
     ListQueryShape,
     PaginatedListDataTable,
+    PaginatedListRefresherRegisterFn,
     RowAction,
 } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -53,6 +54,12 @@ export interface ListPageProps<
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     bulkActions?: BulkAction[];
+    /**
+     * Register a function that allows you to assign a refresh function for
+     * this list. The function can be assigned to a ref and then called when
+     * the list needs to be refreshed.
+     */
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
 /**
@@ -90,6 +97,7 @@ export function ListPage<
     transformData,
     setTableOptions,
     bulkActions,
+    registerRefresher,
 }: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -191,6 +199,7 @@ export function ListPage<
                         bulkActions={bulkActions}
                         setTableOptions={setTableOptions}
                         transformData={transformData}
+                        registerRefresher={registerRefresher}
                     />
                 </FullWidthPageBlock>
             </PageLayout>

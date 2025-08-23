@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -61,49 +61,51 @@ export function normalizeString(input: string, spaceReplacer = ' '): string {
 
 /**
  * Removes any readonly custom fields from form values before submission.
+ * Also removes localeString and localeText fields from the root customFields object
+ * since they should only exist in the translations array.
  * This prevents errors when submitting readonly custom field values to mutations.
  *
  * @param values - The form values that may contain custom fields
  * @param customFieldConfigs - Array of custom field configurations for the entity
- * @returns The values with readonly custom fields removed
+ * @returns The values with readonly custom fields removed and locale fields properly placed
  */
-export function removeReadonlyCustomFields<T extends Record<string, any>>(
+export function removeReadonlyAndLocalizedCustomFields<T extends Record<string, any>>(
     values: T,
-    customFieldConfigs: Array<{ name: string; readonly?: boolean | null }> = [],
+    customFieldConfigs: Array<{ name: string; readonly?: boolean | null; type?: string }> = [],
 ): T {
     if (!values || !customFieldConfigs?.length) {
         return values;
     }
 
-    // Create a deep copy to avoid mutating the original values
     const result = structuredClone(values);
-
-    // Get readonly field names
     const readonlyFieldNames = customFieldConfigs
         .filter(config => config.readonly === true)
         .map(config => config.name);
+    const localeFieldNames = customFieldConfigs
+        .filter(config => config.type === 'localeString' || config.type === 'localeText')
+        .map(config => config.name);
+    const fieldsToRemoveFromRoot = [...readonlyFieldNames, ...localeFieldNames];
 
-    if (readonlyFieldNames.length === 0) {
-        return result;
-    }
-
-    // Remove readonly fields from main customFields
     if (result.customFields && typeof result.customFields === 'object') {
-        for (const fieldName of readonlyFieldNames) {
+        fieldsToRemoveFromRoot.forEach(fieldName => {
             delete result.customFields[fieldName];
-        }
+        });
     }
 
-    // Remove readonly fields from translations customFields
-    if (Array.isArray(result.translations)) {
-        for (const translation of result.translations) {
-            if (translation?.customFields && typeof translation.customFields === 'object') {
-                for (const fieldName of readonlyFieldNames) {
-                    delete translation.customFields[fieldName];
-                }
-            }
-        }
-    }
-
+    removeReadonlyFromTranslations(result, readonlyFieldNames);
     return result;
+}
+
+function removeReadonlyFromTranslations(entity: Record<string, any>, readonlyFieldNames: string[]): void {
+    if (!Array.isArray(entity.translations)) {
+        return;
+    }
+
+    entity.translations.forEach(translation => {
+        if (translation?.customFields && typeof translation.customFields === 'object') {
+            readonlyFieldNames.forEach(fieldName => {
+                delete translation.customFields[fieldName];
+            });
+        }
+    });
 }

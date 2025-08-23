@@ -9,6 +9,8 @@ env:
 jobs:
     codegen:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         steps:
             - uses: actions/checkout@v4
             - name: Use Node.js 22

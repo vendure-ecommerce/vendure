@@ -610,6 +610,7 @@ describe('Shop orders', () => {
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
             });
+
         });
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
@@ -1405,6 +1406,44 @@ describe('Shop orders', () => {
             expect(addItemToOrder.lines.length).toBe(2);
             expect(addItemToOrder.lines[1].productVariant.id).toBe(variantWithoutFeaturedAsset?.id);
             expect(addItemToOrder.lines[1].featuredAsset?.id).toBe(product?.featuredAsset?.id);
+        });
+
+
+        it('adds multiple items to order with different custom fields', async () => {
+            await shopClient.asAnonymousUser(); // New order
+            const { addItemsToOrder } = await shopClient.query<CodegenShop.AddItemsToOrderMutation>(
+                ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    inputs: [
+                        {
+                            productVariantId: 'T_1',
+                            quantity: 1,
+                            customFields: {
+                                    notes: 'Variant 1 note',
+                            },
+                        },
+                        {
+                            productVariantId: 'T_2',
+                            quantity: 2,
+                            customFields: {
+                                    notes: 'Variant 2 note',
+                            },
+                        },
+                        {
+                            productVariantId: 'T_3',
+                            quantity: 3,
+                            // no custom field
+                        },
+                    ],
+                },
+            );
+            const order = addItemsToOrder.order as any;
+            expect(order.lines.length).toBe(3);
+            expect(order.lines[0].customFields.notes).toBe('Variant 1 note');
+            expect(order.lines[1].quantity).toBe(2);
+            expect(order.lines[1].customFields.notes).toBe('Variant 2 note');
+            expect(order.lines[2].quantity).toBe(3);
+            expect(order.lines[2].customFields.notes).toBeNull();
         });
     });
 
@@ -2816,6 +2855,37 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
+export const ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
+    mutation AddMultipleItemsToOrderWithCustomFields(
+        $inputs: [AddItemInput!]!
+    ) {
+        addItemsToOrder(
+            inputs: $inputs
+        ) {
+            order {
+                ...UpdatedOrder
+                lines {
+                    id
+                    quantity
+                    productVariant {
+                        id
+                    }
+                    customFields {
+                        notes
+                    }
+                }   
+            }
+            errorResults {
+                ...on ErrorResult {
+                    errorCode
+                    message
+                }
             }
         }
     }

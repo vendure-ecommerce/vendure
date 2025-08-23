@@ -3,6 +3,68 @@
 This is a React-based admin dashboard for Vendure. It is a standalone application that can be extended to suit the
 needs of any Vendure project.
 
+The package consists of three main components:
+
+- `@vendure/dashboard`: Dashboard source code
+- `@vendure/dashboard/vite`: A Vite plugin that is used to compile the dashboard in your project
+- `@vendure/dashboard/plugin`: A Vendure plugin that provides backend functionality used by the dashboard app.
+
+## DashboardPlugin
+
+### Basic usage - serving the Dashboard UI
+
+```typescript
+import { DashboardPlugin } from '@vendure/dashboard-plugin';
+
+const config: VendureConfig = {
+  // Add an instance of the plugin to the plugins array
+  plugins: [
+    DashboardPlugin.init({ route: 'dashboard' }),
+  ],
+};
+```
+
+The Dashboard UI will be served at the `/dashboard/` path.
+
+### Using only the metrics API
+
+If you are building a stand-alone version of the Dashboard UI app and don't need this plugin to serve the Dashboard UI, you can still use the `metricSummary` query by adding the `DashboardPlugin` to the `plugins` array without calling the `init()` method:
+
+```typescript
+import { DashboardPlugin } from '@vendure/dashboard-plugin';
+
+const config: VendureConfig = {
+  plugins: [
+    DashboardPlugin, // <-- no call to .init()
+  ],
+  // ...
+};
+```
+
+### Custom Dashboard UI build
+
+You can also provide a custom build of the Dashboard UI:
+
+```typescript
+import { DashboardPlugin } from '@vendure/dashboard-plugin';
+
+const config: VendureConfig = {
+  plugins: [
+    DashboardPlugin.init({ 
+      route: 'dashboard',
+      app: path.join(__dirname, 'custom-dashboard-build'),
+    }),
+  ],
+};
+```
+
+## API
+
+### DashboardPluginOptions
+
+- `route: string` - The route at which the Dashboard UI will be served (default: `'dashboard'`)
+- `app?: string` - Optional path to a custom build of the Dashboard UI
+
 ## Development
 
 Run `npx vite` to start Vite in dev mode.

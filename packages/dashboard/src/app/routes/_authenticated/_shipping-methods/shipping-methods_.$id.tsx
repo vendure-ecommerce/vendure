@@ -130,12 +130,14 @@ function ShippingMethodDetailPage() {
                             render={({ field }) => <Input {...field} />}
                         />
                     </DetailFormGrid>
-                    <TranslatableFormFieldWrapper
-                        control={form.control}
-                        name="description"
-                        label={<Trans>Description</Trans>}
-                        render={({ field }) => <Textarea {...field} />}
-                    />
+                    <div className="mb-6">
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <Textarea {...field} />}
+                        />
+                    </div>
                     <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}

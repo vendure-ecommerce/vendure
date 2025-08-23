@@ -4,7 +4,7 @@ import { ClassDeclaration, Project } from 'ts-morph';
 import { addServiceCommand } from '../commands/add/service/add-service';
 import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject, selectTsConfigFile } from '../utilities/ast-utils';
-import { pauseForPromptDisplay } from '../utilities/utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../utilities/utils';
 
 import { EntityRef } from './entity-ref';
 import { ServiceRef } from './service-ref';
@@ -13,6 +13,7 @@ import { VendurePluginRef } from './vendure-plugin-ref';
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
+    config?: string;
 }) {
     const providedVendurePlugin = options.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
@@ -23,12 +24,21 @@ export async function analyzeProject(options: {
         const tsConfigFile = await selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject({}, tsConfigFile);
+        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject(
+            {
+                compilerOptions: {
+                    // When running via the CLI, we want to find all source files,
+                    // not just the compiled .js files.
+                    rootDir: './src',
+                },
+            },
+            tsConfigFile,
+        );
         project = _project;
         tsConfigPath = _tsConfigPath;
         projectSpinner.stop('Project analyzed');
     }
-    return { project: project as Project, tsConfigPath };
+    return { project: project as Project, tsConfigPath, config: options.config };
 }
 
 export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {
@@ -37,14 +47,18 @@ export async function selectPlugin(project: Project, cancelledMessage: string): 
         cancel(Messages.NoPluginsFound);
         process.exit(0);
     }
-    const targetPlugin = await select({
-        message: 'To which plugin would you like to add the feature?',
-        options: pluginClasses.map(c => ({
-            value: c,
-            label: c.getName() as string,
-        })),
-        maxItems: 10,
+
+    const targetPlugin = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'To which plugin would you like to add the feature?',
+            options: pluginClasses.map(c => ({
+                value: c,
+                label: c.getName() as string,
+            })),
+            maxItems: 10,
+        });
     });
+
     if (isCancel(targetPlugin)) {
         cancel(cancelledMessage);
         process.exit(0);
@@ -57,16 +71,20 @@ export async function selectEntity(plugin: VendurePluginRef): Promise<EntityRef>
     if (entities.length === 0) {
         throw new Error(Messages.NoEntitiesFound);
     }
-    const targetEntity = await select({
-        message: 'Select an entity',
-        options: entities
-            .filter(e => !e.isTranslation())
-            .map(e => ({
-                value: e,
-                label: e.name,
-            })),
-        maxItems: 10,
+
+    const targetEntity = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'Select an entity',
+            options: entities
+                .filter(e => !e.isTranslation())
+                .map(e => ({
+                    value: e,
+                    label: e.name,
+                })),
+            maxItems: 10,
+        });
     });
+
     if (isCancel(targetEntity)) {
         cancel('Cancelled');
         process.exit(0);
@@ -83,19 +101,23 @@ export async function selectMultiplePluginClasses(
         cancel(Messages.NoPluginsFound);
         process.exit(0);
     }
-    const selectAll = await select({
-        message: 'To which plugin would you like to add the feature?',
-        options: [
-            {
-                value: 'all',
-                label: 'All plugins',
-            },
-            {
-                value: 'specific',
-                label: 'Specific plugins (you will be prompted to select the plugins)',
-            },
-        ],
+
+    const selectAll = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'To which plugin would you like to add the feature?',
+            options: [
+                {
+                    value: 'all',
+                    label: 'All plugins',
+                },
+                {
+                    value: 'specific',
+                    label: 'Specific plugins (you will be prompted to select the plugins)',
+                },
+            ],
+        });
     });
+
     if (isCancel(selectAll)) {
         cancel(cancelledMessage);
         process.exit(0);
@@ -103,13 +125,17 @@ export async function selectMultiplePluginClasses(
     if (selectAll === 'all') {
         return pluginClasses.map(pc => new VendurePluginRef(pc));
     }
-    const targetPlugins = await multiselect({
-        message: 'Select one or more plugins (use ↑, ↓, space to select)',
-        options: pluginClasses.map(c => ({
-            value: c,
-            label: c.getName() as string,
-        })),
+
+    const targetPlugins = await withInteractiveTimeout(async () => {
+        return await multiselect({
+            message: 'Select one or more plugins (use ↑, ↓, space to select)',
+            options: pluginClasses.map(c => ({
+                value: c,
+                label: c.getName() as string,
+            })),
+        });
     });
+
     if (isCancel(targetPlugins)) {
         cancel(cancelledMessage);
         process.exit(0);
@@ -133,30 +159,33 @@ export async function selectServiceRef(
         throw new Error(Messages.NoServicesFound);
     }
 
-    const result = await select({
-        message: 'Which service contains the business logic for this API extension?',
-        maxItems: 8,
-        options: [
-            ...(canCreateNew
-                ? [
-                      {
-                          value: 'new',
-                          label: `Create new generic service`,
-                      },
-                  ]
-                : []),
-            ...serviceRefs.map(sr => {
-                const features = sr.crudEntityRef
-                    ? `CRUD service for ${sr.crudEntityRef.name}`
-                    : `Generic service`;
-                const label = `${sr.name}: (${features})`;
-                return {
-                    value: sr,
-                    label,
-                };
-            }),
-        ],
+    const result = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'Which service contains the business logic for this API extension?',
+            maxItems: 8,
+            options: [
+                ...(canCreateNew
+                    ? [
+                          {
+                              value: 'new',
+                              label: `Create new generic service`,
+                          },
+                      ]
+                    : []),
+                ...serviceRefs.map(sr => {
+                    const features = sr.crudEntityRef
+                        ? `CRUD service for ${sr.crudEntityRef.name}`
+                        : `Generic service`;
+                    const label = `${sr.name}: (${features})`;
+                    return {
+                        value: sr,
+                        label,
+                    };
+                }),
+            ],
+        });
     });
+
     if (isCancel(result)) {
         cancel('Cancelled');
         process.exit(0);

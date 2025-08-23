@@ -1,0 +1,157 @@
+/**
+ * Component styles
+ * Styles for specific UI components and elements
+ */
+
+:root {
+    --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>');
+
+    --ifm-code-padding-horizontal: 6px;
+    --ifm-code-font-size: 90%;
+}
+
+/* Markdown content */
+.theme-doc-markdown.markdown img {
+    border-radius: 0.7rem;
+    border: 0.5rem solid var(--ifm-color-emphasis-100);
+    outline: 1px solid var(--ifm-color-emphasis-200);
+}
+
+/* Members documentation */
+.members-wrapper {
+    border-left: 1px solid var(--color-members-border);
+    padding-left: 32px;
+}
+
+.members-wrapper > h3 {
+    margin-top: 42px;
+}
+
+/* Sidebar */
+.sidebar-section-header {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    opacity: 0.8;
+    color: #afafaf;
+    padding: var(--ifm-menu-link-padding-vertical) var(--ifm-menu-link-padding-horizontal);
+}
+
+.sidebar-section-divider {
+    border-bottom: 1px solid var(--ifm-font-color-base);
+    opacity: 0.2;
+    margin: 6px 12px;
+}
+
+/* Code blocks */
+
+.prism-code {
+    line-height: 1.8;
+}
+
+.limited-height-code-block pre.prism-code {
+    max-height: 800px;
+}
+
+/* Make copy button always visible instead of only on hover */
+.theme-code-block:not(:hover) button[title="Copy code to clipboard"] {
+    opacity: 1 !important;
+}
+
+/* Alternative selector for copy button visibility */
+div[class*="codeBlockContainer"] button[aria-label*="Copy"] {
+    opacity: 1 !important;
+}
+
+/* Ensure copy button is always visible on code blocks */
+pre[class*="prism-code"] button,
+.prism-code button,
+[class*="codeBlock"] button {
+    opacity: 1 !important;
+}
+
+/* GraphQL code blocks */
+.graphql-code-block {
+    background-color: var(--ifm-pre-background);
+    border-radius: var(--ifm-pre-border-radius);
+    padding: var(--ifm-pre-padding);
+    color: var(--ifm-pre-color);
+    font: var(--ifm-code-font-size) / var(--ifm-pre-line-height) var(--ifm-font-family-monospace);
+}
+
+.graphql-code-line:not(.top-level) {
+    margin-left: 24px;
+}
+
+.graphql-code-line.comment {
+    color: var(--color-graphql-comment);
+}
+
+.graphql-code-identifier {
+    color: var(--color-graphql-identifier);
+    margin-right: 6px;
+}
+
+/* Menu and navigation overrides */
+.menu__link--sublist-caret:after {
+    background: var(--ifm-menu-link-sublist-icon) 50% / 1.5rem 1.5rem;
+    opacity: 0.6;
+}
+
+.menu__link--sublist-caret:hover:after {
+    opacity: 1;
+}
+
+.theme-doc-sidebar-item-category-level-1 {
+    font-size: 15px;
+}
+
+.theme-doc-sidebar-item-category-level-2 {
+    font-size: 14px;
+}
+
+.theme-doc-sidebar-item-link-level-3,
+.theme-doc-sidebar-item-link-level-4,
+.theme-doc-sidebar-item-link-level-5 {
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.menu__caret:before {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>');
+    opacity: 0.6;
+}
+
+/* Navbar */
+.navbar-sidebar {
+    background-color: var(--ifm-background-color);
+}
+
+.navbar {
+    background-color: var(--navbar-background-color-mobile);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Hero section */
+.hero--primary {
+    --ifm-hero-background-color: transparent;
+    --ifm-hero-text-color: var(--ifm-font-color-base);
+}
+
+/* Search button */
+button.DocSearch-Button {
+    border-radius: 6px;
+    width: 250px;
+    border: 1px solid var(--color-docsearch-border);
+}
+
+/* CLI admonition */
+.theme-admonition-cli {
+    background-color: #2b2b2b;
+    color: #fff;
+}
+
+.theme-admonition-cli a:link,
+.theme-admonition-cli a:visited {
+    color: #fff;
+}

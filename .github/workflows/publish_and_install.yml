@@ -1,0 +1,88 @@
+name: Publish & Install
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - master
+            - minor
+            - major
+        paths:
+            - 'packages/**'
+            - 'package.json'
+            - 'package-lock.json'
+    pull_request:
+        branches:
+            - master
+            - major
+            - minor
+        paths:
+            - 'packages/**'
+            - 'package.json'
+            - 'package-lock.json'
+
+defaults:
+    run:
+        shell: bash
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    publish_install:
+        runs-on: ${{ matrix.os }}
+        permissions:
+            contents: read
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                node-version: [20.x, 22.x, 24.x]
+            fail-fast: false
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install Verdaccio
+              run: |
+                  npm install -g verdaccio
+                  npm install -g wait-on
+                  tmp_registry_log=`mktemp`
+                  mkdir -p $HOME/.config/verdaccio
+                  cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  TOKEN_RES=$(curl -XPUT \
+                    -H "Content-type: application/json" \
+                    -d '{ "name": "test", "password": "test" }' \
+                    'http://localhost:4873/-/user/org.couchdb.user:test')
+                  TOKEN=$(echo "$TOKEN_RES" | jq -r '.token')
+                  npm set //localhost:4873/:_authToken $TOKEN
+            - name: Windows dependencies
+              if: matrix.os == 'windows-latest'
+              run: npm install -g @angular/cli
+            - name: npm install
+              run: |
+                  npm install
+              env:
+                  CI: true
+            - name: Publish to Verdaccio
+              run: |
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  npx lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873
+            - name: Install via @vendure/create
+              run: |
+                  mkdir -p $HOME/install
+                  cd $HOME/install
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  npm set registry=http://localhost:4873
+                  npm dist-tag ls @vendure/create
+                  npx @vendure/create@ci test-app --ci --use-npm --log-level info
+            - name: Server smoke tests
+              run: |
+                  cd $HOME/install/test-app
+                  npm run dev &
+                  node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests

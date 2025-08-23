@@ -1,4 +1,4 @@
-import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
+import { removeReadonlyAndLocalizedCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -13,7 +13,7 @@ import { FormEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { NEW_ENTITY_PATH } from '../../constants.js';
-import { api, Variables } from '../../graphql/api.js';
+import { api } from '../../graphql/api.js';
 import { useCustomFieldConfig } from '../../hooks/use-custom-field-config.js';
 import { useExtendedDetailQuery } from '../../hooks/use-extended-detail-query.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
@@ -32,6 +32,8 @@ type RemoveNull<T> = T extends null ? never : T;
 type RemoveNullFields<T> = {
     [K in keyof T]: RemoveNull<T[K]>;
 };
+
+const NEW_ENTITY_ID = '__NEW__';
 
 /**
  * @description
@@ -108,14 +110,16 @@ export interface DetailPageOptions<
     onError?: (error: unknown) => void;
 }
 
-export function getDetailQueryOptions<T, V extends Variables = Variables>(
+export function getDetailQueryOptions<T, V extends { id: string }>(
     document: TypedDocumentNode<T, V> | DocumentNode,
     variables: V,
+    options: Partial<Parameters<typeof queryOptions>[0]> = {},
 ): DefinedInitialDataOptions {
     const queryName = getQueryName(document);
     return queryOptions({
         queryKey: ['DetailPage', queryName, variables],
-        queryFn: () => api.query(document, variables),
+        queryFn: () => (variables.id === NEW_ENTITY_ID ? null : api.query(document, variables)),
+        ...options,
     }) as DefinedInitialDataOptions;
 }
 
@@ -152,7 +156,6 @@ export type DetailPageEntity<
  */
 export interface UseDetailPageResult<
     T extends TypedDocumentNode<any, any>,
-    C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T>,
 > {
@@ -242,7 +245,7 @@ export function useDetailPage<
     VarNameCreate extends keyof VariablesOf<C> = 'input',
 >(
     options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>,
-): UseDetailPageResult<T, C, U, EntityField> {
+): UseDetailPageResult<T, U, EntityField> {
     const {
         pageId,
         queryDocument,
@@ -263,12 +266,12 @@ export function useDetailPage<
     const customFieldConfig = useCustomFieldConfig(returnEntityName);
     const extendedDetailQuery = useExtendedDetailQuery(addCustomFields(queryDocument), pageId);
     const detailQueryOptions = getDetailQueryOptions(extendedDetailQuery, {
-        id: isNew ? '__NEW__' : params.id,
+        id: isNew ? NEW_ENTITY_ID : params.id,
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
     const entityQueryField = entityField ?? getQueryName(extendedDetailQuery);
 
-    const entity = (detailQuery?.data as any)[entityQueryField] as
+    const entity = (detailQuery?.data as any)?.[entityQueryField] as
         | DetailPageEntity<T, EntityField>
         | undefined;
 
@@ -304,10 +307,10 @@ export function useDetailPage<
         document,
         varName: 'input',
         entity,
+        customFieldConfig,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
-            // Filter out readonly custom fields before submitting
-            const filteredValues = removeReadonlyCustomFields(values, customFieldConfig || []);
+            const filteredValues = removeReadonlyAndLocalizedCustomFields(values, customFieldConfig || []);
 
             if (isNew) {
                 const finalInput = transformCreateInput?.(filteredValues) ?? filteredValues;

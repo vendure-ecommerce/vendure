@@ -20,9 +20,7 @@ export function sanitizeMetadata(metadata: Stripe.MetadataParam) {
     const keys = Object.keys(metadata)
         .filter(keyName => keyName.length <= MAX_KEY_NAME_LENGTH)
         .filter(
-            keyName =>
-                typeof metadata[keyName] !== 'string' ||
-                (metadata[keyName] as string).length <= MAX_VALUE_LENGTH,
+            keyName => typeof metadata[keyName] !== 'string' || metadata[keyName].length <= MAX_VALUE_LENGTH,
         )
         .slice(0, MAX_KEYS) as Array<keyof Stripe.MetadataParam>;
 

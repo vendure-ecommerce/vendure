@@ -38,6 +38,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             priceRange: PriceRangeInput
             priceRangeWithTax: PriceRangeInput
             inStock: Boolean
+            groupBySKU: Boolean
             ${inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ')}
         }
 

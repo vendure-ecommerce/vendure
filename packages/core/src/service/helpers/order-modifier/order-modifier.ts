@@ -66,6 +66,7 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
+import { OrderEvent } from '../../../event-bus';
 
 /**
  * @description
@@ -692,6 +693,7 @@ export class OrderModifier {
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'updated', input));
         return { order, modification: createdModification };
     }
 
