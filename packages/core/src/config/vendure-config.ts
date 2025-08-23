@@ -212,8 +212,10 @@ export interface ApiOptions {
     apolloServerPlugins?: ApolloServerPlugin[];
     /**
      * @description
-     * Pass a [custom cache](https://www.apollographql.com/docs/apollo-server/performance/caching) for server-side caching to the Apollo server,
-     * which is the underlying GraphQL server used by Vendure.
+     * Pass a [custom Apollo cache](https://www.apollographql.com/docs/apollo-server/performance/caching) to the underlying Apollo Server.
+     * Note: this option only supplies the cache instance. To enable GraphQL response caching you must also add
+     * the `responseCachePlugin` (or another plugin that uses `server.cache`) to `apolloServerPlugins`, and set
+     * appropriate cache hints on fields. This option is unrelated to Vendure's {@link SystemOptions}.`cacheStrategy`.
      *
      * @default 'bounded'
      * @since 3.5.0
