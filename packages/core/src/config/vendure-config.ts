@@ -1,4 +1,5 @@
 import { ApolloServerPlugin } from '@apollo/server';
+import type { KeyValueCache } from '@apollo/utils.keyvaluecache';
 import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
@@ -209,6 +210,15 @@ export interface ApiOptions {
      * @default []
      */
     apolloServerPlugins?: ApolloServerPlugin[];
+    /**
+     * @description
+     * Pass a [custom cache](https://www.apollographql.com/docs/apollo-server/performance/caching) for server-side caching to the Apollo server,
+     * which is the underlying GraphQL server used by Vendure.
+     *
+     * @default undefined
+     * @since 3.5.0
+     */
+    cache?: KeyValueCache<string> | 'bounded';
     /**
      * @description
      * Controls whether introspection of the GraphQL APIs is enabled. For production, it is recommended to disable
