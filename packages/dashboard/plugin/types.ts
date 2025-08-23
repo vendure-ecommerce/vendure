@@ -31,7 +31,7 @@ export interface DashboardPluginOptions {
      */
     globalSearch?: {
         indexingStrategy?: SearchIndexingStrategy;
-        entityDataMappers?: Record<keyof CustomFields | string, EntityDataMapper>;
+        entityDataMappers?: Map<keyof CustomFields | string, EntityDataMapper>;
     };
 }
 
@@ -63,10 +63,17 @@ export interface MetricSummaryInput {
     refresh?: boolean;
 }
 
+export enum SearchIndexItemType {
+    Entity = 'entity',
+    Plugin = 'plugin',
+    Docs = 'docs',
+    Article = 'article',
+}
+
 export interface SearchIndexItem {
     id?: string;
     title: string;
-    type: 'entity' | 'plugin' | 'docs' | 'article';
+    type: SearchIndexItemType;
     subtitle?: string;
     description?: string;
     thumbnailUrl?: string;

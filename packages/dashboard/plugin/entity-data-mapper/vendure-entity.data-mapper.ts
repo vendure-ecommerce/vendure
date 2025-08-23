@@ -4,7 +4,7 @@ import { EntitySearchIndexItem } from '../types';
 
 import { EntityDataMapper } from './entity-data-mapper.interface';
 
-export abstract class VendureEntityDataMapper implements EntityDataMapper {
+export class VendureEntityDataMapper implements EntityDataMapper {
     map(entity: VendureEntity): Partial<EntitySearchIndexItem> {
         return {
             entityId: entity.id,

@@ -9,7 +9,7 @@ export interface DataProcessorInterface {
      * Returns the total number of results that can be expected from this search index.
      * It will be used to determine the number of batches that will be processed
      */
-    getTotalResults(): Promise<number>;
+    getTotalResults(metadata: Record<string, Serializable> | undefined): Promise<number>;
 
     /**
      * @description
@@ -32,6 +32,7 @@ export interface DataProcessorInterface {
     /**
      * @description Processes a single result by its ID
      * @param id
+     * @param metadata
      */
-    processOne(id: string): Promise<void>;
+    processOne(id: string, metadata: Record<string, Serializable> | undefined): Promise<void>;
 }

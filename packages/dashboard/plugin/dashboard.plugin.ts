@@ -16,8 +16,7 @@ import path from 'path';
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
 import { DASHBOARD_PLUGIN_OPTIONS, DEFAULT_APP_PATH, loggerCtx } from './constants.js';
-import { ProductDataMapper } from './entity-data-mapper/product.data-mapper';
-import { DbIndexingStrategy } from './search-index/db-indexing.strategy';
+import { EntityDataMapperService } from './entity-data-mapper/entity-data-mapper.service';
 import { MetricsService } from './service/metrics.service.js';
 import { DashboardPluginOptions } from './types';
 
@@ -88,6 +87,7 @@ import { DashboardPluginOptions } from './types';
     providers: [
         { provide: DASHBOARD_PLUGIN_OPTIONS, useFactory: () => DashboardPlugin.options },
         MetricsService,
+        EntityDataMapperService,
     ],
     configuration: config => {
         config.settingsStoreFields['vendure.dashboard'] = [
@@ -112,13 +112,6 @@ export class DashboardPlugin implements NestModule {
     static init(options: DashboardPluginOptions): Type<DashboardPlugin> {
         this.options = {
             ...options,
-            globalSearch: {
-                indexingStrategy: options.globalSearch?.indexingStrategy ?? new DbIndexingStrategy(),
-                entityDataMappers: {
-                    Product: new ProductDataMapper(),
-                    ...options.globalSearch?.entityDataMappers,
-                },
-            },
         };
         return DashboardPlugin;
     }
