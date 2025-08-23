@@ -6,4 +6,5 @@ export * from './form-components.js';
 export * from './layout.js';
 export * from './login.js';
 export * from './navigation.js';
+export * from './quick-actions.js';
 export * from './widgets.js';

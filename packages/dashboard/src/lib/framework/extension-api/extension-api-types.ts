@@ -1,4 +1,6 @@
 // Import types for the main interface
+import { QuickActionDefinition } from '../../components/global-search/quick-actions-registry.js';
+
 import {
     DashboardActionBarItem,
     DashboardAlertDefinition,
@@ -73,4 +75,9 @@ export interface DashboardExtension {
      * Allows you to customize the login page with custom components.
      */
     login?: DashboardLoginExtensions;
+    /**
+     * @description
+     * Allows you to define custom quick actions that can be accessed via the global search command palette.
+     */
+    quickActions?: QuickActionDefinition[];
 }

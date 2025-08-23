@@ -1,6 +1,7 @@
 import { AuthProvider } from '@/vdb/providers/auth.js';
 import { ChannelProvider } from '@/vdb/providers/channel-provider.js';
 import { I18nProvider } from '@/vdb/providers/i18n-provider.js';
+import { SearchProvider } from '@/vdb/providers/search-provider.js';
 import { ServerConfigProvider } from '@/vdb/providers/server-config.js';
 import { ThemeProvider } from '@/vdb/providers/theme-provider.js';
 import { UserSettingsProvider } from '@/vdb/providers/user-settings.js';
@@ -18,7 +19,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     <ThemeProvider defaultTheme="system">
                         <AuthProvider>
                             <ServerConfigProvider>
-                                <ChannelProvider>{children}</ChannelProvider>
+                                <ChannelProvider>
+                                    <SearchProvider>{children}</SearchProvider>
+                                </ChannelProvider>
                             </ServerConfigProvider>
                         </AuthProvider>
                     </ThemeProvider>

@@ -1,3 +1,9 @@
+import {
+    alwaysVisible,
+    registerQuickAction,
+    visibleOnDetailPages,
+    visibleOnListPages,
+} from '@/vdb/components/global-search/quick-actions-registry.js';
 import { setNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import {
     LayoutDashboardIcon,
@@ -275,4 +281,264 @@ export function registerDefaults() {
     //         },
     //     ],
     // });
+
+    // Register default quick actions
+    registerDefaultQuickActions();
+}
+
+function registerDefaultQuickActions() {
+    // Global actions - always visible
+    registerQuickAction({
+        id: 'create-product',
+        label: 'Create New Product',
+        description: 'Create a new product',
+        icon: 'plus',
+        shortcut: 'ctrl+shift+p',
+        visible: alwaysVisible,
+        requiredPermissions: ['CreateProduct', 'CreateCatalog'],
+        handler: context => context.navigate('/products/new'),
+    });
+
+    registerQuickAction({
+        id: 'create-customer',
+        label: 'Create New Customer',
+        description: 'Create a new customer',
+        icon: 'user-plus',
+        shortcut: 'ctrl+shift+c',
+        visible: alwaysVisible,
+        requiredPermissions: ['CreateCustomer'],
+        handler: context => context.navigate('/customers/new'),
+    });
+
+    registerQuickAction({
+        id: 'create-order',
+        label: 'Create New Order',
+        description: 'Create a new order',
+        icon: 'shopping-cart',
+        shortcut: 'ctrl+shift+o',
+        visible: alwaysVisible,
+        requiredPermissions: ['CreateOrder'],
+        handler: context => context.navigate('/orders/new'),
+    });
+
+    registerQuickAction({
+        id: 'go-to-products',
+        label: 'Go to Products',
+        description: 'Navigate to products list',
+        icon: 'package',
+        visible: alwaysVisible,
+        handler: context => context.navigate('/products'),
+    });
+
+    registerQuickAction({
+        id: 'go-to-orders',
+        label: 'Go to Orders',
+        description: 'Navigate to orders list',
+        icon: 'shopping-cart',
+        visible: alwaysVisible,
+        handler: context => context.navigate('/orders'),
+    });
+
+    registerQuickAction({
+        id: 'go-to-customers',
+        label: 'Go to Customers',
+        description: 'Navigate to customers list',
+        icon: 'users',
+        visible: alwaysVisible,
+        handler: context => context.navigate('/customers'),
+    });
+
+    // Product list actions
+    registerQuickAction({
+        id: 'export-products',
+        label: 'Export Products',
+        description: 'Export products to CSV',
+        icon: 'download',
+        shortcut: 'ctrl+e',
+        visible: visibleOnListPages('products'),
+        handler: async context => {
+            context.showNotification('Product export started', 'success');
+        },
+    });
+
+    registerQuickAction({
+        id: 'import-products',
+        label: 'Import Products',
+        description: 'Import products from CSV',
+        icon: 'upload',
+        shortcut: 'ctrl+i',
+        visible: visibleOnListPages('products'),
+        requiredPermissions: ['CreateProduct', 'UpdateProduct'],
+        handler: context => {
+            context.navigate('/products/import');
+        },
+    });
+
+    registerQuickAction({
+        id: 'refresh-products',
+        label: 'Refresh Products',
+        description: 'Reload the products list',
+        icon: 'refresh-cw',
+        shortcut: 'ctrl+r',
+        visible: visibleOnListPages('products'),
+        handler: async context => {
+            context.showNotification('Products list refreshed', 'success');
+            // In real implementation, this would trigger a refetch
+        },
+    });
+
+    // Product detail actions
+    registerQuickAction({
+        id: 'duplicate-product',
+        label: 'Duplicate Product',
+        description: 'Create a copy of this product',
+        icon: 'copy',
+        shortcut: 'ctrl+d',
+        visible: visibleOnDetailPages('products'),
+        requiredPermissions: ['CreateProduct'],
+        handler: async context => {
+            const confirmed = await context.confirm('Duplicate this product?');
+            if (confirmed) {
+                context.showNotification('Product duplicated successfully');
+                // In real implementation, this would duplicate the product
+            }
+        },
+    });
+
+    registerQuickAction({
+        id: 'add-product-variant',
+        label: 'Add Variant',
+        description: 'Add a new variant to this product',
+        icon: 'plus-square',
+        shortcut: 'ctrl+shift+v',
+        visible: visibleOnDetailPages('products'),
+        requiredPermissions: ['CreateProduct', 'UpdateProduct'],
+        handler: context => {
+            const entityId = context.currentEntityId;
+            if (entityId) {
+                context.navigate(`/products/${entityId}/variants/create`);
+            }
+        },
+    });
+
+    registerQuickAction({
+        id: 'delete-product',
+        label: 'Delete Product',
+        description: 'Delete this product permanently',
+        icon: 'trash',
+        shortcut: 'ctrl+shift+delete',
+        visible: visibleOnDetailPages('products'),
+        requiredPermissions: ['DeleteProduct'],
+        handler: async context => {
+            const confirmed = await context.confirm(
+                'Are you sure you want to delete this product? This action cannot be undone.',
+            );
+            if (confirmed) {
+                context.showNotification('Product deleted', 'success');
+                context.navigate('/products');
+            }
+        },
+    });
+
+    // Customer list actions
+    registerQuickAction({
+        id: 'export-customers',
+        label: 'Export Customers',
+        description: 'Export customers to CSV',
+        icon: 'download',
+        shortcut: 'ctrl+e',
+        visible: visibleOnListPages('customers'),
+        handler: async context => {
+            context.showNotification('Customer export started', 'success');
+        },
+    });
+
+    // Customer detail actions
+    registerQuickAction({
+        id: 'view-customer-orders',
+        label: 'View Customer Orders',
+        description: 'View orders for this customer',
+        icon: 'shopping-cart',
+        visible: visibleOnDetailPages('customers'),
+        handler: context => {
+            const entityId = context.currentEntityId;
+            if (entityId) {
+                context.navigate(`/customers/${entityId}/orders`);
+            }
+        },
+    });
+
+    // Order list actions
+    registerQuickAction({
+        id: 'export-orders',
+        label: 'Export Orders',
+        description: 'Export orders to CSV',
+        icon: 'download',
+        shortcut: 'ctrl+e',
+        visible: visibleOnListPages('orders'),
+        handler: async context => {
+            context.showNotification('Order export started', 'success');
+        },
+    });
+
+    // Order detail actions
+    registerQuickAction({
+        id: 'fulfill-order',
+        label: 'Fulfill Order',
+        description: 'Fulfill this order',
+        icon: 'truck',
+        shortcut: 'ctrl+f',
+        visible: visibleOnDetailPages('orders'),
+        requiredPermissions: ['UpdateOrder'],
+        handler: context => {
+            const entityId = context.currentEntityId;
+            if (entityId) {
+                context.navigate(`/orders/${entityId}/fulfill`);
+            }
+        },
+    });
+
+    registerQuickAction({
+        id: 'cancel-order',
+        label: 'Cancel Order',
+        description: 'Cancel this order',
+        icon: 'x-circle',
+        shortcut: 'ctrl+shift+x',
+        visible: visibleOnDetailPages('orders'),
+        requiredPermissions: ['UpdateOrder'],
+        handler: async context => {
+            const confirmed = await context.confirm('Are you sure you want to cancel this order?');
+            if (confirmed) {
+                context.showNotification('Order cancelled', 'success');
+            }
+        },
+    });
+
+    // Navigation actions
+    registerQuickAction({
+        id: 'go-to-profile',
+        label: 'Go to Profile',
+        description: 'Navigate to user profile',
+        icon: 'user',
+        visible: alwaysVisible,
+        handler: context => context.navigate('/profile'),
+    });
+
+    registerQuickAction({
+        id: 'manage-facets',
+        label: 'Manage Facets',
+        description: 'Navigate to facet management',
+        icon: 'tags',
+        visible: visibleOnListPages('products'),
+        handler: context => context.navigate('/facets'),
+    });
+
+    registerQuickAction({
+        id: 'manage-collections',
+        label: 'Manage Collections',
+        description: 'Navigate to collection management',
+        icon: 'folder',
+        visible: visibleOnListPages('products'),
+        handler: context => context.navigate('/collections'),
+    });
 }

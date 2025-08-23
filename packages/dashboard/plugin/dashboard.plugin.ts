@@ -15,30 +15,10 @@ import path from 'path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
-import { DEFAULT_APP_PATH, loggerCtx } from './constants.js';
+import { DASHBOARD_PLUGIN_OPTIONS, DEFAULT_APP_PATH, loggerCtx } from './constants.js';
+import { EntityDataMapperService } from './entity-data-mapper/entity-data-mapper.service';
 import { MetricsService } from './service/metrics.service.js';
-
-/**
- * @description
- * Configuration options for the {@link DashboardPlugin}.
- *
- * @docsCategory core plugins/DashboardPlugin
- */
-export interface DashboardPluginOptions {
-    /**
-     * @description
-     * The route to the Dashboard UI.
-     *
-     * @default 'dashboard'
-     */
-    route: string;
-    /**
-     * @description
-     * The path to the dashboard UI app dist directory. By default, the built-in dashboard UI
-     * will be served. This can be overridden with a custom build of the dashboard.
-     */
-    appDir: string;
-}
+import { DashboardPluginOptions } from './types';
 
 /**
  * @description
@@ -104,7 +84,11 @@ export interface DashboardPluginOptions {
         schema: adminApiExtensions,
         resolvers: [MetricsResolver],
     },
-    providers: [MetricsService],
+    providers: [
+        { provide: DASHBOARD_PLUGIN_OPTIONS, useFactory: () => DashboardPlugin.options },
+        MetricsService,
+        EntityDataMapperService,
+    ],
     configuration: config => {
         config.settingsStoreFields['vendure.dashboard'] = [
             {
@@ -126,7 +110,9 @@ export class DashboardPlugin implements NestModule {
      * Set the plugin options
      */
     static init(options: DashboardPluginOptions): Type<DashboardPlugin> {
-        this.options = options;
+        this.options = {
+            ...options,
+        };
         return DashboardPlugin;
     }
 

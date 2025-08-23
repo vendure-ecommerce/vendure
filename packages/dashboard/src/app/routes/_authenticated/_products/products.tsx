@@ -1,3 +1,4 @@
+// Global search actions are now registered centrally in defaults.ts
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
@@ -6,6 +7,7 @@ import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+// No longer need hook-based action registration
 import {
     AssignFacetValuesToProductsBulkAction,
     AssignProductsToChannelBulkAction,
@@ -21,6 +23,8 @@ export const Route = createFileRoute('/_authenticated/_products/products')({
 });
 
 function ProductListPage() {
+    // Quick actions are now registered centrally in defaults.ts
+    // No need for hook-based registration here
     return (
         <ListPage
             pageId="product-list"
