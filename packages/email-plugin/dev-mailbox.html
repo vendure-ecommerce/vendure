@@ -155,12 +155,15 @@
             .then((res) => renderList(res));
     }
 
-    function escapeHTMLEntities(value) {
-        const str = String(value ?? '');
-        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-        return str.replace(/[&<>"']/g, (ch) => map[ch]);
-    }
-
+    const ESCAPE_ENTITIES = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+    };
+    
+    const escapeChar = char => ESCAPE_ENTITIES[char] || char;
+    const escapeHTMLEntities = value => String(value).replace(/[<>"&]/g, escapeChar);
     function renderList(items) {
         const list = document.querySelector('.list');
         list.innerHTML = '';
