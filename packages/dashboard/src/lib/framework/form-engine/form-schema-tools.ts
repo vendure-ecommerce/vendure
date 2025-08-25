@@ -133,30 +133,7 @@ function createStringValidationSchema(pattern?: string | null): ZodType {
  * @param max - Optional maximum value constraint
  * @returns Zod number schema with optional range validation
  */
-function createIntValidationSchema(min?: number | null, max?: number | null): ZodType {
-    let schema = z.number();
-    if (min != null) {
-        schema = schema.min(min, {
-            message: `Value must be at least ${min}`,
-        });
-    }
-    if (max != null) {
-        schema = schema.max(max, {
-            message: `Value must be at most ${max}`,
-        });
-    }
-    return schema;
-}
-
-/**
- * Creates a Zod validation schema for float fields with optional min/max constraints.
- * Used for float-type custom fields that may have numeric range limits.
- *
- * @param min - Optional minimum value constraint
- * @param max - Optional maximum value constraint
- * @returns Zod number schema with optional range validation
- */
-function createFloatValidationSchema(min?: number | null, max?: number | null): ZodType {
+function createNumberValidationSchema(min?: number | null, max?: number | null): ZodType {
     let schema = z.number();
     if (min != null) {
         schema = schema.min(min, {
@@ -189,15 +166,10 @@ function createCustomFieldValidationSchema(customField: CustomFieldConfig): ZodT
             zodType = createStringValidationSchema((customField as StringCustomFieldConfig).pattern);
             break;
         case 'int':
-            zodType = createIntValidationSchema(
+        case 'float':
+            zodType = createNumberValidationSchema(
                 (customField as IntCustomFieldConfig).intMin,
                 (customField as IntCustomFieldConfig).intMax,
-            );
-            break;
-        case 'float':
-            zodType = createFloatValidationSchema(
-                (customField as FloatCustomFieldConfig).floatMin,
-                (customField as FloatCustomFieldConfig).floatMax,
             );
             break;
         case 'datetime': {

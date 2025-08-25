@@ -248,7 +248,7 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
             return {
                 amount,
                 state: args.testMode ? 'Authorized' : 'Settled',
-                transactionId: 'test-' + Math.random().toString(36).substr(2, 9),
+                transactionId: 'test-' + Math.random().toString(36).substring(2, 7),
                 metadata: {
                     ...metadata,
                     processingFee: args.processingFee,

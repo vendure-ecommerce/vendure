@@ -98,33 +98,7 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         return input?.find(t => t.languageCode === displayLanguage)?.value;
     };
 
-    if (!fieldDef || !isStructFieldConfig(fieldDef)) {
-        return null;
-    }
-    const isReadonly = fieldDef.readonly === true;
-
-    // Helper function to format field value for display
-    const formatFieldValue = (value: any, structField: StructField) => {
-        if (value == null) return '-';
-        if (structField.list) {
-            if (Array.isArray(value)) {
-                return value.length ? value.join(', ') : '-';
-            }
-            return '-';
-        }
-        switch (structField.type) {
-            case 'boolean':
-                return (
-                    <span className={`inline-flex items-center ${value ? 'text-green-600' : 'text-red-500'}`}>
-                        {value ? <CheckIcon className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                    </span>
-                );
-            case 'datetime':
-                return value ? formatDate(value, { dateStyle: 'short', timeStyle: 'short' }) : '-';
-            default:
-                return value.toString();
-        }
-    };
+    const isReadonly = fieldDef?.readonly === true;
 
     // Helper function to render individual struct field inputs
     const renderStructFieldInput = (
@@ -244,7 +218,6 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
                     disabled={isReadonly}
                     renderInput={(index, listItemField) => renderSingleStructInput(listItemField)}
                     defaultValue={getDefaultValue()}
-                    isFullWidth={needsFullWidth}
                 />
             );
         }
@@ -270,7 +243,7 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
                         </Button>
                     </div>
                 )}
-                {fieldDef.fields.map(structField => (
+                {fieldDef?.fields?.map(structField => (
                     <FormField
                         key={structField.name}
                         control={control}
@@ -303,6 +276,33 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         ),
         [fieldDef, control, field.name, getTranslation, renderStructFieldInput, isReadonly],
     );
+
+    if (!fieldDef || !isStructFieldConfig(fieldDef)) {
+        return null;
+    }
+
+    // Helper function to format field value for display
+    const formatFieldValue = (value: any, structField: StructField) => {
+        if (value == null) return '-';
+        if (structField.list) {
+            if (Array.isArray(value)) {
+                return value.length ? value.join(', ') : '-';
+            }
+            return '-';
+        }
+        switch (structField.type) {
+            case 'boolean':
+                return (
+                    <span className={`inline-flex items-center ${value ? 'text-green-600' : 'text-red-500'}`}>
+                        {value ? <CheckIcon className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                    </span>
+                );
+            case 'datetime':
+                return value ? formatDate(value, { dateStyle: 'short', timeStyle: 'short' }) : '-';
+            default:
+                return value.toString();
+        }
+    };
 
     return isEditing ? (
         EditMode
