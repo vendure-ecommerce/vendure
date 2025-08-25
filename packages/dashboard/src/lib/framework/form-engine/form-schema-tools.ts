@@ -166,10 +166,15 @@ function createCustomFieldValidationSchema(customField: CustomFieldConfig): ZodT
             zodType = createStringValidationSchema((customField as StringCustomFieldConfig).pattern);
             break;
         case 'int':
-        case 'float':
             zodType = createNumberValidationSchema(
                 (customField as IntCustomFieldConfig).intMin,
                 (customField as IntCustomFieldConfig).intMax,
+            );
+            break;
+        case 'float':
+            zodType = createNumberValidationSchema(
+                (customField as FloatCustomFieldConfig).floatMin,
+                (customField as FloatCustomFieldConfig).floatMax,
             );
             break;
         case 'datetime': {
