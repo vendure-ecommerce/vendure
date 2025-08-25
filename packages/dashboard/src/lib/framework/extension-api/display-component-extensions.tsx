@@ -24,20 +24,6 @@ export function getDisplayComponent(id: string): DataDisplayComponent | undefine
 
 /**
  * @description
- * Gets a display component using the targeting properties.
- * Uses the same key pattern as registration: pageId_blockId_fieldName
- */
-export function getTargetedDisplayComponent(
-    pageId: string,
-    blockId: string,
-    field: string,
-): DataDisplayComponent | undefined {
-    const key = generateDisplayComponentKey(pageId, blockId, field);
-    return globalRegistry.get('displayComponents').get(key);
-}
-
-/**
- * @description
  * Generates a display component key based on the targeting properties.
  * Follows the existing pattern: pageId_blockId_fieldName
  */

@@ -1,9 +1,11 @@
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import TextStyle from '@tiptap/extension-text-style';
 import { BubbleMenu, Editor, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
 import { useLayoutEffect, useRef } from 'react';
 import { Button } from '../ui/button.js';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
 // define your extension array
 const extensions = [
@@ -20,13 +22,8 @@ const extensions = [
     }),
 ];
 
-export interface RichTextInputProps {
-    value: string;
-    disabled?: boolean;
-    onChange: (value: string) => void;
-}
-
-export function RichTextInput({ value, onChange, disabled }: Readonly<RichTextInputProps>) {
+export function RichTextInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
+    const readOnly = isReadonlyField(fieldDef);
     const isInternalUpdate = useRef(false);
 
     const editor = useEditor({
@@ -35,16 +32,16 @@ export function RichTextInput({ value, onChange, disabled }: Readonly<RichTextIn
         },
         extensions: extensions,
         content: value,
-        editable: !disabled,
+        editable: !readOnly,    
         onUpdate: ({ editor }) => {
-            if (!disabled) {
+            if (!readOnly) {
                 isInternalUpdate.current = true;
                 onChange(editor.getHTML());
             }
         },
         editorProps: {
             attributes: {
-                class: `border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/10 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-h-[500px] overflow-y-auto ${disabled ? 'cursor-not-allowed opacity-50' : ''}`,
+                class: `border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/10 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive field-sizing-content min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-h-[500px] overflow-y-auto ${readOnly ? 'cursor-not-allowed opacity-50' : ''}`,
             },
         },
     });
@@ -64,9 +61,9 @@ export function RichTextInput({ value, onChange, disabled }: Readonly<RichTextIn
     // Update editor's editable state when disabled prop changes
     useLayoutEffect(() => {
         if (editor) {
-            editor.setEditable(!disabled);
+            editor.setEditable(!readOnly);
         }
-    }, [disabled, editor]);
+    }, [readOnly, editor]);
 
     if (!editor) {
         return null;
@@ -75,7 +72,7 @@ export function RichTextInput({ value, onChange, disabled }: Readonly<RichTextIn
     return (
         <>
             <EditorContent editor={editor} />
-            <CustomBubbleMenu editor={editor} disabled={disabled} />
+            <CustomBubbleMenu editor={editor} disabled={readOnly} />
         </>
     );
 }

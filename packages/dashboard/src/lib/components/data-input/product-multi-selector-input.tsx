@@ -10,7 +10,7 @@ import {
     DialogTitle,
 } from '@/vdb/components/ui/dialog.js';
 import { Input } from '@/vdb/components/ui/input.js';
-import { DataInputComponent } from '@/vdb/framework/component-registry/component-registry.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -372,21 +372,12 @@ function ProductMultiSelectorDialog({
     );
 }
 
-export const ProductMultiInput: DataInputComponent = ({ value, onChange, ...props }) => {
+export const ProductMultiInput: DashboardFormComponent = ({ value, onChange, ...props }) => {
     const [open, setOpen] = useState(false);
-
     // Parse the configuration from the field definition
-    const mode = (props as any)?.selectionMode === 'variant' ? 'variant' : 'product';
-
+    const mode = props.fieldDef?.ui?.selectionMode === 'variant' ? 'variant' : 'product';
     // Parse the current value (JSON array of IDs)
-    const selectedIds = useMemo(() => {
-        if (!value || typeof value !== 'string') return [];
-        try {
-            return JSON.parse(value);
-        } catch {
-            return [];
-        }
-    }, [value]);
+    const selectedIds = value;
 
     const handleSelectionChange = useCallback(
         (newSelectedIds: string[]) => {
@@ -394,11 +385,9 @@ export const ProductMultiInput: DataInputComponent = ({ value, onChange, ...prop
         },
         [onChange],
     );
-
     const itemType = mode === 'product' ? 'products' : 'variants';
     const buttonText =
         selectedIds.length > 0 ? `Selected ${selectedIds.length} ${itemType}` : `Select ${itemType}`;
-
     return (
         <>
             <div className="space-y-2">
@@ -423,4 +412,8 @@ export const ProductMultiInput: DataInputComponent = ({ value, onChange, ...prop
             />
         </>
     );
+};
+
+ProductMultiInput.metadata = {
+    isListInput: true,
 };

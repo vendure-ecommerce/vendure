@@ -1,43 +1,45 @@
 import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
-import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
-import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
-import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
-import { ProductMultiInput } from '@/vdb/components/data-input/product-multi-selector.js';
-import { Checkbox } from '@/vdb/components/ui/checkbox.js';
-import { Input } from '@/vdb/components/ui/input.js';
-import { DataInputComponent } from '../component-registry/component-registry.js';
+import { DefaultRelationInput } from '@/vdb/components/data-input/default-relation-input.js';
+import {
+    CustomerGroupInput,
+    FacetValueInput,
+    MoneyInput,
+    ProductMultiInput,
+    RichTextInput,
+    SelectWithOptions,
+} from '@/vdb/components/data-input/index.js';
+import { PasswordInput } from '@/vdb/components/data-input/password-input.js';
+import { TextareaInput } from '@/vdb/components/data-input/textarea-input.js';
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
-globalRegistry.register('inputComponents', new Map<string, DataInputComponent>());
-
-// Create component functions for built-in components
-const TextInput: DataInputComponent = props => (
-    <Input {...props} onChange={e => props.onChange(e.target.value)} />
-);
-const NumberInput: DataInputComponent = props => (
-    <Input {...props} onChange={e => props.onChange(e.target.valueAsNumber)} type="number" />
-);
-const CheckboxInput: DataInputComponent = props => (
-    <Checkbox
-        {...props}
-        checked={props.value === 'true' || props.value === true}
-        onCheckedChange={value => props.onChange(value)}
-    />
-);
+globalRegistry.register('inputComponents', new Map<string, DashboardFormComponent>());
 
 // Register built-in input components
 const inputComponents = globalRegistry.get('inputComponents');
-inputComponents.set('vendure:moneyInput', MoneyInput);
-inputComponents.set('vendure:textInput', TextInput);
-inputComponents.set('vendure:numberInput', NumberInput);
-inputComponents.set('vendure:dateTimeInput', DateTimeInput);
-inputComponents.set('vendure:checkboxInput', CheckboxInput);
-inputComponents.set('vendure:facetValueInput', FacetValueInput);
-inputComponents.set('vendure:combinationModeInput', CombinationModeInput);
-inputComponents.set('vendure:productMultiInput', ProductMultiInput);
+inputComponents.set('facet-value-input', FacetValueInput);
+inputComponents.set('combination-mode-input', CombinationModeInput);
+inputComponents.set('product-multi-input', ProductMultiInput);
+inputComponents.set('currency-form-input', MoneyInput);
+inputComponents.set('customer-group-form-input', CustomerGroupInput);
+inputComponents.set('facet-value-form-input', FacetValueInput);
+inputComponents.set('json-editor-form-input', TextareaInput);
+inputComponents.set('textarea-form-input', TextareaInput);
+inputComponents.set('html-editor-form-input', RichTextInput);
+inputComponents.set('rich-text-form-input', RichTextInput);
+inputComponents.set('password-form-input', PasswordInput);
+inputComponents.set('product-selector-form-input', DefaultRelationInput);
+inputComponents.set('relation-form-input', DefaultRelationInput);
+inputComponents.set('select-form-input', SelectWithOptions);
+inputComponents.set('product-multi-form-input', ProductMultiInput);
+inputComponents.set('combination-mode-form-input', CombinationModeInput);
 
-export function getInputComponent(id: string): DataInputComponent | undefined {
-    return globalRegistry.get('inputComponents').get(id);
+export function getInputComponent(id: string | undefined): DashboardFormComponent | undefined {
+    if (!id) {
+        return undefined;
+    }
+    const inputComponent = globalRegistry.get('inputComponents').get(id);
+    return inputComponent;
 }
 
 /**
@@ -58,7 +60,7 @@ export function addInputComponent({
     pageId: string;
     blockId: string;
     field: string;
-    component: DataInputComponent;
+    component: DashboardFormComponent;
 }) {
     const inputComponents = globalRegistry.get('inputComponents');
 
@@ -70,4 +72,20 @@ export function addInputComponent({
         console.warn(`Input component with key "${key}" is already registered and will be overwritten.`);
     }
     inputComponents.set(key, component);
+}
+
+export function addCustomFieldInputComponent({
+    id,
+    component,
+}: {
+    id: string;
+    component: DashboardFormComponent;
+}) {
+    const inputComponents = globalRegistry.get('inputComponents');
+
+    if (inputComponents.has(id)) {
+        // eslint-disable-next-line no-console
+        console.warn(`Input component with key "${id}" is already registered and will be overwritten.`);
+    }
+    inputComponents.set(id, component);
 }

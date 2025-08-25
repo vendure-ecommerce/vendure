@@ -1,4 +1,4 @@
-import { UniversalFieldDefinition } from './universal-field-definition.js';
+import { ConfigurableFieldDef } from '@/vdb/framework/form-engine/form-engine-types.js';
 
 export type ValueMode = 'native' | 'json-string';
 
@@ -6,19 +6,19 @@ export type ValueMode = 'native' | 'json-string';
  * Interface for transforming values between native JavaScript types and JSON strings
  */
 export interface ValueTransformer {
-    parse: (value: string, fieldDef: UniversalFieldDefinition) => any;
-    serialize: (value: any, fieldDef: UniversalFieldDefinition) => string;
+    parse: (value: string, fieldDef: ConfigurableFieldDef) => any;
+    serialize: (value: any, fieldDef: ConfigurableFieldDef) => string;
 }
 
 /**
  * Native value transformer - passes values through unchanged
  */
 export const nativeValueTransformer: ValueTransformer = {
-    parse: (value: string, fieldDef: UniversalFieldDefinition) => {
+    parse: (value: string, fieldDef: ConfigurableFieldDef) => {
         // For native mode, values are already in their correct JavaScript type
         return value;
     },
-    serialize: (value: any, fieldDef: UniversalFieldDefinition) => {
+    serialize: (value: any, fieldDef: ConfigurableFieldDef) => {
         // For native mode, values are already in their correct JavaScript type
         return value;
     },
@@ -28,7 +28,7 @@ export const nativeValueTransformer: ValueTransformer = {
  * JSON string value transformer - converts between JSON strings and native values
  */
 export const jsonStringValueTransformer: ValueTransformer = {
-    parse: (value: string, fieldDef: UniversalFieldDefinition) => {
+    parse: (value: string, fieldDef: ConfigurableFieldDef) => {
         if (!value) {
             return getDefaultValue(fieldDef);
         }
@@ -62,7 +62,7 @@ export const jsonStringValueTransformer: ValueTransformer = {
             }
         }
     },
-    serialize: (value: any, fieldDef: UniversalFieldDefinition) => {
+    serialize: (value: any, fieldDef: ConfigurableFieldDef) => {
         if (value === null || value === undefined) {
             return '';
         }
@@ -100,7 +100,7 @@ export function getValueTransformer(valueMode: ValueMode): ValueTransformer {
 /**
  * Get default value for a field type
  */
-function getDefaultValue(fieldDef: UniversalFieldDefinition): any {
+function getDefaultValue(fieldDef: ConfigurableFieldDef): any {
     if (fieldDef.list) {
         return [];
     }
@@ -132,7 +132,7 @@ function getDefaultValue(fieldDef: UniversalFieldDefinition): any {
  */
 export function transformValue(
     value: any,
-    fieldDef: UniversalFieldDefinition,
+    fieldDef: ConfigurableFieldDef,
     valueMode: ValueMode,
     direction: 'parse' | 'serialize',
 ): any {

@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardCustomFormComponent
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/form-components.ts" sourceLine="13" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/form-components.ts" sourceLine="11" packageName="@vendure/dashboard" since="3.4.0" />
 
 Allows you to define custom form components for custom fields in the dashboard.
 
 ```ts title="Signature"
 interface DashboardCustomFormComponent {
     id: string;
-    component: React.FunctionComponent<CustomFormComponentInputProps>;
+    component: DashboardFormComponent;
 }
 ```
 
@@ -32,7 +32,7 @@ A unique identifier for the custom form component. It is a good practice to name
 these IDs to avoid naming collisions, for example `"my-plugin.markdown-editor"`.
 ### component
 
-<MemberInfo kind="property" type={`React.FunctionComponent&#60;CustomFormComponentInputProps&#62;`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/forms/dashboard-form-component#dashboardformcomponent'>DashboardFormComponent</a>`}   />
 
 The React component that will be rendered as the custom form input.
 
@@ -42,7 +42,7 @@ The React component that will be rendered as the custom form input.
 
 ## DashboardCustomFormComponents
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/form-components.ts" sourceLine="36" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/form-components.ts" sourceLine="34" packageName="@vendure/dashboard" since="3.4.0" />
 
 Interface for registering custom field components in the dashboard.
 For input and display components, use the co-located approach with detailForms.

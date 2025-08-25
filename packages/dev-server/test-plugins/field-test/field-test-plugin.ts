@@ -39,8 +39,20 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Merchant ID' }],
             description: [{ languageCode: LanguageCode.en, value: 'Merchant identifier' }],
-            ui: { component: 'text-form-input' },
+            ui: { component: 'test-input' },
             required: true,
+        },
+        color: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+            description: [{ languageCode: LanguageCode.en, value: 'Color code for this payment method' }],
+            ui: { component: 'color-picker' },
+        },
+        supplierEmail: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Supplier Email' }],
+            pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+            ui: { component: 'custom-email' },
         },
         environment: {
             type: 'string',
@@ -236,7 +248,7 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
             return {
                 amount,
                 state: args.testMode ? 'Authorized' : 'Settled',
-                transactionId: 'test-' + Math.random().toString(36).substr(2, 9),
+                transactionId: 'test-' + Math.random().toString(36).substring(2, 7),
                 metadata: {
                     ...metadata,
                     processingFee: args.processingFee,
@@ -336,6 +348,35 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
                 readonly: true,
             },
             {
+                name: 'supplierEmail',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Supplier Email' }],
+                pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+                ui: { component: 'custom-email' },
+            },
+            {
+                name: 'RRP',
+                type: 'int',
+                label: [{ languageCode: LanguageCode.en, value: 'RRP' }],
+                ui: { component: 'multi-currency-input' },
+            },
+            {
+                name: 'simpleTags',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Product tags' }],
+                ui: { component: 'tags-input' },
+            },
+            {
+                name: 'color',
+                type: 'string',
+                pattern: '^#[A-Fa-f0-9]{6}$',
+                label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Main color for this product' }],
+                ui: {
+                    component: 'color-picker',
+                },
+            },
+            {
                 name: 'category',
                 type: 'string',
                 list: false,
@@ -396,7 +437,7 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
                 type: 'text',
                 label: [{ languageCode: LanguageCode.en, value: 'Specifications' }],
                 description: [{ languageCode: LanguageCode.en, value: 'Product specifications (long text)' }],
-                ui: { fullWidth: true },
+                ui: { fullWidth: false, component: 'test-input' },
             },
             {
                 name: 'warrantyInfo',
@@ -616,5 +657,6 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
 
         return config;
     },
+    dashboard: './dashboard/index.tsx',
 })
 export class FieldTestPlugin {}
