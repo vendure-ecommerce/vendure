@@ -1,5 +1,6 @@
 ---
 title: "Integrating S3-Compatible Asset Storage"
+sidebar_position: 1
 ---
 
 import Tabs from '@theme/Tabs';
@@ -59,6 +60,8 @@ Configure your chosen storage provider by following the setup instructions for y
    # Leave S3_FORCE_PATH_STYLE empty for AWS S3
    ```
 
+   ![AWS S3 Setup](https://cdn.vendure.io/learn/s3-guides/aws-bucket-iam.gif)
+
 </TabItem>
 <TabItem value="digitalocean" label="DigitalOcean Spaces">
 
@@ -111,6 +114,8 @@ Configure your chosen storage provider by following the setup instructions for y
    Use the regional endpoint (e.g., `https://fra1.digitaloceanspaces.com`) not the CDN endpoint. The AWS SDK constructs URLs automatically.
    :::
 
+   ![DigitalOcean Spaces Setup](https://cdn.vendure.io/learn/s3-guides/digital-ocean-create-bucket.gif)
+
 </TabItem>
 <TabItem value="minio" label="MinIO">
 
@@ -135,24 +140,58 @@ Configure your chosen storage provider by following the setup instructions for y
    - Change these credentials in production environments
 
 3. **Create Access Keys**
-   - Navigate to "Identity" → "Users" → "minioadmin"
-   - Click on "Service Accounts" tab
-   - Click "Create service account"
-   - Copy the generated Access Key and Secret Key
-   - ⚠️ **Important**: Save the Secret Key immediately as it won't be shown again
+
+   The MinIO web console in development setups typically only shows bucket management. For access key creation, use the MinIO CLI:
+
+   **Install MinIO Client (if not already installed):**
+   ```bash
+   # macOS
+   brew install minio/stable/mc
+
+   # Linux
+   curl https://dl.min.io/client/mc/release/linux-amd64/mc \
+     --create-dirs -o $HOME/minio-binaries/mc
+   chmod +x $HOME/minio-binaries/mc
+   export PATH=$PATH:$HOME/minio-binaries/
+
+   # Windows
+   # Download mc.exe from https://dl.min.io/client/mc/release/windows-amd64/mc.exe
+   ```
+
+   **Configure and create access keys:**
+   ```bash
+   # Set up MinIO client alias (replace with your MinIO server details)
+   mc alias set local http://localhost:9000 minioadmin minioadmin
+
+   # Create a service account (access key pair)
+   mc admin user svcacct add local minioadmin
+
+   # This will output something like:
+   # Access Key: AKIAIOSFODNN7EXAMPLE
+   # Secret Key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+   ```
+
+   ⚠️ **Important**: Save both keys immediately as the Secret Key won't be shown again
 
 4. **Create Storage Bucket**
-   - Go to "Object Browser" → "Buckets"
-   - Click "Create Bucket"
+   - In the MinIO console, you should see a "Buckets" section showing available buckets
+   - Click **"Create Bucket"** (usually a + icon or button)
    - Enter bucket name: `vendure-assets`
-   - Set bucket policy to allow public read access
+   - Click "Create" to create the bucket
+
+   **Alternative using CLI:**
+   ```bash
+   # Create bucket using MinIO client
+   mc mb local/vendure-assets
+   ```
 
 5. **Configure Public Access Policy**
-   - Select your bucket and click on "Manage"
-   - Go to "Access Rules" section
-   - Add this policy for public read access:
 
-   ```json
+   For public asset access, set the bucket policy using the MinIO CLI (console UI may not have policy editor):
+
+   ```bash
+   # Create a policy file for public read access
+   cat > public-read-policy.json << EOF
    {
      "Version": "2012-10-17",
      "Statement": [
@@ -164,6 +203,19 @@ Configure your chosen storage provider by following the setup instructions for y
        }
      ]
    }
+   EOF
+
+   # Apply the policy to the bucket
+   mc anonymous set download local/vendure-assets
+
+   # Or apply the JSON policy directly
+   mc admin policy create local public-read public-read-policy.json
+   ```
+
+   **Alternative simple approach:**
+   ```bash
+   # Make bucket publicly readable (simpler method)
+   mc anonymous set download local/vendure-assets
    ```
 
 6. **Environment Variables**
@@ -228,6 +280,8 @@ Configure your chosen storage provider by following the setup instructions for y
    Replace `your-account-id` with your actual CloudFlare account ID. If using a custom domain, update `S3_FILE_URL` to point to your custom domain with `https://`.
    :::
 
+   ![CloudFlare R2 Setup](https://cdn.vendure.io/learn/s3-guides/cloudflareR2-bucket.gif)
+
 </TabItem>
 <TabItem value="supabase" label="Supabase Storage">
 
@@ -266,6 +320,57 @@ Configure your chosen storage provider by following the setup instructions for y
    :::info
    Replace `your-project-ref` with your actual Supabase project reference ID found in your project settings.
    :::
+
+   ![Supabase Storage Setup](https://cdn.vendure.io/learn/s3-guides/Supabase-create-bucket.gif)
+
+</TabItem>
+<TabItem value="hetzner" label="Hetzner Object Storage">
+
+### Setting up Hetzner Object Storage
+
+1. **Create Hetzner Cloud Account**
+   - Sign up at [Hetzner Cloud](https://www.hetzner.com/cloud)
+   - Complete account verification and billing setup
+   - Navigate to the Hetzner Cloud Console
+
+2. **Access Object Storage Service**
+   - In the Hetzner Cloud Console, navigate to **"Object Storage"** in the left sidebar
+   - If Object Storage is not visible, you may need to request access (service availability varies by region)
+   - Accept the Object Storage terms of service when prompted
+
+3. **Create Storage Bucket**
+   - Click **"Create Bucket"** in the Object Storage section
+   - Enter a globally unique bucket name (e.g., `vendure-assets-yourname`)
+   - Select your preferred location (e.g., `fsn1` for Falkenstein, Germany)
+   - Choose bucket visibility:
+     - **Private**: Requires authentication for all access
+     - **Public**: Allows public read access for assets
+   - Click **"Create"** to create the bucket
+
+4. **Generate S3 API Credentials**
+   - In the Object Storage section, navigate to **"API Credentials"** or **"Access Keys"**
+   - Click **"Generate new credentials"** or **"Create access key"**
+   - Provide a name for the credentials (e.g., "Vendure API Key")
+   - Copy the generated **Access Key** and **Secret Key**
+   - ⚠️ **Important**: Save the Secret Key immediately as it cannot be viewed again
+
+5. **Environment Variables**
+
+   ```bash
+   # Hetzner Object Storage Configuration
+   S3_BUCKET=vendure-assets-yourname
+   S3_ACCESS_KEY_ID=your-hetzner-access-key
+   S3_SECRET_ACCESS_KEY=your-hetzner-secret-key
+   S3_REGION=fsn1
+   S3_ENDPOINT=https://fsn1.your-objectstorage.com
+   S3_FORCE_PATH_STYLE=true
+   ```
+
+   :::note
+   Replace `fsn1` with your chosen location (e.g., `nbg1` for Nuremberg). The endpoint URL will match your bucket's location. Ensure the region and endpoint location match.
+   :::
+
+   ![Hetzner Object Storage Setup](https://cdn.vendure.io/learn/s3-guides/hetzner-create-storage.gif)
 
 </TabItem>
 </Tabs>
@@ -348,37 +453,8 @@ S3_FORCE_PATH_STYLE=true-or-false
 ```
 
 :::cli
-Use the example templates to quickly set up your environment:
-
-```bash
-# Copy the appropriate template for your provider
-cp .env.example.aws-s3 .env           # For AWS S3
-cp .env.example.digital-ocean-spaces .env  # For DigitalOcean Spaces
-cp .env.example.minio .env            # For MinIO
-cp .env.example.cloudflare-r2 .env    # For CloudFlare R2
-cp .env.example.supabase-s3 .env      # For Supabase Storage
-
-# Then edit .env with your actual credentials
-```
+Preconfigured environment examples for each storage provider are available in the [s3-file-storage example repository](https://github.com/vendure-ecommerce/examples/tree/master/examples/s3-file-storage).
 :::
-
-## Platform Configuration Differences
-
-Understanding the key differences between platforms helps ensure proper configuration:
-
-| Platform | Endpoint Required | Force Path Style | Region Notes |
-|----------|-------------------|------------------|---------------|
-| **AWS S3** | ❌ No (uses default) | ❌ No (virtual-hosted) | Must match bucket region |
-| **DigitalOcean Spaces** | ✅ Yes (regional) | ❌ No (virtual-hosted) | Must match Space region |
-| **MinIO** | ✅ Yes (server URL) | ✅ Yes (path-style) | Dummy value accepted |
-| **CloudFlare R2** | ✅ Yes (account-specific) | ✅ Yes (path-style) | Use 'auto' for region |
-| **Supabase Storage** | ✅ Yes (project-specific) | ✅ Yes (path-style) | Use standard AWS region |
-
-★ Insight ─────────────────────────────────────
-- The `forcePathStyle` setting determines URL structure: `bucket.endpoint.com/file` (virtual-hosted) vs `endpoint.com/bucket/file` (path-style)
-- Most modern S3-compatible services prefer virtual-hosted style, but some (like MinIO) require path-style
-- Endpoint configuration is crucial for non-AWS providers as it tells the SDK where to send requests
-─────────────────────────────────────────────────
 
 ## Testing Your Configuration
 
@@ -403,13 +479,6 @@ Verify your S3 storage configuration works correctly:
    - Check your S3 bucket/storage service for the uploaded file
    - Confirm the asset URL is accessible
 
-:::cli
-Debug configuration issues by enabling verbose logging:
-
-```bash
-DEBUG=Vendure* npm run dev:server
-```
-:::
 
 ## Advanced Configuration
 
@@ -481,24 +550,6 @@ S3_FORCE_PATH_STYLE=true
    - Check firewall settings for outbound connections
    - For self-hosted MinIO, ensure server is running and accessible
 
-### Debug Configuration
-
-Add detailed logging to troubleshoot S3 operations:
-
-```ts title="src/vendure-config.ts"
-import { Logger } from '@vendure/core';
-
-// Enable S3 debug logging
-process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
-
-// Add logging to your configuration
-Logger.info('S3 Configuration:', {
-  bucket: process.env.S3_BUCKET,
-  endpoint: process.env.S3_ENDPOINT,
-  region: process.env.S3_REGION,
-  pathStyle: process.env.S3_FORCE_PATH_STYLE,
-});
-```
 
 ## Conclusion
 
