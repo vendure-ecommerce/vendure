@@ -8,6 +8,8 @@ import TabItem from '@theme/TabItem';
 
 This guide demonstrates how to integrate S3-compatible asset storage into your Vendure application using multiple cloud storage platforms. You'll learn to configure a single, platform-agnostic storage solution that works seamlessly with AWS S3, DigitalOcean Spaces, MinIO, CloudFlare R2, and Supabase Storage.
 
+## Working Example Repository
+
 :::info
 This guide is based on the [s3-file-storage](https://github.com/vendure-ecommerce/examples/tree/master/examples/s3-file-storage) example.
 Refer to the complete working code for full implementation details.
@@ -63,6 +65,47 @@ Configure your chosen storage provider by following the setup instructions for y
    ![AWS S3 Setup](https://cdn.vendure.io/learn/s3-guides/aws-bucket-iam.gif)
 
 </TabItem>
+<TabItem value="supabase" label="Supabase Storage">
+
+### Setting up Supabase S3 Storage
+
+1. **Create Supabase Project**
+   - Sign up at [Supabase](https://supabase.com/)
+   - Click "New project" and fill in project details
+   - Wait for project initialization to complete
+
+2. **Navigate to Storage**
+   - Go to "Storage" section in your project dashboard
+   - Click "Create a new bucket"
+   - Enter bucket name: `assets` (or your preferred name)
+   - Configure bucket to be public if you need direct asset access
+   - Click "Create bucket"
+
+3. **Generate Service Role Key**
+   - Navigate to "Settings" → "API"
+   - Copy your **Project URL** and **Project Reference ID**
+   - Copy the **service_role** key (keep this secure)
+   - The service_role key provides full access to your project
+
+4. **Environment Variables**
+
+   ```bash
+   # Supabase Storage Configuration
+   S3_BUCKET=assets
+   S3_ACCESS_KEY_ID=your-supabase-access-key-id
+   S3_SECRET_ACCESS_KEY=your-service-role-key
+   S3_REGION=us-east-1
+   S3_ENDPOINT=https://your-project-ref.supabase.co/storage/v1/s3
+   S3_FORCE_PATH_STYLE=true
+   ```
+
+   :::info
+   Replace `your-project-ref` with your actual Supabase project reference ID found in your project settings.
+   :::
+
+   ![Supabase Storage Setup](https://cdn.vendure.io/learn/s3-guides/Supabase-create-bucket.gif)
+
+</TabItem>
 <TabItem value="digitalocean" label="DigitalOcean Spaces">
 
 ### Setting up DigitalOcean Spaces
@@ -115,6 +158,107 @@ Configure your chosen storage provider by following the setup instructions for y
    :::
 
    ![DigitalOcean Spaces Setup](https://cdn.vendure.io/learn/s3-guides/digital-ocean-create-bucket.gif)
+
+</TabItem>
+<TabItem value="cloudflare-r2" label="CloudFlare R2">
+
+### Setting up CloudFlare R2
+
+1. **Create CloudFlare Account**
+   - Sign up at [CloudFlare](https://www.cloudflare.com/)
+   - Complete account verification process
+
+2. **Enable R2 Object Storage**
+   - Navigate to R2 Object Storage in your dashboard
+   - You may need to provide payment information (R2 has generous free tier)
+   - Accept the R2 terms of service
+
+3. **Create R2 Bucket**
+   - Click "Create bucket"
+   - Enter a globally unique bucket name: `vendure-assets`
+   - Select "Automatic" for location optimization
+   - Choose "Standard" storage class for most use cases
+   - Click "Create bucket" to finalize
+
+4. **Generate API Tokens**
+   - Go to "Manage R2 API tokens" section
+   - Click "Create API token"
+   - Configure token name: "Vendure R2 Token"
+   - Under Permissions, select "Object Read & Write"
+   - Optionally restrict to specific buckets under "Account resources"
+   - Click "Create API token"
+
+5. **Retrieve Credentials**
+   - Copy the **Access Key ID** and **Secret Access Key**
+   - Copy the **jurisdiction-specific endpoint** for S3 clients
+   - Note your **account ID** from the URL or dashboard
+
+6. **Environment Variables**
+
+   ```bash
+   # CloudFlare R2 Configuration
+   S3_BUCKET=vendure-assets
+   S3_ACCESS_KEY_ID=your-r2-access-key
+   S3_SECRET_ACCESS_KEY=your-r2-secret-key
+   S3_REGION=auto
+   S3_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+   S3_FORCE_PATH_STYLE=true
+   ```
+
+   :::warning
+   Replace `your-account-id` with your actual CloudFlare account ID. If using a custom domain, update `S3_FILE_URL` to point to your custom domain with `https://`.
+   :::
+
+   ![CloudFlare R2 Setup](https://cdn.vendure.io/learn/s3-guides/cloudflareR2-bucket.gif)
+
+</TabItem>
+<TabItem value="hetzner" label="Hetzner Object Storage">
+
+### Setting up Hetzner Object Storage
+
+1. **Create Hetzner Cloud Account**
+   - Sign up at [Hetzner Cloud](https://www.hetzner.com/cloud)
+   - Complete account verification and billing setup
+   - Navigate to the Hetzner Cloud Console
+
+2. **Access Object Storage Service**
+   - In the Hetzner Cloud Console, navigate to **"Object Storage"** in the left sidebar
+   - If Object Storage is not visible, you may need to request access (service availability varies by region)
+   - Accept the Object Storage terms of service when prompted
+
+3. **Create Storage Bucket**
+   - Click **"Create Bucket"** in the Object Storage section
+   - Enter a globally unique bucket name (e.g., `vendure-assets-yourname`)
+   - Select your preferred location (e.g., `fsn1` for Falkenstein, Germany)
+   - Choose bucket visibility:
+     - **Private**: Requires authentication for all access
+     - **Public**: Allows public read access for assets
+   - Click **"Create"** to create the bucket
+
+4. **Generate S3 API Credentials**
+   - In the Object Storage section, navigate to **"API Credentials"** or **"Access Keys"**
+   - Click **"Generate new credentials"** or **"Create access key"**
+   - Provide a name for the credentials (e.g., "Vendure API Key")
+   - Copy the generated **Access Key** and **Secret Key**
+   - ⚠️ **Important**: Save the Secret Key immediately as it cannot be viewed again
+
+5. **Environment Variables**
+
+   ```bash
+   # Hetzner Object Storage Configuration
+   S3_BUCKET=vendure-assets-yourname
+   S3_ACCESS_KEY_ID=your-hetzner-access-key
+   S3_SECRET_ACCESS_KEY=your-hetzner-secret-key
+   S3_REGION=fsn1
+   S3_ENDPOINT=https://fsn1.your-objectstorage.com
+   S3_FORCE_PATH_STYLE=true
+   ```
+
+   :::note
+   Replace `fsn1` with your chosen location (e.g., `nbg1` for Nuremberg). The endpoint URL will match your bucket's location. Ensure the region and endpoint location match.
+   :::
+
+   ![Hetzner Object Storage Setup](https://cdn.vendure.io/learn/s3-guides/hetzner-create-storage.gif)
 
 </TabItem>
 <TabItem value="minio" label="MinIO">
@@ -229,148 +373,6 @@ Configure your chosen storage provider by following the setup instructions for y
    S3_ENDPOINT=http://localhost:9000
    S3_FORCE_PATH_STYLE=true
    ```
-
-</TabItem>
-<TabItem value="cloudflare-r2" label="CloudFlare R2">
-
-### Setting up CloudFlare R2
-
-1. **Create CloudFlare Account**
-   - Sign up at [CloudFlare](https://www.cloudflare.com/)
-   - Complete account verification process
-
-2. **Enable R2 Object Storage**
-   - Navigate to R2 Object Storage in your dashboard
-   - You may need to provide payment information (R2 has generous free tier)
-   - Accept the R2 terms of service
-
-3. **Create R2 Bucket**
-   - Click "Create bucket"
-   - Enter a globally unique bucket name: `vendure-assets`
-   - Select "Automatic" for location optimization
-   - Choose "Standard" storage class for most use cases
-   - Click "Create bucket" to finalize
-
-4. **Generate API Tokens**
-   - Go to "Manage R2 API tokens" section
-   - Click "Create API token"
-   - Configure token name: "Vendure R2 Token"
-   - Under Permissions, select "Object Read & Write"
-   - Optionally restrict to specific buckets under "Account resources"
-   - Click "Create API token"
-
-5. **Retrieve Credentials**
-   - Copy the **Access Key ID** and **Secret Access Key**
-   - Copy the **jurisdiction-specific endpoint** for S3 clients
-   - Note your **account ID** from the URL or dashboard
-
-6. **Environment Variables**
-
-   ```bash
-   # CloudFlare R2 Configuration
-   S3_BUCKET=vendure-assets
-   S3_ACCESS_KEY_ID=your-r2-access-key
-   S3_SECRET_ACCESS_KEY=your-r2-secret-key
-   S3_REGION=auto
-   S3_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
-   S3_FORCE_PATH_STYLE=true
-   ```
-
-   :::warning
-   Replace `your-account-id` with your actual CloudFlare account ID. If using a custom domain, update `S3_FILE_URL` to point to your custom domain with `https://`.
-   :::
-
-   ![CloudFlare R2 Setup](https://cdn.vendure.io/learn/s3-guides/cloudflareR2-bucket.gif)
-
-</TabItem>
-<TabItem value="supabase" label="Supabase Storage">
-
-### Setting up Supabase S3 Storage
-
-1. **Create Supabase Project**
-   - Sign up at [Supabase](https://supabase.com/)
-   - Click "New project" and fill in project details
-   - Wait for project initialization to complete
-
-2. **Navigate to Storage**
-   - Go to "Storage" section in your project dashboard
-   - Click "Create a new bucket"
-   - Enter bucket name: `assets` (or your preferred name)
-   - Configure bucket to be public if you need direct asset access
-   - Click "Create bucket"
-
-3. **Generate Service Role Key**
-   - Navigate to "Settings" → "API"
-   - Copy your **Project URL** and **Project Reference ID**
-   - Copy the **service_role** key (keep this secure)
-   - The service_role key provides full access to your project
-
-4. **Environment Variables**
-
-   ```bash
-   # Supabase Storage Configuration
-   S3_BUCKET=assets
-   S3_ACCESS_KEY_ID=your-supabase-access-key-id
-   S3_SECRET_ACCESS_KEY=your-service-role-key
-   S3_REGION=us-east-1
-   S3_ENDPOINT=https://your-project-ref.supabase.co/storage/v1/s3
-   S3_FORCE_PATH_STYLE=true
-   ```
-
-   :::info
-   Replace `your-project-ref` with your actual Supabase project reference ID found in your project settings.
-   :::
-
-   ![Supabase Storage Setup](https://cdn.vendure.io/learn/s3-guides/Supabase-create-bucket.gif)
-
-</TabItem>
-<TabItem value="hetzner" label="Hetzner Object Storage">
-
-### Setting up Hetzner Object Storage
-
-1. **Create Hetzner Cloud Account**
-   - Sign up at [Hetzner Cloud](https://www.hetzner.com/cloud)
-   - Complete account verification and billing setup
-   - Navigate to the Hetzner Cloud Console
-
-2. **Access Object Storage Service**
-   - In the Hetzner Cloud Console, navigate to **"Object Storage"** in the left sidebar
-   - If Object Storage is not visible, you may need to request access (service availability varies by region)
-   - Accept the Object Storage terms of service when prompted
-
-3. **Create Storage Bucket**
-   - Click **"Create Bucket"** in the Object Storage section
-   - Enter a globally unique bucket name (e.g., `vendure-assets-yourname`)
-   - Select your preferred location (e.g., `fsn1` for Falkenstein, Germany)
-   - Choose bucket visibility:
-     - **Private**: Requires authentication for all access
-     - **Public**: Allows public read access for assets
-   - Click **"Create"** to create the bucket
-
-4. **Generate S3 API Credentials**
-   - In the Object Storage section, navigate to **"API Credentials"** or **"Access Keys"**
-   - Click **"Generate new credentials"** or **"Create access key"**
-   - Provide a name for the credentials (e.g., "Vendure API Key")
-   - Copy the generated **Access Key** and **Secret Key**
-   - ⚠️ **Important**: Save the Secret Key immediately as it cannot be viewed again
-
-5. **Environment Variables**
-
-   ```bash
-   # Hetzner Object Storage Configuration
-   S3_BUCKET=vendure-assets-yourname
-   S3_ACCESS_KEY_ID=your-hetzner-access-key
-   S3_SECRET_ACCESS_KEY=your-hetzner-secret-key
-   S3_REGION=fsn1
-   S3_ENDPOINT=https://fsn1.your-objectstorage.com
-   S3_FORCE_PATH_STYLE=true
-   ```
-
-   :::note
-   Replace `fsn1` with your chosen location (e.g., `nbg1` for Nuremberg). The endpoint URL will match your bucket's location. Ensure the region and endpoint location match.
-   :::
-
-   ![Hetzner Object Storage Setup](https://cdn.vendure.io/learn/s3-guides/hetzner-create-storage.gif)
 
 </TabItem>
 </Tabs>
