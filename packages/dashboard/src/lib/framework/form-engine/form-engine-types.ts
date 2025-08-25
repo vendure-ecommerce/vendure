@@ -52,12 +52,41 @@ export type BooleanStructField = Extract<StructField, { type: 'boolean' }>;
 export type DateTimeStructField = Extract<StructField, { type: 'datetime' }>;
 
 /**
- * THE single form component interface for the entire dashboard.
- * This replaces all the fragmented interfaces:
- * - DataInputComponent
- * - CustomFormComponentInputProps
- * - DirectFormComponentProps
- * - etc.
+ * @description
+ * Props that get passed to all form input components. They are based on the
+ * controller props used by the underlying `react-hook-form`, i.e.:
+ *
+ * ```ts
+ * export type ControllerRenderProps = {
+ *     onChange: (event: any) => void;
+ *     onBlur: () => void;
+ *     value: any;
+ *     disabled?: boolean;
+ *     name: string;
+ *     ref: RefCallBack;
+ * };
+ * ```
+ *
+ * in addition, they can optionally be passed a `fieldDef` prop if the
+ * component is used in the context of a custom field or configurable operation arg.
+ *
+ * The `fieldDef` arg, when present, has the following shape:
+ *
+ * ```ts
+ * export type ConfigurableArgDef = {
+ *     defaultValue: any
+ *     description: string | null
+ *     label: string | null
+ *     list: boolean
+ *     name: string
+ *     required: boolean
+ *     type: string
+ *     ui: any
+ * }
+ * ```
+ *
+ * @docsCategory forms
+ * @docsPage DashboardFormComponent
  */
 export type DashboardFormComponentProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -71,6 +100,24 @@ export type DashboardFormComponentProps<
  * Metadata which can be defined on a {@link DashboardFormComponent} which
  * provides additional information about how the dashboard should render the
  * component.
+ *
+ * The metadata is defined by adding the static property on the component:
+ *
+ * @example
+ * ```ts
+ * export const MyCustomInput: DashboardFormComponent = props => {
+ *   // implementation omitted
+ * }
+ *
+ * // highlight-start
+ * MyCustomInput.metadata = {
+ *   isListInput: true
+ * }
+ * // highlight-end
+ * ```
+ *
+ * @docsCategory forms
+ * @docsPage DashboardFormComponent
  */
 export type DashboardFormComponentMetadata = {
     /**
@@ -84,7 +131,32 @@ export type DashboardFormComponentMetadata = {
 };
 
 /**
- * THE single form component type for the entire dashboard
+ * @description
+ * This is the common type for all custom form components registered for:
+ *
+ * - custom fields
+ * - configurable operation args
+ * - detail page fields
+ *
+ * Here's a simple example:
+ *
+ * ```ts
+ * import { DashboardFormComponent, Input } from '\@vendure/dashboard';
+ *
+ * const MyComponent: DashboardFormComponent = (props) => {
+ *     return <Input value={props.value}
+ *                   onChange={props.onChange}
+ *                   onBlur={props.onBlur}
+ *                   name={props.name}
+ *                   disabled={props.disabled}
+ *                   ref={props.ref}
+ *                   />;
+ * };
+ * ```
+ *
+ * @docsCategory forms
+ * @docsPage DashboardFormComponent
+ * @docsWeight 0
  */
 export type DashboardFormComponent = React.ComponentType<DashboardFormComponentProps> & {
     metadata?: DashboardFormComponentMetadata;

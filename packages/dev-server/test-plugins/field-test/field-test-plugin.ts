@@ -42,6 +42,18 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
             ui: { component: 'test-input' },
             required: true,
         },
+        color: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+            description: [{ languageCode: LanguageCode.en, value: 'Color code for this payment method' }],
+            ui: { component: 'color-picker' },
+        },
+        supplierEmail: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Supplier Email' }],
+            pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+            ui: { component: 'custom-email' },
+        },
         environment: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Environment' }],
@@ -334,6 +346,35 @@ const comprehensiveTestPaymentHandler = new PaymentMethodHandler({
                 label: [{ languageCode: LanguageCode.en, value: 'Custom SKU' }],
                 description: [{ languageCode: LanguageCode.en, value: 'Custom SKU for this product' }],
                 readonly: true,
+            },
+            {
+                name: 'supplierEmail',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Supplier Email' }],
+                pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+                ui: { component: 'custom-email' },
+            },
+            {
+                name: 'RRP',
+                type: 'int',
+                label: [{ languageCode: LanguageCode.en, value: 'RRP' }],
+                ui: { component: 'multi-currency-input' },
+            },
+            {
+                name: 'simpleTags',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Product tags' }],
+                ui: { component: 'tags-input' },
+            },
+            {
+                name: 'color',
+                type: 'string',
+                pattern: '^#[A-Fa-f0-9]{6}$',
+                label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Main color for this product' }],
+                ui: {
+                    component: 'color-picker',
+                },
             },
             {
                 name: 'category',

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardDetailFormInputComponent
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/detail-forms.ts" sourceLine="16" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/detail-forms.ts" sourceLine="13" packageName="@vendure/dashboard" since="3.4.0" />
 
 Allows you to define custom input components for specific fields in detail forms.
 The pageId is already defined in the detail form extension, so only the blockId and field are needed.
@@ -20,7 +20,7 @@ The pageId is already defined in the detail form extension, so only the blockId 
 interface DashboardDetailFormInputComponent {
     blockId: string;
     field: string;
-    component: DataInputComponent;
+    component: DashboardFormComponent;
 }
 ```
 
@@ -38,7 +38,7 @@ The ID of the block where this input component should be used.
 The name of the field where this input component should be used.
 ### component
 
-<MemberInfo kind="property" type={`DataInputComponent`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/forms/dashboard-form-component#dashboardformcomponent'>DashboardFormComponent</a>`}   />
 
 The React component that will be rendered as the input.
 It should accept `value`, `onChange`, and other standard input props.
@@ -47,47 +47,9 @@ It should accept `value`, `onChange`, and other standard input props.
 </div>
 
 
-## DashboardDetailFormDisplayComponent
-
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/detail-forms.ts" sourceLine="44" packageName="@vendure/dashboard" since="3.4.0" />
-
-Allows you to define custom display components for specific fields in detail forms.
-The pageId is already defined in the detail form extension, so only the blockId and field are needed.
-
-```ts title="Signature"
-interface DashboardDetailFormDisplayComponent {
-    blockId: string;
-    field: string;
-    component: DataDisplayComponent;
-}
-```
-
-<div className="members-wrapper">
-
-### blockId
-
-<MemberInfo kind="property" type={`string`}   />
-
-The ID of the block where this display component should be used.
-### field
-
-<MemberInfo kind="property" type={`string`}   />
-
-The name of the field where this display component should be used.
-### component
-
-<MemberInfo kind="property" type={`DataDisplayComponent`}   />
-
-The React component that will be rendered as the display.
-It should accept `value` and other standard display props.
-
-
-</div>
-
-
 ## DashboardDetailFormExtensionDefinition
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/detail-forms.ts" sourceLine="72" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/detail-forms.ts" sourceLine="41" packageName="@vendure/dashboard" since="3.4.0" />
 
 Allows you to extend existing detail forms (e.g. on the product detail or customer detail pages)
 with custom GraphQL queries, input components, and display components.
@@ -97,7 +59,6 @@ interface DashboardDetailFormExtensionDefinition {
     pageId: string;
     extendDetailDocument?: string | DocumentNode | (() => DocumentNode | string);
     inputs?: DashboardDetailFormInputComponent[];
-    displays?: DashboardDetailFormDisplayComponent[];
 }
 ```
 
@@ -119,11 +80,6 @@ fields that can be used by custom input or display components.
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/detail-forms#dashboarddetailforminputcomponent'>DashboardDetailFormInputComponent</a>[]`}   />
 
 Custom input components for specific fields in the detail form.
-### displays
-
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/detail-forms#dashboarddetailformdisplaycomponent'>DashboardDetailFormDisplayComponent</a>[]`}   />
-
-Custom display components for specific fields in the detail form.
 
 
 </div>
