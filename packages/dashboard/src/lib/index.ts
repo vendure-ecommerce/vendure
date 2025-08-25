@@ -251,5 +251,4 @@ export * from './hooks/use-server-config.js';
 export * from './hooks/use-theme.js';
 export * from './hooks/use-user-settings.js';
 export * from './lib/trans.js';
-export * from './lib/util-types.js';
 export * from './lib/utils.js';
