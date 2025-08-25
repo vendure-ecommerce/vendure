@@ -37,34 +37,17 @@ Configure your chosen storage provider by following the setup instructions for y
 2. **Create IAM User with S3 Permissions**
    - Go to [AWS IAM Console](https://console.aws.amazon.com/iam/)
    - Navigate to "Users" and click "Create user"
-   - Enter username and select "Programmatic access"
+   - Enter username and proceeed to `Set Permissions`
+   - Select the `Attach existing policies directly` option
    - Attach the `AmazonS3FullAccess` policy (or create a custom policy with minimal permissions)
 
 3. **Generate Access Keys**
    - After creating the user, click on the user name
    - Go to "Security credentials" tab
    - Click "Create access key" and select "Application running on AWS service"
-   - Copy the Access Key ID and Secret Access Key
+   - Copy the Access Key ID and Secret Access Key (Download the CSV file if needed)
 
-4. **Configure Bucket Policy (Optional)**
-   If you need public read access for assets, add this bucket policy:
-
-   ```json
-   {
-     "Version": "2012-10-17",
-     "Statement": [
-       {
-         "Sid": "PublicReadGetObject",
-         "Effect": "Allow",
-         "Principal": "*",
-         "Action": "s3:GetObject",
-         "Resource": "arn:aws:s3:::your-bucket-name/*"
-       }
-     ]
-   }
-   ```
-
-5. **Environment Variables**
+4. **Environment Variables**
 
    ```bash
    # AWS S3 Configuration
@@ -216,16 +199,7 @@ Configure your chosen storage provider by following the setup instructions for y
    - Choose "Standard" storage class for most use cases
    - Click "Create bucket" to finalize
 
-4. **Configure Public Access (Optional)**
-   For public asset access with custom domain:
-   - Ensure you have a domain configured in CloudFlare
-   - Navigate to your bucket's "Settings" tab
-   - Under "Public access," click "Allow Access"
-   - In "Custom Domains" section, click "Connect Domain"
-   - Enter your subdomain (e.g., `assets.yourdomain.com`)
-   - Review DNS records and click "Connect Domain"
-
-5. **Generate API Tokens**
+4. **Generate API Tokens**
    - Go to "Manage R2 API tokens" section
    - Click "Create API token"
    - Configure token name: "Vendure R2 Token"
@@ -233,12 +207,12 @@ Configure your chosen storage provider by following the setup instructions for y
    - Optionally restrict to specific buckets under "Account resources"
    - Click "Create API token"
 
-6. **Retrieve Credentials**
+5. **Retrieve Credentials**
    - Copy the **Access Key ID** and **Secret Access Key**
    - Copy the **jurisdiction-specific endpoint** for S3 clients
    - Note your **account ID** from the URL or dashboard
 
-7. **Environment Variables**
+6. **Environment Variables**
 
    ```bash
    # CloudFlare R2 Configuration
@@ -277,12 +251,7 @@ Configure your chosen storage provider by following the setup instructions for y
    - Copy the **service_role** key (keep this secure)
    - The service_role key provides full access to your project
 
-4. **Configure Bucket Policies (Optional)**
-   For public read access, configure bucket policies:
-   - Go to "Storage" → "Policies"
-   - Create policy for public read access on your bucket
-
-5. **Environment Variables**
+4. **Environment Variables**
 
    ```bash
    # Supabase Storage Configuration
