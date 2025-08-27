@@ -31,57 +31,81 @@ export function GeneratedBreadcrumbs() {
     const navMenuConfig = getNavMenuConfig() as NavMenuConfig;
     const basePath = router.basepath || '';
 
+    const normalizeBreadcrumb = (breadcrumb: any, pathname: string): BreadcrumbPair[] => {
+        if (typeof breadcrumb === 'string') {
+            return [{ label: breadcrumb, path: pathname }];
+        }
+        if (React.isValidElement(breadcrumb)) {
+            return [{ label: breadcrumb, path: pathname }];
+        }
+        if (typeof breadcrumb === 'function') {
+            return [{ label: breadcrumb(), path: pathname }];
+        }
+        if (Array.isArray(breadcrumb)) {
+            return breadcrumb.map((crumb: PageBreadcrumb) => {
+                if (typeof crumb === 'string' || React.isValidElement(crumb)) {
+                    return { label: crumb, path: pathname };
+                }
+                return { label: crumb.label, path: crumb.path };
+            });
+        }
+        return [];
+    };
+
     const rawCrumbs: BreadcrumbPair[] = React.useMemo(() => {
         return matches
             .filter(match => match.loaderData?.breadcrumb)
-            .flatMap(({ pathname, loaderData }) => {
-                if (typeof loaderData.breadcrumb === 'string') {
-                    return [{ label: loaderData.breadcrumb, path: pathname }];
-                }
-                if (Array.isArray(loaderData.breadcrumb)) {
-                    return loaderData.breadcrumb.map((breadcrumb: PageBreadcrumb) => {
-                        if (typeof breadcrumb === 'string') {
-                            return { label: breadcrumb, path: pathname };
-                        } else if (React.isValidElement(breadcrumb)) {
-                            return { label: breadcrumb, path: pathname };
-                        } else {
-                            return { label: breadcrumb.label, path: breadcrumb.path };
-                        }
-                    });
-                }
-                if (typeof loaderData.breadcrumb === 'function') {
-                    return [{ label: loaderData.breadcrumb(), path: pathname }];
-                }
-                if (React.isValidElement(loaderData.breadcrumb)) {
-                    return [{ label: loaderData.breadcrumb, path: pathname }];
-                }
-                return [];
-            });
+            .flatMap(({ pathname, loaderData }) => 
+                normalizeBreadcrumb(loaderData.breadcrumb, pathname)
+            );
     }, [matches]);
 
     const isBaseRoute = (p: string) => p === basePath || p === `${basePath}/`;
     const pageCrumbs: BreadcrumbPair[] = rawCrumbs.filter(c => !isBaseRoute(c.path));
 
-    const findSectionCrumb = (path: string): BreadcrumbPair | undefined => {
+    const normalizePath = (path: string): string => {
         const normalizedPath = basePath && path.startsWith(basePath) ? path.slice(basePath.length) : path;
-        const cleanPath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
-        for (const section of navMenuConfig.sections as Array<NavMenuSection | NavMenuItem>) {
-            if ('items' in section && Array.isArray(section.items)) {
-                for (const item of section.items as NavMenuItem[]) {
-                    if (cleanPath === item.url || cleanPath.startsWith(item.url + '/')) {
-                        return { label: section.title, path: item.url };
-                    }
-                }
-            } else if ('url' in section && section.url) {
-                if (cleanPath === section.url || cleanPath.startsWith(section.url + '/')) {
-                    return { label: section.title, path: section.url };
-                }
+        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+    };
+
+    const pathMatches = (cleanPath: string, url: string): boolean => {
+        return cleanPath === url || cleanPath.startsWith(url + '/');
+    };
+
+    const checkSectionItems = (section: NavMenuSection, cleanPath: string): BreadcrumbPair | undefined => {
+        if (!('items' in section) || !Array.isArray(section.items)) {
+            return undefined;
+        }
+        
+        for (const item of section.items as NavMenuItem[]) {
+            if (pathMatches(cleanPath, item.url)) {
+                return { label: section.title, path: item.url };
             }
         }
         return undefined;
     };
 
-    const sectionCrumb = React.useMemo(() => findSectionCrumb(currentPath), [currentPath, navMenuConfig, basePath]);
+    const checkDirectSection = (section: NavMenuItem, cleanPath: string): BreadcrumbPair | undefined => {
+        if ('url' in section && section.url && pathMatches(cleanPath, section.url)) {
+            return { label: section.title, path: section.url };
+        }
+        return undefined;
+    };
+
+    const findSectionCrumb = (path: string): BreadcrumbPair | undefined => {
+        const cleanPath = normalizePath(path);
+        
+        for (const section of navMenuConfig.sections as Array<NavMenuSection | NavMenuItem>) {
+            const result = checkSectionItems(section as NavMenuSection, cleanPath) || 
+                          checkDirectSection(section as NavMenuItem, cleanPath);
+            if (result) {
+                return result;
+            }
+        }
+        return undefined;
+    };
+
+    const sectionCrumb = React.useMemo(() => findSectionCrumb(currentPath), [currentPath, basePath]);
     const breadcrumbs: BreadcrumbPair[] = React.useMemo(
         () => (sectionCrumb ? [sectionCrumb, ...pageCrumbs] : pageCrumbs),
         [sectionCrumb, pageCrumbs],
