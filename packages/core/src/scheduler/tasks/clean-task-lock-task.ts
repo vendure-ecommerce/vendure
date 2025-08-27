@@ -5,32 +5,6 @@ import { ScheduledTask } from '../scheduled-task';
  * @description
  * A {@link ScheduledTask} that cleans stale task locks from the database.
  *
- * @example
- * ```ts
- * import { cleanTaskLockTask, VendureConfig } from '@vendure/core';
- *
- * export const config: VendureConfig = {
- *   // ...
- *   schedulerOptions: {
- *     tasks: [
- *       // Use the task as is
- *       cleanTaskLockTask,
- *       // or configure the task
- *       cleanTaskLockTask.configure({
- *         // Run the task every day at 3:00am
- *         // The default schedule is every day at 00:00am
- *         schedule: cron => cron.everyDayAt(3, 0),
- *         params: {
- *           // How many tasks to process in each batch
- *           // Default: 1000
- *           batchSize: 5_000,
- *         },
- *       }),
- *     ],
- *   },
- * };
- * ```
- *
  * @since 3.3.0
  * @docsCategory scheduled-tasks
  */
