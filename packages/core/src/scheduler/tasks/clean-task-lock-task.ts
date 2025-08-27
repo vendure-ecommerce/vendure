@@ -40,7 +40,7 @@ export const cleanTaskLockTask = new ScheduledTask({
     params: {
         batchSize: 1000,
     },
-    schedule: cron => cron.everyDayAt(0, 0),
+    schedule: cron => cron.every(10).minutes(),
     async execute({ injector, params }) {
         const taskService = injector.get(TaskService);
         await taskService.triggerCleanTaskLocksJob(params.batchSize);
