@@ -100,7 +100,7 @@ export class AuthService {
             await this.sessionService.deleteSessionsByActiveOrderId(ctx, ctx.session.activeOrderId);
         }
         user.lastLogin = new Date();
-        await this.connection.getRepository(ctx, User).save(user, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user);
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
