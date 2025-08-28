@@ -328,7 +328,23 @@ export function AssetGallery({
                                     />
                                     {selectable && (
                                         <div className="absolute top-2 left-2">
-                                            <Checkbox checked={isSelected(asset as Asset)} />
+                                            <Checkbox 
+                                                checked={isSelected(asset as Asset)} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const isCurrentlySelected = selected.some(a => a.id === asset.id);
+                                                    let newSelected: Asset[];
+                                                    
+                                                    if (isCurrentlySelected) {
+                                                        newSelected = selected.filter(a => a.id !== asset.id);
+                                                    } else {
+                                                        newSelected = [...selected, asset as Asset];
+                                                    }
+                                                    
+                                                    setSelected(newSelected);
+                                                    onSelect?.(newSelected);
+                                                }}
+                                            />
                                         </div>
                                     )}
                                 </div>
