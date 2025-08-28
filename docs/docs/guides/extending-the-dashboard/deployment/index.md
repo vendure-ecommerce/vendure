@@ -52,7 +52,7 @@ export default defineConfig({
 ### 2. Add DashboardPlugin to Vendure Config
 
 :::warning Angular Admin UI compatibilityMode
-If you want to use the Admin UI and the Dashboard together please change the compatibilityMode to true (/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode)
+If you want to use the Admin UI and the Dashboard together please change the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) to true.
 :::
 
 
