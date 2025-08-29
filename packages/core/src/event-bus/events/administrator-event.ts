@@ -1,11 +1,20 @@
-import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateAdministratorInput,
+    CreateChannelAdministratorInput,
+    UpdateAdministratorInput,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { Administrator } from '../../entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
-type AdministratorInputTypes = CreateAdministratorInput | UpdateAdministratorInput | ID;
+// TODO remove the non-channeladmin inputs?
+type AdministratorInputTypes =
+    | CreateAdministratorInput
+    | CreateChannelAdministratorInput
+    | UpdateAdministratorInput
+    | ID;
 
 /**
  * @description

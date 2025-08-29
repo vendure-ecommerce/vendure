@@ -1,10 +1,12 @@
 import { Permission } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
+
+import { ChannelRole } from './channel-role.entity';
 
 /**
  * @description
@@ -25,7 +27,7 @@ export class Role extends VendureEntity implements ChannelAware {
 
     @Column('simple-array') permissions: Permission[];
 
-    @ManyToMany(type => Channel, channel => channel.roles)
-    @JoinTable()
+    // TODO can you actually link to a column like that?
+    @OneToMany(type => ChannelRole, channelRole => channelRole.channel)
     channels: Channel[];
 }

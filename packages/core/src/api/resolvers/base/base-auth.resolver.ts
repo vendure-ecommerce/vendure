@@ -23,6 +23,7 @@ import { LogLevel } from '../../../config/logger/vendure-logger';
 import { User } from '../../../entity/user/user.entity';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
+import { ChannelRoleService } from '../../../service/services/channel-role.service';
 import { UserService } from '../../../service/services/user.service';
 import { extractSessionToken } from '../../common/extract-session-token';
 import { ApiType } from '../../common/get-api-type';
@@ -35,6 +36,7 @@ export class BaseAuthResolver {
         protected userService: UserService,
         protected administratorService: AdministratorService,
         protected configService: ConfigService,
+        protected channelRoleService: ChannelRoleService,
     ) {}
 
     /**
@@ -145,10 +147,7 @@ export class BaseAuthResolver {
         return {
             id: user.id,
             identifier: user.identifier,
-            channels:
-                await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
-                    user,
-                ),
+            channels: await this.channelRoleService.getMergedPermissionsPerChannel(user.id),
         };
     }
 }

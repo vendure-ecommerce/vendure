@@ -32,13 +32,13 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Role } from '../../entity/role/role.entity';
-import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { RoleEvent } from '../../event-bus/events/role-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelRoleService } from './channel-role.service';
 import { ChannelService } from './channel.service';
 
 /**
@@ -53,6 +53,7 @@ export class RoleService {
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
+        private channelRoleService: ChannelRoleService,
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
         private eventBus: EventBus,
@@ -161,16 +162,12 @@ export class RoleService {
         channelId: ID,
         permissions: Permission[],
     ): Promise<boolean> {
-        const permissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
-        for (const permission of permissions) {
-            if (permissionsOnChannel.includes(permission)) {
-                return true;
-            }
-        }
-        return false;
+        const mergedPermissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
+        return permissions.some(p => mergedPermissionsOnChannel.includes(p));
     }
 
     private async activeUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
+        // TODO channelrole
         const permissionsRequired = getChannelPermissions([role]);
         for (const channelPermissions of permissionsRequired) {
             const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
@@ -194,13 +191,8 @@ export class RoleService {
         channelId: ID,
         permissions: Permission[],
     ): Promise<boolean> {
-        const permissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
-        for (const permission of permissions) {
-            if (!permissionsOnChannel.includes(permission)) {
-                return false;
-            }
-        }
-        return true;
+        const mergedPermissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
+        return permissions.every(p => mergedPermissionsOnChannel.includes(p));
     }
 
     private async getActiveUserPermissionsOnChannel(
@@ -208,30 +200,19 @@ export class RoleService {
         channelId: ID,
     ): Promise<Permission[]> {
         const { activeUserId } = ctx;
-        if (activeUserId == null) {
-            return [];
-        }
+        if (!activeUserId) return [];
+
         // For apps with many channels, this is a performance bottleneck as it will be called
         // for each channel in certain code paths such as the GetActiveAdministrator query in the
         // admin ui. Caching the result prevents unbounded quadratic slowdown.
         const userChannels = await this.requestContextCache.get(
             ctx,
             `RoleService.getActiveUserPermissionsOnChannel.user(${activeUserId})`,
-            async () => {
-                const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
-                    relations: ['roles', 'roles.channels'],
-                });
-                return this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
-                    user,
-                );
-            },
+            async () => this.channelRoleService.getMergedPermissionsPerChannel(activeUserId),
         );
 
         const channel = userChannels.find(c => idsAreEqual(c.id, channelId));
-        if (!channel) {
-            return [];
-        }
-        return channel.permissions;
+        return channel?.permissions ?? [];
     }
 
     async create(ctx: RequestContext, input: CreateRoleInput): Promise<Role> {
@@ -345,6 +326,7 @@ export class RoleService {
         targetChannels: Channel[],
         permissions: Permission[],
     ) {
+        // TODO channelrole
         const permissionsRequired = getChannelPermissions([
             new Role({
                 permissions: unique([Permission.Authenticated, ...permissions]),

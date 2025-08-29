@@ -3,7 +3,6 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { Role } from '../../../entity/role/role.entity';
-import { User } from '../../../entity/user/user.entity';
 
 export interface UserChannelPermissions {
     id: ID;
@@ -13,16 +12,9 @@ export interface UserChannelPermissions {
 }
 
 /**
- * Returns an array of Channels and permissions on those Channels for the given User.
- * @deprecated See `RolePermissionResolverStrategy`
- */
-export function getUserChannelsPermissions(user: User): UserChannelPermissions[] {
-    return getChannelPermissions(user.roles);
-}
-
-/**
  * @description
  * Returns an array of Channels and permissions on those Channels for the given Roles.
+ * // TODO REMOVE AFTER USAGE GETS REMOVED?
  */
 export function getChannelPermissions(roles: Role[]): UserChannelPermissions[] {
     const channelsMap: { [code: string]: UserChannelPermissions } = {};

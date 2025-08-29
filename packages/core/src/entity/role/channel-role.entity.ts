@@ -1,13 +1,13 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 
-import { HasCustomFields } from '../../../config/index';
-import { VendureEntity } from '../../../entity/base/base.entity';
-import { Channel } from '../../../entity/channel/channel.entity';
-import { CustomChannelRoleFields } from '../../../entity/custom-entity-fields';
-import { EntityId } from '../../../entity/index';
-import { Role } from '../../../entity/role/role.entity';
-import { User } from '../../../entity/user/user.entity';
+import { HasCustomFields } from '../../config/index';
+import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
+import { CustomChannelRoleFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
+import { Role } from '../role/role.entity';
+import { User } from '../user/user.entity';
 
 /**
  * @description

@@ -19,7 +19,6 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
-import { RolePermissionResolverStrategy } from './auth/role-permission-resolver-strategy';
 import { VerificationTokenStrategy } from './auth/verification-token-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
@@ -512,20 +511,6 @@ export interface AuthOptions {
      * @since 3.2.0
      */
     verificationTokenStrategy?: VerificationTokenStrategy;
-    /**
-     * @description
-     * Allows you to customize the way permissions resolve for your users.
-     * By default, it uses the {@link DefaultRolePermissionResolverStrategy}, which means
-     * users can have multiple roles where each role defines both (important!) the permissions AND affected channels.
-     *
-     * You might want to replace the default logic with the {@link ChannelRolePermissionResolverStrategy}
-     * if you're building a marketplace where you'd like to share roles between users, without them being
-     * able to see each others channels. See {@link ChannelRolePlugin} for a more detailed description.
-     *
-     * @since TODO
-     * @default DefaultRolePermissionResolverStrategy
-     */
-    rolePermissionResolverStrategy?: RolePermissionResolverStrategy;
 }
 
 /**

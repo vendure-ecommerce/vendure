@@ -37,6 +37,7 @@ import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
+import { ChannelRoleService } from '../../../service/services/channel-role.service';
 import { CustomerService } from '../../../service/services/customer.service';
 import { HistoryService } from '../../../service/services/history.service';
 import { UserService } from '../../../service/services/user.service';
@@ -54,10 +55,11 @@ export class ShopAuthResolver extends BaseAuthResolver {
         userService: UserService,
         administratorService: AdministratorService,
         configService: ConfigService,
+        channelRoleService: ChannelRoleService,
         protected customerService: CustomerService,
         protected historyService: HistoryService,
     ) {
-        super(authService, userService, administratorService, configService);
+        super(authService, userService, administratorService, configService, channelRoleService);
     }
 
     @Transaction()

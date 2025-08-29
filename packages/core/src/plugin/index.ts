@@ -1,5 +1,3 @@
-export * from './channel-role-plugin/channel-role.plugin';
-export * from './channel-role-plugin/config/channel-role-permission-resolver-strategy';
 export * from './default-cache-plugin/default-cache-plugin';
 export * from './default-cache-plugin/sql-cache-strategy';
 export * from './default-job-queue-plugin/default-job-queue-plugin';
@@ -15,4 +13,3 @@ export * from './redis-cache-plugin/redis-cache-plugin';
 export * from './redis-cache-plugin/redis-cache-strategy';
 export * from './redis-cache-plugin/types';
 export * from './vendure-plugin';
-

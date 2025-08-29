@@ -13,6 +13,7 @@ import { ConfigService } from '../../../config/config.service';
 import { CachedSession, CachedSessionUser } from '../../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { User } from '../../../entity/user/user.entity';
+import { ChannelRoleService } from '../../services/channel-role.service';
 import { ChannelService } from '../../services/channel.service';
 
 /**
@@ -26,6 +27,7 @@ export class RequestContextService {
     /** @internal */
     constructor(
         private channelService: ChannelService,
+        private channelRoleService: ChannelRoleService,
         private configService: ConfigService,
     ) {}
 
@@ -58,9 +60,9 @@ export class RequestContextService {
         let session: CachedSession | undefined;
         if (user) {
             const channelPermissions = user.roles
-                ? await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
-                      user,
-                  )
+                ? // TODO user might not exist in the DB, this might lead to different behavior if previously
+                  // a user with manual roles got constructed? Check it out
+                  await this.channelRoleService.getMergedPermissionsPerChannel(user.id)
                 : [];
             session = {
                 user: {

@@ -19,7 +19,6 @@ import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-previe
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { DefaultPasswordValidationStrategy } from './auth/default-password-validation-strategy';
-import { DefaultRolePermissionResolverStrategy } from './auth/default-role-permission-resolver-strategy';
 import { DefaultVerificationTokenStrategy } from './auth/default-verification-token-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
@@ -118,7 +117,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
-        rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,

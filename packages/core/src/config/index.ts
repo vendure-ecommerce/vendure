@@ -6,12 +6,10 @@ export * from './asset-storage-strategy/asset-storage-strategy';
 export * from './auth/authentication-strategy';
 export * from './auth/bcrypt-password-hashing-strategy';
 export * from './auth/default-password-validation-strategy';
-export * from './auth/default-role-permission-resolver-strategy';
 export * from './auth/default-verification-token-strategy';
 export * from './auth/native-authentication-strategy';
 export * from './auth/password-hashing-strategy';
 export * from './auth/password-validation-strategy';
-export * from './auth/role-permission-resolver-strategy';
 export * from './auth/verification-token-strategy';
 export * from './catalog/collection-filter';
 export * from './catalog/default-collection-filters';
@@ -101,4 +99,3 @@ export * from './tax/default-tax-zone-strategy';
 export * from './tax/tax-line-calculation-strategy';
 export * from './tax/tax-zone-strategy';
 export * from './vendure-config';
-

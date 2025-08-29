@@ -21,6 +21,7 @@ import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
 
+import { ChannelRoleService } from './channel-role.service';
 import { OrderService } from './order.service';
 
 /**
@@ -43,6 +44,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         private orderService: OrderService,
         private jobQueueService: JobQueueService,
         private requestContextService: RequestContextService,
+        private channelRoleService: ChannelRoleService,
     ) {
         this.sessionCacheStrategy = this.configService.authOptions.sessionCacheStrategy;
 
@@ -196,10 +198,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 id: user.id,
                 identifier: user.identifier,
                 verified: user.verified,
-                channelPermissions:
-                    await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
-                        user,
-                    ),
+                channelPermissions: await this.channelRoleService.getMergedPermissionsPerChannel(user.id),
             };
         }
         return serializedSession;
