@@ -265,8 +265,8 @@ export const config: VendureConfig = {
   plugins: [
     // ... other plugins
     CmsPlugin.init({
-      cmsApiKey: process.env.STORYBLOK_API_KEY,
-      storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
+      cmsApiKey: process.env.CMS_API_KEY,
+      cmsEndpointID: process.env.CMS_ENDPOINT_ID,
     }),
   ],
 };
@@ -274,7 +274,9 @@ export const config: VendureConfig = {
 
 Your `.env` file should contain the corresponding values:
 
+make sure you adapt this to your CMS provider
+
 ```env
-STORYBLOK_API_KEY="your_storyblok_personal_access_token"
-STORYBLOK_SPACE_ID="your_storyblok_space_id"
+CMS_API_KEY="your_cms_api_key"
+CMS_ENDPOINT_ID="your_cms_endpoint_id"
 ```
