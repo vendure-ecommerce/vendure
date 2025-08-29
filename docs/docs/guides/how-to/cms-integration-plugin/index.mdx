@@ -1,0 +1,282 @@
+---
+title: "Building a CMS Integration Plugin"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
+A CMS integration plugin allows you to automatically synchronize your Vendure product catalog with an external Content Management System.
+
+This enables you to maintain a unified content strategy across your e-commerce platform and marketing channels.
+
+This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are desinged to be CMS-agnostic.
+
+This guide will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
+
+## Working Example Repository
+
+:::info
+The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin).
+:::
+
+## Prerequisites
+
+- Node.js 20+ with npm package manager
+- An existing Vendure project created with the [Vendure create command](/guides/getting-started/installation/)
+- An access key to a CMS platform that provides an API
+
+## Core Concepts
+
+This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure concepts:
+
+- **[EventBus](/guides/developer-guide/events/)**: Provides real-time notifications when entities are created, updated, or deleted.
+- **[Job Queues](/guides/developer-guide/job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
+- **[Plugin API](/guides/developer-guide/plugins/)**: The foundation for extending Vendure with custom capabilities.
+
+## Plugin Structure and Types
+
+We start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](guides/developer-guide/the-service-layer/), and the configuration types.
+
+### Plugin Definition
+
+The `CmsPlugin` class registers the necessary [services](guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
+
+```ts title="src/plugins/cms/cms.plugin.ts"
+import { VendurePlugin, PluginCommonModule } from "@vendure/core";
+import { CmsSyncService } from "./services/cms-sync.service";
+import { StoryblokService } from "./services/storyblok.service";
+// ...
+
+@VendurePlugin({
+  imports: [PluginCommonModule],
+  providers: [
+    { provide: CMS_PLUGIN_OPTIONS, useFactory: () => CmsPlugin.options },
+    CmsSyncService,
+    StoryblokService, // The service for the specific CMS platform
+  ],
+  // ...
+})
+export class CmsPlugin {
+  static options: PluginInitOptions;
+
+  static init(options: PluginInitOptions): Type<CmsPlugin> {
+    this.options = options;
+    return CmsPlugin;
+  }
+}
+```
+
+### Configuration Types
+
+The plugin's configuration options are defined in a `types.ts` file. These options will be passed to the plugin from your `vendure-config.ts`.
+
+```ts title="src/plugins/cms/types.ts"
+export interface PluginInitOptions {
+  cmsApiKey?: string;
+  storyblokSpaceId?: string; // Storyblok-specific option
+  retryAttempts?: number;
+  retryDelay?: number;
+}
+
+export interface SyncJobData {
+  entityType: 'Product' | 'ProductVariant' | 'Collection';
+  entityId: ID;
+  operationType: 'create' | 'update' | 'delete';
+  timestamp: string;
+  retryCount: number;
+}
+```
+
+## Event-Driven Synchronization
+
+The plugin uses Vendure's [EventBus](/guides/developer-guide/events/) to capture changes in real-time.
+
+In the [onModuleInit](/guides/developer-guide/events/#subscribing-to-events) lifecycle hook, we create job queues and subscribe to entity events.
+
+### Creating Job Queues and Subscribing to Events
+
+When an event is detected, we add a [new job to the appropriate queue](guides/developer-guide/worker-job-queue/).
+
+```ts title="src/plugins/cms/cms.plugin.ts"
+export class CmsPlugin implements OnModuleInit {
+  private productSyncQueue: JobQueue<SyncJobData>;
+  // ... other queues
+
+  constructor(
+    private eventBus: EventBus,
+    private jobQueueService: JobQueueService,
+    private cmsSyncService: CmsSyncService,
+  ) {}
+
+  async onModuleInit() {
+    // Create a job queue for product synchronization
+    this.productSyncQueue = await this.jobQueueService.createQueue({
+      name: "cms-product-sync",
+      process: async (job) => {
+        return this.cmsSyncService.syncProductToCms(job.data);
+      },
+    });
+
+    // Listen for Product events
+    this.eventBus.ofType(ProductEvent).subscribe(async (event) => {
+      const syncData = this.extractSyncData(event);
+      await this.productSyncQueue.add(syncData);
+    });
+
+    // Similar listeners for ProductVariantEvent and CollectionEvent...
+  }
+  // ...
+}
+```
+
+## Implementing the Sync Logic
+
+The sync logic is split into two services: a generic service to fetch data, and a specific service to communicate with the CMS.
+
+### The Generic Sync Service
+
+`CmsSyncService` acts as an intermediary. The job queue processor calls this service, which is responsible for fetching the complete entity data from the database. It then calls a mock `CmsService` to perform the actual sync.
+
+:::tip
+Separating the services to one that orchestrates the sync logic and a service that makes calls to the CMS allows for better testability and maintainability.
+:::
+
+```ts title="src/plugins/cms/services/cms-sync.service.ts"
+@Injectable()
+export class CmsSyncService {
+  constructor(
+    private connection: TransactionalConnection,
+    private cmsService: CmsService, // Injected here
+  ) {}
+
+  async syncProductToCms(jobData: SyncJobData): Promise<any> {
+    const { entityId, operationType } = jobData;
+    const product = await this.connection.getRepository(Product).findOne({ /* ... */ });
+
+    if (product) {
+        // Add your own cms services here
+      return this.cmsService.syncProduct({ product, operationType });
+    }
+  }
+  // implement syncProductVariant, Collection and etc...
+  // ...
+}
+```
+
+
+<Tabs>
+<TabItem value="storyblok" label="Storyblok">
+### The Storyblok Service
+
+`StoryblokService` contains all logic specific to the Storyblok API. Its responsibilities include data transformation, making authenticated API calls, handling rate-limiting, and ensuring the required content types exist on startup.
+
+```ts title="src/plugins/cms/services/storyblok.service.ts"
+@Injectable()
+export class StoryblokService implements OnApplicationBootstrap {
+  private readonly storyblokBaseUrl = "https://mapi.storyblok.com/v1";
+
+  constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+
+  async onApplicationBootstrap() {
+    this.ensureStoryContentTypesExists();
+  }
+
+  async syncProduct({ product, operationType }) {
+    switch (operationType) {
+      case "create": await this.createStoryFromProduct(product); break;
+      case "update": await this.updateStoryFromProduct(product); break;
+      case "delete": await this.deleteStoryFromProduct(product); break;
+    }
+  }
+
+  // implement syncProductVariant, Collection and etc...
+  // ...
+
+  private async makeStoryblokRequest({ method, endpoint, data }) {
+    await this.enforceRateLimit();
+    const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
+
+    // make call using fetch or use cms specific SDKs
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.options.storyblokToken}`,
+      },
+      body: JSON.stringify(data),
+    });
+    // ...
+  }
+  // ...
+}
+```
+</TabItem>
+<TabItem value="more-soon" label="More guides coming soon">
+    > [!NOTE]
+    > More guides coming soon!
+</TabItem>
+</Tabs>
+
+## Admin UI Integration
+
+To allow for manual synchronization, we can extend the Admin API with new mutations.
+
+### Extending the GraphQL API
+
+```ts title="src/plugins/cms/api/api-extensions.ts"
+export const adminApiExtensions = gql`
+  extend type Mutation {
+    syncProductToCms(productId: ID!): SyncResponse!
+    syncCollectionToCms(collectionId: ID!): SyncResponse!
+  }
+  // ...
+`;
+```
+
+### Implementing the Resolver
+
+The resolver for these mutations re-uses the existing `CmsSyncService` to add a job to the queue.
+
+```ts title="src/plugins/cms/api/cms-sync-admin.resolver.ts"
+@Resolver()
+export class CmsSyncAdminResolver {
+  constructor(private cmsSyncService: CmsSyncService) {}
+
+  @Mutation()
+  @Allow(Permission.UpdateCatalog)
+  async syncProductToCms(@Args() args: { productId: ID }): Promise<any> {
+    const syncData = { entityId: args.productId, operationType: 'update' };
+    return this.cmsSyncService.syncProductToCms(syncData);
+  }
+}
+```
+
+## Final Configuration
+
+Finally, add the plugin to your `vendure-config.ts` file and provide the necessary options to connect to your Storyblok space.
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { CmsPlugin } from './plugins/cms/cms.plugin';
+
+export const config: VendureConfig = {
+  // ... other config
+  plugins: [
+    // ... other plugins
+    CmsPlugin.init({
+      cmsApiKey: process.env.CMS_API_KEY,
+      cmsEndpointID: process.env.CMS_ENDPOINT_ID,
+    }),
+  ],
+};
+```
+
+Your `.env` file should contain the corresponding values:
+
+make sure you adapt this to your CMS provider
+
+```env
+CMS_API_KEY="your_cms_api_key"
+CMS_ENDPOINT_ID="your_cms_endpoint_id"
+```
