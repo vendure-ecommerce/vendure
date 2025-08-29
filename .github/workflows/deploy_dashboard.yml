@@ -31,6 +31,7 @@ jobs:
         env:
             # VERCEL_ENV: ${{ github.ref_name == 'minor' && 'development' || github.ref_name == 'major' && 'major' || 'production' }}
             VERCEL_ENV: production
+            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -55,22 +56,22 @@ jobs:
                   echo '{"rewrites": [{"source": "/(.*)","destination": "/index.html"}]}' > ./vercel.json
 
             - name: Link folder to project
-              run: vercel link --yes --scope ${{ env.VERCEL_SCOPE }} --project=${{ env.VERCEL_PROJECT }} --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel link --yes --scope ${{ env.VERCEL_SCOPE }} --project=${{ env.VERCEL_PROJECT }} --token=$VERCEL_TOKEN
 
             - name: Pull Vercel Project Information
-              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN
 
             - name: Pull Vercel Environment Variables
               run: |
-                  vercel env pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }}
+                  vercel env pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN
                   cp .env.local packages/dashboard/.env.local
 
             - name: Build Project Artifacts
-              run: vercel build --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
+              run: vercel build --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy_vercel
-              run: vercel deploy --archive=tgz --prebuilt --scope ${{ env.VERCEL_SCOPE }}  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }} | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
+              run: vercel deploy --archive=tgz --prebuilt --scope ${{ env.VERCEL_SCOPE }}  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=$VERCEL_TOKEN | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
 
             - name: Print Vercel URL
               shell: bash

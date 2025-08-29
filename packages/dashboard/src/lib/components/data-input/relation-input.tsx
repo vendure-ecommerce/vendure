@@ -1,12 +1,11 @@
+import { DashboardFormComponent, DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { createRelationSelectorConfig, RelationSelector } from './relation-selector.js';
 
 /**
  * Single relation input component
  */
-export interface SingleRelationInputProps<T = any> {
-    value: string;
-    onChange: (value: string) => void;
+export interface SingleRelationInputProps<T = any> extends DashboardFormComponentProps {
     config: Parameters<typeof createRelationSelectorConfig<T>>[0];
     disabled?: boolean;
     className?: string;
@@ -46,9 +45,7 @@ export function SingleRelationInput<T>({
 /**
  * Multi relation input component
  */
-export interface MultiRelationInputProps<T = any> {
-    value: string[];
-    onChange: (value: string[]) => void;
+export interface MultiRelationInputProps<T = any> extends DashboardFormComponentProps {
     config: Parameters<typeof createRelationSelectorConfig<T>>[0];
     disabled?: boolean;
     className?: string;
@@ -79,6 +76,10 @@ export function MultiRelationInput<T>({
         />
     );
 }
+
+(MultiRelationInput as DashboardFormComponent).metadata = {
+    isListInput: true,
+};
 
 // Example configurations for common entities
 

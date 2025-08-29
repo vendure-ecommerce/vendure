@@ -1,4 +1,5 @@
 import { Button } from '@/vdb/components/ui/button.js';
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { useLingui } from '@/vdb/lib/trans.js';
 import {
     closestCenter,
@@ -26,9 +27,7 @@ interface ListItemWithId {
     value: any;
 }
 
-interface CustomFieldListInputProps {
-    field: ControllerRenderProps<any, any>;
-    disabled?: boolean;
+interface CustomFieldListInputProps extends DashboardFormComponentProps {
     renderInput: (index: number, inputField: ControllerRenderProps<any, any>) => React.ReactNode;
     defaultValue?: any;
 }
@@ -148,7 +147,7 @@ function generateId(): string {
 
 // Convert flat array to array with stable IDs
 function convertToItemsWithIds(values: any[], existingItems?: ListItemWithId[]): ListItemWithId[] {
-    if (!values || values.length === 0) return [];
+    if (!values || !Array.isArray(values) || values.length === 0) return [];
 
     return values.map((value, index) => {
         // Try to reuse existing ID if the value matches and index is within bounds
@@ -170,13 +169,8 @@ function convertToFlatArray(itemsWithIds: ListItemWithId[]): any[] {
     return itemsWithIds.map(item => item.value);
 }
 
-export function CustomFieldListInput({
-    field,
-    disabled,
-    renderInput,
-    defaultValue,
-    isFullWidth = false,
-}: CustomFieldListInputProps & { isFullWidth?: boolean }) {
+export const CustomFieldListInput = ({ renderInput, defaultValue, ...fieldProps }: CustomFieldListInputProps) => {
+    const { value, onChange, disabled } = fieldProps;
     const { i18n } = useLingui();
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -187,18 +181,18 @@ export function CustomFieldListInput({
 
     // Keep track of items with stable IDs
     const [itemsWithIds, setItemsWithIds] = useState<ListItemWithId[]>(() =>
-        convertToItemsWithIds(field.value || []),
+        convertToItemsWithIds(value || []),
     );
 
     // Update items when field value changes externally (e.g., form reset, initial load)
     useEffect(() => {
-        const newItems = convertToItemsWithIds(field.value || [], itemsWithIds);
+        const newItems = convertToItemsWithIds(value || [], itemsWithIds);
         if (
             JSON.stringify(convertToFlatArray(newItems)) !== JSON.stringify(convertToFlatArray(itemsWithIds))
         ) {
             setItemsWithIds(newItems);
         }
-    }, [field.value, itemsWithIds]);
+    }, [value, itemsWithIds]);
 
     const itemIds = useMemo(() => itemsWithIds.map(item => item._id), [itemsWithIds]);
 
@@ -209,25 +203,25 @@ export function CustomFieldListInput({
         };
         const newItemsWithIds = [...itemsWithIds, newItem];
         setItemsWithIds(newItemsWithIds);
-        field.onChange(convertToFlatArray(newItemsWithIds));
-    }, [itemsWithIds, defaultValue, field]);
+        onChange(convertToFlatArray(newItemsWithIds));
+    }, [itemsWithIds, defaultValue, onChange]);
 
     const handleRemoveItem = useCallback(
         (id: string) => {
             const newItemsWithIds = itemsWithIds.filter(item => item._id !== id);
             setItemsWithIds(newItemsWithIds);
-            field.onChange(convertToFlatArray(newItemsWithIds));
+            onChange(convertToFlatArray(newItemsWithIds));
         },
-        [itemsWithIds, field],
+        [itemsWithIds, onChange],
     );
 
     const handleItemChange = useCallback(
         (id: string, value: any) => {
             const newItemsWithIds = itemsWithIds.map(item => (item._id === id ? { ...item, value } : item));
             setItemsWithIds(newItemsWithIds);
-            field.onChange(convertToFlatArray(newItemsWithIds));
+            onChange(convertToFlatArray(newItemsWithIds));
         },
-        [itemsWithIds, field],
+        [itemsWithIds, onChange],
     );
 
     const handleDragEnd = useCallback(
@@ -240,10 +234,10 @@ export function CustomFieldListInput({
 
                 const newItemsWithIds = arrayMove(itemsWithIds, oldIndex, newIndex);
                 setItemsWithIds(newItemsWithIds);
-                field.onChange(convertToFlatArray(newItemsWithIds));
+                onChange(convertToFlatArray(newItemsWithIds));
             }
         },
-        [itemIds, itemsWithIds, field],
+        [itemIds, itemsWithIds, onChange],
     );
 
     const containerClasses = useMemo(() => {
@@ -278,8 +272,7 @@ export function CustomFieldListInput({
                                 renderInput={renderInput}
                                 onRemove={handleRemoveItem}
                                 onItemChange={handleItemChange}
-                                field={field}
-                                isFullWidth={isFullWidth}
+                                field={fieldProps}
                             />
                         ))}
                     </SortableContext>
@@ -294,4 +287,4 @@ export function CustomFieldListInput({
             )}
         </div>
     );
-}
+};

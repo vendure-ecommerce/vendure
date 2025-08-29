@@ -338,6 +338,7 @@ export function AddProductVariantDialog({
                             label={<Trans>Price</Trans>}
                             render={({ field }) => (
                                 <MoneyInput
+                                    {...field}
                                     value={Number(field.value) || 0}
                                     onChange={value => field.onChange(value.toString())}
                                     currency={activeChannel?.defaultCurrencyCode ?? 'USD'}

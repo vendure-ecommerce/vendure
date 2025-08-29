@@ -152,8 +152,7 @@ const sidebars = {
                     label: 'Custom Form Elements',
                     link: { type: 'doc', id: 'guides/extending-the-dashboard/custom-form-components/index' },
                     items: [
-                        'guides/extending-the-dashboard/custom-form-components/input-components',
-                        'guides/extending-the-dashboard/custom-form-components/display-components',
+                        'guides/extending-the-dashboard/custom-form-components/form-component-examples',
                         'guides/extending-the-dashboard/custom-form-components/relation-selectors',
                     ],
                 },
