@@ -2,9 +2,15 @@
 title: "Building a CMS Integration Plugin"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
 A CMS integration plugin allows you to automatically synchronize your Vendure product catalog with an external Content Management System. This enables you to maintain a unified content strategy across your e-commerce platform and marketing channels.
 
-This guide demonstrates how to build a production-ready CMS integration plugin using **Storyblok** as the target CMS. We will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
+This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are CMS-agnostic.
+
+We will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
 
 ## Working Example Repository
 
@@ -82,11 +88,13 @@ export interface SyncJobData {
 
 ## Event-Driven Synchronization
 
-The plugin uses Vendure's `EventBus` to capture changes in real-time. In the `onModuleInit` lifecycle hook, we create job queues and subscribe to entity events.
+The plugin uses Vendure's [EventBus](/guides/developer-guide/events/) to capture changes in real-time.
+
+In the [onModuleInit](/guides/developer-guide/events/#subscribing-to-events) lifecycle hook, we create job queues and subscribe to entity events.
 
 ### Creating Job Queues and Subscribing to Events
 
-When an event is detected, we add a new job to the appropriate queue. Using a job queue makes the process robust, as it allows for retries and ensures that API calls to the CMS happen asynchronously.
+When an event is detected, we add a [new job to the appropriate queue](guides/developer-guide/worker-job-queue/).
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 export class CmsPlugin implements OnModuleInit {
@@ -126,14 +134,18 @@ The sync logic is split into two services: a generic service to fetch data, and 
 
 ### The Generic Sync Service
 
-`CmsSyncService` acts as an intermediary. The job queue processor calls this service, which is responsible for fetching the complete entity data from the database. It then calls the `StoryblokService` to perform the actual sync.
+`CmsSyncService` acts as an intermediary. The job queue processor calls this service, which is responsible for fetching the complete entity data from the database. It then calls a mock `CmsService` to perform the actual sync.
+
+:::tip
+Separating the services to one that orchestrates the sync logic and a service that makes calls to the CMS allows for better testability and maintainability.
+:::
 
 ```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()
 export class CmsSyncService {
   constructor(
     private connection: TransactionalConnection,
-    private storyblokService: StoryblokService, // Injected here
+    private cmsService: CmsService, // Injected here
   ) {}
 
   async syncProductToCms(jobData: SyncJobData): Promise<any> {
@@ -141,13 +153,18 @@ export class CmsSyncService {
     const product = await this.connection.getRepository(Product).findOne({ /* ... */ });
 
     if (product) {
-      return this.storyblokService.syncProduct({ product, operationType });
+        // Add your own cms services here
+      return this.cmsService.syncProduct({ product, operationType });
     }
   }
+  // implement syncProductVariant, Collection and etc...
   // ...
 }
 ```
 
+
+<Tabs>
+<TabItem value="storyblok" label="Storyblok">
 ### The Storyblok Service
 
 `StoryblokService` contains all logic specific to the Storyblok API. Its responsibilities include data transformation, making authenticated API calls, handling rate-limiting, and ensuring the required content types exist on startup.
@@ -171,6 +188,9 @@ export class StoryblokService implements OnApplicationBootstrap {
     }
   }
 
+  // implement syncProductVariant, Collection and etc...
+  // ...
+
   private async makeStoryblokRequest({ method, endpoint, data }) {
     await this.enforceRateLimit();
     const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
@@ -180,6 +200,12 @@ export class StoryblokService implements OnApplicationBootstrap {
   // ...
 }
 ```
+</TabItem>
+<TabItem value="more-soon" label="More guides coming soon">
+    > [!NOTE]
+    > More guides coming soon!
+</TabItem>
+</Tabs>
 
 ## Admin UI Integration
 
@@ -236,6 +262,7 @@ export const config: VendureConfig = {
 ```
 
 Your `.env` file should contain the corresponding values:
+
 ```env
 STORYBLOK_API_KEY="your_storyblok_personal_access_token"
 STORYBLOK_SPACE_ID="your_storyblok_space_id"
