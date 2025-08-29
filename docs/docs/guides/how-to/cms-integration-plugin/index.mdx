@@ -6,11 +6,13 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 
-A CMS integration plugin allows you to automatically synchronize your Vendure product catalog with an external Content Management System. This enables you to maintain a unified content strategy across your e-commerce platform and marketing channels.
+A CMS integration plugin allows you to automatically synchronize your Vendure product catalog with an external Content Management System.
 
-This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are CMS-agnostic.
+This enables you to maintain a unified content strategy across your e-commerce platform and marketing channels.
 
-We will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
+This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are desinged to be CMS-agnostic.
+
+This guide will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
 
 ## Working Example Repository
 
@@ -22,7 +24,7 @@ The complete source code for the plugin described in this guide can be found in 
 
 - Node.js 20+ with npm package manager
 - An existing Vendure project created with the [Vendure create command](/guides/getting-started/installation/)
-- An account with one of the supported S3-compatible storage providers
+- An access key to a CMS platform that provides an API
 
 ## Core Concepts
 
@@ -53,7 +55,7 @@ import { StoryblokService } from "./services/storyblok.service";
     CmsSyncService,
     StoryblokService, // The service for the specific CMS platform
   ],
-  adminApiExtensions: { /* ... */ },
+  // ...
 })
 export class CmsPlugin {
   static options: PluginInitOptions;
@@ -194,7 +196,16 @@ export class StoryblokService implements OnApplicationBootstrap {
   private async makeStoryblokRequest({ method, endpoint, data }) {
     await this.enforceRateLimit();
     const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
-    const response = await fetch(url, { /* ... */ });
+
+    // make call using fetch or use cms specific SDKs
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.options.storyblokToken}`,
+      },
+      body: JSON.stringify(data),
+    });
     // ...
   }
   // ...
