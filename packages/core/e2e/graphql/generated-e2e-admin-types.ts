@@ -291,6 +291,11 @@ export type AssignPromotionsToChannelInput = {
     promotionIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignRoleToChannelAdministratorInput = {
+    administratorId: Scalars['ID']['input'];
+    channelRoles: Array<ChannelRoleInput>;
+};
+
 export type AssignShippingMethodsToChannelInput = {
     channelId: Scalars['ID']['input'];
     shippingMethodIds: Array<Scalars['ID']['input']>;
@@ -315,6 +320,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -459,6 +466,11 @@ export type ChannelListOptions = {
     sort?: InputMaybe<ChannelSortParameter>;
     /** Takes n results, for use in pagination */
     take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ChannelRoleInput = {
+    channelId: Scalars['ID']['input'];
+    roleId: Scalars['ID']['input'];
 };
 
 export type ChannelSortParameter = {
@@ -747,6 +759,14 @@ export type CreateAssetInput = {
 };
 
 export type CreateAssetResult = Asset | MimeTypeError;
+
+export type CreateChannelAdministratorInput = {
+    channelRoles: Array<ChannelRoleInput>;
+    emailAddress: Scalars['String']['input'];
+    firstName: Scalars['String']['input'];
+    lastName: Scalars['String']['input'];
+    password: Scalars['String']['input'];
+};
 
 export type CreateChannelInput = {
     availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
@@ -1319,6 +1339,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1352,6 +1374,7 @@ export type CustomFields = {
     Administrator: Array<CustomFieldConfig>;
     Asset: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
+    ChannelRole: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     CustomerGroup: Array<CustomFieldConfig>;
@@ -1524,6 +1547,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1859,6 +1884,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2066,6 +2093,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2534,6 +2563,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2549,6 +2580,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2722,6 +2755,8 @@ export type Mutation = {
     assignPromotionsToChannel: Array<Promotion>;
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
+    /** Assign a Role to a ChannelAdministrator */
+    assignRoleToChannelAdministrator: Administrator;
     /** Assigns ShippingMethods to the specified Channel */
     assignShippingMethodsToChannel: Array<ShippingMethod>;
     /** Assigns StockLocations to the specified Channel */
@@ -2737,6 +2772,8 @@ export type Mutation = {
     createAssets: Array<CreateAssetResult>;
     /** Create a new Channel */
     createChannel: CreateChannelResult;
+    /** Create a new ChannelAdministrator */
+    createChannelAdministrator: Administrator;
     /** Create a new Collection */
     createCollection: Collection;
     /** Create a new Country */
@@ -2955,12 +2992,16 @@ export type Mutation = {
     unsetDraftOrderShippingAddress: Order;
     /** Update the active (currently logged-in) Administrator */
     updateActiveAdministrator: Administrator;
+    /** Update the active ChannelAdministrator */
+    updateActiveChannelAdministrator: Administrator;
     /** Update an existing Administrator */
     updateAdministrator: Administrator;
     /** Update an existing Asset */
     updateAsset: Asset;
     /** Update an existing Channel */
     updateChannel: UpdateChannelResult;
+    /** Update an existing ChannelAdministrator */
+    updateChannelAdministrator: Administrator;
     /** Update an existing Collection */
     updateCollection: Collection;
     /** Update an existing Country */
@@ -3094,6 +3135,10 @@ export type MutationAssignRoleToAdministratorArgs = {
     roleId: Scalars['ID']['input'];
 };
 
+export type MutationAssignRoleToChannelAdministratorArgs = {
+    input: AssignRoleToChannelAdministratorInput;
+};
+
 export type MutationAssignShippingMethodsToChannelArgs = {
     input: AssignShippingMethodsToChannelInput;
 };
@@ -3129,6 +3174,10 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationCreateChannelArgs = {
     input: CreateChannelInput;
+};
+
+export type MutationCreateChannelAdministratorArgs = {
+    input: CreateChannelAdministratorInput;
 };
 
 export type MutationCreateCollectionArgs = {
@@ -3588,6 +3637,10 @@ export type MutationUpdateActiveAdministratorArgs = {
     input: UpdateActiveAdministratorInput;
 };
 
+export type MutationUpdateActiveChannelAdministratorArgs = {
+    input: UpdateActiveChannelAdministratorInput;
+};
+
 export type MutationUpdateAdministratorArgs = {
     input: UpdateAdministratorInput;
 };
@@ -3598,6 +3651,10 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
+};
+
+export type MutationUpdateChannelAdministratorArgs = {
+    input: UpdateChannelAdministratorInput;
 };
 
 export type MutationUpdateCollectionArgs = {
@@ -5300,6 +5357,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5826,6 +5885,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5876,6 +5937,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6101,6 +6164,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -6130,6 +6195,13 @@ export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionErr
 
 export type UpdateActiveAdministratorInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
+    emailAddress?: InputMaybe<Scalars['String']['input']>;
+    firstName?: InputMaybe<Scalars['String']['input']>;
+    lastName?: InputMaybe<Scalars['String']['input']>;
+    password?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateActiveChannelAdministratorInput = {
     emailAddress?: InputMaybe<Scalars['String']['input']>;
     firstName?: InputMaybe<Scalars['String']['input']>;
     lastName?: InputMaybe<Scalars['String']['input']>;
@@ -6175,6 +6247,15 @@ export type UpdateAssetInput = {
     id: Scalars['ID']['input'];
     name?: InputMaybe<Scalars['String']['input']>;
     tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type UpdateChannelAdministratorInput = {
+    channelRoles?: InputMaybe<Array<ChannelRoleInput>>;
+    emailAddress?: InputMaybe<Scalars['String']['input']>;
+    firstName?: InputMaybe<Scalars['String']['input']>;
+    id: Scalars['ID']['input'];
+    lastName?: InputMaybe<Scalars['String']['input']>;
+    password?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateChannelInput = {

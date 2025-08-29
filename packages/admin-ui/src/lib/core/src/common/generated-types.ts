@@ -289,6 +289,11 @@ export type AssignPromotionsToChannelInput = {
   promotionIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignRoleToChannelAdministratorInput = {
+  administratorId: Scalars['ID']['input'];
+  channelRoles: Array<ChannelRoleInput>;
+};
+
 export type AssignShippingMethodsToChannelInput = {
   channelId: Scalars['ID']['input'];
   shippingMethodIds: Array<Scalars['ID']['input']>;
@@ -315,6 +320,8 @@ export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -459,6 +466,11 @@ export type ChannelListOptions = {
   sort?: InputMaybe<ChannelSortParameter>;
   /** Takes n results, for use in pagination */
   take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ChannelRoleInput = {
+  channelId: Scalars['ID']['input'];
+  roleId: Scalars['ID']['input'];
 };
 
 export type ChannelSortParameter = {
@@ -762,6 +774,14 @@ export type CreateAssetInput = {
 };
 
 export type CreateAssetResult = Asset | MimeTypeError;
+
+export type CreateChannelAdministratorInput = {
+  channelRoles: Array<ChannelRoleInput>;
+  emailAddress: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
 
 export type CreateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
@@ -1344,6 +1364,8 @@ export type CurrentUserChannelInput = {
 };
 
 export type CustomField = {
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -1368,6 +1390,7 @@ export type CustomFields = {
   Administrator: Array<CustomFieldConfig>;
   Asset: Array<CustomFieldConfig>;
   Channel: Array<CustomFieldConfig>;
+  ChannelRole: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
   CustomerGroup: Array<CustomFieldConfig>;
@@ -1548,6 +1571,8 @@ export type DateRange = {
  */
 export type DateTimeCustomFieldConfig = CustomField & {
   __typename?: 'DateTimeCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -1902,6 +1927,8 @@ export type FacetValueTranslationInput = {
 
 export type FloatCustomFieldConfig = CustomField & {
   __typename?: 'FloatCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2122,6 +2149,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 
 export type IntCustomFieldConfig = CustomField & {
   __typename?: 'IntCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2263,11 +2292,6 @@ export enum JobState {
   RETRYING = 'RETRYING',
   RUNNING = 'RUNNING'
 }
-
-export type KeyValueInput = {
-  key: Scalars['String']['input'];
-  value: Scalars['JSON']['input'];
-};
 
 /**
  * @description
@@ -2605,6 +2629,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 
 export type LocaleStringCustomFieldConfig = CustomField & {
   __typename?: 'LocaleStringCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2621,6 +2647,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 
 export type LocaleTextCustomFieldConfig = CustomField & {
   __typename?: 'LocaleTextCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2790,6 +2818,8 @@ export type Mutation = {
   assignPromotionsToChannel: Array<Promotion>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
+  /** Assign a Role to a ChannelAdministrator */
+  assignRoleToChannelAdministrator: Administrator;
   /** Assigns ShippingMethods to the specified Channel */
   assignShippingMethodsToChannel: Array<ShippingMethod>;
   /** Assigns StockLocations to the specified Channel */
@@ -2805,6 +2835,8 @@ export type Mutation = {
   createAssets: Array<CreateAssetResult>;
   /** Create a new Channel */
   createChannel: CreateChannelResult;
+  /** Create a new ChannelAdministrator */
+  createChannelAdministrator: Administrator;
   /** Create a new Collection */
   createCollection: Collection;
   /** Create a new Country */
@@ -2819,6 +2851,8 @@ export type Mutation = {
   createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
+  /** Create a single FacetValue */
+  createFacetValue: FacetValue;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
   /** Create existing PaymentMethod */
@@ -3010,10 +3044,6 @@ export type Mutation = {
   setDraftOrderShippingAddress: Order;
   /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
   setDraftOrderShippingMethod: SetOrderShippingMethodResult;
-  /** Set a single key-value pair (automatically scoped based on field configuration) */
-  setKeyValue: SetKeyValueResult;
-  /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-  setKeyValues: Array<SetKeyValueResult>;
   setMainNavExpanded: Scalars['Boolean']['output'];
   setOrderCustomFields?: Maybe<Order>;
   /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
@@ -3036,12 +3066,16 @@ export type Mutation = {
   unsetDraftOrderShippingAddress: Order;
   /** Update the active (currently logged-in) Administrator */
   updateActiveAdministrator: Administrator;
+  /** Update the active ChannelAdministrator */
+  updateActiveChannelAdministrator: Administrator;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
   /** Update an existing Asset */
   updateAsset: Asset;
   /** Update an existing Channel */
   updateChannel: UpdateChannelResult;
+  /** Update an existing ChannelAdministrator */
+  updateChannelAdministrator: Administrator;
   /** Update an existing Collection */
   updateCollection: Collection;
   /** Update an existing Country */
@@ -3055,6 +3089,8 @@ export type Mutation = {
   updateCustomerNote: HistoryEntry;
   /** Update an existing Facet */
   updateFacet: Facet;
+  /** Update a single FacetValue */
+  updateFacetValue: FacetValue;
   /** Update one or more FacetValues */
   updateFacetValues: Array<FacetValue>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3193,6 +3229,11 @@ export type MutationAssignRoleToAdministratorArgs = {
 };
 
 
+export type MutationAssignRoleToChannelAdministratorArgs = {
+  input: AssignRoleToChannelAdministratorInput;
+};
+
+
 export type MutationAssignShippingMethodsToChannelArgs = {
   input: AssignShippingMethodsToChannelInput;
 };
@@ -3239,6 +3280,11 @@ export type MutationCreateChannelArgs = {
 };
 
 
+export type MutationCreateChannelAdministratorArgs = {
+  input: CreateChannelAdministratorInput;
+};
+
+
 export type MutationCreateCollectionArgs = {
   input: CreateCollectionInput;
 };
@@ -3268,6 +3314,11 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
   input: CreateFacetInput;
+};
+
+
+export type MutationCreateFacetValueArgs = {
+  input: CreateFacetValueInput;
 };
 
 
@@ -3756,16 +3807,6 @@ export type MutationSetDraftOrderShippingMethodArgs = {
 };
 
 
-export type MutationSetKeyValueArgs = {
-  input: KeyValueInput;
-};
-
-
-export type MutationSetKeyValuesArgs = {
-  inputs: Array<KeyValueInput>;
-};
-
-
 export type MutationSetMainNavExpandedArgs = {
   expanded: Scalars['Boolean']['input'];
 };
@@ -3849,6 +3890,11 @@ export type MutationUpdateActiveAdministratorArgs = {
 };
 
 
+export type MutationUpdateActiveChannelAdministratorArgs = {
+  input: UpdateActiveChannelAdministratorInput;
+};
+
+
 export type MutationUpdateAdministratorArgs = {
   input: UpdateAdministratorInput;
 };
@@ -3861,6 +3907,11 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput;
+};
+
+
+export type MutationUpdateChannelAdministratorArgs = {
+  input: UpdateChannelAdministratorInput;
 };
 
 
@@ -3896,6 +3947,11 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
   input: UpdateFacetInput;
+};
+
+
+export type MutationUpdateFacetValueArgs = {
+  input: UpdateFacetValueInput;
 };
 
 
@@ -5228,13 +5284,10 @@ export type Query = {
   /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
+  facetValue?: Maybe<FacetValue>;
   facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
-  /** Get value for a specific key (automatically scoped based on field configuration) */
-  getKeyValue?: Maybe<Scalars['JSON']['output']>;
-  /** Get multiple key-value pairs (each automatically scoped) */
-  getKeyValues?: Maybe<Scalars['JSON']['output']>;
   /** Get value for a specific key (automatically scoped based on field configuration) */
   getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
   /** Get multiple key-value pairs (each automatically scoped) */
@@ -5382,6 +5435,11 @@ export type QueryFacetArgs = {
 };
 
 
+export type QueryFacetValueArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryFacetValuesArgs = {
   options?: InputMaybe<FacetValueListOptions>;
 };
@@ -5389,16 +5447,6 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
-};
-
-
-export type QueryGetKeyValueArgs = {
-  key: Scalars['String']['input'];
-};
-
-
-export type QueryGetKeyValuesArgs = {
-  keys: Array<Scalars['String']['input']>;
 };
 
 
@@ -5716,6 +5764,8 @@ export type RegionTranslation = {
 
 export type RelationCustomFieldConfig = CustomField & {
   __typename?: 'RelationCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   entity: Scalars['String']['output'];
   internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5999,13 +6049,6 @@ export type ServerConfig = {
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
 
-export type SetKeyValueResult = {
-  __typename?: 'SetKeyValueResult';
-  error?: Maybe<Scalars['String']['output']>;
-  key: Scalars['String']['output'];
-  result: Scalars['Boolean']['output'];
-};
-
 export type SetOrderCustomerInput = {
   customerId: Scalars['ID']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
@@ -6264,6 +6307,8 @@ export enum StockMovementType {
 
 export type StringCustomFieldConfig = CustomField & {
   __typename?: 'StringCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -6317,6 +6362,8 @@ export type StringStructFieldConfig = StructField & {
 
 export type StructCustomFieldConfig = CustomField & {
   __typename?: 'StructCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   fields: Array<StructFieldConfig>;
   internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6548,6 +6595,8 @@ export type TestShippingMethodResult = {
 
 export type TextCustomFieldConfig = CustomField & {
   __typename?: 'TextCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -6594,6 +6643,13 @@ export type UpdateActiveAdministratorInput = {
   password?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateActiveChannelAdministratorInput = {
+  emailAddress?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
 /**
  * Input used to update an Address.
  *
@@ -6633,6 +6689,15 @@ export type UpdateAssetInput = {
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type UpdateChannelAdministratorInput = {
+  channelRoles?: InputMaybe<Array<ChannelRoleInput>>;
+  emailAddress?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateChannelInput = {
