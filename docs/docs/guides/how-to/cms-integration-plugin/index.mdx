@@ -6,15 +6,21 @@ A CMS integration plugin allows you to automatically synchronize your Vendure pr
 
 This guide demonstrates how to build a production-ready CMS integration plugin using **Storyblok** as the target CMS. We will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
 
-## Working Example
+## Working Example Repository
 
 :::info
 The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin).
 :::
 
+## Prerequisites
+
+- Node.js 20+ with npm package manager
+- An existing Vendure project created with the [Vendure create command](/guides/getting-started/installation/)
+- An account with one of the supported S3-compatible storage providers
+
 ## Core Concepts
 
-This plugin leverages several key Vendure concepts:
+This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure concepts:
 
 - **[EventBus](/guides/developer-guide/events/)**: Provides real-time notifications when entities are created, updated, or deleted.
 - **[Job Queues](/guides/developer-guide/job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
@@ -22,11 +28,11 @@ This plugin leverages several key Vendure concepts:
 
 ## Plugin Structure and Types
 
-We start by defining the main plugin class, its providers, and the configuration types.
+We start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](guides/developer-guide/the-service-layer/), and the configuration types.
 
 ### Plugin Definition
 
-The `CmsPlugin` class registers the necessary providers (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
+The `CmsPlugin` class registers the necessary [services](guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 import { VendurePlugin, PluginCommonModule } from "@vendure/core";
