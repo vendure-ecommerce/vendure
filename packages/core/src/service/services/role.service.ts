@@ -35,7 +35,6 @@ import { Role } from '../../entity/role/role.entity';
 import { EventBus } from '../../event-bus';
 import { RoleEvent } from '../../event-bus/events/role-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelRoleService } from './channel-role.service';
@@ -166,19 +165,16 @@ export class RoleService {
         return permissions.some(p => mergedPermissionsOnChannel.includes(p));
     }
 
+    /**
+     * This function can get expensive since it might check every returned Role,
+     * so make sure we reuse requestcontext level caching instead fetching from the DB every time.
+     */
     private async activeUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
-        // TODO channelrole
-        const permissionsRequired = getChannelPermissions([role]);
-        for (const channelPermissions of permissionsRequired) {
-            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
-            if (!activeUserHasRequiredPermissions) {
-                return false;
-            }
+        for (const channel of role.channels) {
+            const canRead = await this.userHasAllPermissionsOnChannel(ctx, channel.id, role.permissions);
+            if (!canRead) return false;
         }
+
         return true;
     }
 
@@ -224,7 +220,7 @@ export class RoleService {
         } else {
             targetChannels = [ctx.channel];
         }
-        await this.checkActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
+        await this.assertActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
         const role = await this.createRoleForChannels(ctx, input, targetChannels);
         await this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
         return role;
@@ -243,7 +239,7 @@ export class RoleService {
             ? await this.getPermittedChannels(ctx, input.channelIds)
             : undefined;
         if (input.permissions) {
-            await this.checkActiveUserHasSufficientPermissions(
+            await this.assertActiveUserHasSufficientPermissions(
                 ctx,
                 targetChannels ?? role.channels,
                 input.permissions,
@@ -317,31 +313,22 @@ export class RoleService {
 
     /**
      * @description
-     * Checks that the active User has sufficient Permissions on the target Channels to create
+     * Asserts that the active User has sufficient Permissions on the target Channels to create
      * a Role with the given Permissions. The rule is that an Administrator may only grant
      * Permissions that they themselves already possess.
      */
-    private async checkActiveUserHasSufficientPermissions(
+    private async assertActiveUserHasSufficientPermissions(
         ctx: RequestContext,
         targetChannels: Channel[],
         permissions: Permission[],
     ) {
-        // TODO channelrole
-        const permissionsRequired = getChannelPermissions([
-            new Role({
-                permissions: unique([Permission.Authenticated, ...permissions]),
-                channels: targetChannels,
-            }),
-        ]);
-        for (const channelPermissions of permissionsRequired) {
-            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
-            if (!activeUserHasRequiredPermissions) {
+        for (const channel of targetChannels) {
+            const isPermitted = await this.userHasAllPermissionsOnChannel(ctx, channel.id, [
+                Permission.Authenticated,
+                ...permissions,
+            ]);
+            if (!isPermitted)
                 throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
-            }
         }
     }
 
