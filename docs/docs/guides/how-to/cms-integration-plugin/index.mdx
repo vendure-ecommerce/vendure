@@ -1,10 +1,9 @@
 ---
-title: "Building a CMS Integration Plugin"
+title: 'Building a CMS Integration Plugin'
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-
 
 A CMS integration plugin allows you to automatically synchronize your Vendure product catalog with an external Content Management System.
 
@@ -17,7 +16,7 @@ This guide will walk through a complete implementation that automatically syncs 
 ## Working Example Repository
 
 :::info
-The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin).
+The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin).
 :::
 
 ## Prerequisites
@@ -43,27 +42,27 @@ We start by defining the main [plugin](/guides/developer-guide/plugins/) class, 
 The `CmsPlugin` class registers the necessary [services](guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
-import { VendurePlugin, PluginCommonModule } from "@vendure/core";
-import { CmsSyncService } from "./services/cms-sync.service";
-import { StoryblokService } from "./services/storyblok.service";
+import { VendurePlugin, PluginCommonModule } from '@vendure/core';
+import { CmsSyncService } from './services/cms-sync.service';
+import { StoryblokService } from './services/storyblok.service';
 // ...
 
 @VendurePlugin({
-  imports: [PluginCommonModule],
-  providers: [
-    { provide: CMS_PLUGIN_OPTIONS, useFactory: () => CmsPlugin.options },
-    CmsSyncService,
-    StoryblokService, // The service for the specific CMS platform
-  ],
-  // ...
+    imports: [PluginCommonModule],
+    providers: [
+        { provide: CMS_PLUGIN_OPTIONS, useFactory: () => CmsPlugin.options },
+        CmsSyncService,
+        StoryblokService, // The service for the specific CMS platform
+    ],
+    // ...
 })
 export class CmsPlugin {
-  static options: PluginInitOptions;
+    static options: PluginInitOptions;
 
-  static init(options: PluginInitOptions): Type<CmsPlugin> {
-    this.options = options;
-    return CmsPlugin;
-  }
+    static init(options: PluginInitOptions): Type<CmsPlugin> {
+        this.options = options;
+        return CmsPlugin;
+    }
 }
 ```
 
@@ -73,18 +72,18 @@ The plugin's configuration options are defined in a `types.ts` file. These optio
 
 ```ts title="src/plugins/cms/types.ts"
 export interface PluginInitOptions {
-  cmsApiKey?: string;
-  storyblokSpaceId?: string; // Storyblok-specific option
-  retryAttempts?: number;
-  retryDelay?: number;
+    cmsApiKey?: string;
+    storyblokSpaceId?: string; // Storyblok-specific option
+    retryAttempts?: number;
+    retryDelay?: number;
 }
 
 export interface SyncJobData {
-  entityType: 'Product' | 'ProductVariant' | 'Collection';
-  entityId: ID;
-  operationType: 'create' | 'update' | 'delete';
-  timestamp: string;
-  retryCount: number;
+    entityType: 'Product' | 'ProductVariant' | 'Collection';
+    entityId: ID;
+    operationType: 'create' | 'update' | 'delete';
+    timestamp: string;
+    retryCount: number;
 }
 ```
 
@@ -100,33 +99,33 @@ When an event is detected, we add a [new job to the appropriate queue](guides/de
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 export class CmsPlugin implements OnModuleInit {
-  private productSyncQueue: JobQueue<SyncJobData>;
-  // ... other queues
+    private productSyncQueue: JobQueue<SyncJobData>;
+    // ... other queues
 
-  constructor(
-    private eventBus: EventBus,
-    private jobQueueService: JobQueueService,
-    private cmsSyncService: CmsSyncService,
-  ) {}
+    constructor(
+        private eventBus: EventBus,
+        private jobQueueService: JobQueueService,
+        private cmsSyncService: CmsSyncService,
+    ) {}
 
-  async onModuleInit() {
-    // Create a job queue for product synchronization
-    this.productSyncQueue = await this.jobQueueService.createQueue({
-      name: "cms-product-sync",
-      process: async (job) => {
-        return this.cmsSyncService.syncProductToCms(job.data);
-      },
-    });
+    async onModuleInit() {
+        // Create a job queue for product synchronization
+        this.productSyncQueue = await this.jobQueueService.createQueue({
+            name: 'cms-product-sync',
+            process: async job => {
+                return this.cmsSyncService.syncProductToCms(job.data);
+            },
+        });
 
-    // Listen for Product events
-    this.eventBus.ofType(ProductEvent).subscribe(async (event) => {
-      const syncData = this.extractSyncData(event);
-      await this.productSyncQueue.add(syncData);
-    });
+        // Listen for Product events
+        this.eventBus.ofType(ProductEvent).subscribe(async event => {
+            const syncData = this.extractSyncData(event);
+            await this.productSyncQueue.add(syncData);
+        });
 
-    // Similar listeners for ProductVariantEvent and CollectionEvent...
-  }
-  // ...
+        // Similar listeners for ProductVariantEvent and CollectionEvent...
+    }
+    // ...
 }
 ```
 
@@ -145,32 +144,32 @@ Separating the services to one that orchestrates the sync logic and a service th
 ```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()
 export class CmsSyncService {
-  constructor(
-    private connection: TransactionalConnection,
-    private cmsService: CmsService, // Injected here
-  ) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private cmsService: CmsService, // Injected here
+    ) {}
 
-  async syncProductToCms(jobData: SyncJobData): Promise<any> {
-    const { entityId, operationType } = jobData;
-    const product = await this.connection.getRepository(Product).findOne({ /* ... */ });
+    async syncProductToCms(jobData: SyncJobData): Promise<any> {
+        const { entityId, operationType } = jobData;
+        const product = await this.connection.getRepository(Product).findOne({
+            /* ... */
+        });
 
-    if (product) {
-        // Add your own cms services here
-      return this.cmsService.syncProduct({ product, operationType });
+        if (product) {
+            // Add your own cms services here
+            return this.cmsService.syncProduct({ product, operationType });
+        }
     }
-  }
-  // implement syncProductVariant, Collection and etc...
-  // ...
+    // implement syncProductVariant, Collection and etc...
+    // ...
 
-  // this method is used to get the default language code for the default channel
+    // this method is used to get the default language code for the default channel
     private async getDefaultLanguageCode(): Promise<LanguageCode> {
-      const defaultChannel = await this.channelService.getDefaultChannel();
-      return defaultChannel.defaultLanguageCode;
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        return defaultChannel.defaultLanguageCode;
     }
-
 }
 ```
-
 
 ### Platform specific setup
 
@@ -211,98 +210,104 @@ STORYBLOK_SPACE_ID=your_space_id
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
 @Injectable()
 export class StoryblokService implements OnApplicationBootstrap {
-  // Storyblok Management API base URL for all requests
-  private readonly storyblokBaseUrl = "https://mapi.storyblok.com/v1";
-  private readonly componentsPath = "components";
-  private isInitialized = false;
-  private lastApiCallTime = 0;
-  // Rate limiting: max 5 calls per second to comply with Storyblok API limits
-  private readonly rateLimitDelay = 200;
+    // Storyblok Management API base URL for all requests
+    private readonly storyblokBaseUrl = 'https://mapi.storyblok.com/v1';
+    private readonly componentsPath = 'components';
+    private isInitialized = false;
+    private lastApiCallTime = 0;
+    // Rate limiting: max 5 calls per second to comply with Storyblok API limits
+    private readonly rateLimitDelay = 200;
 
-  // Injects plugin configuration containing Storyblok credentials
-  constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+    // Injects plugin configuration containing Storyblok credentials
+    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
-  // Called when application starts - ensures required content types exist in Storyblok
-  async onApplicationBootstrap() {
-    this.ensureStoryContentTypesExists();
-  }
-
-  // Main sync method that routes different operations to appropriate handlers
-  async syncProduct({ product, operationType }) {
-    switch (operationType) {
-      case "create": await this.createStoryFromProduct(product); break;
-      case "update": await this.updateStoryFromProduct(product); break;
-      case "delete": await this.deleteStoryFromProduct(product); break;
-    }
-  }
-
-  // implement syncProductVariant, Collection and etc...
-  // ...
-
-  // Generic method for making authenticated requests to Storyblok's Management API
-  private async makeStoryblokRequest({ method, endpoint, data }) {
-    // Enforces rate limiting to avoid hitting API limits
-    await this.enforceRateLimit();
-    const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
-
-    // Waits for content types initialization before making requests
-    if (!skipInitializationCheck) {
-      let attempts = 0;
-      while (!this.isInitialized && attempts < 100) {
-        await new Promise(res => setTimeout(res, Math.min(10 + 1.03 ** attempts, 30000)));
-        attempts++;
-      }
+    // Called when application starts - ensures required content types exist in Storyblok
+    async onApplicationBootstrap() {
+        this.ensureStoryContentTypesExists();
     }
 
-    // Makes authenticated request with proper headers
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: this.options.cmsApiKey, // Management API token
-      },
-      body: method === "POST" || method === "PUT" ? JSON.stringify(data) : undefined,
-    });
-
-    // Handles API errors by throwing descriptive error messages
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
+    // Main sync method that routes different operations to appropriate handlers
+    async syncProduct({ product, operationType }) {
+        switch (operationType) {
+            case 'create':
+                await this.createStoryFromProduct(product);
+                break;
+            case 'update':
+                await this.updateStoryFromProduct(product);
+                break;
+            case 'delete':
+                await this.deleteStoryFromProduct(product);
+                break;
+        }
     }
 
-    return method === "DELETE" ? {} : await response.json();
-  }
+    // implement syncProductVariant, Collection and etc...
+    // ...
 
-  // Ensures required content types (components) exist in Storyblok space
-  private async ensureStoryContentTypesExists() {
-    const contentCheck = await this.checkContentTypes();
+    // Generic method for making authenticated requests to Storyblok's Management API
+    private async makeStoryblokRequest({ method, endpoint, data }) {
+        // Enforces rate limiting to avoid hitting API limits
+        await this.enforceRateLimit();
+        const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
 
-    // Creates component schemas for products, variants, and collections
-    if (!contentCheck.product) {
-      await this.createContentType("product");
+        // Waits for content types initialization before making requests
+        if (!skipInitializationCheck) {
+            let attempts = 0;
+            while (!this.isInitialized && attempts < 100) {
+                await new Promise(res => setTimeout(res, Math.min(10 + 1.03 ** attempts, 30000)));
+                attempts++;
+            }
+        }
+
+        // Makes authenticated request with proper headers
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: this.options.cmsApiKey, // Management API token
+            },
+            body: method === 'POST' || method === 'PUT' ? JSON.stringify(data) : undefined,
+        });
+
+        // Handles API errors by throwing descriptive error messages
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
+        }
+
+        return method === 'DELETE' ? {} : await response.json();
     }
-    if (!contentCheck.variant) {
-      await this.createContentType("product_variant");
+
+    // Ensures required content types (components) exist in Storyblok space
+    private async ensureStoryContentTypesExists() {
+        const contentCheck = await this.checkContentTypes();
+
+        // Creates component schemas for products, variants, and collections
+        if (!contentCheck.product) {
+            await this.createContentType('product');
+        }
+        if (!contentCheck.variant) {
+            await this.createContentType('product_variant');
+        }
+        if (!contentCheck.collection) {
+            await this.createContentType('collection');
+        }
+
+        this.isInitialized = true;
     }
-    if (!contentCheck.collection) {
-      await this.createContentType("collection");
+
+    // Rate limiting implementation to comply with Storyblok API limits
+    private async enforceRateLimit(): Promise<void> {
+        const now = Date.now();
+        const timeSinceLastCall = now - this.lastApiCallTime;
+
+        if (timeSinceLastCall < this.rateLimitDelay) {
+            const waitTime = this.rateLimitDelay - timeSinceLastCall;
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+
+        this.lastApiCallTime = Date.now();
     }
-
-    this.isInitialized = true;
-  }
-
-  // Rate limiting implementation to comply with Storyblok API limits
-  private async enforceRateLimit(): Promise<void> {
-    const now = Date.now();
-    const timeSinceLastCall = now - this.lastApiCallTime;
-
-    if (timeSinceLastCall < this.rateLimitDelay) {
-      const waitTime = this.rateLimitDelay - timeSinceLastCall;
-      await new Promise(resolve => setTimeout(resolve, waitTime));
-    }
-
-    this.lastApiCallTime = Date.now();
-  }
 }
 ```
 
@@ -312,9 +317,9 @@ Update your plugin configuration to include Storyblok options:
 
 ```ts title="src/plugins/cms/types.ts"
 export interface PluginInitOptions {
-  // ... existing options
-  cmsApiKey?: string;
-  storyblokSpaceId?: string;
+    // ... existing options
+    cmsApiKey?: string;
+    storyblokSpaceId?: string;
 }
 ```
 
@@ -328,6 +333,7 @@ CmsPlugin.init({
 ```
 
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
+
 </TabItem>
 <TabItem value="Sanity" title="Sanity">
 **Sanity CMS Integration**
@@ -366,58 +372,58 @@ Create the Vendure-specific schema files in your `schemaTypes` folder:
 for example, here is a schema file for a Vendure product variant:
 
 **vendureProductVariant.ts**
+
 ```ts
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from 'sanity';
 
 export const vendureProductVariant = defineType({
-  name: 'vendureProductVariant',
-  title: 'Vendure Product Variant',
-  type: 'document',
-  fields: [
-    defineField({
-      name: 'vendureId',
-      type: 'number',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'title',
-      type: 'string',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      type: 'slug',
-      options: {source: 'title'},
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'vendureProduct',
-      type: 'reference',
-      to: [{type: 'vendureProduct'}],
-    }),
-    defineField({
-      name: 'vendureCollecitons',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'vendureCollection'}]}],
-    }),
-  ],
-})
+    name: 'vendureProductVariant',
+    title: 'Vendure Product Variant',
+    type: 'document',
+    fields: [
+        defineField({
+            name: 'vendureId',
+            type: 'number',
+            validation: rule => rule.required(),
+        }),
+        defineField({
+            name: 'title',
+            type: 'string',
+            validation: rule => rule.required(),
+        }),
+        defineField({
+            name: 'slug',
+            type: 'slug',
+            options: { source: 'title' },
+            validation: rule => rule.required(),
+        }),
+        defineField({
+            name: 'vendureProduct',
+            type: 'reference',
+            to: [{ type: 'vendureProduct' }],
+        }),
+        defineField({
+            name: 'vendureCollecitons',
+            type: 'array',
+            of: [{ type: 'reference', to: [{ type: 'vendureCollection' }] }],
+        }),
+    ],
+});
 ```
-
 
 #### 2. Register the schema types
 
 Update your `schemaTypes/index.ts` file:
 
 ```ts
-import { vendureCollection } from './vendureCollection'
-import { vendureProductType } from './vendureProductType'
-import { vendureProductVariant } from './vendureProductVariant'
+import { vendureCollection } from './vendureCollection';
+import { vendureProductType } from './vendureProductType';
+import { vendureProductVariant } from './vendureProductVariant';
 
 export const schemaTypes = [
-  vendureProductVariant,
-  // ...
-]
+    vendureProductVariant,
+    // ...
+];
 ```
 
 **The Sanity Service**
@@ -429,70 +435,76 @@ The `SanityService` contains all logic specific to the Sanity API. Unlike Storyb
 ```ts title="src/plugins/cms/services/sanity.service.ts"
 @Injectable()
 export class SanityService {
-  // Constructs the Sanity API base URL using the project ID from configuration
-  private get sanityBaseUrl(): string {
-    // the options.sanityProjectId are defined in your vendure-config.ts file.
-    return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
-  }
-
-  // Injects the plugin configuration options containing Sanity credentials
-  constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
-
-  // Main sync method that routes different operations to appropriate handlers
-  async syncProduct({ product, operationType }) {
-    switch (operationType) {
-      case "create": await this.createDocumentFromProduct(product); break;
-      case "update": await this.updateDocumentFromProduct(product); break;
-      case "delete": await this.deleteDocumentFromProduct(product); break;
-    }
-  }
-
-  // implement syncProductVariant, syncCollection...
-
-  // Generic method for making authenticated requests to Sanity's API
-  private async makeSanityRequest({ method, endpoint, data }) {
-    const url = `${this.sanityBaseUrl}/${endpoint}`;
-
-    // Makes authenticated request with proper headers
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.options.sanityApiKey}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    // Handles API errors by throwing descriptive error messages
-    if (!response.ok) {
-      throw new Error(`Sanity API error: ${response.status}`);
+    // Constructs the Sanity API base URL using the project ID from configuration
+    private get sanityBaseUrl(): string {
+        // the options.sanityProjectId are defined in your vendure-config.ts file.
+        return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
     }
 
-    return await response.json();
-  }
+    // Injects the plugin configuration options containing Sanity credentials
+    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
-  // Creates a new document in Sanity from a Vendure product
-  private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
-    // Transforms Vendure product data to Sanity document format
-    const data = this.transformProductData(product, defaultLanguageCode);
-    // Uses Sanity's mutation API to create the document
-    return this.makeSanityRequest({
-      method: "POST",
-      endpoint: `data/mutate/${this.options.sanityDataset || 'production'}`,
-      data: { mutations: [{ create: data }] },
-    });
-  }
+    // Main sync method that routes different operations to appropriate handlers
+    async syncProduct({ product, operationType }) {
+        switch (operationType) {
+            case 'create':
+                await this.createDocumentFromProduct(product);
+                break;
+            case 'update':
+                await this.updateDocumentFromProduct(product);
+                break;
+            case 'delete':
+                await this.deleteDocumentFromProduct(product);
+                break;
+        }
+    }
 
-  // Transforms Vendure product data into Sanity document structure
-  private transformProductData(product, defaultLanguageCode: LanguageCode) {
-    return {
-      _type: 'vendureProduct', // Sanity document type
-      vendureId: parseInt(product.id.toString()), // Original Vendure ID as number
-      title: product.translations[defaultLanguageCode]?.name, // Product name from first translation
-      slug: { current: product.translations[defaultLanguageCode]?.slug }, // Sanity slug format
-      // Add variant references as needed
-    };
-  }
+    // implement syncProductVariant, syncCollection...
+
+    // Generic method for making authenticated requests to Sanity's API
+    private async makeSanityRequest({ method, endpoint, data }) {
+        const url = `${this.sanityBaseUrl}/${endpoint}`;
+
+        // Makes authenticated request with proper headers
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.options.sanityApiKey}`,
+            },
+            body: JSON.stringify(data),
+        });
+
+        // Handles API errors by throwing descriptive error messages
+        if (!response.ok) {
+            throw new Error(`Sanity API error: ${response.status}`);
+        }
+
+        return await response.json();
+    }
+
+    // Creates a new document in Sanity from a Vendure product
+    private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
+        // Transforms Vendure product data to Sanity document format
+        const data = this.transformProductData(product, defaultLanguageCode);
+        // Uses Sanity's mutation API to create the document
+        return this.makeSanityRequest({
+            method: 'POST',
+            endpoint: `data/mutate/${this.options.sanityDataset || 'production'}`,
+            data: { mutations: [{ create: data }] },
+        });
+    }
+
+    // Transforms Vendure product data into Sanity document structure
+    private transformProductData(product, defaultLanguageCode: LanguageCode) {
+        return {
+            _type: 'vendureProduct', // Sanity document type
+            vendureId: parseInt(product.id.toString()), // Original Vendure ID as number
+            title: product.translations[defaultLanguageCode]?.name, // Product name from first translation
+            slug: { current: product.translations[defaultLanguageCode]?.slug }, // Sanity slug format
+            // Add variant references as needed
+        };
+    }
 }
 ```
 
@@ -502,10 +514,10 @@ Update your plugin configuration to include Sanity options:
 
 ```ts title="src/plugins/cms/types.ts"
 export interface PluginInitOptions {
-  // ... existing options
-  sanityApiKey?: string;
-  sanityProjectId?: string;
-  sanityDataset?: string;
+    // ... existing options
+    sanityApiKey?: string;
+    sanityProjectId?: string;
+    sanityDataset?: string;
 }
 ```
 
@@ -530,6 +542,7 @@ CmsPlugin.init({
 ```
 
 This setup provides a complete Sanity CMS integration that automatically syncs your Vendure catalog with structured content in Sanity Studio.
+
 </TabItem>
 <TabItem value="more-soon" label="More guides coming soon">
 :::info
@@ -561,14 +574,14 @@ The resolver for these mutations re-uses the existing `CmsSyncService` to add a 
 ```ts title="src/plugins/cms/api/cms-sync-admin.resolver.ts"
 @Resolver()
 export class CmsSyncAdminResolver {
-  constructor(private cmsSyncService: CmsSyncService) {}
+    constructor(private cmsSyncService: CmsSyncService) {}
 
-  @Mutation()
-  @Allow(Permission.UpdateCatalog)
-  async syncProductToCms(@Args() args: { productId: ID }): Promise<any> {
-    const syncData = { entityId: args.productId, operationType: 'update' };
-    return this.cmsSyncService.syncProductToCms(syncData);
-  }
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async syncProductToCms(@Args() args: { productId: ID }): Promise<any> {
+        const syncData = { entityId: args.productId, operationType: 'update' };
+        return this.cmsSyncService.syncProductToCms(syncData);
+    }
 }
 ```
 
@@ -581,14 +594,14 @@ import { VendureConfig } from '@vendure/core';
 import { CmsPlugin } from './plugins/cms/cms.plugin';
 
 export const config: VendureConfig = {
-  // ... other config
-  plugins: [
-    // ... other plugins
-    CmsPlugin.init({
-      cmsApiKey: process.env.CMS_API_KEY,
-      cmsEndpointID: process.env.CMS_ENDPOINT_ID,
-    }),
-  ],
+    // ... other config
+    plugins: [
+        // ... other plugins
+        CmsPlugin.init({
+            cmsApiKey: process.env.CMS_API_KEY,
+            cmsEndpointID: process.env.CMS_ENDPOINT_ID,
+        }),
+    ],
 };
 ```
 
