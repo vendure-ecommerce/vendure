@@ -30,7 +30,7 @@ The complete source code for the plugin described in this guide can be found in 
 This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure concepts:
 
 - **[EventBus](/guides/developer-guide/events/)**: Provides real-time notifications when entities are created, updated, or deleted.
-- **[Job Queues](/guides/developer-guide/job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
+- **[Job Queues](/guides/developer-guide/worker-job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
 - **[Plugin API](/guides/developer-guide/plugins/)**: The foundation for extending Vendure with custom capabilities.
 
 ## Plugin Structure and Types
@@ -51,11 +51,11 @@ npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
 npx vendure add -s cmsSpecifcService --selected-plugin CmsPlugin
 ```
 
-Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](guides/developer-guide/the-service-layer/), and the configuration types.
+Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](/guides/developer-guide/the-service-layer/), and the configuration types.
 
 ### Plugin Definition
 
-The `CmsPlugin` class registers the necessary [services](guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
+The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 import { VendurePlugin, PluginCommonModule } from '@vendure/core';
@@ -118,7 +118,7 @@ You can also scaffold job queue handlers using the CLI:
 npx vendure add -j CmsProductSync --selected-plugin CmsPlugin
 ```
 
-When an event is detected, we add a [new job to the appropriate queue](guides/developer-guide/worker-job-queue/).
+When an event is detected, we add a [new job to the appropriate queue](/guides/developer-guide/worker-job-queue/).
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 export class CmsPlugin implements OnModuleInit {
