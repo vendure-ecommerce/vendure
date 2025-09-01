@@ -1224,7 +1224,7 @@ describe('Custom fields', () => {
         ]);
     });
 
-    describe.only('setting custom fields directly via a service method', () => {
+    describe('setting custom fields directly via a service method', () => {
         it('OrderService.addItemToOrder warns on unknown custom field', async () => {
             const orderService = server.app.get(OrderService);
             const requestContextService = server.app.get(RequestContextService);
