@@ -35,7 +35,23 @@ This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure co
 
 ## Plugin Structure and Types
 
-We start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](guides/developer-guide/the-service-layer/), and the configuration types.
+First, let's use the Vendure CLI to scaffold the basic plugin structure:
+
+```bash
+npx vendure add -p CmsPlugin
+```
+
+This command will create the basic plugin structure. Next, we'll generate the required services:
+
+```bash
+# Generate the main sync service
+npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
+
+# Generate the CMS-specific service (replace with your CMS, e.g., StoryblokService)
+npx vendure add -s cmsSpecifcService --selected-plugin CmsPlugin
+```
+
+Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](guides/developer-guide/the-service-layer/), and the configuration types.
 
 ### Plugin Definition
 
@@ -68,7 +84,8 @@ export class CmsPlugin {
 
 ### Configuration Types
 
-The plugin's configuration options are defined in a `types.ts` file. These options will be passed to the plugin from your `vendure-config.ts`.
+The plugin's configuration options are defined in a `types.ts` file.
+Create this file in your plugin directory to define the interfaces. These options will be passed to the plugin from your `vendure-config.ts`.
 
 ```ts title="src/plugins/cms/types.ts"
 export interface PluginInitOptions {
@@ -94,6 +111,12 @@ The plugin uses Vendure's [EventBus](/guides/developer-guide/events/) to capture
 In the [onModuleInit](/guides/developer-guide/events/#subscribing-to-events) lifecycle hook, we create job queues and subscribe to entity events.
 
 ### Creating Job Queues and Subscribing to Events
+
+You can also scaffold job queue handlers using the CLI:
+
+```bash
+npx vendure add -j CmsProductSync --selected-plugin CmsPlugin
+```
 
 When an event is detected, we add a [new job to the appropriate queue](guides/developer-guide/worker-job-queue/).
 
@@ -553,7 +576,12 @@ More guides coming soon :D
 
 ## Admin UI Integration
 
-To allow for manual synchronization, we can extend the Admin API with new mutations.
+To allow for manual synchronization, we can extend the Admin API with new mutations. Let's use the CLI to generate the API extensions:
+
+```bash
+# Generate API extensions for the CMS plugin
+npx vendure add -a CmsSyncAdminResolver --selected-plugin CmsPlugin
+```
 
 ### Extending the GraphQL API
 
