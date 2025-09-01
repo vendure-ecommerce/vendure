@@ -6,7 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::info
-The complete source of the following example plugin can be found here: [example-plugins/google-auth-plugin](https://github.com/vendure-ecommerce/examples/tree/master/examples/shop-google-auth)
+The complete source of the following example plugin can be found here: [example-plugins/google-auth-plugin](https://github.com/vendure-ecommerce/examples/tree/publish/examples/shop-google-auth)
 :::
 
 **Google OAuth authentication** allows customers to sign in using their Google accounts, providing a seamless experience that eliminates the need for password-based registration.
@@ -167,7 +167,7 @@ export interface GoogleAuthPluginOptions {
   imports: [PluginCommonModule],
   configuration: (config) => {
     const options = GoogleAuthPlugin.options;
-    
+
     if (options?.googleClientId) {
       config.authOptions.shopAuthenticationStrategy.push(
         new GoogleAuthStrategy({ googleClientId: options.googleClientId })
@@ -406,7 +406,7 @@ VENDURE_API_ENDPOINT=http://localhost:3000/shop-api
 **The Google Identity Services flow works as follows:**
 
 1. **User clicks "Continue with Google"** → Google popup appears
-2. **User signs in with Google** → Google returns an ID token  
+2. **User signs in with Google** → Google returns an ID token
 3. **Frontend sends the token to Vendure** → Vendure verifies token with Google
 4. **If valid, Vendure creates/finds customer** → User is logged in
 
@@ -487,7 +487,7 @@ This means **Google users work seamlessly** with Vendure's [order management](/g
 **To test your Google OAuth integration:**
 
 1. **Start your Vendure server** with the plugin configured
-2. **Navigate to your storefront** and click "Continue with Google"  
+2. **Navigate to your storefront** and click "Continue with Google"
 3. **Complete the Google OAuth flow** when prompted
 4. **Verify customer creation** in the Vendure Admin UI
 5. **Test repeat logins** to ensure existing customers are found correctly
