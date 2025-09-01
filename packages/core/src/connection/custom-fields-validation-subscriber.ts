@@ -16,14 +16,13 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
         connection.rawConnection.subscribers.push(this);
     }
 
-    // TODO: add tests with other services
     validateCustomFields(entityName: string, entity: Partial<HasCustomFields>) {
-        const customFields = this.configService.customFields[entityName as keyof CustomFields];
         if (entity.customFields === undefined) {
             return;
         }
 
-        // Build a Set of valid custom field names for fast lookup
+        const customFields = this.configService.customFields[entityName as keyof CustomFields];
+
         const validFieldNames = new Set(customFields.map(field => field.name));
         for (const key of Object.keys(entity.customFields)) {
             if (!validFieldNames.has(key)) {
