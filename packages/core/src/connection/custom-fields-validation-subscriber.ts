@@ -35,7 +35,7 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
         return;
     }
 
-    beforeInsert(event: InsertEvent<any>): Promise<any> | void {
+    beforeInsert(event: InsertEvent<any>) {
         if (event.entity === undefined) {
             return;
         }
@@ -44,7 +44,7 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
         this.validateCustomFields(entityName, event.entity);
     }
 
-    beforeUpdate(event: UpdateEvent<any>): Promise<any> | void {
+    beforeUpdate(event: UpdateEvent<any>) {
         if (event.entity === undefined) {
             return;
         }
