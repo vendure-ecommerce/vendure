@@ -5,53 +5,22 @@ import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
 import { Logger } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { JobQueue } from '../../job-queue/job-queue';
-import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ScheduledTaskRecord } from '../../plugin/default-scheduler-plugin/scheduled-task-record.entity';
 import { SchedulerService } from '../../scheduler/scheduler.service';
-import { RequestContextService } from '../helpers/request-context/request-context.service';
 
 @Injectable()
 @Instrument()
 export class TaskService {
-    private cleanTaskLocksJobQueue: JobQueue<{ batchSize: number }>;
-
     constructor(
         private connection: TransactionalConnection,
-        private jobQueueService: JobQueueService,
-        private requestContextService: RequestContextService,
         private schedulerService: SchedulerService,
     ) {}
-
-    async onApplicationBootstrap() {
-        this.cleanTaskLocksJobQueue = await this.jobQueueService.createQueue({
-            name: 'clean-task-locks',
-            process: async job => {
-                const ctx = await this.requestContextService.create({
-                    apiType: 'admin',
-                });
-                const result = await this.cleanStaleLocks(ctx, job.data.batchSize);
-                return {
-                    batchSize: job.data.batchSize,
-                    tasksCleared: result.tasksCleared,
-                };
-            },
-        });
-    }
-
-    /**
-     * @description
-     * Triggers the clean task locks job.
-     */
-    async triggerCleanTaskLocksJob(batchSize: number) {
-        await this.cleanTaskLocksJobQueue.add({ batchSize });
-    }
 
     /**
      * @description
      * Cleans stale task locks from the database.
      */
-    private async cleanStaleLocks(ctx: RequestContext, batchSize: number) {
+    async cleanStaleLocks(ctx: RequestContext, batchSize: number) {
         const now = new Date();
         const staleTasks: ScheduledTaskRecord[] = [];
 
