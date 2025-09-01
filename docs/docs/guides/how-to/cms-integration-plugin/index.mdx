@@ -312,16 +312,20 @@ The `SanityService` contains all logic specific to the Sanity API. Unlike Storyb
 ```ts title="src/plugins/cms/services/sanity.service.ts"
 @Injectable()
 export class SanityService implements OnApplicationBootstrap {
+  // Constructs the Sanity API base URL using the project ID from configuration
   private get sanityBaseUrl(): string {
     return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
   }
 
+  // Injects the plugin configuration options containing Sanity credentials
   constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
+  // Called when the application starts - Sanity doesn't require content type setup
   async onApplicationBootstrap() {
     // No content type creation needed - handled by Studio schema
   }
 
+  // Main sync method that routes different operations to appropriate handlers
   async syncProduct({ product, operationType }) {
     switch (operationType) {
       case "create": await this.createDocumentFromProduct(product); break;
@@ -332,10 +336,13 @@ export class SanityService implements OnApplicationBootstrap {
 
   // implement syncProductVariant, syncCollection...
 
+  // Generic method for making authenticated requests to Sanity's API
   private async makeSanityRequest({ method, endpoint, data }) {
+    // Enforces rate limiting to avoid hitting API limits
     await this.enforceRateLimit();
     const url = `${this.sanityBaseUrl}/${endpoint}`;
 
+    // Makes authenticated request with proper headers
     const response = await fetch(url, {
       method,
       headers: {
@@ -345,6 +352,7 @@ export class SanityService implements OnApplicationBootstrap {
       body: JSON.stringify(data),
     });
 
+    // Handles API errors by throwing descriptive error messages
     if (!response.ok) {
       throw new Error(`Sanity API error: ${response.status}`);
     }
@@ -352,8 +360,11 @@ export class SanityService implements OnApplicationBootstrap {
     return await response.json();
   }
 
+  // Creates a new document in Sanity from a Vendure product
   private async createDocumentFromProduct(product) {
+    // Transforms Vendure product data to Sanity document format
     const data = this.transformProductData(product);
+    // Uses Sanity's mutation API to create the document
     return this.makeSanityRequest({
       method: "POST",
       endpoint: `data/mutate/${this.options.sanityDataset || 'production'}`,
@@ -361,12 +372,13 @@ export class SanityService implements OnApplicationBootstrap {
     });
   }
 
+  // Transforms Vendure product data into Sanity document structure
   private transformProductData(product) {
     return {
-      _type: 'vendureProduct',
-      vendureId: parseInt(product.id.toString()),
-      title: product.translations[0]?.name,
-      slug: { current: product.translations[0]?.slug },
+      _type: 'vendureProduct', // Sanity document type
+      vendureId: parseInt(product.id.toString()), // Original Vendure ID as number
+      title: product.translations[0]?.name, // Product name from first translation
+      slug: { current: product.translations[0]?.slug }, // Sanity slug format
       // Add variant references as needed
     };
   }
