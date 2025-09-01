@@ -161,6 +161,13 @@ export class CmsSyncService {
   }
   // implement syncProductVariant, Collection and etc...
   // ...
+
+  // this method is used to get the default language code for the default channel
+    private async getDefaultLanguageCode(): Promise<LanguageCode> {
+      const defaultChannel = await this.channelService.getDefaultChannel();
+      return defaultChannel.defaultLanguageCode;
+    }
+
 }
 ```
 
@@ -169,6 +176,34 @@ export class CmsSyncService {
 
 <Tabs>
 <TabItem value="storyblok" label="Storyblok">
+
+:::tip Working Example
+The complete source code for this Storyblok integration can be found in the [cms-integration-plugin example repository](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin).
+:::
+
+**Setting up Storyblok Space**
+
+#### 1. Create a Storyblok Account and Space
+
+1. Sign up at [storyblok.com](https://app.storyblok.com/#!/signup) if you don't have an account
+2. Create a new Space (equivalent to a project in Storyblok)
+3. Choose a suitable plan based on your needs
+
+#### 2. Get Your API Credentials
+
+1. Navigate to **Settings → Access Tokens** in your Storyblok space
+2. Create a new **Management API Token** with write permissions
+3. Note down your **Space ID** (found in Settings → General)
+
+#### 3. Configure Environment Variables
+
+Add these variables to your `.env` file:
+
+```env
+STORYBLOK_API_KEY=your_management_api_token
+STORYBLOK_SPACE_ID=your_space_id
+```
+
 **The Storyblok Service**
 
 `StoryblokService` contains all logic specific to the Storyblok API. Its responsibilities include data transformation, making authenticated API calls, handling rate-limiting, and ensuring the required content types exist on startup.
@@ -176,14 +211,23 @@ export class CmsSyncService {
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
 @Injectable()
 export class StoryblokService implements OnApplicationBootstrap {
+  // Storyblok Management API base URL for all requests
   private readonly storyblokBaseUrl = "https://mapi.storyblok.com/v1";
+  private readonly componentsPath = "components";
+  private isInitialized = false;
+  private lastApiCallTime = 0;
+  // Rate limiting: max 5 calls per second to comply with Storyblok API limits
+  private readonly rateLimitDelay = 200;
 
+  // Injects plugin configuration containing Storyblok credentials
   constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
+  // Called when application starts - ensures required content types exist in Storyblok
   async onApplicationBootstrap() {
     this.ensureStoryContentTypesExists();
   }
 
+  // Main sync method that routes different operations to appropriate handlers
   async syncProduct({ product, operationType }) {
     switch (operationType) {
       case "create": await this.createStoryFromProduct(product); break;
@@ -195,24 +239,95 @@ export class StoryblokService implements OnApplicationBootstrap {
   // implement syncProductVariant, Collection and etc...
   // ...
 
+  // Generic method for making authenticated requests to Storyblok's Management API
   private async makeStoryblokRequest({ method, endpoint, data }) {
+    // Enforces rate limiting to avoid hitting API limits
     await this.enforceRateLimit();
     const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
 
-    // make call using fetch or use cms specific SDKs
+    // Waits for content types initialization before making requests
+    if (!skipInitializationCheck) {
+      let attempts = 0;
+      while (!this.isInitialized && attempts < 100) {
+        await new Promise(res => setTimeout(res, Math.min(10 + 1.03 ** attempts, 30000)));
+        attempts++;
+      }
+    }
+
+    // Makes authenticated request with proper headers
     const response = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.options.storyblokToken}`,
+        Authorization: this.options.cmsApiKey, // Management API token
       },
-      body: JSON.stringify(data),
+      body: method === "POST" || method === "PUT" ? JSON.stringify(data) : undefined,
     });
-    // ...
+
+    // Handles API errors by throwing descriptive error messages
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
+    }
+
+    return method === "DELETE" ? {} : await response.json();
   }
-  // ...
+
+  // Ensures required content types (components) exist in Storyblok space
+  private async ensureStoryContentTypesExists() {
+    const contentCheck = await this.checkContentTypes();
+
+    // Creates component schemas for products, variants, and collections
+    if (!contentCheck.product) {
+      await this.createContentType("product");
+    }
+    if (!contentCheck.variant) {
+      await this.createContentType("product_variant");
+    }
+    if (!contentCheck.collection) {
+      await this.createContentType("collection");
+    }
+
+    this.isInitialized = true;
+  }
+
+  // Rate limiting implementation to comply with Storyblok API limits
+  private async enforceRateLimit(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastCall = now - this.lastApiCallTime;
+
+    if (timeSinceLastCall < this.rateLimitDelay) {
+      const waitTime = this.rateLimitDelay - timeSinceLastCall;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+
+    this.lastApiCallTime = Date.now();
+  }
 }
 ```
+
+**Configuration**
+
+Update your plugin configuration to include Storyblok options:
+
+```ts title="src/plugins/cms/types.ts"
+export interface PluginInitOptions {
+  // ... existing options
+  cmsApiKey?: string;
+  storyblokSpaceId?: string;
+}
+```
+
+**Final Plugin Configuration**
+
+```ts title="src/vendure-config.ts"
+CmsPlugin.init({
+  cmsApiKey: process.env.STORYBLOK_API_KEY,
+  storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
+}),
+```
+
+This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 </TabItem>
 <TabItem value="Sanity" title="Sanity">
 **Sanity CMS Integration**
@@ -223,10 +338,10 @@ This tab provides a complete guide for integrating Vendure with Sanity CMS, incl
 
 #### 1. Create a new Studio with Sanity CLI
 
-Initialize your Sanity project using the CLI. Replace `hgw9gfg9` with your actual project ID:
+Initialize your Sanity project using the CLI. Replace `<project-id>` with your actual project ID:
 
 ```bash
-npm create sanity@latest -- --project hgw9gfg9 --dataset production --template clean --typescript --output-path studio-vendure-plugin
+npm create sanity@latest -- --project <project-id> --dataset production --template clean --typescript --output-path studio-vendure-plugin
 cd studio-vendure-plugin
 ```
 
@@ -246,7 +361,9 @@ Open your browser to `http://localhost:3333` and log in using the same service (
 
 #### 1. Create Vendure-specific document types
 
-Create the following schema files in your `schemaTypes` folder:
+Create the Vendure-specific schema files in your `schemaTypes` folder:
+
+for example, here is a schema file for a Vendure product variant:
 
 **vendureProductVariant.ts**
 ```ts
@@ -298,7 +415,7 @@ import { vendureProductType } from './vendureProductType'
 import { vendureProductVariant } from './vendureProductVariant'
 
 export const schemaTypes = [
-  vendureCollection,
+  vendureProductVariant,
   // ...
 ]
 ```
@@ -311,19 +428,15 @@ The `SanityService` contains all logic specific to the Sanity API. Unlike Storyb
 
 ```ts title="src/plugins/cms/services/sanity.service.ts"
 @Injectable()
-export class SanityService implements OnApplicationBootstrap {
+export class SanityService {
   // Constructs the Sanity API base URL using the project ID from configuration
   private get sanityBaseUrl(): string {
+    // the options.sanityProjectId are defined in your vendure-config.ts file.
     return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
   }
 
   // Injects the plugin configuration options containing Sanity credentials
   constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
-
-  // Called when the application starts - Sanity doesn't require content type setup
-  async onApplicationBootstrap() {
-    // No content type creation needed - handled by Studio schema
-  }
 
   // Main sync method that routes different operations to appropriate handlers
   async syncProduct({ product, operationType }) {
@@ -338,8 +451,6 @@ export class SanityService implements OnApplicationBootstrap {
 
   // Generic method for making authenticated requests to Sanity's API
   private async makeSanityRequest({ method, endpoint, data }) {
-    // Enforces rate limiting to avoid hitting API limits
-    await this.enforceRateLimit();
     const url = `${this.sanityBaseUrl}/${endpoint}`;
 
     // Makes authenticated request with proper headers
@@ -361,9 +472,9 @@ export class SanityService implements OnApplicationBootstrap {
   }
 
   // Creates a new document in Sanity from a Vendure product
-  private async createDocumentFromProduct(product) {
+  private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
     // Transforms Vendure product data to Sanity document format
-    const data = this.transformProductData(product);
+    const data = this.transformProductData(product, defaultLanguageCode);
     // Uses Sanity's mutation API to create the document
     return this.makeSanityRequest({
       method: "POST",
@@ -373,12 +484,12 @@ export class SanityService implements OnApplicationBootstrap {
   }
 
   // Transforms Vendure product data into Sanity document structure
-  private transformProductData(product) {
+  private transformProductData(product, defaultLanguageCode: LanguageCode) {
     return {
       _type: 'vendureProduct', // Sanity document type
       vendureId: parseInt(product.id.toString()), // Original Vendure ID as number
-      title: product.translations[0]?.name, // Product name from first translation
-      slug: { current: product.translations[0]?.slug }, // Sanity slug format
+      title: product.translations[defaultLanguageCode]?.name, // Product name from first translation
+      slug: { current: product.translations[defaultLanguageCode]?.slug }, // Sanity slug format
       // Add variant references as needed
     };
   }
@@ -414,7 +525,7 @@ SANITY_DATASET=production
 CmsPlugin.init({
   sanityApiKey: process.env.SANITY_API_KEY,
   sanityProjectId: process.env.SANITY_PROJECT_ID,
-  sanityDataset: process.env.SANITY_DATASET || 'production',
+  sanityDataset: process.env.SANITY_DATASET,
 }),
 ```
 
