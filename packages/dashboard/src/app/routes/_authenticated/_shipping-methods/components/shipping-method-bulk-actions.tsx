@@ -43,7 +43,7 @@ export const RemoveShippingMethodsFromChannelBulkAction: BulkActionComponent<any
     selection,
     table,
 }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -54,7 +54,7 @@ export const RemoveShippingMethodsFromChannelBulkAction: BulkActionComponent<any
             requiredPermissions={['UpdateShippingMethod']}
             buildInput={() => ({
                 shippingMethodIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

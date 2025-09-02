@@ -19,7 +19,7 @@ import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
 
 /**
@@ -44,7 +44,7 @@ function getChannelInitialsFromCode(code: string) {
 
 export function ChannelSwitcher() {
     const { isMobile } = useSidebar();
-    const { channels, activeChannel, selectedChannel, setSelectedChannel } = useChannel();
+    const { channels, activeChannel, setActiveChannel } = useChannel();
     const serverConfig = useServerConfig();
     const { formatLanguageName } = useLocalFormat();
     const {
@@ -54,7 +54,7 @@ export function ChannelSwitcher() {
     const [showManageLanguagesDialog, setShowManageLanguagesDialog] = useState(false);
 
     // Use the selected channel if available, otherwise fall back to the active channel
-    const displayChannel = selectedChannel || activeChannel;
+    const displayChannel = activeChannel || activeChannel;
 
     // Get available languages from server config
     const availableLanguages = serverConfig?.availableLanguages || [];
@@ -64,6 +64,8 @@ export function ChannelSwitcher() {
     const orderedChannels = displayChannel
         ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
         : channels;
+
+    useEffect(() => {}, []);
 
     return (
         <>
@@ -109,7 +111,7 @@ export function ChannelSwitcher() {
                             {orderedChannels.map((channel, index) => (
                                 <div key={channel.code}>
                                     <DropdownMenuItem
-                                        onClick={() => setSelectedChannel(channel.id)}
+                                        onClick={() => setActiveChannel(channel.id)}
                                         className="gap-2 p-2"
                                     >
                                         <div className="flex size-8 items-center justify-center rounded border">

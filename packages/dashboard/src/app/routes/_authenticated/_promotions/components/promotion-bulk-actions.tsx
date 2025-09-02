@@ -41,7 +41,7 @@ export const AssignPromotionsToChannelBulkAction: BulkActionComponent<any> = ({ 
 };
 
 export const RemovePromotionsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -52,7 +52,7 @@ export const RemovePromotionsFromChannelBulkAction: BulkActionComponent<any> = (
             requiredPermissions={['UpdatePromotion']}
             buildInput={() => ({
                 promotionIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

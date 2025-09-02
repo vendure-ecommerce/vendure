@@ -56,10 +56,10 @@ export function AssignToChannelDialog({
 }: Readonly<AssignToChannelDialogProps>) {
     const { i18n } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
-    const { channels, selectedChannel } = useChannel();
+    const { channels, activeChannel } = useChannel();
 
     // Filter out the currently selected channel from available options
-    const availableChannels = channels.filter(channel => channel.id !== selectedChannel?.id);
+    const availableChannels = channels.filter(channel => channel.id !== activeChannel?.id);
 
     const { mutate, isPending } = useMutation({
         mutationFn,

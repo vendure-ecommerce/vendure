@@ -1,7 +1,7 @@
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
-import { api } from '@/vdb/graphql/api.js';
 import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
@@ -40,7 +40,7 @@ export const AssignStockLocationsToChannelBulkAction: BulkActionComponent<any> =
 };
 
 export const RemoveStockLocationsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -51,7 +51,7 @@ export const RemoveStockLocationsFromChannelBulkAction: BulkActionComponent<any>
             requiredPermissions={['UpdateStockLocation']}
             buildInput={() => ({
                 stockLocationIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

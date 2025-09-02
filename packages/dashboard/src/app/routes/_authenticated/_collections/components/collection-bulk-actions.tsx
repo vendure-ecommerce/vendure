@@ -1,15 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 import { FolderTree } from 'lucide-react';
+import { useState } from 'react';
 
-import { Trans } from '@/vdb/lib/trans.js';
-import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
-import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
-import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
-import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
@@ -41,7 +41,7 @@ export const AssignCollectionsToChannelBulkAction: BulkActionComponent<any> = ({
 };
 
 export const RemoveCollectionsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const queryClient = useQueryClient();
 
     return (
@@ -53,7 +53,7 @@ export const RemoveCollectionsFromChannelBulkAction: BulkActionComponent<any> = 
             requiredPermissions={['UpdateCatalog', 'UpdateCollection']}
             buildInput={() => ({
                 collectionIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
             onSuccess={() => {
                 queryClient.invalidateQueries({ queryKey: ['childCollections'] });

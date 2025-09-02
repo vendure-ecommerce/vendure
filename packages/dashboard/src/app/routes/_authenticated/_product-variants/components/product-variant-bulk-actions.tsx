@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
-import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
-import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
-import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
@@ -58,7 +58,7 @@ export const RemoveProductVariantsFromChannelBulkAction: BulkActionComponent<any
     selection,
     table,
 }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -69,7 +69,7 @@ export const RemoveProductVariantsFromChannelBulkAction: BulkActionComponent<any
             requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
             buildInput={() => ({
                 productVariantIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

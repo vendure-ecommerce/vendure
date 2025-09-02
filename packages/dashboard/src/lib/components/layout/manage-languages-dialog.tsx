@@ -96,11 +96,11 @@ interface ManageLanguagesDialogProps {
 
 export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogProps) {
     const { formatLanguageName } = useLocalFormat();
-    const { activeChannel, selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const { hasPermissions } = usePermissions();
     const queryClient = useQueryClient();
 
-    const displayChannel = selectedChannel || activeChannel;
+    const displayChannel = activeChannel;
 
     // Permission checks
     const canReadGlobalSettings = hasPermissions(['ReadSettings']) || hasPermissions(['ReadGlobalSettings']);

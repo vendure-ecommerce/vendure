@@ -18,18 +18,18 @@ import { useChannel } from './use-channel.js';
  */
 export function usePermissions() {
     const { channels } = useAuth();
-    const { selectedChannelId } = useChannel();
+    const { activeChannel } = useChannel();
 
     function hasPermissions(permissions: string[]) {
         if (permissions.length === 0) {
             return true;
         }
         // Use the selected channel instead of settings.activeChannelId
-        const activeChannel = (channels ?? []).find(channel => channel.id === selectedChannelId);
-        if (!activeChannel) {
+        const selectedChannel = (channels ?? []).find(channel => channel.id === activeChannel?.id);
+        if (!selectedChannel) {
             return false;
         }
-        return permissions.some(permission => activeChannel.permissions.includes(permission as Permission));
+        return permissions.some(permission => selectedChannel.permissions.includes(permission as Permission));
     }
 
     return { hasPermissions };

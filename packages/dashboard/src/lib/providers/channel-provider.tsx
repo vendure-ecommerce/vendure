@@ -51,12 +51,10 @@ type Channel = ResultOf<typeof channelFragment>;
  * @since 3.3.0
  */
 export interface ChannelContext {
-    activeChannel: ActiveChannel | undefined;
-    channels: Channel[];
-    selectedChannelId: string | undefined;
-    selectedChannel: Channel | undefined;
     isLoading: boolean;
-    setSelectedChannel: (channelId: string) => void;
+    channels: Channel[];
+    activeChannel: ActiveChannel | undefined;
+    setActiveChannel: (channelId: string) => void;
     refreshChannels: () => void;
 }
 
@@ -122,6 +120,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                     localStorage.setItem(SELECTED_CHANNEL_KEY, channelId);
                     localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, channel.token);
                     setSelectedChannelId(channelId);
+
                     queryClient.invalidateQueries();
                 }
             } catch (e) {
@@ -160,13 +159,10 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         }
     }, [selectedChannelId, channels]);
 
-    const activeChannel = channelsData?.activeChannel;
     const isLoading = isChannelsLoading;
 
     // Find the selected channel from the list of channels
-    const selectedChannel = React.useMemo(() => {
-        return channels.find(channel => channel.id === selectedChannelId);
-    }, [channels, selectedChannelId]);
+    const selectedChannel = channelsData?.activeChannel;
 
     const refreshChannels = () => {
         refreshCurrentUser();
@@ -176,12 +172,10 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
     };
 
     const contextValue: ChannelContext = {
-        activeChannel,
         channels,
-        selectedChannelId,
-        selectedChannel,
+        activeChannel: selectedChannel,
         isLoading,
-        setSelectedChannel,
+        setActiveChannel: setSelectedChannel,
         refreshChannels,
     };
 

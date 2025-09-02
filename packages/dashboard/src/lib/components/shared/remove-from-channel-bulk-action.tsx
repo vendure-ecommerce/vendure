@@ -42,7 +42,7 @@ export function RemoveFromChannelBulkAction({
     errorMessage,
 }: Readonly<RemoveFromChannelBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const { i18n } = useLingui();
     const { mutate } = useMutation({
         mutationFn,
@@ -63,7 +63,7 @@ export function RemoveFromChannelBulkAction({
         },
     });
 
-    if (!selectedChannel) {
+    if (!activeChannel) {
         return null;
     }
 
