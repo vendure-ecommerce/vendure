@@ -560,11 +560,14 @@ import type { CollectionConfig } from 'payload/types';
 
 export const VendureProduct: CollectionConfig = {
     slug: 'vendure-product',
+    // WARNING: Development-only access! This grants unrestricted CRUD access to anyone.
+    // For production, implement proper authentication and role-based access control.
     access: {
-        read: () => true,
-        create: () => true,
-        update: () => true,
-        delete: () => true,
+        // DEV ONLY: Public read access
+        read: () => true,    
+        create: () => true, 
+        update: () => true,  
+        delete: () => true,  
     },
     fields: [
         {
@@ -592,78 +595,12 @@ export const VendureProduct: CollectionConfig = {
     ],
 };
 
-export const VendureProductVariant: CollectionConfig = {
-    slug: 'vendure-product-variant',
-    access: {
-        read: () => true,
-        create: () => true,
-        update: () => true,
-        delete: () => true,
-    },
-    fields: [
-        {
-            name: 'id',
-            type: 'number',
-            required: true,
-            unique: true,
-        },
-        {
-            name: 'name',
-            type: 'text',
-            required: true,
-        },
-        {
-            name: 'slug',
-            type: 'text',
-            required: true,
-        },
-        {
-            name: 'product',
-            type: 'relationship',
-            relationTo: 'vendure-product',
-        },
-        {
-            name: 'collections',
-            type: 'relationship',
-            relationTo: 'vendure-collection',
-            hasMany: true,
-        },
-    ],
-};
+// Additional collection configurations for VendureProductVariant and VendureCollection
+// follow the same pattern with appropriate field definitions and relationships.
 
-export const VendureCollection: CollectionConfig = {
-    slug: 'vendure-collection',
-    access: {
-        read: () => true,
-        create: () => true,
-        update: () => true,
-        delete: () => true,
-    },
-    fields: [
-        {
-            name: 'id',
-            type: 'number',
-            required: true,
-            unique: true,
-        },
-        {
-            name: 'name',
-            type: 'text',
-            required: true,
-        },
-        {
-            name: 'slug',
-            type: 'text',
-            required: true,
-        },
-        {
-            name: 'productVariants',
-            type: 'relationship',
-            relationTo: 'vendure-product-variant',
-            hasMany: true,
-        },
-    ],
-};
+
+// export const VendureProductVariant: CollectionConfig = { ... }
+// export const VendureCollection: CollectionConfig = { ... }
 ```
 
 #### 2. Register collections in Payload config
