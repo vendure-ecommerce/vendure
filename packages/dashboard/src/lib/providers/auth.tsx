@@ -21,6 +21,7 @@ export interface AuthContext {
     logout: (onSuccess?: () => void) => Promise<void>;
     user: ResultOf<typeof CurrentUserQuery>['activeAdministrator'] | undefined;
     channels: NonNullable<ResultOf<typeof CurrentUserQuery>['me']>['channels'] | undefined;
+    refreshCurrentUser: () => void;
 }
 
 const LoginMutation = graphql(`
@@ -174,6 +175,12 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         }
     }, [isLoading, currentUserData, currentUserError, status, isLoginLogoutInProgress]);
 
+    const refreshCurrentUser = () => {
+        queryClient.invalidateQueries({
+            queryKey: ['currentUser'],
+        });
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -184,6 +191,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                 channels: currentUserData?.me?.channels,
                 login,
                 logout,
+                refreshCurrentUser,
             }}
         >
             {children}

@@ -1,5 +1,5 @@
 import { api } from '@/vdb/graphql/api.js';
-import { ResultOf, graphql } from '@/vdb/graphql/graphql.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
@@ -57,6 +57,7 @@ export interface ChannelContext {
     selectedChannel: Channel | undefined;
     isLoading: boolean;
     setSelectedChannel: (channelId: string) => void;
+    refreshChannels: () => void;
 }
 
 // Create the context
@@ -68,7 +69,7 @@ const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
 
 export function ChannelProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const queryClient = useQueryClient();
-    const { channels: userChannels, isAuthenticated } = useAuth();
+    const { channels: userChannels, isAuthenticated, refreshCurrentUser } = useAuth();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
         // Initialize from localStorage if available
         try {
@@ -90,15 +91,15 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
 
     // Filter channels based on user permissions
     const channels = React.useMemo(() => {
-        // If user has specific channels assigned (non-superadmin), use those
+        // If user has specific channels assigned, use those
         if (userChannels && userChannels.length > 0) {
             // Map user channels to match the Channel type structure
             return userChannels.map(ch => {
                 const fullChannelData = channelsData?.channels.items.find(c => c.id === ch.id);
                 return {
                     id: ch.id,
-                    code: ch.code,
-                    token: ch.token,
+                    code: fullChannelData?.code ?? ch.code,
+                    token: fullChannelData?.token ?? ch.token,
                     defaultLanguageCode: fullChannelData?.defaultLanguageCode || 'en',
                     defaultCurrencyCode: fullChannelData?.defaultCurrencyCode || 'USD',
                     pricesIncludeTax: fullChannelData?.pricesIncludeTax || false,
@@ -106,7 +107,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                 };
             });
         }
-        // Otherwise use all channels (superadmin)
+        // Otherwise use all channels
         return channelsData?.channels.items || [];
     }, [userChannels, channelsData?.channels.items]);
 
@@ -167,6 +168,13 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         return channels.find(channel => channel.id === selectedChannelId);
     }, [channels, selectedChannelId]);
 
+    const refreshChannels = () => {
+        refreshCurrentUser();
+        queryClient.invalidateQueries({
+            queryKey: ['channels', isAuthenticated],
+        });
+    };
+
     const contextValue: ChannelContext = {
         activeChannel,
         channels,
@@ -174,6 +182,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         selectedChannel,
         isLoading,
         setSelectedChannel,
+        refreshChannels,
     };
 
     return <ChannelContext.Provider value={contextValue}>{children}</ChannelContext.Provider>;
