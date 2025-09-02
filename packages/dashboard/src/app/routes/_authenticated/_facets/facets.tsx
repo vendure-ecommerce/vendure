@@ -1,13 +1,19 @@
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
+import {
+    AssignFacetsToChannelBulkAction,
+    DeleteFacetsBulkAction,
+    DuplicateFacetsBulkAction,
+    RemoveFacetsFromChannelBulkAction,
+} from './components/facet-bulk-actions.js';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
 import { deleteFacetDocument, facetListDocument } from './facets.graphql.js';
 
@@ -80,6 +86,24 @@ function FacetListPage() {
                     },
                 };
             }}
+            bulkActions={[
+                {
+                    order: 100,
+                    component: AssignFacetsToChannelBulkAction,
+                },
+                {
+                    order: 200,
+                    component: RemoveFacetsFromChannelBulkAction,
+                },
+                {
+                    order: 300,
+                    component: DuplicateFacetsBulkAction,
+                },
+                {
+                    order: 400,
+                    component: DeleteFacetsBulkAction,
+                },
+            ]}
             route={Route}
         >
             <PageActionBarRight>

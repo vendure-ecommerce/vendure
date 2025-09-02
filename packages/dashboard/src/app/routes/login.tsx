@@ -1,5 +1,5 @@
-import { LoginForm } from '@/components/login/login-form.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { LoginForm } from '@/vdb/components/login/login-form.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import { z } from 'zod';
 

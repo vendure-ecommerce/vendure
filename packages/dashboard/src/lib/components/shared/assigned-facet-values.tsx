@@ -57,11 +57,7 @@ export function AssignedFacetValues({
                     );
                 })}
             </div>
-            {canUpdate && (
-                <FacetValueSelector
-                    onValueSelect={onSelectHandler}
-                />
-            )}
+            {canUpdate && <FacetValueSelector onValueSelect={onSelectHandler} />}
         </>
     );
 }

@@ -1,12 +1,20 @@
 {
-  "extends": ["../../tsconfig.json"],
+  "extends": [
+    "../../tsconfig.json"
+  ],
   "compilerOptions": {
-    "lib": ["dom"],
-    "types": ["node"],
+    "lib": [
+      "dom"
+    ],
+    "types": [
+      "node"
+    ],
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/lib/*"]
+      "@/vdb/*": [
+        "./src/lib/*"
+      ]
     },
     "plugins": [
       {
@@ -16,5 +24,7 @@
       }
     ]
   },
-  "exclude": ["./lib"]
+  "exclude": [
+    "./lib"
+  ]
 }

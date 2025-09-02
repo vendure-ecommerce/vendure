@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useDetailPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="216" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="239" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -77,7 +77,7 @@ const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
 ```
 
 ```ts title="Signature"
-function useDetailPage<T extends TypedDocumentNode<any, any>, C extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T> = keyof ResultOf<T>, VarNameUpdate extends keyof VariablesOf<U> = 'input', VarNameCreate extends keyof VariablesOf<C> = 'input'>(options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>): UseDetailPageResult<T, C, U, EntityField>
+function useDetailPage<T extends TypedDocumentNode<any, any>, C extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T> = keyof ResultOf<T>, VarNameUpdate extends keyof VariablesOf<U> = 'input', VarNameCreate extends keyof VariablesOf<C> = 'input'>(options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>): UseDetailPageResult<T, U, EntityField>
 ```
 Parameters
 
@@ -89,17 +89,19 @@ Parameters
 
 ## DetailPageOptions
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="37" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="46" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 ```ts title="Signature"
 interface DetailPageOptions<T extends TypedDocumentNode<any, any>, C extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T> = DetailEntityPath<T>, VarNameCreate extends keyof VariablesOf<C> = 'input', VarNameUpdate extends keyof VariablesOf<U> = 'input'> {
+    pageId?: string;
     queryDocument: T;
     entityField?: EntityField;
     params: {
         id: string;
     };
+    entityName?: string;
     createDocument?: C;
     updateDocument?: U;
     setValuesForUpdate: (entity: NonNullable<ResultOf<T>[EntityField]>) => VariablesOf<U>[VarNameUpdate];
@@ -112,6 +114,12 @@ interface DetailPageOptions<T extends TypedDocumentNode<any, any>, C extends Typ
 
 <div className="members-wrapper">
 
+### pageId
+
+<MemberInfo kind="property" type={`string`}   />
+
+The page id. This is optional, but if provided, it will be used to
+identify the page when extending the detail page query
 ### queryDocument
 
 <MemberInfo kind="property" type={`T`}   />
@@ -127,6 +135,13 @@ The field of the query document that contains the entity.
 <MemberInfo kind="property" type={`{         id: string;     }`}   />
 
 The parameters used to identify the entity.
+### entityName
+
+<MemberInfo kind="property" type={`string`}   />
+
+The entity type name for custom field configuration lookup.
+Required to filter out readonly custom fields before mutations.
+If not provided, the function will try to infer it from the query document.
 ### createDocument
 
 <MemberInfo kind="property" type={`C`}   />
@@ -169,12 +184,12 @@ The function to call when the update is successful.
 
 ## UseDetailPageResult
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="133" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="157" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 ```ts title="Signature"
-interface UseDetailPageResult<T extends TypedDocumentNode<any, any>, C extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T>> {
+interface UseDetailPageResult<T extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T>> {
     form: UseFormReturn<RemoveNullFields<VariablesOf<U>['input']>>;
     submitHandler: (event: FormEvent<HTMLFormElement>) => void;
     entity?: DetailPageEntity<T, EntityField>;

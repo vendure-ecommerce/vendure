@@ -1,100 +1,16 @@
-import { PageContextValue } from '@/framework/layout-engine/page-provider.js';
-import { AnyRoute, RouteOptions } from '@tanstack/react-router';
-import { LucideIcon } from 'lucide-react';
-import type React from 'react';
-
-import { DashboardAlertDefinition } from '../alert/types.js';
-import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
-import { NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
-
-export interface DashboardRouteDefinition {
-    component: (route: AnyRoute) => React.ReactNode;
-    path: string;
-    navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
-    loader?: RouteOptions['loader'];
-}
-
-export interface ActionBarButtonState {
-    disabled: boolean;
-    visible: boolean;
-}
-
-export interface DashboardNavSectionDefinition {
-    id: string;
-    title: string;
-    icon?: LucideIcon;
-    order?: number;
-}
-
-/**
- * @description
- * **Status: Developer Preview**
- *
- * Allows you to define custom action bar items for any page in the dashboard.
- *
- * @docsCategory extensions
- * @since 3.3.0
- */
-export interface DashboardActionBarItem {
-    /**
-     * @description
-     * The ID of the page where the action bar item should be displayed.
-     */
-    pageId: string;
-    /**
-     * @description
-     * A React component that will be rendered in the action bar.
-     */
-    component: React.FunctionComponent<{ context: PageContextValue }>;
-    /**
-     * @description
-     * Any permissions that are required to display this action bar item.
-     */
-    requiresPermission?: string | string[];
-}
-
-export interface DashboardActionBarDropdownMenuItem {
-    locationId: string;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
-    requiresPermission?: string | string[];
-}
-
-export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | 'replace' };
-
-/**
- * @description
- * **Status: Developer Preview**
- *
- * The location of a page block in the dashboard. The location can be found by turning on
- * "developer mode" in the dashboard user menu (bottom left corner) and then
- * clicking the `< />` icon when hovering over a page block.
- *
- * @docsCategory extensions
- * @since 3.3.0
- */
-export type PageBlockLocation = {
-    pageId: string;
-    position: PageBlockPosition;
-    column: 'main' | 'side';
-};
-
-/**
- * @description
- * **Status: Developer Preview**
- *
- * This allows you to insert a custom component into a specific location
- * on any page in the dashboard.
- *
- * @docsCategory extensions
- * @since 3.3.0
- */
-export interface DashboardPageBlockDefinition {
-    id: string;
-    title?: React.ReactNode;
-    location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
-    requiresPermission?: string | string[];
-}
+// Import types for the main interface
+import {
+    DashboardActionBarItem,
+    DashboardAlertDefinition,
+    DashboardCustomFormComponents,
+    DashboardDataTableExtensionDefinition,
+    DashboardDetailFormExtensionDefinition,
+    DashboardLoginExtensions,
+    DashboardNavSectionDefinition,
+    DashboardPageBlockDefinition,
+    DashboardRouteDefinition,
+    DashboardWidgetDefinition,
+} from './types/index.js';
 
 /**
  * @description
@@ -128,7 +44,7 @@ export interface DashboardExtension {
     actionBarItems?: DashboardActionBarItem[];
     /**
      * @description
-     * Not yet implemented
+     * Allows you to define custom alerts that can be displayed in the dashboard.
      */
     alerts?: DashboardAlertDefinition[];
     /**
@@ -137,4 +53,24 @@ export interface DashboardExtension {
      * given components and optionally also add a nav menu item.
      */
     widgets?: DashboardWidgetDefinition[];
+    /**
+     * @description
+     * Unified registration for custom form custom field components.
+     */
+    customFormComponents?: DashboardCustomFormComponents;
+    /**
+     * @description
+     * Allows you to customize aspects of existing data tables in the dashboard.
+     */
+    dataTables?: DashboardDataTableExtensionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the detail form for any page in the dashboard.
+     */
+    detailForms?: DashboardDetailFormExtensionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the login page with custom components.
+     */
+    login?: DashboardLoginExtensions;
 }

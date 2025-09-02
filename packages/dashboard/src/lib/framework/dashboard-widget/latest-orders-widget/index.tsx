@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
-import { DashboardBaseWidget } from '../base-widget.js';
-import { PaginatedListDataTable, addCustomFields, useLocalFormat } from '@/index.js';
-import { ColumnFiltersState } from '@tanstack/react-table';
-import { useState } from 'react';
-import { SortingState } from '@tanstack/react-table';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Link } from '@tanstack/react-router';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
-import { Button } from '@/components/ui/button.js';
+import { useState } from 'react';
+import { DashboardBaseWidget } from '../base-widget.js';
+import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
+
 export const WIDGET_ID = 'latest-orders-widget';
 
 export function LatestOrdersWidget() {

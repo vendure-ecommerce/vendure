@@ -1,7 +1,7 @@
 import path from 'path';
 import { Plugin } from 'vite';
 
-import { LoadVendureConfigResult } from './utils/config-loader.js';
+import { CompileResult } from './utils/compiler.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 const virtualModuleId = 'virtual:dashboard-extensions';
@@ -12,9 +12,9 @@ const resolvedVirtualModuleId = `\0${virtualModuleId}`;
  * generates an import statement for each one, wrapped up in a `runDashboardExtensions()`
  * function which can then be imported and executed in the Dashboard app.
  */
-export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
+export function dashboardMetadataPlugin(): Plugin {
     let configLoaderApi: ConfigLoaderApi;
-    let loadVendureConfigResult: LoadVendureConfigResult;
+    let loadVendureConfigResult: CompileResult;
     return {
         name: 'vendure:dashboard-extensions-metadata',
         configResolved({ plugins }) {
@@ -27,36 +27,47 @@ export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
         },
         async load(id) {
             if (id === resolvedVirtualModuleId) {
+                const startTime = Date.now();
+                this.debug('Loading dashboard extensions...');
+
                 if (!loadVendureConfigResult) {
+                    const configStart = Date.now();
                     loadVendureConfigResult = await configLoaderApi.getVendureConfig();
+                    this.debug(`Loaded Vendure config in ${Date.now() - configStart}ms`);
                 }
+
                 const { pluginInfo } = loadVendureConfigResult;
+                const resolveStart = Date.now();
                 const pluginsWithExtensions =
                     pluginInfo
-                        ?.map(
-                            ({ dashboardEntryPath, pluginPath }) =>
-                                dashboardEntryPath && path.join(pluginPath, dashboardEntryPath),
-                        )
+                        ?.map(({ dashboardEntryPath, pluginPath, sourcePluginPath }) => {
+                            if (!dashboardEntryPath) {
+                                return null;
+                            }
+                            // For local plugins, use the sourcePluginPath to resolve the dashboard extension
+                            const basePath = sourcePluginPath
+                                ? path.dirname(sourcePluginPath)
+                                : path.dirname(pluginPath);
+                            const resolved = path.resolve(basePath, dashboardEntryPath);
+                            this.debug(`Resolved extension path: ${resolved}`);
+                            return resolved;
+                        })
                         .filter(x => x != null) ?? [];
 
-                this.info(`Found ${pluginsWithExtensions.length} Dashboard extensions`);
+                this.info(
+                    `Found ${pluginsWithExtensions.length} Dashboard extensions in ${Date.now() - resolveStart}ms`,
+                );
+                this.debug(`Total dashboard extension loading completed in ${Date.now() - startTime}ms`);
+
                 return `
                     export async function runDashboardExtensions() {
                         ${pluginsWithExtensions
                             .map(extension => {
-                                return `await import('${extension}');`;
+                                return `await import(\`${extension}\`);`;
                             })
                             .join('\n')}
                 }`;
             }
         },
     };
-}
-
-/**
- * Converts an import path to a normalized path relative to the rootDir.
- */
-function normalizeImportPath(rootDir: string, importPath: string): string {
-    const relativePath = path.relative(rootDir, importPath).replace(/\\/g, '/');
-    return relativePath.replace(/\.tsx?$/, '.js');
 }

@@ -26,7 +26,16 @@ const reviewDetailDocument = graphql(`
             state
             response
             responseCreatedAt
+            translations {
+                id
+                languageCode
+                text
+                customFields {
+                    reviewerName
+                }
+            }
             customFields {
+                verifiedReviewerName
                 reviewerName
             }
         }
@@ -53,7 +62,6 @@ export const reviewDetail: DashboardRouteDefinition = {
     component: route => {
         return (
             <DetailPage
-                entityName="ProductReview"
                 pageId="review-detail"
                 queryDocument={reviewDetailDocument}
                 updateDocument={updateReviewDocument}
@@ -64,11 +72,10 @@ export const reviewDetail: DashboardRouteDefinition = {
                         id: review.id,
                         summary: review.summary,
                         body: review.body,
-                        rating: review.rating,
-                        authorName: review.authorName,
-                        authorLocation: review.authorLocation,
-                        upvotes: review.upvotes,
-                        downvotes: review.downvotes,
+                        response: review.response,
+                        state: review.state,
+                        customFields: review.customFields,
+                        translations: review.translations,
                     };
                 }}
             />

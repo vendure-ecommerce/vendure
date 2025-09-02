@@ -1,6 +1,6 @@
-import { api } from '@/graphql/api.js';
-import { ResultOf, graphql } from '@/graphql/graphql.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { api } from '@/vdb/graphql/api.js';
+import { ResultOf, graphql } from '@/vdb/graphql/graphql.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
@@ -13,6 +13,7 @@ const channelFragment = graphql(`
         defaultLanguageCode
         defaultCurrencyCode
         pricesIncludeTax
+        availableLanguageCodes
     }
 `);
 
@@ -65,7 +66,7 @@ export const ChannelContext = React.createContext<ChannelContext | undefined>(un
 const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
 const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
 
-export function ChannelProvider({ children }: { children: React.ReactNode }) {
+export function ChannelProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const queryClient = useQueryClient();
     const { channels: userChannels, isAuthenticated } = useAuth();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
@@ -92,17 +93,18 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
         // If user has specific channels assigned (non-superadmin), use those
         if (userChannels && userChannels.length > 0) {
             // Map user channels to match the Channel type structure
-            return userChannels.map(ch => ({
-                id: ch.id,
-                code: ch.code,
-                token: ch.token,
-                defaultLanguageCode:
-                    channelsData?.channels.items.find(c => c.id === ch.id)?.defaultLanguageCode || 'en',
-                defaultCurrencyCode:
-                    channelsData?.channels.items.find(c => c.id === ch.id)?.defaultCurrencyCode || 'USD',
-                pricesIncludeTax:
-                    channelsData?.channels.items.find(c => c.id === ch.id)?.pricesIncludeTax || false,
-            }));
+            return userChannels.map(ch => {
+                const fullChannelData = channelsData?.channels.items.find(c => c.id === ch.id);
+                return {
+                    id: ch.id,
+                    code: ch.code,
+                    token: ch.token,
+                    defaultLanguageCode: fullChannelData?.defaultLanguageCode || 'en',
+                    defaultCurrencyCode: fullChannelData?.defaultCurrencyCode || 'USD',
+                    pricesIncludeTax: fullChannelData?.pricesIncludeTax || false,
+                    availableLanguageCodes: fullChannelData?.availableLanguageCodes || ['en'],
+                };
+            });
         }
         // Otherwise use all channels (superadmin)
         return channelsData?.channels.items || [];

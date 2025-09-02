@@ -1,7 +1,7 @@
-import { PaginatedListDataTable } from '@/components/shared/paginated-list-data-table.js';
-import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { graphql } from '@/graphql/graphql.js';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -24,21 +24,20 @@ export const collectionContentsDocument = graphql(`
     }
 `);
 
-
 export interface CollectionContentsTableProps {
     collectionId?: string;
 }
 
-export function CollectionContentsTable({ collectionId }: CollectionContentsTableProps) {
+export function CollectionContentsTable({ collectionId }: Readonly<CollectionContentsTableProps>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    
+
     return (
         <PaginatedListDataTable
             listQuery={addCustomFields(collectionContentsDocument)}
-            transformVariables={(variables) => {
+            transformVariables={variables => {
                 return {
                     ...variables,
                     collectionId: collectionId,
@@ -50,7 +49,9 @@ export function CollectionContentsTable({ collectionId }: CollectionContentsTabl
                     cell: ({ row }) => {
                         return (
                             <Button asChild variant="ghost">
-                                <Link to={`../../product-variants/${row.original.id}`}>{row.original.name} </Link>
+                                <Link to={`../../product-variants/${row.original.id}`}>
+                                    {row.original.name}{' '}
+                                </Link>
                             </Button>
                         );
                     },

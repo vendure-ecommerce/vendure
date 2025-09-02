@@ -1,22 +1,17 @@
-import { CurrencyCode } from '@/constants.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
+import { CurrencyCode } from '@/vdb/constants.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';
-import {
-    DialogClose,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from '../ui/dialog.js';
+import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog.js';
 import { Label } from '../ui/label.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
 
 export function LanguageDialog() {
-    const { availableLocales, availableLanguages } = uiConfig;
+    const { i18n } = uiConfig;
+    const { availableLocales, availableLanguages } = i18n;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
     const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();

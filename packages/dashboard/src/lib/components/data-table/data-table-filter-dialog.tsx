@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DialogClose,
     DialogContent,
@@ -6,8 +6,8 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Column } from '@tanstack/react-table';
 import { useState } from 'react';
 import { DataTableBooleanFilter } from './filters/data-table-boolean-filter.js';
@@ -15,13 +15,13 @@ import { DataTableDateTimeFilter } from './filters/data-table-datetime-filter.js
 import { DataTableIdFilter } from './filters/data-table-id-filter.js';
 import { DataTableNumberFilter } from './filters/data-table-number-filter.js';
 import { DataTableStringFilter } from './filters/data-table-string-filter.js';
-import { ColumnDataType } from './data-table-types.js';
+import { ColumnDataType } from './types.js';
 
 export interface DataTableFilterDialogProps {
     column: Column<any>;
 }
 
-export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
+export function DataTableFilterDialog({ column }: Readonly<DataTableFilterDialogProps>) {
     const columnFilter = column.getFilterValue() as Record<string, string> | undefined;
     const [filter, setFilter] = useState(columnFilter);
 
@@ -38,7 +38,7 @@ export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
             {columnDataType === 'String' ? (
                 <DataTableStringFilter value={filter} onChange={e => setFilter(e)} />
             ) : columnDataType === 'Int' || columnDataType === 'Float' ? (
-                <DataTableNumberFilter value={filter} onChange={e => setFilter(e)} mode='number' />
+                <DataTableNumberFilter value={filter} onChange={e => setFilter(e)} mode="number" />
             ) : columnDataType === 'DateTime' ? (
                 <DataTableDateTimeFilter value={filter} onChange={e => setFilter(e)} />
             ) : columnDataType === 'Boolean' ? (
@@ -46,7 +46,7 @@ export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
             ) : columnDataType === 'ID' ? (
                 <DataTableIdFilter value={filter} onChange={e => setFilter(e)} />
             ) : columnDataType === 'Money' ? (
-                <DataTableNumberFilter value={filter} onChange={e => setFilter(e)} mode='money' />
+                <DataTableNumberFilter value={filter} onChange={e => setFilter(e)} mode="money" />
             ) : null}
             <DialogFooter className="sm:justify-end">
                 {columnFilter && (
@@ -58,7 +58,7 @@ export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
                     <Button
                         type="button"
                         variant="secondary"
-                            onClick={e => {
+                        onClick={() => {
                             column.setFilterValue(filter);
                             setFilter(undefined);
                         }}

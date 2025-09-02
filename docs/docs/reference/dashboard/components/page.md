@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Page
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="44" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="48" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -25,11 +25,11 @@ The typical hierarchy of a page is as follows:
  - <a href='/reference/dashboard/components/page-layout#pagelayout'>PageLayout</a>
 
 ```ts title="Signature"
-function Page(props: PageProps): void
+function Page(props: Readonly<PageProps>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`PageProps`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;PageProps&#62;`} />
 

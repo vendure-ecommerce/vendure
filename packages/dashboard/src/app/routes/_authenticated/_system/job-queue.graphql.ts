@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const jobInfoFragment = graphql(`
     fragment JobInfo on Job {
@@ -41,3 +41,14 @@ export const jobQueueListDocument = graphql(`
         }
     }
 `);
+
+export const cancelJobDocument = graphql(
+    `
+        mutation CancelJob($jobId: ID!) {
+            cancelJob(jobId: $jobId) {
+                ...JobInfo
+            }
+        }
+    `,
+    [jobInfoFragment],
+);

@@ -1,6 +1,6 @@
-import { AppLayout } from '@/components/layout/app-layout.js';
-import { AUTHENTICATED_ROUTE_PREFIX } from '@/constants.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { AppLayout } from '@/vdb/components/layout/app-layout.js';
+import { AUTHENTICATED_ROUTE_PREFIX } from '@/vdb/constants.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
@@ -15,7 +15,7 @@ export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
         }
     },
     loader: () => ({
-        breadcrumb: 'Dashboard',
+        breadcrumb: 'Insights',
     }),
     component: AuthLayout,
 });

@@ -8,4 +8,4 @@ $ npm install @vendure/core
 
 ### [www.vendure.io](https://www.vendure.io/)
 
-See the [Getting Started](https://www.vendure.io/docs/getting-started/) guide for instructions on use.
+See the [Getting Started](https://docs.vendure.io/guides/getting-started/installation/) guide for instructions on use.

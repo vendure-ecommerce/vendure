@@ -408,8 +408,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 return isCancelled ? JobState.CANCELLED : JobState.RUNNING;
             }
             case 'unknown':
-            default:
-                throw new InternalServerError(`Could not determine job state: ${state}`);
+            default: {
+                Logger.error(
+                    `Could not determine job state for job ${jobId ?? '(unknown ID)'}: ${state}`,
+                    loggerCtx,
+                );
+                // We need to return a valid state, so we default to FAILED.
+                return JobState.FAILED;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { Image } from 'lucide-react';
 import React from 'react';
 
@@ -43,7 +43,11 @@ export function VendureImage({
     ...imgProps
 }: VendureImageProps) {
     if (!asset) {
-        return fallback ? <>{fallback}</> : <PlaceholderImage preset={preset} width={width} height={height} className={className} />;
+        return fallback ? (
+            <>{fallback}</>
+        ) : (
+            <PlaceholderImage preset={preset} width={width} height={height} className={className} />
+        );
     }
 
     // Build the URL with query parameters
@@ -75,17 +79,42 @@ export function VendureImage({
         url.searchParams.set('fpy', asset.focalPoint.y.toString());
     }
 
+    const minDimensions = getMinDimensions(preset, width, height);
+
     return (
         <img
             src={url.toString()}
             alt={alt || asset.name || ''}
             className={cn(className, 'rounded-sm')}
+            width={minDimensions.width}
+            height={minDimensions.height}
             style={style}
             loading="lazy"
             ref={ref}
             {...imgProps}
         />
     );
+}
+
+function getMinDimensions(preset?: ImagePreset, width?: number, height?: number) {
+    if (preset) {
+        switch (preset) {
+            case 'tiny':
+                return { width: 50, height: 50 };
+            case 'thumb':
+                return { width: 150, height: 150 };
+            case 'small':
+                return { width: 300, height: 300 };
+            case 'medium':
+                return { width: 500, height: 500 };
+        }
+    }
+
+    if (width && height) {
+        return { width, height };
+    }
+
+    return { width: 100, height: 100 };
 }
 
 export function PlaceholderImage({

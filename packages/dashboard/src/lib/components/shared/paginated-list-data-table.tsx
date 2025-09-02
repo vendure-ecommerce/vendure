@@ -1,38 +1,26 @@
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
-import { DataTable, FacetedFilter } from '@/components/data-table/data-table.js';
+import { DataTable, FacetedFilter } from '@/vdb/components/data-table/data-table.js';
 import {
-    FieldInfo,
-    getObjectPathToPaginatedList,
-    getTypeFieldInfo,
-} from '@/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
-import { api } from '@/graphql/api.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+    getObjectPathToPaginatedList
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
+import { api } from '@/vdb/graphql/api.js';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
     ColumnSort,
-    createColumnHelper,
     SortingState,
-    Table,
+    Table
 } from '@tanstack/react-table';
-import { AccessorKeyColumnDef, ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
-import { EllipsisIcon, TrashIcon } from 'lucide-react';
-import React, { useMemo } from 'react';
-import { toast } from 'sonner';
-import { Button } from '../ui/button.js';
+import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
+import React from 'react';
+import { getColumnVisibility } from '../data-table/data-table-utils.js';
+import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -216,6 +204,7 @@ export interface PaginatedListDataTableProps<
     onColumnVisibilityChange?: (table: Table<any>, columnVisibility: VisibilityState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    bulkActions?: BulkAction[];
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
@@ -254,14 +243,16 @@ export function PaginatedListDataTable<
     onColumnVisibilityChange,
     facetedFilters,
     rowActions,
+    bulkActions,
     disableViewOptions,
     setTableOptions,
     transformData,
     registerRefresher,
-}: PaginatedListDataTableProps<T, U, V, AC>) {
+}: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
+    const extendedListQuery = useExtendedListQuery(listQuery);
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -286,7 +277,7 @@ export function PaginatedListDataTable<
 
     const defaultQueryKey = [
         PaginatedListDataTableKey,
-        listQuery,
+        extendedListQuery,
         page,
         itemsPerPage,
         sorting,
@@ -298,9 +289,10 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+
     registerRefresher?.(refetchPaginatedList);
 
-    const { data } = useQuery({
+    const { data, isFetching } = useQuery({
         queryFn: () => {
             const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
             const mergedFilter = { ...filter, ...searchFilter };
@@ -314,124 +306,28 @@ export function PaginatedListDataTable<
             } as V;
 
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
-            return api.query(listQuery, transformedVariables);
+            return api.query(extendedListQuery, transformedVariables);
         },
         queryKey,
+        placeholderData: keepPreviousData,
     });
 
-    const fields = useListQueryFields(listQuery);
-    const paginatedListObjectPath = getObjectPathToPaginatedList(listQuery);
+    const fields = useListQueryFields(extendedListQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
 
     let listData = data as any;
     for (const path of paginatedListObjectPath) {
         listData = listData?.[path];
     }
 
-    const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
-
-    const { columns, customFieldColumnNames } = useMemo(() => {
-        const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
-        const customFieldColumnNames: string[] = [];
-
-        columnConfigs.push(
-            ...fields // Filter out custom fields
-                .filter(field => field.name !== 'customFields' && !field.type.endsWith('CustomFields'))
-                .map(field => ({ fieldInfo: field, isCustomField: false })),
-        );
-
-        const customFieldColumn = fields.find(field => field.name === 'customFields');
-        if (customFieldColumn && customFieldColumn.type !== 'JSON') {
-            const customFieldFields = getTypeFieldInfo(customFieldColumn.type);
-            columnConfigs.push(
-                ...customFieldFields.map(field => ({ fieldInfo: field, isCustomField: true })),
-            );
-            customFieldColumnNames.push(...customFieldFields.map(field => field.name));
-        }
-
-        const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
-            const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
-            const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
-
-            return columnHelper.accessor(fieldInfo.name as any, {
-                id: fieldInfo.name,
-                meta: { fieldInfo, isCustomField },
-                enableColumnFilter,
-                enableSorting: fieldInfo.isScalar,
-                // Filtering is done on the server side, but we set this to 'equalsString' because
-                // otherwise the TanStack Table with apply an "auto" function which somehow
-                // prevents certain filters from working.
-                filterFn: 'equalsString',
-                cell: ({ cell, row }) => {
-                    const cellValue = cell.getValue();
-                    const value =
-                        cellValue ??
-                        (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
-
-                    if (fieldInfo.list && Array.isArray(value)) {
-                        return value.join(', ');
-                    }
-                    if (
-                        (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
-                        value instanceof Date
-                    ) {
-                        return <DisplayComponent id="vendure:dateTime" value={value} />;
-                    }
-                    if (fieldInfo.type === 'Boolean') {
-                        if (cell.column.id === 'enabled') {
-                            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
-                        } else {
-                            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
-                        }
-                    }
-                    if (fieldInfo.type === 'Asset') {
-                        return <DisplayComponent id="vendure:asset" value={value} />;
-                    }
-                    if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
-                    }
-                    return value;
-                },
-                header: headerContext => {
-                    return (
-                        <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />
-                    );
-                },
-                ...customConfigRest,
-            });
-        });
-
-        let finalColumns = [...queryBasedColumns];
-
-        for (const [id, column] of Object.entries(additionalColumns ?? {})) {
-            if (!id) {
-                throw new Error('Column id is required');
-            }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
-        }
-
-        if (defaultColumnOrder) {
-            // ensure the columns with ids matching the items in defaultColumnOrder
-            // appear as the first columns in sequence, and leave the remainder in the
-            // existing order
-            const orderedColumns = finalColumns
-                .filter(column => column.id && defaultColumnOrder.includes(column.id as any))
-                .sort((a, b) => defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any));
-            const remainingColumns = finalColumns.filter(
-                column => !column.id || !defaultColumnOrder.includes(column.id as any),
-            );
-            finalColumns = [...orderedColumns, ...remainingColumns];
-        }
-
-        if (rowActions || deleteMutation) {
-            const rowActionColumn = getRowActions(rowActions, deleteMutation);
-            if (rowActionColumn) {
-                finalColumns.push(rowActionColumn);
-            }
-        }
-
-        return { columns: finalColumns, customFieldColumnNames };
-    }, [fields, customizeColumns, rowActions]);
+    const { columns, customFieldColumnNames } = useGeneratedColumns({
+        fields,
+        customizeColumns,
+        rowActions,
+        deleteMutation,
+        additionalColumns,
+        defaultColumnOrder,
+    });
 
     const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     const transformedData =
@@ -441,6 +337,7 @@ export function PaginatedListDataTable<
             <DataTable
                 columns={columns}
                 data={transformedData}
+                isLoading={isFetching}
                 page={page}
                 itemsPerPage={itemsPerPage}
                 sorting={sorting}
@@ -454,6 +351,7 @@ export function PaginatedListDataTable<
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
+                bulkActions={bulkActions}
                 setTableOptions={setTableOptions}
                 onRefresh={refetchPaginatedList}
             />
@@ -461,96 +359,3 @@ export function PaginatedListDataTable<
     );
 }
 
-function getRowActions(
-    rowActions?: RowAction<any>[],
-    deleteMutation?: TypedDocumentNode<any, any>,
-): AccessorKeyColumnDef<any> | undefined {
-    return {
-        id: 'actions',
-        accessorKey: 'actions',
-        header: 'Actions',
-        enableColumnFilter: false,
-        cell: ({ row }) => {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <EllipsisIcon />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {rowActions?.map((action, index) => (
-                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={index}>
-                                {action.label}
-                            </DropdownMenuItem>
-                        ))}
-                        {deleteMutation && (
-                            <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    };
-}
-
-function DeleteMutationRowAction({
-    deleteMutation,
-    row,
-}: {
-    deleteMutation: TypedDocumentNode<any, any>;
-    row: Row<{ id: string }>;
-}) {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate: deleteMutationFn } = useMutation({
-        mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } }) => {
-            const unwrappedResult = Object.values(result)[0];
-            if (unwrappedResult.result === 'DELETED') {
-                refetchPaginatedList();
-                toast.success(i18n.t('Deleted successfully'));
-            } else {
-                toast.error(i18n.t('Failed to delete'), {
-                    description: unwrappedResult.message,
-                });
-            }
-        },
-        onError: (err: Error) => {
-            toast.error(i18n.t('Failed to delete'), {
-                description: err.message,
-            });
-        },
-    });
-    return (
-        <DropdownMenuItem onClick={() => deleteMutationFn({ id: row.original.id })}>
-            <div className="flex items-center gap-2 text-destructive">
-                <TrashIcon className="w-4 h-4 text-destructive" />
-                <Trans>Delete</Trans>
-            </div>
-        </DropdownMenuItem>
-    );
-}
-/**
- * Returns the default column visibility configuration.
- */
-function getColumnVisibility(
-    fields: FieldInfo[],
-    defaultVisibility?: Record<string, boolean | undefined>,
-    customFieldColumnNames?: string[],
-): Record<string, boolean> {
-    const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
-    const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);
-    return {
-        id: false,
-        createdAt: false,
-        updatedAt: false,
-        ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
-        ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
-        // Make custom fields hidden by default unless overridden
-        ...(customFieldColumnNames
-            ? { ...Object.fromEntries(customFieldColumnNames.map(f => [f, false])) }
-            : {}),
-        ...defaultVisibility,
-    };
-}

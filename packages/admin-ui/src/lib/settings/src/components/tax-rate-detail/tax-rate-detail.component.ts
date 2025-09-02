@@ -34,7 +34,7 @@ export const GET_TAX_RATE_DETAIL = gql`
     templateUrl: './tax-rate-detail.component.html',
     styleUrls: ['./tax-rate-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
 export class TaxRateDetailComponent
     extends TypedBaseDetailComponent<typeof GetTaxRateDetailDocument, 'taxRate'>
@@ -82,20 +82,19 @@ export class TaxRateDetailComponent
         if (!this.detailForm.dirty) {
             return;
         }
-        const { name, enabled, value, taxCategoryId, zoneId, customerGroupId, customFields } =
+        const { name, enabled, value, taxCategoryId, zoneId, customFields, customerGroupId } =
             this.detailForm.value;
         if (!name || enabled == null || value == null || !taxCategoryId || !zoneId) {
             return;
         }
-        const formValue = this.detailForm.value;
         const input = {
             name,
             enabled,
             value,
             categoryId: taxCategoryId,
             zoneId,
-            customerGroupId: formValue.customerGroupId,
-            customFields: formValue.customFields,
+            customerGroupId,
+            customFields,
         } satisfies CreateTaxRateInput;
         this.dataService.settings.createTaxRate(input).subscribe(
             data => {

@@ -1,19 +1,18 @@
+import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans } from '@/lib/trans.js';
+import { useQuery } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useQuery } from '@tanstack/react-query';
-import { Alert, AlertDescription } from '@/components/ui/alert.js';
-import { Button } from '@/components/ui/button.js';
-import { Card } from '@/components/ui/card.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
-import { graphql } from '@/graphql/graphql.js';
-import { api } from '@/graphql/api.js';
 import { OptionValueInput } from './option-value-input.js';
 
 const getStockLocationsDocument = graphql(`
@@ -38,7 +37,6 @@ const optionGroupSchema = z.object({
     name: z.string().min(1, { message: 'Option name is required' }),
     values: z.array(optionValueSchema).min(1, { message: 'At least one value is required' }),
 });
-
 
 type VariantOption = {
     name: string;
@@ -99,7 +97,10 @@ interface CreateProductVariantsProps {
     onChange?: ({ data }: { data: VariantConfiguration }) => void;
 }
 
-export function CreateProductVariants({ currencyCode = 'USD', onChange }: CreateProductVariantsProps) {
+export function CreateProductVariants({
+    currencyCode = 'USD',
+    onChange,
+}: Readonly<CreateProductVariantsProps>) {
     const { data: stockLocationsResult } = useQuery({
         queryKey: ['stockLocations'],
         queryFn: () => api.query(getStockLocationsDocument, { options: { take: 100 } }),
@@ -127,7 +128,10 @@ export function CreateProductVariants({ currencyCode = 'USD', onChange }: Create
 
     const watchedOptionGroups = watch('optionGroups');
     // memoize the variants
-    const variants = useMemo(() => generateVariants(watchedOptionGroups), [JSON.stringify(watchedOptionGroups)]);
+    const variants = useMemo(
+        () => generateVariants(watchedOptionGroups),
+        [JSON.stringify(watchedOptionGroups)],
+    );
 
     // Use the handleSubmit approach for the entire form
     useEffect(() => {

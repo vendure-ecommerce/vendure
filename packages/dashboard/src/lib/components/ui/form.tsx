@@ -1,18 +1,18 @@
-import * as React from 'react';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
+import * as React from 'react';
 import {
     Controller,
-    FormProvider,
-    useFormContext,
-    useFormState,
     type ControllerProps,
     type FieldPath,
     type FieldValues,
+    FormProvider,
+    useFormContext,
+    useFormState,
 } from 'react-hook-form';
 
-import { cn } from '@/lib/utils.js';
-import { Label } from '@/components/ui/label.js';
+import { Label } from '@/vdb/components/ui/label.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 const Form = FormProvider;
 
@@ -112,7 +112,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
         <p
             data-slot="form-description"
             id={formDescriptionId}
-            className={cn('text-muted-foreground text-sm', className)}
+            className={cn('text-muted-foreground text-xs', className)}
             {...props}
         />
     );
@@ -138,4 +138,4 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     );
 }
 
-export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField };
+export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useFormField };

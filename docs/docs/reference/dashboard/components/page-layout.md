@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageLayout
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="157" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="170" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -19,19 +19,19 @@ This component governs the layout of the contents of a <a href='/reference/dashb
 It should contain all the <a href='/reference/dashboard/components/page-block#pageblock'>PageBlock</a> components that are to be displayed on the page.
 
 ```ts title="Signature"
-function PageLayout(props: PageLayoutProps): void
+function PageLayout(props: Readonly<PageLayoutProps>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`<a href='/reference/dashboard/components/page-layout#pagelayoutprops'>PageLayoutProps</a>`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;<a href='/reference/dashboard/components/page-layout#pagelayoutprops'>PageLayoutProps</a>&#62;`} />
 
 
 
 ## PageLayoutProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="127" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="140" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

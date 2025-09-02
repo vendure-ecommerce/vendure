@@ -1,38 +1,31 @@
 'use client';
 
-import { DndContext, closestCenter } from '@dnd-kit/core';
-import {
-    restrictToVerticalAxis,
-} from '@dnd-kit/modifiers';
+import { closestCenter, DndContext } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Table } from '@tanstack/react-table';
 import { GripVertical, Settings2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
-    DropdownMenuSeparator, DropdownMenuTrigger,
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem
-} from '@/components/ui/dropdown-menu.js';
-import { usePage } from '@/hooks/use-page.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>;
 }
 
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id });
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -65,7 +58,11 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
             const newColumns = [...columns];
             newColumns.splice(overIndex, 0, newColumns.splice(activeIndex, 1)[0]);
             if (page?.pageId) {
-                setTableSettings(page.pageId, 'columnOrder', newColumns.map(col => col.id));
+                setTableSettings(
+                    page.pageId,
+                    'columnOrder',
+                    newColumns.map(col => col.id),
+                );
             }
         }
     };
@@ -86,16 +83,23 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                         <Trans>Columns</Trans>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[150px]">
-                    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
-                        <SortableContext items={columns.map(col => col.id)} strategy={verticalListSortingStrategy}>
+                <DropdownMenuContent align="end">
+                    <DndContext
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        modifiers={[restrictToVerticalAxis]}
+                    >
+                        <SortableContext
+                            items={columns.map(col => col.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
                             {columns.map(column => (
                                 <SortableItem key={column.id} id={column.id}>
                                     <DropdownMenuCheckboxItem
                                         className="capitalize"
                                         checked={column.getIsVisible()}
                                         onCheckedChange={value => column.toggleVisibility(!!value)}
-                                        onSelect={(e) => e.preventDefault()}
+                                        onSelect={e => e.preventDefault()}
                                     >
                                         {column.id}
                                     </DropdownMenuCheckboxItem>

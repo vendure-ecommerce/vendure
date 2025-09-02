@@ -1,13 +1,12 @@
-import { cn } from '@/lib/utils.js';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input.js';
-import { ReactNode, useRef, useEffect, useState } from 'react';
 
 interface AffixedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
     prefix?: ReactNode;
     suffix?: ReactNode;
 }
 
-export function AffixedInput({ prefix, suffix, className = '', ...props }: AffixedInputProps) {
+export function AffixedInput({ prefix, suffix, className = '', ...props }: Readonly<AffixedInputProps>) {
     const prefixRef = useRef<HTMLSpanElement>(null);
     const suffixRef = useRef<HTMLSpanElement>(null);
     const [prefixWidth, setPrefixWidth] = useState(0);
@@ -34,11 +33,7 @@ export function AffixedInput({ prefix, suffix, className = '', ...props }: Affix
                     {prefix}
                 </span>
             )}
-            <Input
-                {...props}
-                className={className}
-                style={style}
-            />
+            <Input {...props} className={className} style={style} />
             {suffix && (
                 <span ref={suffixRef} className="absolute right-3 text-muted-foreground whitespace-nowrap">
                     {suffix}

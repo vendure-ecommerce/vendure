@@ -1,3 +1,3 @@
-export * from './mollie.plugin';
-export { getLocale, toAmount } from './mollie.helpers';
 export * from './';
+export { toAmount } from './mollie.helpers';
+export * from './mollie.plugin';

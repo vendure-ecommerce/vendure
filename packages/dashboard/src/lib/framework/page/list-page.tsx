@@ -3,26 +3,22 @@ import {
     CustomFieldKeysOfItem,
     CustomizeColumnConfig,
     FacetedFilterConfig,
+    ListQueryFields,
     ListQueryOptionsShape,
     ListQueryShape,
-    ListQueryFields,
     PaginatedListDataTable,
+    PaginatedListRefresherRegisterFn,
     RowAction,
-} from '@/components/shared/paginated-list-data-table.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import {
-    FullWidthPageBlock,
-    Page,
-    PageActionBar,
-    PageLayout,
-    PageTitle,
-} from '../layout-engine/page-layout.js';
+import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
 /**
  * @description
@@ -57,6 +53,13 @@ export interface ListPageProps<
     rowActions?: RowAction<ListQueryFields<T>>[];
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    bulkActions?: BulkAction[];
+    /**
+     * Register a function that allows you to assign a refresh function for
+     * this list. The function can be assigned to a ref and then called when
+     * the list needs to be refreshed.
+     */
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
 /**
@@ -93,7 +96,9 @@ export function ListPage<
     rowActions,
     transformData,
     setTableOptions,
-}: ListPageProps<T, U, V, AC>) {
+    bulkActions,
+    registerRefresher,
+}: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
@@ -191,8 +196,10 @@ export function ListPage<
                         }}
                         facetedFilters={facetedFilters}
                         rowActions={rowActions}
+                        bulkActions={bulkActions}
                         setTableOptions={setTableOptions}
                         transformData={transformData}
+                        registerRefresher={registerRefresher}
                     />
                 </FullWidthPageBlock>
             </PageLayout>

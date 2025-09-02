@@ -1,31 +1,42 @@
-import { AssetPreview } from '@/components/shared/asset/asset-preview.js'
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { createFileRoute } from '@tanstack/react-router'
-import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { toast } from 'sonner';
-import { Page, PageTitle, PageActionBar, PageActionBarRight, PageBlock, PageLayout, CustomFieldsPageBlock } from '@/framework/layout-engine/page-layout.js'
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { useState, useRef } from 'react';
-import { PreviewPreset } from '@/components/shared/asset/asset-preview.js';
-import { AssetPreviewSelector } from '@/components/shared/asset/asset-preview-selector.js';
-import { AssetProperties } from '@/components/shared/asset/asset-properties.js';
-import { AssetFocalPointEditor } from '@/components/shared/asset/asset-focal-point-editor.js';
+import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
+import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
+import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
+import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
+import { Point } from '@/vdb/components/shared/asset/focal-point-control.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Label } from '@/vdb/components/ui/label.js';
+import {
+    CustomFieldsPageBlock,
+    Page,
+    PageActionBar,
+    PageActionBarRight,
+    PageBlock,
+    PageLayout,
+    PageTitle,
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { createFileRoute } from '@tanstack/react-router';
 import { FocusIcon } from 'lucide-react';
-import { Point } from '@/components/shared/asset/focal-point-control.js';
-import { Label } from '@/components/ui/label.js';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
+
+const pageId = 'asset-detail';
+
 export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
     component: AssetDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: assetDetailDocument,
         breadcrumb(isNew, entity) {
             return [
                 { path: '/assets', label: 'Assets' },
-                isNew ? <Trans>New asset</Trans> : entity?.name ?? '',
+                isNew ? <Trans>New asset</Trans> : (entity?.name ?? ''),
             ];
         },
     }),
@@ -42,7 +53,8 @@ function AssetDetailPage() {
     const [height, setHeight] = useState(0);
     const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
         setValuesForUpdate: entity => {
@@ -79,17 +91,14 @@ function AssetDetailPage() {
         return null;
     }
     return (
-        <Page pageId="asset-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 <Trans>Edit asset</Trans>
             </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
                     <PermissionGuard requires={['UpdateChannel']}>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || isPending}
-                        >
+                        <Button type="submit" disabled={!form.formState.isDirty || isPending}>
                             <Trans>Update</Trans>
                         </Button>
                     </PermissionGuard>
@@ -103,7 +112,7 @@ function AssetDetailPage() {
                             height={height}
                             settingFocalPoint={settingFocalPoint}
                             focalPoint={form.getValues().focalPoint ?? { x: 0.5, y: 0.5 }}
-                            onFocalPointChange={(point) => {
+                            onFocalPointChange={point => {
                                 form.setValue('focalPoint.x', point.x, { shouldDirty: true });
                                 form.setValue('focalPoint.y', point.y, { shouldDirty: true });
                                 setSettingFocalPoint(false);
@@ -124,11 +133,7 @@ function AssetDetailPage() {
                         </AssetFocalPointEditor>
                     </div>
                 </PageBlock>
-                <CustomFieldsPageBlock
-                    column="main"
-                    entityType={'Asset'}
-                    control={form.control}
-                />
+                <CustomFieldsPageBlock column="main" entityType={'Asset'} control={form.control} />
                 <PageBlock column="side" blockId="asset-properties">
                     <AssetProperties asset={entity} />
                 </PageBlock>
@@ -136,15 +141,24 @@ function AssetDetailPage() {
                     <div className="flex flex-col gap-2">
                         <AssetPreviewSelector size={size} setSize={setSize} width={width} height={height} />
                         <div className="flex items-center gap-2">
-                            <Button type='button' variant="outline" size="icon" onClick={() => setSettingFocalPoint(true)}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setSettingFocalPoint(true)}
+                            >
                                 <FocusIcon className="h-4 w-4" />
                             </Button>
                             <div className="text-sm text-muted-foreground">
-                                <Label><Trans>Focal Point</Trans></Label>
+                                <Label>
+                                    <Trans>Focal Point</Trans>
+                                </Label>
                                 <div className="text-sm text-muted-foreground">
-                                    {form.getValues().focalPoint?.x && form.getValues().focalPoint?.y
-                                        ? `${form.getValues().focalPoint?.x.toFixed(2)}, ${form.getValues().focalPoint?.y.toFixed(2)}`
-                                        : <Trans>Not set</Trans>}
+                                    {form.getValues().focalPoint?.x && form.getValues().focalPoint?.y ? (
+                                        `${form.getValues().focalPoint?.x.toFixed(2)}, ${form.getValues().focalPoint?.y.toFixed(2)}`
+                                    ) : (
+                                        <Trans>Not set</Trans>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -152,5 +166,5 @@ function AssetDetailPage() {
                 </PageBlock>
             </PageLayout>
         </Page>
-    )
+    );
 }

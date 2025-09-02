@@ -1,5 +1,5 @@
-import { configurableOperationFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const shippingMethodItemFragment = graphql(`
     fragment ShippingMethodItem on ShippingMethod {
@@ -78,6 +78,33 @@ export const deleteShippingMethodDocument = graphql(`
         deleteShippingMethod(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const deleteShippingMethodsDocument = graphql(`
+    mutation DeleteShippingMethods($ids: [ID!]!) {
+        deleteShippingMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignShippingMethodsToChannelDocument = graphql(`
+    mutation AssignShippingMethodsToChannel($input: AssignShippingMethodsToChannelInput!) {
+        assignShippingMethodsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removeShippingMethodsFromChannelDocument = graphql(`
+    mutation RemoveShippingMethodsFromChannel($input: RemoveShippingMethodsFromChannelInput!) {
+        removeShippingMethodsFromChannel(input: $input) {
+            id
+            name
         }
     }
 `);

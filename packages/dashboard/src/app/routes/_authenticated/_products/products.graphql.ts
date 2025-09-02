@@ -1,5 +1,5 @@
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { assetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const productListDocument = graphql(`
     query ProductList($options: ProductListOptions) {
@@ -116,6 +116,74 @@ export const deleteProductDocument = graphql(`
         deleteProduct(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const deleteProductsDocument = graphql(`
+    mutation DeleteProducts($ids: [ID!]!) {
+        deleteProducts(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignProductsToChannelDocument = graphql(`
+    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
+        assignProductsToChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`);
+
+export const removeProductsFromChannelDocument = graphql(`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`);
+
+export const updateProductsDocument = graphql(`
+    mutation UpdateProducts($input: [UpdateProductInput!]!) {
+        updateProducts(input: $input) {
+            id
+            name
+            facetValues {
+                id
+                name
+                code
+            }
+        }
+    }
+`);
+
+export const getProductsWithFacetValuesByIdsDocument = graphql(`
+    query GetProductsWithFacetValuesByIds($ids: [String!]!) {
+        products(options: { filter: { id: { in: $ids } } }) {
+            items {
+                id
+                name
+                facetValues {
+                    id
+                    name
+                    code
+                    facet {
+                        id
+                        name
+                        code
+                    }
+                }
+            }
         }
     }
 `);

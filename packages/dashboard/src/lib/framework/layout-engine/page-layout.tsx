@@ -1,20 +1,24 @@
-import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { Form } from '@/components/ui/form.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { usePage } from '@/hooks/use-page.js';
-import { cn } from '@/lib/utils.js';
-import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { NavigationConfirmation } from '@/vdb/components/shared/navigation-confirmation.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import React, { ComponentProps } from 'react';
+import { EllipsisVerticalIcon } from 'lucide-react';
+import React, { ComponentProps, useMemo } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
-import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
+import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
+import { Button } from '@/vdb/components/ui/button.js';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/vdb/components/ui/dropdown-menu.js';
+import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
+import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
-import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
 
 export interface PageProps extends ComponentProps<'div'> {
     pageId?: string;
@@ -41,13 +45,11 @@ export interface PageProps extends ComponentProps<'div'> {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
+export function Page({ children, pageId, entity, form, submitHandler, ...props }: Readonly<PageProps>) {
     const childArray = React.Children.toArray(children);
 
     const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
-    const pageActionBar = childArray.find(
-        child => isOfType(child, PageActionBar),
-    );
+    const pageActionBar = childArray.find(child => isOfType(child, PageActionBar));
 
     const pageContent = childArray.filter(
         child => !isOfType(child, PageTitle) && !isOfType(child, PageActionBar),
@@ -73,7 +75,13 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
     );
 }
 
-function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }: {
+function PageContent({
+    pageHeader,
+    pageContent,
+    form,
+    submitHandler,
+    ...props
+}: {
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     form?: UseFormReturn<any>;
@@ -94,9 +102,14 @@ function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }:
     );
 }
 
-export function PageContentWithOptionalForm({ form, pageHeader, pageContent, submitHandler }: {
+export function PageContentWithOptionalForm({
+    form,
+    pageHeader,
+    pageContent,
+    submitHandler,
+}: {
     form?: UseFormReturn<any>;
-    pageHeader: React.ReactNode
+    pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     submitHandler?: any;
 }) {
@@ -154,7 +167,7 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageLayout({ children, className }: PageLayoutProps) {
+export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const page = usePage();
     const isDesktop = useMediaQuery('only screen and (min-width : 769px)');
     // Separate blocks into categories
@@ -184,6 +197,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
             if (extensionBlock) {
                 const ExtensionBlock = (
                     <PageBlock
+                        key={childBlock.key}
                         column={extensionBlock.location.column}
                         blockId={extensionBlock.id}
                         title={extensionBlock.title}
@@ -227,8 +241,8 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     );
 }
 
-export function DetailFormGrid({ children }: { children: React.ReactNode }) {
-    return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
+export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNode }>) {
+    return <div className="grid @md:grid-cols-2 gap-6 items-start mb-6">{children}</div>;
 }
 
 /**
@@ -241,7 +255,7 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
  * @docsPage PageTitle
  * @since 3.3.0
  */
-export function PageTitle({ children }: { children: React.ReactNode }) {
+export function PageTitle({ children }: Readonly<{ children: React.ReactNode }>) {
     return <h1 className="text-2xl font-semibold">{children}</h1>;
 }
 
@@ -258,15 +272,11 @@ export function PageTitle({ children }: { children: React.ReactNode }) {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageActionBar({ children }: { children: React.ReactNode }) {
+export function PageActionBar({ children }: Readonly<{ children: React.ReactNode }>) {
     let childArray = React.Children.toArray(children);
 
-    const leftContent = childArray.filter(
-        child => isOfType(child, PageActionBarLeft),
-    );
-    const rightContent = childArray.filter(
-        child => isOfType(child, PageActionBarRight),
-    );
+    const leftContent = childArray.filter(child => isOfType(child, PageActionBarLeft));
+    const rightContent = childArray.filter(child => isOfType(child, PageActionBarRight));
 
     return (
         <div className={cn('flex gap-2', leftContent.length > 0 ? 'justify-between' : 'justify-end')}>
@@ -284,9 +294,11 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
  * @docsPage PageActionBar
  * @since 3.3.0
  */
-export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
+export function PageActionBarLeft({ children }: Readonly<{ children: React.ReactNode }>) {
     return <div className="flex justify-start gap-2">{children}</div>;
 }
+
+type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
 
 /**
  * @description
@@ -296,24 +308,68 @@ export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
  * @docsPage PageActionBar
  * @since 3.3.0
  */
-export function PageActionBarRight({ children }: { children: React.ReactNode }) {
+export function PageActionBarRight({
+    children,
+    dropdownMenuItems,
+}: Readonly<{
+    children: React.ReactNode;
+    dropdownMenuItems?: InlineDropdownItem[];
+}>) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
+    const actionBarButtonItems = actionBarItems.filter(item => item.type !== 'dropdown');
+    const actionBarDropdownItems = [
+        ...(dropdownMenuItems ?? []).map(item => ({
+            ...item,
+            pageId: page.pageId ?? '',
+            type: 'dropdown' as const,
+        })),
+        ...actionBarItems.filter(item => item.type === 'dropdown'),
+    ];
+
     return (
         <div className="flex justify-end gap-2">
-            {actionBarItems.map((item, index) => (
-                <PageActionBarItem key={index} item={item} page={page} />
+            {actionBarButtonItems.map((item, index) => (
+                <PageActionBarItem key={item.pageId + index} item={item} page={page} />
             ))}
             {children}
+            {actionBarDropdownItems.length > 0 && (
+                <PageActionBarDropdown items={actionBarDropdownItems} page={page} />
+            )}
         </div>
     );
 }
 
-function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContextValue }) {
+function PageActionBarItem({
+    item,
+    page,
+}: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
         </PermissionGuard>
+    );
+}
+
+function PageActionBarDropdown({
+    items,
+    page,
+}: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <EllipsisVerticalIcon className="w-4 h-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                {items.map((item, index) => (
+                    <PermissionGuard key={item.pageId + index} requires={item.requiresPermission ?? []}>
+                        <item.component context={page} />
+                    </PermissionGuard>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
 
@@ -348,19 +404,37 @@ export type PageBlockProps = {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageBlock({ children, title, description, className, blockId }: PageBlockProps) {
+export function PageBlock({
+    children,
+    title,
+    description,
+    className,
+    blockId,
+    column,
+}: Readonly<PageBlockProps>) {
+    const contextValue = useMemo(
+        () => ({
+            blockId,
+            title,
+            description,
+            column,
+        }),
+        [blockId, title, description, column],
+    );
     return (
-        <LocationWrapper blockId={blockId}>
-            <Card className={cn('w-full', className)}>
-                {title || description ? (
-                    <CardHeader>
-                        {title && <CardTitle>{title}</CardTitle>}
-                        {description && <CardDescription>{description}</CardDescription>}
-                    </CardHeader>
-                ) : null}
-                <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
-            </Card>
-        </LocationWrapper>
+        <PageBlockContext.Provider value={contextValue}>
+            <LocationWrapper>
+                <Card className={cn('@container  w-full', className)}>
+                    {title || description ? (
+                        <CardHeader>
+                            {title && <CardTitle>{title}</CardTitle>}
+                            {description && <CardDescription>{description}</CardDescription>}
+                        </CardHeader>
+                    ) : null}
+                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                </Card>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 
@@ -376,14 +450,17 @@ export function PageBlock({ children, title, description, className, blockId }: 
  * @since 3.3.0
  */
 export function FullWidthPageBlock({
-                                       children,
-                                       className,
-                                       blockId,
-                                   }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
+    children,
+    className,
+    blockId,
+}: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
+    const contextValue = useMemo(() => ({ blockId, column: 'main' as const }), [blockId]);
     return (
-        <LocationWrapper blockId={blockId}>
-            <div className={cn('w-full', className)}>{children}</div>
-        </LocationWrapper>
+        <PageBlockContext.Provider value={contextValue}>
+            <LocationWrapper>
+                <div className={cn('w-full', className)}>{children}</div>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 
@@ -398,14 +475,14 @@ export function FullWidthPageBlock({
  * @since 3.3.0
  */
 export function CustomFieldsPageBlock({
-                                          column,
-                                          entityType,
-                                          control,
-                                      }: {
+    column,
+    entityType,
+    control,
+}: Readonly<{
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;
-}) {
+}>) {
     const customFieldConfig = useCustomFieldConfig(entityType);
     if (!customFieldConfig || customFieldConfig.length === 0) {
         return null;

@@ -26,3 +26,4 @@ dist-ssr
 *.sw?
 
 src/app/routeTree.gen.ts
+vite/tests/__temp

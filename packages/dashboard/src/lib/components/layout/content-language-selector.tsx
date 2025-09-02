@@ -1,8 +1,8 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { cn } from '@/lib/utils.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 interface ContentLanguageSelectorProps {
     value?: string;
@@ -13,7 +13,10 @@ interface ContentLanguageSelectorProps {
 export function ContentLanguageSelector({ value, onChange, className }: ContentLanguageSelectorProps) {
     const serverConfig = useServerConfig();
     const { formatLanguageName } = useLocalFormat();
-    const { settings: { contentLanguage, displayLanguage }, setContentLanguage} = useUserSettings();
+    const {
+        settings: { contentLanguage },
+        setContentLanguage,
+    } = useUserSettings();
 
     // Fallback to empty array if serverConfig is null
     const languages = serverConfig?.availableLanguages || [];
@@ -22,10 +25,13 @@ export function ContentLanguageSelector({ value, onChange, className }: ContentL
     const currentValue = contentLanguage;
 
     return (
-        <Select value={currentValue} onValueChange={value => {
-            onChange?.(value);
-            setContentLanguage(value);
-            }}>
+        <Select
+            value={currentValue}
+            onValueChange={value => {
+                onChange?.(value);
+                setContentLanguage(value);
+            }}
+        >
             <SelectTrigger className={cn('w-[200px]', className)}>
                 <SelectValue placeholder="Select language" />
             </SelectTrigger>

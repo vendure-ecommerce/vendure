@@ -1,5 +1,12 @@
-import { Button } from '@vendure/dashboard';
-import { Checkbox } from '@vendure/dashboard';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '../ui/button.js';
+import { Checkbox } from '../ui/checkbox.js';
 import {
     Form,
     FormControl,
@@ -8,16 +15,9 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@vendure/dashboard';
-import { Input } from '@vendure/dashboard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@vendure/dashboard';
-import { api } from '@vendure/dashboard';
-import { graphql } from '@vendure/dashboard';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans, useLingui } from '@/lib/trans.js';
-import { useQuery } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+} from '../ui/form.js';
+import { Input } from '../ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
 
 // Query document to fetch available countries
 const getAvailableCountriesDocument = graphql(`
@@ -58,7 +58,12 @@ interface CustomerAddressFormProps<T = any> {
     onCancel?: () => void;
 }
 
-export function CustomerAddressForm<T>({ address, setValuesForUpdate, onSubmit, onCancel }: CustomerAddressFormProps<T>) {
+export function CustomerAddressForm<T>({
+    address,
+    setValuesForUpdate,
+    onSubmit,
+    onCancel,
+}: CustomerAddressFormProps<T>) {
     const { i18n } = useLingui();
 
     // Fetch available countries

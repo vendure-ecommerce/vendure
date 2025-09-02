@@ -2,6 +2,7 @@ type Query {
     facets(options: FacetListOptions): FacetList!
     facet(id: ID!): Facet
     facetValues(options: FacetValueListOptions): FacetValueList!
+    facetValue(id: ID!): FacetValue
 }
 
 type Mutation {
@@ -20,8 +21,14 @@ type Mutation {
     "Create one or more FacetValues"
     createFacetValues(input: [CreateFacetValueInput!]!): [FacetValue!]!
 
+    "Create a single FacetValue"
+    createFacetValue(input: CreateFacetValueInput!): FacetValue!
+
     "Update one or more FacetValues"
     updateFacetValues(input: [UpdateFacetValueInput!]!): [FacetValue!]!
+
+    "Update a single FacetValue"
+    updateFacetValue(input: UpdateFacetValueInput!): FacetValue!
 
     "Delete one or more FacetValues"
     deleteFacetValues(ids: [ID!]!, force: Boolean): [DeletionResponse!]!

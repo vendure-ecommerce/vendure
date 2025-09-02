@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const stockLocationFragment = graphql(`
     fragment StockLocationItem on StockLocation {
@@ -57,6 +57,31 @@ export const deleteStockLocationDocument = graphql(`
         deleteStockLocation(input: { id: $id }) {
             result
             message
+        }
+    }
+`);
+
+export const deleteStockLocationsDocument = graphql(`
+    mutation DeleteStockLocations($input: [DeleteStockLocationInput!]!) {
+        deleteStockLocations(input: $input) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignStockLocationsToChannelDocument = graphql(`
+    mutation AssignStockLocationsToChannel($input: AssignStockLocationsToChannelInput!) {
+        assignStockLocationsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeStockLocationsFromChannelDocument = graphql(`
+    mutation RemoveStockLocationsFromChannel($input: RemoveStockLocationsFromChannelInput!) {
+        removeStockLocationsFromChannel(input: $input) {
+            id
         }
     }
 `);

@@ -1,15 +1,15 @@
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
-import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -19,21 +19,24 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useRef } from 'react';
 import { toast } from 'sonner';
+import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
-import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
-import { useRef } from 'react';
+
+const pageId = 'product-detail';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -53,6 +56,8 @@ function ProductDetailPage() {
     const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        pageId,
+        entityName: 'Product',
         queryDocument: productDetailDocument,
         createDocument: createProductDocument,
         updateDocument: updateProductDocument,
@@ -79,7 +84,7 @@ function ProductDetailPage() {
             toast.success(i18n.t('Successfully updated product'));
             resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../${data.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
@@ -88,9 +93,9 @@ function ProductDetailPage() {
             });
         },
     });
-    
+
     return (
-        <Page pageId="product-detail" entity={entity} form={form} submitHandler={submitHandler}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -142,14 +147,17 @@ function ProductDetailPage() {
                 <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
                 {entity && entity.variantList.totalItems > 0 && (
                     <PageBlock column="main" blockId="product-variants-table">
-                        <ProductVariantsTable productId={params.id} registerRefresher={refresher => {
-                            refreshRef.current = refresher;
-                        }} />
-                         <div className="mt-4">
+                        <ProductVariantsTable
+                            productId={params.id}
+                            registerRefresher={refresher => {
+                                refreshRef.current = refresher;
+                            }}
+                            fromProductDetailPage={true}
+                        />
+                        <div className="mt-4">
                             <AddProductVariantDialog
                                 productId={params.id}
                                 onSuccess={() => {
-                                    console.log('onSuccess');
                                     refreshRef.current?.();
                                 }}
                             />

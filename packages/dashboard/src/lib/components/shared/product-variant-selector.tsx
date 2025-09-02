@@ -1,46 +1,65 @@
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover.js";
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { cn } from '@/lib/utils.js';
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { AssetFragment, assetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
-import { ChevronsUpDown, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/button.js';
-import { assetFragment } from '@/graphql/fragments.js';
 import { VendureImage } from './vendure-image.js';
 
-const productVariantListDocument = graphql(`
-    query ProductVariantList($options: ProductVariantListOptions) {
-        productVariants(options: $options) {
-            items {
-                id
-                name
-                sku
-                featuredAsset {
-                    ...Asset
+const productVariantListDocument = graphql(
+    `
+        query ProductVariantList($options: ProductVariantListOptions) {
+            productVariants(options: $options) {
+                items {
+                    id
+                    name
+                    sku
+                    featuredAsset {
+                        ...Asset
+                    }
+                    price
+                    priceWithTax
+                    product {
+                        featuredAsset {
+                            ...Asset
+                        }
+                    }
                 }
+                totalItems
             }
-            totalItems
         }
-    }
-`, [assetFragment]);
+    `,
+    [assetFragment],
+);
 
 export interface ProductVariantSelectorProps {
-    onProductVariantIdChange: (productVariantId: string) => void;
+    onProductVariantSelect: (variant: {
+        productVariantId: string;
+        productVariantName: string;
+        sku: string;
+        productAsset: AssetFragment | null;
+        price?: number;
+        priceWithTax?: number;
+    }) => void;
 }
 
-export function ProductVariantSelector({ onProductVariantIdChange }: ProductVariantSelectorProps) {
+export function ProductVariantSelector({ onProductVariantSelect }: Readonly<ProductVariantSelectorProps>) {
     const [search, setSearch] = useState('');
     const [open, setOpen] = useState(false);
     const debouncedSearch = useDebounce(search, 500);
 
-    const { data, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ['productVariants', debouncedSearch],
         staleTime: 1000 * 60 * 5,
         enabled: debouncedSearch.length > 0,
@@ -60,11 +79,7 @@ export function ProductVariantSelector({ onProductVariantIdChange }: ProductVari
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full"
-                >
+                <Button variant="outline" role="combobox" className="w-full">
                     Add item to order
                     <Plus className="opacity-50" />
                 </Button>
@@ -74,17 +89,27 @@ export function ProductVariantSelector({ onProductVariantIdChange }: ProductVari
                     <CommandInput
                         placeholder="Add item to order..."
                         className="h-9"
-                       onValueChange={(value) => setSearch(value)}
+                        onValueChange={value => setSearch(value)}
                     />
                     <CommandList>
                         <CommandEmpty>No products found.</CommandEmpty>
                         <CommandGroup>
-                            {data?.productVariants.items.map((variant) => (
+                            {data?.productVariants.items.map(variant => (
                                 <CommandItem
                                     key={variant.id}
                                     value={variant.id}
                                     onSelect={() => {
-                                        onProductVariantIdChange(variant.id);
+                                        onProductVariantSelect({
+                                            productVariantId: variant.id,
+                                            productVariantName: variant.name,
+                                            sku: variant.sku,
+                                            productAsset:
+                                                variant.featuredAsset ??
+                                                variant.product.featuredAsset ??
+                                                null,
+                                            price: variant.price,
+                                            priceWithTax: variant.priceWithTax,
+                                        });
                                         setOpen(false);
                                     }}
                                     className="flex items-center gap-2 p-2"

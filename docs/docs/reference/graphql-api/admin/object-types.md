@@ -3720,6 +3720,20 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#order">Order</a> | <a href="/reference/graphql-api/admin/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/reference/graphql-api/admin/object-types#ineligibleshippingmethoderror">IneligibleShippingMethodError</a> | <a href="/reference/graphql-api/admin/object-types#noactiveordererror">NoActiveOrderError</a></div>
 </div>
 
+## SetSettingsStoreValueResult
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SetSettingsStoreValueResult</span> &#123;</div>
+<div class="graphql-code-line ">key: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">result: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">error: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## SettlePaymentError
 
 <div class="graphql-code-block">
@@ -4359,6 +4373,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateGlobalSettingsResult</span> =</div>
 <div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#globalsettings">GlobalSettings</a> | <a href="/reference/graphql-api/admin/object-types#channeldefaultlanguageerror">ChannelDefaultLanguageError</a></div>
+</div>
+
+## UpdateOrderItemErrorResult
+
+<div class="graphql-code-block">
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Union type of all possible errors that can occur when adding or removing items from an Order.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateOrderItemErrorResult</span> =</div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/reference/graphql-api/admin/object-types#orderlimiterror">OrderLimitError</a> | <a href="/reference/graphql-api/admin/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/reference/graphql-api/admin/object-types#insufficientstockerror">InsufficientStockError</a> | <a href="/reference/graphql-api/admin/object-types#orderinterceptorerror">OrderInterceptorError</a></div>
 </div>
 
 ## UpdateOrderItemsResult

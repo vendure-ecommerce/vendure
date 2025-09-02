@@ -1,4 +1,4 @@
-import { cancel, isCancel, log, select } from '@clack/prompts';
+import { log } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from 'ts-morph';
@@ -6,31 +6,25 @@ import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from
 import { defaultManipulationSettings } from '../constants';
 import { EntityRef } from '../shared/entity-ref';
 
-export async function selectTsConfigFile() {
+export function selectTsConfigFile() {
     const tsConfigFiles = fs.readdirSync(process.cwd()).filter(f => /^tsconfig.*\.json$/.test(f));
     if (tsConfigFiles.length === 0) {
         throw new Error('No tsconfig files found in current directory');
     }
-    if (tsConfigFiles.length === 1) {
-        return tsConfigFiles[0];
+
+    // Prefer the canonical "tsconfig.json" when multiple configs are present.
+    const defaultConfig = 'tsconfig.json';
+    if (tsConfigFiles.includes(defaultConfig)) {
+        return defaultConfig;
     }
-    const selectedConfigFile = await select({
-        message: 'Multiple tsconfig files found. Select one:',
-        options: tsConfigFiles.map(c => ({
-            value: c,
-            label: path.basename(c),
-        })),
-        maxItems: 10,
-    });
-    if (isCancel(selectedConfigFile)) {
-        cancel();
-        process.exit(0);
-    }
-    return selectedConfigFile as string;
+
+    // Fallback: return the first match (stable order from fs.readdirSync).
+    return tsConfigFiles[0];
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function getTsMorphProject(options: ProjectOptions = {}, providedTsConfigPath?: string) {
-    const tsConfigFile = providedTsConfigPath ?? (await selectTsConfigFile());
+    const tsConfigFile = providedTsConfigPath ?? selectTsConfigFile();
     const tsConfigPath = path.join(process.cwd(), tsConfigFile);
     if (!fs.existsSync(tsConfigPath)) {
         throw new Error('No tsconfig.json found in current directory');

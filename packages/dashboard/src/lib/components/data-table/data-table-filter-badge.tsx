@@ -1,10 +1,8 @@
-import { Filter } from 'lucide-react';
-
-import { CircleX } from 'lucide-react';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { CircleX, Filter } from 'lucide-react';
 import { Badge } from '../ui/badge.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { ColumnDataType } from './data-table-types.js';
-import { HumanReadableOperator } from './human-readable-operator.js';
+import { HumanReadableOperator, Operator } from './human-readable-operator.js';
+import { ColumnDataType } from './types.js';
 
 export function DataTableFilterBadge({
     filter,
@@ -22,7 +20,9 @@ export function DataTableFilterBadge({
         <Badge key={filter.id} className="flex gap-1 items-center" variant="secondary">
             <Filter size="12" className="opacity-50" />
             <div>{filter.id}</div>
-            <div className="text-muted-foreground"><HumanReadableOperator operator={operator} mode="short" /></div>
+            <div className="text-muted-foreground">
+                <HumanReadableOperator operator={operator as Operator} mode="short" />
+            </div>
             <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
             <button className="cursor-pointer" onClick={() => onRemove(filter)}>
                 <CircleX size="14" />
@@ -31,7 +31,15 @@ export function DataTableFilterBadge({
     );
 }
 
-function FilterValue({ value, dataType, currencyCode }: { value: unknown, dataType: ColumnDataType, currencyCode: string }) {
+function FilterValue({
+    value,
+    dataType,
+    currencyCode,
+}: {
+    value: unknown;
+    dataType: ColumnDataType;
+    currencyCode: string;
+}) {
     const { formatDate, formatCurrency } = useLocalFormat();
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         return Object.entries(value as Record<string, unknown>).map(([key, value]) => (

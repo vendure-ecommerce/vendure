@@ -1,12 +1,13 @@
+import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
+import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useQuery } from '@tanstack/react-query';
+import { endOfDay, endOfMonth, startOfDay, startOfMonth, subDays, subMonths } from 'date-fns';
+import { useMemo, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
 import { orderSummaryQuery } from './order-summary-widget.graphql.js';
-import { api } from '@/graphql/api.js';
-import { useMemo, useState } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
-import { useChannel, useLocalFormat } from '@/index.js';
-import { startOfDay, endOfDay, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { AnimatedCurrency, AnimatedNumber } from '@/components/shared/animated-number.js';
 
 const WIDGET_ID = 'orders-summary-widget';
 
@@ -36,8 +37,6 @@ function PercentageChange({ value }: PercentageChangeProps) {
 
 export function OrdersSummaryWidget() {
     const [range, setRange] = useState<Range>(Range.Today);
-    const { formatCurrency } = useLocalFormat();
-    const { activeChannel } = useChannel();
 
     const variables = useMemo(() => {
         const now = new Date();

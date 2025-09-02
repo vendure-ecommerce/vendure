@@ -1,0 +1,153 @@
+name: 'Build & Test Dashboard'
+
+on:
+    push:
+        branches:
+            - minor
+            - major
+            - master
+        paths:
+            - 'packages/dashboard/**'
+            - 'package.json'
+            - 'package-lock.json'
+    pull_request:
+        branches:
+            - master
+            - major
+            - minor
+        paths:
+            - 'packages/dashboard/**'
+            - 'package.json'
+            - 'package-lock.json'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    packages: write
+
+env:
+    NODE_OPTIONS: '--max_old_space_size=4096'
+
+defaults:
+    run:
+        shell: bash
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    publish_install:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+                node-version: [22.x, 24.x]
+            fail-fast: false
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install Verdaccio
+              run: |
+                  npm install -g verdaccio
+                  npm install -g wait-on
+                  tmp_registry_log=`mktemp`
+                  mkdir -p $HOME/.config/verdaccio
+                  cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  TOKEN_RES=$(curl -XPUT \
+                    -H "Content-type: application/json" \
+                    -d '{ "name": "test", "password": "test" }' \
+                    'http://localhost:4873/-/user/org.couchdb.user:test')
+                  TOKEN=$(echo "$TOKEN_RES" | jq -r '.token')
+                  npm set //localhost:4873/:_authToken $TOKEN
+            - name: npm install
+              run: |
+                  npm install
+              env:
+                  CI: true
+            - name: Check for banned imports
+              run: |
+                  cd $GITHUB_WORKSPACE/packages/dashboard
+                  node scripts/check-lib-imports.js
+            - name: Build & publish dashboard
+              run: |
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  npx lerna run build --scope @vendure/common --scope @vendure/core
+                  cd packages/dashboard
+                  npm run build:standalone
+                  npm run build
+                  npm version prepatch --preid ci --no-git-tag-version --no-commit-hooks
+                  npm publish --no-push --yes --tag ci --registry http://localhost:4873
+            - name: Set up new Vendure app
+              run: |
+                  mkdir -p ~/install
+                  cd ~/install
+                  nohup verdaccio --config ~/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  npx @vendure/create@latest test-app --ci --use-npm --log-level info
+            - name: Install dashboard
+              run: |
+                  nohup verdaccio --config ~/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  cd ~/install/test-app
+                  npm install @vendure/dashboard@ci --registry=http://localhost:4873
+            - name: Copy files (Windows)
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  cd ~/install/test-app
+                  New-Item -ItemType Directory -Force -Path src/plugins/test-plugin
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" -Destination "./vite.config.mts"
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/*" -Destination "src/plugins/test-plugin/" -Recurse -Force
+                  Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" -Destination "./setup-test-plugin.js"
+            - name: Copy files (Unix)  
+              if: runner.os != 'Windows'
+              run: |
+                  cd ~/install/test-app
+                  mkdir -p src/plugins/test-plugin
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" ./vite.config.mts
+                  cp -r "$GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/." src/plugins/test-plugin/
+                  cp "$GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" ./setup-test-plugin.js
+            - name: Run setup script
+              shell: bash
+              run: |
+                  cd ~/install/test-app
+                  node setup-test-plugin.js
+            - name: Install Playwright
+              run: |
+                  cd $GITHUB_WORKSPACE
+                  npm install playwright
+                  npx playwright install-deps
+                  npx playwright install chromium
+            - name: Start dashboard and run tests
+              run: |
+                  cd ~/install/test-app
+                  # start the dev server in the background
+                  npm run dev &
+                  DEV_PID=$!
+                  # Wait a moment for it to start
+                  sleep 5
+                  # Start the dashboard in the background
+                  npx vite --port 5173 &
+                  DASHBOARD_PID=$!
+                  # Wait a moment for it to start
+                  sleep 5
+                  # Run the dashboard tests
+                  node $GITHUB_WORKSPACE/.github/workflows/scripts/dashboard-tests.js
+                  # Clean up dashboard process
+                  kill $DASHBOARD_PID 2>/dev/null || true
+                  # Clean up dev server process
+                  kill $DEV_PID 2>/dev/null || true
+            - name: Upload dashboard test screenshots
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dashboard-test-screenshots-${{ matrix.os }}-${{ matrix.node-version }}
+                  path: /tmp/dashboard-test-*.png
+                  retention-days: 28

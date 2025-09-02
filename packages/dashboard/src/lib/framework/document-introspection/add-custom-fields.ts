@@ -1,9 +1,9 @@
-import { Variables } from '@/graphql/api.js';
+import { Variables } from '@/vdb/graphql/api.js';
 import {
     getServerConfigDocument,
     relationCustomFieldFragment,
     structCustomFieldFragment,
-} from '@/providers/server-config.js';
+} from '@/vdb/providers/server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { CustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ResultOf } from 'gql.tada';
@@ -24,6 +24,35 @@ type StructCustomFieldFragment = ResultOf<typeof structCustomFieldFragment>;
 type RelationCustomFieldFragment = ResultOf<typeof relationCustomFieldFragment>;
 
 let globalCustomFieldsMap: Map<string, CustomFieldConfig[]> = new Map();
+
+// Memoization cache using WeakMap to avoid memory leaks
+const memoizationCache = new WeakMap<DocumentNode, Map<string, TypedDocumentNode<any, any>>>();
+
+/**
+ * Creates a cache key for the options object
+ */
+function createOptionsKey(options?: {
+    customFieldsMap?: Map<string, CustomFieldConfig[]>;
+    includeCustomFields?: string[];
+}): string {
+    if (!options) return 'default';
+
+    const parts: string[] = [];
+
+    if (options.customFieldsMap) {
+        // Create a deterministic key for the customFieldsMap
+        const mapEntries = Array.from(options.customFieldsMap.entries())
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([key, value]) => `${key}:${value.length}`);
+        parts.push(`map:${mapEntries.join(',')}`);
+    }
+
+    if (options.includeCustomFields) {
+        parts.push(`include:${options.includeCustomFields.sort().join(',')}`);
+    }
+
+    return parts.join('|') || 'default';
+}
 
 /**
  * @description
@@ -56,6 +85,8 @@ export function getCustomFieldsMap() {
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured
  * custom fields to those fragments.
+ *
+ * This function is memoized to return a stable identity for given inputs.
  */
 export function addCustomFields<T, V extends Variables = Variables>(
     documentNode: DocumentNode | TypedDocumentNode<T, V>,
@@ -64,6 +95,21 @@ export function addCustomFields<T, V extends Variables = Variables>(
         includeCustomFields?: string[];
     },
 ): TypedDocumentNode<T, V> {
+    const optionsKey = createOptionsKey(options);
+
+    // Check if we have a cached result for this document and options
+    let documentCache = memoizationCache.get(documentNode);
+    if (!documentCache) {
+        documentCache = new Map();
+        memoizationCache.set(documentNode, documentCache);
+    }
+
+    const cachedResult = documentCache.get(optionsKey);
+    if (cachedResult) {
+        return cachedResult as TypedDocumentNode<T, V>;
+    }
+
+    // If not cached, compute the result
     const clone = JSON.parse(JSON.stringify(documentNode)) as DocumentNode;
     const customFields = options?.customFieldsMap || globalCustomFieldsMap;
 
@@ -209,6 +255,8 @@ export function addCustomFields<T, V extends Variables = Variables>(
         }
     }
 
+    // Cache the result before returning
+    documentCache.set(optionsKey, clone);
     return clone;
 }
 
