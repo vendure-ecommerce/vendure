@@ -17,21 +17,30 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
     }
 
     validateCustomFields(entityName: string, entity: Partial<HasCustomFields>) {
-        if (entity.customFields === undefined) {
+        const cf: any = (entity as any).customFields;
+        if (cf === null || cf === undefined || typeof cf !== 'object') {
             return;
         }
 
-        const customFields = this.configService.customFields[entityName as keyof CustomFields];
-
-        const validFieldNames = new Set(customFields.map(field => field.name));
-        for (const key of Object.keys(entity.customFields)) {
+        const config = this.resolveCustomFieldsConfig(entityName);
+        if (!config || config.length === 0) {
+            return;
+        }
+        const validFieldNames = new Set(config.map(field => field.name));
+        for (const key of Object.keys(cf)) {
             if (!validFieldNames.has(key)) {
                 Logger.warn(`Custom field ${key} not found for entity ${entityName}`);
-                continue;
             }
         }
+    }
 
-        return;
+    private resolveCustomFieldsConfig(entityName: string) {
+        let cfg = this.configService.customFields[entityName as keyof CustomFields];
+        if (!cfg && entityName.endsWith('Translation')) {
+            const base = entityName.slice(0, -'Translation'.length);
+            cfg = this.configService.customFields[base as keyof CustomFields];
+        }
+        return cfg;
     }
 
     beforeInsert(event: InsertEvent<any>) {
