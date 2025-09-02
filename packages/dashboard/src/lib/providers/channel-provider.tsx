@@ -1,6 +1,7 @@
-import { api } from '@/vdb/graphql/api.js';
+import { api, SELECTED_CHANNEL_TOKEN_KEY } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
@@ -58,25 +59,30 @@ export interface ChannelContext {
     refreshChannels: () => void;
 }
 
+/**
+ * Sets the channel token in localStorage, which is then used by the `api`
+ * object to ensure we add the correct token header to all API calls.
+ */
+function setChannelTokenInLocalStorage(channelToken: string) {
+    try {
+        localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, channelToken);
+    } catch (e) {
+        console.error('Failed to store selected channel in localStorage', e);
+    }
+}
+
 // Create the context
 export const ChannelContext = React.createContext<ChannelContext | undefined>(undefined);
 
-// Local storage key for the selected channel
-const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
-const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
-
 export function ChannelProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const queryClient = useQueryClient();
+    const {
+        setActiveChannelId,
+        settings: { activeChannelId },
+    } = useUserSettings();
     const { channels: userChannels, isAuthenticated, refreshCurrentUser } = useAuth();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
-        // Initialize from localStorage if available
-        try {
-            const storedChannelId = localStorage.getItem(SELECTED_CHANNEL_KEY);
-            return storedChannelId || undefined;
-        } catch (e) {
-            console.error('Failed to load selected channel from localStorage', e);
-            return undefined;
-        }
+        return activeChannelId;
     });
 
     // Fetch all available channels
@@ -112,19 +118,12 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
     // Set the selected channel and update localStorage
     const setSelectedChannel = React.useCallback(
         (channelId: string) => {
-            try {
-                // Find the channel to get its token
-                const channel = channels.find(c => c.id === channelId);
-                if (channel) {
-                    // Store channel ID and token in localStorage
-                    localStorage.setItem(SELECTED_CHANNEL_KEY, channelId);
-                    localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, channel.token);
-                    setSelectedChannelId(channelId);
-
-                    queryClient.invalidateQueries();
-                }
-            } catch (e) {
-                console.error('Failed to set selected channel', e);
+            const channel = channels.find(c => c.id === channelId);
+            if (channel) {
+                setChannelTokenInLocalStorage(channel.token);
+                setSelectedChannelId(channelId);
+                setActiveChannelId(channelId);
+                queryClient.invalidateQueries();
             }
         },
         [queryClient, channels],
@@ -136,26 +135,15 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         const validChannelIds = channels.map(c => c.id);
 
         // If selected channel is not valid for this user, reset it
-        if (selectedChannelId && !validChannelIds.includes(selectedChannelId)) {
+        if (selectedChannelId && validChannelIds.length && !validChannelIds.includes(selectedChannelId)) {
             setSelectedChannelId(undefined);
-            try {
-                localStorage.removeItem(SELECTED_CHANNEL_KEY);
-                localStorage.removeItem(SELECTED_CHANNEL_TOKEN_KEY);
-            } catch (e) {
-                console.error('Failed to remove selected channel from localStorage', e);
-            }
         }
 
         // If no selected channel is set, use the first available channel
         if (!selectedChannelId && channels.length > 0) {
             const defaultChannel = channels[0];
             setSelectedChannelId(defaultChannel.id);
-            try {
-                localStorage.setItem(SELECTED_CHANNEL_KEY, defaultChannel.id);
-                localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, defaultChannel.token);
-            } catch (e) {
-                console.error('Failed to store selected channel in localStorage', e);
-            }
+            setChannelTokenInLocalStorage(defaultChannel.token);
         }
     }, [selectedChannelId, channels]);
 

@@ -13,11 +13,13 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
@@ -85,7 +87,11 @@ export function ChannelSwitcher() {
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <div
+                                    className={
+                                        'bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'
+                                    }
+                                >
                                     <span className="truncate font-semibold text-xs uppercase">
                                         {getChannelInitialsFromCode(displayChannel?.code || '')}
                                     </span>
@@ -122,7 +128,12 @@ export function ChannelSwitcher() {
                                         onClick={() => setActiveChannel(channel.id)}
                                         className="gap-2 p-2"
                                     >
-                                        <div className="flex size-8 items-center justify-center rounded border">
+                                        <div
+                                            className={cn(
+                                                'flex size-8 items-center justify-center rounded border',
+                                                channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
+                                            )}
+                                        >
                                             <span className="truncate font-semibold text-xs uppercase">
                                                 {getChannelInitialsFromCode(channel.code)}
                                             </span>
