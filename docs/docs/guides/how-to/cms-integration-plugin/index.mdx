@@ -16,7 +16,11 @@ This guide will walk through a complete implementation that automatically syncs 
 ## Working Example Repository
 
 :::info
+This guide provides a high-level overview of building a CMS integration plugin. For complete implementations, refer to these working examples:
+
 The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin).
+
+The code examples in this guide are simplified for educational purposes. The actual implementations contain additional features like error handling, retry logic, and performance optimizations.
 :::
 
 ## Prerequisites
@@ -158,39 +162,49 @@ The sync logic is split into two services: a generic service to fetch data, and 
 
 ### The Generic Sync Service
 
-`CmsSyncService` acts as an intermediary. The job queue processor calls this service, which is responsible for fetching the complete entity data from the database. It then calls a mock `CmsService` to perform the actual sync.
+`CmsSyncService` orchestrates the synchronization logic. It fetches complete entity data from the database, handles relationships (variants ↔ products ↔ collections), and delegates to the CMS-specific service.
 
 :::tip
-Separating the services to one that orchestrates the sync logic and a service that makes calls to the CMS allows for better testability and maintainability.
+Separating orchestration logic from CMS-specific API calls allows for better testability and maintainability. The sync service handles Vendure-specific operations while CMS services focus on API communication.
 :::
+
+Key responsibilities include:
+
+- Entity data fetching with proper relations
+- Translation handling and validation
+- Relationship resolution (finding collections for variants, etc.)
+- Error handling and retry logic
+- Bulk synchronization with parallel processing
 
 ```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()
 export class CmsSyncService {
     constructor(
         private connection: TransactionalConnection,
-        private cmsService: CmsService, // Injected here
+        private cmsService: CmsService, // Your CMS-specific service
+        private channelService: ChannelService,
+        // ... other services
     ) {}
 
-    async syncProductToCms(jobData: SyncJobData): Promise<any> {
-        const { entityId, operationType } = jobData;
+    async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
+        // Fetch product with relations
         const product = await this.connection.getRepository(Product).findOne({
-            /* ... */
+            where: { id: jobData.entityId },
+            relations: { translations: true },
         });
 
-        if (product) {
-            // Add your own cms services here
-            return this.cmsService.syncProduct({ product, operationType });
-        }
-    }
-    // implement syncProductVariant, Collection and etc...
-    // ...
+        const defaultLanguageCode = await this.getDefaultLanguageCode();
 
-    // this method is used to get the default language code for the default channel
-    private async getDefaultLanguageCode(): Promise<LanguageCode> {
-        const defaultChannel = await this.channelService.getDefaultChannel();
-        return defaultChannel.defaultLanguageCode;
+        // Delegate to CMS-specific service
+        return this.cmsService.syncProduct({
+            product,
+            defaultLanguageCode,
+            operationType: jobData.operationType,
+        });
     }
+
+    // Additional methods: syncVariantToCms, syncCollectionToCms,
+    // findCollectionsForVariant, bulk sync operations, etc.
 }
 ```
 
@@ -200,7 +214,7 @@ export class CmsSyncService {
 <TabItem value="storyblok" label="Storyblok">
 
 :::tip Working Example
-The complete source code for this Storyblok integration can be found in the [cms-integration-plugin example repository](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin).
+The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration). It includes advanced features like rate limiting, content type management, and bulk operations.
 :::
 
 **Setting up Storyblok Space**
@@ -228,109 +242,52 @@ STORYBLOK_SPACE_ID=your_space_id
 
 **The Storyblok Service**
 
-`StoryblokService` contains all logic specific to the Storyblok API. Its responsibilities include data transformation, making authenticated API calls, handling rate-limiting, and ensuring the required content types exist on startup.
+`StoryblokService` handles all Storyblok-specific operations including API communication, content type management, and data transformation. Key features include:
+
+- **Content Type Management**: Automatically creates Vendure-specific content types (components) in Storyblok
+- **Rate Limiting**: Respects Storyblok's API limits (max 5 calls/second)
+- **Story Management**: CRUD operations for stories representing products, variants, and collections
+- **Relationship Handling**: Manages references between products, variants, and collections
 
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
 @Injectable()
-export class StoryblokService implements OnApplicationBootstrap {
-    // Storyblok Management API base URL for all requests
+export class StoryblokService {
     private readonly storyblokBaseUrl = 'https://mapi.storyblok.com/v1';
-    private readonly componentsPath = 'components';
-    private isInitialized = false;
-    private lastApiCallTime = 0;
-    // Rate limiting: max 5 calls per second to comply with Storyblok API limits
-    private readonly rateLimitDelay = 200;
 
-    // Injects plugin configuration containing Storyblok credentials
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
-    // Called when application starts - ensures required content types exist in Storyblok
-    async onApplicationBootstrap() {
-        this.ensureStoryContentTypesExists();
-    }
-
-    // Main sync method that routes different operations to appropriate handlers
-    async syncProduct({ product, operationType }) {
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
         switch (operationType) {
             case 'create':
-                await this.createStoryFromProduct(product);
-                break;
+                return this.createStoryFromProduct(product, defaultLanguageCode);
             case 'update':
-                await this.updateStoryFromProduct(product);
-                break;
+                return this.updateStoryFromProduct(product, defaultLanguageCode);
             case 'delete':
-                await this.deleteStoryFromProduct(product);
-                break;
+                return this.deleteStoryFromProduct(product, defaultLanguageCode);
         }
     }
 
-    // implement syncProductVariant, Collection and etc...
-    // ...
-
-    // Generic method for making authenticated requests to Storyblok's Management API
     private async makeStoryblokRequest({ method, endpoint, data }) {
-        // Enforces rate limiting to avoid hitting API limits
         await this.enforceRateLimit();
         const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
 
-        // Waits for content types initialization before making requests
-        if (!skipInitializationCheck) {
-            let attempts = 0;
-            while (!this.isInitialized && attempts < 100) {
-                await new Promise(res => setTimeout(res, Math.min(10 + 1.03 ** attempts, 30000)));
-                attempts++;
-            }
-        }
-
-        // Makes authenticated request with proper headers
         const response = await fetch(url, {
             method,
             headers: {
+                Authorization: this.options.cmsApiKey,
                 'Content-Type': 'application/json',
-                Authorization: this.options.cmsApiKey, // Management API token
             },
-            body: method === 'POST' || method === 'PUT' ? JSON.stringify(data) : undefined,
+            body: data ? JSON.stringify(data) : undefined,
         });
 
-        // Handles API errors by throwing descriptive error messages
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
+            throw new Error(`Storyblok API error: ${response.status}`);
         }
-
-        return method === 'DELETE' ? {} : await response.json();
+        return response.json();
     }
 
-    // Ensures required content types (components) exist in Storyblok space
-    private async ensureStoryContentTypesExists() {
-        const contentCheck = await this.checkContentTypes();
-
-        // Creates component schemas for products, variants, and collections
-        if (!contentCheck.product) {
-            await this.createContentType('product');
-        }
-        if (!contentCheck.variant) {
-            await this.createContentType('product_variant');
-        }
-        if (!contentCheck.collection) {
-            await this.createContentType('collection');
-        }
-
-        this.isInitialized = true;
-    }
-
-    // Rate limiting implementation to comply with Storyblok API limits
-    private async enforceRateLimit(): Promise<void> {
-        const now = Date.now();
-        const timeSinceLastCall = now - this.lastApiCallTime;
-
-        if (timeSinceLastCall < this.rateLimitDelay) {
-            const waitTime = this.rateLimitDelay - timeSinceLastCall;
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-
-        this.lastApiCallTime = Date.now();
-    }
+    // Additional methods: content type creation, rate limiting,
+    // story CRUD operations, relationship management, etc.
 }
 ```
 
@@ -360,6 +317,10 @@ This setup provides a complete Storyblok CMS integration that automatically crea
 </TabItem>
 <TabItem value="Sanity" title="Sanity">
 **Sanity CMS Integration**
+
+:::tip Working Example
+The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like rate limiting, content type management, and bulk operations.
+:::
 
 This tab provides a complete guide for integrating Vendure with Sanity CMS, including setting up a Sanity Studio and implementing the synchronization service.
 
@@ -451,83 +412,63 @@ export const schemaTypes = [
 
 **The Sanity Service**
 
-#### Implementation
+The `SanityService` handles all Sanity-specific operations including document management, GROQ queries, and API communication. Key features include:
 
-The `SanityService` contains all logic specific to the Sanity API. Unlike Storyblok, Sanity doesn't require content type creation as schemas are defined in the Studio.
+- **Document Management**: CRUD operations using Sanity's mutation API
+- **GROQ Queries**: Efficient document lookups and relationship resolution
+- **Reference Handling**: Manages document references between products, variants, and collections
+- **Schema Independence**: Works with schemas defined in Sanity Studio
 
 ```ts title="src/plugins/cms/services/sanity.service.ts"
 @Injectable()
 export class SanityService {
-    // Constructs the Sanity API base URL using the project ID from configuration
     private get sanityBaseUrl(): string {
-        // the options.sanityProjectId are defined in your vendure-config.ts file.
         return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
     }
 
-    // Injects the plugin configuration options containing Sanity credentials
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
-    // Main sync method that routes different operations to appropriate handlers
-    async syncProduct({ product, operationType }) {
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
         switch (operationType) {
             case 'create':
-                await this.createDocumentFromProduct(product);
-                break;
+                return this.createDocumentFromProduct(product, defaultLanguageCode);
             case 'update':
-                await this.updateDocumentFromProduct(product);
-                break;
+                return this.updateDocumentFromProduct(product, defaultLanguageCode);
             case 'delete':
-                await this.deleteDocumentFromProduct(product);
-                break;
+                return this.deleteDocumentFromProduct(product, defaultLanguageCode);
         }
     }
 
-    // implement syncProductVariant, syncCollection...
-
-    // Generic method for making authenticated requests to Sanity's API
     private async makeSanityRequest({ method, endpoint, data }) {
         const url = `${this.sanityBaseUrl}/${endpoint}`;
 
-        // Makes authenticated request with proper headers
         const response = await fetch(url, {
             method,
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${this.options.sanityApiKey}`,
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
         });
 
-        // Handles API errors by throwing descriptive error messages
         if (!response.ok) {
             throw new Error(`Sanity API error: ${response.status}`);
         }
-
-        return await response.json();
+        return response.json();
     }
 
-    // Creates a new document in Sanity from a Vendure product
-    private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
-        // Transforms Vendure product data to Sanity document format
-        const data = this.transformProductData(product, defaultLanguageCode);
-        // Uses Sanity's mutation API to create the document
-        return this.makeSanityRequest({
-            method: 'POST',
-            endpoint: `data/mutate/${this.options.sanityDataset || 'production'}`,
-            data: { mutations: [{ create: data }] },
-        });
-    }
-
-    // Transforms Vendure product data into Sanity document structure
     private transformProductData(product, defaultLanguageCode: LanguageCode) {
         return {
-            _type: 'vendureProduct', // Sanity document type
-            vendureId: parseInt(product.id.toString()), // Original Vendure ID as number
-            title: product.translations[defaultLanguageCode]?.name, // Product name from first translation
-            slug: { current: product.translations[defaultLanguageCode]?.slug }, // Sanity slug format
-            // Add variant references as needed
+            _type: 'vendureProduct',
+            vendureId: parseInt(product.id.toString()),
+            title: product.translations[defaultLanguageCode]?.name,
+            slug: { current: product.translations[defaultLanguageCode]?.slug },
+            // Additional fields and variant references
         };
     }
+
+    // Additional methods: GROQ queries, document lookups,
+    // batch operations, relationship management, etc.
 }
 ```
 
@@ -569,10 +510,21 @@ This setup provides a complete Sanity CMS integration that automatically syncs y
 </TabItem>
 <TabItem value="more-soon" label="More guides coming soon">
 :::info
-More guides coming soon :D
+More CMS integration guides coming soon! Have a specific CMS you'd like to see covered? [Let us know](https://github.com/vendure-ecommerce/vendure/discussions).
 :::
 </TabItem>
 </Tabs>
+
+## Production Considerations
+
+The examples in this guide are simplified for _educational_ purposes. Production implementations should include:
+
+- **Error Handling**: Comprehensive error handling with retries and fallbacks
+- **Rate Limiting**: Respect CMS API limits to avoid throttling
+- **Bulk Operations**: Efficient batch processing for large catalogs
+- **Monitoring**: Logging and metrics for sync operations
+- **Testing**: Unit and integration tests for sync logic
+- **Performance**: Parallel processing and optimized queries
 
 ## Admin UI Integration
 
