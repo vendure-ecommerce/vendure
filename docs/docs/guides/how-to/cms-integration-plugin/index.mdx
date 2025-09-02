@@ -9,7 +9,7 @@ A CMS integration plugin allows you to automatically synchronize your Vendure pr
 
 This enables you to maintain a unified content strategy across your e-commerce platform and marketing channels.
 
-This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are desinged to be CMS-agnostic.
+This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are designed to be CMS-agnostic.
 
 This guide will walk through a complete implementation that automatically syncs products, variants, and collections whenever changes occur in Vendure.
 
@@ -37,6 +37,17 @@ This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure co
 - **[Job Queues](/guides/developer-guide/worker-job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
 - **[Plugin API](/guides/developer-guide/plugins/)**: The foundation for extending Vendure with custom capabilities.
 
+## How It Works
+
+The CMS integration follows a simple event-driven flow:
+
+```
+Vendure Entity Change → EventBus → Job Queue → Sync Service → CMS API
+    (Product/Variant/Collection)     (Async Processing)   (Transform & Send)
+```
+
+This ensures reliable, asynchronous synchronization with built-in retry capabilities.
+
 ## Plugin Structure and Types
 
 First, let's use the Vendure CLI to scaffold the basic plugin structure:
@@ -52,7 +63,7 @@ This command will create the basic plugin structure. Next, we'll generate the re
 npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
 
 # Generate the CMS-specific service (replace with your CMS, e.g., StoryblokService)
-npx vendure add -s cmsSpecifcService --selected-plugin CmsPlugin
+npx vendure add -s cmsSpecificService --selected-plugin CmsPlugin
 ```
 
 Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](/guides/developer-guide/the-service-layer/), and the configuration types.
@@ -62,9 +73,10 @@ Now we start by defining the main [plugin](/guides/developer-guide/plugins/) cla
 The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
-import { VendurePlugin, PluginCommonModule } from '@vendure/core';
+import { VendurePlugin, PluginCommonModule, Type, OnModuleInit } from '@vendure/core';
 import { CmsSyncService } from './services/cms-sync.service';
 import { StoryblokService } from './services/storyblok.service';
+import { PluginInitOptions, CMS_PLUGIN_OPTIONS } from './types';
 // ...
 
 @VendurePlugin({
@@ -92,6 +104,8 @@ The plugin's configuration options are defined in a `types.ts` file.
 Create this file in your plugin directory to define the interfaces. These options will be passed to the plugin from your `vendure-config.ts`.
 
 ```ts title="src/plugins/cms/types.ts"
+import { ID, InjectionToken } from '@vendure/core';
+
 export interface PluginInitOptions {
     cmsApiKey?: string;
     storyblokSpaceId?: string; // Storyblok-specific option
@@ -106,6 +120,14 @@ export interface SyncJobData {
     timestamp: string;
     retryCount: number;
 }
+
+export interface SyncResponse {
+    success: boolean;
+    message?: string;
+    error?: string;
+}
+
+export const CMS_PLUGIN_OPTIONS = new InjectionToken<PluginInitOptions>('CMS_PLUGIN_OPTIONS');
 ```
 
 ## Event-Driven Synchronization
@@ -208,7 +230,7 @@ export class CmsSyncService {
 }
 ```
 
-### Platform specific setup
+## Platform specific setup
 
 <Tabs>
 <TabItem value="storyblok" label="Storyblok">
@@ -353,7 +375,7 @@ Open your browser to `http://localhost:3333` and log in using the same service (
 
 Create the Vendure-specific schema files in your `schemaTypes` folder:
 
-for example, here is a schema file for a Vendure product variant:
+For example, here is a schema file for a Vendure product variant:
 
 **vendureProductVariant.ts**
 
@@ -387,7 +409,7 @@ export const vendureProductVariant = defineType({
             to: [{ type: 'vendureProduct' }],
         }),
         defineField({
-            name: 'vendureCollecitons',
+            name: 'vendureCollections',
             type: 'array',
             of: [{ type: 'reference', to: [{ type: 'vendureCollection' }] }],
         }),
@@ -530,6 +552,7 @@ cd payload-integration-app
 ```
 
 Choose the following options when prompted:
+
 - Use TypeScript? **Yes**
 - Choose a database: **PostgreSQL** (or your preferred database)
 - Package manager: **pnpm**
@@ -540,10 +563,10 @@ Update your development script to use port 3001 to avoid conflicts with Vendure:
 
 ```json title="package.json"
 {
-  "scripts": {
-    "dev": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts nodemon --exec tsx src/server.ts",
-    "dev:payload": "payload dev --port 3001"
-  }
+    "scripts": {
+        "dev": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts nodemon --exec tsx src/server.ts",
+        "dev:payload": "payload dev --port 3001"
+    }
 }
 ```
 
@@ -564,10 +587,10 @@ export const VendureProduct: CollectionConfig = {
     // For production, implement proper authentication and role-based access control.
     access: {
         // DEV ONLY: Public read access
-        read: () => true,    
-        create: () => true, 
-        update: () => true,  
-        delete: () => true,  
+        read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
     },
     fields: [
         {
@@ -598,7 +621,6 @@ export const VendureProduct: CollectionConfig = {
 // Additional collection configurations for VendureProductVariant and VendureCollection
 // follow the same pattern with appropriate field definitions and relationships.
 
-
 // export const VendureProductVariant: CollectionConfig = { ... }
 // export const VendureCollection: CollectionConfig = { ... }
 ```
@@ -611,13 +633,13 @@ Update your `payload.config.ts` to include the Vendure collections:
 import { VendureProduct, VendureProductVariant, VendureCollection } from './collections/VendureEntities';
 
 export default buildConfig({
-  // ... other config
-  collections: [
-    VendureProduct,
-    VendureProductVariant,
-    VendureCollection,
-    // ... other collections
-  ],
+    // ... other config
+    collections: [
+        VendureProduct,
+        VendureProductVariant,
+        VendureCollection,
+        // ... other collections
+    ],
 });
 ```
 
@@ -650,7 +672,7 @@ The `PayloadService` handles all Payload-specific operations including local API
 @Injectable()
 export class PayloadService {
     private readonly payloadBaseUrl = 'http://localhost:3001/api';
-    
+
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
     async syncProduct({ product, defaultLanguageCode, operationType }) {
@@ -691,7 +713,7 @@ export class PayloadService {
     private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
         const existingDocument = await this.findDocumentBySlug(
             'vendure-product',
-            product.translations[defaultLanguageCode]?.slug
+            product.translations[defaultLanguageCode]?.slug,
         );
 
         if (existingDocument) {
@@ -761,27 +783,6 @@ CmsPlugin.init({
 }),
 ```
 
-**Development Setup**
-
-For development, you can allow API access without authentication by updating your Payload access configuration:
-
-```ts title="src/collections/VendureEntities.ts"
-export const VendureProduct: CollectionConfig = {
-    // ... other config
-    access: {
-        read: () => true,    // NON-PRODUCTION: Allow read without auth
-        create: () => true,  // NON-PRODUCTION: Allow create without auth
-        update: () => true,  // NON-PRODUCTION: Allow update without auth
-        delete: () => true,  // NON-PRODUCTION: Allow delete without auth
-    },
-    // ... fields
-};
-```
-
-:::warning Production Security
-The open access configuration above should only be used in development. For production, implement proper authentication and authorization rules.
-:::
-
 This setup provides a complete Payload CMS integration that automatically syncs your Vendure catalog with Payload's flexible content management system, supporting local development and production deployments.
 
 </TabItem>
@@ -791,17 +792,6 @@ More CMS integration guides coming soon! Have a specific CMS you'd like to see c
 :::
 </TabItem>
 </Tabs>
-
-## Production Considerations
-
-The examples in this guide are simplified for _educational_ purposes. Production implementations should include:
-
-- **Error Handling**: Comprehensive error handling with retries and fallbacks
-- **Rate Limiting**: Respect CMS API limits to avoid throttling
-- **Bulk Operations**: Efficient batch processing for large catalogs
-- **Monitoring**: Logging and metrics for sync operations
-- **Testing**: Unit and integration tests for sync logic
-- **Performance**: Parallel processing and optimized queries
 
 ## Admin UI Integration
 
@@ -844,7 +834,7 @@ export class CmsSyncAdminResolver {
 
 ## Final Configuration
 
-Finally, add the plugin to your `vendure-config.ts` file and provide the necessary options to connect to your Storyblok space.
+Finally, add the plugin to your `vendure-config.ts` file with the appropriate configuration for your chosen CMS platform.
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
@@ -855,18 +845,13 @@ export const config: VendureConfig = {
     plugins: [
         // ... other plugins
         CmsPlugin.init({
+            // Configure based on your chosen CMS platform
+            // See platform-specific tabs above for exact configuration
             cmsApiKey: process.env.CMS_API_KEY,
-            cmsEndpointID: process.env.CMS_ENDPOINT_ID,
+            // Additional CMS-specific options...
         }),
     ],
 };
 ```
 
-Your `.env` file should contain the corresponding values:
-
-make sure you adapt this to your CMS provider
-
-```env
-CMS_API_KEY="your_cms_api_key"
-CMS_ENDPOINT_ID="your_cms_endpoint_id"
-```
+Refer to the platform-specific configuration examples in the tabs above for the exact environment variables and options needed for your chosen CMS.
