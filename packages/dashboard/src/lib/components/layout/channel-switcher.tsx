@@ -65,7 +65,15 @@ export function ChannelSwitcher() {
         ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
         : channels;
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        if (activeChannel?.availableLanguageCodes) {
+            // Ensure the current content language is a valid one for the active
+            // channel
+            if (!activeChannel.availableLanguageCodes.includes(contentLanguage as any)) {
+                setContentLanguage(activeChannel.defaultLanguageCode);
+            }
+        }
+    }, [activeChannel, contentLanguage]);
 
     return (
         <>
