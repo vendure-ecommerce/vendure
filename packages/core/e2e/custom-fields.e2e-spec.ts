@@ -5,6 +5,7 @@ import {
     Logger,
     mergeConfig,
     OrderService,
+    ProductService,
     RequestContextService,
     TransactionalConnection,
 } from '@vendure/core';
@@ -1295,6 +1296,54 @@ describe('Custom fields', () => {
             const warnSpy = vi.spyOn(Logger, 'warn');
 
             await orderService.addItemToOrder(ctx, order.id, 1, 1);
+
+            expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it('warns on unknown custom field in ProductTranslation entity', async () => {
+            const productService = server.app.get(ProductService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await productService.create(ctx, {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test',
+                        slug: 'test',
+                        description: '',
+                        customFields: { customFieldWhichDoesNotExist: 'foo' },
+                    },
+                ],
+            });
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                'Custom field customFieldWhichDoesNotExist not found for entity ProductTranslation',
+            );
+        });
+
+        it('does not warn when Translation has a valid custom field', async () => {
+            const productService = server.app.get(ProductService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await productService.create(ctx, {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test',
+                        slug: 'test',
+                        description: '',
+                        customFields: { localeStringWithDefault: 'foo' },
+                    },
+                ],
+            });
 
             expect(warnSpy).not.toHaveBeenCalled();
         });
