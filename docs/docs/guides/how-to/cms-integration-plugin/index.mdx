@@ -508,6 +508,346 @@ CmsPlugin.init({
 This setup provides a complete Sanity CMS integration that automatically syncs your Vendure catalog with structured content in Sanity Studio.
 
 </TabItem>
+<TabItem value="payload" label="Payload CMS">
+
+**Payload CMS Integration**
+
+:::tip Working Example
+The complete, production-ready Payload implementation can be found in the [Payload integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration). It includes advanced features like local API communication, collection management, and relationship handling.
+:::
+
+This guide provides a complete integration for Vendure with Payload CMS, including setting up a Payload application and implementing the synchronization service.
+
+**Setting up Payload CMS**
+
+#### 1. Create a new Payload project
+
+Initialize your Payload project using the CLI:
+
+```bash
+npx create-payload-app@latest payload-integration-app
+cd payload-integration-app
+```
+
+Choose the following options when prompted:
+- Use TypeScript? **Yes**
+- Choose a database: **PostgreSQL** (or your preferred database)
+- Package manager: **pnpm**
+
+#### 2. Configure development server
+
+Update your development script to use port 3001 to avoid conflicts with Vendure:
+
+```json title="package.json"
+{
+  "scripts": {
+    "dev": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts nodemon --exec tsx src/server.ts",
+    "dev:payload": "payload dev --port 3001"
+  }
+}
+```
+
+**Defining Collection Schemas**
+
+#### 1. Create Vendure-specific collections
+
+Create the collection configurations in your `collections` folder:
+
+**VendureEntities.ts**
+
+```ts title="src/collections/VendureEntities.ts"
+import type { CollectionConfig } from 'payload/types';
+
+export const VendureProduct: CollectionConfig = {
+    slug: 'vendure-product',
+    access: {
+        read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
+    },
+    fields: [
+        {
+            name: 'id',
+            type: 'number',
+            required: true,
+            unique: true,
+        },
+        {
+            name: 'name',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'slug',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'productVariants',
+            type: 'relationship',
+            relationTo: 'vendure-product-variant',
+            hasMany: true,
+        },
+    ],
+};
+
+export const VendureProductVariant: CollectionConfig = {
+    slug: 'vendure-product-variant',
+    access: {
+        read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
+    },
+    fields: [
+        {
+            name: 'id',
+            type: 'number',
+            required: true,
+            unique: true,
+        },
+        {
+            name: 'name',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'slug',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'product',
+            type: 'relationship',
+            relationTo: 'vendure-product',
+        },
+        {
+            name: 'collections',
+            type: 'relationship',
+            relationTo: 'vendure-collection',
+            hasMany: true,
+        },
+    ],
+};
+
+export const VendureCollection: CollectionConfig = {
+    slug: 'vendure-collection',
+    access: {
+        read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
+    },
+    fields: [
+        {
+            name: 'id',
+            type: 'number',
+            required: true,
+            unique: true,
+        },
+        {
+            name: 'name',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'slug',
+            type: 'text',
+            required: true,
+        },
+        {
+            name: 'productVariants',
+            type: 'relationship',
+            relationTo: 'vendure-product-variant',
+            hasMany: true,
+        },
+    ],
+};
+```
+
+#### 2. Register collections in Payload config
+
+Update your `payload.config.ts` to include the Vendure collections:
+
+```ts title="src/payload.config.ts"
+import { VendureProduct, VendureProductVariant, VendureCollection } from './collections/VendureEntities';
+
+export default buildConfig({
+  // ... other config
+  collections: [
+    VendureProduct,
+    VendureProductVariant,
+    VendureCollection,
+    // ... other collections
+  ],
+});
+```
+
+#### 3. Run migrations
+
+After setting up your collections, create and run migrations:
+
+```bash
+# Create a fresh migration (drops all tables and recreates)
+pnpm payload migrate:fresh
+
+# Alternative: Create specific migration (safer for production)
+pnpm payload migrate:create add-vendure-collections
+pnpm payload migrate
+
+# Generate TypeScript types
+pnpm payload generate:types
+```
+
+**The Payload Service**
+
+The `PayloadService` handles all Payload-specific operations including local API communication, document management, and relationship resolution. Key features include:
+
+- **Local API Communication**: Direct communication with Payload's local API
+- **Document Management**: CRUD operations for Payload documents
+- **Relationship Handling**: Manages references between products, variants, and collections
+- **Rate Limiting**: Implements delays to prevent API overload
+
+```ts title="src/plugins/cms/services/payload.service.ts"
+@Injectable()
+export class PayloadService {
+    private readonly payloadBaseUrl = 'http://localhost:3001/api';
+    
+    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
+        switch (operationType) {
+            case 'create':
+                return this.createDocumentFromProduct(product, defaultLanguageCode);
+            case 'update':
+                return this.updateDocumentFromProduct(product, defaultLanguageCode);
+            case 'delete':
+                return this.deleteDocumentFromProduct(product);
+        }
+    }
+
+    private async makePayloadRequest({ method, endpoint, data }) {
+        await this.enforceRateLimit();
+        const url = `${this.payloadBaseUrl}/${endpoint}`;
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+
+        if (this.options.payloadApiKey) {
+            headers.Authorization = `Bearer ${this.options.payloadApiKey}`;
+        }
+
+        const response = await fetch(url, {
+            method,
+            headers,
+            body: data ? JSON.stringify(data) : undefined,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Payload API error: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
+        const existingDocument = await this.findDocumentBySlug(
+            'vendure-product',
+            product.translations[defaultLanguageCode]?.slug
+        );
+
+        if (existingDocument) {
+            return this.updateDocumentFromProduct(product, defaultLanguageCode);
+        }
+
+        const data = this.transformProductData(product, defaultLanguageCode);
+        return this.makePayloadRequest({
+            method: 'POST',
+            endpoint: 'vendure-product',
+            data,
+        });
+    }
+
+    private transformProductData(product, defaultLanguageCode: LanguageCode) {
+        return {
+            id: parseInt(product.id.toString()),
+            name: product.translations[defaultLanguageCode]?.name,
+            slug: product.translations[defaultLanguageCode]?.slug,
+        };
+    }
+
+    private async findDocumentBySlug(collection: string, slug: string) {
+        const response = await this.makePayloadRequest({
+            method: 'GET',
+            endpoint: `${collection}?where[slug][equals]=${slug}`,
+        });
+        return response.docs?.[0];
+    }
+
+    private async enforceRateLimit() {
+        // Implement 100ms delay to prevent API overload
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Additional methods: syncVariant, syncCollection, relationship management, etc.
+}
+```
+
+**Configuration**
+
+Update your plugin configuration to include Payload options:
+
+```ts title="src/plugins/cms/types.ts"
+export interface PluginInitOptions {
+    // ... existing options
+    payloadApiKey?: string;
+    payloadBaseUrl?: string;
+}
+```
+
+**Environment Variables**
+
+Add these to your `.env` file:
+
+```env
+PAYLOAD_API_KEY=your_payload_api_key
+PAYLOAD_BASE_URL=http://localhost:3001/api
+```
+
+**Final Plugin Configuration**
+
+```ts title="src/vendure-config.ts"
+CmsPlugin.init({
+  payloadApiKey: process.env.PAYLOAD_API_KEY,
+  payloadBaseUrl: process.env.PAYLOAD_BASE_URL || 'http://localhost:3001/api',
+}),
+```
+
+**Development Setup**
+
+For development, you can allow API access without authentication by updating your Payload access configuration:
+
+```ts title="src/collections/VendureEntities.ts"
+export const VendureProduct: CollectionConfig = {
+    // ... other config
+    access: {
+        read: () => true,    // NON-PRODUCTION: Allow read without auth
+        create: () => true,  // NON-PRODUCTION: Allow create without auth
+        update: () => true,  // NON-PRODUCTION: Allow update without auth
+        delete: () => true,  // NON-PRODUCTION: Allow delete without auth
+    },
+    // ... fields
+};
+```
+
+:::warning Production Security
+The open access configuration above should only be used in development. For production, implement proper authentication and authorization rules.
+:::
+
+This setup provides a complete Payload CMS integration that automatically syncs your Vendure catalog with Payload's flexible content management system, supporting local development and production deployments.
+
+</TabItem>
 <TabItem value="more-soon" label="More guides coming soon">
 :::info
 More CMS integration guides coming soon! Have a specific CMS you'd like to see covered? [Let us know](https://github.com/vendure-ecommerce/vendure/discussions).
