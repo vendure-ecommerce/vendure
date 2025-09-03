@@ -547,17 +547,13 @@ private async findVariantStoriesForProductUuids(
     productSlug?: string | null,
 ): Promise<string[]> {
     if (!productSlug) return [];
-
     // Get all variants for this product from Vendure database
     const variants = await this.findProductVariants(productId);
-
     // Generate slugs for all variants (convention: product-slug-variant-id)
     const variantSlugs = variants.map(
         (variant) => `${productSlug}-variant-${variant.id}`,
     );
-
     if (variantSlugs.length === 0) return [];
-
     // Batch lookup all variant stories and extract UUIDs
     const storiesMap = await this.findStoriesBySlugs(variantSlugs);
     const storyUuids: string[] = [];
@@ -567,10 +563,8 @@ private async findVariantStoriesForProductUuids(
             storyUuids.push(story.uuid.toString()); // Storyblok uses UUIDs for references
         }
     }
-
     return storyUuids;
 }
-
 // Example: Transform variant data with relationships
 private async transformVariantData(
     variant: ProductVariant,
@@ -782,72 +776,162 @@ The `StrapiService` handles all Strapi-specific operations including API communi
 
 **Basic Service Structure**
 
-The service follows Vendure's dependency injection pattern and exposes sync methods for products, variants, and collections, delegating to CRUD helpers against Strapi.
-
 ```ts title="src/plugins/cms/services/strapi.service.ts"
 @Injectable()
 export class StrapiService {
-    // Prefer configured base URL; default to local Strapi
-    private get strapiBaseUrl(): string {
-        return `${this.options.strapiBaseUrl || 'http://localhost:1337'}/api`;
+  private get strapiBaseUrl(): string {
+    return `${this.options.strapiBaseUrl || 'http://localhost:1337'}/api`;
+  }
+
+  constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+
+  async syncProduct({ product, defaultLanguageCode, operationType }) {
+    switch (operationType) {
+      case 'create':
+        return this.createDocumentFromProduct(product, defaultLanguageCode);
+      case 'update':
+        return this.updateDocumentFromProduct(product, defaultLanguageCode);
+      case 'delete':
+        return this.deleteDocumentFromProduct(product, defaultLanguageCode);
     }
+  }
+}
+```
 
-    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+---
 
-    async syncProduct({ product, defaultLanguageCode, operationType }) {
-        switch (operationType) {
-            case 'create':
-                return this.createDocumentFromProduct(product, defaultLanguageCode);
-            case 'update':
-                return this.updateDocumentFromProduct(product, defaultLanguageCode);
-            case 'delete':
-                return this.deleteDocumentFromProduct(product, defaultLanguageCode);
-        }
+**Making API Requests**
+
+```ts
+private async makeStrapiRequest({ method, endpoint, data }) {
+  const url = `${this.strapiBaseUrl}/${endpoint}`;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (this.options.strapiApiKey) {
+    headers.Authorization = `Bearer ${this.options.strapiApiKey}`;
+  }
+
+  const response = await fetch(url, {
+    method,
+    headers,
+    body: data ? JSON.stringify(data) : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Strapi API error: ${response.status}`);
+  }
+  return response.json();
+}
+```
+
+---
+
+**Data Transformation**
+
+```ts
+private async transformProductData(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t) return undefined;
+
+  const variantDocumentIds = await this.findVariantDocumentsForProductIds(product.id, defaultLanguageCode, productSlug);
+
+  return {
+    vendureId: product.id,
+    name: t.name,
+    slug: t.slug,
+    productVariants: variantDocumentIds,
+  };
+}
+```
+
+---
+
+**Relationship Handling**
+
+```ts
+private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+  return this.connection.rawConnection.getRepository(ProductVariant).find({
+    where: { productId: productId as any },
+    relations: ['translations'],
+    order: { id: 'ASC' },
+  });
+}
+
+private async findDocumentsBySlugs(collectionSlug: string, slugs: string[]): Promise<Map<string, any>> {
+  const map = new Map<string, any>();
+  if (slugs.length === 0) return map;
+
+  const queryParams = slugs.map((slug, i) => `filters[slug][$in][${i}]=${encodeURIComponent(slug)}`).join('&');
+  const endpoint = `${collectionSlug}?${queryParams}`;
+  const response = await this.makeStrapiRequest({ method: 'GET', endpoint });
+
+  if (response.data) {
+    for (const doc of response.data) {
+      if (doc?.slug) map.set(doc.slug, doc);
     }
+  }
+  return map;
+}
 
-    private async makeStrapiRequest({ method, endpoint, data }) {
-        const url = `${this.strapiBaseUrl}/${endpoint}`;
+private async findVariantDocumentsForProductIds(
+  productId: string | number,
+  defaultLanguageCode: LanguageCode,
+  productSlug?: string | null,
+): Promise<string[]> {
+  if (!productSlug) return [];
+  const variants = await this.findProductVariants(productId);
+  const slugs = variants.map(v => `${productSlug}-variant-${v.id}`);
+  if (slugs.length === 0) return [];
+  const docs = await this.findDocumentsBySlugs('vendure-product-variant', slugs);
+  const ids: string[] = [];
+  docs.forEach(doc => { if (doc?.id) ids.push(String(doc.id)); });
+  return ids;
+}
+```
 
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-        };
+---
 
-        if (this.options.strapiApiKey) {
-            headers.Authorization = `Bearer ${this.options.strapiApiKey}`;
-        }
+**CRUD Operations**
 
-        const response = await fetch(url, {
-            method,
-            headers,
-            body: data ? JSON.stringify(data) : undefined,
-        });
+```ts
+private async findDocumentBySlug(collectionSlug: string, slug: string) {
+  const endpoint = `${collectionSlug}?filters[slug][$eq]=${encodeURIComponent(slug)}&pagination[limit]=1`;
+  const response = await this.makeStrapiRequest({ method: 'GET', endpoint });
+  return response.data && response.data.length > 0 ? response.data[0] : null;
+}
 
-        if (!response.ok) {
-            throw new Error(`Strapi API error: ${response.status}`);
-        }
-        return response.json();
-    }
+private async createDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
+  if (!data) return;
+  await this.makeStrapiRequest({ method: 'POST', endpoint: 'vendure-products', data: { data } });
+}
 
-    private async findDocumentBySlug(collectionSlug: string, slug: string) {
-        const endpoint = `${collectionSlug}?filters[slug][$eq]=${encodeURIComponent(slug)}&pagination[limit]=1`;
-        const response = await this.makeStrapiRequest({
-            method: 'GET',
-            endpoint,
-        });
-        return response.data?.[0] || null;
-    }
+private async updateDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const slug = this.translationUtils.getSlugByLanguage(product.translations, defaultLanguageCode);
+  if (!slug) return;
+  const existing = await this.findDocumentBySlug('vendure-products', slug);
+  if (!existing) return this.createDocumentFromProduct(product, defaultLanguageCode, productSlug);
 
-    private transformProductData(product, defaultLanguageCode: LanguageCode) {
-        return {
-            vendureId: product.id,
-            name: product.translations[defaultLanguageCode]?.name,
-            slug: product.translations[defaultLanguageCode]?.slug,
-            // Additional fields and variant references
-        };
-    }
+  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
+  if (!data) return;
 
-    // Additional methods: batch lookups, relationship management,
-    // variant and collection sync operations, etc.
+  await this.makeStrapiRequest({
+    method: 'PUT',
+    endpoint: `vendure-products/${existing.id}`,
+    data: { data },
+  });
+}
+
+private async deleteDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode) {
+  const slug = this.translationUtils.getSlugByLanguage(product.translations, defaultLanguageCode);
+  if (!slug) return;
+  const existing = await this.findDocumentBySlug('vendure-products', slug);
+  if (!existing) return;
+
+  await this.makeStrapiRequest({ method: 'DELETE', endpoint: `vendure-products/${existing.id}` });
 }
 ```
 
