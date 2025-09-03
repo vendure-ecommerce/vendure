@@ -909,13 +909,13 @@ export class ProductVariantService {
     ) {
         // this could be done with fewer queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
-        const optionGroups = (
-            await this.connection.getEntityOrThrow(ctx, Product, productId, {
-                channelId: ctx.channelId,
-                relations: ['optionGroups', 'optionGroups.options'],
-                loadEagerRelations: false,
-            })
-        ).optionGroups;
+        const productWithGroups = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+            relations: ['optionGroups', 'optionGroups.options', '__optionGroups', '__optionGroups.options'],
+            loadEagerRelations: false,
+        });
+
+        const optionGroups = unique([...productWithGroups.optionGroups, ...productWithGroups.__optionGroups]);
 
         const activeOptions = optionGroups && optionGroups.filter(group => !group.deletedAt);
 

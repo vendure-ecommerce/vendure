@@ -299,7 +299,7 @@ export class ProductService {
         }
         for (const optionGroup of product.optionGroups) {
             if (!optionGroup.deletedAt) {
-                const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+                const groupResult = await this.productOptionGroupService.deleteGroupAndOptions(
                     ctx,
                     optionGroup.id,
                     productId,
@@ -400,11 +400,18 @@ export class ProductService {
                 productName: translated.name,
             });
         }
+        if (product.__optionGroups?.find(g => idsAreEqual(g.id, optionGroup.id))) {
+            const translated = this.translator.translate(product, ctx);
+            throw new UserInputError('error.product-option-group-already-assigned', {
+                groupCode: optionGroup.code,
+                productName: translated.name,
+            });
+        }
 
-        if (Array.isArray(product.optionGroups)) {
-            product.optionGroups.push(optionGroup);
+        if (Array.isArray(product.__optionGroups)) {
+            product.__optionGroups.push(optionGroup);
         } else {
-            product.optionGroups = [optionGroup];
+            product.__optionGroups = [optionGroup];
         }
 
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
@@ -421,7 +428,9 @@ export class ProductService {
         force?: boolean,
     ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+        const optionGroup =
+            product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId)) ||
+            product.__optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
@@ -447,17 +456,20 @@ export class ProductService {
                 });
             }
         }
-        const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-            ctx,
-            optionGroupId,
-            productId,
-        );
-        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
-        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        if (result.result === DeletionResult.NOT_DELETED) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            throw new InternalServerError(result.message!);
+        if (optionGroup.productId) {
+            const result = await this.productOptionGroupService.deleteGroupAndOptions(
+                ctx,
+                optionGroupId,
+                productId,
+            );
+            if (result.result === DeletionResult.NOT_DELETED) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                throw new InternalServerError(result.message!);
+            }
         }
+        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
+        product.__optionGroups = product.__optionGroups.filter(g => g.id !== optionGroupId);
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
         );
@@ -469,7 +481,7 @@ export class ProductService {
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
             where: { id: productId, deletedAt: IsNull() },
-            relations: ['optionGroups', 'variants', 'variants.options'],
+            relations: ['optionGroups', '__optionGroups', 'variants', 'variants.options'],
         });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);

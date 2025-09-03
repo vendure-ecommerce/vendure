@@ -118,6 +118,7 @@
       "NoActiveOrderError",
       "NoChangesSpecifiedError",
       "NothingToRefundError",
+      "OptionGroupInUseError",
       "OrderInterceptorError",
       "OrderLimitError",
       "OrderModificationError",
@@ -213,6 +214,8 @@
       "OrderList",
       "PaymentMethodList",
       "ProductList",
+      "ProductOptionGroupList",
+      "ProductOptionList",
       "ProductVariantList",
       "PromotionList",
       "ProvinceList",
@@ -244,6 +247,10 @@
     "RemoveFacetFromChannelResult": [
       "Facet",
       "FacetInUseError"
+    ],
+    "RemoveOptionGroupFromChannelResult": [
+      "OptionGroupInUseError",
+      "ProductOptionGroup"
     ],
     "RemoveOptionGroupFromProductResult": [
       "Product",

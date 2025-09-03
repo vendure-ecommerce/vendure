@@ -1,20 +1,27 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
-    DeletionResult,
+    MutationAssignOptionGroupsToChannelArgs,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
+    MutationDeleteProductOptionGroupArgs,
+    MutationRemoveOptionGroupsFromChannelArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
     QueryProductOptionGroupArgs,
+    QueryProductOptionGroupListArgs,
     QueryProductOptionGroupsArgs,
+    QueryProductOptionsArgs,
+    RemoveOptionGroupFromChannelResult,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common';
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
@@ -38,6 +45,16 @@ export class ProductOptionResolver {
         @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(ctx, args.filterTerm || undefined);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptionGroupList(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionGroupListArgs,
+        @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
+    ): Promise<PaginatedList<Translated<ProductOptionGroup>>> {
+        return this.productOptionGroupService.findAllList(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -82,6 +99,26 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOptionGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() { id }: MutationDeleteProductOptionGroupArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionGroupService.deleteGroupAndOptions(ctx, id);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionsArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.productOptionService.findAllList(ctx, args.options || undefined, relations);
+    }
+
+    @Transaction()
+    @Mutation()
     @Allow(Permission.CreateCatalog, Permission.CreateProduct)
     async createProductOption(
         @Ctx() ctx: RequestContext,
@@ -110,5 +147,25 @@ export class ProductOptionResolver {
         @Args() { id }: MutationDeleteProductOptionArgs,
     ): Promise<DeletionResponse> {
         return this.productOptionService.delete(ctx, id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
+    async assignOptionGroupsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignOptionGroupsToChannelArgs,
+    ): Promise<ProductOptionGroup[]> {
+        return await this.productOptionGroupService.assignGroupsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async removeOptionGroupsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveOptionGroupsFromChannelArgs,
+    ): Promise<Array<ErrorResultUnion<RemoveOptionGroupFromChannelResult, ProductOptionGroup>>> {
+        return await this.productOptionGroupService.removeGroupsFromChannel(ctx, args.input);
     }
 }

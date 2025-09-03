@@ -267,6 +267,11 @@ export type AssignFacetsToChannelInput = {
   facetIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignOptionGroupsToChannelInput = {
+  channelId: Scalars['ID']['input'];
+  groupIds: Array<Scalars['ID']['input']>;
+};
+
 export type AssignPaymentMethodsToChannelInput = {
   channelId: Scalars['ID']['input'];
   paymentMethodIds: Array<Scalars['ID']['input']>;
@@ -315,6 +320,8 @@ export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -1344,6 +1351,8 @@ export type CurrentUserChannelInput = {
 };
 
 export type CustomField = {
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -1548,6 +1557,8 @@ export type DateRange = {
  */
 export type DateTimeCustomFieldConfig = CustomField & {
   __typename?: 'DateTimeCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -1699,6 +1710,7 @@ export enum ErrorCode {
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
   NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+  OPTION_GROUP_IN_USE_ERROR = 'OPTION_GROUP_IN_USE_ERROR',
   ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
@@ -1902,6 +1914,8 @@ export type FacetValueTranslationInput = {
 
 export type FloatCustomFieldConfig = CustomField & {
   __typename?: 'FloatCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2122,6 +2136,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 
 export type IntCustomFieldConfig = CustomField & {
   __typename?: 'IntCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2263,11 +2279,6 @@ export enum JobState {
   RETRYING = 'RETRYING',
   RUNNING = 'RUNNING'
 }
-
-export type KeyValueInput = {
-  key: Scalars['String']['input'];
-  value: Scalars['JSON']['input'];
-};
 
 /**
  * @description
@@ -2605,6 +2616,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 
 export type LocaleStringCustomFieldConfig = CustomField & {
   __typename?: 'LocaleStringCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2621,6 +2634,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 
 export type LocaleTextCustomFieldConfig = CustomField & {
   __typename?: 'LocaleTextCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -2780,6 +2795,8 @@ export type Mutation = {
   assignCollectionsToChannel: Array<Collection>;
   /** Assigns Facets to the specified Channel */
   assignFacetsToChannel: Array<Facet>;
+  /** Assigns ProductOptionGroups to the specified Channel */
+  assignOptionGroupsToChannel: Array<ProductOptionGroup>;
   /** Assigns PaymentMethods to the specified Channel */
   assignPaymentMethodsToChannel: Array<PaymentMethod>;
   /** Assigns ProductVariants to the specified Channel */
@@ -2819,6 +2836,8 @@ export type Mutation = {
   createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
+  /** Create a single FacetValue */
+  createFacetValue: FacetValue;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
   /** Create existing PaymentMethod */
@@ -2897,6 +2916,8 @@ export type Mutation = {
   deleteProduct: DeletionResponse;
   /** Delete a ProductOption */
   deleteProductOption: DeletionResponse;
+  /** Delete a ProductOptionGroup */
+  deleteProductOptionGroup: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
   /** Delete multiple ProductVariants */
@@ -2978,6 +2999,8 @@ export type Mutation = {
    * as well as removing any of the group's options from the Product's ProductVariants.
    */
   removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
+  /** Removes ProductOptionGroups from the specified Channel */
+  removeOptionGroupsFromChannel: Array<RemoveOptionGroupFromChannelResult>;
   /** Removes PaymentMethods from the specified Channel */
   removePaymentMethodsFromChannel: Array<PaymentMethod>;
   /** Removes ProductVariants from the specified Channel */
@@ -3010,10 +3033,6 @@ export type Mutation = {
   setDraftOrderShippingAddress: Order;
   /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
   setDraftOrderShippingMethod: SetOrderShippingMethodResult;
-  /** Set a single key-value pair (automatically scoped based on field configuration) */
-  setKeyValue: SetKeyValueResult;
-  /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-  setKeyValues: Array<SetKeyValueResult>;
   setMainNavExpanded: Scalars['Boolean']['output'];
   setOrderCustomFields?: Maybe<Order>;
   /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
@@ -3055,6 +3074,8 @@ export type Mutation = {
   updateCustomerNote: HistoryEntry;
   /** Update an existing Facet */
   updateFacet: Facet;
+  /** Update a single FacetValue */
+  updateFacetValue: FacetValue;
   /** Update one or more FacetValues */
   updateFacetValues: Array<FacetValue>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3167,6 +3188,11 @@ export type MutationAssignFacetsToChannelArgs = {
 };
 
 
+export type MutationAssignOptionGroupsToChannelArgs = {
+  input: AssignOptionGroupsToChannelInput;
+};
+
+
 export type MutationAssignPaymentMethodsToChannelArgs = {
   input: AssignPaymentMethodsToChannelInput;
 };
@@ -3268,6 +3294,11 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
   input: CreateFacetInput;
+};
+
+
+export type MutationCreateFacetValueArgs = {
+  input: CreateFacetValueInput;
 };
 
 
@@ -3481,6 +3512,11 @@ export type MutationDeleteProductOptionArgs = {
 };
 
 
+export type MutationDeleteProductOptionGroupArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3664,6 +3700,11 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 };
 
 
+export type MutationRemoveOptionGroupsFromChannelArgs = {
+  input: RemoveOptionGroupsFromChannelInput;
+};
+
+
 export type MutationRemovePaymentMethodsFromChannelArgs = {
   input: RemovePaymentMethodsFromChannelInput;
 };
@@ -3753,16 +3794,6 @@ export type MutationSetDraftOrderShippingAddressArgs = {
 export type MutationSetDraftOrderShippingMethodArgs = {
   orderId: Scalars['ID']['input'];
   shippingMethodId: Scalars['ID']['input'];
-};
-
-
-export type MutationSetKeyValueArgs = {
-  input: KeyValueInput;
-};
-
-
-export type MutationSetKeyValuesArgs = {
-  inputs: Array<KeyValueInput>;
 };
 
 
@@ -3896,6 +3927,11 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
   input: UpdateFacetInput;
+};
+
+
+export type MutationUpdateFacetValueArgs = {
+  input: UpdateFacetValueInput;
 };
 
 
@@ -4081,6 +4117,14 @@ export type NumberOperators = {
 export type NumberRange = {
   end: Scalars['Float']['input'];
   start: Scalars['Float']['input'];
+};
+
+export type OptionGroupInUseError = ErrorResult & {
+  __typename?: 'OptionGroupInUseError';
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+  optionGroupCode: Scalars['String']['output'];
+  variantCount: Scalars['Int']['output'];
 };
 
 export type Order = Node & {
@@ -4840,6 +4884,18 @@ export type ProductOption = Node & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionFilterParameter = {
+  _and?: InputMaybe<Array<ProductOptionFilterParameter>>;
+  _or?: InputMaybe<Array<ProductOptionFilterParameter>>;
+  code?: InputMaybe<StringOperators>;
+  createdAt?: InputMaybe<DateOperators>;
+  groupId?: InputMaybe<IdOperators>;
+  id?: InputMaybe<IdOperators>;
+  languageCode?: InputMaybe<StringOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ProductOptionGroup = Node & {
   __typename?: 'ProductOptionGroup';
   code: Scalars['String']['output'];
@@ -4848,9 +4904,54 @@ export type ProductOptionGroup = Node & {
   id: Scalars['ID']['output'];
   languageCode: LanguageCode;
   name: Scalars['String']['output'];
+  /** Returns a paginated, sortable, filterable list of the ProductOptionGroup's options. */
+  optionList: ProductOptionList;
   options: Array<ProductOption>;
   translations: Array<ProductOptionGroupTranslation>;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+
+export type ProductOptionGroupOptionListArgs = {
+  options?: InputMaybe<ProductOptionListOptions>;
+};
+
+export type ProductOptionGroupFilterParameter = {
+  _and?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+  _or?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+  code?: InputMaybe<StringOperators>;
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  languageCode?: InputMaybe<StringOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ProductOptionGroupList = PaginatedList & {
+  __typename?: 'ProductOptionGroupList';
+  items: Array<ProductOptionGroup>;
+  totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ProductOptionGroupFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ProductOptionGroupSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionGroupSortParameter = {
+  code?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -4875,6 +4976,34 @@ export type ProductOptionInUseError = ErrorResult & {
   message: Scalars['String']['output'];
   optionGroupCode: Scalars['String']['output'];
   productVariantCount: Scalars['Int']['output'];
+};
+
+export type ProductOptionList = PaginatedList & {
+  __typename?: 'ProductOptionList';
+  items: Array<ProductOption>;
+  totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ProductOptionFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ProductOptionSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionSortParameter = {
+  code?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  groupId?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionTranslation = {
@@ -5228,13 +5357,10 @@ export type Query = {
   /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
+  facetValue?: Maybe<FacetValue>;
   facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
-  /** Get value for a specific key (automatically scoped based on field configuration) */
-  getKeyValue?: Maybe<Scalars['JSON']['output']>;
-  /** Get multiple key-value pairs (each automatically scoped) */
-  getKeyValues?: Maybe<Scalars['JSON']['output']>;
   /** Get value for a specific key (automatically scoped based on field configuration) */
   getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
   /** Get multiple key-value pairs (each automatically scoped) */
@@ -5261,7 +5387,9 @@ export type Query = {
   /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
   product?: Maybe<Product>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
+  productOptionGroupList: ProductOptionGroupList;
   productOptionGroups: Array<ProductOptionGroup>;
+  productOptions: ProductOptionList;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
   /** List ProductVariants either all or for the specific product. */
@@ -5382,6 +5510,11 @@ export type QueryFacetArgs = {
 };
 
 
+export type QueryFacetValueArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryFacetValuesArgs = {
   options?: InputMaybe<FacetValueListOptions>;
 };
@@ -5389,16 +5522,6 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
-};
-
-
-export type QueryGetKeyValueArgs = {
-  key: Scalars['String']['input'];
-};
-
-
-export type QueryGetKeyValuesArgs = {
-  keys: Array<Scalars['String']['input']>;
 };
 
 
@@ -5474,8 +5597,18 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
+export type QueryProductOptionGroupListArgs = {
+  options?: InputMaybe<ProductOptionGroupListOptions>;
+};
+
+
 export type QueryProductOptionGroupsArgs = {
   filterTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryProductOptionsArgs = {
+  options?: InputMaybe<ProductOptionListOptions>;
 };
 
 
@@ -5716,6 +5849,8 @@ export type RegionTranslation = {
 
 export type RelationCustomFieldConfig = CustomField & {
   __typename?: 'RelationCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   entity: Scalars['String']['output'];
   internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5754,7 +5889,15 @@ export type RemoveFacetsFromChannelInput = {
   force?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type RemoveOptionGroupFromChannelResult = OptionGroupInUseError | ProductOptionGroup;
+
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
+export type RemoveOptionGroupsFromChannelInput = {
+  channelId: Scalars['ID']['input'];
+  force?: InputMaybe<Scalars['Boolean']['input']>;
+  groupIds: Array<Scalars['ID']['input']>;
+};
 
 export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
@@ -5998,13 +6141,6 @@ export type ServerConfig = {
 };
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
-
-export type SetKeyValueResult = {
-  __typename?: 'SetKeyValueResult';
-  error?: Maybe<Scalars['String']['output']>;
-  key: Scalars['String']['output'];
-  result: Scalars['Boolean']['output'];
-};
 
 export type SetOrderCustomerInput = {
   customerId: Scalars['ID']['input'];
@@ -6264,6 +6400,8 @@ export enum StockMovementType {
 
 export type StringCustomFieldConfig = CustomField & {
   __typename?: 'StringCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -6317,6 +6455,8 @@ export type StringStructFieldConfig = StructField & {
 
 export type StructCustomFieldConfig = CustomField & {
   __typename?: 'StructCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   fields: Array<StructFieldConfig>;
   internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6548,6 +6688,8 @@ export type TestShippingMethodResult = {
 
 export type TextCustomFieldConfig = CustomField & {
   __typename?: 'TextCustomFieldConfig';
+  deprecated?: Maybe<Scalars['Boolean']['output']>;
+  deprecationReason?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Array<LocalizedString>>;
   internal?: Maybe<Scalars['Boolean']['output']>;
   label?: Maybe<Array<LocalizedString>>;
@@ -8698,6 +8840,8 @@ type ErrorResult_NoChangesSpecifiedError_Fragment = { __typename?: 'NoChangesSpe
 
 type ErrorResult_NothingToRefundError_Fragment = { __typename?: 'NothingToRefundError', errorCode: ErrorCode, message: string };
 
+type ErrorResult_OptionGroupInUseError_Fragment = { __typename?: 'OptionGroupInUseError', errorCode: ErrorCode, message: string };
+
 type ErrorResult_OrderInterceptorError_Fragment = { __typename?: 'OrderInterceptorError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_OrderLimitError_Fragment = { __typename?: 'OrderLimitError', errorCode: ErrorCode, message: string };
@@ -8728,7 +8872,7 @@ type ErrorResult_RefundStateTransitionError_Fragment = { __typename?: 'RefundSta
 
 type ErrorResult_SettlePaymentError_Fragment = { __typename?: 'SettlePaymentError', errorCode: ErrorCode, message: string };
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_DuplicateEntityError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_GuestCheckoutError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderInterceptorError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundAmountError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_DuplicateEntityError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_GuestCheckoutError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OptionGroupInUseError_Fragment | ErrorResult_OrderInterceptorError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundAmountError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod', id: string, createdAt: any, updatedAt: any, code: string, name: string, description: string, fulfillmentHandlerCode: string, checker: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, calculator: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, translations: Array<{ __typename?: 'ShippingMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }> };
 

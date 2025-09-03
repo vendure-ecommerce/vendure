@@ -1,6 +1,6 @@
 import { DocumentNode } from 'graphql';
 
-import { DashboardCustomFormComponent } from '../extension-api/extension-api-types.js';
+import { DashboardCustomFormComponent } from '../extension-api/types/form-components.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
 import { CustomFormComponentInputProps } from './custom-form-component.js';
