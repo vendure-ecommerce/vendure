@@ -650,6 +650,332 @@ This setup provides a complete Storyblok CMS integration that automatically crea
 The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration).
 
 </TabItem>
+<TabItem value="contentful" label="Contentful">
+
+:::tip Working Example
+The complete, production-ready Contentful implementation can be found in the [Contentful integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/contentful-cms-integration). It includes advanced features like locale mapping, bulk operations, and a robust setup process.
+:::
+
+**Setting up Contentful Space**
+
+**Create a Contentful Account and Space**
+
+1.  Sign up for a free account at [contentful.com](https://www.contentful.com/get-started/).
+2.  Follow the onboarding to create a new **Space**. Think of a Space as a repository for all the content of a single project.
+
+**Get Your API Credentials**
+
+1.  In your Contentful space, navigate to **Settings** → **API keys**.
+2.  Select the **Content management tokens** tab.
+3.  Click **Generate personal token**. Give it a name (e.g., "Vendure Sync") and copy the token. This token is used to create, edit, and delete content.
+4.  Navigate to **Settings** → **General settings** to find your **Space ID**.
+
+**Configure Environment Variables**
+
+Add the API credentials and Space ID to your project's `.env` file.
+
+```env path=null start=null
+CONTENTFUL_API_KEY=your_content_management_token
+CONTENTFUL_SPACE_ID=your_space_id
+```
+
+---
+
+**The Contentful Service**
+
+The `ContentfulService` is the heart of the integration. It manages all communication with Contentful's **Content Management API**, transforms Vendure entities into Contentful **Entries**, and handles the relationships between them.
+
+- **Content Type Management**: On startup, it automatically creates the necessary **Content Types** (e.g., `vendureProduct`, `vendureCollection`) in Contentful to structure your e-commerce data.
+- **Entry Synchronization**: Provides full CRUD (Create, Read, Update, Delete) operations for products, variants, and collections.
+- **Relationship Handling**: Correctly links related entries, such as connecting a variant to its parent product and its collections.
+
+---
+
+**Basic Service Structure**
+
+The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](https://www.google.com/search?q=/reference/typescript-api/common/on-application-bootstrap). This lifecycle hook is crucial because it ensures our custom Contentful **Content Types** are created _before_ the application starts trying to sync data, preventing errors.
+
+```ts path=/src/plugins/cms/services/contentful.service.ts start=15
+// Define content type IDs as constants for consistency and easy reference.
+const CONTENT_TYPE_ID = {
+    product: 'vendureProduct',
+    product_variant: 'vendureProductVariant',
+    collection: 'vendureCollection',
+};
+
+@Injectable()
+export class ContentfulService implements OnApplicationBootstrap {
+    constructor(
+        private connection: TransactionalConnection,
+        @Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions,
+    ) {}
+
+    async onApplicationBootstrap() {
+        // This hook ensures our Contentful space is properly configured with the
+        // necessary Content Types before any sync operations can begin.
+        await this.ensureContentfulContentTypesExists();
+    }
+
+    // Main entry point for synchronizing a product.
+    // The `operationType` determines whether to create, update, or delete an entry.
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
+        switch (operationType) {
+            case 'create':
+                return this.createEntryFromProduct(product, defaultLanguageCode);
+            case 'update':
+                return this.updateEntryFromProduct(product, defaultLanguageCode);
+            case 'delete':
+                return this.deleteEntryFromProduct(product, defaultLanguageCode);
+        }
+    }
+}
+```
+
+---
+
+**Making API Requests**
+
+To keep our code clean and maintainable, all communication with the Contentful API is channeled through a single `makeContentfulRequest` method. This centralizes authentication, error handling, and URL construction.
+
+```ts path=/src/plugins/cms/services/contentful.service.ts start=1505
+private async makeContentfulRequest({ method, endpoint, data, headers = {} }) {
+    // Construct the full API URL using the configured space and environment ID.
+    const url = `https://api.contentful.com/spaces/${this.options.contentfulSpaceId}/environments/master/${endpoint}`;
+
+    const response = await fetch(url, {
+        method,
+        headers: {
+            // The Content Management API requires a Bearer token.
+            Authorization: `Bearer ${this.options.cmsApiKey}`,
+            'Content-Type': 'application/vnd.contentful.management.v1+json',
+            ...headers,
+        },
+        body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        // Rich error messages are critical for debugging API issues.
+        throw new Error(`Contentful API error: ${response.status} - ${errorText}`);
+    }
+
+    // DELETE requests often return no body, so we handle that case.
+    if (response.status === 204 || method === 'DELETE') {
+        return {};
+    }
+    return response.json();
+}
+```
+
+---
+
+**Data Transformation**
+
+Before we can send data to Contentful, we must transform our Vendure entities into the format Contentful expects. A Contentful **Entry** consists of a `fields` object where each key corresponds to a field in the **Content Type**. Each field is also localized, so its value is nested within a locale key (e.g., `en-US`).
+
+```ts path=/src/plugins/cms/services/contentful.service.ts start=1260
+private async transformProductData(
+    product: Product,
+    defaultLanguageCode: LanguageCode,
+) {
+    // Vendure stores translations in an array; we need to find the one
+    // for the store's default language.
+    const translation = product.translations.find(
+        t => t.languageCode === defaultLanguageCode,
+    );
+
+    if (!translation) return undefined; // Cannot sync if default language is missing.
+
+    // Find all variant entries that belong to this product. This is a key
+    // part of relationship handling, covered in the next section.
+    const variantEntryIds = await this.findVariantEntriesForProductIds(
+        product.id,
+        defaultLanguageCode,
+        translation.slug,
+    );
+
+    // Contentful uses a specific locale format, e.g., 'en-US'.
+    const contentfulLocale = this.mapToContentfulLocale(defaultLanguageCode);
+
+    return {
+        fields: {
+            name: { [contentfulLocale]: translation.name },
+            slug: { [contentfulLocale]: translation.slug },
+            vendureId: { [contentfulLocale]: product.id.toString() },
+            // Variants are linked via an array of "Link" objects.
+            variants: {
+                [contentfulLocale]: variantEntryIds.map(id => ({
+                    sys: { type: 'Link', linkType: 'Entry', id },
+                })),
+            },
+        },
+    };
+}
+```
+
+---
+
+**Relationship Handling**
+
+One of the most important aspects of CMS integration is maintaining relationships between entities. Products have variants, and variants belong to collections. Contentful manages these relationships using **Links**, which are essentially pointers from one entry to another. Our goal is to find the Contentful **Entry ID** of a related entity and embed it as a Link.
+
+**Finding Related Vendure Entities**
+
+The first step is always to query the Vendure database to find the related entities. We use the injected **TransactionalConnection** to perform efficient database lookups.
+
+```ts path=/src/plugins/cms/services/contentful.service.ts start=418
+// Finds all ProductVariant entities for a given product ID.
+private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+    try {
+        // Use Vendure's standard pattern for database access in a service.
+        return await this.connection.rawConnection
+            .getRepository(ProductVariant)
+            .find({
+                where: { productId: productId as any },
+                relations: ['translations'], // Eager load translations for slug generation.
+            });
+    } catch (error) {
+        Logger.error(`Failed to find variants for product ${productId}`, String(error));
+        return [];
+    }
+}
+```
+
+---
+
+**Building the Relationships**
+
+Now we combine these two patterns. We fetch the related Vendure entities, generate their unique identifiers (slugs), use a batch lookup to find their corresponding Contentful entries, and extract their IDs to build the **Link** objects.
+
+```ts path=/src/plugins/cms/services/contentful.service.ts start=442
+private async findVariantEntriesForProductIds(
+    productId: string | number,
+    defaultLanguageCode: LanguageCode,
+    productSlug?: string | null,
+): Promise<string[]> {
+    if (!productSlug) return [];
+
+    // 1. Get all related variants from the Vendure database.
+    const variants = await this.findProductVariants(productId);
+
+    // 2. Generate the unique slugs for each variant.
+    // Convention: `product-slug-variant-id`
+    const variantSlugs = variants.map(
+        variant => `${productSlug}-variant-${variant.id}`,
+    );
+    if (variantSlugs.length === 0) return [];
+
+    // 3. Perform a single batch lookup to find all matching Contentful entries.
+    const entriesMap = await this.findEntriesByField(
+        CONTENT_TYPE_ID.product_variant,
+        'slug',
+        variantSlugs,
+    );
+
+    // 4. Extract the system ID from each entry to be used for linking.
+    const entryIds: string[] = [];
+    for (const entry of entriesMap.values()) {
+        if (entry?.sys?.id) {
+            entryIds.push(entry.sys.id);
+        }
+    }
+    return entryIds;
+}
+```
+
+This same pattern is used to link variants to their parent product and to their collections, as shown in the complete `transformVariantData` method in the example repository.
+
+---
+
+**CRUD Operations**
+
+These methods perform the core Create, Read, Update, and Delete logic. They rely on our centralized `makeContentfulRequest` method and handle the specifics of Contentful's API, such as versioning and the publish workflow.
+
+:::info Contentful's Publish Workflow
+Contentful requires entries to be explicitly published before they are visible in the Delivery API. After creating or updating an entry, we must make a separate API call to publish it. Similarly, to delete an entry, it must first be unpublished.
+:::
+
+```ts path=/src/plugins/cms/services/contentful.service.ts
+// Creates a new entry and then publishes it.
+private async createEntryFromProduct(product: Product, defaultLanguageCode: LanguageCode) {
+    const data = await this.transformProductData(product, defaultLanguageCode);
+    if (!data) return;
+
+    // POST to the 'entries' endpoint with a special header specifying the content type.
+    const result = await this.makeContentfulRequest({
+        method: 'POST',
+        endpoint: this.entriesPath,
+        data,
+        headers: { 'X-Contentful-Content-Type': CONTENT_TYPE_ID.product },
+    });
+
+    // An entry is created as a draft; it must be published to be live.
+    if (result.sys?.id) {
+        await this.publishEntry(result.sys.id, result.sys.version);
+    }
+}
+
+// Updates an existing entry.
+private async updateEntryFromProduct(product: Product, defaultLanguageCode: LanguageCode) {
+    // 1. Find the existing entry in Contentful (e.g., by its slug).
+    const slug = getSlug(product, defaultLanguageCode);
+    const existingEntry = await this.findEntryByField(CONTENT_TYPE_ID.product, 'slug', slug);
+    if (!existingEntry) {
+        // If it doesn't exist, we can fall back to creating it.
+        return this.createEntryFromProduct(product, defaultLanguageCode);
+    }
+
+    // 2. Transform the data.
+    const data = await this.transformProductData(product, defaultLanguageCode);
+    if (!data) return;
+
+    // 3. PUT to the specific entry URL. This requires the current version
+    // for optimistic locking, preventing race conditions.
+    const result = await this.makeContentfulRequest({
+        method: 'PUT',
+        endpoint: `${this.entriesPath}/${existingEntry.sys.id}`,
+        data,
+        headers: { 'X-Contentful-Version': existingEntry.sys.version.toString() },
+    });
+
+    // 4. Publish the new version.
+    if (result.sys?.id) {
+        await this.publishEntry(result.sys.id, result.sys.version);
+    }
+}
+
+// The full implementations for delete, as well as variant and collection CRUD,
+// can be found in the working example repository. They follow similar patterns.
+```
+
+---
+
+**Final Plugin Configuration**
+
+Finally, we initialize the plugin in `vendure-config.ts`, providing the API credentials from our environment variables.
+
+```ts title="src/vendure-config.ts" path=null start=null
+import { CmsPlugin } from './plugins/cms/cms.plugin';
+
+// ... other imports
+
+export const config: VendureConfig = {
+    // ... other config
+    plugins: [
+        // ... other plugins
+        CmsPlugin.init({
+            cms: 'contentful', // Specify which CMS service to use
+            cmsApiKey: process.env.CONTENTFUL_API_KEY,
+            contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID,
+        }),
+    ],
+};
+```
+
+This configuration provides a complete Contentful CMS integration that automatically creates the necessary content models and syncs your Vendure catalog with structured content in Contentful, ready to be consumed by a headless storefront.
+
+</TabItem>
+
 <TabItem value="strapi" label="Strapi">
 
 :::tip Working Example
@@ -776,31 +1102,35 @@ The `StrapiService` handles all Strapi-specific operations including API communi
 
 **Basic Service Structure**
 
+The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](/reference/typescript-api/common/on-application-bootstrap) to ensure the CMS is properly configured before handling sync operations.
+
 ```ts title="src/plugins/cms/services/strapi.service.ts"
 @Injectable()
 export class StrapiService {
-  private get strapiBaseUrl(): string {
-    return `${this.options.strapiBaseUrl || 'http://localhost:1337'}/api`;
-  }
-
-  constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
-
-  async syncProduct({ product, defaultLanguageCode, operationType }) {
-    switch (operationType) {
-      case 'create':
-        return this.createDocumentFromProduct(product, defaultLanguageCode);
-      case 'update':
-        return this.updateDocumentFromProduct(product, defaultLanguageCode);
-      case 'delete':
-        return this.deleteDocumentFromProduct(product, defaultLanguageCode);
+    private get strapiBaseUrl(): string {
+        return `${this.options.strapiBaseUrl || 'http://localhost:1337'}/api`;
     }
-  }
+
+    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
+        switch (operationType) {
+            case 'create':
+                return this.createDocumentFromProduct(product, defaultLanguageCode);
+            case 'update':
+                return this.updateDocumentFromProduct(product, defaultLanguageCode);
+            case 'delete':
+                return this.deleteDocumentFromProduct(product, defaultLanguageCode);
+        }
+    }
 }
 ```
 
 ---
 
 **Making API Requests**
+
+All Strapi API communication is centralized through a single method that handles authentication, error handling, and response parsing. This approach ensures consistent behavior across all operations.
 
 ```ts
 private async makeStrapiRequest({ method, endpoint, data }) {
@@ -831,6 +1161,8 @@ private async makeStrapiRequest({ method, endpoint, data }) {
 
 **Data Transformation**
 
+Transformation methods convert Vendure entities into the format expected by Strapi's API. The `data` object structure must match the collection schema defined in Strapi.
+
 ```ts
 private async transformProductData(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
   const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
@@ -850,6 +1182,8 @@ private async transformProductData(product: Product, defaultLanguageCode: Langua
 ---
 
 **Relationship Handling**
+
+One of the most important aspects of CMS integration is maintaining relationships between entities. Products have variants, variants belong to collections, and these relationships need to be reflected in the CMS. Strapi uses document IDs to create references between content pieces.
 
 ```ts
 private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
@@ -895,6 +1229,8 @@ private async findVariantDocumentsForProductIds(
 ---
 
 **CRUD Operations**
+
+These methods handle the basic Create, Read, Update, and Delete operations for documents in Strapi. They follow REST API conventions and leverage the centralized request method for consistent behavior.
 
 ```ts
 private async findDocumentBySlug(collectionSlug: string, slug: string) {
@@ -1092,6 +1428,8 @@ export class SanityService {
 
 **Data Transformation**
 
+Transformation methods convert Vendure entities into the format expected by Sanity's API. The document structure must match the schema defined in Sanity Studio.
+
 ```ts
 private async transformProductData(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
   const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
@@ -1112,6 +1450,8 @@ private async transformProductData(product: Product, defaultLanguageCode: Langua
 ---
 
 **Relationship Handling**
+
+One of the most important aspects of CMS integration is maintaining relationships between entities. Sanity uses document IDs to create references between content pieces.
 
 - Finding Related Entities (Vendure DB)
 
@@ -1174,6 +1514,8 @@ private async findParentProductDocumentId(variant: ProductVariant, defaultLangua
 ---
 
 **CRUD Operations**
+
+These methods handle the basic Create, Read, Update, and Delete operations for documents in Sanity. They use GROQ queries for lookups and mutations for write operations.
 
 ```ts
 private async findDocumentBySlug(type: 'vendureProduct' | 'vendureProductVariant' | 'vendureCollection', slug: string) {
@@ -1368,6 +1710,8 @@ The `PayloadService` handles all Payload-specific operations including local API
 
 **Basic Service Structure**
 
+The `PayloadService` handles all Payload-specific operations including local API communication, document management, and relationship resolution.
+
 ```ts title="src/plugins/cms/services/payload.service.ts"
 @Injectable()
 export class PayloadService {
@@ -1391,6 +1735,8 @@ export class PayloadService {
 ---
 
 **Making API Requests**
+
+All Payload API communication is centralized through a single method that handles authentication, error handling, and response parsing. This approach ensures consistent behavior across all operations.
 
 ```ts
 private getPayloadHeaders(): Record<string, string> {
@@ -1427,6 +1773,8 @@ private async makePayloadRequest({
 
 **Data Transformation**
 
+Transformation methods convert Vendure entities into the format expected by Payload's API. The document structure must match the collection schema defined in Payload.
+
 ```ts
 private async transformProductData(
   product: Product,
@@ -1455,39 +1803,25 @@ private async transformProductData(
 
 **Relationship Handling**
 
+One of the most important aspects of CMS integration is maintaining relationships between entities. Payload uses document IDs to create references between content pieces.
+
 - Finding Related Entities
+
+> First, we need methods to query the Vendure database for related entities:
 
 ```ts
 private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
   return this.connection.rawConnection.getRepository(ProductVariant).find({
-    where: { productId: productId as any },
+    where: { productId: productId },
     relations: ['translations'],
     order: { id: 'ASC' },
   });
 }
 ```
 
-- Batch Document Lookups
+- **Building Relationships**
 
-```ts
-private async findDocumentsBySlugs(collectionSlug: string, slugs: string[]): Promise<Map<string, any>> {
-  const map = new Map<string, any>();
-  if (slugs.length === 0) return map;
-
-  const slugsParam = slugs.map(s => encodeURIComponent(s)).join(',');
-  const res = await this.makePayloadRequest({ method: 'GET', endpoint: `${collectionSlug}?where[slug][in]=${slugsParam}` });
-  for (const doc of res.docs ?? []) {
-    if (doc?.slug) {
-      map.set(doc.slug, doc);
-    }
-  }
-  return map;
-}
-```
-
----
-
-**Building Relationships**
+> Then, we combine database queries with CMS lookups to build relationships:
 
 ```ts
 private async findVariantDocumentsForProductIds(
@@ -1528,6 +1862,8 @@ private async findParentProductDocumentId(
 ---
 
 **CRUD Operations**
+
+These methods handle the basic Create, Read, Update, and Delete operations for documents in Payload. They follow REST API conventions and leverage the centralized request method for consistent behavior.
 
 ```ts
 private async findDocumentBySlug(collection: string, slug: string) {
