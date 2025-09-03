@@ -317,7 +317,7 @@ async findCollectionsForVariant(
 ```
 
 :::info Additional Entity Types
-The service also includes `syncVariantToCms()` and `syncCollectionToCms()` methods that follow the same pattern as the product sync shown above.
+The service can also includes `syncVariantToCms()` and `syncCollectionToCms()` methods that follow the same pattern as the product sync shown above.
 
 These implementations are omitted from this guide for brevity, but they handle their respective entity types with similar data fetching, relationship resolution, and error handling patterns.
 
@@ -653,10 +653,10 @@ CmsPlugin.init({
 
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 
+The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration).
+
 </TabItem>
 <TabItem value="strapi" label="Strapi">
-
-**Strapi CMS Integration**
 
 :::tip Working Example
 The complete, production-ready Strapi implementation can be found in the [Strapi integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration). It includes advanced features like plugin-based content types, batch operations, and relationship management.
@@ -881,23 +881,20 @@ CmsPlugin.init({
 }),
 ```
 
-This section provides a high-level overview. For a complete, production-ready implementation, see the Strapi integration example:
-https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration
+This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Sanity.
+
+The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration).
 
 </TabItem>
 <TabItem value="Sanity" title="Sanity">
-**Sanity CMS Integration**
-:::tip Working Example
-The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like rate limiting, content type management, and bulk operations.
-:::
 
-This tab provides a complete guide for integrating Vendure with Sanity CMS, including setting up a Sanity Studio and implementing the synchronization service.
+:::tip Working Example
+The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
+:::
 
 **Setting up Sanity Studio**
 
 #### 1. Create a new Studio with Sanity CLI
-
-Initialize your Sanity project using the CLI. Replace `<project-id>` with your actual project ID:
 
 ```bash
 npm create sanity@latest -- --project <project-id> --dataset production --template clean --typescript --output-path studio-vendure-plugin
@@ -906,93 +903,61 @@ cd studio-vendure-plugin
 
 #### 2. Run Sanity Studio locally
 
-Start the development server:
-
 ```bash
 npm run dev
 ```
 
 #### 3. Log in to the Studio
 
-Open your browser to `http://localhost:3333` and log in using the same service (Google, GitHub, or email) that you used with the Sanity CLI.
+Open `http://localhost:3333` and authenticate using the same provider you used for the CLI.
 
 **Defining Schema Types**
 
-#### 1. Create Vendure-specific document types
-
-Create the Vendure-specific schema files in your `schemaTypes` folder:
-
-For example, here is a schema file for a Vendure product variant:
-
-**vendureProductVariant.ts**
+Split content into three document types: vendureProduct, vendureProductVariant, and vendureCollection. Keep fields minimal and focused on IDs, names, slugs, and references.
 
 ```ts
 import { defineField, defineType } from 'sanity';
 
-export const vendureProductVariant = defineType({
-    name: 'vendureProductVariant',
-    title: 'Vendure Product Variant',
+export const vendureProduct = defineType({
+    name: 'vendureProduct',
+    title: 'Vendure Product',
     type: 'document',
     fields: [
-        defineField({
-            name: 'vendureId',
-            type: 'number',
-            validation: rule => rule.required(),
-        }),
-        defineField({
-            name: 'title',
-            type: 'string',
-            validation: rule => rule.required(),
-        }),
+        defineField({ name: 'vendureId', type: 'number', validation: r => r.required() }),
+        defineField({ name: 'title', type: 'string', validation: r => r.required() }),
         defineField({
             name: 'slug',
             type: 'slug',
             options: { source: 'title' },
-            validation: rule => rule.required(),
+            validation: r => r.required(),
         }),
         defineField({
-            name: 'vendureProduct',
-            type: 'reference',
-            to: [{ type: 'vendureProduct' }],
-        }),
-        defineField({
-            name: 'vendureCollections',
+            name: 'productVariants',
             type: 'array',
-            of: [{ type: 'reference', to: [{ type: 'vendureCollection' }] }],
+            of: [{ type: 'reference', to: [{ type: 'vendureProductVariant' }] }],
         }),
     ],
+
+    // define the entity types here too...
 });
 ```
 
-#### 2. Register the schema types
-
-Update your `schemaTypes/index.ts` file:
+Register these in `schemaTypes/index.ts`:
 
 ```ts
-import { vendureCollection } from './vendureCollection';
-import { vendureProductType } from './vendureProductType';
-import { vendureProductVariant } from './vendureProductVariant';
-
-export const schemaTypes = [
-    vendureProductVariant,
-    // ...
-];
+export const schemaTypes = [vendureProduct, vendureProductVariant, vendureCollection];
 ```
 
 **The Sanity Service**
 
-The `SanityService` handles all Sanity-specific operations including document management, GROQ queries, and API communication. Key features include:
-
-- **Document Management**: CRUD operations using Sanity's mutation API
-- **GROQ Queries**: Efficient document lookups and relationship resolution
-- **Reference Handling**: Manages document references between products, variants, and collections
-- **Schema Independence**: Works with schemas defined in Sanity Studio
+The `SanityService` encapsulates Sanity-specific API communication, GROQ queries, and transformations.
 
 ```ts title="src/plugins/cms/services/sanity.service.ts"
 @Injectable()
 export class SanityService {
-    private get sanityBaseUrl(): string {
-        return `https://${this.options.sanityProjectId}.api.sanity.io/v2025-09-01`;
+    private get apiBase(): string {
+        // Sanity API base with version; dataset is provided per endpoint
+        return `https://${this.options.sanityProjectId}.api.sanity.io/v2023-10-01`;
     }
 
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
@@ -1008,42 +973,150 @@ export class SanityService {
         }
     }
 
-    private async makeSanityRequest({ method, endpoint, data }) {
-        const url = `${this.sanityBaseUrl}/${endpoint}`;
-
-        const response = await fetch(url, {
-            method,
-            headers: {
-                Authorization: `Bearer ${this.options.sanityApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Sanity API error: ${response.status}`);
-        }
-        return response.json();
-    }
-
-    private transformProductData(product, defaultLanguageCode: LanguageCode) {
+    private getAuthHeaders() {
         return {
-            _type: 'vendureProduct',
-            vendureId: parseInt(product.id.toString()),
-            title: product.translations[defaultLanguageCode]?.name,
-            slug: { current: product.translations[defaultLanguageCode]?.slug },
-            // Additional fields and variant references
-        };
+            Authorization: `Bearer ${this.options.sanityApiKey}`,
+            'Content-Type': 'application/json',
+        } as const;
     }
 
-    // Additional methods: GROQ queries, document lookups,
-    // batch operations, relationship management, etc.
+    // POST query to avoid URL length and simplify params
+    private async query<T>(groq: string, params: Record<string, any> = {}): Promise<T> {
+        const url = `${this.apiBase}/data/query/${this.options.sanityDataset}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({ query: groq, params }),
+        });
+        if (!res.ok) throw new Error(`Sanity query error: ${res.status}`);
+        const json = await res.json();
+        return json.result as T;
+    }
+
+    private async mutate(mutations: any[]) {
+        const url = `${this.apiBase}/data/mutate/${this.options.sanityDataset}?returnIds=true`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify({ mutations }),
+        });
+        if (!res.ok) throw new Error(`Sanity mutate error: ${res.status}`);
+        return res.json();
+    }
 }
 ```
 
+---
+
+**Data Transformation**
+
+```ts
+private async transformProductData(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t) return undefined;
+
+  // Build relationships: variants of this product as Sanity references
+  const variantIds = await this.findVariantDocumentsForProductIds(product.id, defaultLanguageCode, productSlug);
+
+  return {
+    _type: 'vendureProduct',
+    vendureId: parseInt(product.id.toString()),
+    title: t.name,
+    slug: { current: t.slug },
+    productVariants: variantIds.map(id => ({ _type: 'reference', _ref: id })),
+  };
+}
+```
+
+---
+
+**Relationship Handling**
+
+- Finding Related Entities (Vendure DB)
+
+```ts
+private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+  try {
+    return await this.connection.rawConnection.getRepository(ProductVariant).find({
+      where: { productId: productId as any },
+      relations: ['translations'],
+      order: { id: 'ASC' },
+    });
+  } catch (e) {
+    Logger.error(`Failed to find variants for product ${productId}`, String(e));
+    return [];
+  }
+}
+```
+
+- Batch Document Lookups (GROQ)
+
+```ts
+private async findDocumentsBySlugs(type: 'vendureProduct' | 'vendureProductVariant' | 'vendureCollection', slugs: string[]): Promise<Map<string, any>> {
+  const map = new Map<string, any>();
+  if (slugs.length === 0) return map;
+
+  const results = await this.query<any[]>(`*[_type == $type && slug.current in $slugs]{ _id, "slug": slug.current }`, { type, slugs });
+  for (const doc of results ?? []) if (doc?.slug) map.set(doc.slug, doc);
+  return map;
+}
+```
+
+- Building Relationships
+
+```ts
+private async findVariantDocumentsForProductIds(
+  productId: string | number,
+  defaultLanguageCode: LanguageCode,
+  productSlug?: string | null,
+): Promise<string[]> {
+  if (!productSlug) return [];
+  const variants = await this.findProductVariants(productId);
+  const slugs = variants.map(v => `${productSlug}-variant-${v.id}`);
+  if (slugs.length === 0) return [];
+  const docs = await this.findDocumentsBySlugs('vendureProductVariant', slugs);
+  const ids: string[] = [];
+  docs.forEach(doc => { if (doc?._id) ids.push(String(doc._id)); });
+  return ids;
+}
+
+private async findParentProductDocumentId(variant: ProductVariant, defaultLanguageCode: LanguageCode): Promise<string | null> {
+  const product = await this.connection.rawConnection.getRepository(Product).findOne({ where: { id: variant.productId }, relations: ['translations'] });
+  if (!product) return null;
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t?.slug) return null;
+  const results = await this.query<any[]>(`*[_type == "vendureProduct" && slug.current == $slug][0]{ _id }`, { slug: t.slug });
+  return results?._id ?? null;
+}
+```
+
+---
+
+**CRUD Operations**
+
+```ts
+private async findDocumentBySlug(type: 'vendureProduct' | 'vendureProductVariant' | 'vendureCollection', slug: string) {
+  return this.query<any>(`*[_type == $type && slug.current == $slug][0]{ _id, "slug": slug.current }`, { type, slug });
+}
+
+private async createDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
+  if (!data) return;
+  await this.mutate([{ create: data }]);
+  Logger.info(`Created product ${product.id} in Sanity`);
+}
+
+// Additional CRUD methods like updateDocumentFromProduct and deleteDocumentFromProduct
+// follow similar patterns with PUT and DELETE HTTP methods respectively.
+// Full implementations are available in the working example repository.
+
+```
+
+---
+
 **Configuration**
 
-Update your plugin configuration to include Sanity options:
+Add Sanity options to your plugin types and configure via `vendure-config.ts`.
 
 ```ts title="src/plugins/cms/types.ts"
 export interface PluginInitOptions {
@@ -1054,18 +1127,6 @@ export interface PluginInitOptions {
 }
 ```
 
-**Environment Variables**
-
-Add these to your `.env` file:
-
-```env
-SANITY_API_KEY=your_sanity_api_key
-SANITY_PROJECT_ID=your_project_id
-SANITY_DATASET=production
-```
-
-**Final Plugin Configuration**
-
 ```ts title="src/vendure-config.ts"
 CmsPlugin.init({
   sanityApiKey: process.env.SANITY_API_KEY,
@@ -1074,7 +1135,17 @@ CmsPlugin.init({
 }),
 ```
 
-This setup provides a complete Sanity CMS integration that automatically syncs your Vendure catalog with structured content in Sanity Studio.
+**Environment Variables**
+
+```env
+SANITY_API_KEY=your_sanity_api_key
+SANITY_PROJECT_ID=your_project_id
+SANITY_DATASET=production
+```
+
+For the complete implementation (including variants and collections, advanced error handling, and bulk operations), see:
+
+https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration
 
 </TabItem>
 <TabItem value="payload" label="Payload">
@@ -1369,29 +1440,14 @@ private async findDocumentBySlug(collection: string, slug: string) {
 private async createDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
   const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
   if (!data) return;
-  const res = await this.makePayloadRequest({ method: 'POST', endpoint: 'vendure-product', data });
-  Logger.info(`Created product ${product.id} (Payload ID: ${res.doc?.id})`);
+    const res = await this.makePayloadRequest({ method: 'POST', endpoint: 'vendure-product', data });
+    Logger.info(`Created product ${product.id} (Payload ID: ${res.doc?.id})`);
 }
 
-private async updateDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
-  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
-  if (!t?.slug) return;
-  const existing = await this.findDocumentBySlug('vendure-product', t.slug);
-  if (!existing) return this.createDocumentFromProduct(product, defaultLanguageCode, productSlug);
-  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
-  if (!data) return;
-  await this.makePayloadRequest({ method: 'PATCH', endpoint: `vendure-product/${existing.id}`, data });
-  Logger.info(`Updated product ${product.id} (Payload ID: ${existing.id})`);
-}
+// Additional CRUD methods like updateStoryFromProduct and deleteStoryFromProduct
+// follow similar patterns with PUT and DELETE HTTP methods respectively.
+// Full implementations are available in the working example repository.
 
-private async deleteDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode) {
-  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
-  if (!t?.slug) return;
-  const existing = await this.findDocumentBySlug('vendure-product', t.slug);
-  if (!existing) return;
-  await this.makePayloadRequest({ method: 'DELETE', endpoint: `vendure-product/${existing.id}` });
-  Logger.info(`Deleted product ${product.id} (Payload ID: ${existing.id})`);
-}
 ```
 
 **Configuration**
