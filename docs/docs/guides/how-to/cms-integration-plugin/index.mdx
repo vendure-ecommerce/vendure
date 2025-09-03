@@ -309,9 +309,7 @@ export class StoryblokService implements OnApplicationBootstrap {
 }
 ```
 
-3. third
-
-Making API Requests
+### Making API Requests
 
 All Storyblok API communication is centralized through a single method that handles authentication, error handling, and response parsing. This approach ensures consistent behavior across all operations.
 
@@ -343,11 +341,22 @@ private async makeStoryblokRequest({ method, endpoint, data }) {
 Transformation methods convert Vendure entities into the format expected by Storyblok's API. The `content` object structure must match the component schema defined in Storyblok.
 
 ```ts
-private transformProductData(product, defaultLanguageCode) {
+private async transformProductData(product, defaultLanguageCode, productSlug?) {
     // Extract the translation for the default language
     // Vendure stores translations in an array, so we need to find the correct one
     const translation = product.translations.find(
         t => t.languageCode === defaultLanguageCode
+    );
+
+    if (!translation) {
+        return undefined; // Skip if no translation exists
+    }
+
+    // Find all variant story UUIDs for this product using relationship handling
+    const variantStoryIds = await this.findVariantStoriesForProductUuids(
+        product.id,
+        defaultLanguageCode,
+        productSlug,
     );
 
     return {
@@ -357,12 +366,140 @@ private transformProductData(product, defaultLanguageCode) {
             content: {
                 component: COMPONENT_TYPE.product, // Must match the component name in Storyblok
                 vendureId: product.id.toString(),  // Store Vendure ID for reference
-                // Additional fields would be added here based on your component schema
+                variants: variantStoryIds, // Array of story UUIDs for product variants
             },
         },
         publish: 1, // Auto-publish the story (1 = published, 0 = draft)
     };
 }
+```
+
+### Relationship Handling
+
+One of the most important aspects of CMS integration is maintaining relationships between entities. Products have variants, variants belong to collections, and these relationships need to be reflected in the CMS. Storyblok uses story UUIDs to create references between content pieces.
+
+#### Finding Related Entities
+
+First, we need methods to query the Vendure database for related entities:
+
+```ts
+// Find all product variants for a given product ID from the database
+private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+    try {
+        return await this.connection.rawConnection
+            .getRepository(ProductVariant)
+            .find({
+                where: { productId: productId as any },
+                relations: ['translations'], // Include translations for slug generation
+                order: { id: 'ASC' },
+            });
+    } catch (error) {
+        Logger.error(`Failed to find variants for product ${productId}`, String(error));
+        return [];
+    }
+}
+```
+
+#### Batch Story Lookups
+
+For performance, we use batch lookups to find multiple stories at once:
+
+```ts
+// Batch lookup method for efficient story retrieval
+private async findStoriesBySlugs(slugs: string[]): Promise<Map<string, any>> {
+    const storyMap = new Map<string, any>();
+    if (slugs.length === 0) return storyMap;
+
+    try {
+        // Storyblok supports comma-separated slugs for batch lookup
+        const slugsParam = slugs.join(',');
+        const response = await this.makeStoryblokRequest({
+            method: 'GET',
+            endpoint: `stories?by_slugs=${slugsParam}`,
+        });
+
+        if (response.stories) {
+            for (const story of response.stories) {
+                storyMap.set(story.slug, story);
+            }
+        }
+    } catch (error) {
+        Logger.error(`Failed to find stories by slugs: ${slugs.join(', ')}`, String(error));
+    }
+
+    return storyMap;
+}
+```
+
+#### Building Relationships
+
+Finally, we combine database queries with CMS lookups to build relationships:
+
+```ts
+// Find variant stories using batch lookup for efficiency
+private async findVariantStoriesForProductUuids(
+    productId: string | number,
+    defaultLanguageCode: LanguageCode,
+    productSlug?: string | null,
+): Promise<string[]> {
+    if (!productSlug) return [];
+
+    // Get all variants for this product from Vendure database
+    const variants = await this.findProductVariants(productId);
+    
+    // Generate slugs for all variants (convention: product-slug-variant-id)
+    const variantSlugs = variants.map(
+        (variant) => `${productSlug}-variant-${variant.id}`,
+    );
+
+    if (variantSlugs.length === 0) return [];
+
+    // Batch lookup all variant stories and extract UUIDs
+    const storiesMap = await this.findStoriesBySlugs(variantSlugs);
+    const storyUuids: string[] = [];
+
+    for (const [slug, story] of storiesMap) {
+        if (story?.uuid) {
+            storyUuids.push(story.uuid.toString()); // Storyblok uses UUIDs for references
+        }
+    }
+
+    return storyUuids;
+}
+
+// Example: Transform variant data with relationships
+private async transformVariantData(
+    variant: ProductVariant,
+    defaultLanguageCode: LanguageCode,
+    variantSlug: string,
+    collections?: Collection[],
+) {
+    const translation = variant.translations.find(
+        t => t.languageCode === defaultLanguageCode
+    );
+    if (!translation) return undefined;
+
+    // Find parent product and collection references using the same batch lookup patterns
+    const parentProductStoryUuid = await this.findParentProductStoryUuid(variant, defaultLanguageCode);
+    const collectionStoryUuids = await this.findCollectionStoryUuids(collections, defaultLanguageCode);
+
+    return {
+        story: {
+            name: translation.name,
+            slug: variantSlug,
+            content: {
+                component: COMPONENT_TYPE.product_variant,
+                vendureId: variant.id.toString(),
+                parentProduct: parentProductStoryUuid ? [parentProductStoryUuid] : [],
+                collections: collectionStoryUuids,
+            },
+        },
+        publish: 1,
+    };
+}
+
+// Additional relationship methods like findParentProductStoryUuid and findCollectionStoryUuids
+// follow similar patterns and are available in the working example repository.
 ```
 
 ### CRUD Operations
@@ -398,15 +535,8 @@ private async findStoryBySlug(slug: string) {
 // Additional CRUD methods like updateStoryFromProduct and deleteStoryFromProduct
 // follow similar patterns with PUT and DELETE HTTP methods respectively.
 // Full implementations are available in the working example repository.
+
 ```
-
-    // ... existing options
-    cmsApiKey?: string;
-    storyblokSpaceId?: string;
-
-}
-
-````
 
 **Final Plugin Configuration**
 
@@ -415,7 +545,7 @@ CmsPlugin.init({
   cmsApiKey: process.env.STORYBLOK_API_KEY,
   storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
 }),
-````
+```
 
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 
