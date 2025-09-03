@@ -137,26 +137,28 @@ export function OrdersSummaryWidget() {
                 </Tabs>
             }
         >
-            <div className="flex flex-col lg:gap-4 items-center justify-center text-center">
-                <div className="flex flex-col lg:gap-2">
-                    <p className="lg:text-lg text-muted-foreground">Total Orders</p>
-                    <p className="text-3xl font-semibold">
-                        <AnimatedNumber
-                            animationConfig={{ mass: 0.5, stiffness: 90, damping: 10 }}
-                            value={currentTotalOrders}
-                        />
-                    </p>
-                    <PercentageChange value={orderChange} />
-                </div>
-                <div className="flex flex-col lg:gap-2">
-                    <p className="lg:text-lg text-muted-foreground">Total Revenue</p>
-                    <p className="text-3xl font-semibold">
-                        <AnimatedCurrency
-                            animationConfig={{ mass: 0.2, stiffness: 90, damping: 10 }}
-                            value={currentRevenue}
-                        />
-                    </p>
-                    <PercentageChange value={revenueChange} />
+            <div className="@container h-full">
+                <div className="flex flex-col h-full @md:flex-row gap-8 items-center justify-center @md:justify-evenly text-center tabular-nums">
+                    <div className="flex flex-col lg:gap-2">
+                        <p className="lg:text-lg text-muted-foreground">Total Orders</p>
+                        <p className="text-xl @md:text-3xl font-semibold">
+                            <AnimatedNumber
+                                animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}
+                                value={currentTotalOrders}
+                            />
+                        </p>
+                        <PercentageChange value={orderChange} />
+                    </div>
+                    <div className="flex flex-col lg:gap-2">
+                        <p className="lg:text-lg text-muted-foreground">Total Revenue</p>
+                        <p className="text-xl @md:text-3xl font-semibold">
+                            <AnimatedCurrency
+                                animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}
+                                value={currentRevenue}
+                            />
+                        </p>
+                        <PercentageChange value={revenueChange} />
+                    </div>
                 </div>
             </div>
         </DashboardBaseWidget>
