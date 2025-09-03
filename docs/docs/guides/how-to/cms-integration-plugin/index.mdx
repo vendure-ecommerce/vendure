@@ -62,7 +62,7 @@ This command will create the basic plugin structure. Next, we'll generate the re
 # Generate the main sync service
 npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
 
-# Generate the CMS-specific service (replace with your CMS, e.g., StoryblokService)
+# Generate the CMS-specific service (replace with your CMS)
 npx vendure add -s cmsSpecificService --selected-plugin CmsPlugin
 ```
 
@@ -70,12 +70,12 @@ Now we start by defining the main [plugin](/guides/developer-guide/plugins/) cla
 
 ### Plugin Definition
 
-The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `StoryblokService`) and sets up any Admin API extensions.
+The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `cmsSpecificService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 import { VendurePlugin, PluginCommonModule, Type, OnModuleInit } from '@vendure/core';
 import { CmsSyncService } from './services/cms-sync.service';
-import { StoryblokService } from './services/storyblok.service';
+import { cmsSpecificService } from './services/cms-specific.service';
 import { PluginInitOptions, CMS_PLUGIN_OPTIONS } from './types';
 // ...
 
@@ -84,7 +84,7 @@ import { PluginInitOptions, CMS_PLUGIN_OPTIONS } from './types';
     providers: [
         { provide: CMS_PLUGIN_OPTIONS, useFactory: () => CmsPlugin.options },
         CmsSyncService,
-        StoryblokService, // The service for the specific CMS platform
+        cmsSpecificService, // The service for the specific CMS platform
     ],
     // ...
 })
@@ -108,7 +108,7 @@ import { ID, InjectionToken } from '@vendure/core';
 
 export interface PluginInitOptions {
     cmsApiKey?: string;
-    storyblokSpaceId?: string; // Storyblok-specific option
+    cmsSpecificOptions?: any;
     retryAttempts?: number;
     retryDelay?: number;
 }
@@ -254,7 +254,7 @@ async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
         );
 
         // Delegate to CMS-specific service
-        await this.storyblokService.syncProduct({
+        await this.cmsSpecificService.syncProduct({
             product,
             defaultLanguageCode,
             operationType,
