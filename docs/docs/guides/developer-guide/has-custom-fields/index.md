@@ -16,6 +16,8 @@ import {
     HasCustomFields,
     Product,
     VendureEntity,
+    ID,
+    EntityId,
 } from '@vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
@@ -30,11 +32,11 @@ export class ProductReview extends VendureEntity implements HasCustomFields {
     }
 
     // highlight-start
-    @Column(type => CustomProductReviewFields)
+    @Column(() => CustomProductReviewFields)
     customFields: CustomProductReviewFields;
     // highlight-end
     
-    @ManyToOne(type => Product)
+    @ManyToOne(() => Product)
     product: Product;
 
     @EntityId()
@@ -71,9 +73,10 @@ input CreateProductReviewInput {
 }
 
 input UpdateProductReviewInput {
-  productId: ID!
-  text: String!
-  rating: Int!
+  id: ID!
+  productId: ID
+  text: String
+  rating: Int
 }
 ```
 
