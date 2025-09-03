@@ -42,6 +42,7 @@ export function LatestOrdersWidget() {
                             state: {
                                 notIn: ['Cancelled', 'Draft'],
                             },
+                            ...(variables.options?.filter ?? {}),
                         },
                     },
                 })}
