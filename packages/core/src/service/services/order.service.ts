@@ -1899,13 +1899,12 @@ export class OrderService {
                 const isForeignKeyViolation = /foreign key/i.test(message);
 
                 if (!isForeignKeyViolation) throw e;
+                if (!order) throw new Error('Cannot complete order merge: active order not found');
 
                 // If the order has a foreign key violation (e.g. with cancelled payments),
                 // instead of deleting it we cancel the order and leave a note with an explanation.
                 // This way the previous order and all its information are preserved.
                 await this.cancelOrder(ctx, { orderId: orderToDelete.id });
-
-                if (!order) throw e;
 
                 const note = [
                     'This order was cancelled during user sign-in because merging with the active order was not possible.',
