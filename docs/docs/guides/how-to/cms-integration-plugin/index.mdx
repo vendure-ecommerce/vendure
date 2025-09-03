@@ -769,12 +769,18 @@ The `StrapiService` handles all Strapi-specific operations including API communi
 - **Content Management**: CRUD operations using Strapi's REST API
 - **Relationship Handling**: Manages references between products, variants, and collections
 - **Batch Operations**: Efficient bulk lookups for related entities
-- **Rate Limiting**: Configurable delays to prevent API overload
+
+### Basic Service Structure
+
+The service follows Vendure's dependency injection pattern and exposes sync methods for products, variants, and collections, delegating to CRUD helpers against Strapi.
 
 ```ts title="src/plugins/cms/services/strapi.service.ts"
 @Injectable()
 export class StrapiService {
-    private readonly strapiBaseUrl = 'http://localhost:1337/api';
+    // Prefer configured base URL; default to local Strapi
+    private get strapiBaseUrl(): string {
+        return `${this.options.strapiBaseUrl || 'http://localhost:1337'}/api`;
+    }
 
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
@@ -790,7 +796,6 @@ export class StrapiService {
     }
 
     private async makeStrapiRequest({ method, endpoint, data }) {
-        await this.enforceRateLimit();
         const url = `${this.strapiBaseUrl}/${endpoint}`;
 
         const headers: Record<string, string> = {
@@ -866,7 +871,8 @@ CmsPlugin.init({
 }),
 ```
 
-This setup provides a complete Strapi CMS integration that automatically syncs your Vendure catalog with Strapi's flexible content management system, leveraging Strapi's plugin architecture for organized content types.
+This section provides a high-level overview. For a complete, production-ready implementation, see the Strapi integration example:
+https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration
 
 </TabItem>
 <TabItem value="Sanity" title="Sanity">
