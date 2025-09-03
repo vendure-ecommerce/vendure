@@ -272,9 +272,17 @@ STORYBLOK_SPACE_ID=your_space_id
 - **Relationship Handling**: Manages references between products, variants, and collections
 
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
+const COMPONENT_TYPE = {
+    product: 'vendure_product',
+    product_variant: 'vendure_product_variant',
+    collection: 'vendure_collection',
+};
+
 @Injectable()
-export class StoryblokService {
+export class StoryblokService implements OnApplicationBootstrap {
     private readonly storyblokBaseUrl = 'https://mapi.storyblok.com/v1';
+    private isInitialized = false;
+    private readonly rateLimitDelay = 200; // 200ms between calls = max 5 calls/second
 
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
@@ -287,6 +295,60 @@ export class StoryblokService {
             case 'delete':
                 return this.deleteStoryFromProduct(product, defaultLanguageCode);
         }
+    }
+
+    private async transformProductData(product, defaultLanguageCode, productSlug?) {
+        const defaultTranslation = this.getTranslationByLanguage(product.translations, defaultLanguageCode);
+
+        if (!defaultTranslation) {
+            return undefined;
+        }
+
+        // Find all variant story UUIDs for this product
+        const variantStoryIds = await this.findVariantStoriesForProductUuids(
+            product.id,
+            defaultLanguageCode,
+            productSlug,
+        );
+
+        return {
+            story: {
+                name: defaultTranslation.name,
+                slug: defaultTranslation.slug,
+                content: {
+                    component: COMPONENT_TYPE.product,
+                    vendureId: product.id.toString(),
+                    variants: variantStoryIds, // Array of story UUIDs
+                },
+            },
+            publish: 1, // Auto-publish the story
+        };
+    }
+
+    private async findStoryBySlug(slug: string) {
+        const response = await this.makeStoryblokRequest({
+            method: 'GET',
+            endpoint: `stories?by_slugs=${slug}`,
+        });
+        return response.stories.find((story: any) => story.slug === slug);
+    }
+
+    private async ensureStoryContentTypesExists() {
+        // Check if Vendure components exist in Storyblok
+        const contentCheck = await this.checkContentTypes();
+
+        // Create missing components with proper schema
+        if (!contentCheck.product) {
+            await this.createContentType('product');
+        }
+        if (!contentCheck.variant) {
+            await this.createContentType('product_variant');
+        }
+        if (!contentCheck.collection) {
+            await this.createContentType('collection');
+        }
+
+        this.isInitialized = true;
     }
 
     private async makeStoryblokRequest({ method, endpoint, data }) {
@@ -303,13 +365,19 @@ export class StoryblokService {
         });
 
         if (!response.ok) {
-            throw new Error(`Storyblok API error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
         }
         return response.json();
     }
 
-    // Additional methods: content type creation, rate limiting,
-    // story CRUD operations, relationship management, etc.
+    private async enforceRateLimit() {
+        // Storyblok allows max 5 requests per second
+        await new Promise(resolve => setTimeout(resolve, this.rateLimitDelay));
+    }
+
+    // Additional methods: batch story lookups, relationship management,
+    // component creation, variant and collection sync operations, etc.
 }
 ```
 
@@ -337,8 +405,231 @@ CmsPlugin.init({
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 
 </TabItem>
-<TabItem value="Sanity" title="Sanity">
+<TabItem value="strapi" label="Strapi">
 
+**Strapi CMS Integration**
+
+:::tip Working Example
+The complete, production-ready Strapi implementation can be found in the [Strapi integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration). It includes advanced features like plugin-based content types, batch operations, and relationship management.
+:::
+
+This guide provides a complete integration for Vendure with Strapi CMS, including setting up a Strapi application with a custom plugin and implementing the synchronization service.
+
+**Setting up Strapi**
+
+#### 1. Create a new Strapi project
+
+Initialize your Strapi project using the CLI:
+
+```bash
+npx create-strapi-app@latest strapi-integration-app
+cd strapi-integration-app
+```
+
+Choose the following options when prompted:
+
+- Installation type: **Custom (manual settings)**
+- Database client: **Sqlite** (or your preferred database)
+- Use TypeScript: **Yes**
+
+#### 2. Create a Vendure Integration Plugin
+
+Generate a custom plugin to organize Vendure content types:
+
+```bash
+npm run strapi generate plugin
+# Plugin name: vendure-integration-plugin
+```
+
+#### 3. Configure Environment Variables
+
+Add these variables to your `.env` file:
+
+```env
+STRAPI_API_TOKEN=your_api_token
+STRAPI_BASE_URL=http://localhost:1337
+```
+
+**Defining Content Types**
+
+#### 1. Create Vendure-specific content types
+
+Create the content type schemas in your plugin's `server/content-types` folder:
+
+**vendure-product/schema.json**
+
+```json title="src/plugins/vendure-integration-plugin/server/content-types/vendure-product/schema.json"
+{
+    "kind": "collectionType",
+    "collectionName": "vendure_products",
+    "info": {
+        "displayName": "Vendure Product",
+        "singularName": "vendure-product",
+        "pluralName": "vendure-products"
+    },
+    "attributes": {
+        "vendureId": {
+            "type": "integer",
+            "required": true,
+            "unique": true
+        },
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "slug": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "productVariants": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::vendure-product-variant.vendure-product-variant",
+            "mappedBy": "product"
+        }
+    }
+}
+```
+
+**Additional content types for VendureProductVariant and VendureCollection**
+follow the same pattern with appropriate field definitions and relationships.
+
+```json
+// vendure-product-variant/schema.json
+// vendure-collection/schema.json
+```
+
+#### 2. Enable the plugin
+
+Update your Strapi configuration to enable the plugin:
+
+```ts title="config/plugins.ts"
+export default {
+    'vendure-integration-plugin': {
+        enabled: true,
+        resolve: './src/plugins/vendure-integration-plugin',
+    },
+};
+```
+
+#### 3. Generate API tokens
+
+After starting Strapi, create an API token:
+
+1. Navigate to **Settings → API Tokens** in the Strapi admin panel
+2. Create a new token with **Full access** or custom permissions
+3. Save the token for use in your Vendure plugin configuration
+
+**The Strapi Service**
+
+The `StrapiService` handles all Strapi-specific operations including API communication, content management, and relationship resolution. Key features include:
+
+- **Content Management**: CRUD operations using Strapi's REST API
+- **Relationship Handling**: Manages references between products, variants, and collections
+- **Batch Operations**: Efficient bulk lookups for related entities
+- **Rate Limiting**: Configurable delays to prevent API overload
+
+```ts title="src/plugins/cms/services/strapi.service.ts"
+@Injectable()
+export class StrapiService {
+    private readonly strapiBaseUrl = 'http://localhost:1337/api';
+
+    constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
+
+    async syncProduct({ product, defaultLanguageCode, operationType }) {
+        switch (operationType) {
+            case 'create':
+                return this.createDocumentFromProduct(product, defaultLanguageCode);
+            case 'update':
+                return this.updateDocumentFromProduct(product, defaultLanguageCode);
+            case 'delete':
+                return this.deleteDocumentFromProduct(product, defaultLanguageCode);
+        }
+    }
+
+    private async makeStrapiRequest({ method, endpoint, data }) {
+        await this.enforceRateLimit();
+        const url = `${this.strapiBaseUrl}/${endpoint}`;
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+
+        if (this.options.strapiApiKey) {
+            headers.Authorization = `Bearer ${this.options.strapiApiKey}`;
+        }
+
+        const response = await fetch(url, {
+            method,
+            headers,
+            body: data ? JSON.stringify(data) : undefined,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Strapi API error: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    private async findDocumentBySlug(collectionSlug: string, slug: string) {
+        const endpoint = `${collectionSlug}?filters[slug][$eq]=${encodeURIComponent(slug)}&pagination[limit]=1`;
+        const response = await this.makeStrapiRequest({
+            method: 'GET',
+            endpoint,
+        });
+        return response.data?.[0] || null;
+    }
+
+    private transformProductData(product, defaultLanguageCode: LanguageCode) {
+        return {
+            vendureId: product.id,
+            name: product.translations[defaultLanguageCode]?.name,
+            slug: product.translations[defaultLanguageCode]?.slug,
+            // Additional fields and variant references
+        };
+    }
+
+    // Additional methods: batch lookups, relationship management,
+    // variant and collection sync operations, etc.
+}
+```
+
+**Configuration**
+
+Update your plugin configuration to include Strapi options:
+
+```ts title="src/plugins/cms/types.ts"
+export interface PluginInitOptions {
+    // ... existing options
+    strapiApiKey?: string;
+    strapiBaseUrl?: string;
+}
+```
+
+**Environment Variables**
+
+Add these to your `.env` file:
+
+```env
+STRAPI_API_KEY=your_strapi_api_token
+STRAPI_BASE_URL=http://localhost:1337
+```
+
+**Final Plugin Configuration**
+
+```ts title="src/vendure-config.ts"
+CmsPlugin.init({
+  strapiApiKey: process.env.STRAPI_API_KEY,
+  strapiBaseUrl: process.env.STRAPI_BASE_URL || 'http://localhost:1337',
+}),
+```
+
+This setup provides a complete Strapi CMS integration that automatically syncs your Vendure catalog with Strapi's flexible content management system, leveraging Strapi's plugin architecture for organized content types.
+
+</TabItem>
+<TabItem value="Sanity" title="Sanity">
+**Sanity CMS Integration**
 :::tip Working Example
 The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like rate limiting, content type management, and bulk operations.
 :::
@@ -856,5 +1147,6 @@ Refer to the platform-specific configuration examples in the tabs above for the 
 For complete, production-ready implementations, see the working examples:
 
 - [Storyblok CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration)
+- [Strapi CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration)
 - [Sanity CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration)
 - [Payload CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration)
