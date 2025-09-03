@@ -8,7 +8,6 @@ import {
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    LanguageCode,
     LogLevel,
     SettingsStoreScopes,
     VendureConfig,
@@ -74,34 +73,7 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    customFields: {
-        Product: [
-            {
-                name: 'infoUrl',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-            },
-            {
-                name: 'downloadable',
-                type: 'boolean',
-                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-            },
-            {
-                name: 'shortName',
-                type: 'localeString',
-                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-            },
-            {
-                name: 'lastUpdated',
-                type: 'datetime',
-                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-            },
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
