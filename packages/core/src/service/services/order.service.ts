@@ -1889,7 +1889,39 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            await this.deleteOrder(ctx, orderToDelete);
+            try {
+                // Separate transaction to isolate foreign key failure, so it doesn't roll back the entire outer transaction
+                await this.connection.withTransaction(ctx, async innerCtx => {
+                    await this.deleteOrder(innerCtx, orderToDelete);
+                });
+            } catch (e: any) {
+                const message: string = e?.message ?? '';
+                const isForeignKeyViolation = /foreign key/i.test(message);
+
+                if (!isForeignKeyViolation) throw e;
+
+                // If the order has a foreign key violation (e.g. with cancelled payments),
+                // instead of deleting it we cancel the order and leave a note with an explanation.
+                // This way the previous order and all its information are preserved.
+                await this.cancelOrder(ctx, { orderId: orderToDelete.id });
+
+                if (!order) throw e;
+
+                const note = [
+                    'This order was cancelled during user sign-in because merging with the active order was not possible.',
+                    `The active order is ${order.code}. This order has been preserved for reference.`,
+                ].join(' ');
+
+                await this.historyService.createHistoryEntryForOrder(
+                    {
+                        ctx,
+                        orderId: orderToDelete.id,
+                        type: HistoryEntryType.ORDER_NOTE,
+                        data: { note },
+                    },
+                    false,
+                );
+            }
         }
         if (order && linesToDelete) {
             const orderId = order.id;
