@@ -196,7 +196,6 @@ The sync service handles several critical functions:
 - **Translation Management**: Handles Vendure's multi-language support
 - **Relationship Resolution**: Manages complex entity relationships
 - **Error Handling**: Provides consistent error handling and logging
-- **Bulk Synchronization**: Supports syncing all entities with retry logic
 
 ### Service Structure and Dependencies
 
@@ -287,10 +286,12 @@ async findCollectionsForVariant(
     variantId: string | number,
 ): Promise<Collection[]> {
     try {
+        // Load all collections for the current context
         const collections = await this.collectionService.findAll(ctx);
         const collectionsWithVariant: Collection[] = [];
 
         for (const collection of collections.items) {
+            // Resolve variant IDs that belong to this collection
             const variantIds = await this.collectionService.getCollectionProductVariantIds(
                 collection,
                 ctx,
@@ -301,12 +302,14 @@ async findCollectionsForVariant(
             );
 
             if (hasVariant) {
+                // Keep collections that include the variant
                 collectionsWithVariant.push(collection);
             }
         }
 
         return collectionsWithVariant;
     } catch (error) {
+        // Variants can have no collecitons, therefore, sync anyways.
         Logger.error(`Failed to find collections for variant ${variantId}`, String(error));
         return [];
     }
