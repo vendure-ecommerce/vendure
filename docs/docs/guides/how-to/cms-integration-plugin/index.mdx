@@ -201,7 +201,7 @@ The sync service handles several critical functions:
 
 The service follows Vendure's [dependency injection pattern](/guides/developer-guide/services/) and requires several core Vendure services:
 
-```ts title="src/plugins/cms/services/cms-sync.service.ts" path=null start=null
+```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()
 export class CmsSyncService implements OnApplicationBootstrap {
     constructor(
@@ -228,7 +228,7 @@ export class CmsSyncService implements OnApplicationBootstrap {
 
 Product sync demonstrates the complete workflow from job processing to CMS communication:
 
-```ts path=null start=null
+```ts
 async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
     try {
         // Fetch fresh product data from database with translations
@@ -280,7 +280,7 @@ async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
 
 The service includes methods to resolve entity relationships. For example, finding collections that contain a specific variant:
 
-```ts path=null start=null
+```ts
 async findCollectionsForVariant(
     ctx: RequestContext,
     variantId: string | number,
@@ -367,7 +367,9 @@ STORYBLOK_SPACE_ID=your_space_id
 - **Story Management**: CRUD operations for stories representing products, variants, and collections
 - **Relationship Handling**: Manages references between products, variants, and collections
 
-### Basic Service Structure
+---
+
+**Basic Service Structure**
 
 The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](/reference/typescript-api/common/on-application-bootstrap) to ensure Storyblok is properly configured before handling sync operations.
 
@@ -405,7 +407,9 @@ export class StoryblokService implements OnApplicationBootstrap {
 }
 ```
 
-### Making API Requests
+---
+
+**Making API Requests**
 
 All Storyblok API communication is centralized through a single method that handles authentication, error handling, and response parsing. This approach ensures consistent behavior across all operations.
 
@@ -432,7 +436,9 @@ private async makeStoryblokRequest({ method, endpoint, data }) {
 }
 ```
 
-### Data Transformation
+---
+
+**Data Transformation**
 
 Transformation methods convert Vendure entities into the format expected by Storyblok's API. The `content` object structure must match the component schema defined in Storyblok.
 
@@ -470,13 +476,15 @@ private async transformProductData(product, defaultLanguageCode, productSlug?) {
 }
 ```
 
-### Relationship Handling
+---
+
+**Relationship Handling**
 
 One of the most important aspects of CMS integration is maintaining relationships between entities. Products have variants, variants belong to collections, and these relationships need to be reflected in the CMS. Storyblok uses story UUIDs to create references between content pieces.
 
-#### Finding Related Entities
+- **Finding Related Entities**
 
-First, we need methods to query the Vendure database for related entities:
+> First, we need methods to query the Vendure database for related entities:
 
 ```ts
 // Find all product variants for a given product ID from the database
@@ -496,9 +504,9 @@ private async findProductVariants(productId: string | number): Promise<ProductVa
 }
 ```
 
-#### Batch Story Lookups
+- **Batch Story Lookups**
 
-For performance, we use batch lookups to find multiple stories at once:
+> We can also use batch lookups to find multiple stories at once:
 
 ```ts
 // Batch lookup method for efficient story retrieval
@@ -527,9 +535,9 @@ private async findStoriesBySlugs(slugs: string[]): Promise<Map<string, any>> {
 }
 ```
 
-#### Building Relationships
+- **Building Relationships**
 
-Finally, we combine database queries with CMS lookups to build relationships:
+> Finally, we combine database queries with CMS lookups to build relationships:
 
 ```ts
 // Find variant stories using batch lookup for efficiency
@@ -598,7 +606,7 @@ private async transformVariantData(
 // follow similar patterns and are available in the working example repository.
 ```
 
-### CRUD Operations
+**CRUD Operations**
 
 These methods handle the basic Create, Read, Update, and Delete operations for stories in Storyblok. They follow REST API conventions and leverage the centralized request method for consistent behavior.
 
@@ -770,7 +778,9 @@ The `StrapiService` handles all Strapi-specific operations including API communi
 - **Relationship Handling**: Manages references between products, variants, and collections
 - **Batch Operations**: Efficient bulk lookups for related entities
 
-### Basic Service Structure
+---
+
+**Basic Service Structure**
 
 The service follows Vendure's dependency injection pattern and exposes sync methods for products, variants, and collections, delegating to CRUD helpers against Strapi.
 
@@ -1201,12 +1211,16 @@ The `PayloadService` handles all Payload-specific operations including local API
 - **Local API Communication**: Direct communication with Payload's local API
 - **Document Management**: CRUD operations for Payload documents
 - **Relationship Handling**: Manages references between products, variants, and collections
-- **Rate Limiting**: Implements delays to prevent API overload
+
+---
+
+**Basic Service Structure**
 
 ```ts title="src/plugins/cms/services/payload.service.ts"
 @Injectable()
 export class PayloadService {
-    private readonly payloadBaseUrl = 'http://localhost:3001/api';
+    // Base URL from configuration; default for local development
+    private readonly payloadBaseUrl = this.options.payloadBaseUrl || 'http://localhost:3001/api';
 
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
@@ -1220,71 +1234,163 @@ export class PayloadService {
                 return this.deleteDocumentFromProduct(product);
         }
     }
+}
+```
 
-    private async makePayloadRequest({ method, endpoint, data }) {
-        await this.enforceRateLimit();
-        const url = `${this.payloadBaseUrl}/${endpoint}`;
+---
 
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-        };
+**Making API Requests**
 
-        if (this.options.payloadApiKey) {
-            headers.Authorization = `Bearer ${this.options.payloadApiKey}`;
-        }
+```ts
+private getPayloadHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (this.options.payloadApiKey) headers.Authorization = `Bearer ${this.options.payloadApiKey}`;
+  return headers;
+}
 
-        const response = await fetch(url, {
-            method,
-            headers,
-            body: data ? JSON.stringify(data) : undefined,
-        });
+private async makePayloadRequest({ method, endpoint, data }: {
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE'; endpoint: string; data?: any;
+}) {
+  const url = `${this.payloadBaseUrl}/${endpoint}`;
+  const res = await fetch(url, {
+    method,
+    headers: this.getPayloadHeaders(),
+    body: data && (method === 'POST' || method === 'PATCH') ? JSON.stringify(data) : undefined,
+  });
+  if (!res.ok) throw new Error(`Payload API error: ${res.status} ${res.statusText}`);
+  return method === 'DELETE' ? {} : res.json();
+}
+```
 
-        if (!response.ok) {
-            throw new Error(`Payload API error: ${response.status}`);
-        }
-        return response.json();
-    }
+---
 
-    private async createDocumentFromProduct(product, defaultLanguageCode: LanguageCode) {
-        const existingDocument = await this.findDocumentBySlug(
-            'vendure-product',
-            product.translations[defaultLanguageCode]?.slug,
-        );
+**Data Transformation**
 
-        if (existingDocument) {
-            return this.updateDocumentFromProduct(product, defaultLanguageCode);
-        }
+```ts
+private async transformProductData(
+  product: Product,
+  defaultLanguageCode: LanguageCode,
+  productSlug?: string | null,
+) {
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t) return undefined;
 
-        const data = this.transformProductData(product, defaultLanguageCode);
-        return this.makePayloadRequest({
-            method: 'POST',
-            endpoint: 'vendure-product',
-            data,
-        });
-    }
+  const variantDocumentIds = await this.findVariantDocumentsForProductIds(
+    product.id,
+    defaultLanguageCode,
+    productSlug,
+  );
 
-    private transformProductData(product, defaultLanguageCode: LanguageCode) {
-        return {
-            id: parseInt(product.id.toString()),
-            name: product.translations[defaultLanguageCode]?.name,
-            slug: product.translations[defaultLanguageCode]?.slug,
-        };
-    }
+  return {
+    id: parseInt(product.id.toString()),
+    name: t.name,
+    slug: t.slug,
+    productVariants: variantDocumentIds,
+  };
+}
+```
 
-    private async findDocumentBySlug(collection: string, slug: string) {
-        const response = await this.makePayloadRequest({
-            method: 'GET',
-            endpoint: `${collection}?where[slug][equals]=${slug}`,
-        });
-        return response.docs?.[0];
-    }
+---
 
-    private async enforceRateLimit() {
-        // Implement 100ms delay to prevent API overload
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
+**Relationship Handling**
 
-    // Additional methods: syncVariant, syncCollection, relationship management, etc.
+- Finding Related Entities
+
+```ts
+private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+  return this.connection.rawConnection.getRepository(ProductVariant).find({
+    where: { productId: productId as any },
+    relations: ['translations'],
+    order: { id: 'ASC' },
+  });
+}
+```
+
+- Batch Document Lookups
+
+```ts
+private async findDocumentsBySlugs(collectionSlug: string, slugs: string[]): Promise<Map<string, any>> {
+  const map = new Map<string, any>();
+  if (slugs.length === 0) return map;
+
+  const slugsParam = slugs.map(s => encodeURIComponent(s)).join(',');
+  const res = await this.makePayloadRequest({ method: 'GET', endpoint: `${collectionSlug}?where[slug][in]=${slugsParam}` });
+  for (const doc of res.docs ?? []) if (doc?.slug) map.set(doc.slug, doc);
+  return map;
+}
+```
+
+---
+
+**Building Relationships**
+
+```ts
+private async findVariantDocumentsForProductIds(
+  productId: string | number,
+  defaultLanguageCode: LanguageCode,
+  productSlug?: string | null,
+): Promise<string[]> {
+  if (!productSlug) return [];
+  const variants = await this.findProductVariants(productId);
+  const slugs = variants.map(v => `${productSlug}-variant-${v.id}`);
+  if (slugs.length === 0) return [];
+  const docs = await this.findDocumentsBySlugs('vendure-product-variant', slugs);
+  const ids: string[] = [];
+  docs.forEach(doc => { if (doc?.id) ids.push(String(doc.id)); });
+  return ids;
+}
+
+private async findParentProductDocumentId(
+  variant: ProductVariant,
+  defaultLanguageCode: LanguageCode,
+): Promise<string | null> {
+  const product = await this.connection.rawConnection.getRepository(Product).findOne({
+    where: { id: variant.productId },
+    relations: ['translations'],
+  });
+  if (!product) return null;
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t?.slug) return null;
+  const doc = await this.findDocumentBySlug('vendure-product', t.slug);
+  return doc?.id ? String(doc.id) : null;
+}
+```
+
+---
+
+**CRUD Operations**
+
+```ts
+private async findDocumentBySlug(collection: string, slug: string) {
+  const res = await this.makePayloadRequest({ method: 'GET', endpoint: `${collection}?where[slug][equals]=${encodeURIComponent(slug)}&limit=1` });
+  return res.docs?.[0] ?? null;
+}
+
+private async createDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
+  if (!data) return;
+  const res = await this.makePayloadRequest({ method: 'POST', endpoint: 'vendure-product', data });
+  Logger.info(`Created product ${product.id} (Payload ID: ${res.doc?.id})`);
+}
+
+private async updateDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t?.slug) return;
+  const existing = await this.findDocumentBySlug('vendure-product', t.slug);
+  if (!existing) return this.createDocumentFromProduct(product, defaultLanguageCode, productSlug);
+  const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
+  if (!data) return;
+  await this.makePayloadRequest({ method: 'PATCH', endpoint: `vendure-product/${existing.id}`, data });
+  Logger.info(`Updated product ${product.id} (Payload ID: ${existing.id})`);
+}
+
+private async deleteDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode) {
+  const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
+  if (!t?.slug) return;
+  const existing = await this.findDocumentBySlug('vendure-product', t.slug);
+  if (!existing) return;
+  await this.makePayloadRequest({ method: 'DELETE', endpoint: `vendure-product/${existing.id}` });
+  Logger.info(`Deleted product ${product.id} (Payload ID: ${existing.id})`);
 }
 ```
 
@@ -1318,7 +1424,8 @@ CmsPlugin.init({
 }),
 ```
 
-This setup provides a complete Payload CMS integration that automatically syncs your Vendure catalog with Payload's flexible content management system, supporting local development and production deployments.
+This section provides a high-level overview. For a complete, production-ready implementation, see the Payload integration example:
+https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration
 
 </TabItem>
 <TabItem value="more-soon" label="More guides coming soon">
