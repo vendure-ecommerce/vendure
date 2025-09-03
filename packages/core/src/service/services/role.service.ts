@@ -32,16 +32,12 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Role } from '../../entity/role/role.entity';
-import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { RoleEvent } from '../../event-bus/events/role-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import {
-    getChannelPermissions,
-    getUserChannelsPermissions,
-} from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelRoleService } from './channel-role.service';
 import { ChannelService } from './channel.service';
 
 /**
@@ -56,6 +52,7 @@ export class RoleService {
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
+        private channelRoleService: ChannelRoleService,
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
         private eventBus: EventBus,
@@ -164,27 +161,20 @@ export class RoleService {
         channelId: ID,
         permissions: Permission[],
     ): Promise<boolean> {
-        const permissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
-        for (const permission of permissions) {
-            if (permissionsOnChannel.includes(permission)) {
-                return true;
-            }
-        }
-        return false;
+        const mergedPermissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
+        return permissions.some(p => mergedPermissionsOnChannel.includes(p));
     }
 
+    /**
+     * This function can get expensive since it might check every returned Role,
+     * so make sure we reuse requestcontext level caching instead fetching from the DB every time.
+     */
     private async activeUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
-        const permissionsRequired = getChannelPermissions([role]);
-        for (const channelPermissions of permissionsRequired) {
-            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
-            if (!activeUserHasRequiredPermissions) {
-                return false;
-            }
+        for (const channel of role.channels) {
+            const canRead = await this.userHasAllPermissionsOnChannel(ctx, channel.id, role.permissions);
+            if (!canRead) return false;
         }
+
         return true;
     }
 
@@ -197,13 +187,8 @@ export class RoleService {
         channelId: ID,
         permissions: Permission[],
     ): Promise<boolean> {
-        const permissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
-        for (const permission of permissions) {
-            if (!permissionsOnChannel.includes(permission)) {
-                return false;
-            }
-        }
-        return true;
+        const mergedPermissionsOnChannel = await this.getActiveUserPermissionsOnChannel(ctx, channelId);
+        return permissions.every(p => mergedPermissionsOnChannel.includes(p));
     }
 
     private async getActiveUserPermissionsOnChannel(
@@ -211,28 +196,19 @@ export class RoleService {
         channelId: ID,
     ): Promise<Permission[]> {
         const { activeUserId } = ctx;
-        if (activeUserId == null) {
-            return [];
-        }
+        if (!activeUserId) return [];
+
         // For apps with many channels, this is a performance bottleneck as it will be called
         // for each channel in certain code paths such as the GetActiveAdministrator query in the
         // admin ui. Caching the result prevents unbounded quadratic slowdown.
         const userChannels = await this.requestContextCache.get(
             ctx,
             `RoleService.getActiveUserPermissionsOnChannel.user(${activeUserId})`,
-            async () => {
-                const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
-                    relations: ['roles', 'roles.channels'],
-                });
-                return getUserChannelsPermissions(user);
-            },
+            async () => this.channelRoleService.getMergedPermissionsPerChannel(activeUserId),
         );
 
         const channel = userChannels.find(c => idsAreEqual(c.id, channelId));
-        if (!channel) {
-            return [];
-        }
-        return channel.permissions;
+        return channel?.permissions ?? [];
     }
 
     async create(ctx: RequestContext, input: CreateRoleInput): Promise<Role> {
@@ -244,7 +220,7 @@ export class RoleService {
         } else {
             targetChannels = [ctx.channel];
         }
-        await this.checkActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
+        await this.assertActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
         const role = await this.createRoleForChannels(ctx, input, targetChannels);
         await this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
         return role;
@@ -263,7 +239,7 @@ export class RoleService {
             ? await this.getPermittedChannels(ctx, input.channelIds)
             : undefined;
         if (input.permissions) {
-            await this.checkActiveUserHasSufficientPermissions(
+            await this.assertActiveUserHasSufficientPermissions(
                 ctx,
                 targetChannels ?? role.channels,
                 input.permissions,
@@ -279,6 +255,7 @@ export class RoleService {
         if (targetChannels) {
             role.channels = targetChannels;
         }
+
         await this.connection.getRepository(ctx, Role).save(role, { reload: false });
         const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
@@ -336,30 +313,22 @@ export class RoleService {
 
     /**
      * @description
-     * Checks that the active User has sufficient Permissions on the target Channels to create
+     * Asserts that the active User has sufficient Permissions on the target Channels to create
      * a Role with the given Permissions. The rule is that an Administrator may only grant
      * Permissions that they themselves already possess.
      */
-    private async checkActiveUserHasSufficientPermissions(
+    private async assertActiveUserHasSufficientPermissions(
         ctx: RequestContext,
         targetChannels: Channel[],
         permissions: Permission[],
     ) {
-        const permissionsRequired = getChannelPermissions([
-            new Role({
-                permissions: unique([Permission.Authenticated, ...permissions]),
-                channels: targetChannels,
-            }),
-        ]);
-        for (const channelPermissions of permissionsRequired) {
-            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
-            if (!activeUserHasRequiredPermissions) {
+        for (const channel of targetChannels) {
+            const isPermitted = await this.userHasAllPermissionsOnChannel(ctx, channel.id, [
+                Permission.Authenticated,
+                ...permissions,
+            ]);
+            if (!isPermitted)
                 throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
-            }
         }
     }
 
@@ -439,8 +408,9 @@ export class RoleService {
             code: input.code,
             description: input.description,
             permissions: unique([Permission.Authenticated, ...input.permissions]),
+            channels,
         });
-        role.channels = channels;
+
         return this.connection.getRepository(ctx, Role).save(role);
     }
 

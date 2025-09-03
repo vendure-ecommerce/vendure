@@ -12,7 +12,7 @@ import {
 } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { Channel, Collection, FacetValue, TaxCategory, User } from '../../../entity';
+import { Channel, Collection, FacetValue, User } from '../../../entity';
 import {
     CollectionService,
     FacetValueService,
@@ -110,6 +110,7 @@ export class Populator {
             Logger.error('Could not populate roles');
             Logger.error(e, 'populator', e.stack);
         }
+        // TODO channelroles
     }
 
     /**

@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    ChannelRoleInput,
     DeletionResponse,
     MutationAssignRoleToAdministratorArgs,
     MutationCreateAdministratorArgs,
@@ -10,6 +11,7 @@ import {
     Permission,
     QueryAdministratorArgs,
     QueryAdministratorsArgs,
+    UpdateChannelAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -61,7 +63,12 @@ export class AdministratorResolver {
         @Args() args: MutationCreateAdministratorArgs,
     ): Promise<Administrator> {
         const { input } = args;
-        return this.administratorService.create(ctx, input);
+        // TODO look into backwards compatability of leaving the old mutations in place
+        const channelRoles = input.roleIds.map<ChannelRoleInput>(roleId => ({
+            channelId: ctx.channelId,
+            roleId,
+        }));
+        return this.administratorService.create(ctx, { ...input, channelRoles });
     }
 
     @Transaction()
@@ -71,7 +78,12 @@ export class AdministratorResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateAdministratorArgs,
     ): Promise<Administrator> {
-        const { input } = args;
+        // TODO look into backwards compatability of leaving the old mutations in place
+        const channelRoles = args.input.roleIds?.map<ChannelRoleInput>(roleId => ({
+            channelId: ctx.channelId,
+            roleId,
+        }));
+        const input: UpdateChannelAdministratorInput = { ...args.input, channelRoles };
         return this.administratorService.update(ctx, input);
     }
 
@@ -82,13 +94,10 @@ export class AdministratorResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateActiveAdministratorArgs,
     ): Promise<Administrator | undefined> {
-        if (ctx.activeUserId) {
-            const { input } = args;
-            const administrator = await this.administratorService.findOneByUserId(ctx, ctx.activeUserId);
-            if (administrator) {
-                return this.administratorService.update(ctx, { ...input, id: administrator.id });
-            }
-        }
+        const { input } = args;
+        if (!ctx.activeUserId) return;
+        // TODO look into backwards compatability of leaving the old mutations in place
+        return this.administratorService.update(ctx, { ...input, id: ctx.activeUserId });
     }
 
     @Transaction()
@@ -98,7 +107,10 @@ export class AdministratorResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAssignRoleToAdministratorArgs,
     ): Promise<Administrator> {
-        return this.administratorService.assignRole(ctx, args.administratorId, args.roleId);
+        // TODO look into backwards compatability of leaving the old mutations in place
+        return this.administratorService.assignRolesOnChannels(ctx, args.administratorId, [
+            { channelId: ctx.channelId, roleId: args.roleId },
+        ]);
     }
 
     @Transaction()
@@ -121,4 +133,12 @@ export class AdministratorResolver {
     ): Promise<DeletionResponse[]> {
         return Promise.all(args.ids.map(id => this.administratorService.softDelete(ctx, id)));
     }
+
+    // TODO missing the new example channelrole mutations:
+    // - createChannelAdministrator
+    // - updateChannelAdministrator
+    // - updateActiveChannelAdministrator
+    // - assignRoleToChannelAdministrator
+    //
+    // Think about backwards compatability and or breaking changes
 }

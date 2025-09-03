@@ -208,6 +208,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Administrator: [],
         Asset: [],
         Channel: [],
+        ChannelRole: [],
         Collection: [],
         Customer: [],
         CustomerGroup: [],

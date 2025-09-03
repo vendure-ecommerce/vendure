@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
-    CreateAdministratorInput,
+    ChannelRoleInput,
+    CreateChannelAdministratorInput,
     DeletionResult,
-    UpdateAdministratorInput,
+    UpdateChannelAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { In, IsNull } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -15,9 +16,10 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Role } from '../../entity';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
-import { Role } from '../../entity/role/role.entity';
+import { ChannelRole } from '../../entity/role/channel-role.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { AdministratorEvent } from '../../event-bus/events/administrator-event';
@@ -26,9 +28,10 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
-import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelRoleService } from './channel-role.service';
+import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
@@ -48,6 +51,8 @@ export class AdministratorService {
         private passwordCipher: PasswordCipher,
         private userService: UserService,
         private roleService: RoleService,
+        private channelService: ChannelService,
+        private channelRoleService: ChannelRoleService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private requestContextService: RequestContextService,
@@ -126,23 +131,32 @@ export class AdministratorService {
      * @description
      * Create a new Administrator.
      */
-    async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
-        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+    async create(ctx: RequestContext, input: CreateChannelAdministratorInput): Promise<Administrator> {
+        await this.assertActiveUserCanGrantRoles(ctx, input.channelRoles);
+
         const administrator = new Administrator(input);
         administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
-        for (const roleId of input.roleIds) {
-            createdAdministrator = await this.assignRole(ctx, createdAdministrator.id, roleId);
+
+        for (const { channelId, roleId } of input.channelRoles) {
+            // TODO should this run concurrently via Promise.all?
+            await this.channelRoleService.create(ctx, { userId: administrator.id, channelId, roleId });
         }
-        await this.customFieldRelationService.updateRelations(
-            ctx,
-            Administrator,
-            input,
-            createdAdministrator,
-        );
+
+        // TODO getting error that the input has no customfields -- how did this work previously?
+        // Previously the input also didnt specify (?)
+        //
+        // await this.customFieldRelationService.updateRelations(
+        //     ctx,
+        //     Administrator,
+        //     input,
+        //     createdAdministrator,
+        // );
+
+        createdAdministrator = await assertFound(this.findOne(ctx, createdAdministrator.id));
         await this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
         return createdAdministrator;
     }
@@ -151,20 +165,68 @@ export class AdministratorService {
      * @description
      * Update an existing Administrator.
      */
-    async update(ctx: RequestContext, input: UpdateAdministratorInput): Promise<Administrator> {
-        const administrator = await this.findOne(ctx, input.id);
+    async update(ctx: RequestContext, input: UpdateChannelAdministratorInput): Promise<Administrator> {
+        const administrator = await this.findOne(ctx, input.id, ['user']);
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', input.id);
         }
-        if (input.roleIds) {
-            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+
+        const channelRolesToAdd: ChannelRoleInput[] = [];
+        const channelRolesToRemove: ID[] = [];
+        if (input.channelRoles) {
+            await this.assertActiveUserCanGrantRoles(ctx, input.channelRoles);
+
+            // Must also ensure a sole superadmin cant lock themselves out
+            const superAdminRoleId = (await this.roleService.getSuperAdminRole(ctx)).id;
+            if (await this.isSoleSuperadmin(ctx, administrator.user.id, superAdminRoleId)) {
+                // If the admin truly is the last one, assert that the role does not get removed
+                if (!input.channelRoles.find(cr => idsAreEqual(cr.roleId, superAdminRoleId))) {
+                    throw new InternalServerError('error.superadmin-must-have-superadmin-role');
+                }
+            }
+
+            // Gathering to-be-added ones to fire events later
+            // Would it be smarter to just insert it and let the unique constraint deal with it?
+            for (const cr of input.channelRoles) {
+                const exists = await this.connection.getRepository(ctx, ChannelRole).existsBy({
+                    userId: administrator.user.id,
+                    channelId: cr.channelId,
+                    roleId: cr.roleId,
+                });
+                if (!exists) channelRolesToAdd.push(cr);
+            }
+
+            // Gathering to-be-removed ones to fire events later
+            for (const channelRole of await this.connection.getRepository(ctx, ChannelRole).findBy({
+                userId: administrator.user.id,
+                channelId: In(input.channelRoles.map(cr => cr.channelId)),
+                roleId: Not(In(input.channelRoles.map(cr => cr.roleId))),
+            })) {
+                channelRolesToRemove.push(channelRole.id);
+            }
+
+            for (const { channelId, roleId } of channelRolesToAdd) {
+                await this.channelRoleService.create(ctx, {
+                    userId: administrator.user.id,
+                    channelId,
+                    roleId,
+                });
+            }
+
+            for (const id of channelRolesToRemove) {
+                const response = await this.channelRoleService.delete(ctx, id);
+                if (response.result === DeletionResult.NOT_DELETED) {
+                    throw new InternalServerError('// TODO is throwing here really what we want?');
+                }
+            }
         }
-        let updatedAdministrator = patchEntity(administrator, input);
+
+        patchEntity(administrator, input);
         await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
 
         if (input.emailAddress) {
-            updatedAdministrator.user.identifier = input.emailAddress;
-            await this.connection.getRepository(ctx, User).save(updatedAdministrator.user);
+            administrator.user.identifier = input.emailAddress;
+            await this.connection.getRepository(ctx, User).save(administrator.user);
         }
         if (input.password) {
             const user = await this.userService.getUserById(ctx, administrator.user.id);
@@ -174,58 +236,72 @@ export class AdministratorService {
                 await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
             }
         }
-        if (input.roleIds) {
-            const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
-            if (isSoleSuperAdmin) {
-                const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
-                    throw new InternalServerError('error.superadmin-must-have-superadmin-role');
-                }
-            }
-            const removeIds = administrator.user.roles
-                .map(role => role.id)
-                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
 
-            const addIds = (input.roleIds as ID[]).filter(
-                roleId => !administrator.user.roles.some(role => role.id === roleId),
+        const updatedAdministrator = await assertFound(this.findOne(ctx, administrator.id));
+
+        // TODO getting error that the input has no customfields -- how did this work previously?
+        // Previously the input also didnt specify (?)
+        //
+        // await this.customFieldRelationService.updateRelations(
+        //     ctx,
+        //     Administrator,
+        //     input,
+        //     updatedAdministrator,
+        // );
+
+        if (channelRolesToAdd.length > 0) {
+            await this.eventBus.publish(
+                new RoleChangeEvent(
+                    ctx,
+                    updatedAdministrator,
+                    channelRolesToAdd.map(cr => cr.roleId),
+                    'assigned',
+                ),
             );
-
-            administrator.user.roles = [];
-            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
-            for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
-            }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
         }
-        await this.customFieldRelationService.updateRelations(
-            ctx,
-            Administrator,
-            input,
-            updatedAdministrator,
-        );
-        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+
+        if (channelRolesToRemove.length > 0) {
+            await this.eventBus.publish(
+                new RoleChangeEvent(ctx, updatedAdministrator, channelRolesToRemove, 'removed'),
+            );
+        }
+
+        await this.eventBus.publish(new AdministratorEvent(ctx, updatedAdministrator, 'updated', input));
         return updatedAdministrator;
     }
 
     /**
      * @description
-     * Checks that the active user is allowed to grant the specified Roles when creating or
+     * Asserts that the active user is allowed to grant the specified Roles when creating or
      * updating an Administrator.
+     *
+     * @throws {UserInputError} If the active user does not have sufficient permissions
      */
-    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]) {
+    private async assertActiveUserCanGrantRoles(ctx: RequestContext, channelRoles: ChannelRoleInput[]) {
+        if (!ctx.activeUserId)
+            throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+
+        if (channelRoles.length === 0) return;
+
+        // Retrieving the permissions to cross-check against the active user, because
+        // said user may only grant permissions which they already have.
         const roles = await this.connection.getRepository(ctx, Role).find({
-            where: { id: In(roleIds) },
-            relations: { channels: true },
+            select: { permissions: true },
+            where: { id: In(channelRoles.map(cr => cr.roleId)) },
         });
-        const permissionsRequired = getChannelPermissions(roles);
-        for (const channelPermissions of permissionsRequired) {
-            const activeUserHasRequiredPermissions = await this.roleService.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
-            if (!activeUserHasRequiredPermissions) {
+
+        for (const channelRole of channelRoles) {
+            // Someone could have provided a non-existing role-id, so we deny, in order to not leak existing role-ids
+            const role = roles.find(r => idsAreEqual(r.id, channelRole.roleId));
+            if (!role) throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+
+            if (
+                (await this.roleService.userHasAllPermissionsOnChannel(
+                    ctx,
+                    channelRole.channelId,
+                    role.permissions,
+                )) === false
+            ) {
                 throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
             }
         }
@@ -233,19 +309,22 @@ export class AdministratorService {
 
     /**
      * @description
-     * Assigns a Role to the Administrator's User entity.
+     * Assigns roles to the Administrator's User entity on channels.
      */
-    async assignRole(ctx: RequestContext, administratorId: ID, roleId: ID): Promise<Administrator> {
-        const administrator = await this.findOne(ctx, administratorId);
-        if (!administrator) {
-            throw new EntityNotFoundError('Administrator', administratorId);
+    async assignRolesOnChannels(
+        ctx: RequestContext,
+        administratorId: ID,
+        channelRoles: ChannelRoleInput[],
+    ): Promise<Administrator> {
+        const administrator = await this.findOne(ctx, administratorId, ['user']);
+        if (!administrator) throw new EntityNotFoundError('Administrator', administratorId);
+
+        // TODO concurrently instead of sequentially?
+        // TODO unique constraints could be ignored
+        for (const { channelId, roleId } of channelRoles) {
+            await this.channelRoleService.create(ctx, { userId: administrator.user.id, channelId, roleId });
         }
-        const role = await this.roleService.findOne(ctx, roleId);
-        if (!role) {
-            throw new EntityNotFoundError('Role', roleId);
-        }
-        administrator.user.roles.push(role);
-        await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
+
         return administrator;
     }
 
@@ -272,22 +351,25 @@ export class AdministratorService {
 
     /**
      * @description
-     * Resolves to `true` if the administrator ID belongs to the only Administrator
-     * with SuperAdmin permissions.
+     * Resolves to `true` if the User ID belongs to the only User with SuperAdmin permissions.
+     *
+     * @argument superAdminRoleId The role ID with which to compare. If omitted retrieves ID itself.
+     * Passing the ID manually can be useful to avoid fetching the ID multiple times.
      */
-    private async isSoleSuperadmin(ctx: RequestContext, id: ID) {
-        const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-        const allAdmins = await this.connection.getRepository(ctx, Administrator).find({
-            relations: ['user', 'user.roles'],
-        });
-        const superAdmins = allAdmins.filter(
-            admin => !!admin.user.roles.find(r => r.id === superAdminRole.id),
-        );
-        if (1 < superAdmins.length) {
-            return false;
-        } else {
-            return idsAreEqual(superAdmins[0].id, id);
+    private async isSoleSuperadmin(ctx: RequestContext, userId: ID, superAdminRoleId?: ID) {
+        const roleId = superAdminRoleId ?? (await this.roleService.getSuperAdminRole(ctx)).id;
+        const superUserIds = (
+            await this.connection.getRepository(ctx, ChannelRole).find({
+                select: ['userId'],
+                where: { roleId },
+            })
+        ).map(cr => cr.userId);
+
+        if (superUserIds.length === 1) {
+            return idsAreEqual(superUserIds[0], userId);
         }
+
+        return false;
     }
 
     /**
@@ -308,7 +390,6 @@ export class AdministratorService {
 
         if (!superAdminUser) {
             const ctx = await this.requestContextService.create({ apiType: 'admin' });
-            const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = new Administrator({
                 emailAddress: superadminCredentials.identifier,
                 firstName: 'Super',
@@ -320,9 +401,16 @@ export class AdministratorService {
                 superadminCredentials.password,
             );
             const { id } = await this.connection.getRepository(ctx, Administrator).save(administrator);
-            const createdAdministrator = await assertFound(this.findOne(ctx, id));
-            createdAdministrator.user.roles.push(superAdminRole);
-            await this.connection.getRepository(ctx, User).save(createdAdministrator.user, { reload: false });
+            const createdAdministrator = await assertFound(this.findOne(ctx, id, ['user']));
+
+            const superAdminRole = await this.roleService.getSuperAdminRole();
+            const defaultChannel = await this.channelService.getDefaultChannel();
+
+            await this.channelRoleService.create(ctx, {
+                userId: createdAdministrator.user.id,
+                channelId: defaultChannel.id,
+                roleId: superAdminRole.id,
+            });
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)

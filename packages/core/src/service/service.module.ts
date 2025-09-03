@@ -37,6 +37,7 @@ import { InitializerService } from './initializer.service';
 import { AdministratorService } from './services/administrator.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
+import { ChannelRoleService } from './services/channel-role.service';
 import { ChannelService } from './services/channel.service';
 import { CollectionService } from './services/collection.service';
 import { CountryService } from './services/country.service';
@@ -75,6 +76,7 @@ const services = [
     AssetService,
     AuthService,
     ChannelService,
+    ChannelRoleService,
     CollectionService,
     CountryService,
     CustomerGroupService,
