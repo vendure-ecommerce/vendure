@@ -271,7 +271,12 @@ STORYBLOK_SPACE_ID=your_space_id
 - **Story Management**: CRUD operations for stories representing products, variants, and collections
 - **Relationship Handling**: Manages references between products, variants, and collections
 
+### Basic Service Structure
+
+The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](/reference/typescript-api/common/on-application-bootstrap) to ensure Storyblok is properly configured before handling sync operations.
+
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
+// Define component types as constants for consistency and maintainability
 const COMPONENT_TYPE = {
     product: 'vendure_product',
     product_variant: 'vendure_product_variant',
@@ -280,12 +285,17 @@ const COMPONENT_TYPE = {
 
 @Injectable()
 export class StoryblokService implements OnApplicationBootstrap {
-    private readonly storyblokBaseUrl = 'https://mapi.storyblok.com/v1';
-    private isInitialized = false;
-    private readonly rateLimitDelay = 200; // 200ms between calls = max 5 calls/second
-
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
+    async onApplicationBootstrap() {
+        // This lifecycle hook ensures Storyblok components (content types) are created
+        // before any sync operations begin. This prevents API errors when trying to
+        // create stories with non-existent component types.
+        await this.ensureStoryContentTypesExists();
+    }
+
+    // Main entry point for product synchronization
+    // The operationType determines which CRUD operation to perform
     async syncProduct({ product, defaultLanguageCode, operationType }) {
         switch (operationType) {
             case 'create':
@@ -296,102 +306,107 @@ export class StoryblokService implements OnApplicationBootstrap {
                 return this.deleteStoryFromProduct(product, defaultLanguageCode);
         }
     }
-
-    private async transformProductData(product, defaultLanguageCode, productSlug?) {
-        const defaultTranslation = this.getTranslationByLanguage(product.translations, defaultLanguageCode);
-
-        if (!defaultTranslation) {
-            return undefined;
-        }
-
-        // Find all variant story UUIDs for this product
-        const variantStoryIds = await this.findVariantStoriesForProductUuids(
-            product.id,
-            defaultLanguageCode,
-            productSlug,
-        );
-
-        return {
-            story: {
-                name: defaultTranslation.name,
-                slug: defaultTranslation.slug,
-                content: {
-                    component: COMPONENT_TYPE.product,
-                    vendureId: product.id.toString(),
-                    variants: variantStoryIds, // Array of story UUIDs
-                },
-            },
-            publish: 1, // Auto-publish the story
-        };
-    }
-
-    private async findStoryBySlug(slug: string) {
-        const response = await this.makeStoryblokRequest({
-            method: 'GET',
-            endpoint: `stories?by_slugs=${slug}`,
-        });
-        return response.stories.find((story: any) => story.slug === slug);
-    }
-
-    private async ensureStoryContentTypesExists() {
-        // Check if Vendure components exist in Storyblok
-        const contentCheck = await this.checkContentTypes();
-
-        // Create missing components with proper schema
-        if (!contentCheck.product) {
-            await this.createContentType('product');
-        }
-        if (!contentCheck.variant) {
-            await this.createContentType('product_variant');
-        }
-        if (!contentCheck.collection) {
-            await this.createContentType('collection');
-        }
-
-        this.isInitialized = true;
-    }
-
-    private async makeStoryblokRequest({ method, endpoint, data }) {
-        await this.enforceRateLimit();
-        const url = `${this.storyblokBaseUrl}/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
-
-        const response = await fetch(url, {
-            method,
-            headers: {
-                Authorization: this.options.cmsApiKey,
-                'Content-Type': 'application/json',
-            },
-            body: data ? JSON.stringify(data) : undefined,
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Storyblok API error: ${response.status} - ${errorText}`);
-        }
-        return response.json();
-    }
-
-    private async enforceRateLimit() {
-        // Storyblok allows max 5 requests per second
-        await new Promise(resolve => setTimeout(resolve, this.rateLimitDelay));
-    }
-
-    // Additional methods: batch story lookups, relationship management,
-    // component creation, variant and collection sync operations, etc.
 }
 ```
 
-**Configuration**
+3. third
 
-Update your plugin configuration to include Storyblok options:
+Making API Requests
 
-```ts title="src/plugins/cms/types.ts"
-export interface PluginInitOptions {
+All Storyblok API communication is centralized through a single method that handles authentication, error handling, and response parsing. This approach ensures consistent behavior across all operations.
+
+```ts
+private async makeStoryblokRequest({ method, endpoint, data }) {
+    // Construct the full API URL using the configured space ID
+    const url = `https://mapi.storyblok.com/v1/spaces/${this.options.storyblokSpaceId}/${endpoint}`;
+
+    const response = await fetch(url, {
+        method,
+        headers: {
+            Authorization: this.options.storyblokApiKey,
+            'Content-Type': 'application/json',
+        },
+        // Only include request body for POST/PUT operations
+        body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+        // Provide clear error messages for debugging API issues
+        throw new Error(`Storyblok API error: ${response.status}`);
+    }
+    return response.json();
+}
+```
+
+### Data Transformation
+
+Transformation methods convert Vendure entities into the format expected by Storyblok's API. The `content` object structure must match the component schema defined in Storyblok.
+
+```ts
+private transformProductData(product, defaultLanguageCode) {
+    // Extract the translation for the default language
+    // Vendure stores translations in an array, so we need to find the correct one
+    const translation = product.translations.find(
+        t => t.languageCode === defaultLanguageCode
+    );
+
+    return {
+        story: {
+            name: translation?.name, // Story name in Storyblok
+            slug: translation?.slug,  // URL slug for the story
+            content: {
+                component: COMPONENT_TYPE.product, // Must match the component name in Storyblok
+                vendureId: product.id.toString(),  // Store Vendure ID for reference
+                // Additional fields would be added here based on your component schema
+            },
+        },
+        publish: 1, // Auto-publish the story (1 = published, 0 = draft)
+    };
+}
+```
+
+### CRUD Operations
+
+These methods handle the basic Create, Read, Update, and Delete operations for stories in Storyblok. They follow REST API conventions and leverage the centralized request method for consistent behavior.
+
+```ts
+// Create a new story in Storyblok
+private async createStoryFromProduct(product, defaultLanguageCode) {
+    // Transform Vendure product data into Storyblok story format
+    const data = this.transformProductData(product, defaultLanguageCode);
+
+    // POST to the stories endpoint to create a new story
+    return this.makeStoryblokRequest({
+        method: 'POST',
+        endpoint: 'stories',
+        data,
+    });
+}
+
+// Find an existing story by its slug
+private async findStoryBySlug(slug: string) {
+    // Use Storyblok's by_slugs query parameter for efficient lookup
+    const response = await this.makeStoryblokRequest({
+        method: 'GET',
+        endpoint: `stories?by_slugs=${slug}`,
+    });
+
+    // Return the matching story or undefined if not found
+    return response.stories.find((story: any) => story.slug === slug);
+}
+
+// Additional CRUD methods like updateStoryFromProduct and deleteStoryFromProduct
+// follow similar patterns with PUT and DELETE HTTP methods respectively.
+// Full implementations are available in the working example repository.
+```
+
     // ... existing options
     cmsApiKey?: string;
     storyblokSpaceId?: string;
+
 }
-```
+
+````
 
 **Final Plugin Configuration**
 
@@ -400,7 +415,7 @@ CmsPlugin.init({
   cmsApiKey: process.env.STORYBLOK_API_KEY,
   storyblokSpaceId: process.env.STORYBLOK_SPACE_ID,
 }),
-```
+````
 
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 
