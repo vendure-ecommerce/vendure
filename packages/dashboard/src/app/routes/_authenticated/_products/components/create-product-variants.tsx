@@ -225,6 +225,7 @@ export function CreateProductVariants({
                                                         <FormItem className="flex items-center space-x-2">
                                                             <FormControl>
                                                                 <Checkbox
+                                                                    defaultChecked={true}
                                                                     checked={field.value}
                                                                     onCheckedChange={field.onChange}
                                                                 />

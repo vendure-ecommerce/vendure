@@ -135,6 +135,7 @@ export function CreateProductVariantsDialog({
         ({ data }: { data: VariantConfiguration }) => setVariantData(data),
         [],
     );
+    const createCount = Object.values(variantData?.variants ?? {}).filter(v => v.enabled).length;
 
     return (
         <>
@@ -168,7 +169,8 @@ export function CreateProductVariantsDialog({
                                 !variantData ||
                                 createOptionGroupMutation.isPending ||
                                 addOptionGroupToProductMutation.isPending ||
-                                createProductVariantsMutation.isPending
+                                createProductVariantsMutation.isPending ||
+                                createCount === 0
                             }
                         >
                             {createOptionGroupMutation.isPending ||
@@ -176,13 +178,7 @@ export function CreateProductVariantsDialog({
                             createProductVariantsMutation.isPending ? (
                                 <Trans>Creating...</Trans>
                             ) : (
-                                <Trans>
-                                    Create{' '}
-                                    {variantData
-                                        ? Object.values(variantData.variants).filter(v => v.enabled).length
-                                        : 0}{' '}
-                                    variants
-                                </Trans>
+                                <Trans>Create {createCount} variants</Trans>
                             )}
                         </Button>
                     </DialogFooter>
