@@ -230,49 +230,49 @@ Product sync demonstrates the complete workflow from job processing to CMS commu
 
 ```ts
 async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
-    try {
-        // Fetch fresh product data from database with translations
-        const product = await this.connection.rawConnection
-            .getRepository(Product)
-            .findOne({
-                where: { id: jobData.entityId },
-                relations: { translations: true },
-            });
+  try {
+    // Fetch fresh product data from database with translations
+    const product = await this.connection.rawConnection
+      .getRepository(Product)
+      .findOne({
+        where: { id: jobData.entityId },
+        relations: { translations: true },
+      });
 
-        if (!product) {
-            throw new Error(`Product with ID ${jobData.entityId} not found`);
-        }
-
-        const operationType = jobData.operationType;
-        const defaultLanguageCode = await this.getDefaultLanguageCode();
-
-        // Get product slug using translation utilities
-        const productSlug = this.translationUtils.getSlugByLanguage(
-            product.translations,
-            defaultLanguageCode,
-        );
-
-        // Delegate to CMS-specific service
-        await this.cmsSpecificService.syncProduct({
-            product,
-            defaultLanguageCode,
-            operationType,
-            productSlug,
-        });
-
-        return {
-            success: true,
-            message: `Product ${jobData.operationType} synced successfully`,
-            timestamp: new Date(),
-        };
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        Logger.error(`Product sync failed: ${errorMessage}`, error.stack);
-        return {
-            success: false,
-            message: `Product sync failed: ${errorMessage}`,
-        };
+    if (!product) {
+      throw new Error(`Product with ID ${jobData.entityId} not found`);
     }
+
+    const operationType = jobData.operationType;
+    const defaultLanguageCode = await this.getDefaultLanguageCode();
+
+    // Get product slug using translation utilities
+    const productSlug = this.translationUtils.getSlugByLanguage(
+      product.translations,
+      defaultLanguageCode,
+    );
+
+    // Delegate to CMS-specific service
+    await this.cmsSpecificService.syncProduct({
+      product,
+      defaultLanguageCode,
+      operationType,
+      productSlug,
+    });
+
+    return {
+      success: true,
+      message: `Product ${jobData.operationType} synced successfully`,
+      timestamp: new Date(),
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    Logger.error(`Product sync failed: ${errorMessage}`, error.stack);
+    return {
+      success: false,
+      message: `Product sync failed: ${errorMessage}`,
+    };
+  }
 }
 ```
 
@@ -282,37 +282,37 @@ The service includes methods to resolve entity relationships. For example, findi
 
 ```ts
 async findCollectionsForVariant(
-    ctx: RequestContext,
-    variantId: string | number,
+  ctx: RequestContext,
+  variantId: string | number,
 ): Promise<Collection[]> {
-    try {
-        // Load all collections for the current context
-        const collections = await this.collectionService.findAll(ctx);
-        const collectionsWithVariant: Collection[] = [];
+  try {
+    // Load all collections for the current context
+    const collections = await this.collectionService.findAll(ctx);
+    const collectionsWithVariant: Collection[] = [];
 
-        for (const collection of collections.items) {
-            // Resolve variant IDs that belong to this collection
-            const variantIds = await this.collectionService.getCollectionProductVariantIds(
-                collection,
-                ctx,
-            );
+    for (const collection of collections.items) {
+      // Resolve variant IDs that belong to this collection
+      const variantIds = await this.collectionService.getCollectionProductVariantIds(
+        collection,
+        ctx,
+      );
 
-            const hasVariant = variantIds.some(
-                (id) => id.toString() === variantId.toString(),
-            );
+      const hasVariant = variantIds.some(
+        (id) => id.toString() === variantId.toString(),
+      );
 
-            if (hasVariant) {
-                // Keep collections that include the variant
-                collectionsWithVariant.push(collection);
-            }
-        }
-
-        return collectionsWithVariant;
-    } catch (error) {
-        // Variants can have no collecitons, therefore, sync anyways.
-        Logger.error(`Failed to find collections for variant ${variantId}`, String(error));
-        return [];
+      if (hasVariant) {
+        // Keep collections that include the variant
+        collectionsWithVariant.push(collection);
+      }
     }
+
+    return collectionsWithVariant;
+  } catch (error) {
+    // Variants can have no collecitons, therefore, sync anyways.
+    Logger.error(`Failed to find collections for variant ${variantId}`, String(error));
+    return [];
+  }
 }
 ```
 
@@ -892,6 +892,8 @@ The complete implementations can be found in the working [example repositories](
 The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
 :::
 
+This section provides an overview of integrating Vendure with Sanity. It follows the same structure and patterns as the Storyblok and Payload tabs and focuses on the essentials. Advanced features (like rate limiting) are intentionally omitted here—refer to the working example for production patterns.
+
 **Setting up Sanity Studio**
 
 #### 1. Create a new Studio with Sanity CLI
@@ -937,8 +939,6 @@ export const vendureProduct = defineType({
             of: [{ type: 'reference', to: [{ type: 'vendureProductVariant' }] }],
         }),
     ],
-
-    // define the entity types here too...
 });
 ```
 
@@ -956,7 +956,6 @@ The `SanityService` encapsulates Sanity-specific API communication, GROQ queries
 @Injectable()
 export class SanityService {
     private get apiBase(): string {
-        // Sanity API base with version; dataset is provided per endpoint
         return `https://${this.options.sanityProjectId}.api.sanity.io/v2023-10-01`;
     }
 
@@ -980,7 +979,6 @@ export class SanityService {
         } as const;
     }
 
-    // POST query to avoid URL length and simplify params
     private async query<T>(groq: string, params: Record<string, any> = {}): Promise<T> {
         const url = `${this.apiBase}/data/query/${this.options.sanityDataset}`;
         const res = await fetch(url, {
@@ -1015,7 +1013,6 @@ private async transformProductData(product: Product, defaultLanguageCode: Langua
   const t = product.translations.find(tr => tr.languageCode === defaultLanguageCode);
   if (!t) return undefined;
 
-  // Build relationships: variants of this product as Sanity references
   const variantIds = await this.findVariantDocumentsForProductIds(product.id, defaultLanguageCode, productSlug);
 
   return {
@@ -1290,7 +1287,6 @@ The `PayloadService` handles all Payload-specific operations including local API
 ```ts title="src/plugins/cms/services/payload.service.ts"
 @Injectable()
 export class PayloadService {
-    // Base URL from configuration; default for local development
     private readonly payloadBaseUrl = this.options.payloadBaseUrl || 'http://localhost:3001/api';
 
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
@@ -1315,12 +1311,20 @@ export class PayloadService {
 ```ts
 private getPayloadHeaders(): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (this.options.payloadApiKey) headers.Authorization = `Bearer ${this.options.payloadApiKey}`;
+  if (this.options.payloadApiKey) {
+    headers.Authorization = `Bearer ${this.options.payloadApiKey}`;
+  }
   return headers;
 }
 
-private async makePayloadRequest({ method, endpoint, data }: {
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE'; endpoint: string; data?: any;
+private async makePayloadRequest({
+  method,
+  endpoint,
+  data,
+}: {
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  endpoint: string;
+  data?: any;
 }) {
   const url = `${this.payloadBaseUrl}/${endpoint}`;
   const res = await fetch(url, {
@@ -1328,7 +1332,9 @@ private async makePayloadRequest({ method, endpoint, data }: {
     headers: this.getPayloadHeaders(),
     body: data && (method === 'POST' || method === 'PATCH') ? JSON.stringify(data) : undefined,
   });
-  if (!res.ok) throw new Error(`Payload API error: ${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    throw new Error(`Payload API error: ${res.status} ${res.statusText}`);
+  }
   return method === 'DELETE' ? {} : res.json();
 }
 ```
@@ -1386,7 +1392,11 @@ private async findDocumentsBySlugs(collectionSlug: string, slugs: string[]): Pro
 
   const slugsParam = slugs.map(s => encodeURIComponent(s)).join(',');
   const res = await this.makePayloadRequest({ method: 'GET', endpoint: `${collectionSlug}?where[slug][in]=${slugsParam}` });
-  for (const doc of res.docs ?? []) if (doc?.slug) map.set(doc.slug, doc);
+  for (const doc of res.docs ?? []) {
+    if (doc?.slug) {
+      map.set(doc.slug, doc);
+    }
+  }
   return map;
 }
 ```
@@ -1407,7 +1417,11 @@ private async findVariantDocumentsForProductIds(
   if (slugs.length === 0) return [];
   const docs = await this.findDocumentsBySlugs('vendure-product-variant', slugs);
   const ids: string[] = [];
-  docs.forEach(doc => { if (doc?.id) ids.push(String(doc.id)); });
+  docs.forEach(doc => {
+    if (doc?.id) {
+      ids.push(String(doc.id));
+    }
+  });
   return ids;
 }
 
@@ -1440,8 +1454,8 @@ private async findDocumentBySlug(collection: string, slug: string) {
 private async createDocumentFromProduct(product: Product, defaultLanguageCode: LanguageCode, productSlug?: string | null) {
   const data = await this.transformProductData(product, defaultLanguageCode, productSlug);
   if (!data) return;
-    const res = await this.makePayloadRequest({ method: 'POST', endpoint: 'vendure-product', data });
-    Logger.info(`Created product ${product.id} (Payload ID: ${res.doc?.id})`);
+  const res = await this.makePayloadRequest({ method: 'POST', endpoint: 'vendure-product', data });
+  Logger.info(`Created product ${product.id} (Payload ID: ${res.doc?.id})`);
 }
 
 // Additional CRUD methods like updateStoryFromProduct and deleteStoryFromProduct
