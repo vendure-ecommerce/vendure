@@ -360,7 +360,10 @@ export function AssetGallery({
                                                 {formatFileSize(asset.fileSize)}
                                             </p>
                                         )}
-                                        <DetailPageButton id={asset.id} label={<Trans>Edit</Trans>} />
+                                        <DetailPageButton
+                                            href={`/assets/${asset.id}`}
+                                            label={<Trans>Edit</Trans>}
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>
