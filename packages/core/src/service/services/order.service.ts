@@ -117,6 +117,7 @@ import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { isForeignKeyViolationError } from '../helpers/utils/db-errors';
 import { getOrdersFromLines, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -1895,10 +1896,7 @@ export class OrderService {
                     await this.deleteOrder(innerCtx, orderToDelete);
                 });
             } catch (e: any) {
-                const message: string = e?.message ?? '';
-                const isForeignKeyViolation = /foreign key/i.test(message);
-
-                if (!isForeignKeyViolation) throw e;
+                if (!isForeignKeyViolationError(e)) throw e;
                 if (!order)
                     throw new Error(
                         `Cannot complete order merge: active order not found, while cancelling order ${orderToDelete.id}`,
