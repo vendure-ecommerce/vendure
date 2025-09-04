@@ -1,5 +1,14 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Asset, CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
+import {
+    Asset,
+    CustomFields,
+    Logger,
+    mergeConfig,
+    OrderService,
+    ProductService,
+    RequestContextService,
+    TransactionalConnection,
+} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
@@ -1214,5 +1223,129 @@ describe('Custom fields', () => {
                 },
             },
         ]);
+    });
+
+    describe('setting custom fields directly via a service method', () => {
+        it('OrderService.addItemToOrder warns on unknown custom field', async () => {
+            const orderService = server.app.get(OrderService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+
+            const order = await orderService.create(ctx);
+
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await orderService.addItemToOrder(ctx, order.id, 1, 1, {
+                customFieldWhichDoesNotExist: 'test value',
+            });
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                'Custom field customFieldWhichDoesNotExist not found for entity OrderLine',
+            );
+        });
+
+        it('OrderService.addItemToOrder does not warn on known custom field', async () => {
+            const orderService = server.app.get(OrderService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+
+            const order = await orderService.create(ctx);
+
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await orderService.addItemToOrder(ctx, order.id, 1, 1, {
+                validateInt: 1,
+            });
+
+            expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it('OrderService.addItemToOrder warns on multiple unknown custom fields', async () => {
+            const orderService = server.app.get(OrderService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+
+            const order = await orderService.create(ctx);
+
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await orderService.addItemToOrder(ctx, order.id, 1, 1, {
+                unknownField1: 'foo',
+                unknownField2: 'bar',
+            });
+
+            expect(warnSpy).toHaveBeenCalledWith('Custom field unknownField1 not found for entity OrderLine');
+            expect(warnSpy).toHaveBeenCalledWith('Custom field unknownField2 not found for entity OrderLine');
+        });
+
+        it('OrderService.addItemToOrder does not warn when no custom fields are provided', async () => {
+            const orderService = server.app.get(OrderService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+
+            const order = await orderService.create(ctx);
+
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await orderService.addItemToOrder(ctx, order.id, 1, 1);
+
+            expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it('warns on unknown custom field in ProductTranslation entity', async () => {
+            const productService = server.app.get(ProductService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await productService.create(ctx, {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test',
+                        slug: 'test',
+                        description: '',
+                        customFields: { customFieldWhichDoesNotExist: 'foo' },
+                    },
+                ],
+            });
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                'Custom field customFieldWhichDoesNotExist not found for entity ProductTranslation',
+            );
+        });
+
+        it('does not warn when Translation has a valid custom field', async () => {
+            const productService = server.app.get(ProductService);
+            const requestContextService = server.app.get(RequestContextService);
+            const ctx = await requestContextService.create({
+                apiType: 'admin',
+            });
+            const warnSpy = vi.spyOn(Logger, 'warn');
+
+            await productService.create(ctx, {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test',
+                        slug: 'test',
+                        description: '',
+                        customFields: { localeStringWithDefault: 'foo' },
+                    },
+                ],
+            });
+
+            expect(warnSpy).not.toHaveBeenCalled();
+        });
     });
 });
