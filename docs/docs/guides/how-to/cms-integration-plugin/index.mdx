@@ -268,6 +268,7 @@ export class CmsSyncService implements OnApplicationBootstrap {
     ) {}
 
     async onApplicationBootstrap() {
+        // Ensure this logic only runs on the Vendure worker, and not the server
         if (this.processContext.isWorker) {
             // This is where you would add any necessary setup or initialization logic
             // for example, ensuring that the CMS has compatible content types.
@@ -338,26 +339,22 @@ async findCollectionsForVariant(
   variantId: string | number,
 ): Promise<Collection[]> {
   try {
-    // Load all collections for the current context
-    const collections = await this.collectionService.findAll(ctx);
-    const collectionsWithVariant: Collection[] = [];
+    const collections = await this.connection.rawConnection
+      .getRepository(Collection)
+      .createQueryBuilder("collection")
+      .leftJoinAndSelect("collection.productVariants", "variant")
+      .where("variant.id = :variantId", { variantId })
+      .getMany();
 
-    for (const collection of collections.items) {
-      // Resolve variant IDs that belong to this collection
-      const variantIds = await this.collectionService.getCollectionProductVariantIds(
-        collection,
-        ctx,
-      );
-
-      const hasVariant = variantIds.some(
-        (id) => id.toString() === variantId.toString(),
-      );
-
-      if (hasVariant) {
-        // Keep collections that include the variant
-        collectionsWithVariant.push(collection);
-      }
-    }
+    return collections;
+  } catch (error) {
+    Logger.error(
+      `Failed to find collections for variant ${variantId}`,
+      String(error),
+    );
+    return [];
+  }
+}
 
     return collectionsWithVariant;
   } catch (error) {
