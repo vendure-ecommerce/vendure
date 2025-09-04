@@ -60,6 +60,7 @@ npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
 
 # Generate the CMS-specific service (replace with your CMS)
 npx vendure add -s CmsSpecificService --selected-plugin CmsPlugin
+# Explained later in the Event-Driven Synchronization Section
 ```
 
 Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](/guides/developer-guide/the-service-layer/), and the configuration types.
@@ -140,36 +141,87 @@ In the [onModuleInit](/guides/developer-guide/events/#subscribing-to-events) lif
 You can also scaffold job queue handlers using the CLI:
 
 ```bash
-npx vendure add -j CmsProductSync --selected-plugin CmsPlugin
 npx vendure add -j CmsProductSync --name productSyncQueue --selected-service CmsSyncService
 ```
 
-When an event is detected, we add a [new job to the appropriate queue](/guides/developer-guide/worker-job-queue/).
+This creates a `productSyncQueue ` in the `CmsSyncService`. The service will be responsible for setting up the queues and processing the jobs. It will expose public methods to trigger new jobs.
 
-```ts title="src/plugins/cms/cms.plugin.ts"
-export class CmsPlugin implements OnModuleInit {
+```ts title="src/plugins/cms/services/cms-sync.service.ts"
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { JobQueue, JobQueueService /* ... other imports */ } from '@vendure/core';
+import { SyncJobData } from '../types';
+
+@Injectable()
+export class CmsSyncService implements OnModuleInit {
     private productSyncQueue: JobQueue<SyncJobData>;
-    // ... other queues
+    private variantSyncQueue: JobQueue<SyncJobData>;
+    private collectionSyncQueue: JobQueue<SyncJobData>;
 
     constructor(
-        private eventBus: EventBus,
         private jobQueueService: JobQueueService,
+        // ... other dependencies
+    ) {}
+
+    async onModuleInit() {
+        this.productSyncQueue = await this.jobQueueService.createQueue({
+            name: 'cms-product-sync',
+            process: async job => {
+                return this.syncProductToCms(job.data);
+            },
+        });
+
+        this.variantSyncQueue = await this.jobQueueService.createQueue({
+            name: 'cms-variant-sync',
+            process: async job => {
+                return this.syncVariantToCms(job.data);
+            },
+        });
+
+        this.collectionSyncQueue = await this.jobQueueService.createQueue({
+            name: 'cms-collection-sync',
+            process: async job => {
+                return this.syncCollectionToCms(job.data);
+            },
+        });
+    }
+
+    triggerProductSync(data: SyncJobData) {
+        return this.productSyncQueue.add(data);
+    }
+
+    triggerVariantSync(data: SyncJobData) {
+        return this.variantSyncQueue.add(data);
+    }
+
+    triggerCollectionSync(data: SyncJobData) {
+        return this.collectionSyncQueue.add(data);
+    }
+
+    // ... other methods for the actual sync logic (e.g. syncProductToCms)
+}
+```
+
+Next, in the `CmsPlugin`, we subscribe to the `EventBus` and call the new service method to add a job to the queue whenever a relevant event occurs.
+
+```ts title="src/plugins/cms/cms.plugin.ts"
+import { OnModuleInit, EventBus, ProductEvent, VendurePlugin } from '@vendure/core';
+import { CmsSyncService } from './services/cms-sync.service';
+
+@VendurePlugin({
+    // ...
+    providers: [CmsSyncService /* ... */],
+})
+export class CmsPlugin implements OnModuleInit {
+    constructor(
+        private eventBus: EventBus,
         private cmsSyncService: CmsSyncService,
     ) {}
 
     async onModuleInit() {
-        // Create a job queue for product synchronization
-        this.productSyncQueue = await this.jobQueueService.createQueue({
-            name: 'cms-product-sync',
-            process: async job => {
-                return this.cmsSyncService.syncProductToCms(job.data);
-            },
-        });
-
         // Listen for Product events
-        this.eventBus.ofType(ProductEvent).subscribe(async event => {
+        this.eventBus.ofType(ProductEvent).subscribe(event => {
             const syncData = this.extractSyncData(event);
-            await this.productSyncQueue.add(syncData);
+            this.cmsSyncService.triggerProductSync(syncData);
         });
 
         // Similar listeners for ProductVariantEvent and CollectionEvent...
@@ -1947,10 +1999,25 @@ export class CmsSyncAdminResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async syncProductToCms(@Args() args: { productId: ID }): Promise<any> {
-        const syncData = { entityId: args.productId, operationType: 'update' };
-        return this.cmsSyncService.syncProductToCms(syncData);
+    async syncProductToCms(@Args() args: { productId: ID }): Promise<SyncResponse> {
+        // This creates the data payload for the job
+        const syncData: SyncJobData = {
+            entityType: 'Product',
+            entityId: args.productId,
+            operationType: 'update', // Manual syncs are usually 'update'
+            timestamp: new Date().toISOString(),
+            retryCount: 0,
+        };
+        // The service method adds the job to the queue
+        await this.cmsSyncService.triggerProductSync(syncData);
+
+        return {
+            success: true,
+            message: `Successfully queued sync for product ${args.productId}.`,
+        };
     }
+
+    // ... resolver for collection sync
 }
 ```
 
