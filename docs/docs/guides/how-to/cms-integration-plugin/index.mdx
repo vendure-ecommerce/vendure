@@ -56,7 +56,7 @@ sequenceDiagram
 
     Note over vendure: Source of Truth
 
-    vendure --> Bus: Initizalised Plugin
+    vendure --> Bus: Initialized Plugin
 
     Note over Bus: Entity Change Occurs<br/> - Product<br/> - Variant<br/> - Collection<br/>etc..
 
@@ -71,7 +71,7 @@ sequenceDiagram
     Platform->>CMS: 5. API Request
     deactivate Platform
 
-    CMS ->> vendure: Request Status Logged
+    CMS ->> vendure: 6. Request Status Logged
 ```
 
 This ensures reliable, asynchronous synchronization with built-in retry capabilities.
