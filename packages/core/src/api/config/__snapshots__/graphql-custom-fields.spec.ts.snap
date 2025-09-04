@@ -36,6 +36,21 @@ type ProductCustomFields {
 }"
 `;
 
+exports[`addGraphQLCustomFields() > extends a type that implements translatable 1`] = `
+"type ProductTranslation {
+  id: ID
+  customFields: ProductTranslationCustomFields
+}
+
+scalar JSON
+
+scalar DateTime
+
+type ProductTranslationCustomFields {
+  available: Boolean
+}"
+`;
+
 exports[`addGraphQLCustomFields() > extends a type with FilterParameters 1`] = `
 "type Product {
   name: String
@@ -280,6 +295,17 @@ scalar DateTime
 type ProductCustomFields {
   available: Boolean
 }"
+`;
+
+exports[`addGraphQLCustomFields() > uses JSON scalar for translation if no custom fields defined 1`] = `
+"type ProductTranslation {
+  id: ID
+  customFields: JSON
+}
+
+scalar JSON
+
+scalar DateTime"
 `;
 
 exports[`addGraphQLCustomFields() > uses JSON scalar if no custom fields defined 1`] = `

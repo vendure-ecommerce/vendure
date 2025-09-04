@@ -24,6 +24,32 @@ describe('addGraphQLCustomFields()', () => {
         expect(printSchema(result)).toMatchSnapshot();
     });
 
+    it('uses JSON scalar for translation if no custom fields defined', () => {
+        const input = `
+            type ProductTranslation {
+                id: ID
+            }
+        `;
+        const customFieldConfig: CustomFields = {
+            Product: [],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+
+    it('extends a type that implements translatable', () => {
+        const input = `
+            type ProductTranslation {
+                id: ID
+            }
+        `;
+        const customFieldConfig: CustomFields = {
+            ProductTranslation: [{ name: 'available', type: 'boolean' }],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+
     // regression test for
     // https://github.com/vendure-ecommerce/vendure/issues/3158
     it('uses JSON scalar in UpdateActiveAdministratorInput if only internal custom fields defined on Administrator', () => {
