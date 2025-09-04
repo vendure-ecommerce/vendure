@@ -199,7 +199,7 @@ The sync service handles several critical functions:
 
 ### Service Structure and Dependencies
 
-The service follows Vendure's [dependency injection pattern](/guides/developer-guide/services/) and requires several core Vendure services:
+The service follows Vendure's [dependency injection pattern](/guides/developer-guide/the-service-layer/) and requires several core Vendure services:
 
 ```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()
@@ -332,7 +332,7 @@ This sync service provides the foundation for handling all Vendure-specific comp
 <TabItem value="storyblok" label="Storyblok">
 
 :::tip Working Example
-The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration). It includes advanced features like rate limiting, content type management, and bulk operations.
+The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration). Refer to it for a minimal working implementation.
 :::
 
 **Setting up Storyblok Space**
@@ -363,7 +363,6 @@ STORYBLOK_SPACE_ID=your_space_id
 `StoryblokService` handles all Storyblok-specific operations including API communication, content type management, and data transformation. Key features include:
 
 - **Content Type Management**: Automatically creates Vendure-specific content types (components) in Storyblok
-- **Rate Limiting**: Respects Storyblok's API limits (max 5 calls/second)
 - **Story Management**: CRUD operations for stories representing products, variants, and collections
 - **Relationship Handling**: Manages references between products, variants, and collections
 
@@ -371,7 +370,7 @@ STORYBLOK_SPACE_ID=your_space_id
 
 **Basic Service Structure**
 
-The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](/reference/typescript-api/common/on-application-bootstrap) to ensure Storyblok is properly configured before handling sync operations.
+The service follows Vendure's standard dependency injection pattern and implements OnApplicationBootstrap to ensure Storyblok is properly configured before handling sync operations.
 
 ```ts title="src/plugins/cms/services/storyblok.service.ts"
 // Define component types as constants for consistency and maintainability
@@ -693,7 +692,7 @@ The `ContentfulService` is the heart of the integration. It manages all communic
 
 **Basic Service Structure**
 
-The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](https://www.google.com/search?q=/reference/typescript-api/common/on-application-bootstrap). This lifecycle hook is crucial because it ensures our custom Contentful **Content Types** are created _before_ the application starts trying to sync data, preventing errors.
+The service follows Vendure's standard dependency injection pattern and implements OnApplicationBootstrap. This lifecycle hook is crucial because it ensures our custom Contentful **Content Types** are created _before_ the application starts trying to sync data, preventing errors.
 
 ```ts path=/src/plugins/cms/services/contentful.service.ts start=15
 // Define content type IDs as constants for consistency and easy reference.
@@ -1102,7 +1101,7 @@ The `StrapiService` handles all Strapi-specific operations including API communi
 
 **Basic Service Structure**
 
-The service follows Vendure's standard dependency injection pattern and implements [OnApplicationBootstrap](/reference/typescript-api/common/on-application-bootstrap) to ensure the CMS is properly configured before handling sync operations.
+The service follows Vendure's standard dependency injection pattern and implements OnApplicationBootstrap to ensure the CMS is properly configured before handling sync operations.
 
 ```ts title="src/plugins/cms/services/strapi.service.ts"
 @Injectable()
@@ -1301,18 +1300,18 @@ CmsPlugin.init({
 }),
 ```
 
-This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Sanity.
+This setup provides a complete Strapi CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Strapi.
 
 The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration).
 
 </TabItem>
-<TabItem value="Sanity" title="Sanity">
+<TabItem value="Sanity" label="Sanity">
 
 :::tip Working Example
 The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
 :::
 
-This section provides an overview of integrating Vendure with Sanity. It follows the same structure and patterns as the Storyblok and Payload tabs and focuses on the essentials. Advanced features (like rate limiting) are intentionally omitted here—refer to the working example for production patterns.
+This section provides an overview of integrating Vendure with Sanity. Refer to the working example for production patterns.
 
 **Setting up Sanity Studio**
 
@@ -1917,11 +1916,6 @@ CmsPlugin.init({
 This section provides a high-level overview. For a complete, production-ready implementation, see the Payload integration example:
 https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration
 
-</TabItem>
-<TabItem value="more-soon" label="More guides coming soon">
-:::info
-More CMS integration guides coming soon! Have a specific CMS you'd like to see covered? [Let us know](https://github.com/vendure-ecommerce/vendure/discussions).
-:::
 </TabItem>
 </Tabs>
 
