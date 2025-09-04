@@ -335,18 +335,20 @@ The service includes methods to resolve entity relationships. For example, findi
 
 ```ts
 async findCollectionsForVariant(
-  ctx: RequestContext,
   variantId: string | number,
 ): Promise<Collection[]> {
   try {
-    const collections = await this.connection.rawConnection
-      .getRepository(Collection)
-      .createQueryBuilder("collection")
-      .leftJoinAndSelect("collection.productVariants", "variant")
-      .where("variant.id = :variantId", { variantId })
-      .getMany();
+    const variant = await this.connection.rawConnection
+      .getRepository(ProductVariant)
+      .findOne({
+        where: {
+          id: variantId,
+        },
+        relations: ["collections"],
+      });
 
-    return collections;
+    return variant?.collections || [];
+
   } catch (error) {
     Logger.error(
       `Failed to find collections for variant ${variantId}`,
@@ -355,7 +357,6 @@ async findCollectionsForVariant(
     return [];
   }
 }
-
     return collectionsWithVariant;
   } catch (error) {
     // Variants can have no collecitons, therefore, sync anyways.
