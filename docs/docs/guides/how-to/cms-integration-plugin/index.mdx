@@ -37,9 +37,33 @@ This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure co
 
 The CMS integration follows a simple event-driven flow:
 
-```
-Vendure Entity Change → EventBus → Job Queue → Sync Service → CMS API
-    (Product/Variant/Collection)     (Async Processing)   (Transform & Send)
+```mermaid
+
+sequenceDiagram
+    participant vendure as vendure
+    participant Bus as Event Bus
+    participant Sync as CMS Sync Service
+    participant Platform as Platform Specific Service
+    participant CMS as External CMS
+
+    Note over vendure: Source of Truth
+
+    vendure --> Bus: Initizalised Plugin
+
+    Note over Bus: Entity Change Occurs<br/> - Product<br/> - Variant<br/> - Collection<br/>etc..
+
+    Bus->>Sync: 2. Triggers a job with entity data
+    activate Sync
+
+    Sync->>Platform: 3. Calls the CMS-platform service
+    deactivate Sync
+
+    activate Platform
+    Note over Platform: 4. Makes the specific API call
+    Platform->>CMS: 5. API Request
+    deactivate Platform
+
+    CMS ->> vendure: Request Status Logged
 ```
 
 This ensures reliable, asynchronous synchronization with built-in retry capabilities.
