@@ -22,7 +22,7 @@ Platfroms covered in the [guide](/guides/how-to/cms-integration-plugin/#platform
 ## Working Example Repository
 
 :::info
-This guide provides a high-level overview of building a CMS integration plugin. For complete implementations, refer to [working examples repository](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin)
+This guide provides a high-level overview of building a CMS integration plugin. For complete implementations, refer to [working examples repository](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin)
 
 The code examples in this guide are simplified for educational purposes. The actual implementations contain additional features like error handling, retry logic, and performance optimizations.
 :::
@@ -403,7 +403,7 @@ The service can also includes `syncVariantToCms()` and `syncCollectionToCms()` m
 
 These implementations are omitted from this guide for brevity, but they handle their respective entity types with similar data fetching, relationship resolution, and error handling patterns.
 
-The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin).
+The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/master/examples/cms-integration-plugin).
 :::
 
 This sync service provides the foundation for handling all Vendure-specific complexity while delegating CMS API communication to specialized services.
@@ -414,7 +414,7 @@ This sync service provides the foundation for handling all Vendure-specific comp
 <TabItem value="storyblok" label="Storyblok">
 
 :::tip Working Example
-The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration). Refer to it for a minimal working implementation.
+The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendure-ecommerce/examples/tree/master/examples/storyblok-cms-integration). Refer to it for a minimal working implementation.
 :::
 
 **Setting up Storyblok Space**
@@ -726,13 +726,13 @@ CmsPlugin.init({
 
 This setup provides a complete Storyblok CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Storyblok.
 
-The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration).
+The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/master/examples/storyblok-cms-integration).
 
 </TabItem>
 <TabItem value="contentful" label="Contentful">
 
 :::tip Working Example
-The complete, production-ready Contentful implementation can be found in the [Contentful integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/contentful-cms-integration). It includes advanced features like locale mapping, bulk operations, and a robust setup process.
+The complete, production-ready Contentful implementation can be found in the [Contentful integration example](https://github.com/vendure-ecommerce/examples/tree/master/examples/contentful-cms-integration). It includes advanced features like locale mapping, bulk operations, and a robust setup process.
 :::
 
 **Setting up Contentful Space**
@@ -1056,7 +1056,7 @@ This configuration provides a complete Contentful CMS integration that automatic
 <TabItem value="strapi" label="Strapi">
 
 :::tip Working Example
-The complete, production-ready Strapi implementation can be found in the [Strapi integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration). It includes advanced features like plugin-based content types, batch operations, and relationship management.
+The complete, production-ready Strapi implementation can be found in the [Strapi integration example](https://github.com/vendure-ecommerce/examples/tree/master/examples/strapi-cms-integration). It includes advanced features like plugin-based content types, batch operations, and relationship management.
 :::
 
 This guide provides a complete integration for Vendure with Strapi CMS, including setting up a Strapi application with a custom plugin and implementing the synchronization service.
@@ -1380,13 +1380,13 @@ CmsPlugin.init({
 
 This setup provides a complete Strapi CMS integration that automatically creates the necessary content types and syncs your Vendure catalog with structured content in Strapi.
 
-The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration).
+The complete implementations can be found in the working [example repositories](https://github.com/vendure-ecommerce/examples/tree/master/examples/strapi-cms-integration).
 
 </TabItem>
 <TabItem value="Sanity" label="Sanity">
 
 :::tip Working Example
-The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
+The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendure-ecommerce/examples/tree/master/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
 :::
 
 This section provides an overview of integrating Vendure with Sanity. Refer to the working example for production patterns.
@@ -1645,13 +1645,13 @@ SANITY_DATASET=production
 
 For the complete implementation (including variants and collections, advanced error handling, and bulk operations), see:
 
-https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration
+https://github.com/vendure-ecommerce/examples/tree/master/examples/sanity-cms-integration
 
 </TabItem>
 <TabItem value="payload" label="Payload">
 
 :::tip Working Example
-The complete, production-ready Payload implementation can be found in the [Payload integration example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration). It includes advanced features like local API communication, collection management, and relationship handling.
+The complete, production-ready Payload implementation can be found in the [Payload integration example](https://github.com/vendure-ecommerce/examples/tree/master/examples/payload-cms-integration). It includes advanced features like local API communication, collection management, and relationship handling.
 :::
 
 This guide provides a complete integration for Vendure with Payload CMS, including setting up a Payload application and implementing the synchronization service.
@@ -1992,7 +1992,7 @@ CmsPlugin.init({
 ```
 
 This section provides a high-level overview. For a complete, production-ready implementation, see the Payload integration example:
-https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration
+https://github.com/vendure-ecommerce/examples/tree/master/examples/payload-cms-integration
 
 </TabItem>
 </Tabs>
@@ -2077,7 +2077,7 @@ Refer to the platform-specific configuration examples in the tabs above for the 
 
 For complete, production-ready implementations, see the working examples:
 
-- [Storyblok CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/storyblok-cms-integration)
-- [Strapi CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/strapi-cms-integration)
-- [Sanity CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/sanity-cms-integration)
-- [Payload CMS Integration](https://github.com/vendure-ecommerce/examples/tree/publish/examples/payload-cms-integration)
+- [Storyblok CMS Integration](https://github.com/vendure-ecommerce/examples/tree/master/examples/storyblok-cms-integration)
+- [Strapi CMS Integration](https://github.com/vendure-ecommerce/examples/tree/master/examples/strapi-cms-integration)
+- [Sanity CMS Integration](https://github.com/vendure-ecommerce/examples/tree/master/examples/sanity-cms-integration)
+- [Payload CMS Integration](https://github.com/vendure-ecommerce/examples/tree/master/examples/payload-cms-integration)
