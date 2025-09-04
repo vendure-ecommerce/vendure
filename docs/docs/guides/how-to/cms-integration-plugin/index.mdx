@@ -14,9 +14,7 @@ This guide demonstrates how to build a production-ready CMS integration plugin. 
 ## Working Example Repository
 
 :::info
-This guide provides a high-level overview of building a CMS integration plugin. For complete implementations, refer to these working examples:
-
-The complete source code for the plugin described in this guide can be found in the [cms-integration-plugin example](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin).
+This guide provides a high-level overview of building a CMS integration plugin. For complete implementations, refer to [working examples repository](https://github.com/vendure-ecommerce/examples/tree/publish/examples/cms-integration-plugin)
 
 The code examples in this guide are simplified for educational purposes. The actual implementations contain additional features like error handling, retry logic, and performance optimizations.
 :::
@@ -61,19 +59,19 @@ This command will create the basic plugin structure. Next, we'll generate the re
 npx vendure add -s CmsSyncService --selected-plugin CmsPlugin
 
 # Generate the CMS-specific service (replace with your CMS)
-npx vendure add -s cmsSpecificService --selected-plugin CmsPlugin
+npx vendure add -s CmsSpecificService --selected-plugin CmsPlugin
 ```
 
 Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](/guides/developer-guide/the-service-layer/), and the configuration types.
 
 ### Plugin Definition
 
-The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `cmsSpecificService`) and sets up any Admin API extensions.
+The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `CmsSpecificService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 import { VendurePlugin, PluginCommonModule, Type, OnModuleInit } from '@vendure/core';
 import { CmsSyncService } from './services/cms-sync.service';
-import { cmsSpecificService } from './services/cms-specific.service';
+import { CmsSpecificService } from './services/cms-specific.service';
 import { PluginInitOptions, CMS_PLUGIN_OPTIONS } from './types';
 // ...
 
@@ -82,7 +80,7 @@ import { PluginInitOptions, CMS_PLUGIN_OPTIONS } from './types';
     providers: [
         { provide: CMS_PLUGIN_OPTIONS, useFactory: () => CmsPlugin.options },
         CmsSyncService,
-        cmsSpecificService, // The service for the specific CMS platform
+        CmsSpecificService, // The service for the specific CMS platform
     ],
     // ...
 })
@@ -99,14 +97,19 @@ export class CmsPlugin {
 ### Configuration Types
 
 The plugin's configuration options are defined in a `types.ts` file.
+
 Create this file in your plugin directory to define the interfaces. These options will be passed to the plugin from your `vendure-config.ts`.
+
+:::note
+This would be created for you automatically when you run the CLI command `npx vendure add`
+:::
 
 ```ts title="src/plugins/cms/types.ts"
 import { ID, InjectionToken } from '@vendure/core';
 
 export interface PluginInitOptions {
     cmsApiKey?: string;
-    cmsSpecificOptions?: any;
+    CmsSpecificOptions?: any;
     retryAttempts?: number;
     retryDelay?: number;
 }
@@ -124,8 +127,6 @@ export interface SyncResponse {
     message?: string;
     error?: string;
 }
-
-export const CMS_PLUGIN_OPTIONS = new InjectionToken<PluginInitOptions>('CMS_PLUGIN_OPTIONS');
 ```
 
 ## Event-Driven Synchronization
@@ -140,6 +141,7 @@ You can also scaffold job queue handlers using the CLI:
 
 ```bash
 npx vendure add -j CmsProductSync --selected-plugin CmsPlugin
+npx vendure add -j CmsProductSync --name productSyncQueue --selected-service CmsSyncService
 ```
 
 When an event is detected, we add a [new job to the appropriate queue](/guides/developer-guide/worker-job-queue/).
@@ -209,14 +211,14 @@ export class CmsSyncService implements OnApplicationBootstrap {
         private readonly collectionService: CollectionService,
         private readonly requestContextService: RequestContextService,
         // Your CMS-specific service
-        private readonly cmsSpecificService: cmsSpecificService,
+        private readonly CmsSpecificService: CmsSpecificService,
         private processContext: ProcessContext,
     ) {}
 
     async onApplicationBootstrap() {
         if (this.processContext.isWorker) {
-            // Ensure CMS content types exist before sync operations
-            this.ensureContentTypesExists();
+            // This is where you would add any necessary setup or initialization logic
+            // for example, ensuring that the CMS has compatible content types.
         }
     }
 }
@@ -251,7 +253,7 @@ async syncProductToCms(jobData: SyncJobData): Promise<SyncResponse> {
     );
 
     // Delegate to CMS-specific service
-    await this.cmsSpecificService.syncProduct({
+    await this.CmsSpecificService.syncProduct({
       product,
       defaultLanguageCode,
       operationType,
@@ -383,10 +385,8 @@ export class StoryblokService implements OnApplicationBootstrap {
     constructor(@Inject(CMS_PLUGIN_OPTIONS) private options: PluginInitOptions) {}
 
     async onApplicationBootstrap() {
-        // This lifecycle hook ensures Storyblok components (content types) are created
-        // before any sync operations begin. This prevents API errors when trying to
-        // create stories with non-existent component types.
-        await this.ensureStoryContentTypesExists();
+        // This is where you would add any necessary setup or initialization logic
+        // for example, ensuring that the CMS has compatible content types.
     }
 
     // Main entry point for product synchronization
@@ -708,9 +708,8 @@ export class ContentfulService implements OnApplicationBootstrap {
     ) {}
 
     async onApplicationBootstrap() {
-        // This hook ensures our Contentful space is properly configured with the
-        // necessary Content Types before any sync operations can begin.
-        await this.ensureContentfulContentTypesExists();
+        // This is where you would add any necessary setup or initialization logic
+        // for example, ensuring that the CMS has compatible content types.
     }
 
     // Main entry point for synchronizing a product.
@@ -822,7 +821,7 @@ The first step is always to query the Vendure database to find the related entit
 
 ```ts path=/src/plugins/cms/services/contentful.service.ts start=418
 // Finds all ProductVariant entities for a given product ID.
-private async findProductVariants(productId: string | number): Promise<ProductVariant[]> {
+private async findProductVariants(productId: ID): Promise<ProductVariant[]> {
     try {
         // Use Vendure's standard pattern for database access in a service.
         return await this.connection.rawConnection
@@ -961,7 +960,6 @@ export const config: VendureConfig = {
     plugins: [
         // ... other plugins
         CmsPlugin.init({
-            cms: 'contentful', // Specify which CMS service to use
             cmsApiKey: process.env.CONTENTFUL_API_KEY,
             contentfulSpaceId: process.env.CONTENTFUL_SPACE_ID,
         }),
@@ -1590,8 +1588,8 @@ cd payload-integration-app
 Choose the following options when prompted:
 
 - Use TypeScript? **Yes**
-- Choose a database: **PostgreSQL** (or your preferred database)
-- Package manager: **pnpm**
+- Choose a database: **SQLite** (or your preferred database)
+- Package manager: **npm**
 
 #### 2. Configure development server
 
@@ -1685,14 +1683,14 @@ After setting up your collections, create and run migrations:
 
 ```bash
 # Create a fresh migration (drops all tables and recreates)
-pnpm payload migrate:fresh
+npm payload migrate:fresh
 
 # Alternative: Create specific migration (safer for production)
-pnpm payload migrate:create add-vendure-collections
-pnpm payload migrate
+npm payload migrate:create add-vendure-collections
+npm payload migrate
 
 # Generate TypeScript types
-pnpm payload generate:types
+npm payload generate:types
 ```
 
 **The Payload Service**
