@@ -538,6 +538,11 @@ export function resolveDirName(packageName: string) {
     try {
         entry = require.resolve(packageName);
     } catch {
+        // Fallback: try to find package in node_modules directly
+        const fallbackPath = path.join(process.cwd(), 'node_modules', packageName);
+        if (fs.existsSync(fallbackPath)) {
+            return fallbackPath;
+        }
         throw new Error(`Cannot resolve package "${packageName}". Is it installed?`);
     }
 
