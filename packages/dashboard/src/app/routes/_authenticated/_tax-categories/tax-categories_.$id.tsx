@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_tax-categories/tax-catego
         queryDocument: taxCategoryDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-categories', label: 'Tax Categories' },
+                { path: '/tax-categories', label: <Trans>Tax Categories</Trans> },
                 isNew ? <Trans>New tax category</Trans> : entity?.name,
             ];
         },

@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
         queryDocument: roleDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/roles', label: 'Roles' },
+                { path: '/roles', label: <Trans>Roles</Trans> },
                 isNew ? <Trans>New role</Trans> : entity?.description,
             ];
         },

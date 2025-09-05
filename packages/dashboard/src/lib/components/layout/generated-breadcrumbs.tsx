@@ -64,8 +64,12 @@ export function GeneratedBreadcrumbs() {
         return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
     };
 
-    const pathMatches = (cleanPath: string, url: string): boolean => {
-        return cleanPath === url || cleanPath.startsWith(url + '/');
+    const pathMatches = (cleanPath: string, rawUrl?: string): boolean => {
+        if (!rawUrl) return false;
+        const strip = (p: string) => (p !== '/' && p.endsWith('/') ? p.slice(0, -1) : p);
+        const p = strip(cleanPath);
+        const u = strip(rawUrl);
+        return p === u || p.startsWith(`${u}/`);
     };
 
     const checkSectionItems = (
@@ -77,6 +81,7 @@ export function GeneratedBreadcrumbs() {
         }
 
         for (const item of section.items) {
+            if (!item?.url) continue;
             if (pathMatches(cleanPath, item.url)) {
                 return { label: section.title, path: item.url };
             }
@@ -96,8 +101,10 @@ export function GeneratedBreadcrumbs() {
 
     const findSectionCrumb = (path: string): BreadcrumbPair | undefined => {
         const cleanPath = normalizePath(path);
-        
-        for (const section of navMenuConfig.sections) {
+        const sections: Array<NavMenuSection | NavMenuItem> = navMenuConfig?.sections ?? [];
+        if (sections.length === 0) return undefined;
+
+        for (const section of sections) {
             const result = checkSectionItems(section, cleanPath) || checkDirectSection(section, cleanPath);
             if (result) {
                 return result;
@@ -106,11 +113,16 @@ export function GeneratedBreadcrumbs() {
         return undefined;
     };
 
-    const sectionCrumb = React.useMemo(() => findSectionCrumb(currentPath), [currentPath, basePath]);
-    const breadcrumbs: BreadcrumbPair[] = React.useMemo(
-        () => (sectionCrumb ? [sectionCrumb, ...pageCrumbs] : pageCrumbs),
-        [sectionCrumb, pageCrumbs],
+    const sectionCrumb = React.useMemo(
+        () => findSectionCrumb(currentPath),
+        [currentPath, basePath, navMenuConfig],
     );
+    const breadcrumbs: BreadcrumbPair[] = React.useMemo(() => {
+        const arr = sectionCrumb ? [sectionCrumb, ...pageCrumbs] : pageCrumbs;
+        return arr.filter((c, i, self) =>
+            self.findIndex(x => x.path === c.path && x.label === c.label) === i,
+        );
+    }, [sectionCrumb, pageCrumbs]);
     return (
         <Breadcrumb>
             <BreadcrumbList>

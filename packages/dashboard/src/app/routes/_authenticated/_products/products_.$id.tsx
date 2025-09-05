@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id')(
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/products', label: 'Products' },
+                { path: '/products', label: <Trans>Products</Trans> },
                 isNew ? <Trans>New product</Trans> : entity?.name,
             ];
         },

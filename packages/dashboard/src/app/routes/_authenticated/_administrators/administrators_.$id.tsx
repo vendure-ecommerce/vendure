@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_administrators/administra
         breadcrumb: (isNew, entity) => {
             const name = `${entity?.firstName} ${entity?.lastName}`;
             return [
-                { path: '/administrators', label: 'Administrators' },
+                { path: '/administrators', label: <Trans>Administrators</Trans> },
                 isNew ? <Trans>New administrator</Trans> : name,
             ];
         },

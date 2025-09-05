@@ -51,9 +51,9 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id_/v
         });
         return {
             breadcrumb: [
-                { path: '/products', label: 'Products' },
+                { path: '/products', label: <Trans>Products</Trans> },
                 { path: `/products/${params.id}`, label: result.product?.name },
-                <Trans>Manage variants</Trans>,
+                <Trans>Manage Variants</Trans>,
             ],
         };
     },
