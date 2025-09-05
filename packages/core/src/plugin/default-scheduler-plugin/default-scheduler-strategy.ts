@@ -10,7 +10,6 @@ import { TransactionalConnection } from '../../connection';
 import { ProcessContext } from '../../process-context';
 import { ScheduledTask } from '../../scheduler/scheduled-task';
 import { SchedulerStrategy, TaskReport } from '../../scheduler/scheduler-strategy';
-import { RequestContextService } from '../../service/helpers/request-context/request-context.service';
 import { TaskService } from '../../service/services/task.service';
 
 import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
@@ -75,11 +74,9 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         return async (job?: Cron) => {
             await this.ensureTaskIsRegistered(task);
 
-            const requestContextService = this.injector.get(RequestContextService);
-            const ctx = await requestContextService.create({
-                apiType: 'admin',
-            });
-            await this.taskService.cleanStaleLocks(ctx, 1000);
+            Logger.verbose(`Cleaning stale task locks for task "${task.id}"`);
+            Logger.verbose(`Executing scheduled task "${task.id}"`);
+            await this.taskService.cleanStaleLocks();
 
             const taskEntity = await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)

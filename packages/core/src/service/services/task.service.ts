@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from 'croner';
 
-import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
 import { Logger } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -20,13 +19,12 @@ export class TaskService {
      * @description
      * Cleans stale task locks from the database.
      */
-    async cleanStaleLocks(ctx: RequestContext, batchSize: number) {
+    async cleanStaleLocks() {
         const now = new Date();
         const staleTasks: ScheduledTaskRecord[] = [];
+        Logger.verbose('Cleaning stale task locks');
 
         try {
-            await this.clearSelfLockIfStale();
-
             const lockedTasks = await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)
                 .createQueryBuilder('task')
@@ -38,18 +36,34 @@ export class TaskService {
                     .getRepository(ScheduledTaskRecord)
                     .findOne({ where: { taskId: task.taskId } });
 
-                if (!taskConfig || !task.lockedAt) continue;
+                if (!taskConfig || !task.lockedAt) {
+                    Logger.verbose(`Task ${task.taskId} not found or locked at is null`, 'CleanTaskLockTask');
+                    continue;
+                }
 
                 try {
                     const taskInfo = (await this.schedulerService.getTaskList()).find(
                         (t: { id: string }) => t.id === task.taskId,
                     );
-                    if (!taskInfo) continue;
+                    if (!taskInfo) {
+                        Logger.verbose(
+                            `Task ${task.taskId} not found in scheduler service`,
+                            'CleanTaskLockTask',
+                        );
+                        continue;
+                    }
 
                     const cron = new Cron(taskInfo.schedule);
                     const next1 = cron.nextRun();
                     const next2 = cron.nextRun();
-                    if (!next1 || !next2) continue;
+
+                    Logger.verbose(
+                        `Next run for task ${task.taskId}: ${next1?.toISOString() ?? 'Time 1 not found'} and ${next2?.toISOString() ?? 'Time 2 not found'}`,
+                    );
+                    if (!next1 || !next2) {
+                        Logger.verbose(`Next run for task ${task.taskId} not found`, 'CleanTaskLockTask');
+                        continue;
+                    }
 
                     const intervalMs = next2.getTime() - next1.getTime();
 
@@ -94,44 +108,6 @@ export class TaskService {
                 'CleanTaskLockTask',
             );
             throw error;
-        }
-    }
-
-    /**
-     * @description
-     * Checks if the cleanup task itself has a stale lock and clears it.
-     * This prevents the cleanup task from deadlocking itself.
-     */
-    private async clearSelfLockIfStale() {
-        const now = new Date();
-        const cleanupTaskId = 'clean-task-lock';
-
-        const maxCleanupDuration = 5 * 60 * 1000; // maximum cleanup duration 5 minutes
-
-        try {
-            const cleanupTask = await this.connection.rawConnection
-                .getRepository(ScheduledTaskRecord)
-                .findOne({ where: { taskId: cleanupTaskId } });
-
-            if (cleanupTask && cleanupTask.lockedAt) {
-                const lockAge = now.getTime() - cleanupTask.lockedAt.getTime();
-
-                if (lockAge > maxCleanupDuration) {
-                    await this.connection.rawConnection
-                        .getRepository(ScheduledTaskRecord)
-                        .update({ taskId: cleanupTaskId }, { lockedAt: null });
-
-                    Logger.warn(
-                        `Cleared stale lock for cleanup task "${cleanupTaskId}" (was locked for ${Math.round(lockAge / 1000)}s)`,
-                        'TaskService',
-                    );
-                }
-            }
-        } catch (error) {
-            Logger.warn(
-                `Failed to check/clear self lock: ${error instanceof Error ? error.message : String(error)}`,
-                'TaskService',
-            );
         }
     }
 }
