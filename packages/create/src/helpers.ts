@@ -532,3 +532,30 @@ export function cleanUpDockerResources(name: string) {
         log(pc.yellow(`Could not clean up Docker resources`), { level: 'verbose' });
     }
 }
+
+export function resolveDirName(packageName: string) {
+    let entry: string;
+    try {
+        entry = require.resolve(packageName);
+    } catch {
+        // Fallback: try to find package in node_modules directly
+        const fallbackPath = path.join(process.cwd(), 'node_modules', packageName);
+        if (fs.existsSync(fallbackPath)) {
+            return fallbackPath;
+        }
+        throw new Error(`Cannot resolve package "${packageName}". Is it installed?`);
+    }
+
+    const target = packageName.split('/').pop();
+    let dir = path.dirname(entry);
+    const root = path.parse(dir).root;
+
+    while (path.basename(dir) !== target) {
+        const next = path.dirname(dir);
+        if (next === dir || dir === root) {
+            throw new Error(`Could not locate package root for "${packageName}" from "${entry}".`);
+        }
+        dir = next;
+    }
+    return dir;
+}
