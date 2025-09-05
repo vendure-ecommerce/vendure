@@ -37,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')(
         queryDocument: channelDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/channels', label: 'Channels' },
+                { path: '/channels', label: <Trans>Channels</Trans> },
                 isNew ? <Trans>New channel</Trans> : <ChannelCodeLabel code={entity?.code ?? ''} />,
             ];
         },

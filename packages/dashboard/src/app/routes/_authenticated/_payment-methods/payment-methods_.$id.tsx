@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
         queryDocument: paymentMethodDetailDocument,
         breadcrumb(_isNew, entity) {
             return [
-                { path: '/payment-methods', label: 'Payment methods' },
+                { path: '/payment-methods', label: <Trans>Payment Methods</Trans> },
                 _isNew ? <Trans>New payment method</Trans> : entity?.name,
             ];
         },

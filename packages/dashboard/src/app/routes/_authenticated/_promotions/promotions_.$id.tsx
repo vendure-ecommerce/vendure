@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$i
         queryDocument: promotionDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/promotions', label: 'Promotions' },
+                { path: '/promotions', label: <Trans>Promotions</Trans> },
                 isNew ? <Trans>New promotion</Trans> : entity?.name,
             ];
         },

@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates_/$id'
         queryDocument: taxRateDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-rates', label: 'Tax rates' },
+                { path: '/tax-rates', label: <Trans>Tax Rates</Trans> },
                 isNew ? <Trans>New tax rate</Trans> : entity?.name,
             ];
         },

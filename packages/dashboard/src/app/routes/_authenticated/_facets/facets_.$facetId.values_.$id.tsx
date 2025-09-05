@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$facetId/v
         queryDocument: facetValueDetailDocument,
         breadcrumb(isNew, entity) {
             const facetName = entity?.facet.name ?? 'Facet Value';
-            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: 'Facets' }];
+            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: <Trans>Facets</Trans> }];
             if (isNew) {
                 breadcrumb.push(<Trans>New facet value</Trans>);
             } else if (entity) {

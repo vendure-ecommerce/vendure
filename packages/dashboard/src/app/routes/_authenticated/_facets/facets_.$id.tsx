@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$id')({
         pageId,
         queryDocument: facetDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/facets', label: 'Facets' }, isNew ? <Trans>New facet</Trans> : entity?.name];
+            return [{ path: '/facets', label: <Trans>Facets</Trans> }, isNew ? <Trans>New facet</Trans> : entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

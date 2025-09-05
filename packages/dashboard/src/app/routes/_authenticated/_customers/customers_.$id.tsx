@@ -55,7 +55,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers_/$id'
         pageId,
         queryDocument: customerDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/customers', label: 'Customers' },
+            { path: '/customers', label: <Trans>Customers</Trans> },
             isNew ? <Trans>New customer</Trans> : `${entity?.firstName} ${entity?.lastName}`,
         ],
     }),

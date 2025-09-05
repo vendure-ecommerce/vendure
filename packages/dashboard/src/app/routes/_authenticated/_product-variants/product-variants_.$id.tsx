@@ -46,12 +46,12 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: 'Products' },
+                    { path: '/product', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];
             }
-            return [{ path: '/product-variants', label: 'Product Variants' }, entity?.name];
+            return [{ path: '/product-variants', label: <Trans>Product Variants</Trans> }, entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

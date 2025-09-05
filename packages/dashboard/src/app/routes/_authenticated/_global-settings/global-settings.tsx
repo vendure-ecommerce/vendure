@@ -38,7 +38,7 @@ export const Route = createFileRoute('/_authenticated/_global-settings/global-se
             {},
         );
         return {
-            breadcrumb: [{ path: '/global-settings', label: <Trans>Global settings</Trans> }],
+            breadcrumb: [{ path: '/global-settings', label: <Trans>Global Settings</Trans> }],
         };
     },
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -88,7 +88,7 @@ function GlobalSettingsPage() {
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
-                <Trans>Global settings</Trans>
+                <Trans>Global Settings</Trans>
             </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
