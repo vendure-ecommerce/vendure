@@ -73,9 +73,6 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     executeTask(task: ScheduledTask) {
         return async (job?: Cron) => {
             await this.ensureTaskIsRegistered(task);
-
-            Logger.verbose(`Cleaning stale task locks for task "${task.id}"`);
-            Logger.verbose(`Executing scheduled task "${task.id}"`);
             await this.taskService.cleanStaleLocks();
 
             const taskEntity = await this.connection.rawConnection

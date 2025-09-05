@@ -7,6 +7,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { ScheduledTaskRecord } from '../../plugin/default-scheduler-plugin/scheduled-task-record.entity';
 import { SchedulerService } from '../../scheduler/scheduler.service';
 
+const loggerCtx = 'CleanTaskLocks';
+
 @Injectable()
 @Instrument()
 export class TaskService {
@@ -22,7 +24,7 @@ export class TaskService {
     async cleanStaleLocks() {
         const now = new Date();
         const staleTasks: ScheduledTaskRecord[] = [];
-        Logger.verbose('Cleaning stale task locks');
+        Logger.verbose('Cleaning stale task locks', loggerCtx);
 
         try {
             const lockedTasks = await this.connection.rawConnection
@@ -37,7 +39,6 @@ export class TaskService {
                     .findOne({ where: { taskId: task.taskId } });
 
                 if (!taskConfig || !task.lockedAt) {
-                    Logger.verbose(`Task ${task.taskId} not found or locked at is null`, 'CleanTaskLockTask');
                     continue;
                 }
 
@@ -46,10 +47,7 @@ export class TaskService {
                         (t: { id: string }) => t.id === task.taskId,
                     );
                     if (!taskInfo) {
-                        Logger.verbose(
-                            `Task ${task.taskId} not found in scheduler service`,
-                            'CleanTaskLockTask',
-                        );
+                        Logger.verbose(`Task ${task.taskId} not found in scheduler service`, loggerCtx);
                         continue;
                     }
 
@@ -57,11 +55,7 @@ export class TaskService {
                     const next1 = cron.nextRun();
                     const next2 = cron.nextRun();
 
-                    Logger.verbose(
-                        `Next run for task ${task.taskId}: ${next1?.toISOString() ?? 'Time 1 not found'} and ${next2?.toISOString() ?? 'Time 2 not found'}`,
-                    );
                     if (!next1 || !next2) {
-                        Logger.verbose(`Next run for task ${task.taskId} not found`, 'CleanTaskLockTask');
                         continue;
                     }
 
@@ -73,29 +67,20 @@ export class TaskService {
                 } catch (e) {
                     Logger.warn(
                         `Could not parse schedule for task ${task.taskId}: ${e instanceof Error ? e.message : String(e)}`,
-                        'CleanTaskLockTask',
+                        loggerCtx,
                     );
                     continue;
                 }
             }
 
             if (staleTasks.length > 0) {
-                Logger.info(`Found ${staleTasks.length} tasks with stale locks`, 'CleanTaskLockTask');
-
                 for (const task of staleTasks) {
                     await this.connection.rawConnection
                         .getRepository(ScheduledTaskRecord)
                         .update({ taskId: task.taskId }, { lockedAt: null });
-
-                    Logger.info(
-                        `Cleared stale lock for task "${task.taskId}" (locked since ${
-                            task.lockedAt ? task.lockedAt.toISOString() : 'unknown'
-                        })`,
-                        'CleanTaskLockTask',
-                    );
                 }
             } else {
-                Logger.debug('No stale task locks found', 'CleanTaskLockTask');
+                Logger.debug('No stale task locks found', loggerCtx);
             }
 
             return {
@@ -105,7 +90,7 @@ export class TaskService {
         } catch (error) {
             Logger.error(
                 `Error cleaning up stale task locks: ${error instanceof Error ? error.message : String(error)}`,
-                'CleanTaskLockTask',
+                loggerCtx,
             );
             throw error;
         }
