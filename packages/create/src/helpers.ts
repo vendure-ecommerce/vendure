@@ -540,9 +540,11 @@ export function resolveDirName(packageName: string) {
     } catch {
         throw new Error(`Cannot resolve package "${packageName}". Is it installed?`);
     }
+
     const target = packageName.split('/').pop();
     let dir = path.dirname(entry);
     const root = path.parse(dir).root;
+
     while (path.basename(dir) !== target) {
         const next = path.dirname(dir);
         if (next === dir || dir === root) {
