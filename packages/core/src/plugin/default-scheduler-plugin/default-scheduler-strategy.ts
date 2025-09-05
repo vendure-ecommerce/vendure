@@ -248,6 +248,9 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
                 .insert()
                 .into(ScheduledTaskRecord)
                 .values({ taskId })
+                // Fix for versions lower than MariaDB v10.5 and MySQL: updateEntity(false) prevents TypeORM from
+                // using the RETURNING clause after an INSERT. Keep in mind that this query won't return the id of the inserted record.
+                .updateEntity(false)
                 .orIgnore()
                 .execute();
 

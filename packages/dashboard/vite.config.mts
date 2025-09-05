@@ -15,12 +15,6 @@ export default ({ mode }: { mode: string }) => {
 
     process.env.IS_LOCAL_DEV = adminApiHost.includes('localhost') ? 'true' : 'false';
 
-    console.log('Admin API Connection Info', {
-        adminApiHost,
-        adminApiPort,
-        isLocalDev: process.env.IS_LOCAL_DEV,
-    });
-
     const vendureConfigPath = process.env.VITEST
         ? // This should always be used for running the tests
           './sample-vendure-config.ts'
@@ -31,12 +25,13 @@ export default ({ mode }: { mode: string }) => {
         test: {
             globals: true,
             environment: 'jsdom',
+            exclude: ['./plugin/**/*', '**/node_modules/**/*'],
         },
         plugins: [
             vendureDashboardPlugin({
                 vendureConfigPath: pathToFileURL(vendureConfigPath),
-                adminUiConfig: { apiHost: adminApiHost, apiPort: adminApiPort },
-                // gqlOutputPath: path.resolve(__dirname, './graphql/'),
+                api: { host: adminApiHost, port: adminApiPort },
+                gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
             }) as any,
         ],

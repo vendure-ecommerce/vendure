@@ -1,10 +1,10 @@
-import { Module, Provider, Type as NestType } from '@nestjs/common';
+import { Module, Type as NestType, Provider } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
-import { DocumentNode, GraphQLScalarType } from 'graphql';
+import { DocumentNode, GraphQLScalarType, GraphQLSchema } from 'graphql';
 
 import { RuntimeVendureConfig } from '../config/vendure-config';
 
@@ -81,6 +81,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
      *
      * @example
      * ```ts
@@ -90,7 +91,7 @@ export interface APIExtensionDefinition {
      * }`;
      * ```
      */
-    schema?: DocumentNode | (() => DocumentNode | undefined);
+    schema?: DocumentNode | ((schema?: GraphQLSchema) => DocumentNode | undefined);
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)

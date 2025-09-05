@@ -11,9 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardWidgetInstance
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/widgets.ts" sourceLine="29" packageName="@vendure/dashboard" since="3.3.0" />
-
-**Status: Developer Preview**
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/widgets.ts" sourceLine="25" packageName="@vendure/dashboard" since="3.3.0" />
 
 Represents an instance of a dashboard widget with its layout and configuration.
 

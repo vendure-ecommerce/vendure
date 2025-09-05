@@ -1,70 +1,67 @@
-# Vendure
+<p align="center">
+  <a href="https://vendure.io">
+    <img alt="Vendure logo" height="60" width="auto" src="https://a.storyblok.com/f/328257/699x480/8dbb4c7a3c/logo-icon.png">
+  </a>
+</p>
 
-An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
+<h1 align="center">
+  Vendure
+</h1>
+<h3 align="center">
+    Own Your Commerce. Build Without Workarounds. Ship Faster.
+</h3>
+<h4 align="center">
+  <a href="https://docs.vendure.io">Documentation</a> |
+  <a href="https://vendure.io">Website</a>
+</h4>
 
-> [!IMPORTANT]
-> **We're introducing our new React-based Admin Dashboard**</br>
-> Check out our beta preview now: [v3.3.0 release notes](https://github.com/vendure-ecommerce/vendure/releases/tag/v3.3.0)</br>
-> We're phasing out our Angular-based Admin UI with support until June 2026:
-> [Read more here](https://vendure.io/blog/2025/02/vendure-react-admin-ui)
+<p align="center">
+  <a href="https://github.com/vendure-ecommerce/vendure/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/badge/license-GPL-blue.svg" alt="Vendure is released under the GPLv3 license." />
+  </a>
+  <a href="https://twitter.com/intent/follow?screen_name=vendure_io">
+    <img src="https://img.shields.io/twitter/follow/vendure_io" alt="Follow @vendure_io" />
+  </a>
+  <a href="https://vendure.io/community">
+    <img src="https://img.shields.io/badge/join-our%20discord-7289DA.svg" alt="Join our Discord" />
+  </a>
+  <a href="https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
+  </a>
+</p>
 
-[![Build Status](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test.yml/badge.svg?branch=master)](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test.yml)
-[![Publish & Install](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml/badge.svg?branch=master)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
-[![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+## What is Vendure 
 
-![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
+Vendure is an open-source headless commerce platform built with _TypeScript_ and _Node.js_. It provides a robust foundation for building enterprise-grade digital commerce applications with exceptional scalability and maintainability.
 
-## [www.vendure.io](https://www.vendure.io/)
+- **Built for heavy customization**: Extensible plugin architecture allows you to tailor every aspect of your commerce solution
+- **Modern, AI-optimized tech stack**: Built on TypeScript, Node.js, NestJS, and GraphQL for outstanding performance and developer experience
+- **Headless architecture**: API-first design enables seamless multichannel commerce across any frontend
+- **Enterprise-ready**: Trusted by thousands of teams worldwide, from startups to Fortune 500 companies
+- **Rich feature set**: Comprehensive out-of-the-box functionality with customizable admin dashboard and commerce framework
 
-## 🚀 Getting Started
+Whether you're building a B2B platform, multi-vendor marketplace, or D2C storefront, Vendure provides the flexible foundation to create unique commerce experiences tailored to your business needs.
 
-**New to Vendure?** Start here:
+## Getting Started
 
-- **[Getting Started Guide](https://docs.vendure.io/guides/getting-started/installation/)**: Get Vendure up and running locally in minutes with a single command
-- **[Public Demo](https://vendure.io/demo)**: Take a look at the Vendure Admin UI
-- **[Documentation](https://docs.vendure.io/)**: Comprehensive guides, API reference, and tutorials
+Visit our [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/) to get Vendure up and running locally in _less than 2 minutes_ with a single command.
 
-**Need Help?**
+**Need Help?** Our community is here to help, join [our Discord](https://www.vendure.io/community) for support and discussions!
 
-- **[Vendure Discord](https://www.vendure.io/community)**: Join our community for support and discussions
+## Upgrades & Plugins 
 
-## 🔧 Contributing - For developers
+New updates get released on a bi-weekly cadence, check out our [release notes](https://github.com/vendure-ecommerce/vendure/releases) to keep up-to-date with the latest releases.
 
-**Want to contribute to Vendure?**
+Have a look at all of our [ready-made Vendure plugins](https://vendure.io/plugins?page=1).
+
+## Contribution
 
 Contributions to Vendure are welcome and highly appreciated! Whether you're fixing bugs, adding features, or improving documentation, your help makes Vendure better for everyone.
 
-**[Contribution Guidelines](./CONTRIBUTING.md)** - This is complete guide covering everything from setting up your development environment to submitting your first pull request
+Our **[Contribution Guide](./CONTRIBUTING.md)** is covering everything from setting up your development environment to submitting your first pull request.
 
-**Ready to get started?**
-
- Check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for good first issues
-
-We're here to help if you have questions, and we're excited to see what you'll build with Vendure!
-
-## Branches
-
-- `master` - The latest stable release, currently the 3.x series.
-- `minor` - The next minor release, including new features
-- `major` - The next major release (v4.0)
-- `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
-
-## Structure
-
-This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna). Several npm packages are published from this repo, which can be found in the `packages/` directory.
-
-```plaintext
-vendure/
-├── docs/           # Documentation source
-├── e2e-common/     # Shared config for package e2e tests
-├── license/        # License information & CLA signature log
-├── packages/       # Source for the Vendure server, admin-ui & core plugin packages
-├── scripts/
-    ├── changelog/  # Scripts used to generate the changelog based on the git history
-    ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
-    ├── docs/       # Scripts used to generate documentation markdown from the source
-```
+**Ready to get started?** Check out [these issues](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for a good first task to start!
 
 ## License
 
-See [LICENSE.md](./LICENSE.md).
+Licensed under the [GPLv3 license](./LICENSE.md). Commercial license (VCL) [available](https://vendure.io/pricing).

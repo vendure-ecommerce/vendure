@@ -1,32 +1,32 @@
 import {
-    BooleanCustomFieldConfig as GraphQLBooleanCustomFieldConfig,
     CustomField,
+    BooleanCustomFieldConfig as GraphQLBooleanCustomFieldConfig,
+    BooleanStructFieldConfig as GraphQLBooleanStructFieldConfig,
     DateTimeCustomFieldConfig as GraphQLDateTimeCustomFieldConfig,
+    DateTimeStructFieldConfig as GraphQLDateTimeStructFieldConfig,
     FloatCustomFieldConfig as GraphQLFloatCustomFieldConfig,
+    FloatStructFieldConfig as GraphQLFloatStructFieldConfig,
     IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
+    IntStructFieldConfig as GraphQLIntStructFieldConfig,
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
     LocaleTextCustomFieldConfig as GraphQLLocaleTextCustomFieldConfig,
-    LocalizedString,
-    Permission,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
-    TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
+    StringStructFieldConfig as GraphQLStringStructFieldConfig,
     StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
     StructField as GraphQLStructField,
-    StringStructFieldConfig as GraphQLStringStructFieldConfig,
-    IntStructFieldConfig as GraphQLIntStructFieldConfig,
+    TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
     TextStructFieldConfig as GraphQLTextStructFieldConfig,
-    FloatStructFieldConfig as GraphQLFloatStructFieldConfig,
-    BooleanStructFieldConfig as GraphQLBooleanStructFieldConfig,
-    DateTimeStructFieldConfig as GraphQLDateTimeStructFieldConfig,
+    LocalizedString,
+    Permission,
 } from '@vendure/common/lib/generated-types';
 import {
     CustomFieldsObject,
     CustomFieldType,
     DefaultFormComponentId,
+    StructFieldType,
     Type,
     UiComponentConfig,
-    StructFieldType,
 } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -63,6 +63,15 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      * @since 2.2.0
      */
     requiresPermission?: Array<Permission | string> | Permission | string;
+    /**
+     * @description
+     * Marks the custom field as deprecated. When set to `true` or a string,
+     * the field will be marked as deprecated in the GraphQL schema.
+     * If a string is provided, it will be used as the deprecation reason.
+     *
+     * @since 3.4.0
+     */
+    deprecated?: boolean | string;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 

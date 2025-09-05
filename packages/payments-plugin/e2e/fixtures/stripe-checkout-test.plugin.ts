@@ -1,9 +1,9 @@
 /* eslint-disable */
-import { Controller, Res, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Response } from 'express';
 
-import { clientSecret } from './stripe-dev-server';
+import { clientSecret } from '../stripe-dev-server';
 
 /**
  * This test controller returns the Stripe intent checkout page

@@ -15,19 +15,16 @@ order to demonstrate how to extend the dashboard.
 Let's create the plugin:
 
 ```bash
-npx vendure add
+npx vendure add --plugin cms
 ```
 
-When prompted, select the following options:
+Now let's add an entity to the plugin:
 
-- **Which feature would you like to add?**: `[Plugin] Create a new Vendure plugin`
-- **What is the name of the plugin?**: `cms`
-- **Add features to cms?**: `[Plugin: Entity] Add a new entity to a plugin`
-- **What is the name of the custom entity?**: `Article`
-- **Entity features**: (hit enter to keep defaults)
-- **[Finish] No, I'm done!**
+```bash
+npx vendure add --entity Article --selected-plugin CmsPlugin
+```
 
-You now have you `CmsPlugin` created with a new `Article` entity. You can find the plugin in the `./src/plugins/cms` directory.
+You now have your `CmsPlugin` created with a new `Article` entity. You can find the plugin in the `./src/plugins/cms` directory.
 
 Let's edit the entity to add the appropriate fields:
 
@@ -63,43 +60,24 @@ export class Article extends VendureEntity implements HasCustomFields {
 Now let's create a new `ArticleService` to handle the business logic of our new entity:
 
 ```bash
-npx vendure add
+npx vendure add --service ArticleService --selected-plugin CmsPlugin --selected-entity Article
 ```
-
-When prompted, select the following options:
-
-- **Which feature would you like to add?**: `[Plugin: Service] Add a new service to a plugin`
-- **To which plugin would you like to add the feature?**: `CmsPlugin`
-- **What type of service would you like to add?**: `Service to perform CRUD operations on an entity`
-- **Select an entity**: `Article`
 
 The service will be created in the `./src/plugins/cms/services` directory.
 
 Finally, we'll extend the GraphQL API to expose those CRUD operations:
 
 ```bash
-npx vendure add
+npx vendure add --api-extension CmsPlugin --selected-service ArticleService --query-name ArticleQuery
 ```
-
-When prompted, select the following options:
-
-- **Which feature would you like to add?**: `[Plugin: API] Adds GraphQL API extensions to a plugin`
-- **To which plugin would you like to add the feature?**: `CmsPlugin`
-- **Which service contains the business logic for this API extension?**: `ArticleService: (CRUD service for Article)`
 
 Now the api extensions and resolver has been created in the `./src/plugins/cms/api-extensions` directory.
 
 The last step is to create a migration for our newly-created entity:
 
 ```bash
-npx vendure migrate
+npx vendure migrate --generate article
 ```
-
-When prompted, select the following options:
-
-- **What would you like to do?**: `Generate a new migration`
-- **Enter a meaningful name for the migration**: `article`
-- **Migration file location**: (pick the first option in the `src/migrations` dir)
 
 ## Setting up Dashboard extensions
 

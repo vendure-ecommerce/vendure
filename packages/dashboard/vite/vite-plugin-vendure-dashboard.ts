@@ -133,7 +133,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin(),
-        uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
+        uiConfigPlugin(options),
         ...(options.gqlOutputPath
             ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlOutputPath, tempDir, packageRoot })]
             : []),

@@ -70,7 +70,7 @@ async function runDashboardTests() {
         console.log('Verifying successful login...');
 
         // Wait for dashboard elements to appear with a more robust approach
-        const dashboardSelectors = ['h1:has-text("Dashboard")'];
+        const dashboardSelectors = ['h1:has-text("Insights")'];
 
         // Try to wait for any dashboard element to appear
         let dashboardElement = null;
@@ -116,11 +116,22 @@ async function runDashboardTests() {
         await page.screenshot({ path: '/tmp/dashboard-test-login.png' });
         console.log('Screenshot saved to /tmp/dashboard-test-login.png');
 
-        // navigate to the product list page by clicking the "Products" link in the sidebar
-        // based on the text label "Products"
+        // navigate to the product list page by first expanding the "Catalog" section
+        // and then clicking the "Products" link in the sidebar
+        console.log('Expanding Catalog section...');
+        const catalogSection = await page.locator('button:has-text("Catalog")').first();
+        if (!catalogSection) {
+            throw new Error('Catalog section not found');
+        }
+        await catalogSection.click();
+
+        // Wait for the section to expand and Products link to be visible
+        console.log('Waiting for Products link to be visible...');
+        await page.waitForSelector('a:has-text("Products")', { timeout: 5000 });
+        
         const productsLink = await page.locator('a:has-text("Products")').first();
         if (!productsLink) {
-            throw new Error('Products link not found');
+            throw new Error('Products link not found after expanding Catalog section');
         }
         await productsLink.click();
 

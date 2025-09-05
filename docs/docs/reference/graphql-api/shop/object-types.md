@@ -2449,6 +2449,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#paymentmethodtranslation">PaymentMethodTranslation</a>!]!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -2466,6 +2468,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#shippingmethodtranslation">ShippingMethodTranslation</a>!]!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3233,6 +3237,33 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateCustomerPasswordResult</span> =</div>
 <div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+</div>
+
+## UpdateMultipleOrderItemsResult
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returned when multiple items are added to an Order.</div>
+
+<div class="graphql-code-line top-level comment">The errorResults array contains the errors that occurred for each item, if any.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">UpdateMultipleOrderItemsResult</span> &#123;</div>
+<div class="graphql-code-line ">order: <a href="/reference/graphql-api/shop/object-types#order">Order</a>!</div>
+
+<div class="graphql-code-line ">errorResults: [<a href="/reference/graphql-api/shop/object-types#updateorderitemerrorresult">UpdateOrderItemErrorResult</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## UpdateOrderItemErrorResult
+
+<div class="graphql-code-block">
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Union type of all possible errors that can occur when adding or removing items from an Order.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateOrderItemErrorResult</span> =</div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/reference/graphql-api/shop/object-types#orderlimiterror">OrderLimitError</a> | <a href="/reference/graphql-api/shop/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/reference/graphql-api/shop/object-types#insufficientstockerror">InsufficientStockError</a> | <a href="/reference/graphql-api/shop/object-types#orderinterceptorerror">OrderInterceptorError</a></div>
 </div>
 
 ## UpdateOrderItemsResult

@@ -10,7 +10,8 @@ import { Label } from '../ui/label.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
 
 export function LanguageDialog() {
-    const { availableLocales, availableLanguages } = uiConfig;
+    const { i18n } = uiConfig;
+    const { availableLocales, availableLanguages } = i18n;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
     const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();

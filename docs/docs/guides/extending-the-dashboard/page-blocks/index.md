@@ -3,7 +3,7 @@ title: 'Page Blocks'
 ---
 
 In the Dashboard, all pages are built from blocks. Every block has a `pageId` and a `blockId` which uniquely locates it in the
-app (see [Dev Mode](/guides/extending-the-dashboard/getting-started/#dev-mode) section).
+app (see [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode) section).
 
 You can also define your own blocks, which can be added to any page and can even replace the default blocks.
 
@@ -180,7 +180,7 @@ export default defineDashboardExtension({
 
 To find the `pageId` and `blockId` values for positioning your blocks:
 
-1. Enable [Dev Mode](/guides/extending-the-dashboard/getting-started/#dev-mode) in the dashboard
+1. Enable [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode) in the dashboard
 2. Navigate to the page where you want to add your block
 3. Hover over existing blocks to see their IDs
 4. Use these IDs in your block positioning configuration

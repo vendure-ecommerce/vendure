@@ -1,3 +1,4 @@
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
 import { LanguageSelector } from '@/vdb/components/shared/language-selector.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
@@ -16,7 +17,6 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
-import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Lock } from 'lucide-react';
@@ -69,7 +69,24 @@ const updateChannelDocument = graphql(`
 
 // All possible language codes for global settings - includes more than what might be globally enabled
 const ALL_LANGUAGE_CODES = [
-    'en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'pl', 'ru', 'ja', 'zh', 'ko', 'ar', 'hi', 'sv', 'da', 'no', 'fi'
+    'en',
+    'es',
+    'fr',
+    'de',
+    'it',
+    'pt',
+    'nl',
+    'pl',
+    'ru',
+    'ja',
+    'zh',
+    'ko',
+    'ar',
+    'hi',
+    'sv',
+    'da',
+    'no',
+    'fi',
 ];
 
 interface ManageLanguagesDialogProps {
@@ -79,15 +96,16 @@ interface ManageLanguagesDialogProps {
 
 export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogProps) {
     const { formatLanguageName } = useLocalFormat();
-    const { activeChannel, selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const { hasPermissions } = usePermissions();
     const queryClient = useQueryClient();
-    
-    const displayChannel = selectedChannel || activeChannel;
-    
+
+    const displayChannel = activeChannel;
+
     // Permission checks
     const canReadGlobalSettings = hasPermissions(['ReadSettings']) || hasPermissions(['ReadGlobalSettings']);
-    const canUpdateGlobalSettings = hasPermissions(['UpdateSettings']) || hasPermissions(['UpdateGlobalSettings']);
+    const canUpdateGlobalSettings =
+        hasPermissions(['UpdateSettings']) || hasPermissions(['UpdateGlobalSettings']);
     const canReadChannel = hasPermissions(['ReadChannel']);
     const canUpdateChannel = hasPermissions(['UpdateChannel']);
 
@@ -97,10 +115,10 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
     const [channelDefaultLanguage, setChannelDefaultLanguage] = useState<string>('');
 
     // Queries
-    const { 
-        data: globalSettingsData, 
+    const {
+        data: globalSettingsData,
         isLoading: globalSettingsLoading,
-        error: globalSettingsError 
+        error: globalSettingsError,
     } = useQuery({
         queryKey: ['globalSettings', 'languages'],
         queryFn: () => api.query(globalSettingsLanguagesDocument),
@@ -121,8 +139,11 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
     });
 
     const updateChannelMutation = useMutation({
-        mutationFn: (input: { id: string; availableLanguageCodes?: string[]; defaultLanguageCode?: string }) =>
-            api.mutate(updateChannelDocument, { input }),
+        mutationFn: (input: {
+            id: string;
+            availableLanguageCodes?: string[];
+            defaultLanguageCode?: string;
+        }) => api.mutate(updateChannelDocument, { input }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['channels'] });
             toast.success('Channel language settings updated successfully');
@@ -145,11 +166,11 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
 
     const handleGlobalLanguagesChange = (newLanguages: string[]) => {
         setGlobalLanguages(newLanguages);
-        
+
         // Remove channel languages that are no longer in global languages
         const updatedChannelLanguages = channelLanguages.filter(lang => newLanguages.includes(lang));
         setChannelLanguages(updatedChannelLanguages);
-        
+
         // If the default language is no longer available, reset it
         if (!newLanguages.includes(channelDefaultLanguage)) {
             setChannelDefaultLanguage(updatedChannelLanguages[0] || '');
@@ -158,7 +179,7 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
 
     const handleChannelLanguagesChange = (newLanguages: string[]) => {
         setChannelLanguages(newLanguages);
-        
+
         // If the default language is no longer available, reset it
         if (!newLanguages.includes(channelDefaultLanguage)) {
             setChannelDefaultLanguage(newLanguages[0] || '');
@@ -172,7 +193,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
         if (canUpdateGlobalSettings && globalSettingsData) {
             const currentGlobalLanguages = globalSettingsData.globalSettings.availableLanguages || [];
             if (JSON.stringify(currentGlobalLanguages.sort()) !== JSON.stringify(globalLanguages.sort())) {
-                promises.push(updateGlobalSettingsMutation.mutateAsync({ availableLanguages: globalLanguages }));
+                promises.push(
+                    updateGlobalSettingsMutation.mutateAsync({ availableLanguages: globalLanguages }),
+                );
             }
         }
 
@@ -180,16 +203,19 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
         if (canUpdateChannel && displayChannel) {
             const currentChannelLanguages = displayChannel.availableLanguageCodes || [];
             const currentChannelDefault = displayChannel.defaultLanguageCode || '';
-            
-            const languagesChanged = JSON.stringify(currentChannelLanguages.sort()) !== JSON.stringify(channelLanguages.sort());
+
+            const languagesChanged =
+                JSON.stringify(currentChannelLanguages.sort()) !== JSON.stringify(channelLanguages.sort());
             const defaultChanged = currentChannelDefault !== channelDefaultLanguage;
-            
+
             if (languagesChanged || defaultChanged) {
-                promises.push(updateChannelMutation.mutateAsync({
-                    id: displayChannel.id,
-                    availableLanguageCodes: channelLanguages,
-                    defaultLanguageCode: channelDefaultLanguage,
-                }));
+                promises.push(
+                    updateChannelMutation.mutateAsync({
+                        id: displayChannel.id,
+                        availableLanguageCodes: channelLanguages,
+                        defaultLanguageCode: channelDefaultLanguage,
+                    }),
+                );
             }
         }
 
@@ -208,17 +234,17 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                 return true;
             }
         }
-        
+
         if (displayChannel && canUpdateChannel) {
             const currentChannelLangs = displayChannel.availableLanguageCodes || [];
             const currentChannelDefault = displayChannel.defaultLanguageCode || '';
-            
+
             return (
                 JSON.stringify(currentChannelLangs.sort()) !== JSON.stringify(channelLanguages.sort()) ||
                 currentChannelDefault !== channelDefaultLanguage
             );
         }
-        
+
         return false;
     };
 
@@ -228,7 +254,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle><Trans>Manage Languages</Trans></DialogTitle>
+                    <DialogTitle>
+                        <Trans>Manage Languages</Trans>
+                    </DialogTitle>
                     <DialogDescription>
                         <Trans>Configure available languages for your store and channels</Trans>
                     </DialogDescription>
@@ -238,10 +266,12 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                     {/* Global Settings Section */}
                     <div>
                         <div className="flex items-center gap-2 mb-3">
-                            <h3 className="text-lg font-semibold"><Trans>Global Languages</Trans></h3>
+                            <h3 className="font-semibold">
+                                <Trans>Global Languages</Trans>
+                            </h3>
                             {!canReadGlobalSettings && <Lock className="h-4 w-4 text-muted-foreground" />}
                         </div>
-                        
+
                         {!canReadGlobalSettings ? (
                             <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
@@ -262,10 +292,14 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                             </div>
                         ) : (
                             <div className="space-y-2">
-                                <Label className="text-sm font-medium">
+                                <Label>
                                     <Trans>Select Available Languages</Trans>
                                 </Label>
-                                <div className={!canUpdateGlobalSettings ? 'pointer-events-none opacity-50' : ''}>
+                                <div
+                                    className={
+                                        !canUpdateGlobalSettings ? 'pointer-events-none opacity-50' : ''
+                                    }
+                                >
                                     <LanguageSelector
                                         value={globalLanguages}
                                         onChange={handleGlobalLanguagesChange}
@@ -285,8 +319,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                     {/* Channel Settings Section */}
                     <div>
                         <div className="flex items-center gap-2 mb-3">
-                            <h3 className="text-lg font-semibold">
-                                <Trans>Channel Languages</Trans> - <ChannelCodeLabel code={displayChannel?.code} />
+                            <h3 className="font-semibold">
+                                <Trans>Channel Languages</Trans> -{' '}
+                                <ChannelCodeLabel code={displayChannel?.code} />
                             </h3>
                             {!canReadChannel && <Lock className="h-4 w-4 text-muted-foreground" />}
                         </div>
@@ -304,7 +339,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                                     <Label className="text-sm font-medium">
                                         <Trans>Available Languages</Trans>
                                     </Label>
-                                    <div className={!canUpdateChannel ? 'pointer-events-none opacity-50' : ''}>
+                                    <div
+                                        className={!canUpdateChannel ? 'pointer-events-none opacity-50' : ''}
+                                    >
                                         <LanguageSelector
                                             value={channelLanguages}
                                             onChange={handleChannelLanguagesChange}
@@ -318,7 +355,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                                         </p>
                                     ) : (
                                         <p className="text-xs text-muted-foreground">
-                                            <Trans>Select from globally available languages for this channel</Trans>
+                                            <Trans>
+                                                Select from globally available languages for this channel
+                                            </Trans>
                                         </p>
                                     )}
                                 </div>
@@ -339,7 +378,8 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                                             <SelectContent>
                                                 {channelLanguages.map(languageCode => (
                                                     <SelectItem key={languageCode} value={languageCode}>
-                                                        {formatLanguageName(languageCode)} ({languageCode.toUpperCase()})
+                                                        {formatLanguageName(languageCode)} (
+                                                        {languageCode.toUpperCase()})
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -355,10 +395,7 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                     <Button variant="outline" onClick={onClose} disabled={isLoading}>
                         <Trans>Cancel</Trans>
                     </Button>
-                    <Button 
-                        onClick={handleSave} 
-                        disabled={!hasChanges() || isLoading}
-                    >
+                    <Button onClick={handleSave} disabled={!hasChanges() || isLoading}>
                         {isLoading ? <Trans>Saving...</Trans> : <Trans>Save Changes</Trans>}
                     </Button>
                 </DialogFooter>

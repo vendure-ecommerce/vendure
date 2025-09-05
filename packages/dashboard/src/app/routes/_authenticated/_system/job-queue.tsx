@@ -94,6 +94,7 @@ function JobQueuePage() {
         <ListPage
             pageId="job-queue-list"
             title="Job Queue"
+            defaultSort={[{ id: 'createdAt', desc: true }]}
             listQuery={jobListDocument}
             route={Route}
             customizeColumns={{

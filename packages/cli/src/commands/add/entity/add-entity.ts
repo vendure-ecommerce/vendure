@@ -8,8 +8,8 @@ import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { createFile } from '../../../utilities/ast-utils';
-import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { createFile, getPluginClasses } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -24,6 +24,11 @@ export interface AddEntityOptions {
         customFields: boolean;
         translatable: boolean;
     };
+    config?: string;
+    isNonInteractive?: boolean;
+    pluginName?: string;
+    customFields?: boolean;
+    translatable?: boolean;
 }
 
 export const addEntityCommand = new CliCommand({
@@ -37,8 +42,35 @@ async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
-    const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
+    const { project } = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage,
+        config: options?.config,
+    });
+
+    let vendurePlugin = providedVendurePlugin;
+
+    // If pluginName is provided (from CLI), find the plugin by name
+    if (options?.pluginName && !vendurePlugin) {
+        const pluginClasses = getPluginClasses(project);
+        const pluginClass = pluginClasses.find((p: ClassDeclaration) => p.getName() === options.pluginName);
+        if (!pluginClass) {
+            const availablePlugins = pluginClasses.map((p: ClassDeclaration) => p.getName()).join(', ');
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins: ${availablePlugins}`,
+            );
+        }
+        vendurePlugin = new VendurePluginRef(pluginClass);
+    }
+
+    // In non-interactive mode with no plugin specified after checking for pluginName, we cannot proceed
+    if (options?.isNonInteractive && !vendurePlugin) {
+        throw new Error(
+            'Plugin must be specified when running in non-interactive mode. Usage: vendure add -e <entity-name> --selected-plugin <plugin-name>',
+        );
+    }
+
+    vendurePlugin = vendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
 
     const customEntityName = options?.className ?? (await getCustomEntityName(cancelledMessage));
@@ -48,6 +80,7 @@ async function addEntity(
         fileName: paramCase(customEntityName) + '.entity',
         translationFileName: paramCase(customEntityName) + '-translation.entity',
         features: await getFeatures(options),
+        config: options?.config,
     };
 
     const entitySpinner = spinner();
@@ -77,23 +110,43 @@ async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEnti
     if (options?.features) {
         return options?.features;
     }
-    const features = await multiselect({
-        message: 'Entity features (use ↑, ↓, space to select)',
-        required: false,
-        initialValues: ['customFields'],
-        options: [
-            {
-                label: 'Custom fields',
-                value: 'customFields',
-                hint: 'Adds support for custom fields on this entity',
-            },
-            {
-                label: 'Translatable',
-                value: 'translatable',
-                hint: 'Adds support for localized properties on this entity',
-            },
-        ],
+
+    // Handle non-interactive mode with explicit feature flags
+    if (options?.isNonInteractive) {
+        return {
+            customFields: options?.customFields ?? false,
+            translatable: options?.translatable ?? false,
+        };
+    }
+
+    // Default features for non-interactive mode when not specified
+    if (options?.className && !options?.features) {
+        return {
+            customFields: true,
+            translatable: false,
+        };
+    }
+
+    const features = await withInteractiveTimeout(async () => {
+        return await multiselect({
+            message: 'Entity features (use ↑, ↓, space to select)',
+            required: false,
+            initialValues: ['customFields'],
+            options: [
+                {
+                    label: 'Custom fields',
+                    value: 'customFields',
+                    hint: 'Adds support for custom fields on this entity',
+                },
+                {
+                    label: 'Translatable',
+                    value: 'translatable',
+                    hint: 'Adds support for localized properties on this entity',
+                },
+            ],
+        });
     });
+
     if (isCancel(features)) {
         cancel(cancelledMessage);
         process.exit(0);

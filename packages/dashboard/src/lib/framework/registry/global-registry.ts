@@ -36,6 +36,10 @@ class GlobalRegistry {
         const oldValue = this.get(key);
         this.registry.set(key, updater(oldValue));
     }
+
+    public has(key: string): boolean {
+        return this.registry.has(key);
+    }
 }
 
 export type GlobalRegistryKey = keyof GlobalRegistryContents;

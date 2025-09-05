@@ -11,9 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardBaseWidgetProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/widgets.ts" sourceLine="12" packageName="@vendure/dashboard" since="3.3.0" />
-
-**Status: Developer Preview**
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/widgets.ts" sourceLine="10" packageName="@vendure/dashboard" since="3.3.0" />
 
 Base props interface for dashboard widgets.
 

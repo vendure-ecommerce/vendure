@@ -89,6 +89,7 @@ export interface AssetGalleryProps {
     className?: string;
     onFilesDropped?: (files: File[]) => void;
     bulkActions?: AssetBulkAction[];
+    displayBulkActions?: boolean;
 }
 
 export function AssetGallery({
@@ -102,6 +103,7 @@ export function AssetGallery({
     className = '',
     onFilesDropped,
     bulkActions,
+    displayBulkActions = true,
 }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
@@ -232,7 +234,7 @@ export function AssetGallery({
     };
 
     return (
-        <div className={`flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
+        <div className={`relative flex flex-col w-full ${fixedHeight ? 'h-[600px]' : 'h-full'} ${className}`}>
             {showHeader && (
                 <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
                     <div className="relative flex-grow flex items-center gap-2">
@@ -272,7 +274,9 @@ export function AssetGallery({
             )}
 
             {/* Bulk actions bar */}
-            <AssetBulkActions selection={selected} bulkActions={bulkActions} refetch={refetch} />
+            {displayBulkActions ? (
+                <AssetBulkActions selection={selected} bulkActions={bulkActions} refetch={refetch} />
+            ) : null}
 
             <div
                 {...getRootProps()}
@@ -291,7 +295,10 @@ export function AssetGallery({
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
+                <div
+                    data-asset-gallery
+                    className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1"
+                >
                     {isLoading ? (
                         <div className="col-span-full flex justify-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -321,7 +328,25 @@ export function AssetGallery({
                                     />
                                     {selectable && (
                                         <div className="absolute top-2 left-2">
-                                            <Checkbox checked={isSelected(asset as Asset)} />
+                                            <Checkbox
+                                                checked={isSelected(asset as Asset)}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    const isCurrentlySelected = selected.some(
+                                                        a => a.id === asset.id,
+                                                    );
+                                                    let newSelected: Asset[];
+
+                                                    if (isCurrentlySelected) {
+                                                        newSelected = selected.filter(a => a.id !== asset.id);
+                                                    } else {
+                                                        newSelected = [...selected, asset as Asset];
+                                                    }
+
+                                                    setSelected(newSelected);
+                                                    onSelect?.(newSelected);
+                                                }}
+                                            />
                                         </div>
                                     )}
                                 </div>
@@ -335,7 +360,10 @@ export function AssetGallery({
                                                 {formatFileSize(asset.fileSize)}
                                             </p>
                                         )}
-                                        <DetailPageButton id={asset.id} label={<Trans>Edit</Trans>} />
+                                        <DetailPageButton
+                                            href={`/assets/${asset.id}`}
+                                            label={<Trans>Edit</Trans>}
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>

@@ -23,7 +23,7 @@ import { rateLimit } from 'express-rate-limit';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { adminApiExtensions } from './api/api-extensions';
+import { getApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
     DEFAULT_APP_PATH,
@@ -77,6 +77,15 @@ export interface AdminUiPluginOptions {
      * for specifying the Vendure GraphQL API host, available UI languages, etc.
      */
     adminUiConfig?: Partial<AdminUiConfig>;
+    /**
+     * @description
+     * If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
+     * set this to `true` in order to avoid a conflict caused by both plugins defining the same
+     * schema extensions.
+     *
+     * @since 3.4.0
+     */
+    compatibilityMode?: boolean;
 }
 
 /**
@@ -130,8 +139,14 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     adminApiExtensions: {
-        schema: adminApiExtensions,
-        resolvers: [MetricsResolver],
+        schema: () => {
+            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
+            return getApiExtensions(compatibilityMode);
+        },
+        resolvers: () => {
+            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
+            return compatibilityMode ? [] : [MetricsResolver];
+        },
     },
     providers: [MetricsService],
     compatibility: '^3.0.0',

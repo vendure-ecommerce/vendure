@@ -1,6 +1,9 @@
-import { Money } from '@/vdb/components/data-display/money.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
+import {
+    CustomerCell,
+    OrderMoneyCell,
+    OrderStateCell,
+} from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
@@ -9,7 +12,7 @@ import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { createDraftOrderDocument, orderListDocument } from './orders.graphql.js';
 
@@ -58,26 +61,15 @@ function OrderListPage() {
             customizeColumns={{
                 total: {
                     header: 'Total',
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currency={currencyCode} />;
-                    },
+                    cell: OrderMoneyCell,
                 },
                 totalWithTax: {
                     header: 'Total with Tax',
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currency={currencyCode} />;
-                    },
+                    cell: OrderMoneyCell,
                 },
                 state: {
                     header: 'State',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue() as string;
-                        return <Badge variant="outline">{value}</Badge>;
-                    },
+                    cell: OrderStateCell,
                 },
                 code: {
                     header: 'Code',
@@ -89,24 +81,12 @@ function OrderListPage() {
                 },
                 customer: {
                     header: 'Customer',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
-                        if (!value) {
-                            return null;
-                        }
-                        return (
-                            <Button asChild variant="ghost">
-                                <Link to={`/customers/${value.id}`}>
-                                    {value.firstName} {value.lastName}
-                                </Link>
-                            </Button>
-                        );
-                    },
+                    cell: CustomerCell,
                 },
                 shippingLines: {
                     header: 'Shipping',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
+                    cell: ({ row }) => {
+                        const value = row.original.shippingLines;
                         return <div>{value.map(line => line.shippingMethod.name).join(', ')}</div>;
                     },
                 },

@@ -94,7 +94,3 @@
     }
 }
 
-/* Overrides for the react-grid-layout library */
-.react-grid-item {
-    transition: none !important;
-}

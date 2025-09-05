@@ -9,6 +9,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -26,7 +27,8 @@ export function DataTableBulkActions<TData>({
     bulkActions,
 }: Readonly<DataTableBulkActionsProps<TData>>) {
     const { pageId } = usePage();
-    const { blockId } = usePageBlock();
+    const pageBlock = usePageBlock();
+    const blockId = pageBlock?.blockId;
 
     // Cache to store selected items across page changes
     const selectedItemsCache = useRef<Map<string, TData>>(new Map());
@@ -52,7 +54,13 @@ export function DataTableBulkActions<TData>({
         })
         .filter((item): item is TData => item !== undefined);
 
-    if (selection.length === 0) {
+    const { position, shouldShow } = useFloatingBulkActions({
+        selectionCount: selection.length,
+        containerSelector: '[data-table-root], .data-table-container, table',
+        bottomOffset: 40,
+    });
+
+    if (!shouldShow) {
         return null;
     }
     const extendedBulkActions = pageId ? getBulkActions(pageId, blockId) : [];
@@ -61,8 +69,13 @@ export function DataTableBulkActions<TData>({
 
     return (
         <div
-            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white shadow-2xl rounded-md border"
-            style={{ height: 'auto', maxHeight: '60px' }}
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-white shadow-2xl rounded-md border z-50"
+            style={{ 
+                height: 'auto', 
+                maxHeight: '60px',
+                bottom: position.bottom,
+                left: position.left
+            }}
         >
             <span className="text-sm text-muted-foreground">
                 <Trans>{selection.length} selected</Trans>

@@ -1,12 +1,12 @@
-import { cancel, isCancel, log, multiselect, select, spinner, text } from '@clack/prompts';
+import { cancel, isCancel, log, select, spinner, text } from '@clack/prompts';
 import { unique } from '@vendure/common/lib/unique';
 import { generateMigration, VendureConfig } from '@vendure/core';
-import * as fs from 'fs-extra';
 import path from 'path';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
+import { withInteractiveTimeout } from '../../../utilities/utils';
 import { loadVendureConfigFile } from '../load-vendure-config-file';
 
 const cancelledMessage = 'Generate migration cancelled';
@@ -23,16 +23,19 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
     const vendureConfig = new VendureConfigRef(project);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
 
-    const name = await text({
-        message: 'Enter a meaningful name for the migration',
-        initialValue: '',
-        placeholder: 'add-custom-fields',
-        validate: input => {
-            if (!/^[a-zA-Z][a-zA-Z-_0-9]+$/.test(input)) {
-                return 'The plugin name must contain only letters, numbers, underscores and dashes';
-            }
-        },
+    const name = await withInteractiveTimeout(async () => {
+        return await text({
+            message: 'Enter a meaningful name for the migration',
+            initialValue: '',
+            placeholder: 'add-custom-fields',
+            validate: input => {
+                if (!/^[a-zA-Z][a-zA-Z-_0-9]+$/.test(input)) {
+                    return 'The plugin name must contain only letters, numbers, underscores and dashes';
+                }
+            },
+        });
     });
+
     if (isCancel(name)) {
         cancel(cancelledMessage);
         process.exit(0);
@@ -43,18 +46,21 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
     let migrationDir = migrationsDirs[0];
 
     if (migrationsDirs.length > 1) {
-        const migrationDirSelect = await select({
-            message: 'Migration file location',
-            options: migrationsDirs
-                .map(c => ({
-                    value: c,
-                    label: c,
-                }))
-                .concat({
-                    value: 'other',
-                    label: 'Other',
-                }),
+        const migrationDirSelect = await withInteractiveTimeout(async () => {
+            return await select({
+                message: 'Migration file location',
+                options: migrationsDirs
+                    .map(c => ({
+                        value: c,
+                        label: c,
+                    }))
+                    .concat({
+                        value: 'other',
+                        label: 'Other',
+                    }),
+            });
         });
+
         if (isCancel(migrationDirSelect)) {
             cancel(cancelledMessage);
             process.exit(0);
@@ -63,11 +69,14 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
     }
 
     if (migrationsDirs.length === 1 || migrationDir === 'other') {
-        const confirmation = await text({
-            message: 'Migration file location',
-            initialValue: migrationsDirs[0],
-            placeholder: '',
+        const confirmation = await withInteractiveTimeout(async () => {
+            return await text({
+                message: 'Migration file location',
+                initialValue: migrationsDirs[0],
+                placeholder: '',
+            });
         });
+
         if (isCancel(confirmation)) {
             cancel(cancelledMessage);
             process.exit(0);

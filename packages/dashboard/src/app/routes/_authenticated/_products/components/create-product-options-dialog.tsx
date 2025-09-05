@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { addOptionGroupToProductDocument, createProductOptionGroupDocument } from '../products.graphql.js';
 
 const getProductDocument = graphql(`
     query GetProduct($productId: ID!) {
@@ -37,39 +38,6 @@ const getProductDocument = graphql(`
                     groupId
                 }
             }
-            optionGroups {
-                id
-                code
-                name
-                options {
-                    id
-                    code
-                    name
-                }
-            }
-        }
-    }
-`);
-
-const createProductOptionGroupDocument = graphql(`
-    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-        createProductOptionGroup(input: $input) {
-            id
-            code
-            name
-            options {
-                id
-                code
-                name
-            }
-        }
-    }
-`);
-
-const addOptionGroupToProductDocument = graphql(`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
             optionGroups {
                 id
                 code

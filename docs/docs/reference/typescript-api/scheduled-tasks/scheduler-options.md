@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SchedulerOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="977" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="998" packageName="@vendure/core" since="3.3.0" />
 
 Options related to scheduled tasks..
 

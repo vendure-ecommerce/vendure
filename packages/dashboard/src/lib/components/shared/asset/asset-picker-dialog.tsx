@@ -39,21 +39,22 @@ export function AssetPickerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[800px] lg:max-w-[1000px] max-h-[80vh] flex flex-col">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-[800px] lg:max-w-[1000px] h-[85vh] p-0 flex flex-col">
+                <DialogHeader className="px-6 pt-6">
                     <DialogTitle>{multiSelect ? title : title.replace('Assets', 'Asset')}</DialogTitle>
                 </DialogHeader>
 
-                <div className="flex-grow py-4">
+                <div className="flex-1 overflow-y-auto px-6 pt-1">
                     <AssetGallery
                         onSelect={handleAssetSelect}
                         multiSelect="manual"
                         initialSelectedAssets={initialSelectedAssets}
-                        fixedHeight={true}
+                        fixedHeight={false}
+                        displayBulkActions={false}
                     />
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="px-6 pb-6 pt-4 border-t">
                     <Button variant="outline" onClick={onClose}>
                         Cancel
                     </Button>

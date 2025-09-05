@@ -3231,6 +3231,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## SettingsStoreInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">SettingsStoreInput</span> &#123;</div>
+<div class="graphql-code-line ">key: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/admin/object-types#json">JSON</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## SettleRefundInput
 
 <div class="graphql-code-block">

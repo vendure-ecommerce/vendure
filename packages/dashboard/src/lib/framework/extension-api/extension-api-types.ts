@@ -5,6 +5,7 @@ import {
     DashboardCustomFormComponents,
     DashboardDataTableExtensionDefinition,
     DashboardDetailFormExtensionDefinition,
+    DashboardLoginExtensions,
     DashboardNavSectionDefinition,
     DashboardPageBlockDefinition,
     DashboardRouteDefinition,
@@ -54,8 +55,7 @@ export interface DashboardExtension {
     widgets?: DashboardWidgetDefinition[];
     /**
      * @description
-     * Unified registration for custom form components including custom field components,
-     * input components, and display components.
+     * Unified registration for custom form custom field components.
      */
     customFormComponents?: DashboardCustomFormComponents;
     /**
@@ -63,5 +63,14 @@ export interface DashboardExtension {
      * Allows you to customize aspects of existing data tables in the dashboard.
      */
     dataTables?: DashboardDataTableExtensionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the detail form for any page in the dashboard.
+     */
     detailForms?: DashboardDetailFormExtensionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the login page with custom components.
+     */
+    login?: DashboardLoginExtensions;
 }

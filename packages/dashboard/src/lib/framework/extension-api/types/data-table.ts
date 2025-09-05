@@ -7,6 +7,7 @@ import { DocumentNode } from 'graphql';
  * The pageId is already defined in the data table extension, so only the column name is needed.
  *
  * @docsCategory extensions
+ * @docsPage DataTable
  * @since 3.4.0
  */
 export interface DashboardDataTableDisplayComponent {
@@ -39,21 +40,29 @@ export type BulkActionComponent<Item extends { id: string } & Record<string, any
  * A bulk action is a component that will be rendered in the bulk actions dropdown.
  *
  * @docsCategory components
- * @docsPage DataTableBulkActions
+ * @docsPage DataTable
  * @since 3.4.0
  */
 export type BulkAction = {
+    /**
+     * @description
+     * Optional order number to control the position of this bulk action in the dropdown.
+     * A larger number will appear lower in the list.
+     */
     order?: number;
+    /**
+     * @description
+     * The React component that will be rendered as the bulk action item.
+     */
     component: BulkActionComponent<any>;
 };
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * This allows you to customize aspects of existing data tables in the dashboard.
  *
  * @docsCategory extensions
+ * @docsPage DataTable
  * @since 3.4.0
  */
 export interface DashboardDataTableExtensionDefinition {

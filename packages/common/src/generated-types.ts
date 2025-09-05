@@ -2802,6 +2802,8 @@ export type Mutation = {
   createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
+  /** Create a single FacetValue */
+  createFacetValue: FacetValue;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
   /** Create existing PaymentMethod */
@@ -2989,6 +2991,10 @@ export type Mutation = {
   setOrderCustomFields?: Maybe<Order>;
   /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
   setOrderCustomer?: Maybe<Order>;
+  /** Set a single key-value pair (automatically scoped based on field configuration) */
+  setSettingsStoreValue: SetSettingsStoreValueResult;
+  /** Set multiple key-value pairs in a transaction (each automatically scoped) */
+  setSettingsStoreValues: Array<SetSettingsStoreValueResult>;
   settlePayment: SettlePaymentResult;
   settleRefund: SettleRefundResult;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
@@ -3019,6 +3025,8 @@ export type Mutation = {
   updateCustomerNote: HistoryEntry;
   /** Update an existing Facet */
   updateFacet: Facet;
+  /** Update a single FacetValue */
+  updateFacetValue: FacetValue;
   /** Update one or more FacetValues */
   updateFacetValues: Array<FacetValue>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3231,6 +3239,11 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
   input: CreateFacetInput;
+};
+
+
+export type MutationCreateFacetValueArgs = {
+  input: CreateFacetValueInput;
 };
 
 
@@ -3709,6 +3722,16 @@ export type MutationSetOrderCustomerArgs = {
 };
 
 
+export type MutationSetSettingsStoreValueArgs = {
+  input: SettingsStoreInput;
+};
+
+
+export type MutationSetSettingsStoreValuesArgs = {
+  inputs: Array<SettingsStoreInput>;
+};
+
+
 export type MutationSettlePaymentArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3799,6 +3822,11 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
   input: UpdateFacetInput;
+};
+
+
+export type MutationUpdateFacetValueArgs = {
+  input: UpdateFacetValueInput;
 };
 
 
@@ -5120,9 +5148,14 @@ export type Query = {
   /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
+  facetValue?: Maybe<FacetValue>;
   facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
+  /** Get value for a specific key (automatically scoped based on field configuration) */
+  getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
+  /** Get multiple key-value pairs (each automatically scoped) */
+  getSettingsStoreValues?: Maybe<Scalars['JSON']['output']>;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobBufferSize: Array<JobBufferSize>;
@@ -5263,6 +5296,11 @@ export type QueryFacetArgs = {
 };
 
 
+export type QueryFacetValueArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryFacetValuesArgs = {
   options?: InputMaybe<FacetValueListOptions>;
 };
@@ -5270,6 +5308,16 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
+};
+
+
+export type QueryGetSettingsStoreValueArgs = {
+  key: Scalars['String']['input'];
+};
+
+
+export type QueryGetSettingsStoreValuesArgs = {
+  keys: Array<Scalars['String']['input']>;
 };
 
 
@@ -5867,6 +5915,18 @@ export type SetOrderCustomerInput = {
 };
 
 export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
+
+export type SetSettingsStoreValueResult = {
+  __typename?: 'SetSettingsStoreValueResult';
+  error?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  result: Scalars['Boolean']['output'];
+};
+
+export type SettingsStoreInput = {
+  key: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
+};
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -6580,6 +6640,9 @@ export type UpdateOrderInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   id: Scalars['ID']['input'];
 };
+
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult = InsufficientStockError | NegativeQuantityError | OrderInterceptorError | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderInterceptorError | OrderLimitError | OrderModificationError;
 

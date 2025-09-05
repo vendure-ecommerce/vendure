@@ -18,8 +18,8 @@ export function registerDefaults() {
     setNavMenuConfig({
         sections: [
             {
-                id: 'dashboard',
-                title: 'Dashboard',
+                id: 'insights',
+                title: 'Insights',
                 placement: 'top',
                 icon: LayoutDashboardIcon,
                 url: '/',
@@ -29,7 +29,6 @@ export function registerDefaults() {
                 id: 'catalog',
                 title: 'Catalog',
                 icon: SquareTerminal,
-                defaultOpen: true,
                 placement: 'top',
                 order: 200,
                 items: [
@@ -69,7 +68,6 @@ export function registerDefaults() {
                 id: 'sales',
                 title: 'Sales',
                 icon: ShoppingCart,
-                defaultOpen: true,
                 placement: 'top',
                 order: 300,
                 items: [
@@ -85,7 +83,6 @@ export function registerDefaults() {
                 id: 'customers',
                 title: 'Customers',
                 icon: Users,
-                defaultOpen: false,
                 placement: 'top',
                 order: 400,
                 items: [
@@ -107,7 +104,6 @@ export function registerDefaults() {
                 id: 'marketing',
                 title: 'Marketing',
                 icon: Mail,
-                defaultOpen: false,
                 placement: 'top',
                 order: 500,
                 items: [
@@ -123,9 +119,8 @@ export function registerDefaults() {
                 id: 'system',
                 title: 'System',
                 icon: Terminal,
-                defaultOpen: false,
                 placement: 'bottom',
-                order: 100,
+                order: 200,
                 items: [
                     {
                         id: 'job-queue',
@@ -151,9 +146,8 @@ export function registerDefaults() {
                 id: 'settings',
                 title: 'Settings',
                 icon: Settings2,
-                defaultOpen: false,
                 placement: 'bottom',
-                order: 200,
+                order: 100,
                 items: [
                     {
                         id: 'sellers',
@@ -237,6 +231,7 @@ export function registerDefaults() {
         name: 'Metrics Widget',
         component: MetricsWidget,
         defaultSize: { w: 12, h: 6, x: 0, y: 0 },
+        minSize: { w: 6, h: 4 },
     });
 
     registerDashboardWidget({

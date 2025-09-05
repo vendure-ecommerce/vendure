@@ -14,7 +14,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     return (
         <I18nProvider>
             <QueryClientProvider client={queryClient}>
-                <UserSettingsProvider>
+                <UserSettingsProvider queryClient={queryClient}>
                     <ThemeProvider defaultTheme="system">
                         <AuthProvider>
                             <ServerConfigProvider>

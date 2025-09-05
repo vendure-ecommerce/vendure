@@ -25,7 +25,7 @@ function useChannel(): void
 
 ## ChannelContext
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/channel-provider.tsx" sourceLine="52" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/channel-provider.tsx" sourceLine="53" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

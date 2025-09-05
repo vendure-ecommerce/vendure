@@ -50,14 +50,16 @@ const config = {
                 },
                 blog: false,
                 theme: {
-                    customCss: [
-                        require.resolve('./src/css/custom.css'),
-                    ],
+                    customCss: [require.resolve('./src/css/custom.css')],
                 },
             }),
         ],
     ],
-    themes: ['docusaurus-theme-search-typesense'],
+    themes: ['docusaurus-theme-search-typesense', '@docusaurus/theme-mermaid'],
+
+    markdown: {
+        mermaid: true,
+    },
 
     plugins: [llmTxtPlugin],
 

@@ -618,7 +618,8 @@ function mapToFields(
                 return;
             }
             const name = nameFn ? nameFn(field) : field.name;
-            return `${name}: ${type}`;
+            const deprecationDirective = getDeprecationDirective(field);
+            return `${name}: ${type} ${deprecationDirective}`;
         })
         .filter(x => x != null);
     return res.join('\n');
@@ -639,6 +640,8 @@ function mapToStructFields(
                 return;
             }
             const name = nameFn ? nameFn(field) : field.name;
+            // Note: Struct fields don't currently support deprecation in the type system,
+            // but we keep this consistent for future extensibility
             return `${name}: ${type}`;
         })
         .filter(x => x != null);
@@ -746,4 +749,18 @@ function getStructInputName(entityName: string, fieldDef: StructCustomFieldConfi
 
 function pascalCase(input: string) {
     return input.charAt(0).toUpperCase() + input.slice(1);
+}
+
+function getDeprecationDirective(field: CustomFieldConfig): string {
+    if (!field.deprecated) {
+        return '';
+    }
+
+    if (typeof field.deprecated === 'string') {
+        // Escape quotes in the deprecation reason
+        const escapedReason = field.deprecated.replace(/"/g, '\\"');
+        return `@deprecated(reason: "${escapedReason}")`;
+    }
+
+    return '@deprecated';
 }

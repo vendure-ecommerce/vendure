@@ -2,8 +2,6 @@ import React, { PropsWithChildren } from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Base props interface for dashboard widgets.
  *
  * @docsCategory extensions
@@ -19,8 +17,6 @@ export type DashboardBaseWidgetProps = PropsWithChildren<{
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Represents an instance of a dashboard widget with its layout and configuration.
  *
  * @docsCategory extensions
@@ -46,6 +42,10 @@ export type DashboardWidgetInstance = {
         y: number;
         w: number;
         h: number;
+        minW?: number;
+        minH?: number;
+        maxW?: number;
+        maxH?: number;
     };
     /**
      * @description

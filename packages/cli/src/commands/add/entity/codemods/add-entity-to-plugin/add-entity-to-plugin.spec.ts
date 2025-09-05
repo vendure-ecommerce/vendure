@@ -46,4 +46,60 @@ describe('addEntityToPlugin', () => {
             expectedFileName: 'existing-entity-prop.expected',
         });
     });
+
+    it('throws error when entity class is null', () => {
+        const project = new Project({
+            manipulationSettings: defaultManipulationSettings,
+        });
+        project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'no-entity-prop.fixture.ts'));
+        const pluginClasses = getPluginClasses(project);
+        const vendurePlugin = new VendurePluginRef(pluginClasses[0]);
+
+        expect(() => addEntityToPlugin(vendurePlugin, null as any)).toThrow('Could not find entity class');
+    });
+
+    it('throws error when entity class is undefined', () => {
+        const project = new Project({
+            manipulationSettings: defaultManipulationSettings,
+        });
+        project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'no-entity-prop.fixture.ts'));
+        const pluginClasses = getPluginClasses(project);
+        const vendurePlugin = new VendurePluginRef(pluginClasses[0]);
+
+        expect(() => addEntityToPlugin(vendurePlugin, undefined as any)).toThrow(
+            'Could not find entity class',
+        );
+    });
+
+    it('adds entity and import to plugin successfully', () => {
+        const project = new Project({
+            manipulationSettings: defaultManipulationSettings,
+        });
+        project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'no-entity-prop.fixture.ts'));
+        const pluginClasses = getPluginClasses(project);
+        const entityTemplatePath = path.join(__dirname, '../../templates/entity.template.ts');
+        const entityFile = createFile(
+            project,
+            entityTemplatePath,
+            path.join(__dirname, 'fixtures', 'entity.ts'),
+        );
+        const entityClass = entityFile.getClass('ScaffoldEntity');
+        const vendurePlugin = new VendurePluginRef(pluginClasses[0]);
+
+        // Execute the function
+        addEntityToPlugin(vendurePlugin, entityClass!);
+
+        // Verify the plugin metadata was updated
+        const entities = vendurePlugin.getMetadataOptions().getProperty('entities');
+        expect(entities).toBeDefined();
+
+        // Verify the import was added
+        const sourceFile = pluginClasses[0].getSourceFile();
+        const importDeclaration = sourceFile
+            .getImportDeclarations()
+            .find(imp =>
+                imp.getNamedImports().some(namedImport => namedImport.getName() === 'ScaffoldEntity'),
+            );
+        expect(importDeclaration).toBeDefined();
+    });
 });

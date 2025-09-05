@@ -3,7 +3,6 @@ import {
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
     DEFAULT_CHANNEL_TOKEN_KEY,
 } from '@vendure/common/lib/shared-constants';
-import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import { VendureConfig } from '@vendure/core';
 
 import {
@@ -12,53 +11,42 @@ import {
     defaultLanguage,
     defaultLocale,
 } from '../constants.js';
+import { ResolvedUiConfig, UiConfigPluginOptions } from '../vite-plugin-ui-config.js';
 
-export function getAdminUiConfig(
-    config: VendureConfig,
-    adminUiConfig?: Partial<AdminUiConfig>,
-): AdminUiConfig {
+export function getUiConfig(config: VendureConfig, pluginOptions: UiConfigPluginOptions): ResolvedUiConfig {
     const { authOptions, apiOptions } = config;
 
-    const propOrDefault = <Prop extends keyof AdminUiConfig>(
-        prop: Prop,
-        defaultVal: AdminUiConfig[Prop],
-        isArray: boolean = false,
-    ): AdminUiConfig[Prop] => {
-        if (isArray) {
-            const isValidArray = !!adminUiConfig
-                ? !!((adminUiConfig as AdminUiConfig)[prop] as any[])?.length
-                : false;
+    // Merge API configuration with defaults
+    const api = {
+        adminApiPath: pluginOptions.api?.adminApiPath ?? apiOptions.adminApiPath ?? ADMIN_API_PATH,
+        host: pluginOptions.api?.host ?? 'auto',
+        port: pluginOptions.api?.port ?? 'auto',
+        tokenMethod:
+            pluginOptions.api?.tokenMethod ?? (authOptions.tokenMethod === 'bearer' ? 'bearer' : 'cookie'),
+        authTokenHeaderKey:
+            pluginOptions.api?.authTokenHeaderKey ??
+            authOptions.authTokenHeaderKey ??
+            DEFAULT_AUTH_TOKEN_HEADER_KEY,
+        channelTokenKey:
+            pluginOptions.api?.channelTokenKey ?? apiOptions.channelTokenKey ?? DEFAULT_CHANNEL_TOKEN_KEY,
+    };
 
-            return !!adminUiConfig && isValidArray ? (adminUiConfig as AdminUiConfig)[prop] : defaultVal;
-        } else {
-            return adminUiConfig ? (adminUiConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
-        }
+    // Merge i18n configuration with defaults
+    const i18n = {
+        defaultLanguage: pluginOptions.i18n?.defaultLanguage ?? defaultLanguage,
+        defaultLocale: pluginOptions.i18n?.defaultLocale ?? defaultLocale,
+        availableLanguages:
+            pluginOptions.i18n?.availableLanguages && pluginOptions.i18n.availableLanguages.length > 0
+                ? pluginOptions.i18n.availableLanguages
+                : defaultAvailableLanguages,
+        availableLocales:
+            pluginOptions.i18n?.availableLocales && pluginOptions.i18n.availableLocales.length > 0
+                ? pluginOptions.i18n.availableLocales
+                : defaultAvailableLocales,
     };
 
     return {
-        adminApiPath: propOrDefault('adminApiPath', apiOptions.adminApiPath || ADMIN_API_PATH),
-        apiHost: propOrDefault('apiHost', 'auto'),
-        apiPort: propOrDefault('apiPort', 'auto'),
-        tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod === 'bearer' ? 'bearer' : 'cookie'),
-        authTokenHeaderKey: propOrDefault(
-            'authTokenHeaderKey',
-            authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
-        ),
-        channelTokenKey: propOrDefault(
-            'channelTokenKey',
-            apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY,
-        ),
-        defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
-        defaultLocale: propOrDefault('defaultLocale', defaultLocale),
-        availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages, true),
-        availableLocales: propOrDefault('availableLocales', defaultAvailableLocales, true),
-        brand: adminUiConfig?.brand,
-        hideVendureBranding: propOrDefault(
-            'hideVendureBranding',
-            adminUiConfig?.hideVendureBranding || false,
-        ),
-        hideVersion: propOrDefault('hideVersion', adminUiConfig?.hideVersion || false),
-        loginImageUrl: adminUiConfig?.loginImageUrl,
-        cancellationReasons: propOrDefault('cancellationReasons', undefined),
+        api,
+        i18n,
     };
 }

@@ -208,7 +208,7 @@ function CollectionDetailPage() {
                         <FormMessage />
                     </FormItem>
                 </PageBlock>
-                <PageBlock column="main" blockId="contents" title={<Trans>Facet values</Trans>}>
+                <PageBlock column="main" blockId="contents" title={<Trans>Contents</Trans>}>
                     {shouldPreviewContents || creatingNewEntity ? (
                         <CollectionContentsPreviewTable
                             parentId={entity?.parent?.id}

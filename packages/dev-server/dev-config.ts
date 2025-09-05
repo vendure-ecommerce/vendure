@@ -8,10 +8,11 @@ import {
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    LanguageCode,
     LogLevel,
+    SettingsStoreScopes,
     VendureConfig,
 } from '@vendure/core';
+import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import { TelemetryPlugin } from '@vendure/telemetry-plugin';
@@ -61,35 +62,18 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-
-    customFields: {
-        Product: [
+    settingsStoreFields: {
+        MyPlugin: [
             {
-                name: 'infoUrl',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                name: 'globalVal',
             },
             {
-                name: 'downloadable',
-                type: 'boolean',
-                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-            },
-            {
-                name: 'shortName',
-                type: 'localeString',
-                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-            },
-            {
-                name: 'lastUpdated',
-                type: 'datetime',
-                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                name: 'userVal',
+                scope: SettingsStoreScopes.user,
             },
         ],
     },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -132,6 +116,7 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            compatibilityMode: true,
             adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
@@ -152,6 +137,10 @@ export const devConfig: VendureConfig = {
             //     ],
             //     devMode: true,
             // }),
+        }),
+        DashboardPlugin.init({
+            route: 'dashboard',
+            appDir: path.join(__dirname, './dist'),
         }),
     ],
 };

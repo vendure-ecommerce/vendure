@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post, Req } from '@nestjs/common';
-import { Logger, RequestContext, Transaction, ChannelService, LanguageCode } from '@vendure/core';
+import { ChannelService, LanguageCode, Logger, RequestContext, Transaction } from '@vendure/core';
 import { Request } from 'express';
 
 import { loggerCtx } from './constants';
@@ -29,7 +29,7 @@ export class MollieController {
             const ctx = await this.createContext(channelToken, req);
             await this.mollieService.handleMollieStatusUpdate(ctx, {
                 paymentMethodId,
-                orderId: body.id,
+                paymentId: body.id,
             });
         } catch (error: any) {
             Logger.error(
