@@ -302,9 +302,9 @@ export async function createVendureApp(
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
-        const { populate } = await import(path.join(resolveDirName('@vendure/core'), '/cli/populate'));
+        const { populate } = await import(path.join(resolveDirName('@vendure/core'), 'cli', 'populate'));
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
-            path.join(resolveDirName('@vendure/core'), '/dist/index')
+            path.join(resolveDirName('@vendure/core'), 'dist', 'index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -498,7 +498,7 @@ async function createDirectoryStructure(root: string) {
  */
 async function copyEmailTemplates(root: string) {
     const emailPackageDirname = resolveDirName('@vendure/email-plugin');
-    const templateDir = path.join(emailPackageDirname, '/templates');
+    const templateDir = path.join(emailPackageDirname, 'templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {

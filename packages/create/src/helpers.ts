@@ -534,11 +534,21 @@ export function cleanUpDockerResources(name: string) {
 }
 
 export function resolveDirName(packageName: string) {
-    const packageDirName = path.dirname(require.resolve(packageName));
-    const packagePath = packageName.split('/').at(-1);
-    let currentPath = packageDirName;
-    while (path.basename(currentPath) !== packagePath) {
-        currentPath = path.join(currentPath, '..');
+    let entry: string;
+    try {
+        entry = require.resolve(packageName);
+    } catch {
+        throw new Error(`Cannot resolve package "${packageName}". Is it installed?`);
     }
-    return currentPath;
+    const target = packageName.split('/').pop();
+    let dir = path.dirname(entry);
+    const root = path.parse(dir).root;
+    while (path.basename(dir) !== target) {
+        const next = path.dirname(dir);
+        if (next === dir || dir === root) {
+            throw new Error(`Could not locate package root for "${packageName}" from "${entry}".`);
+        }
+        dir = next;
+    }
+    return dir;
 }
