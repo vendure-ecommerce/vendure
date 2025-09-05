@@ -23,10 +23,10 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
-import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
@@ -154,13 +154,13 @@ function ProductDetailPage() {
                             }}
                             fromProductDetailPage={true}
                         />
-                        <div className="mt-4">
-                            <AddProductVariantDialog
-                                productId={params.id}
-                                onSuccess={() => {
-                                    refreshRef.current?.();
-                                }}
-                            />
+                        <div className="mt-4 flex gap-2">
+                            <Button asChild variant="outline">
+                                <Link to="./variants">
+                                    <PlusIcon className="mr-2 h-4 w-4" />
+                                    <Trans>Manage variants</Trans>
+                                </Link>
+                            </Button>
                         </div>
                     </PageBlock>
                 )}

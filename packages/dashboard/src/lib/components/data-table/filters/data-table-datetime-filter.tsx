@@ -53,6 +53,24 @@ export function DataTableDateTimeFilter({
         }
     }, [operator, value, startDate, endDate]);
 
+    const parseToDate = (input: unknown): Date | undefined => {
+        if (input instanceof Date) {
+            return input;
+        }
+        if (typeof input === 'string' && input !== '') {
+            return new Date(input);
+        }
+        return;
+    };
+
+    const dashboardComponentProps = {
+        name: 'date',
+        onBlur: () => {
+            /* */
+        },
+        ref: () => null,
+    };
+
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-col md:flex-row gap-2">
@@ -71,11 +89,23 @@ export function DataTableDateTimeFilter({
                 {operator !== 'isNull' &&
                     (operator === 'between' ? (
                         <div className="space-y-2">
-                            <DateTimeInput value={startDate} onChange={setStartDate} />
-                            <DateTimeInput value={endDate} onChange={setEndDate} />
+                            <DateTimeInput
+                                {...dashboardComponentProps}
+                                value={startDate}
+                                onChange={val => setStartDate(parseToDate(val))}
+                            />
+                            <DateTimeInput
+                                {...dashboardComponentProps}
+                                value={endDate}
+                                onChange={val => setEndDate(parseToDate(val))}
+                            />
                         </div>
                     ) : (
-                        <DateTimeInput value={value} onChange={setValue} />
+                        <DateTimeInput
+                            {...dashboardComponentProps}
+                            value={value}
+                            onChange={val => setValue(parseToDate(val))}
+                        />
                     ))}
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}

@@ -2,9 +2,9 @@ import { toast } from 'sonner';
 
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLingui } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
@@ -45,7 +45,7 @@ export const AssignFacetsToChannelBulkAction: BulkActionComponent<any> = ({ sele
 };
 
 export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const { i18n } = useLingui();
 
     return (
@@ -57,7 +57,7 @@ export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ se
             requiredPermissions={['UpdateCatalog', 'UpdateFacet']}
             buildInput={() => ({
                 facetIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
             onSuccess={result => {
                 const typedResult = result as ResultOf<typeof removeFacetsFromChannelDocument>;

@@ -22,6 +22,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -49,6 +50,7 @@ function ChannelDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
+    const { refreshChannels } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -81,6 +83,7 @@ function ChannelDetailPage() {
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
                 toast(i18n.t('Successfully updated channel'));
+                refreshChannels();
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });

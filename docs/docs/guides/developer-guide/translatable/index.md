@@ -100,7 +100,7 @@ type ProductRequest implements Node {
 
 ## Creating translatable entities
 
-Creating a translatable entity is usually done by using the [`TranslateableSaver`](/reference/typescript-api/service-helpers/translatable-saver/). This injectable service provides a `create` and `update` method which can be used to save or update a translatable entity.
+Creating a translatable entity is usually done by using the [`TranslatableSaver`](/reference/typescript-api/service-helpers/translatable-saver/). This injectable service provides a `create` and `update` method which can be used to save or update a translatable entity.
 
 ```ts title="src/plugins/requests/service/product-request.service.ts"
 export class RequestService {
@@ -144,7 +144,7 @@ input CreateProductRequestInput {
 
 ## Updating translatable entities
 
-Updating a translatable entity is done in a similar way as creating one. The [`TranslateableSaver`](/reference/typescript-api/service-helpers/translatable-saver/) provides an `update` method which can be used to update a translatable entity.
+Updating a translatable entity is done in a similar way as creating one. The [`TranslatableSaver`](/reference/typescript-api/service-helpers/translatable-saver/) provides an `update` method which can be used to update a translatable entity.
 
 ```ts title="src/plugins/requests/service/product-request.service.ts"
 export class RequestService {
