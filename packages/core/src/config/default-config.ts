@@ -11,7 +11,7 @@ import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
-import { cleanSessionsTask } from '../scheduler/tasks';
+import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -49,6 +49,7 @@ import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
 import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
+import { cleanOrphanedSettingsStoreTask } from './settings-store/clean-orphaned-settings-store-task';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
@@ -86,6 +87,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             origin: true,
             credentials: true,
         },
+        trustProxy: false,
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
@@ -198,7 +200,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
-        tasks: [cleanSessionsTask],
+        tasks: [cleanSessionsTask, cleanOrphanedSettingsStoreTask],
         runTasksInWorkerOnly: true,
     },
     customFields: {
@@ -238,6 +240,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
         Zone: [],
     },
+    settingsStoreFields: {},
     plugins: [],
     systemOptions: {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),

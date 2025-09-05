@@ -1,12 +1,10 @@
 {
-  "packages": [
-    "packages/*"
-  ],
-  "version": "3.3.8",
-  "npmClient": "npm",
-  "command": {
-    "version": {
-      "push": false
+    "packages": ["packages/*"],
+    "version": "3.4.1",
+    "npmClient": "npm",
+    "command": {
+        "version": {
+            "push": false
+        }
     }
-  }
 }
