@@ -532,3 +532,13 @@ export function cleanUpDockerResources(name: string) {
         log(pc.yellow(`Could not clean up Docker resources`), { level: 'verbose' });
     }
 }
+
+export function resolveDirName(packageName: string) {
+    const packageDirName = path.dirname(require.resolve(packageName));
+    const packagePath = packageName.split('/').at(-1);
+    let currentPath = packageDirName;
+    while (path.basename(currentPath) !== packagePath) {
+        currentPath = path.join(currentPath, '..');
+    }
+    return currentPath;
+}
