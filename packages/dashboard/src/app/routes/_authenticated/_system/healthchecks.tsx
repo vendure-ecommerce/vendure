@@ -10,6 +10,7 @@ import { uiConfig } from 'virtual:vendure-ui-config';
 
 export const Route = createFileRoute('/_authenticated/_system/healthchecks')({
     component: HealthchecksPage,
+    loader: () => ({ breadcrumb: () => <Trans>Healthchecks</Trans> }),
 });
 
 interface HealthcheckItem {

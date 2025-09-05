@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping
         queryDocument: shippingMethodDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/shipping-methods', label: 'Shipping methods' },
+                { path: '/shipping-methods', label: 'Shipping Methods' },
                 isNew ? <Trans>New shipping method</Trans> : entity?.name,
             ];
         },

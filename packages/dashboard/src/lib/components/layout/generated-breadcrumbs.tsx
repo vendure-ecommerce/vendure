@@ -9,11 +9,7 @@ import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { Fragment } from 'react';
 import { getNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
-import type {
-    NavMenuConfig,
-    NavMenuItem,
-    NavMenuSection,
-} from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
+import type { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 
 export interface BreadcrumbPair {
     label: string | React.ReactElement;
@@ -28,7 +24,7 @@ export function GeneratedBreadcrumbs() {
     const matches = useRouterState({ select: s => s.matches });
     const currentPath = useRouterState({ select: s => s.location.pathname });
     const router = useRouter();
-    const navMenuConfig = getNavMenuConfig() as NavMenuConfig;
+    const navMenuConfig = getNavMenuConfig();
     const basePath = router.basepath || '';
 
     const normalizeBreadcrumb = (breadcrumb: any, pathname: string): BreadcrumbPair[] => {
@@ -72,12 +68,15 @@ export function GeneratedBreadcrumbs() {
         return cleanPath === url || cleanPath.startsWith(url + '/');
     };
 
-    const checkSectionItems = (section: NavMenuSection, cleanPath: string): BreadcrumbPair | undefined => {
+    const checkSectionItems = (
+        section: NavMenuSection | NavMenuItem,
+        cleanPath: string,
+    ): BreadcrumbPair | undefined => {
         if (!('items' in section) || !Array.isArray(section.items)) {
             return undefined;
         }
-        
-        for (const item of section.items as NavMenuItem[]) {
+
+        for (const item of section.items) {
             if (pathMatches(cleanPath, item.url)) {
                 return { label: section.title, path: item.url };
             }
@@ -85,7 +84,10 @@ export function GeneratedBreadcrumbs() {
         return undefined;
     };
 
-    const checkDirectSection = (section: NavMenuItem, cleanPath: string): BreadcrumbPair | undefined => {
+    const checkDirectSection = (
+        section: NavMenuSection | NavMenuItem,
+        cleanPath: string,
+    ): BreadcrumbPair | undefined => {
         if ('url' in section && section.url && pathMatches(cleanPath, section.url)) {
             return { label: section.title, path: section.url };
         }
@@ -95,9 +97,8 @@ export function GeneratedBreadcrumbs() {
     const findSectionCrumb = (path: string): BreadcrumbPair | undefined => {
         const cleanPath = normalizePath(path);
         
-        for (const section of navMenuConfig.sections as Array<NavMenuSection | NavMenuItem>) {
-            const result = checkSectionItems(section as NavMenuSection, cleanPath) || 
-                          checkDirectSection(section as NavMenuItem, cleanPath);
+        for (const section of navMenuConfig.sections) {
+            const result = checkSectionItems(section, cleanPath) || checkDirectSection(section, cleanPath);
             if (result) {
                 return result;
             }

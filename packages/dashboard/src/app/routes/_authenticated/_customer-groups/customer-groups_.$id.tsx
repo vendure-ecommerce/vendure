@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_customer-groups/customer-
         pageId,
         queryDocument: customerGroupDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/customer-groups', label: 'Customer groups' },
+            { path: '/customer-groups', label: 'Customer Groups' },
             isNew ? <Trans>New customer group</Trans> : entity?.name,
         ],
     }),
