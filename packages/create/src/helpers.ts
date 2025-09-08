@@ -534,11 +534,11 @@ export function cleanUpDockerResources(name: string) {
 }
 
 export function resolveDirName(packageName: string) {
-    let entry: string;
+    let packageEntryPath: string;
     try {
-        entry = require.resolve(packageName);
+        packageEntryPath = require.resolve(packageName);
     } catch {
-        // Fallback: try to find package in node_modules directly
+        log(`Falling back to direct node_modules lookup for ${packageName}`);
         const fallbackPath = path.join(process.cwd(), 'node_modules', packageName);
         if (fs.existsSync(fallbackPath)) {
             return fallbackPath;
@@ -547,13 +547,13 @@ export function resolveDirName(packageName: string) {
     }
 
     const target = packageName.split('/').pop();
-    let dir = path.dirname(entry);
+    let dir = path.dirname(packageEntryPath);
     const root = path.parse(dir).root;
 
     while (path.basename(dir) !== target) {
         const next = path.dirname(dir);
         if (next === dir || dir === root) {
-            throw new Error(`Could not locate package root for "${packageName}" from "${entry}".`);
+            throw new Error(`Could not locate package root for "${packageName}" from "${packageEntryPath}".`);
         }
         dir = next;
     }

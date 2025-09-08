@@ -499,8 +499,6 @@ async function createDirectoryStructure(root: string) {
 async function copyEmailTemplates(root: string) {
     const emailPackageDirname = resolveDirName('@vendure/email-plugin');
     const templateDir = path.join(emailPackageDirname, 'templates');
-    log(pc.bgRedBright(emailPackageDirname));
-    log(pc.bgRedBright(templateDir));
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
