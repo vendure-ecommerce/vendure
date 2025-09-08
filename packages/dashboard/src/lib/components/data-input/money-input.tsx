@@ -50,6 +50,7 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
     return (
         <AffixedInput
             type="text"
+            className="bg-background"
             value={displayValue}
             onChange={e => {
                 const inputValue = e.target.value;
