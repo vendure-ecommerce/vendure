@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries_/$id'
         pageId,
         queryDocument: countryDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/countries', label: 'Countries' },
+            { path: '/countries', label: <Trans>Countries</Trans> },
             isNew ? <Trans>New country</Trans> : entity?.name,
         ],
     }),

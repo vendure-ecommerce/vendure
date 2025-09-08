@@ -41,7 +41,7 @@ export const Route = createFileRoute('/_authenticated/_collections/collections_/
         pageId,
         queryDocument: collectionDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/collections', label: 'Collections' },
+            { path: '/collections', label: <Trans>Collections</Trans> },
             isNew ? <Trans>New collection</Trans> : entity?.name,
         ],
     }),

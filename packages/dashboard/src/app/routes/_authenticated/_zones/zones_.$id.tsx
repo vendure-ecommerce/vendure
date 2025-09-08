@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_authenticated/_zones/zones_/$id')({
         pageId,
         queryDocument: zoneDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/zones', label: 'Zones' }, isNew ? <Trans>New zone</Trans> : entity?.name];
+            return [{ path: '/zones', label: <Trans>Zones</Trans> }, isNew ? <Trans>New zone</Trans> : entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

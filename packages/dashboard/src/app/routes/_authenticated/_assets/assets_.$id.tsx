@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
         queryDocument: assetDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/assets', label: 'Assets' },
+                { path: '/assets', label: <Trans>Assets</Trans> },
                 isNew ? <Trans>New asset</Trans> : (entity?.name ?? ''),
             ];
         },

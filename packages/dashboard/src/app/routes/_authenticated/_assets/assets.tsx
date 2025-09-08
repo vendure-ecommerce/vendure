@@ -6,6 +6,7 @@ import { DeleteAssetsBulkAction } from './components/asset-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_assets/assets')({
     component: RouteComponent,
+    loader: () => ({ breadcrumb: () => <Trans>Assets</Trans> }),
 });
 
 function RouteComponent() {

@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_stock-locations/stock-loc
         queryDocument: stockLocationDetailQuery,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/stock-locations', label: 'Stock locations' },
+                { path: '/stock-locations', label: <Trans>Stock Locations</Trans> },
                 isNew ? <Trans>New stock location</Trans> : entity?.name,
             ];
         },
