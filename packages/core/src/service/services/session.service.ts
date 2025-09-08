@@ -218,15 +218,16 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * Looks for a valid session with the given token and returns one if found.
      */
     private async findSessionByToken(token: string): Promise<Session | undefined> {
-        const session = await this.connection.rawConnection
+        const qb = this.connection.rawConnection
             .getRepository(Session)
             .createQueryBuilder('session')
-            .leftJoinAndSelect('session.user', 'user')
-            .leftJoinAndSelect('user.roles', 'roles')
-            .leftJoinAndSelect('roles.channels', 'channels')
             .where('session.token = :token', { token })
-            .andWhere('session.invalidated = false')
-            .getOne();
+            .andWhere('session.invalidated = false');
+
+        // Add standard relations for authentication and custom fields
+        this.buildSessionQueryWithCustomFields(qb, ['user', 'user.roles', 'roles.channels']);
+
+        const session = await qb.getOne();
 
         if (session && session.expires > new Date()) {
             await this.updateSessionExpiry(session);
@@ -359,11 +360,130 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         Logger.verbose(`Cleaned ${sessions.length} expired sessions`);
         return sessions.length;
     }
+
     /**
-     * If we are over half way to the current session's expiry date, then we update it.
+     * @description
+     * Finds sessions with custom field relations properly loaded.
      *
-     * This ensures that the session will not expire when in active use, but prevents us from
-     * needing to run an update query on *every* request.
+     * NOTE: This method was added to fix custom field relations loading for Session entities.
+     * Unlike regular entities, Session has embedded customFields which require special handling.
+     *
+     * @since 3.4.1
+     * @internal
+     */
+    async findSessionsWithRelations(
+        ctx: RequestContext,
+        options: {
+            where?: any;
+            relations?: string[];
+            take?: number;
+            skip?: number;
+            order?: any;
+        } = {},
+    ): Promise<Session[]> {
+        const qb = this.connection.getRepository(ctx, Session).createQueryBuilder('session');
+
+        if (options.where) {
+            qb.where(options.where);
+        }
+
+        if (options.take) {
+            qb.take(options.take);
+        }
+
+        if (options.skip) {
+            qb.skip(options.skip);
+        }
+
+        if (options.order) {
+            Object.entries(options.order).forEach(([key, direction]) => {
+                qb.addOrderBy(key, direction as 'ASC' | 'DESC');
+            });
+        }
+
+        this.buildSessionQueryWithCustomFields(qb, options.relations);
+
+        // Post-process to map custom field relations correctly using QueryBuilder
+        return this.mapCustomFieldRelationsToSessions(qb);
+    }
+
+    /**
+     * @description
+     * Finds a single session with custom field relations properly loaded.
+     *
+     * NOTE: This method was added to fix custom field relations loading for Session entities.
+     * Unlike regular entities, Session has embedded customFields which require special handling.
+     *
+     * @since 3.4.1
+     * @internal
+     */
+    async findSessionWithRelations(
+        ctx: RequestContext,
+        where: any,
+        relations?: string[],
+    ): Promise<Session | null> {
+        const qb = this.connection.getRepository(ctx, Session).createQueryBuilder('session').where(where);
+        this.buildSessionQueryWithCustomFields(qb, relations);
+
+        const metadata = this.connection.rawConnection.getMetadata(Session);
+        const customFieldsEmbedded = metadata.embeddeds.find(e => e.propertyName === 'customFields');
+
+        // If no custom field relations, use simple getOne
+        if (!customFieldsEmbedded || customFieldsEmbedded.relations.length === 0) {
+            return qb.getOne();
+        }
+
+        // Use getRawAndEntities for custom field relations
+        const sessions = await this.mapCustomFieldRelationsToSessions(qb);
+        return sessions[0] || null;
+    }
+
+    /**
+     * @description
+     * Builds query builder with custom field relations for Session.
+     *
+     * NOTE: This method was added to fix custom field relations loading for Session entities.
+     * It handles the special case where customFields is an embedded entity, not a regular relation.
+     *
+     * @since 3.4.1
+     * @internal
+     */
+    private buildSessionQueryWithCustomFields(qb: any, relations?: string[]): void {
+        // Handle standard relations
+        if (relations) {
+            for (const relation of relations) {
+                if (!relation.startsWith('customFields')) {
+                    const parts = relation.split('.');
+                    if (parts.length === 1) {
+                        qb.leftJoinAndSelect(`session.${relation}`, relation);
+                    } else if (parts.length === 2) {
+                        qb.leftJoinAndSelect(`${parts[0]}.${parts[1]}`, parts[1]);
+                    } else if (parts.length === 3) {
+                        qb.leftJoinAndSelect(`${parts[1]}.${parts[2]}`, parts[2]);
+                    }
+                }
+            }
+        }
+
+        // Handle custom fields relations
+        const metadata = this.connection.rawConnection.getMetadata(Session);
+        const customFieldsEmbedded = metadata.embeddeds.find(e => e.propertyName === 'customFields');
+
+        if (customFieldsEmbedded && customFieldsEmbedded.relations.length > 0) {
+            // Join the relations and manually map them to customFields in the result
+            for (const relation of customFieldsEmbedded.relations) {
+                const relationPropertyName = relation.propertyName;
+                if (relation.relationType === 'many-to-one' || relation.relationType === 'one-to-one') {
+                    qb.leftJoinAndSelect(`session.customFields.${relationPropertyName}`, `customFields_${relationPropertyName}`);
+                }
+            }
+        }
+    }
+
+    /**
+     * Extends the expiry date of the session if more than half of the session duration has passed.
+     * @param session
+     * @private
      */
     private async updateSessionExpiry(session: Session) {
         const now = new Date().getTime();
@@ -394,6 +514,66 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 }
                 resolve(buf.toString('hex'));
             });
+        });
+    }
+
+    /**
+     * @description
+     * Maps custom field relations from QueryBuilder result to the session's customFields object.
+     * Uses getRawAndEntities to properly access the joined data.
+     *
+     * NOTE: This method was added to fix custom field relations loading for Session entities.
+     * Since TypeORM doesn't automatically map embedded entity relations, we manually
+     * extract the raw data and map it to the proper structure.
+     *
+     * @since 3.4.1
+     * @internal
+     */
+    private async mapCustomFieldRelationsToSessions(qb: any): Promise<Session[]> {
+        const metadata = this.connection.rawConnection.getMetadata(Session);
+        const customFieldsEmbedded = metadata.embeddeds.find(e => e.propertyName === 'customFields');
+
+        if (!customFieldsEmbedded || customFieldsEmbedded.relations.length === 0) {
+            return qb.getMany();
+        }
+
+        // Get both raw data and entities
+        const result = await qb.getRawAndEntities();
+        const sessions = result.entities as Session[];
+        const rawResults = result.raw;
+
+        return sessions.map((session, index) => {
+            const rawRow = rawResults[index];
+            const mappedSession = { ...session };
+
+            if (!mappedSession.customFields) {
+                mappedSession.customFields = {} as any;
+            }
+
+            // Map each relation from raw result to customFields
+            for (const relation of customFieldsEmbedded.relations) {
+                const relationPropertyName = relation.propertyName;
+                const aliasPrefix = `customFields_${relationPropertyName}_`;
+
+                // Find raw columns that belong to this relation
+                const relationData: any = {};
+                let hasData = false;
+
+                for (const [key, value] of Object.entries(rawRow)) {
+                    if (key.startsWith(aliasPrefix)) {
+                        const propertyName = key.substring(aliasPrefix.length);
+                        relationData[propertyName] = value;
+                        if (value !== null) hasData = true;
+                    }
+                }
+
+                // Only set the relation if we have actual data
+                if (hasData && Object.keys(relationData).length > 0) {
+                    (mappedSession.customFields as any)[relationPropertyName] = relationData;
+                }
+            }
+
+            return mappedSession;
         });
     }
 
