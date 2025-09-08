@@ -533,7 +533,7 @@ export function cleanUpDockerResources(name: string) {
     }
 }
 
-export function resolveDirName(packageName: string) {
+export function resolvePackageRootDir(packageName: string) {
     let packageEntryPath: string;
     try {
         packageEntryPath = require.resolve(packageName);

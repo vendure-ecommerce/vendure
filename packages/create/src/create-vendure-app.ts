@@ -24,7 +24,7 @@ import {
     installPackages,
     isSafeToCreateProjectIn,
     isServerPortInUse,
-    resolveDirName,
+    resolvePackageRootDir,
     scaffoldAlreadyExists,
     startPostgresDatabase,
 } from './helpers';
@@ -298,13 +298,15 @@ export async function createVendureApp(
 
     // register ts-node so that the config file can be loaded
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(path.join(resolveDirName('ts-node'))).register();
+    require(resolvePackageRootDir('ts-node')).register();
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
-        const { populate } = await import(path.join(resolveDirName('@vendure/core'), 'cli', 'populate'));
+        const { populate } = await import(
+            path.join(resolvePackageRootDir('@vendure/core'), 'cli', 'populate')
+        );
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
-            path.join(resolveDirName('@vendure/core'), 'dist', 'index')
+            path.join(resolvePackageRootDir('@vendure/core'), 'dist', 'index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -497,7 +499,7 @@ async function createDirectoryStructure(root: string) {
  * Copy the email templates into the app
  */
 async function copyEmailTemplates(root: string) {
-    const emailPackageDirname = resolveDirName('@vendure/email-plugin');
+    const emailPackageDirname = resolvePackageRootDir('@vendure/email-plugin');
     const templateDir = path.join(emailPackageDirname, 'templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
