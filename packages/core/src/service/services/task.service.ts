@@ -53,6 +53,7 @@ export class TaskService {
         return this.connection.rawConnection
             .getRepository(ScheduledTaskRecord)
             .createQueryBuilder('task')
+            .select(['task.taskId', 'task.lockedAt'])
             .where('task.lockedAt IS NOT NULL')
             .getMany();
     }
@@ -126,7 +127,10 @@ export class TaskService {
                     { lockedAt: null },
                 );
                 if (result.affected && result.affected > 0) {
-                    Logger.verbose(`Successfully cleaned stale task locks for task "${task.taskId}"`);
+                    Logger.verbose(
+                        `Successfully cleaned stale task locks for task "${task.taskId}"`,
+                        loggerCtx,
+                    );
                 } else {
                     Logger.debug(
                         `Skipped clearing lock for task "${task.taskId}" because the lock has changed since observation`,

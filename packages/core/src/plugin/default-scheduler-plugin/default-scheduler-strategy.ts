@@ -10,7 +10,7 @@ import { TransactionalConnection } from '../../connection';
 import { ProcessContext } from '../../process-context';
 import { ScheduledTask } from '../../scheduler/scheduled-task';
 import { SchedulerStrategy, TaskReport } from '../../scheduler/scheduler-strategy';
-import { TaskService } from '../../service/services/task.service';
+import { TaskService } from '../../service';
 
 import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
