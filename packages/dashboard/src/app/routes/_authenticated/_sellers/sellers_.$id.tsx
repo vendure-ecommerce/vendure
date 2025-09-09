@@ -55,14 +55,14 @@ function SellerDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated seller'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created seller' : 'Successfully updated seller'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update seller'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create seller' : 'Failed to update seller'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

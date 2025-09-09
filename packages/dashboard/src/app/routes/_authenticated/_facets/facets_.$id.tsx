@@ -72,14 +72,14 @@ function FacetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created facet' : 'Successfully updated facet'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create facet' : 'Failed to update facet'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

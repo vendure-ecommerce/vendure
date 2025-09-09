@@ -56,14 +56,14 @@ function ZoneDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated zone'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created zone' : 'Successfully updated zone'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update zone'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create zone' : 'Failed to update zone'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
