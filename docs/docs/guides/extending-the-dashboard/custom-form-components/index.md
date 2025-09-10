@@ -10,7 +10,7 @@ interact with forms. This includes:
 
 ## Anatomy of a Form Component
 
-All form components must implement the [DashboardFormComponent type](/reference/dashboard/forms/dashboard-form-component).
+All form components must implement the [DashboardFormComponent type](/reference/dashboard/extensions-api/form-components#dashboardformcomponent).
 
 This type is based on the props that are made available from `react-hook-form`, which is the
 underlying form library used by the Dashboard.

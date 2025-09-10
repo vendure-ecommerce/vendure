@@ -2,6 +2,13 @@ import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-en
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 import { Input } from '../ui/input.js';
 
+/**
+ * @description
+ * A component for displaying a password input.
+ *
+ * @docsCategory form-components
+ * @docsPage PasswordInput
+ */
 export function PasswordInput(props: Readonly<DashboardFormComponentProps>) {
     const readOnly = props.disabled || isReadonlyField(props.fieldDef);
     return (

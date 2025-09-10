@@ -8,8 +8,8 @@ import { NavMenuItem } from '../../nav-menu/nav-menu-extensions.js';
  * @description
  * Defines a custom route for the dashboard with optional navigation menu integration.
  *
- * @docsCategory extensions
- * @docsPage Navigation
+ * @docsCategory extensions-api
+ * @docsPage Routes
  * @since 3.4.0
  */
 export interface DashboardRouteDefinition {
@@ -42,7 +42,7 @@ export interface DashboardRouteDefinition {
  * @description
  * Defines a custom navigation section in the dashboard sidebar.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Navigation
  * @since 3.4.0
  */

@@ -2,6 +2,14 @@ import { cn } from '@/vdb/lib/utils.js';
 import { Image } from 'lucide-react';
 import React from 'react';
 
+/**
+ * @description
+ * The type of object that can be used as an asset in the {@link VendureImage} component.
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @since 3.4.0
+ */
 export interface AssetLike {
     id: string;
     preview: string; // Base URL of the asset
@@ -9,23 +17,127 @@ export interface AssetLike {
     focalPoint?: { x: number; y: number } | null;
 }
 
+/**
+ * @description
+ * The presets that can be used for the {@link VendureImage} component.
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @since 3.4.0
+ */
 export type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | null;
+
+/**
+ * @description
+ * The formats that can be used for the {@link VendureImage} component.
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @since 3.4.0
+ */
 export type ImageFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif' | null;
+
+/**
+ * @description
+ * The modes that can be used for the {@link VendureImage} component.
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @since 3.4.0
+ */
 export type ImageMode = 'crop' | 'resize' | null;
 
+/**
+ * @description
+ * The props for the {@link VendureImage} component.
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @docsWeight 1
+ * @since 3.4.0
+ */
 export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+    /**
+     * @description
+     * The asset to display.
+     */
     asset: AssetLike | null | undefined;
+    /**
+     * @description
+     * The preset to use for the image.
+     */
     preset?: ImagePreset;
+    /**
+     * @description
+     * The crop/resize mode to use for the image.
+     */
     mode?: ImageMode;
+    /**
+     * @description
+     * The width of the image.
+     */
     width?: number;
+    /**
+     * @description
+     * The height of the image.
+     */
     height?: number;
+    /**
+     * @description
+     * The format of the image.
+     */
     format?: ImageFormat;
+    /**
+     * @description
+     * The quality of the image.
+     */
     quality?: number;
-    useFocalPoint?: boolean; // Whether to use the asset's focal point in crop mode
-    fallback?: React.ReactNode; // What to show if no asset is provided
+    /**
+     * @description
+     * Whether to use the asset's focal point in crop mode.
+     */
+    useFocalPoint?: boolean;
+    /**
+     * @description
+     * The fallback to show if no asset is provided. If no fallback is provided, 
+     * a default placeholder will be shown.
+     */ 
+    fallback?: React.ReactNode;
+    /**
+     * @description
+     * The ref to the image element.
+     */
     ref?: React.Ref<HTMLImageElement>;
 }
 
+/**
+ * @description
+ * A component for displaying an image from a Vendure asset.
+ * 
+ * Supports the following features:
+ * 
+ * * Presets
+ * * Cropping
+ * * Resizing
+ * * Formatting
+ * * Quality
+ * * Focal point
+ * * Fallback
+ * 
+ * @example
+ * ```tsx
+ *  <VendureImage
+ *      asset={asset}
+ *      preset="thumb"
+ *      className="w-full h-full object-contain"
+ *  />
+ * ```
+ *
+ * @docsCategory components
+ * @docsPage VendureImage
+ * @docsWeight 0
+ * @since 3.4.0
+ */
 export function VendureImage({
     asset,
     preset = null,

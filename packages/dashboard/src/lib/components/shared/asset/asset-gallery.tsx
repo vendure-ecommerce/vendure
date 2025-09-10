@@ -71,6 +71,13 @@ const AssetType = {
 
 export type Asset = AssetFragment;
 
+/**
+ * @description
+ * Props for the {@link AssetGallery} component.
+ * 
+ * @docsCategory components
+ * @docsPage AssetGallery
+ */
 export interface AssetGalleryProps {
     onSelect?: (assets: Asset[]) => void;
     selectable?: boolean;
@@ -82,16 +89,67 @@ export interface AssetGalleryProps {
      * If set to 'manual', multiple selection will occur only if the user holds down the control/cmd key.
      */
     multiSelect?: 'auto' | 'manual';
+    /**
+     * @description
+     * The initial assets that should be selected.
+     */
     initialSelectedAssets?: Asset[];
+    /**
+     * @description
+     * The number of assets to display per page.
+     */
     pageSize?: number;
+    /**
+     * @description
+     * Whether the gallery should have a fixed height.
+     */
     fixedHeight?: boolean;
+    /**
+     * @description
+     * Whether the gallery should show a header.
+     */
     showHeader?: boolean;
+    /**
+     * @description
+     * The class name to apply to the gallery.
+     */
     className?: string;
+    /**
+     * @description
+     * The function to call when files are dropped.
+     */
     onFilesDropped?: (files: File[]) => void;
+    /**
+     * @description
+     * The bulk actions to display in the gallery.
+     */
     bulkActions?: AssetBulkAction[];
+    /**
+     * @description
+     * Whether the gallery should display bulk actions.
+     */
     displayBulkActions?: boolean;
 }
 
+/**
+ * @description
+ * A component for displaying a gallery of assets.
+ * 
+ * @example
+ * ```tsx
+ *  <AssetGallery
+        onSelect={handleAssetSelect}
+        multiSelect="manual"
+        initialSelectedAssets={initialSelectedAssets}
+        fixedHeight={false}
+        displayBulkActions={false}
+    />
+ * ```
+ *
+ * @docsCategory components
+ * @docsPage AssetGallery
+ * @docsWeight 0
+ */
 export function AssetGallery({
     onSelect,
     selectable = true,

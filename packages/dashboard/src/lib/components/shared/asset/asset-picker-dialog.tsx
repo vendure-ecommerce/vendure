@@ -9,15 +9,54 @@ import {
 import { useState } from 'react';
 import { Asset, AssetGallery } from './asset-gallery.js';
 
+/**
+ * @description
+ * Props for the {@link AssetPickerDialog} component.
+ * 
+ * @docsCategory components
+ * @docsPage AssetPickerDialog
+ */
 interface AssetPickerDialogProps {
+    /**
+     * @description
+     * Whether the dialog is open.
+     */
     open: boolean;
+    /**
+     * @description
+     * The function to call when the dialog is closed.
+     */
     onClose: () => void;
+    /**
+     * @description
+     * The function to call when assets are selected.
+     */
     onSelect: (assets: Asset[]) => void;
+    /**
+     * @description
+     * Whether multiple assets can be selected.
+     */
     multiSelect?: boolean;
+    /**
+     * @description
+     * The initial assets that should be selected.
+     */
     initialSelectedAssets?: Asset[];
+    /**
+     * @description
+     * The title of the dialog.
+     */
     title?: string;
 }
 
+/**
+ * @description
+ * A dialog which allows the creation and selection of assets.
+ * 
+ * @docsCategory components
+ * @docsPage AssetPickerDialog
+ * @docsWeight 0
+ */
 export function AssetPickerDialog({
     open,
     onClose,

@@ -10,6 +10,24 @@ export type AffixedInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>
         suffix?: ReactNode;
     };
 
+/**
+ * @description
+ * A component for displaying an input with a prefix and/or a suffix.
+ * 
+ * @example
+ * ```tsx
+ * <AffixedInput
+ *     {...field}
+ *     type="number"
+ *     suffix="%"
+ *     value={field.value}
+ *     onChange={e => field.onChange(e.target.valueAsNumber)}
+ * />
+ * ```
+ * 
+ * @docsCategory form-components
+ * @docsPage AffixedInput
+ */
 export function AffixedInput({ prefix, suffix, className = '', ...props }: Readonly<AffixedInputProps>) {
     const readOnly = props.disabled || isReadonlyField(props.fieldDef);
     const prefixRef = useRef<HTMLSpanElement>(null);

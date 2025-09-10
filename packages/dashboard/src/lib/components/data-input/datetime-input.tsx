@@ -12,6 +12,13 @@ import { cn } from '@/vdb/lib/utils.js';
 import { CalendarClock } from 'lucide-react';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
+/**
+ * @description
+ * A component for selecting a date and time.
+ *
+ * @docsCategory form-components
+ * @docsPage DateTimeInput
+ */
 export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
     const readOnly = isReadonlyField(fieldDef);
     const date = value && value instanceof Date ? value.toISOString() : (value ?? '');

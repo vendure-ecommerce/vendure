@@ -8,6 +8,15 @@ import { useContext } from 'react';
  *
  * If `optional` is set to true, the hook will not throw if no PageBlock
  * exists higher in the tree, but will just return undefined.
+ *
+ * @example
+ * ```tsx
+ * const { blockId, title, description, column } = usePageBlock();
+ * ```
+ * 
+ * @docsCategory page-layout
+ * @docsPage usePageBlock
+ * @since 3.3.0
  */
 export function usePageBlock({ optional }: { optional?: boolean } = {}) {
     const pageBlock = useContext(PageBlockContext);

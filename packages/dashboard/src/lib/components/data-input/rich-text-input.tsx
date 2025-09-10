@@ -22,6 +22,13 @@ const extensions = [
     }),
 ];
 
+/**
+ * @description
+ * A component for displaying a rich text editor. Internally uses ProseMirror (rich text editor) under the hood.
+ *
+ * @docsCategory form-components
+ * @docsPage RichTextInput
+ */
 export function RichTextInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
     const readOnly = isReadonlyField(fieldDef);
     const isInternalUpdate = useRef(false);

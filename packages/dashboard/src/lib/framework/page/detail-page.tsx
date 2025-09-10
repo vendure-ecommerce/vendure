@@ -33,9 +33,9 @@ import { DetailEntityPath } from './page-types.js';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Props to configure the {@link DetailPage} component.
  *
- * @docsCategory components
+ * @docsCategory detail-views
  * @docsPage DetailPage
  * @since 3.3.0
  */
@@ -138,13 +138,11 @@ function FieldInputRenderer<
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Auto-generates a detail page with a form based on the provided query and mutation documents.
  *
  * For more control over the layout, you would use the more low-level {@link Page} component.
  *
- * @docsCategory components
+ * @docsCategory detail-views
  * @docsPage DetailPage
  * @docsWeight 0
  * @since 3.3.0

@@ -239,7 +239,7 @@ You should now be able to see the list view, which will be empty:
 Now let's create a detail page so we can start adding articles.
 
 We'll begin with the simplest approach, where the form will be auto-generated for us based on the GraphQL schema
-using the [DetailPage](/reference/dashboard/components/detail-page) component.
+using the [DetailPage](/reference/dashboard/detail-views/detail-page) component.
 This is useful for quickly getting started, but you will probably want to customize the form later on.
 
 Create a new file called `article-detail.tsx` in the `./src/plugins/cms/dashboard` directory:
@@ -339,7 +339,7 @@ Congratulations! You can now add, edit and delete articles in the dashboard.
 
 ## Customizing the detail page
 
-The auto-generated [DetailPage](/reference/dashboard/components/detail-page) is a great way to get started and quickly be able
+The auto-generated [DetailPage](/reference/dashboard/detail-views/detail-page) is a great way to get started and quickly be able
 to interact with your entities. But let's now see how we can fully customize the layout and form fields.
 
 ```tsx title="src/plugins/cms/dashboard/article-detail.tsx"
@@ -504,13 +504,13 @@ function ArticleDetailPage({ route }: { route: AnyRoute }) {
 
 In the above example, we have:
 
-- Used the [Page](/reference/dashboard/components/page), [PageTitle](/reference/dashboard/components/page-title),
-  [PageActionBar](/reference/dashboard/components/page-action-bar) and [PageLayout](/reference/dashboard/components/page-layout) components to create a layout for our page.
-- Used [PageBlock](/reference/dashboard/components/page-block) components to structure the page into blocks.
+- Used the [Page](/reference/dashboard/page-layout/page), [PageTitle](/reference/dashboard/page-layout/page-title),
+  [PageActionBar](/reference/dashboard/page-layout/page-action-bar) and [PageLayout](/reference/dashboard/page-layout) components to create a layout for our page.
+- Used [PageBlock](/reference/dashboard/page-layout/page-block) components to structure the page into blocks.
 - Used custom form components (such as the `RichTextInput`) to better represent the data.
 
 ## API Reference
 
 A partial API reference of the new Dashboard API can be found here:
 
-- [Dashboard API Reference](/reference/dashboard/extensions/)
+- [Dashboard API Reference](/reference/dashboard/extensions-api/)

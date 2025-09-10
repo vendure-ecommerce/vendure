@@ -120,6 +120,7 @@ function TaxRateDetailPage() {
                             label={<Trans>Rate</Trans>}
                             render={({ field }) => (
                                 <AffixedInput
+                                    {...field}
                                     type="number"
                                     suffix="%"
                                     value={field.value}
