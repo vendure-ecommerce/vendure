@@ -64,14 +64,14 @@ function StockLocationDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated stock location'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created stock location' : 'Successfully updated stock location'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update stock location'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create stock location' : 'Failed to update stock location'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -89,7 +89,7 @@ function StockLocationDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

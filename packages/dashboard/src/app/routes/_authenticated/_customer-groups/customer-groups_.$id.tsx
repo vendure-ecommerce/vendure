@@ -61,14 +61,14 @@ function CustomerGroupDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated customer group'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created customer group' : 'Successfully updated customer group'));
             resetForm();
             if (creatingNewEntity && data?.id) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update customer group'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer group' : 'Failed to update customer group'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -86,7 +86,7 @@ function CustomerGroupDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
