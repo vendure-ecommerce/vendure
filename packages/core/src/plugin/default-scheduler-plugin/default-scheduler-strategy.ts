@@ -32,13 +32,13 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     private readonly tasks: Map<string, { task: ScheduledTask; isRegistered: boolean }> = new Map();
     private pluginOptions: DefaultSchedulerPluginOptions;
     private runningTasks: ScheduledTask[] = [];
-    private taskService: StaleTaskService;
+    private staleTaskService: StaleTaskService;
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         this.pluginOptions = injector.get(DEFAULT_SCHEDULER_PLUGIN_OPTIONS);
         this.injector = injector;
-        this.taskService = injector.get(StaleTaskService);
+        this.staleTaskService = injector.get(StaleTaskService);
 
         const runTriggerCheck =
             injector.get(ConfigService).schedulerOptions.runTasksInWorkerOnly === false ||
@@ -74,7 +74,7 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     executeTask(task: ScheduledTask) {
         return async (job?: Cron) => {
             await this.ensureTaskIsRegistered(task);
-            await this.taskService.cleanStaleLocks();
+            await this.staleTaskService.cleanStaleLocksForTask(task);
 
             const taskEntity = await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)
