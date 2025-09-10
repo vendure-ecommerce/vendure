@@ -54,9 +54,7 @@ export function ChannelSwitcher() {
         setContentLanguage,
     } = useUserSettings();
     const [showManageLanguagesDialog, setShowManageLanguagesDialog] = useState(false);
-
-    // Use the selected channel if available, otherwise fall back to the active channel
-    const displayChannel = activeChannel || activeChannel;
+    const displayChannel = activeChannel;
 
     // Get available languages from server config
     const availableLanguages = serverConfig?.availableLanguages || [];
