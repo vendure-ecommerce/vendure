@@ -101,11 +101,6 @@ export class SettingsStoreService implements OnModuleInit {
      */
     async get<T = JsonCompatible<any>>(key: string, ctx: RequestContext): Promise<T | undefined> {
         const fieldConfig = this.getFieldConfig(key);
-
-        if (!this.hasPermission(ctx, fieldConfig)) {
-            return undefined;
-        }
-
         const scope = this.generateScope(key, undefined, ctx, fieldConfig);
 
         const entry = await this.connection.getRepository(ctx, SettingsStoreEntry).findOne({
@@ -132,11 +127,8 @@ export class SettingsStoreService implements OnModuleInit {
 
         for (const key of keys) {
             const fieldConfig = this.getFieldConfig(key);
-
-            if (this.hasPermission(ctx, fieldConfig)) {
-                const scope = this.generateScope(key, undefined, ctx, fieldConfig);
-                queries.push({ key, scope });
-            }
+            const scope = this.generateScope(key, undefined, ctx, fieldConfig);
+            queries.push({ key, scope });
         }
 
         if (queries.length === 0) {
@@ -188,23 +180,6 @@ export class SettingsStoreService implements OnModuleInit {
     ): Promise<SetSettingsStoreValueResult> {
         try {
             const fieldConfig = this.getFieldConfig(key);
-
-            if (!this.hasPermission(ctx, fieldConfig)) {
-                return {
-                    key,
-                    result: false,
-                    error: 'Insufficient permissions to set settings store value',
-                };
-            }
-
-            if (fieldConfig.readonly) {
-                return {
-                    key,
-                    result: false,
-                    error: 'Cannot modify readonly settings store field via API',
-                };
-            }
-
             // Validate the value
             await this.validateValue(key, value, ctx);
 
@@ -438,18 +413,39 @@ export class SettingsStoreService implements OnModuleInit {
     /**
      * @description
      * Check if the current user has permission to access a field.
+     * This is not called internally in the get and set methods, so should
+     * be used by any methods which are exposing these methods via the GraphQL
+     * APIs.
      */
-    private hasPermission(ctx: RequestContext, fieldConfig: SettingsStoreFieldConfig): boolean {
-        // Admin API: check required permissions
-        const requiredPermissions = fieldConfig.requiresPermission;
-        if (requiredPermissions) {
-            const permissions = Array.isArray(requiredPermissions)
-                ? requiredPermissions
-                : [requiredPermissions];
-            return ctx.userHasPermissions(permissions as any);
-        }
+    hasPermission(ctx: RequestContext, key: string): boolean {
+        try {
+            const fieldConfig = this.getFieldConfig(key);
+            // Admin API: check required permissions
+            const requiredPermissions = fieldConfig.requiresPermission;
+            if (requiredPermissions) {
+                const permissions = Array.isArray(requiredPermissions)
+                    ? requiredPermissions
+                    : [requiredPermissions];
+                return ctx.userHasPermissions(permissions as any);
+            }
 
-        // Default: require authentication
-        return ctx.userHasPermissions([Permission.Authenticated]);
+            // Default: require authentication
+            return ctx.userHasPermissions([Permission.Authenticated]);
+        } catch (error) {
+            return true;
+        }
+    }
+
+    /**
+     * @description
+     * Returns true if the settings field has the `readonly: true` configuration.
+     */
+    isReadonly(key: string): boolean {
+        try {
+            const fieldConfig = this.getFieldConfig(key);
+            return fieldConfig.readonly === true;
+        } catch (error) {
+            return false;
+        }
     }
 }
