@@ -10,10 +10,10 @@ import { TransactionalConnection } from '../../connection';
 import { ProcessContext } from '../../process-context';
 import { ScheduledTask } from '../../scheduler/scheduled-task';
 import { SchedulerStrategy, TaskReport } from '../../scheduler/scheduler-strategy';
-import { TaskService } from '../../service';
 
 import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
+import { StaleTaskService } from './stale-task.service';
 import { DefaultSchedulerPluginOptions } from './types';
 
 /**
@@ -32,13 +32,13 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     private readonly tasks: Map<string, { task: ScheduledTask; isRegistered: boolean }> = new Map();
     private pluginOptions: DefaultSchedulerPluginOptions;
     private runningTasks: ScheduledTask[] = [];
-    private taskService: TaskService;
+    private taskService: StaleTaskService;
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         this.pluginOptions = injector.get(DEFAULT_SCHEDULER_PLUGIN_OPTIONS);
         this.injector = injector;
-        this.taskService = injector.get(TaskService);
+        this.taskService = injector.get(StaleTaskService);
 
         const runTriggerCheck =
             injector.get(ConfigService).schedulerOptions.runTasksInWorkerOnly === false ||

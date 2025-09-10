@@ -5,14 +5,14 @@ import { Cron } from 'croner';
 import { Instrument } from '../../common/instrument-decorator';
 import { Logger } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { ScheduledTaskRecord } from '../../plugin/default-scheduler-plugin/scheduled-task-record.entity';
 import { SchedulerService } from '../../scheduler/scheduler.service';
 
-const loggerCtx = 'CleanTaskLocks';
+import { loggerCtx } from './constants';
+import { ScheduledTaskRecord } from './scheduled-task-record.entity';
 
 @Injectable()
 @Instrument()
-export class TaskService {
+export class StaleTaskService {
     constructor(
         private connection: TransactionalConnection,
         private schedulerService: SchedulerService,

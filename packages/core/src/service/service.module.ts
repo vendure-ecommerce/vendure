@@ -65,7 +65,6 @@ import { StockLevelService } from './services/stock-level.service';
 import { StockLocationService } from './services/stock-location.service';
 import { StockMovementService } from './services/stock-movement.service';
 import { TagService } from './services/tag.service';
-import { TaskService } from './services/task.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
@@ -107,7 +106,6 @@ const services = [
     TaxRateService,
     UserService,
     ZoneService,
-    TaskService,
 ];
 
 const helpers = [
