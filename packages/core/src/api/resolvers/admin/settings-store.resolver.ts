@@ -28,7 +28,7 @@ export class SettingsStoreAdminResolver {
         if (!this.settingsStoreService.hasPermission(ctx, key)) {
             return undefined;
         }
-        return this.settingsStoreService.get(key, ctx);
+        return this.settingsStoreService.get(ctx, key);
     }
 
     @Query()
@@ -42,7 +42,7 @@ export class SettingsStoreAdminResolver {
                 permittedKeys.push(key);
             }
         }
-        return this.settingsStoreService.getMany(permittedKeys, ctx);
+        return this.settingsStoreService.getMany(ctx, permittedKeys);
     }
 
     @Mutation()
@@ -64,7 +64,7 @@ export class SettingsStoreAdminResolver {
                 error: ErrorMessage.readonly,
             };
         }
-        return this.settingsStoreService.set(input.key, input.value, ctx);
+        return this.settingsStoreService.set(ctx, input.key, input.value);
     }
 
     @Mutation()
@@ -89,7 +89,7 @@ export class SettingsStoreAdminResolver {
                     error: ErrorMessage.readonly,
                 });
             } else {
-                const result = await this.settingsStoreService.set(input.key, input.value, ctx);
+                const result = await this.settingsStoreService.set(ctx, input.key, input.value);
                 results.push(result);
             }
         }
