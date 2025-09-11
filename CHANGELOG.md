@@ -8,6 +8,7 @@
 * **core** Fix logic for calculating interval ([394fb05](https://github.com/vendure-ecommerce/vendure/commit/394fb05))
 * **core** Handle foreign key violations during order merge (#3795) ([c00a044](https://github.com/vendure-ecommerce/vendure/commit/c00a044)), closes [#3795](https://github.com/vendure-ecommerce/vendure/issues/3795)
 * **core** Log warning when attempting to persist invalid custom fields (#3793) ([eefbd9c](https://github.com/vendure-ecommerce/vendure/commit/eefbd9c)), closes [#3793](https://github.com/vendure-ecommerce/vendure/issues/3793)
+* **core** Handle stale locks on scheduled tasks (#3708) ([4492850](https://github.com/vendure-ecommerce/vendure/commit/4492850)), closes [#3708](https://github.com/vendure-ecommerce/vendure/issues/3708)
 * **create** Fix resolving path in repos using hoisted node_modules (#3802) ([fd971a5](https://github.com/vendure-ecommerce/vendure/commit/fd971a5)), closes [#3802](https://github.com/vendure-ecommerce/vendure/issues/3802)
 * **dashboard** Add initial value to reduce call ([9261f03](https://github.com/vendure-ecommerce/vendure/commit/9261f03))
 * **dashboard** Allow column selection on recent orders ([182c0b7](https://github.com/vendure-ecommerce/vendure/commit/182c0b7))
@@ -28,6 +29,22 @@
 * **dashboard** Make long table column dropdowns scrollable ([f878e24](https://github.com/vendure-ecommerce/vendure/commit/f878e24))
 * **dashboard** Show “Create” for new entities, “Update” for edits (#3805) ([fdece02](https://github.com/vendure-ecommerce/vendure/commit/fdece02)), closes [#3805](https://github.com/vendure-ecommerce/vendure/issues/3805)
 * **dashboard** Update channel switcher when Channel added/updated ([1cd7652](https://github.com/vendure-ecommerce/vendure/commit/1cd7652))
+
+Note: In this release, the `SettingsStoreService` methods have been revised to put the
+`ctx` argument in the first position, as is standard across Vendure APIs. Existing code
+with the ctx last will still work, but you are advised to update it.
+
+```diff
+- SettingsStoreService.get<T>(key, ctx)       
+- SettingsStoreService.getMany(keys, ctx)     
+- SettingsStoreService.set<T>(key, value, ctx)
+- SettingsStoreService.setMany(values, ctx)
+
++ SettingsStoreService.get<T>(ctx, key)       
++ SettingsStoreService.getMany(ctx, keys)     
++ SettingsStoreService.set<T>(ctx, key, value)
++ SettingsStoreService.setMany(ctx, values)   
+```
 
 #### Features
 
