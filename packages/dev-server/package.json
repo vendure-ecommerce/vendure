@@ -1,6 +1,6 @@
 {
     "name": "dev-server",
-    "version": "3.4.1",
+    "version": "3.4.2",
     "main": "index.js",
     "license": "GPL-3.0-or-later",
     "private": true,
@@ -19,17 +19,17 @@
     },
     "dependencies": {
         "@nestjs/axios": "^4.0.0",
-        "@vendure/admin-ui-plugin": "3.4.1",
-        "@vendure/asset-server-plugin": "3.4.1",
-        "@vendure/common": "3.4.1",
-        "@vendure/core": "3.4.1",
-        "@vendure/elasticsearch-plugin": "3.4.1",
-        "@vendure/email-plugin": "3.4.1",
+        "@vendure/admin-ui-plugin": "3.4.2",
+        "@vendure/asset-server-plugin": "3.4.2",
+        "@vendure/common": "3.4.2",
+        "@vendure/core": "3.4.2",
+        "@vendure/elasticsearch-plugin": "3.4.2",
+        "@vendure/email-plugin": "3.4.2",
         "typescript": "5.8.2"
     },
     "devDependencies": {
-        "@vendure/testing": "3.4.1",
-        "@vendure/ui-devkit": "3.4.1",
+        "@vendure/testing": "3.4.2",
+        "@vendure/ui-devkit": "3.4.2",
         "commander": "^12.0.0",
         "concurrently": "^9.2.0",
         "csv-stringify": "^6.4.6",
