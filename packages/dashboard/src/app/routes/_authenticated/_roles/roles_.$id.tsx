@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
         queryDocument: roleDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/roles', label: 'Roles' },
+                { path: '/roles', label: <Trans>Roles</Trans> },
                 isNew ? <Trans>New role</Trans> : entity?.description,
             ];
         },
@@ -61,14 +61,14 @@ function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated role'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created role' : 'Successfully updated role'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update role'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create role' : 'Failed to update role'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -84,7 +84,7 @@ function RoleDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

@@ -16,6 +16,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -76,39 +77,41 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
 
     return (
         <div className="flex items-center gap-2">
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="ml-auto hidden h-8 lg:flex">
                         <Settings2 />
                         <Trans>Columns</Trans>
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DndContext
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                        modifiers={[restrictToVerticalAxis]}
-                    >
-                        <SortableContext
-                            items={columns.map(col => col.id)}
-                            strategy={verticalListSortingStrategy}
+                <DropdownMenuContent align="end" className="overflow-auto">
+                    <ScrollArea className="max-h-[60vh]" type="always">
+                        <DndContext
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                            modifiers={[restrictToVerticalAxis]}
                         >
-                            {columns.map(column => (
-                                <SortableItem key={column.id} id={column.id}>
-                                    <DropdownMenuCheckboxItem
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={value => column.toggleVisibility(!!value)}
-                                        onSelect={e => e.preventDefault()}
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                </SortableItem>
-                            ))}
-                        </SortableContext>
-                    </DndContext>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleReset}>Reset</DropdownMenuItem>
+                            <SortableContext
+                                items={columns.map(col => col.id)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {columns.map(column => (
+                                    <SortableItem key={column.id} id={column.id}>
+                                        <DropdownMenuCheckboxItem
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={value => column.toggleVisibility(!!value)}
+                                            onSelect={e => e.preventDefault()}
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    </SortableItem>
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleReset}>Reset</DropdownMenuItem>
+                    </ScrollArea>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

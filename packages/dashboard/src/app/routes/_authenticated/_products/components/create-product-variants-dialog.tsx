@@ -9,53 +9,18 @@ import {
     DialogTrigger,
 } from '@/vdb/components/ui/dialog.js';
 import { api } from '@/vdb/graphql/api.js';
-import { graphql } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { normalizeString } from '@/vdb/lib/utils.js';
 import { useMutation } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import {
+    addOptionGroupToProductDocument,
+    createProductOptionGroupDocument,
+    createProductVariantsDocument,
+} from '../products.graphql.js';
 import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
-
-const createProductOptionsMutation = graphql(`
-    mutation CreateOptionGroups($input: CreateProductOptionGroupInput!) {
-        createProductOptionGroup(input: $input) {
-            id
-            name
-            options {
-                id
-                code
-                name
-            }
-        }
-    }
-`);
-
-export const addOptionGroupToProductDocument = graphql(`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
-            optionGroups {
-                id
-                code
-                options {
-                    id
-                    code
-                }
-            }
-        }
-    }
-`);
-
-export const createProductVariantsDocument = graphql(`
-    mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
-        createProductVariants(input: $input) {
-            id
-            name
-        }
-    }
-`);
 
 export function CreateProductVariantsDialog({
     productId,
@@ -71,7 +36,7 @@ export function CreateProductVariantsDialog({
     const [open, setOpen] = useState(false);
 
     const createOptionGroupMutation = useMutation({
-        mutationFn: api.mutate(createProductOptionsMutation),
+        mutationFn: api.mutate(createProductOptionGroupDocument),
     });
 
     const addOptionGroupToProductMutation = useMutation({
@@ -170,6 +135,7 @@ export function CreateProductVariantsDialog({
         ({ data }: { data: VariantConfiguration }) => setVariantData(data),
         [],
     );
+    const createCount = Object.values(variantData?.variants ?? {}).filter(v => v.enabled).length;
 
     return (
         <>
@@ -180,7 +146,7 @@ export function CreateProductVariantsDialog({
                     </Button>
                 </DialogTrigger>
 
-                <DialogContent>
+                <DialogContent className="max-w-90vw">
                     <DialogHeader>
                         <DialogTitle>
                             <Trans>Create Variants</Trans>
@@ -203,7 +169,8 @@ export function CreateProductVariantsDialog({
                                 !variantData ||
                                 createOptionGroupMutation.isPending ||
                                 addOptionGroupToProductMutation.isPending ||
-                                createProductVariantsMutation.isPending
+                                createProductVariantsMutation.isPending ||
+                                createCount === 0
                             }
                         >
                             {createOptionGroupMutation.isPending ||
@@ -211,13 +178,7 @@ export function CreateProductVariantsDialog({
                             createProductVariantsMutation.isPending ? (
                                 <Trans>Creating...</Trans>
                             ) : (
-                                <Trans>
-                                    Create{' '}
-                                    {variantData
-                                        ? Object.values(variantData.variants).filter(v => v.enabled).length
-                                        : 0}{' '}
-                                    variants
-                                </Trans>
+                                <Trans>Create {createCount} variants</Trans>
                             )}
                         </Button>
                     </DialogFooter>

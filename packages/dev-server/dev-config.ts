@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
@@ -7,7 +8,6 @@ import {
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    LanguageCode,
     LogLevel,
     SettingsStoreScopes,
     VendureConfig,
@@ -20,6 +20,7 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
+import { LongRunningTaskPlugin } from './example-plugins/long-running-task-plugin/src/long-running-task';
 
 const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
@@ -73,34 +74,7 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    customFields: {
-        Product: [
-            {
-                name: 'infoUrl',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-            },
-            {
-                name: 'downloadable',
-                type: 'boolean',
-                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-            },
-            {
-                name: 'shortName',
-                type: 'localeString',
-                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-            },
-            {
-                name: 'lastUpdated',
-                type: 'datetime',
-                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-            },
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -140,34 +114,36 @@ export const devConfig: VendureConfig = {
             },
         }),
         ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
-        // AdminUiPlugin.init({
-        //     route: 'admin',
-        //     port: 5001,
-        //     adminUiConfig: {},
-        //     // Un-comment to compile a custom admin ui
-        //     // app: compileUiExtensions({
-        //     //     outputPath: path.join(__dirname, './custom-admin-ui'),
-        //     //     extensions: [
-        //     //         {
-        //     //             id: 'ui-extensions-library',
-        //     //             extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
-        //     //             routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
-        //     //             providers: ['providers.ts'],
-        //     //         },
-        //     //         {
-        //     //             globalStyles: path.join(
-        //     //                 __dirname,
-        //     //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
-        //     //             ),
-        //     //         },
-        //     //     ],
-        //     //     devMode: true,
-        //     // }),
-        // }),
+        AdminUiPlugin.init({
+            route: 'admin',
+            port: 5001,
+            compatibilityMode: true,
+            adminUiConfig: {},
+            // Un-comment to compile a custom admin ui
+            // app: compileUiExtensions({
+            //     outputPath: path.join(__dirname, './custom-admin-ui'),
+            //     extensions: [
+            //         {
+            //             id: 'ui-extensions-library',
+            //             extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
+            //             routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
+            //             providers: ['providers.ts'],
+            //         },
+            //         {
+            //             globalStyles: path.join(
+            //                 __dirname,
+            //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
+            //             ),
+            //         },
+            //     ],
+            //     devMode: true,
+            // }),
+        }),
         DashboardPlugin.init({
             route: 'dashboard',
             appDir: path.join(__dirname, './dist'),
         }),
+        LongRunningTaskPlugin.init(),
     ],
 };
 

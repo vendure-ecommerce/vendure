@@ -240,7 +240,21 @@ export class JobListIndexService {
 
         // Get all queue names from our indexed sets
         const allStateKeys = this.createSortedSetKey('*');
-        const keys = await this.redis.keys(allStateKeys);
+        const keys: string[] = [];
+        let scanCursor = '0';
+
+        do {
+            const [nextCursor, foundKeys] = await this.redis.scan(
+                scanCursor,
+                'MATCH',
+                allStateKeys,
+                'COUNT',
+                this.BATCH_SIZE,
+            );
+            scanCursor = nextCursor;
+            keys.push(...foundKeys);
+        } while (scanCursor !== '0');
+
         const result: Array<{ queueName: string; jobsRemoved: number }> = [];
         const startTime = Date.now();
         Logger.verbose(`Cleaning up ${keys.length} indexed sets`, loggerCtx);

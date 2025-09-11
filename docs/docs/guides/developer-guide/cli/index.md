@@ -185,7 +185,7 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 - `--mutationName <n>`: Name for the GraphQL mutation
 
 :::info
-**Validation**: Entity and service commands validate that the specified plugin exists in your project. If the plugin is not found, the command will list all available plugins in the error message. Both commands require the `--plugin` parameter when running in non-interactive mode.
+**Validation**: Entity and service commands validate that the specified plugin exists in your project. If the plugin is not found, the command will list all available plugins in the error message. Both commands require the `--selected-plugin` parameter when running in non-interactive mode.
 :::
 
 ## The Migrate Command

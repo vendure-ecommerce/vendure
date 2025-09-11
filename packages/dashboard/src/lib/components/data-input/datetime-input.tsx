@@ -7,24 +7,27 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Calendar } from '@/vdb/components/ui/calendar.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { ScrollArea, ScrollBar } from '@/vdb/components/ui/scroll-area.js';
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { CalendarClock } from 'lucide-react';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
-export interface DateTimeInputProps {
-    value: Date | string | undefined;
-    onChange: (value: Date) => void;
-    disabled?: boolean;
-}
-
-export function DateTimeInput(props: DateTimeInputProps) {
-    const { disabled = false } = props;
-    const date = props.value && props.value instanceof Date ? props.value.toISOString() : (props.value ?? '');
+/**
+ * @description
+ * A component for selecting a date and time.
+ *
+ * @docsCategory form-components
+ * @docsPage DateTimeInput
+ */
+export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
+    const readOnly = isReadonlyField(fieldDef);
+    const date = value && value instanceof Date ? value.toISOString() : (value ?? '');
     const [isOpen, setIsOpen] = React.useState(false);
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (selectedDate) {
-            props.onChange(selectedDate);
+            onChange(selectedDate.toISOString());
         }
     };
 
@@ -39,16 +42,16 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 const currentHours = newDate.getHours();
                 newDate.setHours(value === 'PM' ? currentHours + 12 : currentHours - 12);
             }
-            props.onChange(newDate);
+            onChange(newDate);
         }
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={disabled ? undefined : setIsOpen}>
+        <Popover open={isOpen} onOpenChange={readOnly ? undefined : setIsOpen}>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
-                    disabled={disabled}
+                    disabled={readOnly}
                     className={cn(
                         'w-full justify-start text-left font-normal shadow-xs',
                         !date && 'text-muted-foreground',

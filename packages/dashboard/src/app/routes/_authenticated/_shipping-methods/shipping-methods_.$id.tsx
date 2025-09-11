@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping
         queryDocument: shippingMethodDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/shipping-methods', label: 'Shipping methods' },
+                { path: '/shipping-methods', label: <Trans>Shipping Methods</Trans> },
                 isNew ? <Trans>New shipping method</Trans> : entity?.name,
             ];
         },
@@ -84,14 +84,14 @@ function ShippingMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated shipping method'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created shipping method' : 'Successfully updated shipping method'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update shipping method'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create shipping method' : 'Failed to update shipping method'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -109,7 +109,7 @@ function ShippingMethodDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

@@ -22,6 +22,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -36,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')(
         queryDocument: channelDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/channels', label: 'Channels' },
+                { path: '/channels', label: <Trans>Channels</Trans> },
                 isNew ? <Trans>New channel</Trans> : <ChannelCodeLabel code={entity?.code ?? ''} />,
             ];
         },
@@ -49,6 +50,7 @@ function ChannelDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
+    const { refreshChannels } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -80,19 +82,20 @@ function ChannelDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
-                toast(i18n.t('Successfully updated channel'));
+                toast(i18n.t(creatingNewEntity ? 'Successfully created channel' : 'Successfully updated channel'));
+                refreshChannels();
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast(i18n.t('Failed to update channel'), {
+                toast(i18n.t(creatingNewEntity ? 'Failed to create channel' : 'Failed to update channel'), {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update channel'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create channel' : 'Failed to update channel'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -119,7 +122,7 @@ function ChannelDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
