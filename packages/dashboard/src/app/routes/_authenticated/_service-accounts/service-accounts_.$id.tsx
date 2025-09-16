@@ -71,29 +71,29 @@ function ServiceAccountDetailPage() {
                 isServiceAccount: true,
             };
         },
-        transformUpdateInput: input => {
+        transformUpdateInput: (input: any) => {
             // Allow updating the service account name (mapped to firstName). Keep other identity fields internal.
-            const { firstName, lastName, emailAddress, password, ...rest } = input as any;
+            const { firstName, lastName, emailAddress, password, ...rest } = input;
             return { ...rest, firstName, isServiceAccount: true };
         },
-        transformCreateInput: input => {
+        transformCreateInput: (input: any) => {
             function rand(n = 16) {
                 const arr = new Uint32Array(n);
                 (globalThis.crypto ?? (window as any).crypto).getRandomValues(arr);
                 return Array.from(arr, v => v.toString(36)).join('').slice(0, n);
             }
             const baseId = Date.now().toString(36);
-            const firstName = (input as any).firstName || 'Service';
-            const lastName = (input as any).lastName || 'Account';
+            const firstName = input.firstName ?? (input.firstName === '' ? input.firstName : 'Service');
+            const lastName = input.lastName ?? (input.lastName === '' ? input.lastName : 'Account');
             // Prefer a kebab-case identifier derived from the name; fall back to random if not available
-            const namePartRaw = (input as any).firstName as string | undefined;
+            const namePartRaw = input.firstName;
             const kebabName = namePartRaw ? normalizeString(String(namePartRaw), '-') : '';
             const generatedId = kebabName && kebabName.length > 0
                 ? `svc-${kebabName}-${baseId}-${rand(6)}`
                 : `svc-${baseId}-${rand(6)}`;
             // Vendure's identifier does not need to be an email. Use a simple stable identifier if none provided.
-            const emailAddress = (input as any).emailAddress || generatedId;
-            const password = (input as any).password || `svc_${rand(24)}`;
+            const emailAddress = input.emailAddress || generatedId;
+            const password = input.password || `svc_${rand(24)}`;
             return { ...input, firstName, lastName, emailAddress, password, isServiceAccount: true };
         },
         params: { id: params.id },

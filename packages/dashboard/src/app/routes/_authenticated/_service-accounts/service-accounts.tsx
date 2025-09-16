@@ -14,7 +14,7 @@ const NameHeader = () => <Trans>Name</Trans>;
 const RolesHeader = () => <Trans>Roles</Trans>;
 const IdentifierHeader = () => <Trans>Identifier</Trans>;
 
-function NameCell({ row }: { row: any }) {
+function NameCell({ row }: Readonly<{ row: any }>) {
     const first = (row.original as any).firstName || '';
     const last = (row.original as any).lastName || '';
     const fallback = row.original.user.roles[0]?.code || 'Service account';
@@ -22,7 +22,7 @@ function NameCell({ row }: { row: any }) {
     return <DetailPageButton id={row.original.id} label={label} />;
 }
 
-function RolesCell({ row }: { row: any }) {
+function RolesCell({ row }: Readonly<{ row: any }>) {
     return (
         <div className="flex flex-wrap gap-2">
             {row.original.user.roles.map((role: any) => (
@@ -34,7 +34,7 @@ function RolesCell({ row }: { row: any }) {
     );
 }
 
-function IdentifierCell({ row }: { row: any }) {
+function IdentifierCell({ row }: Readonly<{ row: any }>) {
     return <div>{row.original.emailAddress}</div>;
 }
 
@@ -64,18 +64,18 @@ function ServiceAccountListPage() {
             additionalColumns={{
                 name: {
                     header: NameHeader,
-                    cell: NameCell as any,
+                    cell: NameCell,
                 },
                 roles: {
                     header: RolesHeader,
-                    cell: RolesCell as any,
+                    cell: RolesCell,
                 },
             }}
             customizeColumns={{
                 emailAddress: {
                     id: 'Identifier',
                     header: IdentifierHeader,
-                    cell: IdentifierCell as any,
+                    cell: IdentifierCell,
                 },
             }}
             defaultVisibility={{ emailAddress: true }}

@@ -30,6 +30,34 @@ interface ApiKeysPanelProps {
 
 type ConfirmState = { type: 'rotate' | 'revoke' | 'invalidate'; id: string } | null;
 
+const NameHeader = () => <Trans>Name</Trans>;
+const PrefixHeader = () => <Trans>Prefix</Trans>;
+const StatusHeader = () => <Trans>Status</Trans>;
+const ExpiresHeader = () => <Trans>Expires</Trans>;
+const LastUsedHeader = () => <Trans>Last used</Trans>;
+const CreatedHeader = () => <Trans>Created</Trans>;
+
+function StatusCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
+    const v = getValue() as string;
+    const variant = v === 'active' ? 'default' : 'destructive';
+    return <Badge variant={variant as any}>{v}</Badge>;
+}
+
+function ExpiresCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
+    const v = getValue() as string | null | undefined;
+    return v ? new Date(v).toLocaleString() : '—';
+}
+
+function LastUsedCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
+    const v = getValue() as string | null | undefined;
+    return v ? new Date(v).toLocaleString() : '—';
+}
+
+function CreatedCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
+    const v = getValue() as string;
+    return new Date(v).toLocaleString();
+}
+
 function ConfirmDialogBody({
     items,
     confirm,
@@ -38,7 +66,7 @@ function ConfirmDialogBody({
     onCancel,
     setConfirmInput,
     isPending,
-}: {
+}: Readonly<{
     items: Array<any>;
     confirm: ConfirmState;
     confirmInput: string;
@@ -46,7 +74,7 @@ function ConfirmDialogBody({
     onConfirm: () => void;
     onCancel: () => void;
     isPending: boolean;
-}) {
+}>) {
     const target = items.find(k => k.id === confirm?.id);
     const requiredName = target?.name ?? '';
     const matches = confirmInput.trim() === requiredName;
@@ -85,13 +113,13 @@ function ActionCell({
     onRotate,
     onRevoke,
     onInvalidate,
-}: {
+}: Readonly<{
     row: any;
     canUpdate: boolean;
     onRotate: (id: string) => void;
     onRevoke: (id: string) => void;
     onInvalidate: (id: string) => void;
-}) {
+}>) {
     return (
         <div className="flex gap-2 justify-end">
             {canUpdate && row.original.status === 'active' && (
@@ -210,20 +238,16 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
     const totalItems = data?.apiKeys.totalItems ?? 0;
 
     const columns: ColumnDef<(typeof items)[number]>[] = [
-        { accessorKey: 'name', header: () => <Trans>Name</Trans> },
-        { accessorKey: 'prefix', header: () => <Trans>Prefix</Trans> },
+        { accessorKey: 'name', header: NameHeader },
+        { accessorKey: 'prefix', header: PrefixHeader },
         {
             accessorKey: 'status',
-            header: () => <Trans>Status</Trans>,
-            cell: ({ getValue }) => {
-                const v = getValue() as string;
-                const variant = v === 'active' ? 'default' : 'destructive';
-                return <Badge variant={variant as any}>{v}</Badge>;
-            },
+            header: StatusHeader,
+            cell: StatusCell as any,
         },
-        { accessorKey: 'expiresAt', header: () => <Trans>Expires</Trans>, cell: ({ getValue }) => (getValue() ? new Date(getValue() as string).toLocaleString() : '—') },
-        { accessorKey: 'lastUsedAt', header: () => <Trans>Last used</Trans>, cell: ({ getValue }) => (getValue() ? new Date(getValue() as string).toLocaleString() : '—') },
-        { accessorKey: 'createdAt', header: () => <Trans>Created</Trans>, cell: ({ getValue }) => new Date(getValue() as string).toLocaleString() },
+        { accessorKey: 'expiresAt', header: ExpiresHeader, cell: ExpiresCell as any },
+        { accessorKey: 'lastUsedAt', header: LastUsedHeader, cell: LastUsedCell as any },
+        { accessorKey: 'createdAt', header: CreatedHeader, cell: CreatedCell as any },
         {
             id: 'actions',
             header: '',
