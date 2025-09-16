@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 
 import { SessionService } from './session.service';
@@ -23,22 +25,20 @@ export class ApiKeyService {
         private readonly connection: TransactionalConnection,
         private readonly passwordCipher: PasswordCipher,
         private readonly sessionService: SessionService,
+        private readonly listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /** List keys for an Administrator. @since 3.5.0 */
     async listByAdministrator(
         ctx: RequestContext,
         administratorId: ID,
-        options?: { skip?: number; take?: number },
-    ): Promise<{ items: ApiKey[]; totalItems: number }> {
-        const take = options?.take ?? 25;
-        const skip = options?.skip ?? 0;
-        const [items, totalItems] = await this.connection.getRepository(ctx, ApiKey).findAndCount({
+        options?: ListQueryOptions<ApiKey>,
+    ): Promise<PaginatedList<ApiKey>> {
+        const qb = this.listQueryBuilder.build(ApiKey, options, {
             where: { administrator: { id: administratorId as any } },
-            order: { createdAt: 'DESC' },
-            take,
-            skip,
+            ctx,
         });
+        const [items, totalItems] = await qb.getManyAndCount();
         return { items, totalItems };
     }
 

@@ -1,4 +1,4 @@
-import { DataTable } from '@/vdb/components/data-table/data-table.js';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/vdb/components/ui/dialog.js';
@@ -11,7 +11,9 @@ import { usePermissions } from '@/vdb/hooks/use-permissions.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { ColumnDef } from '@tanstack/react-table';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { CopyIcon, RefreshCcw, RotateCcw, Trash2 } from 'lucide-react';
+import { Ban, CopyIcon, EllipsisIcon, PlusIcon, RotateCcw, Trash2 } from 'lucide-react';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/vdb/components/ui/dropdown-menu.js';
 import React from 'react';
 import { toast } from 'sonner';
 import {
@@ -45,24 +47,11 @@ const LastUsedHeader = () => <Trans>Last used</Trans>;
 const CreatedHeader = () => <Trans>Created</Trans>;
 
 function StatusCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
-    const v = getValue() as string;
-    const variant = v === 'active' ? 'default' : 'destructive';
-    return <Badge variant={variant as any}>{v}</Badge>;
-}
-
-function ExpiresCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
-    const v = getValue() as string | null | undefined;
-    return v ? new Date(v).toLocaleString() : '—';
-}
-
-function LastUsedCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
-    const v = getValue() as string | null | undefined;
-    return v ? new Date(v).toLocaleString() : '—';
-}
-
-function CreatedCell({ getValue }: Readonly<{ getValue: () => unknown }>) {
-    const v = getValue() as string;
-    return new Date(v).toLocaleString();
+    const v = (getValue() as string) || '';
+    const isActive = v === 'ACTIVE';
+    const label = isActive ? 'Active' : 'Revoked';
+    const variant: 'success' | 'destructive' = isActive ? 'success' : 'destructive';
+    return <Badge variant={variant}>{label}</Badge>;
 }
 
 function ConfirmDialogBody({
@@ -128,22 +117,25 @@ function ActionCell({
     onInvalidate: (id: string) => void;
 }>) {
     return (
-        <div className="flex gap-2 justify-end">
-            {canUpdate && row.original.status === 'active' && (
-                <Button variant="outline" size="xs" onClick={() => onRotate(row.original.id)}>
-                    <RotateCcw className="mr-1 h-4 w-4" /> <Trans>Rotate</Trans>
-                </Button>
-            )}
-            {canUpdate && row.original.status === 'active' && (
-                <Button variant="destructive" size="xs" onClick={() => onRevoke(row.original.id)}>
-                    <Trash2 className="mr-1 h-4 w-4" /> <Trans>Revoke</Trans>
-                </Button>
-            )}
-            {canUpdate && (
-                <Button variant="ghost" size="xs" onClick={() => onInvalidate(row.original.id)}>
-                    <RefreshCcw className="mr-1 h-4 w-4" /> <Trans>Invalidate Sessions</Trans>
-                </Button>
-            )}
+        <div className="flex justify-end">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Actions">
+                        <EllipsisIcon />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onSelect={e => e.preventDefault()} disabled={!canUpdate || row.original.status !== 'ACTIVE'} onClick={() => onRotate(row.original.id)}>
+                        <RotateCcw /> <Trans>Rotate Key</Trans>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={e => e.preventDefault()} disabled={!canUpdate} onClick={() => onInvalidate(row.original.id)}>
+                        <Ban /> <Trans>Invalidate Sessions</Trans>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={e => e.preventDefault()} variant="destructive" disabled={!canUpdate || row.original.status !== 'ACTIVE'} onClick={() => onRevoke(row.original.id)}>
+                        <Trash2 /> <Trans>Revoke Key</Trans>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }
@@ -180,18 +172,33 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
     const [expiresValue, setExpiresValue] = React.useState<string | Date | null>(null);
     const [expiresMode, setExpiresMode] = React.useState<'7' | '30' | '60' | '90' | '180' | 'custom' | 'none'>('none');
     const [confirm, setConfirm] = React.useState<ConfirmState>(null);
+    const [sorting, setSorting] = React.useState<{ id: string; desc: boolean }[]>([]);
+    const [filters, setFilters] = React.useState<{ id: string; value: Record<string, any> }[]>([]);
     const [confirmInput, setConfirmInput] = React.useState('');
     React.useEffect(() => {
         setConfirmInput('');
     }, [confirm?.id, confirm?.type]);
 
     const { data, isFetching, refetch } = useQuery({
-        queryKey: ['api-keys', administratorId, page, pageSize],
-        queryFn: () =>
-            api.query(apiKeyListDocument, {
+        queryKey: ['api-keys', administratorId, page, pageSize, JSON.stringify(sorting), JSON.stringify(filters)],
+        queryFn: () => {
+            const sort = {};
+            sorting.forEach(srt => {
+                if (['name','prefix','status','expiresAt','lastUsedAt','createdAt','updatedAt','version'].includes(srt.id)) {
+                    sort[srt.id] = srt.desc ? 'DESC' : 'ASC';
+                }
+            });
+            const filter = {};
+            filters.forEach(f => {
+                if (f.value && Object.keys(f.value).length) {
+                    filter[f.id] = f.value;
+                }
+            });
+            return api.query(apiKeyListDocument, {
                 administratorId,
-                options: { skip: (page - 1) * pageSize, take: pageSize },
-            }),
+                options: { skip: (page - 1) * pageSize, take: pageSize, sort: Object.keys(sort).length ? sort as any : undefined, filter: Object.keys(filter).length ? filter as any : undefined },
+            });
+        },
     });
 
     // Clear inputs when opening the create dialog
@@ -259,16 +266,14 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
     const totalItems = data?.apiKeys.totalItems ?? 0;
 
     const columns: ColumnDef<(typeof items)[number]>[] = [
-        { accessorKey: 'name', header: NameHeader },
-        { accessorKey: 'prefix', header: PrefixHeader },
+        { accessorKey: 'name', header: NameHeader, meta: { fieldInfo: { type: 'String' } } },
+        { accessorKey: 'prefix', header: PrefixHeader, meta: { fieldInfo: { type: 'String' } } },
         {
             accessorKey: 'status',
             header: StatusHeader,
             cell: StatusCell as any,
+            meta: { fieldInfo: { type: 'String' } },
         },
-        { accessorKey: 'expiresAt', header: ExpiresHeader, cell: ExpiresCell as any },
-        { accessorKey: 'lastUsedAt', header: LastUsedHeader, cell: LastUsedCell as any },
-        { accessorKey: 'createdAt', header: CreatedHeader, cell: CreatedCell as any },
         { id: 'actions', header: '', cell: ActionsCellRenderer as any },
     ];
 
@@ -277,18 +282,68 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
         <ApiKeysContext.Provider value={apiKeysCtxValue}>
         <div className="space-y-4">
             {/* Actions moved to PageBlock title via parent. This spacer remains minimal when needed. */}
-            <DataTable
-                columns={columns}
-                data={items}
-                totalItems={totalItems}
-                isLoading={isFetching}
+            <PaginatedListDataTable
+                listQuery={apiKeyListDocument as any}
+                transformVariables={variables => ({
+                    ...(variables as any),
+                    administratorId,
+                })}
+                defaultVisibility={{ id: false, updatedAt: false, version: false, notes: false, createdAt: false } as any}
+                customizeColumns={{
+                    status: {
+                        header: StatusHeader as any,
+                        cell: StatusCell as any,
+                    },
+                }}
+                additionalColumns={{}}
+                rowActions={[
+                    {
+                        label: (
+                            <span className="flex items-center gap-2">
+                                <RotateCcw /> <Trans>Rotate Key</Trans>
+                            </span>
+                        ),
+                        onClick: row => setConfirm({ type: 'rotate', id: (row.original as any).id }),
+                    },
+                    {
+                        label: (
+                            <span className="flex items-center gap-2">
+                                <Ban /> <Trans>Invalidate Sessions</Trans>
+                            </span>
+                        ),
+                        onClick: row => setConfirm({ type: 'invalidate', id: (row.original as any).id }),
+                    },
+                    {
+                        label: (
+                            <span className="flex items-center gap-2">
+                                <Trash2 /> <Trans>Revoke Key</Trans>
+                            </span>
+                        ),
+                        onClick: row => setConfirm({ type: 'revoke', id: (row.original as any).id }),
+                    },
+                ]}
                 page={page}
                 itemsPerPage={pageSize}
+                sorting={sorting as any}
+                columnFilters={filters as any}
                 onPageChange={(_, p, per) => { setPage(p); setPageSize(per); }}
-                onRefresh={() => {
-                    refetch();
-                }}
+                onSortChange={(_, s) => setSorting(s as any)}
+                onFilterChange={(_, f) => setFilters(f as any)}
+                onSearchTermChange={term => ({
+                    _or: [
+                        { name: { contains: term } },
+                        { prefix: { contains: term } },
+                    ],
+                })}
             />
+            <div className="mt-4">
+                <PermissionGuard requires={["CreateServiceAccount"]}>
+                    <Button variant="outline" onClick={() => onCreateDialogOpenChange?.(true)}>
+                        <PlusIcon />
+                        <Trans>Add API key</Trans>
+                    </Button>
+                </PermissionGuard>
+            </div>
 
             {/* Confirm dialog for rotate/revoke/invalidate */}
             <Dialog open={!!confirm} onOpenChange={open => !open && setConfirm(null)}>

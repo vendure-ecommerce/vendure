@@ -116,11 +116,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 : undefined;
         const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
-        let duration = this.sessionDurationInMs;
-        if (authenticationStrategyName === 'apiKey') {
-            const configured = this.configService.authOptions.adminApiKey?.sessionDuration ?? '15m';
-            duration = typeof configured === 'string' ? ms(configured) : configured;
-        }
+        const duration = this.getSessionDurationMsForStrategy(authenticationStrategyName);
         const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
             new AuthenticatedSession({
                 token,
@@ -392,8 +388,11 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      */
     private async updateSessionExpiry(session: Session) {
         const now = new Date().getTime();
-        if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
-            const newExpiryDate = this.getExpiryDate(this.sessionDurationInMs);
+        const duration = this.isAuthenticatedSession(session)
+            ? this.getSessionDurationMsForStrategy(session.authenticationStrategy)
+            : this.sessionDurationInMs;
+        if (session.expires.getTime() - now < duration / 2) {
+            const newExpiryDate = this.getExpiryDate(duration);
             session.expires = newExpiryDate;
             await this.connection.rawConnection
                 .getRepository(Session)
@@ -424,5 +423,17 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
 
     private isAuthenticatedSession(session: Session): session is AuthenticatedSession {
         return session.hasOwnProperty('user');
+    }
+
+    /**
+     * Resolve the configured TTL for a given authentication strategy.
+     * Defaults to global session TTL for non-apiKey strategies.
+     */
+    private getSessionDurationMsForStrategy(authenticationStrategyName?: string): number {
+        if (authenticationStrategyName === 'apiKey') {
+            const configured = this.configService.authOptions.adminApiKey?.sessionDuration ?? '15m';
+            return typeof configured === 'string' ? ms(configured) : configured;
+        }
+        return this.sessionDurationInMs;
     }
 }

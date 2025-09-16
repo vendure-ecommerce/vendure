@@ -39,8 +39,7 @@ export class ApiKeyAdminAuthStrategy implements AuthenticationStrategy<{ key: st
         // Mark the key used asynchronously (best effort)
         void this.apiKeyService.markUsed(ctx, result.apiKey.id);
         // Attach the apiKey id to the context so the session can be linked post-creation.
-        // We avoid changing public method signatures.
-        (ctx as any).__apiKeyId = result.apiKey.id;
+        ctx.setApiKeyId(result.apiKey.id);
         return result.administrator.user;
     }
 }

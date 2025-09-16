@@ -144,7 +144,13 @@ function ServiceAccountDetailPage() {
                             control={form.control}
                             name="emailAddress"
                             label={<Trans>Identifier</Trans>}
-                            render={({ field }) => <Input placeholder="e.g. svc-orders-sync" {...field} />}
+                            render={({ field }) => (
+                                <Input
+                                    placeholder="e.g. svc-orders-sync"
+                                    disabled={!creatingNewEntity}
+                                    {...field}
+                                />
+                            )}
                         />
                     </div>
                 </PageBlock>
@@ -159,16 +165,7 @@ function ServiceAccountDetailPage() {
                     <PageBlock
                         column="main"
                         blockId="api-keys"
-                        title={
-                            <div className="flex items-center justify-between w-full">
-                                <span><Trans>API Keys</Trans></span>
-                                <PermissionGuard requires={["CreateServiceAccount"]}>
-                                    <Button onClick={() => setCreateKeyOpen(true)}>
-                                        <Trans>New API Key</Trans>
-                                    </Button>
-                                </PermissionGuard>
-                            </div>
-                        }
+                        title={<span><Trans>API Keys</Trans></span>}
                     >
                         <ApiKeysPanel
                             administratorId={entity.id}

@@ -73,7 +73,6 @@ function ServiceAccountListPage() {
             }}
             customizeColumns={{
                 emailAddress: {
-                    id: 'Identifier',
                     header: IdentifierHeader,
                     cell: IdentifierCell,
                 },

@@ -108,7 +108,7 @@ export class AuthService {
         );
         // Link API key to session for targeted invalidation when applicable.
         // @since 3.5.0
-        const apiKeyId: string | undefined = (ctx as any).__apiKeyId;
+        const apiKeyId: string | undefined = ctx.apiKeyId as any;
         if (apiKeyId) {
             await this.connection
                 .getRepository(ctx, AuthenticatedSession)

@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 import { ApiKey } from '../../../entity/api-key/api-key.entity';
@@ -58,5 +58,10 @@ export class ApiKeyResolver {
         // Return number invalidated as an Int
         const count = await this.apiKeyService.invalidateSessionsForKey(ctx, id);
         return count;
+    }
+
+    @ResolveField()
+    status(@Parent() apiKey: ApiKey): 'ACTIVE' | 'REVOKED' {
+        return apiKey.status === 'active' ? 'ACTIVE' : 'REVOKED';
     }
 }

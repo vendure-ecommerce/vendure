@@ -26,15 +26,16 @@ describe('ApiKeyAdminAuthStrategy', () => {
         expect(res).toBe(false);
     });
 
-    it('authenticate sets ctx.__apiKeyId and returns user on success', async () => {
+    it('authenticate sets ctx.apiKeyId and returns user on success', async () => {
         const user = { id: 'u1' } as any;
         apiKeyService.validateRawKey.mockResolvedValue({
             administrator: { user },
             apiKey: { id: 'k1' },
         });
-        const ctx: any = {};
+        const { RequestContext } = await import('../../api/common/request-context');
+        const ctx = RequestContext.empty();
         const res = await strategy.authenticate(ctx, { key: 'vk_test_abc' });
         expect(res).toBe(user);
-        expect(ctx.__apiKeyId).toBe('k1');
+        expect(ctx.apiKeyId).toBe('k1');
     });
 });
