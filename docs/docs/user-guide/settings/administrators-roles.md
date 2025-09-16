@@ -32,3 +32,13 @@ For each individual that needs to log in to the Admin UI, you should create a ne
 Apart from filling in their details and selecting a strong password, you then need to assign at least one role. Roles "add together", meaning that when more than one role is assigned, the combined set of permissions of all assigned roles is granted to that administrator. 
 
 Thus, it is possible to create a set of specific roles "Inventory Manager", "Order Manager", "Customer Services", "Marketing Manager", and _compose_ them together as needed.
+
+### Service Accounts
+
+Since v3.5.0
+
+Service accounts are administrator users intended for non-interactive access via Admin API keys.
+
+- Mark an administrator as a service account by enabling the “Service account” option (maps to `isServiceAccount`).
+- The Administrators list hides service accounts by default to reduce clutter. SuperAdmins can include them by adding a filter for `isServiceAccount = true`.
+- Assign the minimal set of roles needed for the service account’s tasks. Keys minted for the account inherit its roles and channel permissions.
