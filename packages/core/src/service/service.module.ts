@@ -35,6 +35,7 @@ import { TranslatorService } from './helpers/translator/translator.service';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
 import { InitializerService } from './initializer.service';
 import { AdministratorService } from './services/administrator.service';
+import { ApiKeyService } from './services/api-key.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
 import { ChannelService } from './services/channel.service';
@@ -74,6 +75,7 @@ const services = [
     AdministratorService,
     AssetService,
     AuthService,
+    ApiKeyService,
     ChannelService,
     CollectionService,
     CountryService,

@@ -32,7 +32,21 @@ export class AdministratorResolver {
         @Args() args: QueryAdministratorsArgs,
         @Relations(Administrator) relations: RelationPaths<Administrator>,
     ): Promise<PaginatedList<Administrator>> {
-        return this.administratorService.findAll(ctx, args.options || undefined, relations);
+        // Default-hide service accounts unless explicitly included by SuperAdmin.
+        // @since 3.5.0
+        const options = args.options ?? ({} as any);
+        const filter = options.filter ?? {};
+        const isSuperAdmin = ctx.userHasPermissions([Permission.SuperAdmin]);
+        const includeRequested =
+            filter?.isServiceAccount?.eq === true ||
+            (Array.isArray(filter?.isServiceAccount?.in) && filter.isServiceAccount.in.includes(true));
+
+        if (!isSuperAdmin) {
+            options.filter = { ...filter, isServiceAccount: { eq: false } };
+        } else if (!includeRequested) {
+            options.filter = { ...filter, isServiceAccount: { eq: false, ...filter.isServiceAccount } };
+        }
+        return this.administratorService.findAll(ctx, options || undefined, relations);
     }
 
     @Query()

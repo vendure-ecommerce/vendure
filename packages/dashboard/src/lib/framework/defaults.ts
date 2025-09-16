@@ -174,6 +174,12 @@ export function registerDefaults() {
                         order: 400,
                     },
                     {
+                        id: 'service-accounts',
+                        title: 'Service Accounts',
+                        url: '/service-accounts',
+                        order: 450,
+                    },
+                    {
                         id: 'roles',
                         title: 'Roles',
                         url: '/roles',

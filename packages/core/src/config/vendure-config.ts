@@ -410,6 +410,36 @@ export interface AuthOptions {
     sessionDuration?: string | number;
     /**
      * @description
+     * Options for Admin API key authentication strategy.
+     *
+     * @since 3.5.0
+     */
+    adminApiKey?: {
+        /**
+         * @description
+         * Controls the prefix used when generating Admin API keys. Prefixes help identify the key type at a glance
+         * and are stored alongside the hashed secret to optimize lookups.
+         *
+         * - production: `vk_live_` (default)
+         * - non-production: `vk_test_` (default)
+         *
+         * You may override this with a single string (used for all environments), or provide distinct `live` and `test` prefixes.
+         *
+         * @default { live: 'vk_live_', test: 'vk_test_' }
+         */
+        prefix?: string | { live: string; test: string };
+        /**
+         * @description
+         * Session duration specifically for sessions created via the Admin API key strategy.
+         * Use a shorter TTL to limit the lifetime of non-interactive sessions.
+         * Accepts milliseconds as number or timespan string per zeit/ms (e.g. `'15m'`).
+         *
+         * @default '15m'
+         */
+        sessionDuration?: string | number;
+    };
+    /**
+     * @description
      * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
      * the underlying cache strategy defined in the {@link SystemOptions}`.cacheStrategy`.
      *

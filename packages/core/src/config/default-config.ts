@@ -103,6 +103,12 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
+        // Admin API key options
+        // @since 3.5.0
+        adminApiKey: {
+            sessionDuration: '15m',
+            prefix: { live: 'vk_live_', test: 'vk_test_' },
+        },
         sessionCacheStrategy: new DefaultSessionCacheStrategy(),
         sessionCacheTTL: 300,
         requireVerification: true,

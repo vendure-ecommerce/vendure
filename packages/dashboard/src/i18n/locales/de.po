@@ -1577,3 +1577,92 @@ msgstr ""
 #: src/app/routes/_authenticated/_zones/zones.tsx:14
 msgid "Zones"
 msgstr ""
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts.tsx:1
+msgid "Service Accounts"
+msgstr "Dienstkonten"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Roles"
+msgstr "Rollen"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Service Account"
+msgstr "Dienstkonto"
+
+msgid "Identifier"
+msgstr "Kennung"
+
+msgid "New Service Account"
+msgstr "Neues Dienstkonto"
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts_.$id.tsx
+msgid "Account type"
+msgstr "Kontotyp"
+
+msgid "Service accounts cannot sign in with a password."
+msgstr "Dienstkonten können sich nicht mit einem Passwort anmelden."
+
+#: API Keys panel
+msgid "API Keys"
+msgstr "API-Schlüssel"
+
+msgid "New API Key"
+msgstr "Neuer API-Schlüssel"
+
+msgid "Prefix"
+msgstr "Präfix"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Expires"
+msgstr "Läuft ab"
+
+msgid "Last used"
+msgstr "Zuletzt verwendet"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "Rotate"
+msgstr "Rotieren"
+
+msgid "Revoke"
+msgstr "Widerrufen"
+
+msgid "Invalidate Sessions"
+msgstr "Sitzungen ungültig machen"
+
+msgid "Create API Key"
+msgstr "API-Schlüssel erstellen"
+
+msgid "Generate a new Admin API key. The raw secret will be shown only once."
+msgstr "Einen neuen Admin-API-Schlüssel erzeugen. Das Geheimnis wird nur einmal angezeigt."
+
+msgid "Expires at (optional)"
+msgstr "Ablaufdatum (optional)"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Create"
+msgstr "Erstellen"
+
+msgid "API key created"
+msgstr "API-Schlüssel erstellt"
+
+msgid "Copy and store this secret now. It cannot be shown again."
+msgstr "Kopieren und speichern Sie dieses Geheimnis jetzt. Es kann nicht erneut angezeigt werden."
+
+msgid "Copy"
+msgstr "Kopieren"
+
+msgid "I’ve saved this key"
+msgstr "Ich habe diesen Schlüssel gespeichert"
+msgid "Clear"
+msgstr "Löschen"

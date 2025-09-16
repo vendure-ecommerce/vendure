@@ -106,6 +106,16 @@ export class AuthService {
             user,
             authenticationStrategyName,
         );
+        // Link API key to session for targeted invalidation when applicable.
+        // @since 3.5.0
+        const apiKeyId: string | undefined = ctx.apiKeyId as any;
+        if (apiKeyId) {
+            await this.connection
+                .getRepository(ctx, AuthenticatedSession)
+                .update({ id: session.id }, { apiKeyId });
+            // Also update in-memory object to keep serializeSession consistent
+            (session as any).apiKeyId = apiKeyId;
+        }
         await this.eventBus.publish(new LoginEvent(ctx, user));
         return session;
     }

@@ -11,6 +11,8 @@ import {
     LogLevel,
     SettingsStoreScopes,
     VendureConfig,
+    NativeAuthenticationStrategy,
+    ApiKeyAdminAuthStrategy,
 } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -20,7 +22,8 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
-import { LongRunningTaskPlugin } from './example-plugins/long-running-task-plugin/src/long-running-task';
+// NOTE: The long-running task example plugin is not present in this checkout.
+// import { LongRunningTaskPlugin } from './example-plugins/long-running-task-plugin/src/long-running-task';
 
 const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
@@ -53,6 +56,10 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
+        adminAuthenticationStrategy: [
+            new NativeAuthenticationStrategy(),
+            new ApiKeyAdminAuthStrategy(),
+        ],
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -143,7 +150,7 @@ export const devConfig: VendureConfig = {
             route: 'dashboard',
             appDir: path.join(__dirname, './dist'),
         }),
-        LongRunningTaskPlugin.init(),
+        // LongRunningTaskPlugin.init(),
     ],
 };
 
