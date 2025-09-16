@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$i
         queryDocument: promotionDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/promotions', label: 'Promotions' },
+                { path: '/promotions', label: <Trans>Promotions</Trans> },
                 isNew ? <Trans>New promotion</Trans> : entity?.name,
             ];
         },
@@ -99,19 +99,19 @@ function PromotionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Promotion') {
-                toast.success(i18n.t('Successfully updated promotion'));
+                toast.success(i18n.t(creatingNewEntity ? 'Successfully created promotion' : 'Successfully updated promotion'));
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t('Failed to update promotion'), {
+                toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update promotion'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -127,7 +127,7 @@ function PromotionDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

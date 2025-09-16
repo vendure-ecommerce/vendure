@@ -1,10 +1,9 @@
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Allows you to define custom alerts that can be displayed in the dashboard.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage Alerts
  * @since 3.3.0
  */
 export interface DashboardAlertDefinition<TResponse = any> {

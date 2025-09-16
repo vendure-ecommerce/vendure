@@ -1,3 +1,55 @@
+## <small>3.4.2 (2025-09-11)</small>
+
+
+#### Fixes
+
+* **core** Correctly implement SettingsStore validation & argument order (#3808) ([d8cdd62](https://github.com/vendure-ecommerce/vendure/commit/d8cdd62)), closes [#3808](https://github.com/vendure-ecommerce/vendure/issues/3808)
+* **core** Emit `CollectionEvent` after moving a collection (#3801) ([d80e28f](https://github.com/vendure-ecommerce/vendure/commit/d80e28f)), closes [#3801](https://github.com/vendure-ecommerce/vendure/issues/3801)
+* **core** Fix logic for calculating interval ([394fb05](https://github.com/vendure-ecommerce/vendure/commit/394fb05))
+* **core** Handle foreign key violations during order merge (#3795) ([c00a044](https://github.com/vendure-ecommerce/vendure/commit/c00a044)), closes [#3795](https://github.com/vendure-ecommerce/vendure/issues/3795)
+* **core** Log warning when attempting to persist invalid custom fields (#3793) ([eefbd9c](https://github.com/vendure-ecommerce/vendure/commit/eefbd9c)), closes [#3793](https://github.com/vendure-ecommerce/vendure/issues/3793)
+* **core** Handle stale locks on scheduled tasks (#3708) ([4492850](https://github.com/vendure-ecommerce/vendure/commit/4492850)), closes [#3708](https://github.com/vendure-ecommerce/vendure/issues/3708)
+* **create** Fix resolving path in repos using hoisted node_modules (#3802) ([fd971a5](https://github.com/vendure-ecommerce/vendure/commit/fd971a5)), closes [#3802](https://github.com/vendure-ecommerce/vendure/issues/3802)
+* **dashboard** Add initial value to reduce call ([9261f03](https://github.com/vendure-ecommerce/vendure/commit/9261f03))
+* **dashboard** Allow column selection on recent orders ([182c0b7](https://github.com/vendure-ecommerce/vendure/commit/182c0b7))
+* **dashboard** Derive breadcrumbs from path/basepath to match sidebar (#3784) ([562cc54](https://github.com/vendure-ecommerce/vendure/commit/562cc54)), closes [#3784](https://github.com/vendure-ecommerce/vendure/issues/3784)
+* **dashboard** Ensure language is valid when switching channel ([97d9a9d](https://github.com/vendure-ecommerce/vendure/commit/97d9a9d)), closes [#3780](https://github.com/vendure-ecommerce/vendure/issues/3780)
+* **dashboard** Ensure language is valid when switching channel ([7473956](https://github.com/vendure-ecommerce/vendure/commit/7473956))
+* **dashboard** Fix api 'auto' options (#3807) ([b597dfc](https://github.com/vendure-ecommerce/vendure/commit/b597dfc)), closes [#3807](https://github.com/vendure-ecommerce/vendure/issues/3807)
+* **dashboard** Fix change detection in RichTextInput ([1c18b41](https://github.com/vendure-ecommerce/vendure/commit/1c18b41))
+* **dashboard** Fix checkboxes on variant creation ([4b69839](https://github.com/vendure-ecommerce/vendure/commit/4b69839))
+* **dashboard** Fix data table date filter ([225b774](https://github.com/vendure-ecommerce/vendure/commit/225b774))
+* **dashboard** Fix filtering in latest orders widget ([b8ac456](https://github.com/vendure-ecommerce/vendure/commit/b8ac456))
+* **dashboard** Fix multi select on asset gallery ([5826c7f](https://github.com/vendure-ecommerce/vendure/commit/5826c7f))
+* **dashboard** Fix navigation to Asset detail from gallery dialog ([846ab24](https://github.com/vendure-ecommerce/vendure/commit/846ab24))
+* **dashboard** Fix scroll behaviour on asset picker dialog ([363043d](https://github.com/vendure-ecommerce/vendure/commit/363043d))
+* **dashboard** Improve facet list table ([b76d1dc](https://github.com/vendure-ecommerce/vendure/commit/b76d1dc))
+* **dashboard** Improve layout & rendering of order summary widget ([cf72c72](https://github.com/vendure-ecommerce/vendure/commit/cf72c72))
+* **dashboard** Improve styling of metrics widget, add refresh ([e8f8d99](https://github.com/vendure-ecommerce/vendure/commit/e8f8d99))
+* **dashboard** Make long table column dropdowns scrollable ([f878e24](https://github.com/vendure-ecommerce/vendure/commit/f878e24))
+* **dashboard** Show “Create” for new entities, “Update” for edits (#3805) ([fdece02](https://github.com/vendure-ecommerce/vendure/commit/fdece02)), closes [#3805](https://github.com/vendure-ecommerce/vendure/issues/3805)
+* **dashboard** Update channel switcher when Channel added/updated ([1cd7652](https://github.com/vendure-ecommerce/vendure/commit/1cd7652))
+
+Note: In this release, the `SettingsStoreService` methods have been revised to put the
+`ctx` argument in the first position, as is standard across Vendure APIs. Existing code
+with the ctx last will still work, but you are advised to update it.
+
+```diff
+- SettingsStoreService.get<T>(key, ctx)       
+- SettingsStoreService.getMany(keys, ctx)     
+- SettingsStoreService.set<T>(key, value, ctx)
+- SettingsStoreService.setMany(values, ctx)
+
++ SettingsStoreService.get<T>(ctx, key)       
++ SettingsStoreService.getMany(ctx, keys)     
++ SettingsStoreService.set<T>(ctx, key, value)
++ SettingsStoreService.setMany(ctx, values)   
+```
+
+#### Features
+
+* **dashboard** Add manage variants screen ([cdfd4ca](https://github.com/vendure-ecommerce/vendure/commit/cdfd4ca))
+
 ## <small>3.4.1 (2025-08-25)</small>
 
 

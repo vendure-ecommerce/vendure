@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$facetId/v
         queryDocument: facetValueDetailDocument,
         breadcrumb(isNew, entity) {
             const facetName = entity?.facet.name ?? 'Facet Value';
-            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: 'Facets' }];
+            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: <Trans>Facets</Trans> }];
             if (isNew) {
                 breadcrumb.push(<Trans>New facet value</Trans>);
             } else if (entity) {
@@ -81,7 +81,7 @@ function FacetValueDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet value'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created facet value' : 'Successfully updated facet value'));
             resetForm();
             const created = Array.isArray(data) ? data[0] : data;
             if (creatingNewEntity && created) {
@@ -89,7 +89,7 @@ function FacetValueDetailPage() {
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet value'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create facet value' : 'Failed to update facet value'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -107,7 +107,7 @@ function FacetValueDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

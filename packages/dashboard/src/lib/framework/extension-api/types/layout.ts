@@ -2,17 +2,16 @@ import type React from 'react';
 
 import { PageContextValue } from '../../layout-engine/page-provider.js';
 
-export interface ActionBarButtonState {
-    disabled: boolean;
-    visible: boolean;
-}
-
 /**
  * @description
- * Allows you to define custom action bar items for any page in the dashboard.
+ * Allows you to define custom action bar items for any page in the dashboard, which is the
+ * top bar that normally contains the main call-to-action buttons such as "update" or "create".
  *
- * @docsCategory extensions
- * @docsPage Layout
+ * This API also allows you to specify dropdown menu items, which when defined, will appear in
+ * a context menu to the very right of the ActionBar.
+ *
+ * @docsCategory extensions-api
+ * @docsPage ActionBar
  * @since 3.3.0
  */
 export interface DashboardActionBarItem {
@@ -23,7 +22,8 @@ export interface DashboardActionBarItem {
     pageId: string;
     /**
      * @description
-     * A React component that will be rendered in the action bar.
+     * A React component that will be rendered in the action bar. Typically, you would use
+     * the default Shadcn `<Button>` component.
      */
     component: React.FunctionComponent<{ context: PageContextValue }>;
     /**
@@ -54,6 +54,16 @@ export interface DashboardActionBarItem {
     requiresPermission?: string | string[];
 }
 
+/**
+ * @description
+ * The relative position of a PageBlock. This is determined by finding an existing
+ * block, and then specifying whether your custom block should come before, after,
+ * or completely replace that block.
+ *
+ * @docsCategory extensions-api
+ * @docsPage page-blocks
+ * @since 3.3.0
+ */
 export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | 'replace' };
 
 /**
@@ -62,8 +72,8 @@ export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | '
  * "developer mode" in the dashboard user menu (bottom left corner) and then
  * clicking the `< />` icon when hovering over a page block.
  *
- * @docsCategory extensions
- * @docsPage Layout
+ * @docsCategory extensions-api
+ * @docsPage page-blocks
  * @since 3.3.0
  */
 export type PageBlockLocation = {
@@ -77,8 +87,9 @@ export type PageBlockLocation = {
  * This allows you to insert a custom component into a specific location
  * on any page in the dashboard.
  *
- * @docsCategory extensions
- * @docsPage Layout
+ * @docsCategory extensions-api
+ * @docsPage page-blocks
+ * @docsWeight 0
  * @since 3.3.0
  */
 export interface DashboardPageBlockDefinition {

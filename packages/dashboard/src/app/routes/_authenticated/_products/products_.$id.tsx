@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id')(
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/products', label: 'Products' },
+                { path: '/products', label: <Trans>Products</Trans> },
                 isNew ? <Trans>New product</Trans> : entity?.name,
             ];
         },
@@ -81,14 +81,14 @@ function ProductDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated product'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product' : 'Successfully updated product'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update product'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product' : 'Failed to update product'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -104,7 +104,7 @@ function ProductDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

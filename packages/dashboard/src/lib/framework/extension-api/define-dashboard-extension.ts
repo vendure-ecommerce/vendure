@@ -27,12 +27,34 @@ export function executeDashboardExtensionCallbacks() {
 
 /**
  * @description
- * **Status: Developer Preview**
+ * The main entry point for extensions to the React-based dashboard. Every dashboard extension
+ * must contain a call to this function, usually in the entry point file that is referenced by
+ * the `dashboard` property of the plugin decorator.
  *
- * The main entry point for extensions to the React-based dashboard.
+ * Every type of customisation of the dashboard can be defined here, including:
+ *
+ * - Navigation (nav sections and routes)
+ * - Layout (action bar items and page blocks)
+ * - Widgets
+ * - Form components (custom form components, input components, and display components)
+ * - Data tables
+ * - Detail forms
+ * - Login
+ *
+ * @example
+ * ```tsx
+ * defineDashboardExtension({
+ *  navSections: [],
+ *  routes: [],
+ *  pageBlocks: [],
+ *  actionBarItems: [],
+ * });
+ * ```
  *
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage defineDashboardExtension
+ * @docsWeight 0
  * @since 3.3.0
  */
 export function defineDashboardExtension(extension: DashboardExtension) {

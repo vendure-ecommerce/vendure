@@ -85,8 +85,9 @@ export type DateTimeStructField = Extract<StructField, { type: 'datetime' }>;
  * }
  * ```
  *
- * @docsCategory forms
- * @docsPage DashboardFormComponent
+ * @docsCategory extensions-api
+ * @docsPage FormComponents
+ * @since 3.4.0
  */
 export type DashboardFormComponentProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -116,8 +117,9 @@ export type DashboardFormComponentProps<
  * // highlight-end
  * ```
  *
- * @docsCategory forms
- * @docsPage DashboardFormComponent
+ * @docsCategory extensions-api
+ * @docsPage FormComponents
+ * @since 3.4.0
  */
 export type DashboardFormComponentMetadata = {
     /**
@@ -127,6 +129,10 @@ export type DashboardFormComponentMetadata = {
      * handle both lists and single values.
      */
     isListInput?: boolean | 'dynamic';
+    /**
+     * @description
+     * TODO: not currently implemented
+     */
     isFullWidth?: boolean;
 };
 
@@ -154,9 +160,9 @@ export type DashboardFormComponentMetadata = {
  * };
  * ```
  *
- * @docsCategory forms
- * @docsPage DashboardFormComponent
- * @docsWeight 0
+ * @docsCategory extensions-api
+ * @docsPage FormComponents
+ * @since 3.4.0
  */
 export type DashboardFormComponent = React.ComponentType<DashboardFormComponentProps> & {
     metadata?: DashboardFormComponentMetadata;

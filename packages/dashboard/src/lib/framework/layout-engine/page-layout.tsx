@@ -20,8 +20,21 @@ import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/pag
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
+/**
+ * @description
+ * The props used to configure the {@link Page} component.
+ *
+ * @docsCategory page-layout
+ * @docsPage Page
+ * @since 3.3.0
+ */
 export interface PageProps extends ComponentProps<'div'> {
+    /**
+     * @description
+     * A string identifier for the page, e.g. "product-list", "review-detail", etc.
+     */
     pageId?: string;
+
     entity?: any;
     form?: UseFormReturn<any>;
     submitHandler?: any;
@@ -29,8 +42,6 @@ export interface PageProps extends ComponentProps<'div'> {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * This component should be used to wrap _all_ pages in the dashboard. It provides
  * a consistent layout as well as a context for the slot-based PageBlock system.
  *
@@ -39,8 +50,33 @@ export interface PageProps extends ComponentProps<'div'> {
  *  - {@link PageTitle}
  *  - {@link PageActionBar}
  *  - {@link PageLayout}
+ * 
+ * @example
+ * ```tsx
+ * import { Page, PageTitle, PageActionBar, PageLayout, PageBlock, Button } from '\@vendure/dashboard';
+ * 
+ * const pageId = 'my-page';
+ * 
+ * export function MyPage() {
+ *  return (
+ *    <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
+ *      <PageTitle>My Page</PageTitle>
+ *      <PageActionBar>
+ *        <PageActionBarRight>
+ *          <Button>Save</Button>
+ *        </PageActionBarRight>
+ *      </PageActionBar>
+ *      <PageLayout>
+ *        <PageBlock column="main" blockId="my-block">
+ *          <div>My Block</div>
+ *        </PageBlock>
+ *      </PageLayout>
+ *    </Page>
+ *  )
+ * }
+ * ```
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage Page
  * @docsWeight 0
  * @since 3.3.0
@@ -133,7 +169,7 @@ export function PageContentWithOptionalForm({
  * @description
  * **Status: Developer Preview**
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageLayout
  * @since 3.3.0
  */
@@ -156,13 +192,11 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * This component governs the layout of the contents of a {@link Page} component.
  * It should contain all the {@link PageBlock} components that are to be displayed on the page.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageLayout
  * @docsWeight 0
  * @since 3.3.0
@@ -247,11 +281,9 @@ export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNod
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * A component for displaying the title of a page. This should be used inside the {@link Page} component.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageTitle
  * @since 3.3.0
  */
@@ -260,14 +292,12 @@ export function PageTitle({ children }: Readonly<{ children: React.ReactNode }>)
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying the main actions for a page. This should be used inside the {@link Page} component.
  * It should be used in conjunction with the {@link PageActionBarLeft} and {@link PageActionBarRight} components
  * as direct children.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @docsWeight 0
  * @since 3.3.0
@@ -288,9 +318,9 @@ export function PageActionBar({ children }: Readonly<{ children: React.ReactNode
 
 /**
  * @description
- * **Status: Developer Preview**
- *
- * @docsCategory components
+ * The PageActionBarLeft component should be used to display the left content of the action bar.
+ * 
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
  */
@@ -302,9 +332,9 @@ type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
 
 /**
  * @description
- * **Status: Developer Preview**
+ * The PageActionBarRight component should be used to display the right content of the action bar.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
  */
@@ -375,31 +405,59 @@ function PageActionBarDropdown({
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Props used to configure the {@link PageBlock} component.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @since 3.3.0
  */
 export type PageBlockProps = {
+    /**
+     * @description
+     * The content of the block.
+     */
     children?: React.ReactNode;
-    /** Which column this block should appear in */
+    /**
+     * @description
+     * Which column this block should appear in
+     */
     column: 'main' | 'side';
+    /**
+     * @description
+     * The ID of the block, e.g. "gift-cards" or "related-products".
+     */
     blockId?: string;
+    /**
+     * @description
+     * The title of the block, e.g. "Gift Cards" or "Related Products".
+     */
     title?: React.ReactNode | string;
+    /**
+     * @description
+     * An optional description of the block.
+     */
     description?: React.ReactNode | string;
+    /**
+     * @description
+     * An optional set of CSS classes to apply to the block.
+     */
     className?: string;
 };
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying a block of content on a page. This should be used inside the {@link PageLayout} component.
  * It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
  * to identify the block.
+ * 
+ * @example
+ * ```tsx
+ * <PageBlock column="main" blockId="my-block">
+ *  <div>My Block</div>
+ * </PageBlock>
+ * ```
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @docsWeight 0
  * @since 3.3.0
@@ -465,12 +523,17 @@ export function FullWidthPageBlock({
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying an auto-generated form for custom fields on a page.
+ * This is a special form of {@link PageBlock} that automatically generates
+ * a form corresponding to the custom fields for the given entity type.
  *
- * @docsCategory components
+ * @example
+ * ```tsx
+ * <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
+ * ```
+ *
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @since 3.3.0
  */

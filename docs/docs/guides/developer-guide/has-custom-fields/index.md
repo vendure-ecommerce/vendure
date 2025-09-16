@@ -83,7 +83,17 @@ input UpdateProductReviewInput {
 Notice the lack of manually defining `customFields` on the types, this is because Vendure extends the types automatically once your entity implements `HasCustomFields`.
 
 :::important Naming convention
-In order for Vendure to find the correct input types to extend to, they must conform to the naming convention of `Create<EntityName>Input` and `Update<EntityName>Input`.
+In order for Vendure to find the correct input types to extend to, they must conform to the naming convention of:
+
+- `Create<EntityName>Input`
+- `Update<EntityName>Input`
+
+And if your entity is [supporting translations](/guides/developer-guide/translatable):
+
+- `<EntityName>Translation`
+- `<EntityName>TranslationInput`
+- `Create<EntityName>TranslationInput`
+- `Update<EntityName>TranslationInput`
 :::
 
 Following this caveat, codegen will now produce correct types including `customFields`-fields like so:

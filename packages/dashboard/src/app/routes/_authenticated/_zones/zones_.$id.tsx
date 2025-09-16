@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_authenticated/_zones/zones_/$id')({
         pageId,
         queryDocument: zoneDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/zones', label: 'Zones' }, isNew ? <Trans>New zone</Trans> : entity?.name];
+            return [{ path: '/zones', label: <Trans>Zones</Trans> }, isNew ? <Trans>New zone</Trans> : entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -56,14 +56,14 @@ function ZoneDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated zone'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created zone' : 'Successfully updated zone'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update zone'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create zone' : 'Failed to update zone'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -79,7 +79,7 @@ function ZoneDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

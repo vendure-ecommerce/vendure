@@ -1,5 +1,5 @@
 import { Money } from '@/vdb/components/data-display/money.js';
-import { DataTableCellComponent } from '@/vdb/components/shared/table-cell/table-cell-types.js';
+import { DataTableCellComponent } from '@/vdb/components/data-table/types.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Link } from '@tanstack/react-router';

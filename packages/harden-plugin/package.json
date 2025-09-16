@@ -1,6 +1,6 @@
 {
     "name": "@vendure/harden-plugin",
-    "version": "3.4.1",
+    "version": "3.4.2",
     "license": "GPL-3.0-or-later",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -25,7 +25,7 @@
         "graphql-query-complexity": "^0.12.0"
     },
     "devDependencies": {
-        "@vendure/common": "3.4.1",
-        "@vendure/core": "3.4.1"
+        "@vendure/common": "3.4.2",
+        "@vendure/core": "3.4.2"
     }
 }

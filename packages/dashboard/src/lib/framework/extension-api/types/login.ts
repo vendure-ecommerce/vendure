@@ -4,7 +4,7 @@ import type React from 'react';
  * @description
  * Defines a custom logo component for the login page.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Login
  * @since 3.4.0
  */
@@ -20,7 +20,7 @@ export interface LoginLogoExtension {
  * @description
  * Defines content to display before the login form.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Login
  * @since 3.4.0
  */
@@ -36,7 +36,7 @@ export interface LoginBeforeFormExtension {
  * @description
  * Defines content to display after the login form.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Login
  * @since 3.4.0
  */
@@ -52,7 +52,7 @@ export interface LoginAfterFormExtension {
  * @description
  * Defines a custom login image component that replaces the default image panel.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Login
  * @since 3.4.0
  */
@@ -68,8 +68,9 @@ export interface LoginImageExtension {
  * @description
  * Defines all available login page extensions.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage Login
+ * @docsWeight 0
  * @since 3.4.0
  */
 export interface DashboardLoginExtensions {

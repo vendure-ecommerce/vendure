@@ -6,7 +6,7 @@ import { DocumentNode } from 'graphql';
  * Allows you to define custom display components for specific columns in data tables.
  * The pageId is already defined in the data table extension, so only the column name is needed.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage DataTable
  * @since 3.4.0
  */
@@ -61,7 +61,7 @@ export type BulkAction = {
  * @description
  * This allows you to customize aspects of existing data tables in the dashboard.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage DataTable
  * @since 3.4.0
  */

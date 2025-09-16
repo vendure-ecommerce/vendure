@@ -24,6 +24,7 @@ import {
     installPackages,
     isSafeToCreateProjectIn,
     isServerPortInUse,
+    resolvePackageRootDir,
     scaffoldAlreadyExists,
     startPostgresDatabase,
 } from './helpers';
@@ -69,7 +70,10 @@ void createVendureApp(
     options.useNpm,
     options.verbose ? 'verbose' : options.logLevel || 'info',
     options.ci,
-);
+).catch(err => {
+    log(err);
+    process.exit(1);
+});
 
 export async function createVendureApp(
     name: string | undefined,
@@ -294,13 +298,15 @@ export async function createVendureApp(
 
     // register ts-node so that the config file can be loaded
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(path.join(root, 'node_modules/ts-node')).register();
+    require(resolvePackageRootDir('ts-node')).register();
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
-        const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
+        const { populate } = await import(
+            path.join(resolvePackageRootDir('@vendure/core'), 'cli', 'populate')
+        );
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
-            path.join(root, 'node_modules/@vendure/core/dist/index')
+            path.join(resolvePackageRootDir('@vendure/core'), 'dist', 'index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -493,10 +499,13 @@ async function createDirectoryStructure(root: string) {
  * Copy the email templates into the app
  */
 async function copyEmailTemplates(root: string) {
-    const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
+    const emailPackageDirname = resolvePackageRootDir('@vendure/email-plugin');
+    const templateDir = path.join(emailPackageDirname, 'templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
         log(pc.red('Failed to copy email templates.'));
+        log(err);
+        process.exit(0);
     }
 }

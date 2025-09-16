@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
         queryDocument: paymentMethodDetailDocument,
         breadcrumb(_isNew, entity) {
             return [
-                { path: '/payment-methods', label: 'Payment methods' },
+                { path: '/payment-methods', label: <Trans>Payment Methods</Trans> },
                 _isNew ? <Trans>New payment method</Trans> : entity?.name,
             ];
         },
@@ -95,14 +95,14 @@ function PaymentMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated payment method'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created payment method' : 'Successfully updated payment method'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update payment method'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create payment method' : 'Failed to update payment method'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -120,7 +120,7 @@ function PaymentMethodDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

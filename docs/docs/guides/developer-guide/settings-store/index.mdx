@@ -12,8 +12,8 @@ The Settings Store is a flexible system for storing configuration data with supp
 and validation. It allows plugins and the core system to store and retrieve arbitrary JSON data with
 fine-grained control over access and isolation.
 
-It provides a robust, secure, and flexible system for managing configuration data in your Vendure 
-application. Use it to store user preferences, plugin settings, feature flags, and any other 
+It provides a robust, secure, and flexible system for managing configuration data in your Vendure
+application. Use it to store user preferences, plugin settings, feature flags, and any other
 settings data your application needs.
 
 
@@ -221,7 +221,7 @@ mutation SetSettingsStoreValues($inputs: [SettingsStoreInput!]!) {
 ```
 
 :::note
-By default, the Settings Store is not exposed in the Shop API. 
+By default, the Settings Store is not exposed in the Shop API.
 However, you can expose this functionality via a custom mutations & queries
 that internally use the `SettingsStoreService` (see next section).
 :::
@@ -310,12 +310,12 @@ For programmatic access within plugins or services, use the [SettingsStoreServic
             constructor(private settingsStoreService: SettingsStoreService) {}
 
             async getUserTheme(ctx: RequestContext): Promise<string> {
-                const theme = await this.settingsStoreService.get<string>('dashboard.theme', ctx);
+                const theme = await this.settingsStoreService.get<string>(ctx, 'dashboard.theme');
                 return theme || 'light'; // Default fallback
             }
 
             async setUserTheme(ctx: RequestContext, theme: string): Promise<boolean> {
-                const result = await this.settingsStoreService.set('dashboard.theme', theme, ctx);
+                const result = await this.settingsStoreService.set(ctx, 'dashboard.theme', theme);
                 return result.result;
             }
         }
@@ -339,11 +339,11 @@ For programmatic access within plugins or services, use the [SettingsStoreServic
             constructor(private settingsStoreService: SettingsStoreService) {}
 
             async getDashboardSettings(ctx: RequestContext): Promise<DashboardSettings> {
-                const settings = await this.settingsStoreService.getMany([
+                const settings = await this.settingsStoreService.getMany(ctx, [
                     'dashboard.theme',
                     'dashboard.language',
                     'dashboard.notifications'
-                ], ctx);
+                ]);
 
                 return {
                     theme: settings['dashboard.theme'] || 'light',
@@ -364,7 +364,7 @@ For programmatic access within plugins or services, use the [SettingsStoreServic
                     updates['dashboard.notifications'] = settings.notifications;
                 }
 
-                const results = await this.settingsStoreService.setMany(updates, ctx);
+                const results = await this.settingsStoreService.setMany(ctx, updates);
 
                 return {
                     success: results.every(r => r.result),
@@ -382,15 +382,21 @@ For programmatic access within plugins or services, use the [SettingsStoreServic
 
 | Method                    | Description                                         |
 | ------------------------- | --------------------------------------------------- |
-| `get<T>(key, ctx)`        | Get a single value with optional type parameter     |
-| `getMany(keys, ctx)`      | Get multiple values efficiently in a single query   |
-| `set<T>(key, value, ctx)` | Set a value with structured result feedback         |
-| `setMany(values, ctx)`    | Set multiple values with individual result feedback |
+| `get<T>(ctx, key)`        | Get a single value with optional type parameter     |
+| `getMany(ctx, keys)`      | Get multiple values efficiently in a single query   |
+| `set<T>(ctx, key, value)` | Set a value with structured result feedback         |
+| `setMany(ctx, values)`    | Set multiple values with individual result feedback |
 | `getFieldDefinition(key)` | Get the field configuration for a key               |
+
+:::note
+Prior to v3.4.2, `ctx` was the _last_ argument to the above methods. However, since
+this is contrary to all other method usage which has `ctx` as the _first_ argument, it was
+changed while deprecating (but still supporting) the former signature.
+:::
 
 ## Orphaned Entries Cleanup
 
-When field definitions are removed from your configuration, the corresponding 
+When field definitions are removed from your configuration, the corresponding
 database entries become "orphaned". The Settings Store includes an automatic cleanup system to handle this.
 
 ### Manual Cleanup

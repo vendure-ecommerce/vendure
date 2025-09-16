@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$id')({
         pageId,
         queryDocument: facetDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/facets', label: 'Facets' }, isNew ? <Trans>New facet</Trans> : entity?.name];
+            return [{ path: '/facets', label: <Trans>Facets</Trans> }, isNew ? <Trans>New facet</Trans> : entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -72,14 +72,14 @@ function FacetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created facet' : 'Successfully updated facet'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create facet' : 'Failed to update facet'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -95,7 +95,7 @@ function FacetDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

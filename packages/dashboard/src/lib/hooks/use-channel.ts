@@ -5,11 +5,13 @@ import * as React from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Provides access to the {@link ChannelContext} which contains information
  * about the active channel.
  *
+ * @example
+ * ```tsx
+ * const { activeChannel } = useChannel();
+ * ```
  *
  * @docsCategory hooks
  * @docsPage useChannel

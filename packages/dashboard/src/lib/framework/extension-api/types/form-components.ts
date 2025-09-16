@@ -4,7 +4,7 @@ import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-
  * @description
  * Allows you to define custom form components for custom fields in the dashboard.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage FormComponents
  * @since 3.4.0
  */
@@ -27,7 +27,7 @@ export interface DashboardCustomFormComponent {
  * Interface for registering custom field components in the dashboard.
  * For input and display components, use the co-located approach with detailForms.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage FormComponents
  * @since 3.4.0
  */

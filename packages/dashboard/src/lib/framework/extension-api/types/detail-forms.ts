@@ -6,7 +6,7 @@ import { DocumentNode } from 'graphql';
  * Allows you to define custom input components for specific fields in detail forms.
  * The pageId is already defined in the detail form extension, so only the blockId and field are needed.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
  * @docsPage DetailForms
  * @since 3.4.0
  */
@@ -36,7 +36,7 @@ export interface DashboardDetailFormInputComponent {
  *
  * @since 3.4.0
  * @docsPage DetailForms
- * @docsCategory extensions
+ * @docsCategory extensions-api
  */
 export interface DashboardDetailFormExtensionDefinition {
     /**

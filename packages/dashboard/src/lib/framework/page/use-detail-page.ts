@@ -37,9 +37,9 @@ const NEW_ENTITY_ID = '__NEW__';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Options used to configure the result of the `useDetailPage` hook.
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @since 3.3.0
  */
@@ -148,9 +148,8 @@ export type DetailPageEntity<
 
 /**
  * @description
- * **Status: Developer Preview**
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @since 3.3.0
  */
@@ -231,7 +230,7 @@ export interface UseDetailPageResult<
  * });
  * ```
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @docsWeight 0
  * @since 3.3.0

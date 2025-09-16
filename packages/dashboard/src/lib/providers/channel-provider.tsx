@@ -45,17 +45,38 @@ type Channel = ResultOf<typeof channelFragment>;
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Provides information about the active channel, and the means to set a new
+ * active channel.
  *
  * @docsCategory hooks
  * @docsPage useChannel
  * @since 3.3.0
  */
 export interface ChannelContext {
+    /**
+     * @description
+     * Whether the channels are loading.
+     */
     isLoading: boolean;
+    /**
+     * @description
+     * An array of all available channels.
+     */
     channels: Channel[];
+    /**
+     * @description
+     * The active channel.
+     */
     activeChannel: ActiveChannel | undefined;
+    /**
+     * @description
+     * The function to set the active channel.
+     */
     setActiveChannel: (channelId: string) => void;
+    /**
+     * @description
+     * The function to refresh the channels.
+     */
     refreshChannels: () => void;
 }
 

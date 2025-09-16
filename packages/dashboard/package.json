@@ -1,7 +1,7 @@
 {
     "name": "@vendure/dashboard",
     "private": false,
-    "version": "3.4.1",
+    "version": "3.4.2",
     "type": "module",
     "repository": {
         "type": "git",
@@ -100,8 +100,8 @@
         "@types/react": "^19.0.10",
         "@types/react-dom": "^19.0.4",
         "@uidotdev/usehooks": "^2.4.1",
-        "@vendure/common": "3.4.1",
-        "@vendure/core": "3.4.1",
+        "@vendure/common": "3.4.2",
+        "@vendure/core": "3.4.2",
         "@vitejs/plugin-react": "^4.3.4",
         "acorn": "^8.11.3",
         "acorn-walk": "^8.3.2",

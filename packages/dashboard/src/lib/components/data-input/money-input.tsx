@@ -11,6 +11,14 @@ export interface MoneyInputProps extends DashboardFormComponentProps {
     currency?: string;
 }
 
+/**
+ * @description
+ * A component for displaying a money value. The `currency` can be specified, but otherwise
+ * will be taken from the active channel's default currency.
+ *
+ * @docsCategory form-components
+ * @docsPage MoneyInput
+ */
 export function MoneyInput(props: Readonly<MoneyInputProps>) {
     const { value, onChange, currency, ...rest } = props;
     const { activeChannel } = useChannel();

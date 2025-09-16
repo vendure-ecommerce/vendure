@@ -8,6 +8,7 @@ import {
 } from './constants';
 import { DefaultSchedulerStrategy } from './default-scheduler-strategy';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
+import { StaleTaskService } from './stale-task.service';
 import { DefaultSchedulerPluginOptions } from './types';
 
 /**
@@ -48,6 +49,7 @@ import { DefaultSchedulerPluginOptions } from './types';
             provide: DEFAULT_SCHEDULER_PLUGIN_OPTIONS,
             useFactory: () => DefaultSchedulerPlugin.options,
         },
+        StaleTaskService,
     ],
     compatibility: '>0.0.0',
 })

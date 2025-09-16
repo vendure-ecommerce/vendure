@@ -62,7 +62,11 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id_/modif
         }
 
         return {
-            breadcrumb: [{ path: '/orders', label: 'Orders' }, result.order.code, { label: 'Modify' }],
+            breadcrumb: [
+                { path: '/orders', label: <Trans>Orders</Trans> },
+                result.order.code,
+                { label: <Trans>Modify</Trans> },
+            ],
         };
     },
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

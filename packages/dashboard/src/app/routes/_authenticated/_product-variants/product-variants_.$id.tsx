@@ -46,12 +46,12 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: 'Products' },
+                    { path: '/product', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];
             }
-            return [{ path: '/product-variants', label: 'Product Variants' }, entity?.name];
+            return [{ path: '/product-variants', label: <Trans>Product Variants</Trans> }, entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -97,14 +97,14 @@ function ProductVariantDetailPage() {
         },
         params: { id: params.id },
         onSuccess: data => {
-            toast.success(i18n.t('Successfully updated product'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product variant' : 'Successfully updated product variant'));
             resetForm();
             if (creatingNewEntity) {
                 navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update product'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product variant' : 'Failed to update product variant'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -124,7 +124,7 @@ function ProductVariantDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

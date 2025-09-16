@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates_/$id'
         queryDocument: taxRateDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-rates', label: 'Tax rates' },
+                { path: '/tax-rates', label: <Trans>Tax Rates</Trans> },
                 isNew ? <Trans>New tax rate</Trans> : entity?.name,
             ];
         },
@@ -67,14 +67,14 @@ function TaxRateDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated tax rate'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created tax rate' : 'Successfully updated tax rate'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update tax rate'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create tax rate' : 'Failed to update tax rate'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -90,7 +90,7 @@ function TaxRateDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -120,6 +120,7 @@ function TaxRateDetailPage() {
                             label={<Trans>Rate</Trans>}
                             render={({ field }) => (
                                 <AffixedInput
+                                    {...field}
                                     type="number"
                                     suffix="%"
                                     value={field.value}

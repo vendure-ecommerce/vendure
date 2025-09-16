@@ -20,7 +20,7 @@ class StockMovementService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
     shippingCalculators: ShippingCalculator[];
     constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, globalSettingsService: GlobalSettingsService, stockLevelService: StockLevelService, eventBus: EventBus, stockLocationService: StockLocationService)
-    getStockMovementsByProductVariantId(ctx: RequestContext, productVariantId: ID, options: StockMovementListOptions) => Promise<PaginatedList<StockMovement>>;
+    getStockMovementsByProductVariantId(ctx: RequestContext, productVariantId: ID, options?: StockMovementListOptions) => Promise<PaginatedList<StockMovement>>;
     adjustProductVariantStock(ctx: RequestContext, productVariantId: ID, stockOnHandNumberOrInput: number | StockLevelInput[]) => Promise<StockAdjustment[]>;
     createAllocationsForOrder(ctx: RequestContext, order: Order) => Promise<Allocation[]>;
     createAllocationsForOrderLines(ctx: RequestContext, lines: OrderLineInput[]) => Promise<Allocation[]>;
@@ -49,7 +49,7 @@ class StockMovementService {
 
 ### getStockMovementsByProductVariantId
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, options: StockMovementListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, options?: StockMovementListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>&#62;&#62;`}   />
 
 Returns a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> of all StockMovements associated with the specified ProductVariant.
 ### adjustProductVariantStock

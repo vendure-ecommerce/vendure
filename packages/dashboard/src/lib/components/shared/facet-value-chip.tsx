@@ -20,6 +20,13 @@ interface FacetValueChipProps {
     onRemove?: (id: string) => void;
 }
 
+/**
+ * @description
+ * A component for displaying a facet value as a chip.
+ *
+ * @docsCategory components
+ * @since 3.4.0
+ */
 export function FacetValueChip({
     facetValue,
     removable = true,
