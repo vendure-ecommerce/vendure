@@ -7,6 +7,10 @@ import { Brackets, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEv
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
 import { Logger } from '../../config';
+import {
+    API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS,
+    API_KEY_AUTH_STRATEGY_NAME,
+} from '../../config/api-key-strategy/api-key-authentication-options';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -108,21 +112,29 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         ctx: RequestContext,
         user: User,
         authenticationStrategyName: string,
+        sessionToken?: string,
     ): Promise<AuthenticatedSession> {
-        const token = await this.generateSessionToken();
+        const token = sessionToken ?? (await this.generateSessionToken());
         const guestOrder =
             ctx.session && ctx.session.activeOrderId
                 ? await this.orderService.findOne(ctx, ctx.session.activeOrderId)
                 : undefined;
         const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
+
+        const expires = this.getExpiryDate(
+            authenticationStrategyName === API_KEY_AUTH_STRATEGY_NAME
+                ? API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS
+                : this.sessionDurationInMs,
+        );
+
         const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
             new AuthenticatedSession({
                 token,
                 user,
                 activeOrder,
                 authenticationStrategy: authenticationStrategyName,
-                expires: this.getExpiryDate(this.sessionDurationInMs),
+                expires,
                 invalidated: false,
             }),
         );
@@ -302,6 +314,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * Deletes all existing sessions for the given user.
      */
     async deleteSessionsByUser(ctx: RequestContext, user: User): Promise<void> {
+        // TODO think about apikey sessions and think about soft-deletion of user too!
         const userSessions = await this.connection
             .getRepository(ctx, AuthenticatedSession)
             .find({ where: { user: { id: user.id } } });
@@ -316,6 +329,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * Deletes all existing sessions with the given activeOrder.
      */
     async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID): Promise<void> {
+        // TODO think about apikey sessions
         const sessions = await this.connection.getRepository(ctx, Session).find({ where: { activeOrderId } });
         await this.connection.getRepository(ctx, Session).remove(sessions);
         for (const session of sessions) {

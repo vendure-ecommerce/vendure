@@ -1,6 +1,6 @@
 import {
-    AuthenticationResult as ShopAuthenticationResult,
     PasswordValidationError,
+    AuthenticationResult as ShopAuthenticationResult,
 } from '@vendure/common/lib/generated-shop-types';
 import {
     AuthenticationResult as AdminAuthenticationResult,
@@ -24,6 +24,7 @@ import { LogLevel } from '../../../config/logger/vendure-logger';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AdministratorService } from '../../../service/services/administrator.service';
+import { ApiKeyService } from '../../../service/services/api-key.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
 import { extractSessionToken } from '../../common/extract-session-token';
@@ -37,6 +38,7 @@ export class BaseAuthResolver {
         protected userService: UserService,
         protected administratorService: AdministratorService,
         protected configService: ConfigService,
+        protected apiKeyService: ApiKeyService,
     ) {}
 
     /**
@@ -61,7 +63,14 @@ export class BaseAuthResolver {
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
-        const token = extractSessionToken(req, this.configService.authOptions.tokenMethod);
+        const apiKeyHashingStrategy = this.apiKeyService.getHashingStrategyByApiType(ctx.apiType);
+
+        // TODO dont let api keys logout their session
+        const token = await extractSessionToken(
+            req,
+            this.configService.authOptions.tokenMethod,
+            apiKeyHashingStrategy,
+        );
         if (!token) {
             return { success: false };
         }

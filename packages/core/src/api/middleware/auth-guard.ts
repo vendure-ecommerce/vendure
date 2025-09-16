@@ -4,15 +4,18 @@ import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { ForbiddenError } from '../../common/error/errors';
+import { ApiKeyHashingStrategy } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { LogLevel } from '../../config/logger/vendure-logger';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Customer } from '../../entity/customer/customer.entity';
 import { RequestContextService } from '../../service/helpers/request-context/request-context.service';
+import { ApiKeyService } from '../../service/services/api-key.service';
 import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
+import { getApiType } from '../common/get-api-type';
 import { isFieldResolver } from '../common/is-field-resolver';
 import { parseContext } from '../common/parse-context';
 import {
@@ -43,6 +46,7 @@ export class AuthGuard implements CanActivate {
         private sessionService: SessionService,
         private customerService: CustomerService,
         private channelService: ChannelService,
+        private apiKeyService: ApiKeyService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -59,7 +63,8 @@ export class AuthGuard implements CanActivate {
         if (targetIsFieldResolver) {
             requestContext = internal_getRequestContext(req);
         } else {
-            const session = await this.getSession(req, res, hasOwnerPermission);
+            const apiKeyHashingStrategy = this.apiKeyService.getHashingStrategyByApiType(getApiType(info));
+            const session = await this.getSession(req, res, hasOwnerPermission, apiKeyHashingStrategy);
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
 
             const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
@@ -137,8 +142,13 @@ export class AuthGuard implements CanActivate {
         req: Request,
         res: Response,
         hasOwnerPermission: boolean,
+        apiKeyHashingStrategy: ApiKeyHashingStrategy,
     ): Promise<CachedSession | undefined> {
-        const sessionToken = extractSessionToken(req, this.configService.authOptions.tokenMethod);
+        const sessionToken = await extractSessionToken(
+            req,
+            this.configService.authOptions.tokenMethod,
+            apiKeyHashingStrategy,
+        );
         let serializedSession: CachedSession | undefined;
         if (sessionToken) {
             serializedSession = await this.sessionService.getSessionFromToken(sessionToken);

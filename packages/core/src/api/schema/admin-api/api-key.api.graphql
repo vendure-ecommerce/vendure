@@ -1,0 +1,52 @@
+# TODO type Query { apiKey apiKeys }
+
+type Mutation {
+    """
+    Generates a new API-Key and attaches it to an Administrator.
+    Returns the generated API-Key.
+    API-Keys cannot be viewed again after creation.
+    """
+    createApiKey(input: CreateApiKeyInput!): CreateApiKeyResult!
+    "Updates an API-Key"
+    updateApiKey(input: UpdateApiKeyInput!): ApiKey!
+    "Deletes an API-Key"
+    deleteApiKey(input: DeleteApiKeyInput!): DeletionResult!
+}
+
+input CreateApiKeyTranslationInput {
+    languageCode: LanguageCode!
+
+    "A descriptive name so you can remind yourself where the API-Key gets used"
+    name: String!
+}
+
+input UpdateApiKeyTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+
+    "A descriptive name so you can remind yourself where the API-Key gets used"
+    name: String
+}
+
+# TODO creation result probably should be in a Union because there can be other errors like misconfiguring the strategies?
+type CreateApiKeyResult {
+    "The generated API-Key. API-Keys cannot be viewed again after creation."
+    apiKey: String!
+    entity: ApiKey!
+}
+
+input CreateApiKeyInput {
+    "ID of the Administrator for whom to create the API-Key for"
+    administratorId: ID!
+    translations: [CreateApiKeyTranslationInput!]!
+}
+
+input UpdateApiKeyInput {
+    id: ID!
+    translations: [UpdateApiKeyTranslationInput!]
+}
+
+input DeleteApiKeyInput {
+    "ID of the Administrator"
+    administratorId: ID!
+}

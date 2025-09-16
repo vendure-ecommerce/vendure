@@ -4,7 +4,8 @@ import { ConfigService } from '../../../config/config.service';
 
 /**
  * @description
- * Used in the {@link NativeAuthenticationStrategy} when hashing and checking user passwords.
+ * Used in the {@link NativeAuthenticationStrategy} when hashing and checking user passwords and
+ * used for hashing and checking API-Keys when using {@link ApiKeyAuthenticationStrategy}.
  */
 @Injectable()
 export class PasswordCipher {
