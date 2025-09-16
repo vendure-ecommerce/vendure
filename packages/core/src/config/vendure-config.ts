@@ -410,6 +410,44 @@ export interface AuthOptions {
     sessionDuration?: string | number;
     /**
      * @description
+     * Session duration specifically for Admin API sessions created via the API key authentication strategy.
+     * Use a shorter TTL here to limit the lifetime of non-interactive sessions.
+     *
+     * If passed as a number it represents milliseconds and if passed as a string it describes a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js). Eg: `900000`, `'15m'`, `'1h'`.
+     *
+     * @default '15m'
+     * @since 3.5.0
+     */
+    adminApiKeySessionDuration?: string | number;
+    /**
+     * @description
+     * Controls the prefix used when generating Admin API keys. Prefixes help identify the key type at a glance
+     * and are stored alongside the hashed secret to optimize lookups. By default, Vendure uses different prefixes
+     * based on `NODE_ENV`:
+     *
+     * - production: `vk_live_`
+     * - non-production: `vk_test_`
+     *
+     * You may override this with a single string (used for all environments), or provide distinct `live` and `test`
+     * prefixes. When set as a string, that value will be used regardless of environment.
+     *
+     * Example:
+     * ```ts
+     * authOptions: {
+     *   adminApiKeyPrefix: { live: 'my_live_', test: 'my_test_' },
+     * }
+     * ```
+     *
+     * Note: The raw key’s prefix is stored separately from the secret, so previously-issued keys continue to work
+     * even if you later change this config.
+     *
+     * @default { live: 'vk_live_', test: 'vk_test_' }
+     * @since 3.5.0
+     */
+    adminApiKeyPrefix?: string | { live: string; test: string };
+    /**
+     * @description
      * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
      * the underlying cache strategy defined in the {@link SystemOptions}`.cacheStrategy`.
      *

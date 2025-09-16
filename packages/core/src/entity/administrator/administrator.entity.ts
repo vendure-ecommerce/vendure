@@ -31,6 +31,14 @@ export class Administrator extends VendureEntity implements SoftDeletable, HasCu
     @Column({ unique: true })
     emailAddress: string;
 
+    /**
+     * Marks this Administrator as a service account. Service accounts are hidden from
+     * the Administrators list by default and are intended for non-interactive access.
+     * @since 3.5.0
+     */
+    @Column({ type: 'boolean', default: false })
+    isServiceAccount: boolean;
+
     @OneToOne(type => User)
     @JoinColumn()
     user: User;

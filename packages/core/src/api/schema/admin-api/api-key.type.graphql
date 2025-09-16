@@ -1,0 +1,43 @@
+"""
+Admin API key bound to an Administrator.
+@since 3.5.0
+"""
+type ApiKey implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    prefix: String!
+    status: String!
+    expiresAt: DateTime
+    revokedAt: DateTime
+    lastUsedAt: DateTime
+    version: Int!
+    administrator: Administrator!
+    notes: String
+}
+
+"""
+Returned when creating or rotating an API key.
+Includes the raw secret once.
+@since 3.5.0
+"""
+type ApiKeyWithSecret {
+    apiKey: ApiKey!
+    rawKey: String!
+}
+
+"""
+List options for ApiKeys.
+@since 3.5.0
+"""
+input ApiKeyListOptions
+
+"""
+Paginated list wrapper for ApiKeys.
+@since 3.5.0
+"""
+type ApiKeyList implements PaginatedList {
+    items: [ApiKey!]!
+    totalItems: Int!
+}

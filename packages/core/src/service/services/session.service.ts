@@ -116,13 +116,20 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 : undefined;
         const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
+        let duration = this.sessionDurationInMs;
+        if (authenticationStrategyName === 'apiKey') {
+            const configured = this.configService.authOptions.adminApiKeySessionDuration;
+            duration = typeof configured === 'string' ? ms(configured) : configured;
+        }
         const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
             new AuthenticatedSession({
                 token,
                 user,
                 activeOrder,
                 authenticationStrategy: authenticationStrategyName,
-                expires: this.getExpiryDate(this.sessionDurationInMs),
+                // API key sessions have a short TTL by default for security hardening.
+                // @since 3.5.0
+                expires: this.getExpiryDate(duration),
                 invalidated: false,
             }),
         );
@@ -321,6 +328,24 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         for (const session of sessions) {
             await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
+    }
+
+    /**
+     * Invalidate all admin sessions linked to an API key.
+     * @since 3.5.0
+     */
+    async invalidateSessionsByApiKeyId(ctx: RequestContext, apiKeyId: ID): Promise<number> {
+        const sessions = await this.connection
+            .getRepository(ctx, Session)
+            .find({ where: { apiKeyId: String(apiKeyId) } });
+        if (!sessions.length) {
+            return 0;
+        }
+        await this.connection.getRepository(ctx, Session).remove(sessions);
+        for (const session of sessions) {
+            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
+        }
+        return sessions.length;
     }
 
     /**

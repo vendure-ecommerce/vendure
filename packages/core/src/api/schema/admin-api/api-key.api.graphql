@@ -1,0 +1,18 @@
+extend type Mutation {
+    """Create a new Admin API key. @since 3.5.0"""
+    createApiKey(administratorId: ID!, name: String!, expiresAt: DateTime, notes: String): ApiKeyWithSecret!
+
+    """Rotate an existing key (revoke old, create new). @since 3.5.0"""
+    rotateApiKey(id: ID!): ApiKeyWithSecret!
+
+    """Revoke a key and invalidate sessions minted from it. @since 3.5.0"""
+    revokeApiKey(id: ID!): ApiKey!
+
+    """Helper to invalidate live sessions for a key. @since 3.5.0"""
+    invalidateApiKeySessions(id: ID!): Int!
+}
+
+extend type Query {
+    """List API keys for an Administrator. @since 3.5.0"""
+    apiKeys(administratorId: ID!, options: ApiKeyListOptions): ApiKeyList!
+}

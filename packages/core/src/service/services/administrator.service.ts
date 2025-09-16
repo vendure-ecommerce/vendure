@@ -10,7 +10,12 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { Instrument } from '../../common';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    ForbiddenError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config';
@@ -128,9 +133,21 @@ export class AdministratorService {
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
-        const administrator = new Administrator(input);
+        const administrator = new Administrator(input as any);
+        // Normalize email & SuperAdmin enforcement for service-account flag
         administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
+        // Only SuperAdmin can set isServiceAccount
+        // @since 3.5.0
+        if ((input as any).isServiceAccount !== undefined) {
+            const { Permission } = await import('@vendure/common/lib/generated-types');
+            if (!ctx.userHasPermissions([Permission.SuperAdmin])) {
+                throw new ForbiddenError();
+            }
+            administrator.isServiceAccount = !!(input as any).isServiceAccount;
+        } else {
+            administrator.isServiceAccount = false;
+        }
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
@@ -155,6 +172,15 @@ export class AdministratorService {
         const administrator = await this.findOne(ctx, input.id);
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', input.id);
+        }
+        // Only SuperAdmin can set the flag. Apply before patchEntity to avoid accidental writes.
+        // @since 3.5.0
+        if ((input as any).isServiceAccount !== undefined) {
+            const { Permission } = await import('@vendure/common/lib/generated-types');
+            if (!ctx.userHasPermissions([Permission.SuperAdmin])) {
+                throw new ForbiddenError();
+            }
+            administrator.isServiceAccount = !!(input as any).isServiceAccount;
         }
         if (input.roleIds) {
             await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);

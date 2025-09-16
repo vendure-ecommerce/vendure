@@ -6,6 +6,11 @@ type Administrator implements Node {
     lastName: String!
     emailAddress: String!
     user: User!
+    """
+    Marks an Administrator as a service account.
+    @since 3.5.0
+    """
+    isServiceAccount: Boolean!
 }
 
 type AdministratorList implements PaginatedList {
