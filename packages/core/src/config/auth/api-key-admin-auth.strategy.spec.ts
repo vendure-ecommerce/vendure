@@ -22,7 +22,7 @@ describe('ApiKeyAdminAuthStrategy', () => {
     it('authenticate returns false on invalid key', async () => {
         apiKeyService.validateRawKey.mockResolvedValue(false);
         const ctx: any = {};
-        const res = await strategy.authenticate(ctx, { apiKey: 'bad' });
+        const res = await strategy.authenticate(ctx, { key: 'bad' });
         expect(res).toBe(false);
     });
 
@@ -33,7 +33,7 @@ describe('ApiKeyAdminAuthStrategy', () => {
             apiKey: { id: 'k1' },
         });
         const ctx: any = {};
-        const res = await strategy.authenticate(ctx, { apiKey: 'vk_test_abc' });
+        const res = await strategy.authenticate(ctx, { key: 'vk_test_abc' });
         expect(res).toBe(user);
         expect(ctx.__apiKeyId).toBe('k1');
     });

@@ -10,7 +10,7 @@ import { AuthenticationStrategy } from './authentication-strategy';
  * inherits the bound Administrator's Roles/Permissions/Channels.
  * @since 3.5.0
  */
-export class ApiKeyAdminAuthStrategy implements AuthenticationStrategy<{ apiKey: string }> {
+export class ApiKeyAdminAuthStrategy implements AuthenticationStrategy<{ key: string }> {
     readonly name = 'apiKey';
 
     private apiKeyService: import('../../service/services/api-key.service').ApiKeyService;
@@ -23,16 +23,16 @@ export class ApiKeyAdminAuthStrategy implements AuthenticationStrategy<{ apiKey:
     defineInputType(): DocumentNode {
         return gql`
             input ApiKeyAuthInput {
-                apiKey: String!
+                key: String!
             }
         `;
     }
 
     async authenticate(
         ctx: RequestContext,
-        data: { apiKey: string },
+        data: { key: string },
     ): Promise<import('../../entity/user/user.entity').User | false | string> {
-        const result = await this.apiKeyService.validateRawKey(ctx, data.apiKey);
+        const result = await this.apiKeyService.validateRawKey(ctx, data.key);
         if (!result) {
             return false;
         }

@@ -57,7 +57,7 @@ Variables:
 ```json
 {
   "input": {
-    "apiKey": { "apiKey": "vk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }
+    "apiKey": { "key": "vk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" }
   }
 }
 ```
