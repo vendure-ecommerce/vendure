@@ -1635,7 +1635,7 @@ msgstr "Rotieren"
 msgid "Revoke"
 msgstr "Widerrufen"
 
-msgid "Invalidate sessions"
+msgid "Invalidate Sessions"
 msgstr "Sitzungen ungültig machen"
 
 msgid "Create API Key"

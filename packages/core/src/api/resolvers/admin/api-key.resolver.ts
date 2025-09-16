@@ -10,7 +10,7 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('ApiKey')
 export class ApiKeyResolver {
-    constructor(private apiKeyService: ApiKeyService) {}
+    constructor(private readonly apiKeyService: ApiKeyService) {}
 
     @Query()
     @Allow(Permission.ReadServiceAccount)

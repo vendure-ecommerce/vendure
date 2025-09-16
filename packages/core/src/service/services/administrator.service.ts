@@ -139,15 +139,7 @@ export class AdministratorService {
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         // Only SuperAdmin can set isServiceAccount
         // @since 3.5.0
-        if ((input as any).isServiceAccount !== undefined) {
-            const { Permission } = await import('@vendure/common/lib/generated-types');
-            if (!ctx.userHasPermissions([Permission.SuperAdmin])) {
-                throw new ForbiddenError();
-            }
-            administrator.isServiceAccount = !!(input as any).isServiceAccount;
-        } else {
-            administrator.isServiceAccount = false;
-        }
+        await this.applyServiceAccountFlag(ctx, administrator, (input as any).isServiceAccount);
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
@@ -175,13 +167,7 @@ export class AdministratorService {
         }
         // Only SuperAdmin can set the flag. Apply before patchEntity to avoid accidental writes.
         // @since 3.5.0
-        if ((input as any).isServiceAccount !== undefined) {
-            const { Permission } = await import('@vendure/common/lib/generated-types');
-            if (!ctx.userHasPermissions([Permission.SuperAdmin])) {
-                throw new ForbiddenError();
-            }
-            administrator.isServiceAccount = !!(input as any).isServiceAccount;
-        }
+        await this.applyServiceAccountFlag(ctx, administrator, (input as any).isServiceAccount);
         if (input.roleIds) {
             await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
         }
@@ -201,28 +187,7 @@ export class AdministratorService {
             }
         }
         if (input.roleIds) {
-            const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
-            if (isSoleSuperAdmin) {
-                const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
-                    throw new InternalServerError('error.superadmin-must-have-superadmin-role');
-                }
-            }
-            const removeIds = administrator.user.roles
-                .map(role => role.id)
-                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
-
-            const addIds = (input.roleIds as ID[]).filter(
-                roleId => !administrator.user.roles.some(role => role.id === roleId),
-            );
-
-            administrator.user.roles = [];
-            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
-            for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
-            }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+            updatedAdministrator = await this.updateAdministratorRoles(ctx, administrator, input.roleIds);
         }
         await this.customFieldRelationService.updateRelations(
             ctx,
@@ -380,5 +345,51 @@ export class AdministratorService {
                 await this.connection.rawConnection.getRepository(User).save(superAdminUser);
             }
         }
+    }
+
+    /**
+     * Applies the service account flag with SuperAdmin permission guard.
+     * @since 3.5.0
+     */
+    private async applyServiceAccountFlag(ctx: RequestContext, administrator: Administrator, value: unknown) {
+        if (value !== undefined) {
+            const { Permission } = await import('@vendure/common/lib/generated-types');
+            if (!ctx.userHasPermissions([Permission.SuperAdmin])) {
+                throw new ForbiddenError();
+            }
+            administrator.isServiceAccount = !!value;
+        }
+    }
+
+    /**
+     * Updates the Administrator's roles, ensuring we do not remove the sole SuperAdmin role.
+     */
+    private async updateAdministratorRoles(
+        ctx: RequestContext,
+        administrator: Administrator,
+        roleIds: ID[],
+    ): Promise<Administrator> {
+        const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, administrator.id);
+        if (isSoleSuperAdmin) {
+            const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
+            if (!roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
+                throw new InternalServerError('error.superadmin-must-have-superadmin-role');
+            }
+        }
+        const removeIds = administrator.user.roles
+            .map(role => role.id)
+            .filter(roleId => roleIds.indexOf(roleId) === -1);
+
+        const addIds = roleIds.filter(roleId => !administrator.user.roles.some(role => role.id === roleId));
+
+        administrator.user.roles = [];
+        await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
+        let updated = administrator;
+        for (const roleId of roleIds) {
+            updated = await this.assignRole(ctx, administrator.id, roleId);
+        }
+        await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
+        await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+        return updated;
     }
 }

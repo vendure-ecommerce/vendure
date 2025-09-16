@@ -22,15 +22,17 @@ export const config: VendureConfig = {
       new ApiKeyAdminAuthStrategy(),
     ],
     // Optional: configure key prefixes and session TTL for key-based sessions
-    adminApiKeyPrefix: { live: 'vk_live_', test: 'vk_test_' },
-    adminApiKeySessionDuration: '15m',
+    adminApiKey: {
+      prefix: { live: 'vk_live_', test: 'vk_test_' },
+      sessionDuration: '15m',
+    },
   },
 };
 ```
 
 Notes:
-- Keys use environment-aware prefixes by default: `vk_live_` in production and `vk_test_` otherwise. You can override via `authOptions.adminApiKeyPrefix`.
-- Sessions created via API key use a short TTL by default (`authOptions.adminApiKeySessionDuration`, default `15m`).
+- Keys use environment-aware prefixes by default: `vk_live_` in production and `vk_test_` otherwise. You can override via `authOptions.adminApiKey.prefix`.
+- Sessions created via API key use a short TTL by default (`authOptions.adminApiKey.sessionDuration`, default `15m`).
 
 ## Obtaining an admin session
 
@@ -81,11 +83,11 @@ Recommended practices:
 
 ## Security guidelines
 
-- Prefixes: Configure recognizable prefixes (e.g. `vk_live_`, `vk_test_`) via `authOptions.adminApiKeyPrefix` to help prevent cross-environment mix-ups.
+- Prefixes: Configure recognizable prefixes (e.g. `vk_live_`, `vk_test_`) via `authOptions.adminApiKey.prefix` to help prevent cross-environment mix-ups.
 - Hashing: Only a hash of the key is stored in the database; raw keys are never persisted.
 - Logging: Do not log raw keys. Vendure does not log the raw secret at any time; ensure your application code and infrastructure logs don’t capture it either.
 - Scope: Keys inherit the bound Administrator’s Roles & Channels. Create dedicated service accounts with the minimal required permissions.
-- TTL: Keep `adminApiKeySessionDuration` short to limit the lifetime of non-interactive sessions.
+- TTL: Keep `authOptions.adminApiKey.sessionDuration` short to limit the lifetime of non-interactive sessions.
 
 ## Administrators and service accounts
 

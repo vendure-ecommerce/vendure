@@ -10,6 +10,34 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { serviceAccountListDocument } from './service-accounts.graphql.js';
 
+const NameHeader = () => <Trans>Name</Trans>;
+const RolesHeader = () => <Trans>Roles</Trans>;
+const IdentifierHeader = () => <Trans>Identifier</Trans>;
+
+function NameCell({ row }: { row: any }) {
+    const first = (row.original as any).firstName || '';
+    const last = (row.original as any).lastName || '';
+    const fallback = row.original.user.roles[0]?.code || 'Service account';
+    const label = (first || last) ? `${first} ${last}`.trim() : fallback;
+    return <DetailPageButton id={row.original.id} label={label} />;
+}
+
+function RolesCell({ row }: { row: any }) {
+    return (
+        <div className="flex flex-wrap gap-2">
+            {row.original.user.roles.map((role: any) => (
+                <Badge variant="secondary" key={role.id}>
+                    <RoleCodeLabel code={role.code} />
+                </Badge>
+            ))}
+        </div>
+    );
+}
+
+function IdentifierCell({ row }: { row: any }) {
+    return <div>{row.original.emailAddress}</div>;
+}
+
 export const Route = createFileRoute('/_authenticated/_service-accounts/service-accounts')({
     component: ServiceAccountListPage,
     loader: () => ({ breadcrumb: () => <Trans>Service Accounts</Trans> }),
@@ -23,45 +51,31 @@ function ServiceAccountListPage() {
             listQuery={serviceAccountListDocument}
             route={Route}
             transformVariables={variables => {
-                const filter = { ...(variables.options?.filter ?? {}), isServiceAccount: { eq: true } } as any;
-                return { ...variables, options: { ...(variables.options ?? {}), filter } } as any;
+                const filter = { ...(variables.options?.filter ?? {}), isServiceAccount: { eq: true } };
+                return { ...variables, options: { ...(variables.options ?? {}), filter } };
             }}
             onSearchTermChange={searchTerm => {
                 return {
                     firstName: { contains: searchTerm },
                     lastName: { contains: searchTerm },
                     emailAddress: { contains: searchTerm },
-                } as any;
+                };
             }}
             additionalColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
-                    cell: ({ row }) => {
-                        const first = (row.original as any).firstName || '';
-                        const last = (row.original as any).lastName || '';
-                        const fallback = row.original.user.roles[0]?.code || 'Service account';
-                        const label = (first || last) ? `${first} ${last}`.trim() : fallback;
-                        return <DetailPageButton id={row.original.id} label={label} />;
-                    },
+                    header: NameHeader,
+                    cell: NameCell as any,
                 },
                 roles: {
-                    header: () => <Trans>Roles</Trans>,
-                    cell: ({ row }) => (
-                        <div className="flex flex-wrap gap-2">
-                            {row.original.user.roles.map(role => (
-                                <Badge variant="secondary" key={role.id}>
-                                    <RoleCodeLabel code={role.code} />
-                                </Badge>
-                            ))}
-                        </div>
-                    ),
+                    header: RolesHeader,
+                    cell: RolesCell as any,
                 },
             }}
             customizeColumns={{
                 emailAddress: {
                     id: 'Identifier',
-                    header: () => <Trans>Identifier</Trans>,
-                    cell: ({ row }) => <div>{row.original.emailAddress}</div>,
+                    header: IdentifierHeader,
+                    cell: IdentifierCell as any,
                 },
             }}
             defaultVisibility={{ emailAddress: true }}

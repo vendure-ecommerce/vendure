@@ -28,6 +28,91 @@ interface ApiKeysPanelProps {
     onCreateDialogOpenChange?: (open: boolean) => void;
 }
 
+type ConfirmState = { type: 'rotate' | 'revoke' | 'invalidate'; id: string } | null;
+
+function ConfirmDialogBody({
+    items,
+    confirm,
+    confirmInput,
+    onConfirm,
+    onCancel,
+    setConfirmInput,
+    isPending,
+}: {
+    items: Array<any>;
+    confirm: ConfirmState;
+    confirmInput: string;
+    setConfirmInput: (v: string) => void;
+    onConfirm: () => void;
+    onCancel: () => void;
+    isPending: boolean;
+}) {
+    const target = items.find(k => k.id === confirm?.id);
+    const requiredName = target?.name ?? '';
+    const matches = confirmInput.trim() === requiredName;
+    return (
+        <div className="space-y-2">
+            <div className="text-sm">
+                <Trans>
+                    Please type the API key name to confirm:
+                </Trans>
+                {requiredName ? (
+                    <span className="ml-1 rounded bg-muted px-1 py-0.5 font-mono text-xs">
+                        {requiredName}
+                    </span>
+                ) : null}
+            </div>
+            <Input value={confirmInput} onChange={e => setConfirmInput(e.target.value)} />
+            <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={onCancel}><Trans>Cancel</Trans></Button>
+                <Button
+                    variant={confirm?.type === 'revoke' ? 'destructive' : 'default'}
+                    disabled={!matches || isPending}
+                    onClick={onConfirm}
+                >
+                    {confirm?.type === 'rotate' && <Trans>Rotate</Trans>}
+                    {confirm?.type === 'revoke' && <Trans>Revoke</Trans>}
+                    {confirm?.type === 'invalidate' && <Trans>Invalidate</Trans>}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+function ActionCell({
+    row,
+    canUpdate,
+    onRotate,
+    onRevoke,
+    onInvalidate,
+}: {
+    row: any;
+    canUpdate: boolean;
+    onRotate: (id: string) => void;
+    onRevoke: (id: string) => void;
+    onInvalidate: (id: string) => void;
+}) {
+    return (
+        <div className="flex gap-2 justify-end">
+            {canUpdate && row.original.status === 'active' && (
+                <Button variant="outline" size="xs" onClick={() => onRotate(row.original.id)}>
+                    <RotateCcw className="mr-1 h-4 w-4" /> <Trans>Rotate</Trans>
+                </Button>
+            )}
+            {canUpdate && row.original.status === 'active' && (
+                <Button variant="destructive" size="xs" onClick={() => onRevoke(row.original.id)}>
+                    <Trash2 className="mr-1 h-4 w-4" /> <Trans>Revoke</Trans>
+                </Button>
+            )}
+            {canUpdate && (
+                <Button variant="ghost" size="xs" onClick={() => onInvalidate(row.original.id)}>
+                    <RefreshCcw className="mr-1 h-4 w-4" /> <Trans>Invalidate Sessions</Trans>
+                </Button>
+            )}
+        </div>
+    );
+}
+
 /**
  * Lists and manages API keys for a service account.
  * Shows raw secret only once in a dialog on create/rotate.
@@ -35,9 +120,9 @@ interface ApiKeysPanelProps {
  */
 export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCreateDialogOpenChange }: Readonly<ApiKeysPanelProps>) {
     const { hasPermissions } = usePermissions();
-    const canCreate = hasPermissions(['CreateServiceAccount']);
     const canUpdate = hasPermissions(['UpdateServiceAccount']);
-    const { i18n } = useLingui();
+    // Subscribe to locale changes for <Trans> without using the i18n object directly
+    useLingui();
 
     const [page, setPage] = React.useState(1);
     const [pageSize, setPageSize] = React.useState(10);
@@ -45,7 +130,7 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
     const [newKeyName, setNewKeyName] = React.useState('');
     const [expiresValue, setExpiresValue] = React.useState<string | Date | null>(null);
     const [expiresMode, setExpiresMode] = React.useState<'7' | '30' | '60' | '90' | '180' | 'custom' | 'none'>('none');
-    const [confirm, setConfirm] = React.useState<null | { type: 'rotate' | 'revoke' | 'invalidate'; id: string }>(null);
+    const [confirm, setConfirm] = React.useState<ConfirmState>(null);
     const [confirmInput, setConfirmInput] = React.useState('');
     React.useEffect(() => {
         setConfirmInput('');
@@ -81,7 +166,7 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
             const secret = result.createApiKey.rawKey;
             setRawKey(secret);
             onCreateDialogOpenChange?.(false);
-            void refetch();
+            refetch();
             // Reset inputs after successful create
             setNewKeyName('');
             setExpiresValue(null);
@@ -96,13 +181,15 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
         mutationFn: (id: string) => api.mutate(rotateApiKeyDocument, { id }),
         onSuccess: res => {
             setRawKey(res.rotateApiKey.rawKey);
-            void refetch();
+            refetch();
         },
     });
 
     const revokeMutation = useMutation({
         mutationFn: (id: string) => api.mutate(revokeApiKeyDocument, { id }),
-        onSuccess: () => void refetch(),
+        onSuccess: () => {
+            refetch();
+        },
     });
 
     const invalidateMutation = useMutation({
@@ -141,23 +228,13 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
             id: 'actions',
             header: '',
             cell: ({ row }) => (
-                <div className="flex gap-2 justify-end">
-                    {canUpdate && row.original.status === 'active' && (
-                        <Button variant="outline" size="xs" onClick={() => setConfirm({ type: 'rotate', id: row.original.id })}>
-                            <RotateCcw className="mr-1 h-4 w-4" /> <Trans>Rotate</Trans>
-                        </Button>
-                    )}
-                    {canUpdate && row.original.status === 'active' && (
-                        <Button variant="destructive" size="xs" onClick={() => setConfirm({ type: 'revoke', id: row.original.id })}>
-                            <Trash2 className="mr-1 h-4 w-4" /> <Trans>Revoke</Trans>
-                        </Button>
-                    )}
-                    {canUpdate && (
-                        <Button variant="ghost" size="xs" onClick={() => setConfirm({ type: 'invalidate', id: row.original.id })}>
-                            <RefreshCcw className="mr-1 h-4 w-4" /> <Trans>Invalidate sessions</Trans>
-                        </Button>
-                    )}
-                </div>
+                <ActionCell
+                    row={row}
+                    canUpdate={canUpdate}
+                    onRotate={id => setConfirm({ type: 'rotate', id })}
+                    onRevoke={id => setConfirm({ type: 'revoke', id })}
+                    onInvalidate={id => setConfirm({ type: 'invalidate', id })}
+                />
             ),
         },
     ];
@@ -173,7 +250,9 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
                 page={page}
                 itemsPerPage={pageSize}
                 onPageChange={(_, p, per) => { setPage(p); setPageSize(per); }}
-                onRefresh={() => void refetch()}
+                onRefresh={() => {
+                    refetch();
+                }}
             />
 
             {/* Confirm dialog for rotate/revoke/invalidate */}
@@ -197,48 +276,25 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
                             )}
                         </DialogDescription>
                     </DialogHeader>
-                    {(() => {
-                        const target = items.find(k => k.id === confirm?.id);
-                        const requiredName = target?.name ?? '';
-                        const matches = confirmInput.trim() === requiredName;
-                        return (
-                            <div className="space-y-2">
-                                <div className="text-sm">
-                                    <Trans>
-                                        Please type the API key name to confirm:
-                                    </Trans>
-                                    {requiredName ? (
-                                        <span className="ml-1 rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                                            {requiredName}
-                                        </span>
-                                    ) : null}
-                                </div>
-                                <Input value={confirmInput} onChange={e => setConfirmInput(e.target.value)} />
-                                <div className="flex justify-end gap-2 pt-2">
-                                    <Button variant="outline" onClick={() => setConfirm(null)}><Trans>Cancel</Trans></Button>
-                                    <Button
-                                        variant={confirm?.type === 'revoke' ? 'destructive' : 'default'}
-                                        disabled={!matches || rotateMutation.isPending || revokeMutation.isPending || invalidateMutation.isPending}
-                                        onClick={() => {
-                                            if (!confirm) return;
-                                            if (confirm.type === 'rotate') {
-                                                rotateMutation.mutate(confirm.id);
-                                            } else if (confirm.type === 'revoke') {
-                                                revokeMutation.mutate(confirm.id);
-                                            } else {
-                                                invalidateMutation.mutate(confirm.id);
-                                            }
-                                            setConfirm(null);
-                                        }}
-                                    >
-                                        {confirm?.type === 'rotate' && <Trans>Rotate</Trans>}
-                                        {confirm?.type === 'revoke' && <Trans>Revoke</Trans>}
-                                        {confirm?.type === 'invalidate' && <Trans>Invalidate</Trans>}
-                                    </Button>
-                                </div>
-                            </div>
-                        );
-                    })()}
+                    <ConfirmDialogBody
+                        items={items}
+                        confirm={confirm}
+                        confirmInput={confirmInput}
+                        setConfirmInput={setConfirmInput}
+                        isPending={rotateMutation.isPending || revokeMutation.isPending || invalidateMutation.isPending}
+                        onCancel={() => setConfirm(null)}
+                        onConfirm={() => {
+                            if (!confirm) return;
+                            if (confirm.type === 'rotate') {
+                                rotateMutation.mutate(confirm.id);
+                            } else if (confirm.type === 'revoke') {
+                                revokeMutation.mutate(confirm.id);
+                            } else {
+                                invalidateMutation.mutate(confirm.id);
+                            }
+                            setConfirm(null);
+                        }}
+                    />
                 </DialogContent>
             </Dialog>
 

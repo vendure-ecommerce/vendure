@@ -20,9 +20,9 @@ import { SessionService } from './session.service';
 @Injectable()
 export class ApiKeyService {
     constructor(
-        private connection: TransactionalConnection,
-        private passwordCipher: PasswordCipher,
-        private sessionService: SessionService,
+        private readonly connection: TransactionalConnection,
+        private readonly passwordCipher: PasswordCipher,
+        private readonly sessionService: SessionService,
     ) {}
 
     /** List keys for an Administrator. @since 3.5.0 */
@@ -189,7 +189,7 @@ export class ApiKeyService {
 
     private getConfiguredPrefixes(): { live: string; test: string } {
         const cfg: any = getConfig() as any;
-        const opt = cfg?.authOptions?.adminApiKeyPrefix;
+        const opt = cfg?.authOptions?.adminApiKey?.prefix;
         if (typeof opt === 'string') {
             return { live: opt, test: opt };
         }

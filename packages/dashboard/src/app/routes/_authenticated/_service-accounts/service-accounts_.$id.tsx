@@ -68,26 +68,40 @@ function ServiceAccountDetailPage() {
                 customFields: entity.customFields,
                 roleIds: entity.user.roles.map(role => role.id),
                 isServiceAccount: true,
-            } as any;
+            };
         },
         transformUpdateInput: input => {
             // Allow updating the service account name (mapped to firstName). Keep other identity fields internal.
             const { firstName, lastName, emailAddress, password, ...rest } = input as any;
-            return { ...rest, firstName, isServiceAccount: true } as any;
+            return { ...rest, firstName, isServiceAccount: true };
         },
         transformCreateInput: input => {
             function rand(n = 16) {
                 const arr = new Uint32Array(n);
-                (globalThis.crypto || (window as any).crypto).getRandomValues(arr);
+                (globalThis.crypto ?? (window as any).crypto).getRandomValues(arr);
                 return Array.from(arr, v => v.toString(36)).join('').slice(0, n);
+            }
+            function toKebabCase(s: string) {
+                return s
+                    .normalize('NFKD')
+                    .replace(/[^\p{L}\p{N}]+/gu, '-')
+                    .replace(/^-+|-+$/g, '')
+                    .replace(/-{2,}/g, '-')
+                    .toLowerCase();
             }
             const baseId = Date.now().toString(36);
             const firstName = (input as any).firstName || 'Service';
             const lastName = (input as any).lastName || 'Account';
+            // Prefer a kebab-case identifier derived from the name; fall back to random if not available
+            const namePartRaw = (input as any).firstName as string | undefined;
+            const kebabName = namePartRaw ? toKebabCase(String(namePartRaw)) : '';
+            const generatedId = kebabName && kebabName.length > 0
+                ? `svc-${kebabName}-${baseId}-${rand(6)}`
+                : `svc-${baseId}-${rand(6)}`;
             // Vendure's identifier does not need to be an email. Use a simple stable identifier if none provided.
-            const emailAddress = (input as any).emailAddress || `svc_${baseId}_${rand(6)}`;
+            const emailAddress = (input as any).emailAddress || generatedId;
             const password = (input as any).password || `svc_${rand(24)}`;
-            return { ...input, firstName, lastName, emailAddress, password, isServiceAccount: true } as any;
+            return { ...input, firstName, lastName, emailAddress, password, isServiceAccount: true };
         },
         params: { id: params.id },
         onSuccess: async data => {
@@ -104,7 +118,7 @@ function ServiceAccountDetailPage() {
         },
     });
 
-    const name = (entity?.firstName && entity?.firstName.trim().length)
+    const name = (entity?.firstName?.trim()?.length)
         ? entity.firstName
         : (entity?.emailAddress || entity?.user?.identifier || '');
     const roleIds = form.watch('roleIds');

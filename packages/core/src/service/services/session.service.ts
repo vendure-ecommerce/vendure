@@ -118,7 +118,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
         let duration = this.sessionDurationInMs;
         if (authenticationStrategyName === 'apiKey') {
-            const configured = this.configService.authOptions.adminApiKeySessionDuration;
+            const configured = this.configService.authOptions.adminApiKey?.sessionDuration ?? '15m';
             duration = typeof configured === 'string' ? ms(configured) : configured;
         }
         const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
