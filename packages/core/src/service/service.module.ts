@@ -8,6 +8,7 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 import { SchedulerModule } from '../scheduler/scheduler.module';
 
 import { ActiveOrderService } from './helpers/active-order/active-order.service';
+import { ApiKeyAuthenticationService } from './helpers/api-key-authentication/api-key-authentication.service';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { EntityDuplicatorService } from './helpers/entity-duplicator/entity-duplicator.service';
@@ -109,6 +110,7 @@ const services = [
 ];
 
 const helpers = [
+    ApiKeyAuthenticationService,
     TranslatableSaver,
     PasswordCipher,
     OrderCalculator,
