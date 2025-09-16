@@ -15,8 +15,8 @@ const RolesHeader = () => <Trans>Roles</Trans>;
 const IdentifierHeader = () => <Trans>Identifier</Trans>;
 
 function NameCell({ row }: Readonly<{ row: any }>) {
-    const first = (row.original as any).firstName || '';
-    const last = (row.original as any).lastName || '';
+    const first = row.original.firstName || '';
+    const last = row.original.lastName || '';
     const fallback = row.original.user.roles[0]?.code || 'Service account';
     const label = (first || last) ? `${first} ${last}`.trim() : fallback;
     return <DetailPageButton id={row.original.id} label={label} />;

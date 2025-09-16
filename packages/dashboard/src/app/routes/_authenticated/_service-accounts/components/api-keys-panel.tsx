@@ -30,6 +30,13 @@ interface ApiKeysPanelProps {
 
 type ConfirmState = { type: 'rotate' | 'revoke' | 'invalidate'; id: string } | null;
 
+const ApiKeysContext = React.createContext<
+    Readonly<{
+        canUpdate: boolean;
+        setConfirm: (state: ConfirmState) => void;
+    }> | null
+>(null);
+
 const NameHeader = () => <Trans>Name</Trans>;
 const PrefixHeader = () => <Trans>Prefix</Trans>;
 const StatusHeader = () => <Trans>Status</Trans>;
@@ -141,6 +148,20 @@ function ActionCell({
     );
 }
 
+function ActionsCellRenderer({ row }: Readonly<{ row: any }>) {
+    const ctx = React.useContext(ApiKeysContext);
+    if (!ctx) return null;
+    return (
+        <ActionCell
+            row={row}
+            canUpdate={ctx.canUpdate}
+            onRotate={id => ctx.setConfirm({ type: 'rotate', id })}
+            onRevoke={id => ctx.setConfirm({ type: 'revoke', id })}
+            onInvalidate={id => ctx.setConfirm({ type: 'invalidate', id })}
+        />
+    );
+}
+
 /**
  * Lists and manages API keys for a service account.
  * Shows raw secret only once in a dialog on create/rotate.
@@ -248,22 +269,11 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
         { accessorKey: 'expiresAt', header: ExpiresHeader, cell: ExpiresCell as any },
         { accessorKey: 'lastUsedAt', header: LastUsedHeader, cell: LastUsedCell as any },
         { accessorKey: 'createdAt', header: CreatedHeader, cell: CreatedCell as any },
-        {
-            id: 'actions',
-            header: '',
-            cell: ({ row }) => (
-                <ActionCell
-                    row={row}
-                    canUpdate={canUpdate}
-                    onRotate={id => setConfirm({ type: 'rotate', id })}
-                    onRevoke={id => setConfirm({ type: 'revoke', id })}
-                    onInvalidate={id => setConfirm({ type: 'invalidate', id })}
-                />
-            ),
-        },
+        { id: 'actions', header: '', cell: ActionsCellRenderer as any },
     ];
 
     return (
+        <ApiKeysContext.Provider value={{ canUpdate, setConfirm }}>
         <div className="space-y-4">
             {/* Actions moved to PageBlock title via parent. This spacer remains minimal when needed. */}
             <DataTable
@@ -424,5 +434,6 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
                 </DialogContent>
             </Dialog>
         </div>
+        </ApiKeysContext.Provider>
     );
 }
