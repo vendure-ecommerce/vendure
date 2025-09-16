@@ -18,6 +18,7 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { normalizeString } from '@/vdb/lib/utils.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -81,20 +82,12 @@ function ServiceAccountDetailPage() {
                 (globalThis.crypto ?? (window as any).crypto).getRandomValues(arr);
                 return Array.from(arr, v => v.toString(36)).join('').slice(0, n);
             }
-            function toKebabCase(s: string) {
-                return s
-                    .normalize('NFKD')
-                    .replace(/[^\p{L}\p{N}]+/gu, '-')
-                    .replace(/^-+|-+$/g, '')
-                    .replace(/-{2,}/g, '-')
-                    .toLowerCase();
-            }
             const baseId = Date.now().toString(36);
             const firstName = (input as any).firstName || 'Service';
             const lastName = (input as any).lastName || 'Account';
             // Prefer a kebab-case identifier derived from the name; fall back to random if not available
             const namePartRaw = (input as any).firstName as string | undefined;
-            const kebabName = namePartRaw ? toKebabCase(String(namePartRaw)) : '';
+            const kebabName = namePartRaw ? normalizeString(String(namePartRaw), '-') : '';
             const generatedId = kebabName && kebabName.length > 0
                 ? `svc-${kebabName}-${baseId}-${rand(6)}`
                 : `svc-${baseId}-${rand(6)}`;
