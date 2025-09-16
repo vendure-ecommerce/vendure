@@ -272,8 +272,9 @@ export function ApiKeysPanel({ administratorId, createDialogOpen = false, onCrea
         { id: 'actions', header: '', cell: ActionsCellRenderer as any },
     ];
 
+    const apiKeysCtxValue = React.useMemo(() => ({ canUpdate, setConfirm }), [canUpdate, setConfirm]);
     return (
-        <ApiKeysContext.Provider value={{ canUpdate, setConfirm }}>
+        <ApiKeysContext.Provider value={apiKeysCtxValue}>
         <div className="space-y-4">
             {/* Actions moved to PageBlock title via parent. This spacer remains minimal when needed. */}
             <DataTable
