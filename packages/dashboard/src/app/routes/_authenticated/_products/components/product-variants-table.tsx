@@ -47,8 +47,12 @@ export function ProductVariantsTable({
                 productId,
             })}
             defaultVisibility={{
-                id: false,
-                currencyCode: false,
+                featuredAsset: true,
+                name: true,
+                enabled: true,
+                price: true,
+                priceWithTax: true,
+                stockLevels: true,
             }}
             customizeColumns={{
                 name: {
