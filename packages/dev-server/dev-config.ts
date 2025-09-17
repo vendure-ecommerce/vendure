@@ -20,7 +20,6 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
-import { LongRunningTaskPlugin } from './example-plugins/long-running-task-plugin/src/long-running-task';
 
 const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
@@ -143,7 +142,6 @@ export const devConfig: VendureConfig = {
             route: 'dashboard',
             appDir: path.join(__dirname, './dist'),
         }),
-        LongRunningTaskPlugin.init(),
     ],
 };
 
