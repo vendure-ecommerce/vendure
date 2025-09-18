@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="192" packageName="@vendure/job-queue-plugin" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="190" packageName="@vendure/job-queue-plugin" />
 
 This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
 job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
@@ -68,11 +68,9 @@ which is a web-based UI for interacting with Redis:
 version: "3"
 services:
   redis:
-    image: bitnami/redis:6.2
+    image: redis:7.4
     hostname: redis
     container_name: redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
   redis-commander:
