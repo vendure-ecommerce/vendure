@@ -94,6 +94,7 @@
         "@tanstack/react-table": "^8.21.2",
         "@tanstack/router-devtools": "^1.105.0",
         "@tanstack/router-plugin": "^1.105.0",
+        "@tiptap/extension-image": "^2.26.1",
         "@tiptap/extension-link": "^2.26.1",
         "@tiptap/pm": "^2.11.5",
         "@tiptap/react": "^2.11.5",

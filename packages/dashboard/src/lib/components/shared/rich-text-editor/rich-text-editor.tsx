@@ -1,3 +1,4 @@
+import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import TextStyle from '@tiptap/extension-text-style';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -23,6 +24,13 @@ const extensions = [
             class: 'text-primary underline underline-offset-2 cursor-pointer hover:text-primary/80',
         },
         validate: (href) => /^https?:\/\//.test(href),
+    }),
+    Image.configure({
+        inline: true,
+        allowBase64: true,
+        HTMLAttributes: {
+            class: 'rich-text-image',
+        },
     }),
 ];
 
@@ -195,6 +203,19 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
                 }
                 .rich-text-editor a:hover {
                     opacity: 0.8;
+                }
+                .rich-text-editor img,
+                .rich-text-editor .rich-text-image {
+                    max-width: 100%;
+                    height: auto;
+                    display: inline-block;
+                    margin: 0.5em 0;
+                    border-radius: 4px;
+                }
+                .rich-text-editor img.ProseMirror-selectednode,
+                .rich-text-editor .rich-text-image.ProseMirror-selectednode {
+                    outline: 2px solid hsl(var(--primary));
+                    outline-offset: 2px;
                 }
                 .rich-text-editor code {
                     background-color: hsl(var(--muted));

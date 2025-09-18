@@ -2,6 +2,7 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { Editor } from '@tiptap/react';
 import {
     BoldIcon,
+    ImageIcon,
     ItalicIcon,
     LinkIcon,
     ListIcon,
@@ -15,6 +16,7 @@ import { useState } from 'react';
 import { Button } from '../../ui/button.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select.js';
 import { Separator } from '../../ui/separator.js';
+import { ImageDialog } from './image-dialog.js';
 import { LinkDialog } from './link-dialog.js';
 
 export interface EditorToolbarProps {
@@ -24,6 +26,7 @@ export interface EditorToolbarProps {
 
 export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+    const [imageDialogOpen, setImageDialogOpen] = useState(false);
 
     if (!editor) return null;
 
@@ -145,6 +148,16 @@ export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
                     type="button"
                     variant="ghost"
                     size="sm"
+                    onClick={() => setImageDialogOpen(true)}
+                    className={`h-8 px-2 ${editor.isActive('image') ? 'bg-accent' : ''}`}
+                    disabled={disabled}
+                >
+                    <ImageIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
                     className={`h-8 px-2 ${editor.isActive('blockquote') ? 'bg-accent' : ''}`}
                     disabled={disabled}
@@ -182,6 +195,12 @@ export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
                 editor={editor}
                 isOpen={linkDialogOpen}
                 onClose={() => setLinkDialogOpen(false)}
+            />
+
+            <ImageDialog
+                editor={editor}
+                isOpen={imageDialogOpen}
+                onClose={() => setImageDialogOpen(false)}
             />
         </div>
     );
