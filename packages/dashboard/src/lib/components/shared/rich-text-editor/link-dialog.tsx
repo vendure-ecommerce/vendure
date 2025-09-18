@@ -1,23 +1,11 @@
 import { Trans } from '@/vdb/lib/trans.js';
 import { Editor } from '@tiptap/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../../ui/button.js';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '../../ui/dialog.js';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog.js';
 import { Input } from '../../ui/input.js';
 import { Label } from '../../ui/label.js';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../../ui/select.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select.js';
 
 export interface LinkDialogProps {
     editor: Editor;
@@ -33,8 +21,11 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
     useEffect(() => {
         if (isOpen) {
             // Get current link attributes if editing existing link
-            const { href: currentHref, target: currentTarget, title: currentTitle } =
-                editor.getAttributes('link');
+            const {
+                href: currentHref,
+                target: currentTarget,
+                title: currentTitle,
+            } = editor.getAttributes('link');
 
             setHref(currentHref || '');
             setTitle(currentTitle || '');
@@ -64,8 +55,7 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
                 .setLink({
                     href,
                     target,
-                    title: title || undefined,
-                    rel: target === '_blank' ? 'noopener noreferrer' : undefined
+                    rel: target === '_blank' ? 'noopener noreferrer' : undefined,
                 })
                 .run();
         }
@@ -87,7 +77,7 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
     const isEditing = editor.isActive('link');
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <Dialog open={isOpen} onOpenChange={open => !open && handleClose()}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
@@ -102,7 +92,7 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
                         <Input
                             id="link-href"
                             value={href}
-                            onChange={(e) => setHref(e.target.value)}
+                            onChange={e => setHref(e.target.value)}
                             placeholder="https://example.com"
                             className="col-span-3"
                             autoFocus
@@ -115,7 +105,7 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
                         <Input
                             id="link-title"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={e => setTitle(e.target.value)}
                             placeholder=""
                             className="col-span-3"
                         />
@@ -124,7 +114,10 @@ export function LinkDialog({ editor, isOpen, onClose }: Readonly<LinkDialogProps
                         <Label htmlFor="link-target" className="text-right">
                             <Trans>Link target</Trans>
                         </Label>
-                        <Select value={target} onValueChange={(value) => setTarget(value as '_self' | '_blank')}>
+                        <Select
+                            value={target}
+                            onValueChange={value => setTarget(value as '_self' | '_blank')}
+                        >
                             <SelectTrigger className="col-span-3">
                                 <SelectValue />
                             </SelectTrigger>

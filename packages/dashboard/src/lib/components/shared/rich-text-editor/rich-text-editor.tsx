@@ -1,9 +1,13 @@
+import { FloatingMenu } from '@tiptap/extension-floating-menu';
 import Image from '@tiptap/extension-image';
+import { TableKit } from '@tiptap/extension-table';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useLayoutEffect, useRef } from 'react';
 import { EditorToolbar } from './editor-toolbar.js';
+import { TableDeleteMenu } from './table-delete-menu.js';
+import { TableEditIcons } from './table-edit-icons.js';
 
 const extensions = [
     TextStyle.configure(),
@@ -31,6 +35,21 @@ const extensions = [
             class: 'rich-text-image',
         },
     }),
+    TableKit.configure({
+        tableCell: {
+            HTMLAttributes: {
+                class: 'rich-text-table-cell',
+            },
+        },
+        tableHeader: {
+            HTMLAttributes: {
+                class: 'rich-text-table-header',
+            },
+        },
+    }),
+    FloatingMenu.configure({
+        shouldShow: null, // Let individual floating menus control when they show
+    }),
 ];
 
 export interface RichTextEditorProps {
@@ -52,7 +71,6 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
         onUpdate: ({ editor }) => {
             if (!disabled) {
                 isInternalUpdate.current = true;
-                console.log('onUpdate');
                 const newValue = editor.getHTML();
                 if (value !== newValue) {
                     onChange(newValue);
@@ -71,7 +89,7 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
             const currentContent = editor.getHTML();
             if (currentContent !== value) {
                 const { from, to } = editor.state.selection;
-                editor.commands.setContent(value, false);
+                editor.commands.setContent(value, { emitUpdate: false });
                 editor.commands.setTextSelection({ from, to });
             }
         }
@@ -92,6 +110,8 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
         <div className="border rounded-md overflow-hidden">
             <EditorToolbar editor={editor} disabled={disabled} />
             <EditorContent editor={editor} />
+            <TableEditIcons editor={editor} disabled={disabled} />
+            <TableDeleteMenu editor={editor} disabled={disabled} />
             <style>{`
                 .rich-text-editor h1 {
                     font-size: 2em;
@@ -215,6 +235,69 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
                 .rich-text-editor .rich-text-image.ProseMirror-selectednode {
                     outline: 2px solid hsl(var(--primary));
                     outline-offset: 2px;
+                }
+                .rich-text-editor table {
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    table-layout: auto;
+                    width: 100%;
+                    margin: 1em 0;
+                    overflow: hidden;
+                    border: 2px solid var(--color-muted);
+                    border-radius: 6px;
+                }
+                .rich-text-editor table colgroup,
+                .rich-text-editor table col {
+                    display: none;
+                }
+                .rich-text-editor table td,
+                .rich-text-editor table th,
+                .rich-text-editor .rich-text-table-cell,
+                .rich-text-editor .rich-text-table-header {
+                    min-width: 1em;
+                    border-right: 1px solid var(--color-muted);
+                    border-bottom: 1px solid var(--color-muted);
+                    padding: 8px 12px;
+                    vertical-align: top;
+                    box-sizing: border-box;
+                    position: relative;
+                    background-color: hsl(var(--background));
+                }
+                .rich-text-editor table td:last-child,
+                .rich-text-editor table th:last-child {
+                    border-right: none;
+                }
+                .rich-text-editor table tr:last-child td,
+                .rich-text-editor table tr:last-child th {
+                    border-bottom: none;
+                }
+                .rich-text-editor table th,
+                .rich-text-editor .rich-text-table-header {
+                    font-weight: 600;
+                    text-align: left;
+                    background-color: hsl(var(--muted));
+                }
+                .rich-text-editor table .selectedCell {
+                    background-color: hsl(var(--accent));
+                }
+                .rich-text-editor table .column-resize-handle {
+                    position: absolute;
+                    right: -2px;
+                    top: 0;
+                    bottom: 0;
+                    width: 4px;
+                    background-color: hsl(var(--primary));
+                    pointer-events: none;
+                }
+                .rich-text-editor table p {
+                    margin: 0;
+                }
+                .rich-text-editor .tableWrapper {
+                    overflow-x: auto;
+                }
+                .rich-text-editor .resize-cursor {
+                    cursor: ew-resize;
+                    cursor: col-resize;
                 }
                 .rich-text-editor code {
                     background-color: hsl(var(--muted));

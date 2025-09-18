@@ -10,6 +10,7 @@ import {
     QuoteIcon,
     Redo2Icon,
     StrikethroughIcon,
+    TableIcon,
     Undo2Icon,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -163,6 +164,17 @@ export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
                     disabled={disabled}
                 >
                     <QuoteIcon className="h-4 w-4" />
+                </Button>
+
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                    className={`h-8 px-2 ${editor.isActive('table') ? 'bg-accent' : ''}`}
+                    disabled={disabled || !editor.can().insertTable()}
+                >
+                    <TableIcon className="h-4 w-4" />
                 </Button>
             </div>
 

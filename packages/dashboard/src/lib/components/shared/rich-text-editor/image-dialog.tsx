@@ -1,19 +1,14 @@
 import { Trans } from '@/vdb/lib/trans.js';
+import { SetImageOptions } from '@tiptap/extension-image';
 import { Editor } from '@tiptap/react';
 import { ImageIcon, PaperclipIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../../ui/button.js';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '../../ui/dialog.js';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../ui/dialog.js';
 import { Input } from '../../ui/input.js';
 import { Label } from '../../ui/label.js';
-import { AssetPickerDialog } from '../asset/asset-picker-dialog.js';
 import { Asset } from '../asset/asset-gallery.js';
+import { AssetPickerDialog } from '../asset/asset-picker-dialog.js';
 
 export interface ImageDialogProps {
     editor: Editor;
@@ -33,8 +28,13 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
     useEffect(() => {
         if (isOpen) {
             // Get current image attributes if editing existing image
-            const { src: currentSrc, alt: currentAlt, title: currentTitle, width: currentWidth, height: currentHeight } =
-                editor.getAttributes('image');
+            const {
+                src: currentSrc,
+                alt: currentAlt,
+                title: currentTitle,
+                width: currentWidth,
+                height: currentHeight,
+            } = editor.getAttributes('image');
 
             setSrc(currentSrc || '');
             setAlt(currentAlt || '');
@@ -50,7 +50,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
             return;
         }
 
-        const attrs: Record<string, any> = {
+        const attrs: SetImageOptions = {
             src,
             alt: alt || undefined,
             title: title || undefined,
@@ -64,11 +64,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
             attrs.height = Number(height);
         }
 
-        editor
-            .chain()
-            .focus()
-            .setImage(attrs)
-            .run();
+        editor.chain().focus().setImage(attrs).run();
 
         handleClose();
     };
@@ -103,7 +99,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
 
     return (
         <>
-            <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+            <Dialog open={isOpen} onOpenChange={open => !open && handleClose()}>
                 <DialogContent className="sm:max-w-[525px]">
                     <DialogHeader>
                         <DialogTitle>
@@ -144,7 +140,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
                             <Input
                                 id="image-source"
                                 value={src}
-                                onChange={(e) => {
+                                onChange={e => {
                                     setSrc(e.target.value);
                                     setPreviewUrl(e.target.value);
                                 }}
@@ -160,7 +156,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
                             <Input
                                 id="image-title"
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={e => setTitle(e.target.value)}
                                 placeholder=""
                             />
                         </div>
@@ -172,7 +168,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
                             <Input
                                 id="image-alt"
                                 value={alt}
-                                onChange={(e) => setAlt(e.target.value)}
+                                onChange={e => setAlt(e.target.value)}
                                 placeholder=""
                             />
                         </div>
@@ -186,7 +182,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
                                     id="image-width"
                                     type="number"
                                     value={width}
-                                    onChange={(e) => setWidth(e.target.value)}
+                                    onChange={e => setWidth(e.target.value)}
                                     placeholder="auto"
                                 />
                             </div>
@@ -198,7 +194,7 @@ export function ImageDialog({ editor, isOpen, onClose }: Readonly<ImageDialogPro
                                     id="image-height"
                                     type="number"
                                     value={height}
-                                    onChange={(e) => setHeight(e.target.value)}
+                                    onChange={e => setHeight(e.target.value)}
                                     placeholder="auto"
                                 />
                             </div>
