@@ -6,7 +6,10 @@ import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
 } from '@/vdb/framework/dashboard-widget/widget-extensions.js';
-import { DefinedDateRange, WidgetFiltersProvider } from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
+import {
+    DefinedDateRange,
+    WidgetFiltersProvider,
+} from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
 import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
@@ -20,9 +23,6 @@ import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { endOfDay, startOfMonth } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
 
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
