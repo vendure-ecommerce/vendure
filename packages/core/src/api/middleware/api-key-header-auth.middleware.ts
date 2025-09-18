@@ -25,8 +25,18 @@ export class ApiKeyHeaderAuthMiddleware implements NestMiddleware {
         try {
             const authHeader = req.get('Authorization');
             if (!authHeader) return next();
-            const apiKeyMatch = authHeader.trim().match(/^apikey\s+(.+)$/i);
-            if (!apiKeyMatch) return next();
+            // Parse scheme and token without complex regex to avoid potential backtracking DoS.
+            // Accept: 'ApiKey <token>' (case-insensitive).
+            let token: string | undefined;
+            const trimmed = authHeader.trim();
+            if (trimmed.length >= 6 && trimmed.slice(0, 6).toLowerCase() === 'apikey') {
+                const rest = trimmed.slice(6);
+                // Require at least one whitespace after scheme
+                if (/^\s+/.test(rest)) {
+                    token = rest.trim();
+                }
+            }
+            if (!token) return next();
 
             const path = ((req.baseUrl ?? '') + (req.path ?? '')).toLowerCase();
             const adminBase = `/${this.configService.apiOptions.adminApiPath}`.toLowerCase();
@@ -50,7 +60,7 @@ export class ApiKeyHeaderAuthMiddleware implements NestMiddleware {
             if (!apiType) return next();
 
             const tmpCtx = await this.requestContextService.create({ apiType, req });
-            const result = await this.apiKeyService.verifyRawKey(tmpCtx, apiKeyMatch[1]);
+            const result = await this.apiKeyService.verifyRawKey(tmpCtx, token);
             if (!result) return next();
             if (apiType === 'admin' && result.apiKey.scope !== 'admin') return next();
             if (apiType === 'shop' && result.apiKey.scope !== 'shop') return next();

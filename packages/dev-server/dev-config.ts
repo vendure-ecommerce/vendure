@@ -12,7 +12,7 @@ import {
     SettingsStoreScopes,
     VendureConfig,
     NativeAuthenticationStrategy,
-    ApiKeyAdminAuthStrategy,
+    ApiKeyAuthenticationStrategy,
 } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -56,7 +56,7 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
-        adminAuthenticationStrategy: [new NativeAuthenticationStrategy(), new ApiKeyAdminAuthStrategy()],
+        adminAuthenticationStrategy: [new NativeAuthenticationStrategy(), new ApiKeyAuthenticationStrategy()],
     },
     dbConnectionOptions: {
         synchronize: false,

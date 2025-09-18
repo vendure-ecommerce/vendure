@@ -394,7 +394,8 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
             .andWhere('session.invalidated = false')
             .andWhere('session.expires > :now', { now: new Date() })
             .orderBy('session.updatedAt', 'DESC');
-        return qb.getOne() ?? undefined;
+        const found = await qb.getOne();
+        return found ?? undefined;
     }
 
     /**
