@@ -104,7 +104,7 @@ export function TableEditIcons({ editor, disabled }: Readonly<TableEditIconsProp
 
     if (!editor) return null;
 
-    const { cellRect, tableRect, columnIndex, rowIndex } = cellPosition;
+    const { cellRect, tableRect } = cellPosition;
 
     if (!cellRect || !tableRect) return null;
 
