@@ -1,6 +1,5 @@
 import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import TextStyle from '@tiptap/extension-text-style';
+import { TextStyle } from '@tiptap/extension-text-style';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useLayoutEffect, useRef } from 'react';
@@ -17,13 +16,13 @@ const extensions = [
             keepMarks: true,
             keepAttributes: false,
         },
-    }),
-    Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-            class: 'text-primary underline underline-offset-2 cursor-pointer hover:text-primary/80',
+        link: {
+            openOnClick: false,
+            HTMLAttributes: {
+                class: 'text-primary underline underline-offset-2 cursor-pointer hover:text-primary/80',
+            },
+            validate: href => /^https?:\/\//.test(href),
         },
-        validate: (href) => /^https?:\/\//.test(href),
     }),
     Image.configure({
         inline: true,
