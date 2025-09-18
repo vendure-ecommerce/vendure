@@ -5,7 +5,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useLayoutEffect, useRef } from 'react';
-import { EditorToolbar } from './editor-toolbar.js';
+import { ResponsiveToolbar } from './responsive-toolbar.js';
 import { TableDeleteMenu } from './table-delete-menu.js';
 import { TableEditIcons } from './table-edit-icons.js';
 
@@ -108,7 +108,7 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
 
     return (
         <div className="border rounded-md overflow-hidden">
-            <EditorToolbar editor={editor} disabled={disabled} />
+            <ResponsiveToolbar editor={editor} disabled={disabled} />
             <EditorContent editor={editor} />
             <TableEditIcons editor={editor} disabled={disabled} />
             <TableDeleteMenu editor={editor} disabled={disabled} />
