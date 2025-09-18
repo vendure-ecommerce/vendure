@@ -154,13 +154,13 @@ export function DateRangePicker({ className, dateRange, onDateRangeChange }: Dat
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
                 <div className="flex">
-                    <div className="border-r p-2 space-y-1">
+                    <div className="border-r p-2 space-y-0.5 min-w-0 w-32">
                         {presets.map((preset) => (
                             <Button
                                 key={preset.label}
                                 variant={isPresetActive(preset) ? 'default' : 'ghost'}
                                 size="sm"
-                                className="w-full justify-start font-normal"
+                                className="w-full justify-start font-normal text-xs h-7 px-2"
                                 onClick={() => handlePresetClick(preset)}
                             >
                                 {preset.label}
