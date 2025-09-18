@@ -42,7 +42,7 @@ interface ToolbarItem {
     isActive?: boolean;
 }
 
-export function ResponsiveToolbar({ editor, disabled }: ResponsiveToolbarProps) {
+export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolbarProps>) {
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
     const [visibleItems, setVisibleItems] = useState<string[]>([]);
@@ -398,39 +398,37 @@ export function ResponsiveToolbar({ editor, disabled }: ResponsiveToolbarProps) 
             {visibleElements}
 
             {overflowElements.length > 0 && (
-                <>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2"
-                                disabled={disabled}
-                            >
-                                <MoreHorizontalIcon className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {overflowElements.map((item, index) => (
-                                <div key={item.id}>
-                                    <DropdownMenuItem
-                                        onClick={item.action}
-                                        disabled={disabled}
-                                        className={item.isActive ? 'bg-accent' : ''}
-                                    >
-                                        <Trans>{item.label}</Trans>
-                                    </DropdownMenuItem>
-                                    {(index < overflowElements.length - 1 && index === 2) ||
-                                    index === 4 ||
-                                    index === 7 ? (
-                                        <DropdownMenuSeparator />
-                                    ) : null}
-                                </div>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2"
+                            disabled={disabled}
+                        >
+                            <MoreHorizontalIcon className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {overflowElements.map((item, index) => (
+                            <div key={item.id}>
+                                <DropdownMenuItem
+                                    onClick={item.action}
+                                    disabled={disabled}
+                                    className={item.isActive ? 'bg-accent' : ''}
+                                >
+                                    <Trans>{item.label}</Trans>
+                                </DropdownMenuItem>
+                                {(index < overflowElements.length - 1 && index === 2) ||
+                                index === 4 ||
+                                index === 7 ? (
+                                    <DropdownMenuSeparator />
+                                ) : null}
+                            </div>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             )}
 
             <LinkDialog editor={editor} isOpen={linkDialogOpen} onClose={() => setLinkDialogOpen(false)} />

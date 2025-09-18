@@ -58,7 +58,7 @@ export interface RichTextEditorProps {
     disabled?: boolean;
 }
 
-export function RichTextEditor({ value, onChange, disabled = false }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, disabled = false }: Readonly<RichTextEditorProps>) {
     const isInternalUpdate = useRef(false);
 
     const editor = useEditor({
