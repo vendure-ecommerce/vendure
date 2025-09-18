@@ -83,8 +83,6 @@ jobs:
                 # which causes e2e test failures currently
                 image: mariadb:11.5
                 env:
-                    MARIADB_USER: vendure
-                    MARIADB_PASSWORD: password
                     MARIADB_ROOT_PASSWORD: password
                 ports:
                     - 3306
@@ -92,9 +90,6 @@ jobs:
             mysql:
                 image: mysql:8.0
                 env:
-                    MYSQL_DATABASE: vendure
-                    MYSQL_USER: vendure
-                    MYSQL_PASSWORD: password
                     MYSQL_ROOT_PASSWORD: password
                 ports:
                     - 3306
