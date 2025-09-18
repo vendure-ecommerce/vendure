@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { MetricsChart } from './chart.js';
 import { orderChartDataQuery } from './metrics-widget.graphql.js';
 
@@ -19,11 +20,13 @@ enum DATA_TYPES {
 export function MetricsWidget() {
     const { formatDate, formatCurrency } = useLocalFormat();
     const { activeChannel } = useChannel();
+    const { dateRange } = useWidgetFilters();
     const [dataType, setDataType] = useState<DATA_TYPES>(DATA_TYPES.OrderTotal);
 
-    const { data, isRefetching, refetch } = useQuery({
-        queryKey: ['dashboard-order-metrics', dataType],
+    const { data, refetch, isRefetching } = useQuery({
+        queryKey: ['dashboard-order-metrics', dataType, dateRange],
         queryFn: () => {
+            // TODO: When the API supports date filtering, pass dateRange.from and dateRange.to
             return api.query(orderChartDataQuery, {
                 types: [dataType],
                 refresh: true,

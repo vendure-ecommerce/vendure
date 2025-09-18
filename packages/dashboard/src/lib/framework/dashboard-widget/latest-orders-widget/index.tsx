@@ -11,11 +11,13 @@ import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
 import { useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
 
 export const WIDGET_ID = 'latest-orders-widget';
 
 export function LatestOrdersWidget() {
+    const { dateRange } = useWidgetFilters();
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: 'orderPlacedAt',
