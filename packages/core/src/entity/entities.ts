@@ -1,5 +1,6 @@
 import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
+import { ApiKey } from './api-key/api-key.entity';
 import { Asset } from './asset/asset.entity';
 import { AuthenticationMethod } from './authentication-method/authentication-method.entity';
 import { ExternalAuthenticationMethod } from './authentication-method/external-authentication-method.entity';
@@ -75,6 +76,7 @@ import { Zone } from './zone/zone.entity';
  * A map of all the core database entities.
  */
 export const coreEntitiesMap = {
+    ApiKey,
     Address,
     Administrator,
     Allocation,

@@ -410,6 +410,39 @@ export interface AuthOptions {
     sessionDuration?: string | number;
     /**
      * @description
+     * API key configuration.
+     * @since 3.5.0
+     */
+    apiKey?: {
+        /**
+         * @description
+         * Strategy used to generate and fingerprint API keys globally (Admin/Shop).
+         * @default DefaultApiKeyGenerationStrategy
+         */
+        generationStrategy?: import('./auth/api-key-generation-strategy').ApiKeyGenerationStrategy;
+        /**
+         * @description
+         * Admin API options.
+         * - enabled: turn Admin header-based API key auth on/off (default true)
+         * - sessionDuration: base TTL for API-key sessions on Admin API (still capped by key expiry)
+         */
+        admin?: {
+            enabled?: boolean;
+            sessionDuration?: string | number;
+        };
+        /**
+         * @description
+         * Shop API options.
+         * - enabled: turn Shop header-based API key auth on/off (default false)
+         * - sessionDuration: base TTL for API-key sessions on Shop API (still capped by key expiry)
+         */
+        shop?: {
+            enabled?: boolean;
+            sessionDuration?: string | number;
+        };
+    };
+    /**
+     * @description
      * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
      * the underlying cache strategy defined in the {@link SystemOptions}`.cacheStrategy`.
      *

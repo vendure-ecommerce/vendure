@@ -40,6 +40,15 @@ export abstract class Session extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => Channel)
     activeChannel: Channel | null;
 
+    /**
+     * If this session was created via an Admin API key, this links the session to the key used.
+     * Allows targeted invalidation on key revocation or rotation.
+     * @since 3.5.0
+     */
+    @Index()
+    @Column({ nullable: true })
+    apiKeyId?: string;
+
     @Column(type => CustomSessionFields)
     customFields: CustomSessionFields;
 }

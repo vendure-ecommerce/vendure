@@ -170,6 +170,17 @@ export function usePaginatedList() {
 export interface RowAction<T> {
     label: React.ReactNode;
     onClick?: (row: Row<T>) => void;
+    /** Optional visual variant (e.g., destructive) */
+    variant?: 'default' | 'destructive';
+    /** Optional confirm dialog settings */
+    confirm?: {
+        title?: React.ReactNode;
+        description?: React.ReactNode;
+        confirmText?: React.ReactNode;
+        cancelText?: React.ReactNode;
+    };
+    /** Optional disabled state: boolean or function using current row */
+    disabled?: boolean | ((row: Row<T>) => boolean);
 }
 
 export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;

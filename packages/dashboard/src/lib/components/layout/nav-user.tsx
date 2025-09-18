@@ -115,6 +115,9 @@ export function NavUser() {
                                 <DropdownMenuItem asChild>
                                     <Link to="/profile">Profile</Link>
                                 </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to="/api-keys">API Keys</Link>
+                                </DropdownMenuItem>
                                 <DialogTrigger asChild>
                                     <DropdownMenuItem>Language</DropdownMenuItem>
                                 </DialogTrigger>

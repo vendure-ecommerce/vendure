@@ -10,6 +10,7 @@ import { ServiceModule } from '../service/service.module';
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { VENDURE_ADMIN_API_TYPE_PATHS, VENDURE_SHOP_API_TYPE_PATHS } from './constants';
+import { ApiKeyHeaderAuthMiddleware } from './middleware/api-key-header-auth.middleware';
 import { AuthGuard } from './middleware/auth-guard';
 import { CustomFieldProcessingInterceptor } from './middleware/custom-field-processing-interceptor';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
@@ -83,5 +84,26 @@ export class ApiModule implements NestModule {
         consumer
             .apply(graphqlUploadExpress({ maxFileSize: uploadMaxFileSize }))
             .forRoutes(adminApiPath, shopApiPath);
+
+        // Conditionally register API key header auth middleware when enabled & strategy present
+        const apiKeyCfg: any = this.configService.authOptions.apiKey ?? {};
+        const adminEnabled = apiKeyCfg.admin?.enabled ?? true;
+        const shopEnabled = apiKeyCfg.shop?.enabled ?? false;
+        const adminHasStrategy = !!this.configService.authOptions.adminAuthenticationStrategy?.some(
+            s => s.name === 'apiKey',
+        );
+        const shopHasStrategy = !!this.configService.authOptions.shopAuthenticationStrategy?.some(
+            s => s.name === 'apiKey',
+        );
+        const applyRoutes: string[] = [];
+        if (adminEnabled && adminHasStrategy) {
+            applyRoutes.push(adminApiPath);
+        }
+        if (shopEnabled && shopHasStrategy) {
+            applyRoutes.push(shopApiPath);
+        }
+        if (applyRoutes.length) {
+            consumer.apply(ApiKeyHeaderAuthMiddleware).forRoutes(...applyRoutes);
+        }
     }
 }

@@ -4,7 +4,7 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { ReplicationMode, EntityManager } from 'typeorm';
+import { EntityManager, ReplicationMode } from 'typeorm';
 
 import {
     REQUEST_CONTEXT_KEY,
@@ -25,6 +25,7 @@ export type SerializedRequestContext = {
     _languageCode: LanguageCode;
     _isAuthorized: boolean;
     _authorizedAsOwnerOnly: boolean;
+    _apiKeyId?: ID;
 };
 
 /**
@@ -187,6 +188,7 @@ export class RequestContext {
     private readonly _apiType: ApiType;
     private readonly _req?: Request;
     private _replicationMode?: ReplicationMode;
+    private _apiKeyId?: ID;
 
     /**
      * @internal
@@ -201,6 +203,7 @@ export class RequestContext {
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
         translationFn?: TFunction;
+        apiKeyId?: ID;
     }) {
         const { req, apiType, channel, session, languageCode, currencyCode, translationFn } = options;
         this._req = req;
@@ -212,6 +215,7 @@ export class RequestContext {
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
+        this._apiKeyId = options.apiKeyId;
     }
 
     /**
@@ -248,6 +252,7 @@ export class RequestContext {
             languageCode: ctxObject._languageCode,
             isAuthorized: ctxObject._isAuthorized,
             authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
+            apiKeyId: ctxObject._apiKeyId,
         });
     }
 
@@ -330,6 +335,26 @@ export class RequestContext {
 
     get session(): CachedSession | undefined {
         return this._session;
+    }
+
+    /**
+     * @description
+     * Set the Admin API key id used to authenticate this context, if any.
+     * Used to associate the created session to the API key for targeted invalidation.
+     * @since 3.5.0
+     * @internal
+     */
+    setApiKeyId(id: ID) {
+        this._apiKeyId = id;
+    }
+
+    /**
+     * @description
+     * The Admin API key id used to authenticate this context, if any.
+     * @since 3.5.0
+     */
+    get apiKeyId(): ID | undefined {
+        return this._apiKeyId;
     }
 
     get activeUserId(): ID | undefined {

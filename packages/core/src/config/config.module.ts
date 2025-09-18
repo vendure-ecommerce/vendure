@@ -84,6 +84,8 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             passwordValidationStrategy,
             verificationTokenStrategy,
         } = this.configService.authOptions;
+        const { generationStrategy: apiKeyGenerationStrategy } =
+            (this.configService.authOptions as any).apiKey ?? {};
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
         const { schedulerStrategy } = this.configService.schedulerOptions;
@@ -118,6 +120,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
             sessionCacheStrategy,
+            ...(apiKeyGenerationStrategy ? [apiKeyGenerationStrategy] : []),
             passwordHashingStrategy,
             passwordValidationStrategy,
             verificationTokenStrategy,

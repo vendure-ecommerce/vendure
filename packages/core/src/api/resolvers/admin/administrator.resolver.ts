@@ -32,7 +32,8 @@ export class AdministratorResolver {
         @Args() args: QueryAdministratorsArgs,
         @Relations(Administrator) relations: RelationPaths<Administrator>,
     ): Promise<PaginatedList<Administrator>> {
-        return this.administratorService.findAll(ctx, args.options || undefined, relations);
+        const options = args.options ?? undefined;
+        return this.administratorService.findAll(ctx, options, relations);
     }
 
     @Query()

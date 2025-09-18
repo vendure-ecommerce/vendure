@@ -504,8 +504,6 @@ msgstr ""
 
 #: src/lib/components/shared/confirmation-dialog.tsx:43
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:378
-msgid "Cancel"
-msgstr ""
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:189
 msgid "Channel defaults"
@@ -570,8 +568,6 @@ msgid "Coupon code"
 msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:289
-msgid "Create"
-msgstr ""
 
 #. placeholder {0}: variantData ? Object.values(variantData.variants).filter(v => v.enabled).length : 0
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:214
@@ -805,8 +801,6 @@ msgid "Gross price: <0/>"
 msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:63
-msgid "Identifier"
-msgstr ""
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:177
 msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
@@ -876,8 +870,6 @@ msgstr ""
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:99
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:110
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:153
-msgid "Name"
-msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:38
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:95
@@ -1198,8 +1190,6 @@ msgstr ""
 
 #: src/app/routes/_authenticated/_roles/roles.tsx:17
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:139
-msgid "Roles"
-msgstr ""
 
 #: src/lib/components/layout/language-dialog.tsx:70
 msgid "Sample Formatting"
@@ -1319,8 +1309,6 @@ msgid "State/Province"
 msgstr ""
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:249
-msgid "Status"
-msgstr ""
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:192
 msgid "Stock"
@@ -1577,3 +1565,72 @@ msgstr ""
 #: src/app/routes/_authenticated/_zones/zones.tsx:14
 msgid "Zones"
 msgstr ""
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts.tsx:1
+msgid "Service Accounts"
+msgstr "Dienstkonten"
+
+
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Service Account"
+msgstr "Dienstkonto"
+
+
+msgid "New Service Account"
+msgstr "Neues Dienstkonto"
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts_.$id.tsx
+msgid "Account type"
+msgstr "Kontotyp"
+
+msgid "Service accounts cannot sign in with a password."
+msgstr "Dienstkonten können sich nicht mit einem Passwort anmelden."
+
+#: API Keys panel
+msgid "API Keys"
+msgstr "API-Schlüssel"
+
+msgid "New API Key"
+msgstr "Neuer API-Schlüssel"
+
+msgid "Expires"
+msgstr "Läuft ab"
+
+msgid "Last used"
+msgstr "Zuletzt verwendet"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "Rotate"
+msgstr "Rotieren"
+
+msgid "Revoke"
+msgstr "Widerrufen"
+
+msgid "Invalidate Sessions"
+msgstr "Sitzungen ungültig machen"
+
+msgid "Create API Key"
+msgstr "API-Schlüssel erstellen"
+
+msgid "Generate a new Admin API key. The raw secret will be shown only once."
+msgstr "Einen neuen Admin-API-Schlüssel erzeugen. Das Geheimnis wird nur einmal angezeigt."
+
+msgid "Expires at (optional)"
+msgstr "Ablaufdatum (optional)"
+
+
+
+msgid "API key created"
+msgstr "API-Schlüssel erstellt"
+
+msgid "Copy and store this secret now. It cannot be shown again."
+msgstr "Kopieren und speichern Sie dieses Geheimnis jetzt. Es kann nicht erneut angezeigt werden."
+
+
+msgid "I’ve saved this key"
+msgstr "Ich habe diesen Schlüssel gespeichert"

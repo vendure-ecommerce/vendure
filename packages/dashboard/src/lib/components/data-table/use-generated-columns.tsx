@@ -227,14 +227,49 @@ function getRowActions(
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        {rowActions?.map((action, index) => (
-                            <DropdownMenuItem
-                                onClick={() => action.onClick?.(row)}
-                                key={`${action.label}-${index}`}
-                            >
-                                {action.label}
-                            </DropdownMenuItem>
-                        ))}
+                        {rowActions?.map((action, index) => {
+                            const isDisabled = typeof action.disabled === 'function'
+                                ? action.disabled(row)
+                                : !!action.disabled;
+                            const item = (
+                                <DropdownMenuItem
+                                    onClick={() => !action.confirm && !isDisabled && action.onClick?.(row)}
+                                    onSelect={e => action.confirm && !isDisabled && e.preventDefault()}
+                                    disabled={isDisabled}
+                                    key={`${index}`}
+                                >
+                                    {action.label}
+                                </DropdownMenuItem>
+                            );
+                            if (action.confirm && !isDisabled) {
+                                return (
+                                    <AlertDialog key={`confirm-${index}`}>
+                                        <AlertDialogTrigger asChild>{item}</AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                    {action.confirm.title ?? <Trans>Confirm action</Trans>}
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    {action.confirm.description ?? (
+                                                        <Trans>Are you sure you want to proceed?</Trans>
+                                                    )}
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>
+                                                    {action.confirm.cancelText ?? <Trans>Cancel</Trans>}
+                                                </AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => action.onClick?.(row)}>
+                                                    {action.confirm.confirmText ?? <Trans>Continue</Trans>}
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                );
+                            }
+                            return item;
+                        })}
                         {deleteMutation && (
                             <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
                         )}

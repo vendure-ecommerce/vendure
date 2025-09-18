@@ -1577,3 +1577,90 @@ msgstr "Zone"
 #: src/app/routes/_authenticated/_zones/zones.tsx:14
 msgid "Zones"
 msgstr "Zones"
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts.tsx:1
+msgid "Service Accounts"
+msgstr "Service Accounts"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Roles"
+msgstr "Roles"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Service Account"
+msgstr "Service Account"
+
+msgid "Identifier"
+msgstr "Identifier"
+
+msgid "New Service Account"
+msgstr "New Service Account"
+
+#: src/app/routes/_authenticated/_service-accounts/service-accounts_.$id.tsx
+msgid "Account type"
+msgstr "Account type"
+
+msgid "Service accounts cannot sign in with a password."
+msgstr "Service accounts cannot sign in with a password."
+
+#: API Keys panel
+msgid "API Keys"
+msgstr "API Keys"
+
+msgid "New API Key"
+msgstr "New API Key"
+
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Expires"
+msgstr "Expires"
+
+msgid "Last used"
+msgstr "Last used"
+
+msgid "Created"
+msgstr "Created"
+
+msgid "Rotate"
+msgstr "Rotate"
+
+msgid "Revoke"
+msgstr "Revoke"
+
+msgid "Invalidate Sessions"
+msgstr "Invalidate Sessions"
+
+msgid "Create API Key"
+msgstr "Create API Key"
+
+msgid "Generate a new Admin API key. The raw secret will be shown only once."
+msgstr "Generate a new Admin API key. The raw secret will be shown only once."
+
+msgid "Expires at (optional)"
+msgstr "Expires at (optional)"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Create"
+msgstr "Create"
+
+msgid "API key created"
+msgstr "API key created"
+
+msgid "Copy and store this secret now. It cannot be shown again."
+msgstr "Copy and store this secret now. It cannot be shown again."
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "I’ve saved this key"
+msgstr "I’ve saved this key"
+msgid "Clear"
+msgstr "Clear"

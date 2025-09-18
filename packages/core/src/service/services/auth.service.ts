@@ -101,10 +101,12 @@ export class AuthService {
         }
         user.lastLogin = new Date();
         await this.connection.getRepository(ctx, User).save(user, { reload: false });
+        const apiKeyId: string | undefined = ctx.apiKeyId as any;
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
             authenticationStrategyName,
+            apiKeyId,
         );
         await this.eventBus.publish(new LoginEvent(ctx, user));
         return session;

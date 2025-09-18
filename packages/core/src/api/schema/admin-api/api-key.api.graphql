@@ -1,0 +1,21 @@
+extend type Mutation {
+    """Create a new API key for the currently logged-in User. @since 3.5.0"""
+    createApiKey(name: String!, expiresAt: DateTime!, notes: String): ApiKeyWithSecret!
+
+    """Rotate an existing key (revoke old, create new). @since 3.5.0"""
+    rotateApiKey(id: ID!): ApiKeyWithSecret!
+
+    """Revoke a key and invalidate sessions minted from it. @since 3.5.0"""
+    revokeApiKey(id: ID!): ApiKey!
+
+    """Delete a key permanently and invalidate sessions minted from it. @since 3.5.0"""
+    deleteApiKey(id: ID!): DeletionResponse!
+
+    """Helper to invalidate live sessions for a key. @since 3.5.0"""
+    invalidateApiKeySessions(id: ID!): Int!
+}
+
+extend type Query {
+    """List API keys for the currently logged-in User. @since 3.5.0"""
+    apiKeys(options: ApiKeyListOptions): ApiKeyList!
+}

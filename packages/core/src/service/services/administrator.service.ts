@@ -128,7 +128,8 @@ export class AdministratorService {
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
-        const administrator = new Administrator(input);
+        const administrator = new Administrator(input as any);
+        // Normalize email & SuperAdmin enforcement for service-account flag
         administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         let createdAdministrator = await this.connection
@@ -175,28 +176,7 @@ export class AdministratorService {
             }
         }
         if (input.roleIds) {
-            const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
-            if (isSoleSuperAdmin) {
-                const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
-                    throw new InternalServerError('error.superadmin-must-have-superadmin-role');
-                }
-            }
-            const removeIds = administrator.user.roles
-                .map(role => role.id)
-                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
-
-            const addIds = (input.roleIds as ID[]).filter(
-                roleId => !administrator.user.roles.some(role => role.id === roleId),
-            );
-
-            administrator.user.roles = [];
-            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
-            for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
-            }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+            updatedAdministrator = await this.updateAdministratorRoles(ctx, administrator, input.roleIds);
         }
         await this.customFieldRelationService.updateRelations(
             ctx,
@@ -354,5 +334,37 @@ export class AdministratorService {
                 await this.connection.rawConnection.getRepository(User).save(superAdminUser);
             }
         }
+    }
+
+    /**
+     * Updates the Administrator's roles, ensuring we do not remove the sole SuperAdmin role.
+     */
+    private async updateAdministratorRoles(
+        ctx: RequestContext,
+        administrator: Administrator,
+        roleIds: ID[],
+    ): Promise<Administrator> {
+        const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, administrator.id);
+        if (isSoleSuperAdmin) {
+            const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
+            if (!roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
+                throw new InternalServerError('error.superadmin-must-have-superadmin-role');
+            }
+        }
+        const removeIds = administrator.user.roles
+            .map(role => role.id)
+            .filter(roleId => roleIds.indexOf(roleId) === -1);
+
+        const addIds = roleIds.filter(roleId => !administrator.user.roles.some(role => role.id === roleId));
+
+        administrator.user.roles = [];
+        await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
+        let updated = administrator;
+        for (const roleId of roleIds) {
+            updated = await this.assignRole(ctx, administrator.id, roleId);
+        }
+        await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
+        await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+        return updated;
     }
 }
