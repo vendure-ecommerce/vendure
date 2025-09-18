@@ -26,33 +26,33 @@ export function MetricsWidget() {
     const { data, refetch, isRefetching } = useQuery({
         queryKey: ['dashboard-order-metrics', dataType, dateRange],
         queryFn: () => {
-            // TODO: When the API supports date filtering, pass dateRange.from and dateRange.to
             return api.query(orderChartDataQuery, {
                 types: [dataType],
                 refresh: true,
+                startDate: dateRange.from.toISOString(),
+                endDate: dateRange.to.toISOString(),
             });
         },
     });
 
     const chartData = useMemo(() => {
-        const entry = data?.metricSummary.at(0);
+        const entry = data?.dashboardMetricSummary.at(0);
         if (!entry) {
             return undefined;
         }
 
-        const { interval, type, entries } = entry;
+        const { type, entries } = entry;
 
-        const values = entries.map(({ label, value }) => ({
+        const values = entries.map(({ label, value }: { label: string; value: number }) => ({
             name: formatDate(label, { month: 'short', day: 'numeric' }),
             sales: value,
         }));
 
         return {
             values,
-            interval,
             type,
         };
-    }, [data]);
+    }, [data, formatDate]);
 
     return (
         <DashboardBaseWidget
