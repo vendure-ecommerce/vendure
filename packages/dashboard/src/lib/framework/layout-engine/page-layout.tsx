@@ -6,15 +6,21 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { useMediaQuery } from '@uidotdev/usehooks';
-import { EllipsisVerticalIcon } from 'lucide-react';
-import React, { ComponentProps, useMemo } from 'react';
+import { useCopyToClipboard, useMediaQuery } from '@uidotdev/usehooks';
+import { CheckIcon, CopyIcon, EllipsisVerticalIcon, InfoIcon } from 'lucide-react';
+import React, { ComponentProps, useMemo, useState } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
 import { Button } from '@/vdb/components/ui/button.js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/vdb/components/ui/dropdown-menu.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/vdb/components/ui/dropdown-menu.js';
 import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
 import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
@@ -50,13 +56,13 @@ export interface PageProps extends ComponentProps<'div'> {
  *  - {@link PageTitle}
  *  - {@link PageActionBar}
  *  - {@link PageLayout}
- * 
+ *
  * @example
  * ```tsx
  * import { Page, PageTitle, PageActionBar, PageLayout, PageBlock, Button } from '\@vendure/dashboard';
- * 
+ *
  * const pageId = 'my-page';
- * 
+ *
  * export function MyPage() {
  *  return (
  *    <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -319,7 +325,7 @@ export function PageActionBar({ children }: Readonly<{ children: React.ReactNode
 /**
  * @description
  * The PageActionBarLeft component should be used to display the left content of the action bar.
- * 
+ *
  * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
@@ -329,6 +335,79 @@ export function PageActionBarLeft({ children }: Readonly<{ children: React.React
 }
 
 type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
+
+function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
+    const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [, copy] = useCopyToClipboard();
+
+    const handleCopy = async (text: string, field: string) => {
+        await copy(text);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString();
+    };
+
+    if (!entity || !entity.id) {
+        return null;
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-muted-foreground">
+                    <InfoIcon className="w-4 h-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Entity Information</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="px-3 py-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">ID</span>
+                        <div className="flex items-center gap-1">
+                            <span className="text-sm font-mono">{entity.id}</span>
+                            <button
+                                onClick={() => handleCopy(entity.id, 'id')}
+                                className="p-1 hover:bg-muted rounded-sm transition-colors"
+                            >
+                                {copiedField === 'id' ? (
+                                    <CheckIcon className="h-3 w-3 text-green-500" />
+                                ) : (
+                                    <CopyIcon className="h-3 w-3" />
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {entity.createdAt && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <div className="px-3 py-2">
+                            <div className="text-sm">
+                                <div className="font-medium text-muted-foreground">Created:</div>
+                                <div className="text-xs">{formatDate(entity.createdAt)}</div>
+                            </div>
+                        </div>
+                    </>
+                )}
+                {entity.updatedAt && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <div className="px-3 py-2">
+                            <div className="text-sm">
+                                <div className="font-medium text-muted-foreground">Updated:</div>
+                                <div className="text-xs">{formatDate(entity.updatedAt)}</div>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
 
 /**
  * @description
@@ -366,6 +445,7 @@ export function PageActionBarRight({
             {actionBarDropdownItems.length > 0 && (
                 <PageActionBarDropdown items={actionBarDropdownItems} page={page} />
             )}
+            <EntityInfoDropdown entity={page.entity} />
         </div>
     );
 }
@@ -449,7 +529,7 @@ export type PageBlockProps = {
  * A component for displaying a block of content on a page. This should be used inside the {@link PageLayout} component.
  * It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
  * to identify the block.
- * 
+ *
  * @example
  * ```tsx
  * <PageBlock column="main" blockId="my-block">
