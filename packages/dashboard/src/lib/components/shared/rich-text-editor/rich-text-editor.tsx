@@ -1,3 +1,4 @@
+import Link from '@tiptap/extension-link';
 import TextStyle from '@tiptap/extension-text-style';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -15,6 +16,13 @@ const extensions = [
             keepMarks: true,
             keepAttributes: false,
         },
+    }),
+    Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+            class: 'text-primary underline underline-offset-2 cursor-pointer hover:text-primary/80',
+        },
+        validate: (href) => /^https?:\/\//.test(href),
     }),
 ];
 
@@ -178,6 +186,15 @@ export function RichTextEditor({ value, onChange, disabled = false }: RichTextEd
                 }
                 .rich-text-editor blockquote p:last-child {
                     margin-bottom: 0;
+                }
+                .rich-text-editor a {
+                    color: hsl(var(--primary));
+                    text-decoration: underline;
+                    text-underline-offset: 2px;
+                    cursor: pointer;
+                }
+                .rich-text-editor a:hover {
+                    opacity: 0.8;
                 }
                 .rich-text-editor code {
                     background-color: hsl(var(--muted));

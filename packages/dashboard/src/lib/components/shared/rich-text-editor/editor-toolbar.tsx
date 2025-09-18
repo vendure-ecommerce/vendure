@@ -3,6 +3,7 @@ import { Editor } from '@tiptap/react';
 import {
     BoldIcon,
     ItalicIcon,
+    LinkIcon,
     ListIcon,
     ListOrderedIcon,
     QuoteIcon,
@@ -10,9 +11,11 @@ import {
     StrikethroughIcon,
     Undo2Icon,
 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '../../ui/button.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select.js';
 import { Separator } from '../../ui/separator.js';
+import { LinkDialog } from './link-dialog.js';
 
 export interface EditorToolbarProps {
     editor: Editor | null;
@@ -20,6 +23,8 @@ export interface EditorToolbarProps {
 }
 
 export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
+    const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+
     if (!editor) return null;
 
     const handleHeadingChange = (value: string) => {
@@ -125,16 +130,28 @@ export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
 
             <Separator orientation="vertical" className="mx-1 h-6" />
 
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                className={`h-8 px-2 ${editor.isActive('blockquote') ? 'bg-accent' : ''}`}
-                disabled={disabled}
-            >
-                <QuoteIcon className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLinkDialogOpen(true)}
+                    className={`h-8 px-2 ${editor.isActive('link') ? 'bg-accent' : ''}`}
+                    disabled={disabled}
+                >
+                    <LinkIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                    className={`h-8 px-2 ${editor.isActive('blockquote') ? 'bg-accent' : ''}`}
+                    disabled={disabled}
+                >
+                    <QuoteIcon className="h-4 w-4" />
+                </Button>
+            </div>
 
             <Separator orientation="vertical" className="mx-1 h-6" />
 
@@ -160,6 +177,12 @@ export function EditorToolbar({ editor, disabled }: EditorToolbarProps) {
                     <Redo2Icon className="h-4 w-4" />
                 </Button>
             </div>
+
+            <LinkDialog
+                editor={editor}
+                isOpen={linkDialogOpen}
+                onClose={() => setLinkDialogOpen(false)}
+            />
         </div>
     );
 }
