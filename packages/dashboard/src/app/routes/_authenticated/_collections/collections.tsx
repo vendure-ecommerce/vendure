@@ -13,6 +13,7 @@ import { ResultOf } from 'gql.tada';
 import { Folder, FolderOpen, FolderTreeIcon, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
@@ -147,6 +148,26 @@ function CollectionListPage() {
                                 >
                                     <Trans>{row.original.productVariants.totalItems} variants</Trans>
                                 </CollectionContentsSheet>
+                            );
+                        },
+                    },
+                    children: {
+                        cell: ({ row }) => {
+                            const children = row.original.children ?? [];
+                            const count = children.length;
+                            const maxDisplay = 5;
+                            const leftOver = Math.max(count - maxDisplay, 0);
+                            return (
+                                <div className="flex flex-wrap gap-2">
+                                    {children.slice(0, maxDisplay).map(child => (
+                                        <Badge variant="outline">{child.name}</Badge>
+                                    ))}
+                                    {leftOver > 0 ? (
+                                        <Badge variant="outline">
+                                            <Trans>+ {leftOver} more</Trans>
+                                        </Badge>
+                                    ) : null}
+                                </div>
                             );
                         },
                     },
