@@ -11,7 +11,7 @@ import {
     DeleteProductVariantsBulkAction,
     RemoveProductVariantsFromChannelBulkAction,
 } from './components/product-variant-bulk-actions.js';
-import { deleteProductVariantDocument, productVariantListDocument } from './product-variants.graphql.js';
+import { productVariantListDocument } from './product-variants.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants')({
     component: ProductListPage,
@@ -25,7 +25,6 @@ function ProductListPage() {
             pageId="product-variant-list"
             title={<Trans>Product Variants</Trans>}
             listQuery={productVariantListDocument}
-            deleteMutation={deleteProductVariantDocument}
             bulkActions={[
                 {
                     component: AssignProductVariantsToChannelBulkAction,

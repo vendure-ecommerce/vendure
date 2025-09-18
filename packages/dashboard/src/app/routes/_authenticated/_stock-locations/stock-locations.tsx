@@ -11,7 +11,7 @@ import {
     DeleteStockLocationsBulkAction,
     RemoveStockLocationsFromChannelBulkAction,
 } from './components/stock-location-bulk-actions.js';
-import { deleteStockLocationDocument, stockLocationListQuery } from './stock-locations.graphql.js';
+import { stockLocationListQuery } from './stock-locations.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations')({
     component: StockLocationListPage,
@@ -24,7 +24,6 @@ function StockLocationListPage() {
             pageId="stock-location-list"
             title="Stock Locations"
             listQuery={stockLocationListQuery}
-            deleteMutation={deleteStockLocationDocument}
             route={Route}
             customizeColumns={{
                 name: {
