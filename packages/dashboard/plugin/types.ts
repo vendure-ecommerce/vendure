@@ -1,27 +1,23 @@
-export type MetricSummary = {
-    interval: MetricInterval;
-    type: MetricType;
+export type DashboardMetricSummary = {
+    type: DashboardMetricType;
     title: string;
-    entries: MetricSummaryEntry[];
+    entries: DashboardMetricSummaryEntry[];
 };
 
-export enum MetricType {
+export enum DashboardMetricType {
     OrderCount = 'OrderCount',
     OrderTotal = 'OrderTotal',
     AverageOrderValue = 'AverageOrderValue',
 }
 
-export enum MetricInterval {
-    Daily = 'Daily',
-}
-
-export type MetricSummaryEntry = {
+export type DashboardMetricSummaryEntry = {
     label: string;
     value: number;
 };
 
-export interface MetricSummaryInput {
-    interval: MetricInterval;
-    types: MetricType[];
+export interface DashboardMetricSummaryInput {
+    types: DashboardMetricType[];
     refresh?: boolean;
+    startDate: string;
+    endDate: string;
 }

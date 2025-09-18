@@ -9,7 +9,7 @@ import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
 import { useWidgetFilters } from '../widget-filters-context.js';
 import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
@@ -26,8 +26,33 @@ export function LatestOrdersWidget() {
     ]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [filters, setFilters] = useState<ColumnFiltersState>([]);
+    const [filters, setFilters] = useState<ColumnFiltersState>([
+        {
+            id: 'orderPlacedAt',
+            value: {
+                between: {
+                    start: dateRange.from.toISOString(),
+                    end: dateRange.to.toISOString(),
+                },
+            },
+        },
+    ]);
     const { formatCurrency } = useLocalFormat();
+
+    // Update filters when date range changes
+    useEffect(() => {
+        setFilters([
+            {
+                id: 'orderPlacedAt',
+                value: {
+                    between: {
+                        start: dateRange.from.toISOString(),
+                        end: dateRange.to.toISOString(),
+                    },
+                },
+            },
+        ]);
+    }, [dateRange]);
 
     return (
         <DashboardBaseWidget id={WIDGET_ID} title="Latest Orders" description="Your latest orders">

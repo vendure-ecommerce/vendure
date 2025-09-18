@@ -6,7 +6,7 @@ import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
 } from '@/vdb/framework/dashboard-widget/widget-extensions.js';
-import { DefinedDateRange } from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
+import { DefinedDateRange, WidgetFiltersProvider } from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
 import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
@@ -195,22 +195,24 @@ function DashboardPage() {
                 <FullWidthPageBlock blockId="widgets">
                     <div className="w-full">
                         {widgets.length > 0 ? (
-                            <GridLayout
-                                layouts={widgets.map(w => ({ ...w.layout, i: w.id }))}
-                                onLayoutChange={handleLayoutChange}
-                                cols={12}
-                                rowHeight={100}
-                                isDraggable={editMode}
-                                isResizable={editMode}
-                                className="min-h-[400px]"
-                                gutter={10}
-                            >
-                                {
-                                    widgets
-                                        .map(widget => renderWidget(widget))
-                                        .filter(Boolean) as React.ReactElement[]
-                                }
-                            </GridLayout>
+                            <WidgetFiltersProvider filters={{ dateRange }}>
+                                <GridLayout
+                                    layouts={widgets.map(w => ({ ...w.layout, i: w.id }))}
+                                    onLayoutChange={handleLayoutChange}
+                                    cols={12}
+                                    rowHeight={100}
+                                    isDraggable={editMode}
+                                    isResizable={editMode}
+                                    className="min-h-[400px]"
+                                    gutter={10}
+                                >
+                                    {
+                                        widgets
+                                            .map(widget => renderWidget(widget))
+                                            .filter(Boolean) as React.ReactElement[]
+                                    }
+                                </GridLayout>
+                            </WidgetFiltersProvider>
                         ) : (
                             <div
                                 className="flex items-center justify-center text-muted-foreground"
