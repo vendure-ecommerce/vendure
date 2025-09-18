@@ -125,8 +125,6 @@ jobs:
                 options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
             redis:
                 image: redis:7.4.1
-                env:
-                    # Redis official image doesn't require auth by default
                 ports:
                     - 6379
         strategy:
