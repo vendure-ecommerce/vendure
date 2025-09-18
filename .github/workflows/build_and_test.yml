@@ -93,7 +93,7 @@ jobs:
                     MYSQL_ROOT_PASSWORD: password
                 ports:
                     - 3306
-                options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
+                options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10 --default-authentication-plugin=mysql_native_password
             postgres:
                 image: postgres:16
                 env:
