@@ -19,7 +19,7 @@ const channelFragment = graphql(`
 `);
 
 // Query to get all available channels and the active channel
-const ChannelsQuery = graphql(
+const activeChannelDocument = graphql(
     `
         query ChannelInformation {
             activeChannel {
@@ -28,6 +28,14 @@ const ChannelsQuery = graphql(
                     id
                 }
             }
+        }
+    `,
+    [channelFragment],
+);
+
+const channelsDocument = graphql(
+    `
+        query ChannelInformation {
             channels {
                 items {
                     ...ChannelInfo
@@ -40,7 +48,7 @@ const ChannelsQuery = graphql(
 );
 
 // Define the type for a channel
-type ActiveChannel = ResultOf<typeof ChannelsQuery>['activeChannel'];
+type ActiveChannel = ResultOf<typeof activeChannelDocument>['activeChannel'];
 type Channel = ResultOf<typeof channelFragment>;
 
 /**
@@ -106,10 +114,18 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         return activeChannelId;
     });
 
+    // Fetch active channel
+    const { data: activeChannelData, isLoading: isActiveChannelLoading } = useQuery({
+        queryKey: ['activeChannel', isAuthenticated],
+        queryFn: () => api.query(activeChannelDocument),
+        retry: false,
+        enabled: isAuthenticated,
+    });
+
     // Fetch all available channels
     const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
         queryKey: ['channels', isAuthenticated],
-        queryFn: () => api.query(ChannelsQuery),
+        queryFn: () => api.query(channelsDocument),
         retry: false,
         enabled: isAuthenticated,
     });
@@ -168,10 +184,10 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         }
     }, [selectedChannelId, channels]);
 
-    const isLoading = isChannelsLoading;
+    const isLoading = isActiveChannelLoading;
 
     // Find the selected channel from the list of channels
-    const selectedChannel = channelsData?.activeChannel;
+    const selectedChannel = activeChannelData?.activeChannel;
 
     const refreshChannels = () => {
         refreshCurrentUser();

@@ -11,6 +11,12 @@ interface NavMenuBaseItem {
     icon?: LucideIcon;
     order?: number;
     placement?: NavMenuSectionPlacement;
+    /**
+     * @description
+     * This can be used to restrict the menu item to the given
+     * permission or permissions.
+     */
+    requiresPermission?: string | string[];
 }
 
 export interface NavMenuItem extends NavMenuBaseItem {
