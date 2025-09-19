@@ -12,7 +12,7 @@ import {
     RemoveShippingMethodsFromChannelBulkAction,
 } from './components/shipping-method-bulk-actions.js';
 import { TestShippingMethodDialog } from './components/test-shipping-method-dialog.js';
-import { deleteShippingMethodDocument, shippingMethodListQuery } from './shipping-methods.graphql.js';
+import { shippingMethodListQuery } from './shipping-methods.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping-methods')({
     component: ShippingMethodListPage,
@@ -24,7 +24,6 @@ function ShippingMethodListPage() {
         <ListPage
             pageId="shipping-method-list"
             listQuery={shippingMethodListQuery}
-            deleteMutation={deleteShippingMethodDocument}
             route={Route}
             title="Shipping Methods"
             defaultVisibility={{

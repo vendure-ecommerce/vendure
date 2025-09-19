@@ -13,7 +13,7 @@ import {
     DuplicatePromotionsBulkAction,
     RemovePromotionsFromChannelBulkAction,
 } from './components/promotion-bulk-actions.js';
-import { deletePromotionDocument, promotionListDocument } from './promotions.graphql.js';
+import { promotionListDocument } from './promotions.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
     component: PromotionListPage,
@@ -25,7 +25,6 @@ function PromotionListPage() {
         <ListPage
             pageId="promotion-list"
             listQuery={promotionListDocument}
-            deleteMutation={deletePromotionDocument}
             route={Route}
             title="Promotions"
             defaultVisibility={{

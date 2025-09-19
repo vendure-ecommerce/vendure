@@ -7,7 +7,7 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteSellersBulkAction } from './components/seller-bulk-actions.js';
-import { deleteSellerDocument, sellerListQuery } from './sellers.graphql.js';
+import { sellerListQuery } from './sellers.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers')({
     component: SellerListPage,
@@ -19,7 +19,6 @@ function SellerListPage() {
         <ListPage
             pageId="seller-list"
             listQuery={sellerListQuery}
-            deleteMutation={deleteSellerDocument}
             route={Route}
             title="Sellers"
             defaultVisibility={{

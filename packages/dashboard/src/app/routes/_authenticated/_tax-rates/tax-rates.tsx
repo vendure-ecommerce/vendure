@@ -11,7 +11,7 @@ import { PlusIcon } from 'lucide-react';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
 import { zoneListQuery } from '../_zones/zones.graphql.js';
 import { DeleteTaxRatesBulkAction } from './components/tax-rate-bulk-actions.js';
-import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
+import { taxRateListQuery } from './tax-rates.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,
@@ -23,7 +23,6 @@ function TaxRateListPage() {
         <ListPage
             pageId="tax-rate-list"
             listQuery={taxRateListQuery}
-            deleteMutation={deleteTaxRateDocument}
             route={Route}
             title="Tax Rates"
             defaultVisibility={{
