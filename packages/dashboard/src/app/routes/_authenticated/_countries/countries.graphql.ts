@@ -38,6 +38,8 @@ export const countryDetailDocument = graphql(`
                 languageCode
                 name
             }
+            createdAt
+            updatedAt
             customFields
         }
     }
