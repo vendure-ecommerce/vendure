@@ -123,7 +123,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
     });
 
     // Fetch all available channels
-    const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
+    const { data: channelsData } = useQuery({
         queryKey: ['channels', isAuthenticated],
         queryFn: () => api.query(channelsDocument),
         retry: false,
