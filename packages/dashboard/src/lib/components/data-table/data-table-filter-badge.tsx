@@ -1,5 +1,5 @@
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { CircleX, Filter } from 'lucide-react';
+import { Filter, XIcon } from 'lucide-react';
 import { Badge } from '../ui/badge.js';
 import { HumanReadableOperator, Operator } from './human-readable-operator.js';
 import { ColumnDataType } from './types.js';
@@ -17,16 +17,20 @@ export function DataTableFilterBadge({
 }) {
     const [operator, value] = Object.entries(filter.value as Record<string, unknown>)[0];
     return (
-        <Badge key={filter.id} className="flex gap-1 items-center" variant="secondary">
+        <Badge
+            key={filter.id}
+            className="flex gap-1 items-center font-mono cursor-pointer "
+            variant="outline"
+            onClick={() => onRemove(filter)}
+        >
             <Filter size="12" className="opacity-50" />
             <div>{filter.id}</div>
             <div className="text-muted-foreground">
                 <HumanReadableOperator operator={operator as Operator} mode="short" />
             </div>
             <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
-            <button className="cursor-pointer" onClick={() => onRemove(filter)}>
-                <CircleX size="14" />
-            </button>
+
+            <XIcon className="h-4" />
         </Badge>
     );
 }

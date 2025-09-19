@@ -1,4 +1,6 @@
 import { Button } from '@/vdb/components/ui/button.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -33,8 +35,15 @@ export function RefreshButton({
     };
 
     return (
-        <Button variant="ghost" size="sm" onClick={handleClick} disabled={delayedLoading}>
-            <RefreshCw className={delayedLoading ? 'animate-rotate' : ''} />
-        </Button>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={handleClick} disabled={delayedLoading}>
+                    <RefreshCw className={delayedLoading ? 'animate-rotate' : ''} />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+                <Trans>Refresh data</Trans>
+            </TooltipContent>
+        </Tooltip>
     );
 }

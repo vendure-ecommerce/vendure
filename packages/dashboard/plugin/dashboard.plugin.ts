@@ -15,7 +15,12 @@ import path from 'path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
-import { DEFAULT_APP_PATH, loggerCtx } from './constants.js';
+import {
+    DEFAULT_APP_PATH,
+    loggerCtx,
+    MANAGE_DASHBOARD_GLOBAL_VIEWS_PERMISSION_NAME,
+    manageDashboardGlobalViews,
+} from './constants.js';
 import { MetricsService } from './service/metrics.service.js';
 
 /**
@@ -106,9 +111,20 @@ export interface DashboardPluginOptions {
     },
     providers: [MetricsService],
     configuration: config => {
+        config.authOptions.customPermissions.push(manageDashboardGlobalViews);
+
         config.settingsStoreFields['vendure.dashboard'] = [
             {
                 name: 'userSettings',
+                scope: SettingsStoreScopes.user,
+            },
+            {
+                name: 'globalSavedViews',
+                scope: SettingsStoreScopes.global,
+                requiresPermission: MANAGE_DASHBOARD_GLOBAL_VIEWS_PERMISSION_NAME,
+            },
+            {
+                name: 'userSavedViews',
                 scope: SettingsStoreScopes.user,
             },
         ];
