@@ -25,6 +25,7 @@ import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
+import { AssetTagsEditor } from './components/asset-tags-editor.js';
 
 const pageId = 'asset-detail';
 
@@ -163,6 +164,15 @@ function AssetDetailPage() {
                             </div>
                         </div>
                     </div>
+                </PageBlock>
+                <PageBlock column="side" blockId="asset-tags">
+                    <AssetTagsEditor
+                        selectedTags={form.watch('tags') || []}
+                        onTagsChange={(tags) => {
+                            form.setValue('tags', tags, { shouldDirty: true });
+                        }}
+                        disabled={isPending}
+                    />
                 </PageBlock>
             </PageLayout>
         </Page>

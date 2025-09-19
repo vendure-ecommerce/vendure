@@ -35,3 +35,24 @@ export const deleteAssetsDocument = graphql(`
         }
     }
 `);
+
+export const tagListDocument = graphql(`
+    query TagList($options: TagListOptions) {
+        tags(options: $options) {
+            items {
+                id
+                value
+            }
+            totalItems
+        }
+    }
+`);
+
+export const createTagDocument = graphql(`
+    mutation CreateTag($input: CreateTagInput!) {
+        createTag(input: $input) {
+            id
+            value
+        }
+    }
+`);
