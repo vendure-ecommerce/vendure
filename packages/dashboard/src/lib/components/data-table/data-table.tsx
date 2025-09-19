@@ -3,11 +3,15 @@
 import { DataTablePagination } from '@/vdb/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/vdb/components/data-table/data-table-view-options.js';
 import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
+import { GlobalViewsBar } from '@/vdb/components/data-table/global-views-bar.js';
+import { SaveViewButton } from '@/vdb/components/data-table/save-view-button.js';
+import { MyViewsButton } from '@/vdb/components/data-table/my-views-button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -106,7 +110,9 @@ export function DataTable<TData>({
 }: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
+    const [searchTerm, setSearchTerm] = React.useState<string>('');
     const { activeChannel } = useChannel();
+    const { pageId } = usePage();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -175,8 +181,23 @@ export function DataTable<TData>({
     }, [columnVisibility]);
 
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+
+    const handleApplyView = (filters: ColumnFiltersState, newSearchTerm?: string) => {
+        setColumnFilters(filters);
+        if (newSearchTerm !== undefined) {
+            setSearchTerm(newSearchTerm);
+            onSearchTermChange?.(newSearchTerm);
+        }
+    };
+
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
+        onSearchTermChange?.(value);
+    };
+
     return (
         <>
+            {pageId && onFilterChange && <GlobalViewsBar onApplyView={handleApplyView} currentFilters={columnFilters} />}
             <div className="flex justify-between items-start">
                 <div className="flex flex-col space-y-2">
                     <div className="flex items-center justify-start gap-2">
@@ -184,7 +205,8 @@ export function DataTable<TData>({
                             <div className="flex items-center">
                                 <Input
                                     placeholder="Filter..."
-                                    onChange={event => onSearchTermChange(event.target.value)}
+                                    value={searchTerm}
+                                    onChange={event => handleSearchChange(event.target.value)}
                                     className="max-w-sm w-md"
                                 />
                             </div>
@@ -225,6 +247,8 @@ export function DataTable<TData>({
                     </div>
                 </div>
                 <div className="flex items-center justify-start gap-2">
+                    {pageId && onFilterChange && <SaveViewButton filters={columnFilters} searchTerm={searchTerm} />}
+                    {pageId && onFilterChange && <MyViewsButton onApplyView={handleApplyView} />}
                     {!disableViewOptions && <DataTableViewOptions table={table} />}
                     {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
                 </div>
