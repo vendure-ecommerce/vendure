@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import React from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { SavedView } from '../../types/saved-views.js';
+import { PermissionGuard } from '../shared/permission-guard.js';
 import { Button } from '../ui/button.js';
 import {
     DropdownMenu,
@@ -10,6 +11,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu.js';
+import { ManageGlobalViewsButton } from './manage-global-views-button.js';
 
 interface GlobalViewsBarProps {
     onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
@@ -17,7 +19,7 @@ interface GlobalViewsBarProps {
 }
 
 export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, currentFilters = [] }) => {
-    const { globalViews, applyView } = useSavedViews();
+    const { globalViews, canManageGlobalViews } = useSavedViews();
 
     if (globalViews.length === 0) {
         return null;
@@ -44,12 +46,13 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
                     <Button
                         key={view.id}
                         variant={isViewActive(view) ? 'default' : 'outline'}
-                        size="xs"
+                        size="sm"
                         onClick={() => handleApplyView(view)}
                     >
                         {view.name}
                     </Button>
                 ))}
+                {canManageGlobalViews && <ManageGlobalViewsButton onApplyView={onApplyView} />}
             </div>
         );
     }
@@ -64,7 +67,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
                 <Button
                     key={view.id}
                     variant={isViewActive(view) ? 'default' : 'outline'}
-                    size="xs"
+                    size="sm"
                     onClick={() => handleApplyView(view)}
                 >
                     {view.name}
@@ -72,7 +75,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
             ))}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="xs">
+                    <Button variant="outline" size="sm">
                         More Views
                         <ChevronDown className="h-3 w-3" />
                     </Button>
@@ -89,6 +92,9 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
+            <PermissionGuard requires={['ManageDashboardGlobalViews']}>
+                {canManageGlobalViews && <ManageGlobalViewsButton onApplyView={onApplyView} />}
+            </PermissionGuard>
         </div>
     );
 };
