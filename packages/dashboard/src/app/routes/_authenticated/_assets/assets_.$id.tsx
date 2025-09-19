@@ -2,7 +2,6 @@ import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal
 import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
-import { Point } from '@/vdb/components/shared/asset/focal-point-control.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
@@ -52,7 +51,6 @@ function AssetDetailPage() {
     const [size, setSize] = useState<PreviewPreset>('medium');
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-    const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
     const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
@@ -168,7 +166,7 @@ function AssetDetailPage() {
                 <PageBlock column="side" blockId="asset-tags">
                     <AssetTagsEditor
                         selectedTags={form.watch('tags') || []}
-                        onTagsChange={(tags) => {
+                        onTagsChange={tags => {
                             form.setValue('tags', tags, { shouldDirty: true });
                         }}
                         onTagsUpdated={() => {
