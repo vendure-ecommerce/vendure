@@ -2,16 +2,17 @@
 
 import { DataTablePagination } from '@/vdb/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/vdb/components/data-table/data-table-view-options.js';
-import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
 import { GlobalViewsBar } from '@/vdb/components/data-table/global-views-bar.js';
-import { SaveViewButton } from '@/vdb/components/data-table/save-view-button.js';
 import { MyViewsButton } from '@/vdb/components/data-table/my-views-button.js';
+import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
+import { SaveViewButton } from '@/vdb/components/data-table/save-view-button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
+import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -113,6 +114,7 @@ export function DataTable<TData>({
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const { activeChannel } = useChannel();
     const { pageId } = usePage();
+    const { globalViews } = pageId && onFilterChange ? useSavedViews() : { globalViews: [] };
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -196,33 +198,47 @@ export function DataTable<TData>({
     };
 
     return (
-        <>
-            {pageId && onFilterChange && <GlobalViewsBar onApplyView={handleApplyView} currentFilters={columnFilters} />}
-            <div className="flex justify-between items-start">
-                <div className="flex flex-col space-y-2">
-                    <div className="flex items-center justify-start gap-2">
-                        {onSearchTermChange && (
-                            <div className="flex items-center">
-                                <Input
-                                    placeholder="Filter..."
-                                    value={searchTerm}
-                                    onChange={event => handleSearchChange(event.target.value)}
-                                    className="max-w-sm w-md"
-                                />
-                            </div>
+        <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    {onSearchTermChange && (
+                        <Input
+                            placeholder="Filter..."
+                            value={searchTerm}
+                            onChange={event => handleSearchChange(event.target.value)}
+                            className="w-64"
+                        />
+                    )}
+                    <Suspense>
+                        {Object.entries(facetedFilters ?? {}).map(([key, filter]) => (
+                            <DataTableFacetedFilter
+                                key={key}
+                                column={table.getColumn(key)}
+                                title={filter?.title}
+                                options={filter?.options}
+                                optionsFn={filter?.optionsFn}
+                            />
+                        ))}
+                    </Suspense>
+                    {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
+                    {pageId && onFilterChange && <MyViewsButton onApplyView={handleApplyView} />}
+                </div>
+                <div className="flex items-center gap-2">
+                    {pageId && onFilterChange && (
+                        <SaveViewButton filters={columnFilters} searchTerm={searchTerm} />
+                    )}
+                    {!disableViewOptions && <DataTableViewOptions table={table} />}
+                    {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
+                </div>
+            </div>
+
+            {(pageId && onFilterChange && globalViews.length > 0) ||
+            columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
+                <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
+                    <div className="flex items-center">
+                        {pageId && onFilterChange && (
+                            <GlobalViewsBar onApplyView={handleApplyView} currentFilters={columnFilters} />
                         )}
-                        <Suspense>
-                            {Object.entries(facetedFilters ?? {}).map(([key, filter]) => (
-                                <DataTableFacetedFilter
-                                    key={key}
-                                    column={table.getColumn(key)}
-                                    title={filter?.title}
-                                    options={filter?.options}
-                                    optionsFn={filter?.optionsFn}
-                                />
-                            ))}
-                        </Suspense>
-                        {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
                     </div>
                     <div className="flex gap-1">
                         {columnFilters
@@ -246,13 +262,7 @@ export function DataTable<TData>({
                             })}
                     </div>
                 </div>
-                <div className="flex items-center justify-start gap-2">
-                    {pageId && onFilterChange && <SaveViewButton filters={columnFilters} searchTerm={searchTerm} />}
-                    {pageId && onFilterChange && <MyViewsButton onApplyView={handleApplyView} />}
-                    {!disableViewOptions && <DataTableViewOptions table={table} />}
-                    {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
-                </div>
-            </div>
+            ) : null}
 
             <div className="rounded-md border my-2 relative">
                 <Table>
@@ -318,6 +328,6 @@ export function DataTable<TData>({
                 <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
             </div>
             {onPageChange && totalItems != null && <DataTablePagination table={table} />}
-        </>
+        </div>
     );
 }

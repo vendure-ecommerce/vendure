@@ -1,7 +1,8 @@
+import { ColumnFiltersState } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
-import { ColumnFiltersState } from '@tanstack/react-table';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
+import { SavedView } from '../../types/saved-views.js';
 import { Button } from '../ui/button.js';
 import {
     DropdownMenu,
@@ -9,17 +10,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu.js';
-import { SavedView } from '../../types/saved-views.js';
 
 interface GlobalViewsBarProps {
     onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
     currentFilters?: ColumnFiltersState;
 }
 
-export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
-    onApplyView,
-    currentFilters = [],
-}) => {
+export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, currentFilters = [] }) => {
     const { globalViews, applyView } = useSavedViews();
 
     if (globalViews.length === 0) {
@@ -28,7 +25,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
 
     // Sort by creation date (oldest first)
     const sortedViews = [...globalViews].sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
 
     const handleApplyView = (view: SavedView) => {
@@ -42,13 +39,12 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
     if (sortedViews.length <= 3) {
         // Show all views as buttons
         return (
-            <div className="flex gap-2 p-2 border-b">
-                <span className="text-sm text-muted-foreground self-center mr-2">Quick Views:</span>
+            <div className="flex items-center gap-1">
                 {sortedViews.map(view => (
                     <Button
                         key={view.id}
                         variant={isViewActive(view) ? 'default' : 'outline'}
-                        size="sm"
+                        size="xs"
                         onClick={() => handleApplyView(view)}
                     >
                         {view.name}
@@ -63,13 +59,12 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
     const dropdownViews = sortedViews.slice(3);
 
     return (
-        <div className="flex gap-2 p-2 border-b">
-            <span className="text-sm text-muted-foreground self-center mr-2">Quick Views:</span>
+        <div className="flex items-center gap-1">
             {visibleViews.map(view => (
                 <Button
                     key={view.id}
                     variant={isViewActive(view) ? 'default' : 'outline'}
-                    size="sm"
+                    size="xs"
                     onClick={() => handleApplyView(view)}
                 >
                     {view.name}
@@ -77,9 +72,9 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
             ))}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="xs">
                         More Views
-                        <ChevronDown className="ml-1 h-3 w-3" />
+                        <ChevronDown className="h-3 w-3" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
@@ -87,7 +82,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
                         <DropdownMenuItem
                             key={view.id}
                             onClick={() => handleApplyView(view)}
-                            className={isViewActive(view) ? 'bg-accent' : ''}
+                            className={isViewActive(view) ? 'bg-primary' : ''}
                         >
                             {view.name}
                         </DropdownMenuItem>
