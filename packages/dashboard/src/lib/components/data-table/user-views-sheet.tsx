@@ -1,9 +1,15 @@
-import { Copy, Edit, Globe, Trash2 } from 'lucide-react';
+import { Copy, Edit, Globe, MoreHorizontal, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { Button } from '../ui/button.js';
 import { Input } from '../ui/input.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu.js';
 import {
     Sheet,
     SheetContent,
@@ -109,7 +115,7 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
                             Manage your personal saved views for this table
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="mt-6">
+                    <div className="mt-4">
                         {userViews.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
                                 <p>You haven't saved any views yet.</p>
@@ -118,14 +124,14 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
                                 </p>
                             </div>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="divide-y">
                                 {userViews.map(view => (
                                     <div
                                         key={view.id}
-                                        className="p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                                        className="flex items-center justify-between py-3 first:pt-0 last:pb-0 hover:bg-accent/50 transition-colors rounded-md px-2"
                                     >
                                         {editingId === view.id ? (
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-1">
                                                 <Input
                                                     value={editingName}
                                                     onChange={e => setEditingName(e.target.value)}
@@ -134,6 +140,7 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
                                                         if (e.key === 'Escape') handleCancelEdit();
                                                     }}
                                                     autoFocus
+                                                    className="flex-1"
                                                 />
                                                 <Button size="sm" onClick={handleSaveEdit}>
                                                     Save
@@ -144,50 +151,44 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
                                             </div>
                                         ) : (
                                             <>
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h4 className="font-medium">{view.name}</h4>
+                                                <span className="font-medium text-sm truncate flex-1">{view.name}</span>
+                                                <div className="flex items-center gap-1">
                                                     <Button
                                                         size="sm"
                                                         onClick={() => handleApplyView(view)}
                                                     >
                                                         Apply
                                                     </Button>
-                                                </div>
-                                                <div className="flex gap-1">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => handleStartEdit(view)}
-                                                    >
-                                                        <Edit className="h-3 w-3 mr-1" />
-                                                        Rename
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => handleDuplicate(view)}
-                                                    >
-                                                        <Copy className="h-3 w-3 mr-1" />
-                                                        Duplicate
-                                                    </Button>
-                                                    {canManageGlobalViews && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => handleConvertToGlobal(view)}
-                                                        >
-                                                            <Globe className="h-3 w-3 mr-1" />
-                                                            Make Global
-                                                        </Button>
-                                                    )}
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => setDeleteConfirmId(view.id)}
-                                                    >
-                                                        <Trash2 className="h-3 w-3 mr-1" />
-                                                        Delete
-                                                    </Button>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="sm">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem onClick={() => handleStartEdit(view)}>
+                                                                <Edit className="h-4 w-4 mr-2" />
+                                                                Rename
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleDuplicate(view)}>
+                                                                <Copy className="h-4 w-4 mr-2" />
+                                                                Duplicate
+                                                            </DropdownMenuItem>
+                                                            {canManageGlobalViews && (
+                                                                <DropdownMenuItem onClick={() => handleConvertToGlobal(view)}>
+                                                                    <Globe className="h-4 w-4 mr-2" />
+                                                                    Make Global
+                                                                </DropdownMenuItem>
+                                                            )}
+                                                            <DropdownMenuItem
+                                                                onClick={() => setDeleteConfirmId(view.id)}
+                                                                className="text-destructive"
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
                                                 </div>
                                             </>
                                         )}
