@@ -239,7 +239,7 @@ function dbDriverPackage(dbType: DbType): string {
     switch (dbType) {
         case 'mysql':
         case 'mariadb':
-            return 'mysql';
+            return 'mysql2';
         case 'postgres':
             return 'pg';
         case 'sqlite':
@@ -267,7 +267,7 @@ export function checkDbConnection(options: any, root: string): Promise<true> {
 }
 
 async function checkMysqlDbExists(options: any, root: string): Promise<true> {
-    const mysql = await import(path.join(root, 'node_modules/mysql'));
+    const mysql = await import(path.join(root, 'node_modules/mysql2/promise'));
     const connectionOptions = {
         host: options.host,
         user: options.username,

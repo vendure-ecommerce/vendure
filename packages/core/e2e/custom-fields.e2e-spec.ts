@@ -1165,7 +1165,7 @@ describe('Custom fields', () => {
                 switch (customConfig.dbConnectionOptions.type) {
                     case 'mariadb':
                     case 'mysql':
-                        duplicateKeyErrMessage = "ER_DUP_ENTRY: Duplicate entry 'foo' for key";
+                        duplicateKeyErrMessage = "Duplicate entry 'foo' for key";
                         break;
                     case 'postgres':
                         duplicateKeyErrMessage = 'duplicate key value violates unique constraint';

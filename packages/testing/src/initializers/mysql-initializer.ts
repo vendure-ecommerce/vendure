@@ -1,12 +1,10 @@
 import path from 'path';
-import { DataSourceOptions } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-import { promisify } from 'util';
 
 import { TestDbInitializer } from './test-db-initializer';
 
 export class MysqlInitializer implements TestDbInitializer<MysqlConnectionOptions> {
-    private conn: import('mysql').Connection;
+    private conn: import('mysql2/promise').Connection;
 
     async init(
         testFileName: string,
@@ -16,9 +14,8 @@ export class MysqlInitializer implements TestDbInitializer<MysqlConnectionOption
         this.conn = await this.getMysqlConnection(connectionOptions);
         (connectionOptions as any).database = dbName;
         (connectionOptions as any).synchronize = true;
-        const query = promisify(this.conn.query).bind(this.conn);
-        await query(`DROP DATABASE IF EXISTS ${dbName}`);
-        await query(`CREATE DATABASE IF NOT EXISTS ${dbName}`);
+        await this.conn.query(`DROP DATABASE IF EXISTS ${dbName}`);
+        await this.conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`);
         return connectionOptions;
     }
 
@@ -27,23 +24,19 @@ export class MysqlInitializer implements TestDbInitializer<MysqlConnectionOption
     }
 
     async destroy() {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        await promisify(this.conn.end).bind(this.conn)();
+        await this.conn.end();
     }
 
     private async getMysqlConnection(
         connectionOptions: MysqlConnectionOptions,
-    ): Promise<import('mysql').Connection> {
-        const { createConnection } = await import('mysql');
+    ): Promise<import('mysql2/promise').Connection> {
+        const { createConnection } = await import('mysql2/promise');
         const conn = createConnection({
             host: connectionOptions.host,
             port: connectionOptions.port,
             user: connectionOptions.username,
             password: connectionOptions.password,
         });
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        const connect = promisify(conn.connect).bind(conn);
-        await connect();
         return conn;
     }
 
