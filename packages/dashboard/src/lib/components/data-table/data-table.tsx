@@ -264,9 +264,9 @@ export function DataTable<TData>({
                 </div>
             ) : null}
 
-            <div className="rounded-md border my-2 relative">
+            <div className="rounded-md border my-2 relative shadow-sm">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-muted/50">
                         {table.getHeaderGroups().map(headerGroup => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map(header => {
