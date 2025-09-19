@@ -20,7 +20,6 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { formatFileSize } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
-import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -210,7 +209,7 @@ export function AssetGallery({
             // Add tag filtering if tags are provided
             if (selectedTags && selectedTags.length > 0) {
                 options.tags = selectedTags;
-                options.tagsOperator = LogicalOperator.AND;
+                options.tagsOperator = 'AND';
             }
 
             return api.query(getAssetListDocument, { options });
