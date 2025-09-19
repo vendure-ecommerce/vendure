@@ -187,7 +187,7 @@ export class ChannelService {
         // so that this join could be done prior to invoking this method.
         // TODO: overload the assignToChannels method to allow it to take an entity instance
         if (entityType === (Order as any)) {
-            relations.push('lines', 'shippingLines');
+            relations.push('lines', 'shippingLines', 'surcharges');
         }
         const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
             loadEagerRelations: false,
