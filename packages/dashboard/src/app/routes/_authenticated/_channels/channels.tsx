@@ -8,7 +8,7 @@ import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
+import { channelListQuery } from './channels.graphql.js';
 import { DeleteChannelsBulkAction } from './components/channel-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
@@ -23,7 +23,6 @@ function ChannelListPage() {
             pageId="channel-list"
             title="Channels"
             listQuery={channelListQuery}
-            deleteMutation={deleteChannelDocument}
             route={Route}
             defaultVisibility={{
                 code: true,
