@@ -177,7 +177,7 @@ interface AssetLike {
 The presets that can be used for the <a href='/reference/dashboard/components/vendure-image#vendureimage'>VendureImage</a> component.
 
 ```ts title="Signature"
-type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | null
+type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | 'full' | null
 ```
 
 

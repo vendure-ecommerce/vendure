@@ -5,6 +5,14 @@ import { globalRegistry } from '../registry/global-registry.js';
 // Define the placement options for navigation sections
 export type NavMenuSectionPlacement = 'top' | 'bottom';
 
+/**
+ * @description
+ * The base configuration for navigation items and sections of the main app nav bar.
+ *
+ * @docsCategory extensions-api
+ * @docsPage Navigation
+ * @since 3.4.0
+ */
 interface NavMenuBaseItem {
     id: string;
     title: string;
@@ -19,7 +27,19 @@ interface NavMenuBaseItem {
     requiresPermission?: string | string[];
 }
 
+/**
+ * @description
+ * Defines an items in the navigation menu.
+ *
+ * @docsCategory extensions-api
+ * @docsPage Navigation
+ * @since 3.4.0
+ */
 export interface NavMenuItem extends NavMenuBaseItem {
+    /**
+     * @description
+     * The url of the route which this nav item links to.
+     */
     url: string;
 }
 
