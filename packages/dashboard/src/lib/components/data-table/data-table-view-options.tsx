@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
@@ -78,12 +79,18 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     return (
         <div className="flex items-center gap-2">
             <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="ml-auto hidden h-8 lg:flex">
-                        <Settings2 />
-                        <Trans>Columns</Trans>
-                    </Button>
-                </DropdownMenuTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+                                <Settings2 />
+                            </Button>
+                        </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <Trans>Column settings</Trans>
+                    </TooltipContent>
+                </Tooltip>
                 <DropdownMenuContent align="end" className="overflow-auto">
                     <ScrollArea className="max-h-[60vh]" type="always">
                         <DndContext

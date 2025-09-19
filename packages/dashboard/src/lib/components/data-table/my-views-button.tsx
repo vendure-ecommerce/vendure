@@ -2,6 +2,8 @@ import { ColumnFiltersState } from '@tanstack/react-table';
 import { Bookmark } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '../ui/button.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { UserViewsSheet } from './user-views-sheet.js';
 
 interface MyViewsButtonProps {
@@ -13,9 +15,16 @@ export const MyViewsButton: React.FC<MyViewsButtonProps> = ({ onApplyView }) => 
 
     return (
         <>
-            <Button variant="outline" size="icon" onClick={() => setSheetOpen(true)}>
-                <Bookmark />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" onClick={() => setSheetOpen(true)}>
+                        <Bookmark />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <Trans>My saved views</Trans>
+                </TooltipContent>
+            </Tooltip>
             <UserViewsSheet open={sheetOpen} onOpenChange={setSheetOpen} onApplyView={onApplyView} />
         </>
     );
