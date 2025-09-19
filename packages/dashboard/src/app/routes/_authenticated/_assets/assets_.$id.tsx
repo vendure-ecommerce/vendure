@@ -1,4 +1,4 @@
-import { AssetFocalPointEditor, Point } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
+import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
 import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
@@ -50,7 +50,6 @@ function AssetDetailPage() {
     const [size, setSize] = useState<PreviewPreset>('medium');
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-    const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -105,7 +104,7 @@ function AssetDetailPage() {
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="asset-preview">
-                    <div className="relative flex items-center justify-center bg-muted/30 rounded-lg min-h-[300px] overflow-auto">
+                    <div className="relative flex items-center justify-center bg-muted/30 rounded-lg min-h-[300px] overflow-auto resize-y">
                         <AssetFocalPointEditor
                             width={width}
                             height={height}
@@ -124,10 +123,9 @@ function AssetDetailPage() {
                                 ref={imageRef}
                                 asset={entity}
                                 preset={size || undefined}
-                                mode="resize"
                                 useFocalPoint={true}
                                 onLoad={updateDimensions}
-                                className="max-w-full max-h-full object-contain"
+                                className="max-w-full object-contain"
                             />
                         </AssetFocalPointEditor>
                     </div>
