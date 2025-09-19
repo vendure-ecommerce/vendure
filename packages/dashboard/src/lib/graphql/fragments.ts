@@ -34,22 +34,31 @@ export const configurableOperationFragment = graphql(`
 
 export type ConfigurableOperationFragment = ResultOf<typeof configurableOperationFragment>;
 
-export const configurableOperationDefFragment = graphql(`
-    fragment ConfigurableOperationDef on ConfigurableOperationDefinition {
-        args {
-            name
-            type
-            required
-            defaultValue
-            list
-            ui
-            label
-            description
-        }
-        code
+export const configArgDefinitionFragment = graphql(`
+    fragment ConfigArgDefinition on ConfigArgDefinition {
+        name
+        type
+        required
+        defaultValue
+        list
+        ui
+        label
         description
     }
 `);
+
+export const configurableOperationDefFragment = graphql(
+    `
+        fragment ConfigurableOperationDef on ConfigurableOperationDefinition {
+            args {
+                ...ConfigArgDefinition
+            }
+            code
+            description
+        }
+    `,
+    [configArgDefinitionFragment],
+);
 
 export const errorResultFragment = graphql(`
     fragment ErrorResult on ErrorResult {
@@ -59,3 +68,4 @@ export const errorResultFragment = graphql(`
 `);
 
 export type ConfigurableOperationDefFragment = ResultOf<typeof configurableOperationDefFragment>;
+export type ConfigArgDefFragment = ResultOf<typeof configArgDefinitionFragment>;

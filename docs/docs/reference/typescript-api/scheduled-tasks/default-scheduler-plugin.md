@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSchedulerPlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler.plugin.ts" sourceLine="39" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler.plugin.ts" sourceLine="40" packageName="@vendure/core" since="3.3.0" />
 
 This plugin configures a default scheduling strategy that executes scheduled
 tasks using the database to ensure that each task is executed exactly once

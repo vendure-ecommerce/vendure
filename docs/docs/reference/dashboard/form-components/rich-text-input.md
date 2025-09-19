@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RichTextInput
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/rich-text-input.tsx" sourceLine="32" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/rich-text-input.tsx" sourceLine="12" packageName="@vendure/dashboard" />
 
 A component for displaying a rich text editor. Internally uses ProseMirror (rich text editor) under the hood.
 

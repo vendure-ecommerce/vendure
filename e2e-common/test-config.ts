@@ -1,10 +1,10 @@
 import { mergeConfig } from '@vendure/core';
 import {
+    testConfig as defaultTestConfig,
     MysqlInitializer,
     PostgresInitializer,
     registerInitializer,
     SqljsInitializer,
-    testConfig as defaultTestConfig,
 } from '@vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
@@ -104,7 +104,7 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
-                username: 'vendure',
+                username: 'root',
                 password: 'password',
             };
         case 'mysql':
@@ -113,7 +113,7 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mysql',
                 host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
-                username: 'vendure',
+                username: 'root',
                 password: 'password',
             };
         case 'sqljs':

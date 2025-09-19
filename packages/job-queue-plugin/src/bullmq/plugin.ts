@@ -65,11 +65,9 @@ import { BullMQPluginOptions } from './types';
  * version: "3"
  * services:
  *   redis:
- *     image: bitnami/redis:6.2
+ *     image: redis:7.4
  *     hostname: redis
  *     container_name: redis
- *     environment:
- *       - ALLOW_EMPTY_PASSWORD=yes
  *     ports:
  *       - "6379:6379"
  *   redis-commander:
