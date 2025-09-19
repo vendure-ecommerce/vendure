@@ -23,7 +23,7 @@ interface ManageTagsDialogProps {
     onTagsUpdated?: () => void;
 }
 
-export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: ManageTagsDialogProps) {
+export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: Readonly<ManageTagsDialogProps>) {
     const queryClient = useQueryClient();
     const [toDelete, setToDelete] = useState<string[]>([]);
     const [toUpdate, setToUpdate] = useState<Array<{ id: string; value: string }>>([]);
@@ -82,6 +82,55 @@ export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: ManageTa
             return updateItem.value;
         }
         return allTags.find(tag => tag.id === id)?.value || '';
+    };
+
+    const renderTagsList = () => {
+        if (isLoading) {
+            return (
+                <div className="text-sm text-muted-foreground">
+                    <Trans>Loading tags...</Trans>
+                </div>
+            );
+        }
+
+        if (allTags.length === 0) {
+            return (
+                <div className="text-sm text-muted-foreground">
+                    <Trans>No tags found</Trans>
+                </div>
+            );
+        }
+
+        return allTags.map(tag => {
+            const isDeleted = markedAsDeleted(tag.id);
+            const isModified = toUpdate.some(i => i.id === tag.id);
+
+            return (
+                <div
+                    key={tag.id}
+                    className={cn(
+                        'flex items-center gap-2 p-2 rounded-md',
+                        isDeleted && 'opacity-50',
+                    )}
+                >
+                    <Input
+                        value={getDisplayValue(tag.id)}
+                        onChange={e => updateTagValue(tag.id, e.target.value)}
+                        disabled={isDeleted || isSaving}
+                        className={cn('flex-1', isModified && !isDeleted && 'border-primary')}
+                    />
+                    <Button
+                        variant={isDeleted ? 'default' : 'ghost'}
+                        size="icon"
+                        onClick={() => toggleDelete(tag.id)}
+                        disabled={isSaving}
+                        className={cn(isDeleted && 'bg-destructive hover:bg-destructive/90')}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            );
+        });
     };
 
     const hasChanges = toDelete.length > 0 || toUpdate.length > 0;
@@ -151,51 +200,7 @@ export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: ManageTa
                 </DialogHeader>
 
                 <div className="max-h-[400px] overflow-y-auto space-y-2 py-4">
-                    {isLoading ? (
-                        <div className="text-sm text-muted-foreground">
-                            <Trans>Loading tags...</Trans>
-                        </div>
-                    ) : allTags.length === 0 ? (
-                        <div className="text-sm text-muted-foreground">
-                            <Trans>No tags found</Trans>
-                        </div>
-                    ) : (
-                        allTags.map(tag => {
-                            const isDeleted = markedAsDeleted(tag.id);
-                            const isModified = toUpdate.some(i => i.id === tag.id);
-
-                            return (
-                                <div
-                                    key={tag.id}
-                                    className={cn(
-                                        "flex items-center gap-2 p-2 rounded-md",
-                                        isDeleted && "opacity-50"
-                                    )}
-                                >
-                                    <Input
-                                        value={getDisplayValue(tag.id)}
-                                        onChange={(e) => updateTagValue(tag.id, e.target.value)}
-                                        disabled={isDeleted || isSaving}
-                                        className={cn(
-                                            "flex-1",
-                                            isModified && !isDeleted && "border-primary"
-                                        )}
-                                    />
-                                    <Button
-                                        variant={isDeleted ? "default" : "ghost"}
-                                        size="icon"
-                                        onClick={() => toggleDelete(tag.id)}
-                                        disabled={isSaving}
-                                        className={cn(
-                                            isDeleted && "bg-destructive hover:bg-destructive/90"
-                                        )}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    )}
+                    {renderTagsList()}
                 </div>
 
                 <DialogFooter>
