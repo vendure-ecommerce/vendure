@@ -3,6 +3,7 @@ export * from './asset-naming-strategy/asset-naming-strategy';
 export * from './asset-naming-strategy/default-asset-naming-strategy';
 export * from './asset-preview-strategy/asset-preview-strategy';
 export * from './asset-storage-strategy/asset-storage-strategy';
+export * from './auth/api-key-authentication-strategy';
 export * from './auth/authentication-strategy';
 export * from './auth/bcrypt-password-hashing-strategy';
 export * from './auth/default-password-validation-strategy';

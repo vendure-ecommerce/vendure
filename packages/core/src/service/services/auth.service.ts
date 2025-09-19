@@ -58,6 +58,7 @@ export class AuthService {
             new AttemptedLoginEvent(
                 ctx,
                 authenticationMethod,
+                // TODO maybe log something from api key and external auth too?
                 authenticationMethod === NATIVE_AUTH_STRATEGY_NAME
                     ? (authenticationData as NativeAuthenticationData).username
                     : undefined,

@@ -1,6 +1,7 @@
 import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
+import { ApiKeyAuthenticationMethod } from './authentication-method/api-key-authentication-method.entity';
 import { AuthenticationMethod } from './authentication-method/authentication-method.entity';
 import { ExternalAuthenticationMethod } from './authentication-method/external-authentication-method.entity';
 import { NativeAuthenticationMethod } from './authentication-method/native-authentication-method.entity';
@@ -79,6 +80,7 @@ export const coreEntitiesMap = {
     Administrator,
     Allocation,
     AnonymousSession,
+    ApiKeyAuthenticationMethod,
     Asset,
     AuthenticatedSession,
     AuthenticationMethod,

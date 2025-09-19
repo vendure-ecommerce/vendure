@@ -6,7 +6,7 @@ import { Brackets, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEv
 
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
-import { Logger } from '../../config';
+import { API_KEY_AUTH_STRATEGY_NAME, ApiKeyAuthenticationStrategy, Logger } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -36,6 +36,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
     private sessionCacheStrategy: SessionCacheStrategy;
     private cleanSessionsJobQueue: JobQueue<{ batchSize: number }>;
     private readonly sessionDurationInMs: number;
+    private readonly apiKeySessionDurationInMs: number;
     private readonly sessionCacheTimeoutMs = 50;
 
     constructor(
@@ -50,6 +51,10 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         const { sessionDuration } = this.configService.authOptions;
         this.sessionDurationInMs =
             typeof sessionDuration === 'string' ? ms(sessionDuration) : sessionDuration;
+        this.apiKeySessionDurationInMs =
+            typeof ApiKeyAuthenticationStrategy.sessionDuration === 'string'
+                ? ms(ApiKeyAuthenticationStrategy.sessionDuration)
+                : ApiKeyAuthenticationStrategy.sessionDuration;
 
         // This allows us to register this class as a TypeORM Subscriber while also allowing
         // the injection on dependencies. See https://docs.nestjs.com/techniques/database#subscribers
@@ -116,13 +121,20 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
                 : undefined;
         const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
+
+        const expires = this.getExpiryDate(
+            authenticationStrategyName === API_KEY_AUTH_STRATEGY_NAME
+                ? this.apiKeySessionDurationInMs
+                : this.sessionDurationInMs,
+        );
+
         const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
             new AuthenticatedSession({
                 token,
                 user,
                 activeOrder,
                 authenticationStrategy: authenticationStrategyName,
-                expires: this.getExpiryDate(this.sessionDurationInMs),
+                expires,
                 invalidated: false,
             }),
         );

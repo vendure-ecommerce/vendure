@@ -1,7 +1,9 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { AuthenticationMethod as AuthenticationMethodType } from '@vendure/common/lib/generated-types';
 
+import { API_KEY_AUTH_STRATEGY_NAME } from '../../../config/auth/api-key-authentication-strategy';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
+import { ApiKeyAuthenticationMethod } from '../../../entity/authentication-method/api-key-authentication-method.entity';
 import { AuthenticationMethod } from '../../../entity/authentication-method/authentication-method.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
 import { Role } from '../../../entity/role/role.entity';
@@ -30,7 +32,12 @@ export class UserEntityResolver {
         return methodEntities.map(m => ({
             ...m,
             id: m.id.toString(),
-            strategy: m instanceof ExternalAuthenticationMethod ? m.strategy : NATIVE_AUTH_STRATEGY_NAME,
+            strategy:
+                m instanceof ExternalAuthenticationMethod
+                    ? m.strategy
+                    : m instanceof ApiKeyAuthenticationMethod
+                      ? API_KEY_AUTH_STRATEGY_NAME
+                      : NATIVE_AUTH_STRATEGY_NAME,
         }));
     }
 
