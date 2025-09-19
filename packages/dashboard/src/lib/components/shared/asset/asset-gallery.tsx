@@ -179,8 +179,8 @@ export function AssetGallery({
 
     // Query for available tags to check if we should show the filter
     const { data: tagsData } = useQuery({
-        queryKey: ['tags'],
-        queryFn: () => api.query(tagListDocument, { options: { take: 100 } }),
+        queryKey: ['tags-check'],
+        queryFn: () => api.query(tagListDocument, { options: { take: 1 } }),
         staleTime: 1000 * 60 * 5,
     });
 
