@@ -1,8 +1,7 @@
-import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
+import { AssetFocalPointEditor, Point } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
 import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
-import { Point } from '@/vdb/components/shared/asset/focal-point-control.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
@@ -111,7 +110,7 @@ function AssetDetailPage() {
                             width={width}
                             height={height}
                             settingFocalPoint={settingFocalPoint}
-                            focalPoint={form.getValues().focalPoint ?? { x: 0.5, y: 0.5 }}
+                            focalPoint={entity.focalPoint ?? { x: 0.5, y: 0.5 }}
                             onFocalPointChange={point => {
                                 form.setValue('focalPoint.x', point.x, { shouldDirty: true });
                                 form.setValue('focalPoint.y', point.y, { shouldDirty: true });

@@ -70,7 +70,6 @@ export * from './components/shared/asset/asset-preview-dialog.js';
 export * from './components/shared/asset/asset-preview-selector.js';
 export * from './components/shared/asset/asset-preview.js';
 export * from './components/shared/asset/asset-properties.js';
-export * from './components/shared/asset/focal-point-control.js';
 export * from './components/shared/assign-to-channel-bulk-action.js';
 export * from './components/shared/assign-to-channel-dialog.js';
 export * from './components/shared/assigned-facet-values.js';
