@@ -20,9 +20,12 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { formatFileSize } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { tagListDocument } from '../../../../app/routes/_authenticated/_assets/assets.graphql.js';
+import { AssetTagFilter } from '../../../../app/routes/_authenticated/_assets/components/asset-tag-filter.js';
 import { DetailPageButton } from '../detail-page-button.js';
 import { AssetBulkAction, AssetBulkActions } from './asset-bulk-actions.js';
 
@@ -74,7 +77,7 @@ export type Asset = AssetFragment;
 /**
  * @description
  * Props for the {@link AssetGallery} component.
- * 
+ *
  * @docsCategory components
  * @docsPage AssetGallery
  */
@@ -134,16 +137,16 @@ export interface AssetGalleryProps {
 /**
  * @description
  * A component for displaying a gallery of assets.
- * 
+ *
  * @example
  * ```tsx
  *  <AssetGallery
-        onSelect={handleAssetSelect}
-        multiSelect="manual"
-        initialSelectedAssets={initialSelectedAssets}
-        fixedHeight={false}
-        displayBulkActions={false}
-    />
+ onSelect={handleAssetSelect}
+ multiSelect="manual"
+ initialSelectedAssets={initialSelectedAssets}
+ fixedHeight={false}
+ displayBulkActions={false}
+ />
  * ```
  *
  * @docsCategory components
@@ -169,9 +172,19 @@ export function AssetGallery({
     const debouncedSearch = useDebounce(search, 500);
     const [assetType, setAssetType] = useState<string>(AssetType.ALL);
     const [selected, setSelected] = useState<Asset[]>(initialSelectedAssets || []);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const queryClient = useQueryClient();
 
-    const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType];
+    const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType, selectedTags];
+
+    // Query for available tags to check if we should show the filter
+    const { data: tagsData } = useQuery({
+        queryKey: ['tags-check'],
+        queryFn: () => api.query(tagListDocument, { options: { take: 1 } }),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const hasTags = (tagsData?.tags.items?.length || 0) > 0;
 
     // Query for assets
     const { data, isLoading, refetch } = useQuery({
@@ -187,14 +200,20 @@ export function AssetGallery({
                 filter.type = { eq: assetType };
             }
 
-            return api.query(getAssetListDocument, {
-                options: {
-                    skip: (page - 1) * pageSize,
-                    take: pageSize,
-                    filter: Object.keys(filter).length > 0 ? filter : undefined,
-                    sort: { createdAt: 'DESC' },
-                },
-            });
+            const options: any = {
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+                filter: Object.keys(filter).length > 0 ? filter : undefined,
+                sort: { createdAt: 'DESC' },
+            };
+
+            // Add tag filtering if tags are provided
+            if (selectedTags && selectedTags.length > 0) {
+                options.tags = selectedTags;
+                options.tagsOperator = LogicalOperator.AND;
+            }
+
+            return api.query(getAssetListDocument, { options });
         },
     });
 
@@ -262,10 +281,17 @@ export function AssetGallery({
     // Check if an asset is selected
     const isSelected = (asset: Asset) => selected.some(a => a.id === asset.id);
 
+    // Handle tag changes
+    const handleTagsChange = (tags: string[]) => {
+        setSelectedTags(tags);
+        setPage(1); // Reset to page 1 when tags change
+    };
+
     // Clear filters
     const clearFilters = () => {
         setSearch('');
         setAssetType(AssetType.ALL);
+        setSelectedTags([]);
         setPage(1);
     };
 
@@ -294,40 +320,48 @@ export function AssetGallery({
     return (
         <div className={`relative flex flex-col w-full ${fixedHeight ? 'h-[600px]' : 'h-full'} ${className}`}>
             {showHeader && (
-                <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
-                    <div className="relative flex-grow flex items-center gap-2">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search assets..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="pl-8"
-                        />
-                        {(search || assetType !== AssetType.ALL) && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={clearFilters}
-                                className="absolute right-0"
-                            >
-                                <X className="h-4 w-4 mr-1" /> Clear filters
-                            </Button>
-                        )}
+                <div className="space-y-4 mb-4 flex-shrink-0">
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <div className="relative flex-grow flex items-center gap-2">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search assets..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="pl-8"
+                            />
+                            {(search || assetType !== AssetType.ALL || selectedTags.length > 0) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={clearFilters}
+                                    className="absolute right-0"
+                                >
+                                    <X className="h-4 w-4 mr-1" /> Clear filters
+                                </Button>
+                            )}
+                        </div>
+                        <Select value={assetType} onValueChange={setAssetType}>
+                            <SelectTrigger className="w-full md:w-[180px]">
+                                <SelectValue placeholder="Asset type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={AssetType.ALL}>All types</SelectItem>
+                                <SelectItem value={AssetType.IMAGE}>Images</SelectItem>
+                                <SelectItem value={AssetType.VIDEO}>Video</SelectItem>
+                                <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button onClick={openFileDialog} className="whitespace-nowrap">
+                            <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
+                        </Button>
                     </div>
-                    <Select value={assetType} onValueChange={setAssetType}>
-                        <SelectTrigger className="w-full md:w-[180px]">
-                            <SelectValue placeholder="Asset type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={AssetType.ALL}>All types</SelectItem>
-                            <SelectItem value={AssetType.IMAGE}>Images</SelectItem>
-                            <SelectItem value={AssetType.VIDEO}>Video</SelectItem>
-                            <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Button onClick={openFileDialog} className="whitespace-nowrap">
-                        <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
-                    </Button>
+
+                    {hasTags && (
+                        <div className="flex items-center -mt-2">
+                            <AssetTagFilter selectedTags={selectedTags} onTagsChange={handleTagsChange} />
+                        </div>
+                    )}
                 </div>
             )}
 
