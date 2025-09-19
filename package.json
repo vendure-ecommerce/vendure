@@ -113,6 +113,6 @@
         "eslint-plugin-prefer-arrow": "^1.2.3"
     },
     "overrides": {
-        "typeorm": "https://pkg.pr.new/typeorm/typeorm@11659"
+        "typeorm": "https://pkg.pr.new/typeorm/typeorm/typeorm@d6d2d555a17717fa14af78ef9bee71691e0d65b7"
     }
 }
