@@ -7,7 +7,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { PlusCircle } from 'lucide-react';
@@ -27,9 +26,8 @@ export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 border-dashed">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        <Trans>Add filter</Trans>
+                    <Button variant="outline" size="icon" className="border-dashed">
+                        <PlusCircle />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
