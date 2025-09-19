@@ -13,20 +13,28 @@ import { api } from '@/vdb/graphql/api.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { Check, ChevronsUpDown, Settings2, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { createTagDocument, tagListDocument } from '../assets.graphql.js';
+import { ManageTagsDialog } from './manage-tags-dialog.js';
 
 interface AssetTagsEditorProps {
     selectedTags: string[];
     onTagsChange: (tags: string[]) => void;
     disabled?: boolean;
+    onTagsUpdated?: () => void;
 }
 
-export function AssetTagsEditor({ selectedTags, onTagsChange, disabled = false }: AssetTagsEditorProps) {
+export function AssetTagsEditor({
+    selectedTags,
+    onTagsChange,
+    disabled = false,
+    onTagsUpdated,
+}: Readonly<AssetTagsEditorProps>) {
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [manageDialogOpen, setManageDialogOpen] = useState(false);
     const queryClient = useQueryClient();
 
     // Fetch available tags
@@ -195,6 +203,24 @@ export function AssetTagsEditor({ selectedTags, onTagsChange, disabled = false }
                     </PopoverContent>
                 </Popover>
             )}
+
+            {!disabled && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setManageDialogOpen(true)}
+                    className="w-full justify-start"
+                >
+                    <Settings2 className="h-4 w-4 mr-2" />
+                    <Trans>Manage tags</Trans>
+                </Button>
+            )}
+            {/* Manage Tags Dialog */}
+            <ManageTagsDialog
+                open={manageDialogOpen}
+                onOpenChange={setManageDialogOpen}
+                onTagsUpdated={onTagsUpdated}
+            />
         </div>
     );
 }

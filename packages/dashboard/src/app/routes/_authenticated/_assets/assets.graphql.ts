@@ -56,3 +56,21 @@ export const createTagDocument = graphql(`
         }
     }
 `);
+
+export const updateTagDocument = graphql(`
+    mutation UpdateTag($input: UpdateTagInput!) {
+        updateTag(input: $input) {
+            id
+            value
+        }
+    }
+`);
+
+export const deleteTagDocument = graphql(`
+    mutation DeleteTag($id: ID!) {
+        deleteTag(id: $id) {
+            result
+            message
+        }
+    }
+`);

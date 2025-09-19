@@ -54,7 +54,7 @@ function AssetDetailPage() {
     const [height, setHeight] = useState(0);
     const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
-    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
@@ -170,6 +170,10 @@ function AssetDetailPage() {
                         selectedTags={form.watch('tags') || []}
                         onTagsChange={(tags) => {
                             form.setValue('tags', tags, { shouldDirty: true });
+                        }}
+                        onTagsUpdated={() => {
+                            // Refresh the asset entity to get updated tag values
+                            refreshEntity();
                         }}
                         disabled={isPending}
                     />
