@@ -32,6 +32,7 @@ import { Role } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { EventBus } from '../../event-bus';
+import { ApiKeyEvent } from '../../event-bus/events/api-key-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -162,7 +163,7 @@ export class ApiKeyService {
         Logger.verbose(
             `Created ApiKey (${newEntity.id}) for User (${userIdOwner}) with ApiKeyUser (${apiKeyUser.id}, ${apiKeyUser.identifier})`,
         );
-        // await this.eventBus.publish(new ApiKeyEvent(ctx, entity, "created", input)); // TODO
+        await this.eventBus.publish(new ApiKeyEvent(ctx, newEntity, 'created', input));
 
         return {
             apiKey,
@@ -190,7 +191,7 @@ export class ApiKeyService {
         await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, apiKey);
 
         Logger.verbose(`Updated ApiKey (${apiKey.id}) by User (${String(ctx.activeUserId)})`);
-        // await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, "updated", input)); // TODO
+        await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, 'updated', input));
 
         return assertFound(this.findOne(ctx, input.id, relations));
     }
@@ -208,10 +209,11 @@ export class ApiKeyService {
         // SoftDelete should also delete the related sessions
         await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
         // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
+        const deletedApiKey = new ApiKey(apiKey); // For retaining the ID
         await this.connection.getRepository(ctx, ApiKey).remove(apiKey);
 
         Logger.verbose(`Deleted ApiKey (${String(input.id)}) by User (${String(ctx.activeUserId)})`);
-        // await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, "deleted", input)); // TODO
+        await this.eventBus.publish(new ApiKeyEvent(ctx, deletedApiKey, 'deleted', input));
 
         return { result: DeletionResult.DELETED };
     }
