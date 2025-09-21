@@ -9,7 +9,7 @@ import {
     InternalServerError,
     ListQueryOptions,
     Translated,
-    UnauthorizedError,
+    UserInputError,
 } from '../../common';
 import {
     API_KEY_AUTH_STRATEGY_NAME,
@@ -27,9 +27,9 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 
-import { AdministratorService } from './administrator.service';
 import { ChannelService } from './channel.service';
 import { SessionService } from './session.service';
+import { UserService } from './user.service';
 
 @Injectable()
 @Instrument()
@@ -44,9 +44,12 @@ export class ApiKeyService {
         private sessionService: SessionService,
         private translatableSaver: TranslatableSaver,
         private translator: TranslatorService,
-        private adminService: AdministratorService,
+        private userService: UserService,
     ) {}
 
+    /**
+     * @throws {InternalServerError} When {@link ApiKeyHashingStrategy} has not been configured.
+     */
     getHashingStrategyByApiType(apiType: ApiType): ApiKeyHashingStrategy {
         const options =
             apiType === 'admin'
@@ -59,6 +62,9 @@ export class ApiKeyService {
         return options.hashingStrategy;
     }
 
+    /**
+     * @throws {InternalServerError} When {@link ApiKeyGenerationStrategy} has not been configured.
+     */
     getGenerationStrategyByApiType(apiType: ApiType): ApiKeyGenerationStrategy {
         const options =
             apiType === 'admin'
@@ -74,39 +80,26 @@ export class ApiKeyService {
     // TODO extract common creation logic for use between forAdmin and forCustomer
 
     /**
-     * Restricts API-Key creation to the active user! Allowing Admins to create keys for others,
-     * comes with the risk of privilege escalation and impersonation.
+     * Creates a new API-Key.
      *
-     * @throws {UnauthorizedError} When creating an API-Key for someone other than yourself
+     * The owner of the API-Key is determined by the active User ID inside the RequestContext.
+     *
+     * @throws {UserInputError} When the context has no active User ID
      * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or {@link ApiKeyHashingStrategy}
      * have not been configured.
      */
-    async createForAdministrator(
+    async create(
         ctx: RequestContext,
+        // TODO need permissions either in creation and or update
         input: CreateApiKeyInput,
         relations?: RelationPaths<ApiKey>,
     ): Promise<CreateApiKeyResult> {
-        const admin = await this.adminService.findOne(
-            ctx,
-            input.administratorId,
-            // We specifically need channels for the session creation, important! (2025-09-20)
-            ['user', 'user.roles', 'user.roles.channels'],
-        );
-        // We could allow superadmins to create for others too here would be convenient
-        // Dont throw EntityNotFound so as to not leak Admin IDs
-        if (!admin || input.administratorId !== admin.id) throw new UnauthorizedError();
+        const ownerId = ctx.activeUserId;
+        if (!ownerId) throw new UserInputError('CONTEXT HAS NO ACTIVE USER'); // TODO i18n key
 
-        const apiKey =
-            await this.configService.authOptions.adminApiKeyAuthorizationOptions.generationStrategy?.generateApiKey(
-                ctx,
-            );
-        if (!apiKey) throw new InternalServerError('GENERATION STRATEGY MISSING'); // TODO proper i18n key
-
-        const hash =
-            await this.configService.authOptions.adminApiKeyAuthorizationOptions.hashingStrategy?.hash(
-                apiKey,
-            );
-        if (!hash) throw new InternalServerError('HASHING STRATEGY MISSING'); // TODO proper i18n key
+        const apiKeyUser = await this.userService.createApiKeyUser(ctx, []); // TODO roles
+        const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
+        const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
 
         const newEntity = await this.translatableSaver.create({
             ctx,
@@ -114,7 +107,8 @@ export class ApiKeyService {
             entityType: ApiKey,
             translationType: ApiKeyTranslation,
             beforeSave: async e => {
-                e.user = admin.user;
+                e.ownerId = ownerId;
+                e.apiKeyUserId = apiKeyUser.id;
                 e.apiKeyHash = hash;
                 await this.channelService.assignToCurrentChannel(e, ctx);
             },
@@ -122,15 +116,18 @@ export class ApiKeyService {
 
         await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, newEntity);
 
-        // Important: The Hash is now a session token, this is what allows us to authorize on a per-request basis
+        // Important: The hash becomes the session token, this is what allows us to authorize on a per-request basis
+        // Important: The User of the session is not the owner, it's a new User to allow configuring separate permissions
         await this.sessionService.createNewAuthenticatedSession(
             ctx,
-            admin.user,
+            apiKeyUser,
             API_KEY_AUTH_STRATEGY_NAME,
             hash,
         );
 
-        Logger.verbose(`Created ApiKey (${newEntity.id}) for Administrator (${admin.id})`); // TODO i18n key
+        Logger.verbose(
+            `Created ApiKey (${newEntity.id}) for User (${ownerId}) with ApiKeyUser (${apiKeyUser.id}, ${apiKeyUser.identifier})`,
+        );
         // await this.eventBus.publish(new ApiKeyEvent(ctx, entity, "created", input)); // TODO
 
         return {

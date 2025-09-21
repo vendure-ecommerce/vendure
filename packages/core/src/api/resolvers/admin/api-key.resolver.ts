@@ -21,6 +21,6 @@ export class ApiKeyResolver {
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationCreateApiKeyArgs,
     ): Promise<CreateApiKeyResult> {
-        return this.apiKeyService.createForAdministrator(ctx, input);
+        return this.apiKeyService.create(ctx, input);
     }
 }

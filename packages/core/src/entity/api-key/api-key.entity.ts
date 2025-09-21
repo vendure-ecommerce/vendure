@@ -33,11 +33,23 @@ export class ApiKey extends VendureEntity implements HasCustomFields, ChannelAwa
     @Column({ unique: true })
     apiKeyHash: string;
 
+    /**
+     * This is the only User that is allowed to update this API-Key
+     */
     @ManyToOne(type => User)
-    user: User;
+    owner: User;
 
     @EntityId()
-    userId: ID;
+    ownerId: ID;
+
+    /**
+     * This is the underlying User which determines the kind of permissions for this API-Key.
+     */
+    @ManyToOne(type => User)
+    apiKeyUser: User;
+
+    @EntityId()
+    apiKeyUserId: ID;
 
     @ManyToMany(() => Channel)
     @JoinTable()

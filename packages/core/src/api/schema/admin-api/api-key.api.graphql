@@ -28,25 +28,33 @@ input UpdateApiKeyTranslationInput {
     name: String
 }
 
-# TODO creation result probably should be in a Union because there can be other errors like misconfiguring the strategies?
 type CreateApiKeyResult {
     "The generated API-Key. API-Keys cannot be viewed again after creation."
     apiKey: String!
     entity: ApiKey!
 }
 
+"""
+There is no User ID because you can only create API-Keys for yourself,
+which gets determined by the User who does the request.
+"""
 input CreateApiKeyInput {
-    "ID of the Administrator for whom to create the API-Key for"
-    administratorId: ID!
+    """
+    Which roles to attach to this ApiKey.
+    You may only grant roles which you, yourself have.
+    """
+    roleIds: [ID!]!
+    # TODO we could allow an optional User parameter specifically for SuperAdmins
     translations: [CreateApiKeyTranslationInput!]!
 }
 
 input UpdateApiKeyInput {
+    "ID of the ApiKey"
     id: ID!
     translations: [UpdateApiKeyTranslationInput!]
 }
 
 input DeleteApiKeyInput {
-    "ID of the Administrator"
-    administratorId: ID!
+    "ID of the ApiKey. Only an Owner can delete their own Key, or SuperAdmin."
+    id: ID!
 }
