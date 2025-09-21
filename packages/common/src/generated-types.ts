@@ -778,10 +778,17 @@ export type CreateAdministratorInput = {
   roleIds: Array<Scalars['ID']['input']>;
 };
 
+/**
+ * There is no User ID because you can only create API-Keys for yourself,
+ * which gets determined by the User who does the request.
+ */
 export type CreateApiKeyInput = {
-  /** ID of the Administrator for whom to create the API-Key for */
-  administratorId: Scalars['ID']['input'];
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  /**
+   * Which roles to attach to this ApiKey.
+   * You may only grant roles which you, yourself have.
+   */
+  roleIds: Array<Scalars['ID']['input']>;
   translations: Array<CreateApiKeyTranslationInput>;
 };
 
@@ -1623,8 +1630,8 @@ export type DateTimeStructFieldConfig = StructField & {
 };
 
 export type DeleteApiKeyInput = {
-  /** ID of the Administrator */
-  administratorId: Scalars['ID']['input'];
+  /** ID of the ApiKey. Only an Owner can delete their own Key, or SuperAdmin. */
+  id: Scalars['ID']['input'];
 };
 
 export type DeleteAssetInput = {
@@ -6629,6 +6636,7 @@ export type UpdateAdministratorInput = {
 
 export type UpdateApiKeyInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  /** ID of the ApiKey */
   id: Scalars['ID']['input'];
   translations?: InputMaybe<Array<UpdateApiKeyTranslationInput>>;
 };
