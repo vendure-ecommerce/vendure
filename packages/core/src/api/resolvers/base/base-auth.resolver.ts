@@ -65,16 +65,19 @@ export class BaseAuthResolver {
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
         const apiKeyHashingStrategy = this.apiKeyService.getHashingStrategyByApiType(ctx.apiType);
 
-        // TODO dont let api keys logout their session
-        const token = await extractSessionToken(
+        const extraction = await extractSessionToken(
             req,
             this.configService.authOptions.tokenMethod,
             apiKeyHashingStrategy,
         );
-        if (!token) {
+
+        // ApiKey "Sessions" are not meant to be logged out of
+        if (!extraction?.token || extraction.method === 'api-key') {
             return { success: false };
         }
-        await this.authService.destroyAuthenticatedSession(ctx, token);
+
+        await this.authService.destroyAuthenticatedSession(ctx, extraction.token);
+
         setSessionToken({
             req,
             res,
@@ -82,6 +85,7 @@ export class BaseAuthResolver {
             rememberMe: false,
             sessionToken: '',
         });
+
         return { success: true };
     }
 

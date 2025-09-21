@@ -314,7 +314,6 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * Deletes all existing sessions for the given user.
      */
     async deleteSessionsByUser(ctx: RequestContext, user: User): Promise<void> {
-        // TODO think about apikey sessions and think about soft-deletion of user too!
         const userSessions = await this.connection
             .getRepository(ctx, AuthenticatedSession)
             .find({ where: { user: { id: user.id } } });
