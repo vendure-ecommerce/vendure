@@ -186,10 +186,39 @@ export type ApiKey = Node & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ApiKeyFilterParameter = {
+  _and?: InputMaybe<Array<ApiKeyFilterParameter>>;
+  _or?: InputMaybe<Array<ApiKeyFilterParameter>>;
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ApiKeyList = PaginatedList & {
   __typename?: 'ApiKeyList';
   items: Array<ApiKey>;
   totalItems: Scalars['Int']['output'];
+};
+
+export type ApiKeyListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ApiKeyFilterParameter>;
+  /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ApiKeySortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ApiKeySortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ApiKeyTranslation = Node & {
@@ -2931,7 +2960,7 @@ export type Mutation = {
   /** Delete multiple Administrators */
   deleteAdministrators: Array<DeletionResponse>;
   /** Deletes an API-Key */
-  deleteApiKey: DeletionResult;
+  deleteApiKey: DeletionResponse;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
   /** Delete multiple Assets */
@@ -5309,6 +5338,8 @@ export type Query = {
   activeChannel: Channel;
   administrator?: Maybe<Administrator>;
   administrators: AdministratorList;
+  apiKey?: Maybe<ApiKey>;
+  apiKeys: ApiKeyList;
   /** Get a single Asset by id */
   asset?: Maybe<Asset>;
   /** Get a list of Assets */
@@ -5407,6 +5438,16 @@ export type QueryAdministratorArgs = {
 
 export type QueryAdministratorsArgs = {
   options?: InputMaybe<AdministratorListOptions>;
+};
+
+
+export type QueryApiKeyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryApiKeysArgs = {
+  options?: InputMaybe<ApiKeyListOptions>;
 };
 
 
