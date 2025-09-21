@@ -1,10 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { CreateApiKeyInput, CreateApiKeyResult } from '@vendure/common/lib/generated-types';
+import {
+    CreateApiKeyInput,
+    CreateApiKeyResult,
+    DeleteApiKeyInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateApiKeyInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { ApiType, RelationPaths, RequestContext } from '../../api';
 import {
     assertFound,
+    EntityNotFoundError,
     Instrument,
     InternalServerError,
     ListQueryOptions,
@@ -19,6 +28,7 @@ import {
     Logger,
 } from '../../config';
 import { TransactionalConnection } from '../../connection';
+import { Role } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { EventBus } from '../../event-bus';
@@ -26,8 +36,10 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 
 import { ChannelService } from './channel.service';
+import { RoleService } from './role.service';
 import { SessionService } from './session.service';
 import { UserService } from './user.service';
 
@@ -41,6 +53,7 @@ export class ApiKeyService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
+        private roleService: RoleService,
         private sessionService: SessionService,
         private translatableSaver: TranslatableSaver,
         private translator: TranslatorService,
@@ -77,27 +90,48 @@ export class ApiKeyService {
         return options.generationStrategy;
     }
 
-    // TODO extract common creation logic for use between forAdmin and forCustomer
+    /**
+     * Checks that the active user is allowed to grant the specified Roles for an API-Key
+     *
+     * // TODO this is duplicated from admin service, could merge to not repeat logic
+     *
+     * @returns Role-Entities with relations to Channels
+     */
+    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
+        const roles = await this.connection.getRepository(ctx, Role).find({
+            where: { id: In(roleIds) },
+            relations: { channels: true },
+        });
+        const permissionsRequired = getChannelPermissions(roles);
+        for (const channelPermissions of permissionsRequired) {
+            const isAllowed = await this.roleService.userHasAllPermissionsOnChannel(
+                ctx,
+                channelPermissions.id,
+                channelPermissions.permissions,
+            );
+
+            if (!isAllowed)
+                throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+        }
+
+        return roles;
+    }
 
     /**
-     * Creates a new API-Key.
+     * Creates a new API-Key for the given User
      *
-     * The owner of the API-Key is determined by the active User ID inside the RequestContext.
-     *
-     * @throws {UserInputError} When the context has no active User ID
-     * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or {@link ApiKeyHashingStrategy}
-     * have not been configured.
+     * @throws {UserInputError} When the User tries to grant a role which they themselves dont have
+     * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or
+     * {@link ApiKeyHashingStrategy} have not been configured.
      */
     async create(
         ctx: RequestContext,
-        // TODO need permissions either in creation and or update
         input: CreateApiKeyInput,
+        userIdOwner: ID,
         relations?: RelationPaths<ApiKey>,
     ): Promise<CreateApiKeyResult> {
-        const ownerId = ctx.activeUserId;
-        if (!ownerId) throw new UserInputError('CONTEXT HAS NO ACTIVE USER'); // TODO i18n key
-
-        const apiKeyUser = await this.userService.createApiKeyUser(ctx, []); // TODO roles
+        const roles = await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+        const apiKeyUser = await this.userService.createApiKeyUser(ctx, roles);
         const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
         const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
 
@@ -107,7 +141,7 @@ export class ApiKeyService {
             entityType: ApiKey,
             translationType: ApiKeyTranslation,
             beforeSave: async e => {
-                e.ownerId = ownerId;
+                e.ownerId = userIdOwner;
                 e.apiKeyUserId = apiKeyUser.id;
                 e.apiKeyHash = hash;
                 await this.channelService.assignToCurrentChannel(e, ctx);
@@ -126,7 +160,7 @@ export class ApiKeyService {
         );
 
         Logger.verbose(
-            `Created ApiKey (${newEntity.id}) for User (${ownerId}) with ApiKeyUser (${apiKeyUser.id}, ${apiKeyUser.identifier})`,
+            `Created ApiKey (${newEntity.id}) for User (${userIdOwner}) with ApiKeyUser (${apiKeyUser.id}, ${apiKeyUser.identifier})`,
         );
         // await this.eventBus.publish(new ApiKeyEvent(ctx, entity, "created", input)); // TODO
 
@@ -134,6 +168,52 @@ export class ApiKeyService {
             apiKey,
             entity: await assertFound(this.findOne(ctx, newEntity.id, relations)),
         };
+    }
+
+    /**
+     * Updates an API-Key. Is Channel-Aware.
+     *
+     * @throws {EntityNotFoundError} If API-Key cannot be found
+     */
+    async update(
+        ctx: RequestContext,
+        input: UpdateApiKeyInput,
+        relations?: RelationPaths<ApiKey>,
+    ): Promise<Translated<ApiKey>> {
+        await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, { channelId: ctx.channelId });
+        const apiKey = await this.translatableSaver.update({
+            ctx,
+            input,
+            entityType: ApiKey,
+            translationType: ApiKeyTranslation,
+        });
+        await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, apiKey);
+
+        Logger.verbose(`Updated ApiKey (${apiKey.id}) by User (${String(ctx.activeUserId)})`);
+        // await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, "updated", input)); // TODO
+
+        return assertFound(this.findOne(ctx, input.id, relations));
+    }
+
+    /**
+     * Deletes an API-Key and its session. Is Channel-Aware.
+     *
+     * @throws {EntityNotFoundError} If API-Key cannot be found
+     */
+    async delete(ctx: RequestContext, input: DeleteApiKeyInput): Promise<DeletionResponse> {
+        const apiKey = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
+            channelId: ctx.channelId,
+        });
+
+        // SoftDelete should also delete the related sessions
+        await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
+        // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
+        await this.connection.getRepository(ctx, ApiKey).remove(apiKey);
+
+        Logger.verbose(`Deleted ApiKey (${String(input.id)}) by User (${String(ctx.activeUserId)})`);
+        // await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, "deleted", input)); // TODO
+
+        return { result: DeletionResult.DELETED };
     }
 
     /**
@@ -169,6 +249,4 @@ export class ApiKeyService {
                 return { items, totalItems };
             });
     }
-
-    // TODO other helper methods like delete, findByUserId, etc. after we had a discussion about the approach
 }

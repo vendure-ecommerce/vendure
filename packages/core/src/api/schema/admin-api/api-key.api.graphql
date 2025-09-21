@@ -1,4 +1,7 @@
-# TODO type Query { apiKey apiKeys }
+type Query {
+    apiKey(id: ID!): ApiKey
+    apiKeys(options: ApiKeyListOptions): ApiKeyList!
+}
 
 type Mutation {
     """
@@ -10,7 +13,7 @@ type Mutation {
     "Updates an API-Key"
     updateApiKey(input: UpdateApiKeyInput!): ApiKey!
     "Deletes an API-Key"
-    deleteApiKey(input: DeleteApiKeyInput!): DeletionResult!
+    deleteApiKey(input: DeleteApiKeyInput!): DeletionResponse!
 }
 
 input CreateApiKeyTranslationInput {

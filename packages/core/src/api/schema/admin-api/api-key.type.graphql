@@ -19,6 +19,9 @@ type ApiKeyTranslation implements Node {
     name: String!
 }
 
+# generated
+input ApiKeyListOptions
+
 type ApiKeyList implements PaginatedList {
     items: [ApiKey!]!
     totalItems: Int!
