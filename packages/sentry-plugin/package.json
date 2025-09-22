@@ -12,7 +12,7 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
         },
-        "./preload": {
+        "./instrument": {
             "types": "./dist/instrument.d.ts",
             "default": "./dist/instrument.js"
         }
