@@ -13,7 +13,6 @@ export async function commonRegularOrderLoader(context: any, params: { id: strin
 
     const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
         getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-        { id: params.id },
     );
 
     if (!result.order) {
@@ -83,7 +82,6 @@ export async function loadSellerOrder(
 
     const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
         getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.sellerOrderId }),
-        { id: params.sellerOrderId },
     );
 
     if (!result.order) {

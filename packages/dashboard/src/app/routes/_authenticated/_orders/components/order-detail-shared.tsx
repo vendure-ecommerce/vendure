@@ -58,7 +58,12 @@ function DefaultOrderTitle({ entity }: { entity: any }) {
  * @description
  * Shared functionality between the order and seller order detail pages.
  */
-export function OrderDetailShared({ pageId, orderId, titleSlot, beforeOrderTable }: OrderDetailSharedProps) {
+export function OrderDetailShared({
+    pageId,
+    orderId,
+    titleSlot,
+    beforeOrderTable,
+}: Readonly<OrderDetailSharedProps>) {
     const { i18n } = useLingui();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -203,7 +208,7 @@ export function OrderDetailShared({ pageId, orderId, titleSlot, beforeOrderTable
                                 type="submit"
                                 disabled={!form.formState.isDirty || !form.formState.isValid}
                             >
-                                Save
+                                <Trans>Save</Trans>
                             </Button>
                         </div>
                     </PageBlock>
@@ -233,12 +238,18 @@ export function OrderDetailShared({ pageId, orderId, titleSlot, beforeOrderTable
                     />
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
-                    <Button variant="ghost" asChild>
-                        <Link to={`/customers/${entity?.customer?.id}`}>
-                            <User className="w-4 h-4" />
-                            {entity?.customer?.firstName} {entity?.customer?.lastName}
-                        </Link>
-                    </Button>
+                    {entity?.customer ? (
+                        <Button variant="ghost" asChild>
+                            <Link to={`/customers/${entity.customer.id}`}>
+                                <User className="w-4 h-4" />
+                                {entity.customer.firstName} {entity.customer.lastName}
+                            </Link>
+                        </Button>
+                    ) : (
+                        <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
+                            <Trans>No customer</Trans>
+                        </div>
+                    )}
                     <div className="mt-4 divide-y">
                         {entity?.shippingAddress && (
                             <div className="pb-6">

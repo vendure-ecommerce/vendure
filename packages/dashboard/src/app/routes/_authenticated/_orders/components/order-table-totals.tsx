@@ -17,7 +17,7 @@ export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTota
                 ? order.surcharges.map((surcharge, index) => (
                       <TableRow key={`${surcharge.description}-${index}`}>
                           <TableCell colSpan={columnCount - 1} className="h-12">
-                              <Trans>Discount</Trans>: {surcharge.description}
+                              <Trans>Surcharge</Trans>: {surcharge.description}
                           </TableCell>
                           <TableCell colSpan={1} className="h-12">
                               <MoneyGrossNet

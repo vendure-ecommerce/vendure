@@ -37,14 +37,14 @@ export function DetailPageButton({
     disabled,
     search,
     className,
-}: {
+}: Readonly<{
     label: string | React.ReactNode;
     id?: string;
     href?: string;
     disabled?: boolean;
     search?: Record<string, string>;
     className?: string;
-}) {
+}>) {
     if (!id && !href) {
         return <span>{label}</span>;
     }
