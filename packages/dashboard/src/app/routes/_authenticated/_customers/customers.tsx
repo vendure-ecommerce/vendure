@@ -8,7 +8,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCustomersBulkAction } from './components/customer-bulk-actions.js';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
-import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';
+import { customerListDocument } from './customers.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_customers/customers')({
     component: CustomerListPage,
@@ -21,7 +21,6 @@ function CustomerListPage() {
             title="Customers"
             pageId="customer-list"
             listQuery={customerListDocument}
-            deleteMutation={deleteCustomerDocument}
             onSearchTermChange={searchTerm => {
                 return {
                     lastName: {

@@ -25,7 +25,7 @@ export interface AssetLike {
  * @docsPage VendureImage
  * @since 3.4.0
  */
-export type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | null;
+export type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | 'full' | null;
 
 /**
  * @description
@@ -219,6 +219,10 @@ function getMinDimensions(preset?: ImagePreset, width?: number, height?: number)
                 return { width: 300, height: 300 };
             case 'medium':
                 return { width: 500, height: 500 };
+            case 'large':
+                return { width: 800, height: 800 };
+            case 'full':
+                return { width: undefined, height: undefined };
         }
     }
 
@@ -257,6 +261,10 @@ export function PlaceholderImage({
             case 'large':
                 width = 800;
                 height = 800;
+                break;
+            case 'full':
+                width = 1200;
+                height = 1200;
                 break;
             default:
                 break;

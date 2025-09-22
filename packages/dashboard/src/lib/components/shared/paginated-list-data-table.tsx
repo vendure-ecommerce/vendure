@@ -437,6 +437,7 @@ export function PaginatedListDataTable<
         fields,
         customizeColumns,
         rowActions,
+        bulkActions,
         deleteMutation,
         additionalColumns,
         defaultColumnOrder,
