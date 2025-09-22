@@ -460,20 +460,85 @@ export class SettingsStoreService implements OnModuleInit {
      * This is not called internally in the get and set methods, so should
      * be used by any methods which are exposing these methods via the GraphQL
      * APIs.
+     * @deprecated Use `hasReadPermission` or `hasWritePermission` for granular control
      */
     hasPermission(ctx: RequestContext, key: string): boolean {
+        // For backwards compatibility, check both read and write permissions
+        return this.hasReadPermission(ctx, key) && this.hasWritePermission(ctx, key);
+    }
+
+    /**
+     * @description
+     * Check if the current user has permission to read a field.
+     * @since 3.4.0
+     */
+    hasReadPermission(ctx: RequestContext, key: string): boolean {
         try {
             const fieldConfig = this.getFieldConfig(key);
-            // Admin API: check required permissions
             const requiredPermissions = fieldConfig.requiresPermission;
+
             if (requiredPermissions) {
-                const permissions = Array.isArray(requiredPermissions)
-                    ? requiredPermissions
-                    : [requiredPermissions];
-                return ctx.userHasPermissions(permissions as any);
+                if (
+                    typeof requiredPermissions === 'object' &&
+                    !Array.isArray(requiredPermissions) &&
+                    ('read' in requiredPermissions || 'write' in requiredPermissions)
+                ) {
+                    const readPerms = requiredPermissions.read;
+                    if (readPerms) {
+                        const permissions = Array.isArray(readPerms) ? readPerms : [readPerms];
+                        return ctx.userHasPermissions(permissions as any);
+                    }
+                    // If no read permission specified but write is, fall back to authenticated
+                    if (requiredPermissions.write) {
+                        return ctx.userHasPermissions([Permission.Authenticated]);
+                    }
+                } else {
+                    const permissions = Array.isArray(requiredPermissions)
+                        ? requiredPermissions
+                        : [requiredPermissions];
+                    return ctx.userHasPermissions(permissions as any);
+                }
             }
 
-            // Default: require authentication
+            return ctx.userHasPermissions([Permission.Authenticated]);
+        } catch (error) {
+            return true;
+        }
+    }
+
+    /**
+     * @description
+     * Check if the current user has permission to write a field.
+     * @since 3.4.0
+     */
+    hasWritePermission(ctx: RequestContext, key: string): boolean {
+        try {
+            const fieldConfig = this.getFieldConfig(key);
+            const requiredPermissions = fieldConfig.requiresPermission;
+
+            if (requiredPermissions) {
+                if (
+                    typeof requiredPermissions === 'object' &&
+                    !Array.isArray(requiredPermissions) &&
+                    ('read' in requiredPermissions || 'write' in requiredPermissions)
+                ) {
+                    const writePerms = requiredPermissions.write;
+                    if (writePerms) {
+                        const permissions = Array.isArray(writePerms) ? writePerms : [writePerms];
+                        return ctx.userHasPermissions(permissions as any);
+                    }
+                    // If no write permission specified but read is, fall back to authenticated
+                    if (requiredPermissions.read) {
+                        return ctx.userHasPermissions([Permission.Authenticated]);
+                    }
+                } else {
+                    const permissions = Array.isArray(requiredPermissions)
+                        ? requiredPermissions
+                        : [requiredPermissions];
+                    return ctx.userHasPermissions(permissions as any);
+                }
+            }
+
             return ctx.userHasPermissions([Permission.Authenticated]);
         } catch (error) {
             return true;

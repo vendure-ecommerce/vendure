@@ -25,7 +25,7 @@ export class SettingsStoreAdminResolver {
 
     @Query()
     async getSettingsStoreValue(@Ctx() ctx: RequestContext, @Args('key') key: string): Promise<any> {
-        if (!this.settingsStoreService.hasPermission(ctx, key)) {
+        if (!this.settingsStoreService.hasReadPermission(ctx, key)) {
             return undefined;
         }
         return this.settingsStoreService.get(ctx, key);
@@ -38,7 +38,7 @@ export class SettingsStoreAdminResolver {
     ): Promise<Record<string, any>> {
         const permittedKeys = [];
         for (const key of keys) {
-            if (this.settingsStoreService.hasPermission(ctx, key)) {
+            if (this.settingsStoreService.hasReadPermission(ctx, key)) {
                 permittedKeys.push(key);
             }
         }
@@ -50,7 +50,7 @@ export class SettingsStoreAdminResolver {
         @Ctx() ctx: RequestContext,
         @Args('input') input: SettingsStoreInput,
     ): Promise<SetSettingsStoreValueResult> {
-        if (!this.settingsStoreService.hasPermission(ctx, input.key)) {
+        if (!this.settingsStoreService.hasWritePermission(ctx, input.key)) {
             return {
                 key: input.key,
                 result: false,
@@ -74,7 +74,7 @@ export class SettingsStoreAdminResolver {
     ): Promise<SetSettingsStoreValueResult[]> {
         const results: SetSettingsStoreValueResult[] = [];
         for (const input of inputs) {
-            const hasPermission = this.settingsStoreService.hasPermission(ctx, input.key);
+            const hasPermission = this.settingsStoreService.hasWritePermission(ctx, input.key);
             const isWritable = !this.settingsStoreService.isReadonly(input.key);
             if (!hasPermission) {
                 results.push({
