@@ -1673,7 +1673,7 @@ export type DateTimeStructFieldConfig = StructField & {
 };
 
 export type DeleteApiKeyInput = {
-  /** ID of the ApiKey. Only an Owner can delete their own Key, or SuperAdmin. */
+  /** ID of the ApiKey */
   id: Scalars['ID']['input'];
 };
 
@@ -3104,6 +3104,12 @@ export type Mutation = {
   removeStockLocationsFromChannel: Array<StockLocation>;
   requestCompleted: Scalars['Int']['output'];
   requestStarted: Scalars['Int']['output'];
+  /**
+   * Replaces the old with a new API-Key.
+   * This is a convenience method to invalidate an API-Key without
+   * deleting the underlying roles and permissions.
+   */
+  rotateApiKey: RotateApiKeyResult;
   runPendingSearchIndexUpdates: Success;
   runScheduledTask: Success;
   setActiveChannel: UserStatus;
@@ -3822,6 +3828,11 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
   input: RemoveStockLocationsFromChannelInput;
+};
+
+
+export type MutationRotateApiKeyArgs = {
+  input: RotateApiKeyInput;
 };
 
 
@@ -5984,6 +5995,17 @@ export type RoleSortParameter = {
   description?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type RotateApiKeyInput = {
+  /** ID of the ApiKey */
+  id: Scalars['ID']['input'];
+};
+
+export type RotateApiKeyResult = {
+  __typename?: 'RotateApiKeyResult';
+  /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+  apiKey: Scalars['String']['output'];
 };
 
 export type Sale = Node & StockMovement & {

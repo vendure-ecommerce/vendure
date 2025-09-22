@@ -1644,7 +1644,7 @@ export type DateTimeStructFieldConfig = StructField & {
 };
 
 export type DeleteApiKeyInput = {
-    /** ID of the ApiKey. Only an Owner can delete their own Key, or SuperAdmin. */
+    /** ID of the ApiKey */
     id: Scalars['ID']['input'];
 };
 
@@ -3035,6 +3035,12 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
+    /**
+     * Replaces the old with a new API-Key.
+     * This is a convenience method to invalidate an API-Key without
+     * deleting the underlying roles and permissions.
+     */
+    rotateApiKey: RotateApiKeyResult;
     runPendingSearchIndexUpdates: Success;
     runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
@@ -3624,6 +3630,10 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
+};
+
+export type MutationRotateApiKeyArgs = {
+    input: RotateApiKeyInput;
 };
 
 export type MutationRunScheduledTaskArgs = {
@@ -5572,6 +5582,16 @@ export type RoleSortParameter = {
     updatedAt?: InputMaybe<SortOrder>;
 };
 
+export type RotateApiKeyInput = {
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
+};
+
+export type RotateApiKeyResult = {
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+    apiKey: Scalars['String']['output'];
+};
+
 export type Sale = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
@@ -6819,6 +6839,12 @@ export type DeleteApiKeyMutationVariables = Exact<{
 }>;
 
 export type DeleteApiKeyMutation = { deleteApiKey: { result: DeletionResult; message?: string | null } };
+
+export type RotateApiKeyMutationVariables = Exact<{
+    input: RotateApiKeyInput;
+}>;
+
+export type RotateApiKeyMutation = { rotateApiKey: { apiKey: string } };
 
 export type Q1QueryVariables = Exact<{ [key: string]: never }>;
 
@@ -16192,6 +16218,46 @@ export const DeleteApiKeyDocument = {
         },
     ],
 } as unknown as DocumentNode<DeleteApiKeyMutation, DeleteApiKeyMutationVariables>;
+export const RotateApiKeyDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'RotateApiKey' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'RotateApiKeyInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'rotateApiKey' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'apiKey' } }],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<RotateApiKeyMutation, RotateApiKeyMutationVariables>;
 export const Q1Document = {
     kind: 'Document',
     definitions: [
