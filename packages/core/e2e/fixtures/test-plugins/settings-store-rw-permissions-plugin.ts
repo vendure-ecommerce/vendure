@@ -34,7 +34,7 @@ export const dashboardSavedViewsPermission = new RwPermissionDefinition('Dashboa
                 },
                 {
                     name: 'dashboardSavedViews',
-                    scope: SettingsStoreScopes.user,
+                    scope: SettingsStoreScopes.global,
                     // Using custom RwPermissionDefinition for dashboard saved views
                     requiresPermission: {
                         read: dashboardSavedViewsPermission.Read,
