@@ -182,6 +182,7 @@ export type ApiKey = Node & {
     id: Scalars['ID']['output'];
     /** A descriptive name so you can remind yourself where the API-Key gets used */
     name: Scalars['String']['output'];
+    translations: Array<ApiKeyTranslation>;
     updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -809,9 +810,10 @@ export type CreateApiKeyInput = {
 };
 
 export type CreateApiKeyResult = {
-    /** The generated API-Key. API-Keys cannot be viewed again after creation. */
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
     apiKey: Scalars['String']['output'];
-    entity: ApiKey;
+    /** ID of the created ApiKey-Entity */
+    entityId: Scalars['ID']['output'];
 };
 
 export type CreateApiKeyTranslationInput = {
@@ -6775,6 +6777,48 @@ export type DeleteAdministratorMutationVariables = Exact<{
 export type DeleteAdministratorMutation = {
     deleteAdministrator: { message?: string | null; result: DeletionResult };
 };
+
+export type CreateApiKeyMutationVariables = Exact<{
+    input: CreateApiKeyInput;
+}>;
+
+export type CreateApiKeyMutation = { createApiKey: { apiKey: string; entityId: string } };
+
+export type ApiKeyQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type ApiKeyQuery = {
+    apiKey?: {
+        id: string;
+        name: string;
+        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+    } | null;
+};
+
+export type ApiKeysQueryVariables = Exact<{
+    options?: InputMaybe<ApiKeyListOptions>;
+}>;
+
+export type ApiKeysQuery = { apiKeys: { totalItems: number; items: Array<{ id: string; name: string }> } };
+
+export type UpdateApiKeyMutationVariables = Exact<{
+    input: UpdateApiKeyInput;
+}>;
+
+export type UpdateApiKeyMutation = {
+    updateApiKey: {
+        id: string;
+        name: string;
+        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+    };
+};
+
+export type DeleteApiKeyMutationVariables = Exact<{
+    input: DeleteApiKeyInput;
+}>;
+
+export type DeleteApiKeyMutation = { deleteApiKey: { result: DeletionResult; message?: string | null } };
 
 export type Q1QueryVariables = Exact<{ [key: string]: never }>;
 
@@ -15902,6 +15946,252 @@ export const DeleteAdministratorDocument = {
         },
     ],
 } as unknown as DocumentNode<DeleteAdministratorMutation, DeleteAdministratorMutationVariables>;
+export const CreateApiKeyDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'CreateApiKey' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'CreateApiKeyInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createApiKey' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'apiKey' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'entityId' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<CreateApiKeyMutation, CreateApiKeyMutationVariables>;
+export const ApiKeyDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'ApiKey' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'apiKey' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'translations' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ApiKeyQuery, ApiKeyQueryVariables>;
+export const ApiKeysDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'ApiKeys' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
+                    type: { kind: 'NamedType', name: { kind: 'Name', value: 'ApiKeyListOptions' } },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'apiKeys' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'options' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'options' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ApiKeysQuery, ApiKeysQueryVariables>;
+export const UpdateApiKeyDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UpdateApiKey' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateApiKeyInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updateApiKey' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'translations' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UpdateApiKeyMutation, UpdateApiKeyMutationVariables>;
+export const DeleteApiKeyDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'DeleteApiKey' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'DeleteApiKeyInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'deleteApiKey' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<DeleteApiKeyMutation, DeleteApiKeyMutationVariables>;
 export const Q1Document = {
     kind: 'Document',
     definitions: [

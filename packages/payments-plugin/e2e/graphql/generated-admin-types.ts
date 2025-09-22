@@ -186,6 +186,7 @@ export type ApiKey = Node & {
     id: Scalars['ID']['output'];
     /** A descriptive name so you can remind yourself where the API-Key gets used */
     name: Scalars['String']['output'];
+    translations: Array<ApiKeyTranslation>;
     updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -813,9 +814,10 @@ export type CreateApiKeyInput = {
 };
 
 export type CreateApiKeyResult = {
-    /** The generated API-Key. API-Keys cannot be viewed again after creation. */
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
     apiKey: Scalars['String']['output'];
-    entity: ApiKey;
+    /** ID of the created ApiKey-Entity */
+    entityId: Scalars['ID']['output'];
 };
 
 export type CreateApiKeyTranslationInput = {
