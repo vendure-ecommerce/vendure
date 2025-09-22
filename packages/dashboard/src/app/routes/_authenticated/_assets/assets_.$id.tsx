@@ -24,6 +24,7 @@ import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
+import { AssetTagsEditor } from './components/asset-tags-editor.js';
 
 const pageId = 'asset-detail';
 
@@ -51,7 +52,7 @@ function AssetDetailPage() {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
-    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
@@ -160,6 +161,19 @@ function AssetDetailPage() {
                             </div>
                         </div>
                     </div>
+                </PageBlock>
+                <PageBlock column="side" blockId="asset-tags">
+                    <AssetTagsEditor
+                        selectedTags={form.watch('tags') || []}
+                        onTagsChange={tags => {
+                            form.setValue('tags', tags, { shouldDirty: true });
+                        }}
+                        onTagsUpdated={() => {
+                            // Refresh the asset entity to get updated tag values
+                            refreshEntity();
+                        }}
+                        disabled={isPending}
+                    />
                 </PageBlock>
             </PageLayout>
         </Page>

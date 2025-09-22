@@ -8,7 +8,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteZonesBulkAction } from './components/zone-bulk-actions.js';
 import { ZoneCountriesSheet } from './components/zone-countries-sheet.js';
-import { deleteZoneDocument, zoneListQuery } from './zones.graphql.js';
+import { zoneListQuery } from './zones.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_zones/zones')({
     component: ZoneListPage,
@@ -20,7 +20,6 @@ function ZoneListPage() {
         <ListPage
             pageId="zone-list"
             listQuery={zoneListQuery}
-            deleteMutation={deleteZoneDocument}
             route={Route}
             title="Zones"
             defaultVisibility={{

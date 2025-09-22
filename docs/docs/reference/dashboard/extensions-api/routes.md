@@ -38,10 +38,14 @@ The React component that will be rendered for this route.
 The URL path for this route, e.g. '/my-custom-page'.
 ### navMenuItem
 
-<MemberInfo kind="property" type={`Partial&#60;<a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>&#62; &#38; { sectionId: string }`}   />
+<MemberInfo kind="property" type={`Partial&#60;<a href='/reference/dashboard/extensions-api/navigation#navmenuitem'>NavMenuItem</a>&#62; &#38; { sectionId: string }`}   />
 
 Optional navigation menu item configuration to add this route to the nav menu
 on the left side of the dashboard.
+
+The `sectionId` specifies which nav menu section (e.g. "catalog", "customers")
+this item should appear in. It can also point to custom nav menu sections that
+have been defined using the `navSections` extension property.
 ### loader
 
 <MemberInfo kind="property" type={`RouteOptions['loader']`}   />

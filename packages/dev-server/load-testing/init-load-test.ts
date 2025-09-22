@@ -111,7 +111,7 @@ async function isDatabasePopulated(databaseName: string): Promise<boolean> {
             throw e;
         }
     } else {
-        const mysql = require('mysql');
+        const mysql = require('mysql2/promise');
 
         const mysqlConnectionOptions = getMysqlConnectionOptions(databaseName);
         const connection = mysql.createConnection({
