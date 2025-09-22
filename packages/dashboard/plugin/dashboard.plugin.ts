@@ -15,12 +15,7 @@ import path from 'path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
-import {
-    DEFAULT_APP_PATH,
-    loggerCtx,
-    MANAGE_DASHBOARD_GLOBAL_VIEWS_PERMISSION_NAME,
-    manageDashboardGlobalViews,
-} from './constants.js';
+import { DEFAULT_APP_PATH, loggerCtx, manageDashboardGlobalViews } from './constants.js';
 import { MetricsService } from './service/metrics.service.js';
 
 /**
@@ -121,7 +116,10 @@ export interface DashboardPluginOptions {
             {
                 name: 'globalSavedViews',
                 scope: SettingsStoreScopes.global,
-                requiresPermission: MANAGE_DASHBOARD_GLOBAL_VIEWS_PERMISSION_NAME,
+                requiresPermission: {
+                    read: manageDashboardGlobalViews.Read,
+                    write: manageDashboardGlobalViews.Write,
+                },
             },
             {
                 name: 'userSavedViews',
