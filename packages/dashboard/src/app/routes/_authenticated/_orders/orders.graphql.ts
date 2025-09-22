@@ -189,6 +189,13 @@ export const orderDetailFragment = graphql(
                     code
                 }
             }
+            channels {
+                id
+                code
+                seller {
+                    name
+                }
+            }
             code
             state
             nextStates
@@ -719,6 +726,30 @@ export const setOrderCustomFieldsDocument = graphql(`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
         setOrderCustomFields(input: $input) {
             id
+        }
+    }
+`);
+
+export const sellerOrdersDocument = graphql(`
+    query GetSellerOrders($orderId: ID!) {
+        order(id: $orderId) {
+            id
+            sellerOrders {
+                id
+                code
+                state
+                orderPlacedAt
+                currencyCode
+                totalWithTax
+                channels {
+                    id
+                    code
+                    seller {
+                        id
+                        name
+                    }
+                }
+            }
         }
     }
 `);

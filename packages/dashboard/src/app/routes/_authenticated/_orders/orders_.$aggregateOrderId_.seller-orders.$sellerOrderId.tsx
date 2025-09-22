@@ -1,6 +1,7 @@
 import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -19,7 +20,7 @@ import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
-import { Pencil, User } from 'lucide-react';
+import { ArrowLeft, Pencil, User } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
@@ -31,7 +32,6 @@ import { orderHistoryQueryKey } from './components/order-history/use-order-histo
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
-import { SellerOrdersCard } from './components/seller-orders-card.js';
 import { getTypeForState, StateTransitionControl } from './components/state-transition-control.js';
 import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
 import {
@@ -39,46 +39,71 @@ import {
     setOrderCustomFieldsDocument,
     transitionOrderToStateDocument,
 } from './orders.graphql.js';
-import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
+import { canAddFulfillment, getSeller, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
 
-const pageId = 'order-detail';
+const pageId = 'seller-order-detail';
 
-export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
-    component: OrderDetailPage,
+export const Route = createFileRoute(
+    '/_authenticated/_orders/orders_/$aggregateOrderId_/seller-orders/$sellerOrderId',
+)({
+    component: SellerOrderDetailPage,
     loader: async ({ context, params }) => {
-        if (!params.id) {
-            throw new Error('ID param is required');
+        if (!params.sellerOrderId || !params.aggregateOrderId) {
+            throw new Error('Both seller order ID and aggregate order ID params are required');
         }
 
         const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-            { id: params.id },
+            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.sellerOrderId }),
+            { id: params.sellerOrderId },
         );
 
         if (!result.order) {
-            throw new Error(`Order with the ID ${params.id} was not found`);
+            throw new Error(`Seller order with the ID ${params.sellerOrderId} was not found`);
+        }
+
+        // Verify this is actually a seller order by checking if it has an aggregateOrder
+        if (!result.order.aggregateOrder) {
+            throw new Error(`Order ${params.sellerOrderId} is not a seller order`);
+        }
+
+        // Verify the aggregate order ID matches
+        if (result.order.aggregateOrder.id !== params.aggregateOrderId) {
+            throw new Error(
+                `Seller order ${params.sellerOrderId} does not belong to aggregate order ${params.aggregateOrderId}`,
+            );
         }
 
         if (result.order.state === 'Draft') {
             throw redirect({
-                to: `/orders/draft/${params.id}`,
+                to: `/orders/draft/${params.sellerOrderId}`,
             });
         }
 
         if (result.order.state === 'Modifying') {
             throw redirect({
-                to: `/orders/${params.id}/modify`,
+                to: `/orders/${params.sellerOrderId}/modify`,
             });
         }
 
         return {
-            breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, result.order.code],
+            breadcrumb: [
+                { path: '/orders', label: <Trans>Orders</Trans> },
+                {
+                    path: `/orders/${params.aggregateOrderId}`,
+                    label: result.order.aggregateOrder.code,
+                },
+                {
+                    path: `/orders/${params.aggregateOrderId}`,
+                    label: 'Seller orders',
+                },
+                result.order.code,
+            ],
         };
     },
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-function OrderDetailPage() {
+function SellerOrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
     const navigate = useNavigate();
@@ -93,13 +118,13 @@ function OrderDetailPage() {
                 customFields: entity.customFields,
             };
         },
-        params: { id: params.id },
+        params: { id: params.sellerOrderId },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated order'));
+            toast(i18n.t('Successfully updated seller order'));
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update order'), {
+            toast(i18n.t('Failed to update seller order'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -119,7 +144,7 @@ function OrderDetailPage() {
             onClick: async () => {
                 const transitionError = await transitionToState(state);
                 if (transitionError) {
-                    toast(i18n.t('Failed to transition order to state'), {
+                    toast(i18n.t('Failed to transition seller order to state'), {
                         description: transitionError,
                     });
                 } else {
@@ -143,7 +168,7 @@ function OrderDetailPage() {
             await queryClient.invalidateQueries({ queryKey });
             await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
         } catch (error) {
-            toast(i18n.t('Failed to modify order'), {
+            toast(i18n.t('Failed to modify seller order'), {
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         }
@@ -161,9 +186,29 @@ function OrderDetailPage() {
         }
     }
 
+    // Get seller information from channels
+    const sellerChannel = entity.channels?.find(channel => channel.seller);
+    const seller = getSeller(entity);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
-            <PageTitle>{entity?.code ?? ''}</PageTitle>
+            <PageTitle>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" asChild>
+                        <Link
+                            to="/orders/$aggregateOrderId"
+                            params={{ aggregateOrderId: params.aggregateOrderId }}
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    {entity?.code ?? ''}
+                    <Badge variant="secondary">
+                        <Trans>Seller order</Trans>
+                    </Badge>
+                    {seller && <Badge variant="outline">{seller.name}</Badge>}
+                </div>
+            </PageTitle>
             <PageActionBar>
                 <PageActionBarRight
                     dropdownMenuItems={[
@@ -204,11 +249,6 @@ function OrderDetailPage() {
                 </PageActionBarRight>
             </PageActionBar>
             <PageLayout>
-                {entity?.sellerOrders && entity.sellerOrders.length > 0 && (
-                    <PageBlock column="main" blockId="seller-orders" title={<Trans>Seller orders</Trans>}>
-                        <SellerOrdersCard orderId={entity.id} />
-                    </PageBlock>
-                )}
                 <PageBlock column="main" blockId="order-table">
                     <OrderTable order={entity} pageId={pageId} />
                 </PageBlock>

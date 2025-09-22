@@ -13,7 +13,7 @@ import { Button } from '../ui/button.js';
  * ```tsx
  * // Basic usage with ID (relative navigation)
  * <DetailPageButton id="123" label="Product Name" />
- * 
+ *
  *
  * @example
  * ```tsx
@@ -36,18 +36,20 @@ export function DetailPageButton({
     label,
     disabled,
     search,
+    className,
 }: {
     label: string | React.ReactNode;
     id?: string;
     href?: string;
     disabled?: boolean;
     search?: Record<string, string>;
+    className?: string;
 }) {
     if (!id && !href) {
         return <span>{label}</span>;
     }
     return (
-        <Button asChild variant="ghost" disabled={disabled}>
+        <Button asChild variant="ghost" disabled={disabled} className={className}>
             <Link to={href ?? `./${id}`} search={search ?? {}} preload={false}>
                 {label}
                 {!disabled && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
