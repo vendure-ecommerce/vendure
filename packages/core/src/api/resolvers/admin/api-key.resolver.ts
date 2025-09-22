@@ -4,10 +4,12 @@ import {
     DeletionResponse,
     MutationCreateApiKeyArgs,
     MutationDeleteApiKeyArgs,
+    MutationRotateApiKeyArgs,
     MutationUpdateApiKeyArgs,
     Permission,
     QueryApiKeyArgs,
     QueryApiKeysArgs,
+    RotateApiKeyResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -75,5 +77,15 @@ export class ApiKeyResolver {
         @Args() { input }: MutationDeleteApiKeyArgs,
     ): Promise<DeletionResponse> {
         return this.apiKeyService.delete(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateApiKey)
+    async rotateApiKey(
+        @Ctx() ctx: RequestContext,
+        @Args() { input }: MutationRotateApiKeyArgs,
+    ): Promise<RotateApiKeyResult> {
+        return this.apiKeyService.rotate(ctx, input);
     }
 }

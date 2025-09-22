@@ -5,6 +5,8 @@ import {
     DeleteApiKeyInput,
     DeletionResponse,
     DeletionResult,
+    RotateApiKeyInput,
+    RotateApiKeyResult,
     UpdateApiKeyInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -28,7 +30,7 @@ import {
     Logger,
 } from '../../config';
 import { TransactionalConnection } from '../../connection';
-import { Role, User } from '../../entity';
+import { AuthenticationMethod, Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { EventBus } from '../../event-bus';
@@ -172,7 +174,7 @@ export class ApiKeyService {
         await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, newEntity);
 
         // Important: The hash becomes the session token, this is what allows us to authorize on a per-request basis
-        // Important: The User of the session is not the owner, it's a new User to allow configuring separate permissions
+        // Important: The User of the session may be new User to allow configuring separate permissions
         await this.sessionService.createNewAuthenticatedSession(
             ctx,
             apiKeyUser,
@@ -223,9 +225,21 @@ export class ApiKeyService {
             channelId: ctx.channelId,
         });
 
-        // SoftDelete should also delete the related sessions
-        await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
-        // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
+        const hasAuthMethod = await this.connection.getRepository(ctx, AuthenticationMethod).existsBy({
+            user: { id: apiKey.apiKeyUserId },
+        });
+
+        // If this is an impersonated user who can login, we dont want to delete them
+        if (hasAuthMethod) {
+            await this.sessionService.deleteApiKeySession(ctx, apiKey);
+        }
+        // If this is an underlying user solely for holding permission, delete them
+        else {
+            // SoftDelete should also delete the related sessions & cache
+            // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
+            await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
+        }
+
         const deletedApiKey = new ApiKey(apiKey); // For retaining the ID
         await this.connection.getRepository(ctx, ApiKey).remove(apiKey);
 
@@ -233,6 +247,43 @@ export class ApiKeyService {
         await this.eventBus.publish(new ApiKeyEvent(ctx, deletedApiKey, 'deleted', input));
 
         return { result: DeletionResult.DELETED };
+    }
+
+    /**
+     * Replaces the old with a new API-Key.
+     *
+     * This is a convenience method to invalidate an API-Key without
+     * deleting the underlying roles and permissions.
+     *
+     * @throws {EntityNotFoundError} If API-Key cannot be found
+     * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or
+     * {@link ApiKeyHashingStrategy} have not been configured.
+     */
+    async rotate(ctx: RequestContext, input: RotateApiKeyInput): Promise<RotateApiKeyResult> {
+        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
+            channelId: ctx.channelId,
+            // Need roles and channels for session
+            relations: { apiKeyUser: { roles: { channels: true } } },
+        });
+
+        const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
+        const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
+
+        await this.sessionService.deleteApiKeySession(ctx, entity);
+        await this.sessionService.createNewAuthenticatedSession(
+            ctx,
+            entity.apiKeyUser,
+            API_KEY_AUTH_STRATEGY_NAME,
+            hash,
+        );
+
+        entity.apiKeyHash = hash;
+        await this.connection.getRepository(ctx, ApiKey).save(entity, { reload: false });
+
+        Logger.verbose(`Rotated ApiKey (${entity.id}) by User (${String(ctx.activeUserId)})`);
+        await this.eventBus.publish(new ApiKeyEvent(ctx, entity, 'updated', input));
+
+        return { apiKey };
     }
 
     /**

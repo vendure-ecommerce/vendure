@@ -12,6 +12,7 @@ import {
     ApiKeysDocument,
     CreateApiKeyDocument,
     DeleteApiKeyDocument,
+    RotateApiKeyDocument,
     UpdateApiKeyDocument,
 } from './graphql/generated-e2e-admin-types';
 
@@ -81,6 +82,20 @@ describe('ApiKey resolver', () => {
         const { apiKey } = await adminClient.query(API_KEY, { id: createdApiKeyId });
         expect(apiKey).toBeNull();
     });
+
+    it('rotateApiKey', async ({ expect }) => {
+        const apiKey = await adminClient.query(CreateApiKeyDocument, {
+            input: {
+                roleIds: ['1'],
+                translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
+            },
+        });
+        const result = await adminClient.query(RotateApiKeyDocument, {
+            input: { id: apiKey.createApiKey.entityId },
+        });
+        expect(result.rotateApiKey.apiKey).toBeDefined();
+        expect(apiKey.createApiKey.apiKey).not.toBe(result.rotateApiKey.apiKey);
+    });
 });
 
 export const CREATE_API_KEY = gql`
@@ -137,6 +152,14 @@ export const DELETE_API_KEY = gql`
         deleteApiKey(input: $input) {
             result
             message
+        }
+    }
+`;
+
+export const ROTATE_API_KEY = gql`
+    mutation RotateApiKey($input: RotateApiKeyInput!) {
+        rotateApiKey(input: $input) {
+            apiKey
         }
     }
 `;

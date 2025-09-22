@@ -1,10 +1,15 @@
-import { CreateApiKeyInput, DeleteApiKeyInput, UpdateApiKeyInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateApiKeyInput,
+    DeleteApiKeyInput,
+    RotateApiKeyInput,
+    UpdateApiKeyInput,
+} from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
-type ApiKeyInputTypes = CreateApiKeyInput | UpdateApiKeyInput | DeleteApiKeyInput;
+type ApiKeyInputTypes = CreateApiKeyInput | UpdateApiKeyInput | DeleteApiKeyInput | RotateApiKeyInput;
 
 /**
  * @description

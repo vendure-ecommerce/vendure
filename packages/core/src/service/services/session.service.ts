@@ -14,6 +14,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Role } from '../../entity/role/role.entity';
@@ -321,6 +322,19 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         for (const session of userSessions) {
             await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
+    }
+
+    /**
+     * @description
+     * Deletes session related to API-Key
+     */
+    async deleteApiKeySession(ctx: RequestContext, apiKey: ApiKey): Promise<void> {
+        await this.connection.getRepository(ctx, AuthenticatedSession).delete({
+            token: apiKey.apiKeyHash,
+            user: { id: apiKey.apiKeyUserId },
+            authenticationStrategy: API_KEY_AUTH_STRATEGY_NAME,
+        });
+        await this.withTimeout(this.sessionCacheStrategy.delete(apiKey.apiKeyHash));
     }
 
     /**

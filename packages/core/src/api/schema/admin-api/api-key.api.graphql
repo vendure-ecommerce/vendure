@@ -14,6 +14,12 @@ type Mutation {
     updateApiKey(input: UpdateApiKeyInput!): ApiKey!
     "Deletes an API-Key"
     deleteApiKey(input: DeleteApiKeyInput!): DeletionResponse!
+    """
+    Replaces the old with a new API-Key.
+    This is a convenience method to invalidate an API-Key without
+    deleting the underlying roles and permissions.
+    """
+    rotateApiKey(input: RotateApiKeyInput!): RotateApiKeyResult!
 }
 
 input CreateApiKeyTranslationInput {
@@ -31,13 +37,6 @@ input UpdateApiKeyTranslationInput {
     name: String
 }
 
-type CreateApiKeyResult {
-    "The generated API-Key. API-Keys cannot be viewed again after creation!"
-    apiKey: String!
-    "ID of the created ApiKey-Entity"
-    entityId: ID!
-}
-
 """
 There is no User ID because you can only create API-Keys for yourself,
 which gets determined by the User who does the request.
@@ -52,6 +51,13 @@ input CreateApiKeyInput {
     translations: [CreateApiKeyTranslationInput!]!
 }
 
+type CreateApiKeyResult {
+    "The generated API-Key. API-Keys cannot be viewed again after creation!"
+    apiKey: String!
+    "ID of the created ApiKey-Entity"
+    entityId: ID!
+}
+
 input UpdateApiKeyInput {
     "ID of the ApiKey"
     id: ID!
@@ -59,6 +65,16 @@ input UpdateApiKeyInput {
 }
 
 input DeleteApiKeyInput {
-    "ID of the ApiKey. Only an Owner can delete their own Key, or SuperAdmin."
+    "ID of the ApiKey"
     id: ID!
+}
+
+input RotateApiKeyInput {
+    "ID of the ApiKey"
+    id: ID!
+}
+
+type RotateApiKeyResult {
+    "The generated API-Key. API-Keys cannot be viewed again after creation!"
+    apiKey: String!
 }
