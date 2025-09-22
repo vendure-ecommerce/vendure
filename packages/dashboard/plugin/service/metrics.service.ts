@@ -1,17 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { assertNever } from '@vendure/common/lib/shared-utils';
 import { CacheService, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
 import { createHash } from 'crypto';
-import {
-    Duration,
-    endOfDay,
-    getDayOfYear,
-    getISOWeek,
-    getMonth,
-    setDayOfYear,
-    startOfDay,
-    sub,
-} from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 
 import {
     AverageOrderValueMetric,
@@ -20,7 +10,11 @@ import {
     OrderTotalMetric,
 } from '../config/metrics-strategies.js';
 import { loggerCtx } from '../constants.js';
-import { MetricInterval, MetricSummary, MetricSummaryEntry, MetricSummaryInput } from '../types.js';
+import {
+    DashboardMetricSummary,
+    DashboardMetricSummaryEntry,
+    DashboardMetricSummaryInput,
+} from '../types.js';
 
 export type MetricData = {
     date: Date;
@@ -44,49 +38,48 @@ export class MetricsService {
 
     async getMetrics(
         ctx: RequestContext,
-        { interval, types, refresh }: MetricSummaryInput,
-    ): Promise<MetricSummary[]> {
-        // Set 23:59:59.999 as endDate
-        const endDate = endOfDay(new Date());
+        { types, refresh, startDate, endDate }: DashboardMetricSummaryInput,
+    ): Promise<DashboardMetricSummary[]> {
+        const calculatedStartDate = startOfDay(new Date(startDate));
+        const calculatedEndDate = endOfDay(new Date(endDate));
         // Check if we have cached result
         const hash = createHash('sha1')
             .update(
                 JSON.stringify({
-                    endDate,
+                    startDate: calculatedStartDate,
+                    endDate: calculatedEndDate,
                     types: types.sort(),
-                    interval,
                     channel: ctx.channel.token,
                 }),
             )
             .digest('base64');
         const cacheKey = `MetricsService:${hash}`;
-        const cachedMetricList = await this.cacheService.get<MetricSummary[]>(cacheKey);
+        const cachedMetricList = await this.cacheService.get<DashboardMetricSummary[]>(cacheKey);
         if (cachedMetricList && refresh !== true) {
             Logger.verbose(`Returning cached metrics for channel ${ctx.channel.token}`, loggerCtx);
             return cachedMetricList;
         }
         // No cache, calculating new metrics
         Logger.verbose(
-            `No cache hit, calculating ${interval} metrics until ${endDate.toISOString()} for channel ${
+            `No cache hit, calculating metrics from ${calculatedStartDate.toISOString()} to ${calculatedEndDate.toISOString()} for channel ${
                 ctx.channel.token
             } for all orders`,
             loggerCtx,
         );
-        const data = await this.loadData(ctx, interval, endDate);
-        const metrics: MetricSummary[] = [];
+        const data = await this.loadData(ctx, calculatedStartDate, calculatedEndDate);
+        const metrics: DashboardMetricSummary[] = [];
         for (const type of types) {
             const metric = this.metricCalculations.find(m => m.type === type);
             if (!metric) {
                 continue;
             }
-            // Calculate entry (month or week)
-            const entries: MetricSummaryEntry[] = [];
-            data.forEach(dataPerTick => {
-                entries.push(metric.calculateEntry(ctx, interval, dataPerTick));
+            // Calculate entries for each day
+            const entries: DashboardMetricSummaryEntry[] = [];
+            data.forEach(dataPerDay => {
+                entries.push(metric.calculateEntry(ctx, dataPerDay));
             });
             // Create metric with calculated entries
             metrics.push({
-                interval,
                 title: metric.getTitle(ctx),
                 type: metric.type,
                 entries,
@@ -96,30 +89,13 @@ export class MetricsService {
         return metrics;
     }
 
-    async loadData(
-        ctx: RequestContext,
-        interval: MetricInterval,
-        endDate: Date,
-    ): Promise<Map<number, MetricData>> {
-        let nrOfEntries: number;
-        let backInTimeAmount: Duration;
+    async loadData(ctx: RequestContext, startDate: Date, endDate: Date): Promise<Map<string, MetricData>> {
         const orderRepo = this.connection.getRepository(ctx, Order);
-        // What function to use to get the current Tick of a date (i.e. the week or month number)
-        let getTickNrFn: typeof getMonth | typeof getISOWeek;
-        let maxTick: number;
-        switch (interval) {
-            case MetricInterval.Daily: {
-                nrOfEntries = 30;
-                backInTimeAmount = { days: nrOfEntries };
-                getTickNrFn = getDayOfYear;
-                maxTick = 365;
-                break;
-            }
-            default:
-                assertNever(interval);
-        }
-        const startDate = startOfDay(sub(endDate, backInTimeAmount));
-        const startTick = getTickNrFn(startDate);
+
+        // Calculate number of days between start and end
+        const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+        const nrOfDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
         // Get orders in a loop until we have all
         let skip = 0;
         const take = 1000;
@@ -133,6 +109,9 @@ export class MetricsService {
                 .andWhere('order.orderPlacedAt >= :startDate', {
                     startDate: startDate.toISOString(),
                 })
+                .andWhere('order.orderPlacedAt <= :endDate', {
+                    endDate: endDate.toISOString(),
+                })
                 .skip(skip)
                 .take(take);
             const [items, nrOfOrders] = await query.getManyAndCount();
@@ -140,7 +119,7 @@ export class MetricsService {
             Logger.verbose(
                 `Fetched orders ${skip}-${skip + take} for channel ${
                     ctx.channel.token
-                } for ${interval} metrics`,
+                } for date range metrics`,
                 loggerCtx,
             );
             skip += items.length;
@@ -149,27 +128,31 @@ export class MetricsService {
             }
         }
         Logger.verbose(
-            `Finished fetching all ${orders.length} orders for channel ${ctx.channel.token} for ${interval} metrics`,
+            `Finished fetching all ${orders.length} orders for channel ${ctx.channel.token} for date range metrics`,
             loggerCtx,
         );
-        const dataPerInterval = new Map<number, MetricData>();
-        const ticks = [];
-        for (let i = 1; i <= nrOfEntries; i++) {
-            if (startTick + i >= maxTick) {
-                // make sure we don't go over month 12 or week 52
-                ticks.push(startTick + i - maxTick);
-            } else {
-                ticks.push(startTick + i);
-            }
-        }
-        ticks.forEach(tick => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const ordersInCurrentTick = orders.filter(order => getTickNrFn(order.orderPlacedAt!) === tick);
-            dataPerInterval.set(tick, {
-                orders: ordersInCurrentTick,
-                date: setDayOfYear(endDate, tick),
+
+        const dataPerDay = new Map<string, MetricData>();
+
+        // Create a map entry for each day in the range
+        for (let i = 0; i < nrOfDays; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+            const dateKey = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+
+            // Filter orders for this specific day
+            const ordersForDay = orders.filter(order => {
+                if (!order.orderPlacedAt) return false;
+                const orderDate = new Date(order.orderPlacedAt).toISOString().split('T')[0];
+                return orderDate === dateKey;
             });
-        });
-        return dataPerInterval;
+
+            dataPerDay.set(dateKey, {
+                orders: ordersForDay,
+                date: currentDate,
+            });
+        }
+
+        return dataPerDay;
     }
 }
