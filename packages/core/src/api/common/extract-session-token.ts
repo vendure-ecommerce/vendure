@@ -40,7 +40,7 @@ export async function extractSessionToken(
         const matchesBasic = authHeader.match(/^basic\s(.+)$/i); // TODO document this
         if (matchesBasic) {
             // Per Auth-Spec "Basic" is base64 encoded and includes "username:password"
-            const decodedHeader = Buffer.from(matchesBasic[1], 'base64').toString('ascii');
+            const decodedHeader = Buffer.from(matchesBasic[1], 'base64').toString('utf8'); // TODO if this stays document utf8
             const decodedApiKey = decodedHeader.split(':', 1)[0];
             return { method: 'api-key', token: await apiKeyHashingStrategy.hash(decodedApiKey) };
         }

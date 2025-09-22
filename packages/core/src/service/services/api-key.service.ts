@@ -28,7 +28,7 @@ import {
     Logger,
 } from '../../config';
 import { TransactionalConnection } from '../../connection';
-import { Role } from '../../entity';
+import { Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
 import { ApiKey } from '../../entity/api-key/api-key.entity';
 import { EventBus } from '../../event-bus';
@@ -94,11 +94,12 @@ export class ApiKeyService {
     /**
      * Checks that the active user is allowed to grant the specified Roles for an API-Key
      *
-     * // TODO this is duplicated from admin service, could merge to not repeat logic
+     * // TODO this is taken & slightly modified from adminservice, could merge to not repeat logic
      *
+     * @throws {UserInputError} If the active User has insufficient permissions
      * @returns Role-Entities with relations to Channels
      */
-    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
+    private async assertActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
         const roles = await this.connection.getRepository(ctx, Role).find({
             where: { id: In(roleIds) },
             relations: { channels: true },
@@ -121,6 +122,12 @@ export class ApiKeyService {
     /**
      * Creates a new API-Key for the given User
      *
+     * **Important**: The caller is responsible for avoiding privilege escalations by
+     * verifying `userIdOwner` and `userIdApiKeyUser`; **Use this with great care!**
+     *
+     * If you allow users to specify these IDs, they may leak existing User IDs via thrown errors.
+     *
+     * @throws {EntityNotFoundError} When either Owner or ApiKeyUser cannot be found
      * @throws {UserInputError} When the User tries to grant a role which they themselves dont have
      * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or
      * {@link ApiKeyHashingStrategy} have not been configured.
@@ -129,10 +136,23 @@ export class ApiKeyService {
         ctx: RequestContext,
         input: CreateApiKeyInput,
         userIdOwner: ID,
-        relations?: RelationPaths<ApiKey>,
+        /**
+         * Optionally allow overriding the creation of a separate User.
+         * This is an advanced use case for plugin-authors to allow impersonation.
+         * You are responsible for avoiding privilege escalation by verifying this ID.
+         */
+        userIdApiKeyUser?: ID,
     ): Promise<CreateApiKeyResult> {
-        const roles = await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
-        const apiKeyUser = await this.userService.createApiKeyUser(ctx, roles);
+        const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
+
+        const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
+        const apiKeyUser = userIdApiKeyUser
+            ? await this.connection.getEntityOrThrow(ctx, User, userIdApiKeyUser, {
+                  // ApiKeyUsers generally require roles and their channels, its important for sessions!
+                  relations: { roles: { channels: true } },
+              })
+            : await this.userService.createApiKeyUser(ctx, roles);
+
         const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
         const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
 
@@ -142,7 +162,7 @@ export class ApiKeyService {
             entityType: ApiKey,
             translationType: ApiKeyTranslation,
             beforeSave: async e => {
-                e.ownerId = userIdOwner;
+                e.ownerId = ownerUser.id;
                 e.apiKeyUserId = apiKeyUser.id;
                 e.apiKeyHash = hash;
                 await this.channelService.assignToCurrentChannel(e, ctx);
@@ -165,10 +185,7 @@ export class ApiKeyService {
         );
         await this.eventBus.publish(new ApiKeyEvent(ctx, newEntity, 'created', input));
 
-        return {
-            apiKey,
-            entity: await assertFound(this.findOne(ctx, newEntity.id, relations)),
-        };
+        return { apiKey, entityId: newEntity.id };
     }
 
     /**

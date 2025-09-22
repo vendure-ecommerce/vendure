@@ -32,9 +32,10 @@ input UpdateApiKeyTranslationInput {
 }
 
 type CreateApiKeyResult {
-    "The generated API-Key. API-Keys cannot be viewed again after creation."
+    "The generated API-Key. API-Keys cannot be viewed again after creation!"
     apiKey: String!
-    entity: ApiKey!
+    "ID of the created ApiKey-Entity"
+    entityId: ID!
 }
 
 """

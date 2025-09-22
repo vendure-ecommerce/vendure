@@ -48,14 +48,12 @@ export class ApiKeyResolver {
     async createApiKey(
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationCreateApiKeyArgs,
-        // TODO our output is not an entity, does this even work?
-        @Relations(ApiKey) relations: RelationPaths<ApiKey>,
     ): Promise<CreateApiKeyResult> {
         // TODO This should never happen? Could this only fail if ctx has an underlying bug? Could non null assert..?
         if (!ctx.activeUserId)
             throw new InternalServerError('error.active-user-does-not-have-sufficient-permissions');
 
-        return this.apiKeyService.create(ctx, input, ctx.activeUserId, relations);
+        return this.apiKeyService.create(ctx, input, ctx.activeUserId);
     }
 
     @Transaction()
