@@ -473,8 +473,10 @@ export class SettingsStoreService implements OnModuleInit {
      * @since 3.5.0
      */
     hasReadPermission(ctx: RequestContext, key: string): boolean {
+        // Get field config first - let validation errors (like unregistered keys) bubble up
+        const fieldConfig = this.getFieldConfig(key);
+
         try {
-            const fieldConfig = this.getFieldConfig(key);
             const requiredPermissions = fieldConfig.requiresPermission;
 
             if (requiredPermissions) {
@@ -494,7 +496,11 @@ export class SettingsStoreService implements OnModuleInit {
 
             return ctx.userHasPermissions([Permission.Authenticated]);
         } catch (error) {
-            return true;
+            // Only catch permission evaluation errors, not field validation errors
+            Logger.error(
+                `Error evaluating read permissions for settings store key "${key}": ${JSON.stringify(error)}`,
+            );
+            return false;
         }
     }
 
@@ -504,8 +510,8 @@ export class SettingsStoreService implements OnModuleInit {
      * @since 3.5.0
      */
     hasWritePermission(ctx: RequestContext, key: string): boolean {
+        const fieldConfig = this.getFieldConfig(key); // Let validation errors bubble up
         try {
-            const fieldConfig = this.getFieldConfig(key);
             const requiredPermissions = fieldConfig.requiresPermission;
 
             if (requiredPermissions) {
@@ -525,7 +531,10 @@ export class SettingsStoreService implements OnModuleInit {
 
             return ctx.userHasPermissions([Permission.Authenticated]);
         } catch (error) {
-            return true;
+            Logger.error(
+                `Error evaluating write permissions for settings store key "${key}": ${JSON.stringify(error)}`,
+            );
+            return false;
         }
     }
 
@@ -533,9 +542,7 @@ export class SettingsStoreService implements OnModuleInit {
      * @description
      * Helper method to check if a permission configuration is a read/write object.
      */
-    private isReadWritePermissionObject(
-        permissions: any,
-    ): permissions is {
+    private isReadWritePermissionObject(permissions: any): permissions is {
         read?: Array<Permission | string> | Permission | string;
         write?: Array<Permission | string> | Permission | string;
     } {
