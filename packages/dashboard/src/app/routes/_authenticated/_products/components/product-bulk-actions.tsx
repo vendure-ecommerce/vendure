@@ -55,7 +55,7 @@ export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ se
 };
 
 export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -66,7 +66,7 @@ export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ 
             requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
             buildInput={() => ({
                 productIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

@@ -1,3 +1,4 @@
+import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
@@ -21,14 +22,8 @@ const facetValuesDocument = graphql(`
     }
 `);
 
-export interface FacetValueInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    readOnly?: boolean;
-}
-
-export function FacetValueInput(props: FacetValueInputProps) {
-    const ids = decodeIds(props.value);
+export const FacetValueInput: DashboardFormComponent = ({ value, onChange, disabled }) => {
+    const ids = decodeIds(value);
     const { data } = useQuery({
         queryKey: ['facetValues', ids],
         queryFn: () =>
@@ -43,12 +38,12 @@ export function FacetValueInput(props: FacetValueInputProps) {
 
     const onValueSelectHandler = (value: FacetValue) => {
         const newIds = new Set([...ids, value.id]);
-        props.onChange(JSON.stringify(Array.from(newIds)));
+        onChange(JSON.stringify(Array.from(newIds)));
     };
 
     const onValueRemoveHandler = (id: string) => {
         const newIds = new Set(ids.filter(existingId => existingId !== id));
-        props.onChange(JSON.stringify(Array.from(newIds)));
+        onChange(JSON.stringify(Array.from(newIds)));
     };
 
     return (
@@ -62,12 +57,19 @@ export function FacetValueInput(props: FacetValueInputProps) {
                     />
                 ))}
             </div>
-            <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={props.readOnly} />
+            <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={disabled} />
         </div>
     );
-}
+};
 
-function decodeIds(idsString: string): string[] {
+FacetValueInput.metadata = {
+    isListInput: true,
+};
+
+function decodeIds(idsString: string | string[]): string[] {
+    if (Array.isArray(idsString)) {
+        return idsString;
+    }
     try {
         return JSON.parse(idsString);
     } catch (error) {

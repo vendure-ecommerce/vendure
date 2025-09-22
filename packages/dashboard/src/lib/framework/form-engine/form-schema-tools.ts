@@ -3,33 +3,24 @@ import {
     isEnumType,
     isScalarType,
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
-import { StructCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { ResultOf } from 'gql.tada';
+import {
+    CustomFieldConfig,
+    DateTimeCustomFieldConfig,
+    FloatCustomFieldConfig,
+    IntCustomFieldConfig,
+    StringCustomFieldConfig,
+    StructCustomFieldConfig,
+    StructField,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
 import { z, ZodRawShape, ZodType, ZodTypeAny } from 'zod';
 
-import { structCustomFieldFragment } from '../../providers/server-config.js';
-
-type CustomFieldConfig = {
-    name: string;
-    type: string;
-    pattern?: string;
-    intMin?: number;
-    intMax?: number;
-    floatMin?: number;
-    floatMax?: number;
-    datetimeMin?: string;
-    datetimeMax?: string;
-    list?: boolean;
-    nullable?: boolean;
-};
-
-type StructFieldConfig = ResultOf<typeof structCustomFieldFragment>['fields'][number];
-
-function mapGraphQLCustomFieldToConfig(field: StructFieldConfig): CustomFieldConfig {
-    const baseConfig = {
-        name: field.name,
-        type: field.type,
+function mapGraphQLCustomFieldToConfig(field: StructField) {
+    const { __typename, ...rest } = field;
+    const baseConfig: CustomFieldConfig = {
+        ...rest,
         list: field.list ?? false,
+        readonly: false,
+        requiresPermission: [],
         nullable: true, // Default to true since GraphQL fields are nullable by default
     };
 
@@ -37,26 +28,34 @@ function mapGraphQLCustomFieldToConfig(field: StructFieldConfig): CustomFieldCon
         case 'StringStructFieldConfig':
             return {
                 ...baseConfig,
-                pattern: field.pattern ?? undefined,
-            };
+                __typename: 'StringCustomFieldConfig',
+                pattern: field.pattern ?? null,
+                options: [],
+            } satisfies StringCustomFieldConfig;
         case 'IntStructFieldConfig':
             return {
                 ...baseConfig,
-                intMin: field.intMin ?? undefined,
-                intMax: field.intMax ?? undefined,
-            };
+                __typename: 'IntCustomFieldConfig',
+                intMin: field.intMin ?? null,
+                intMax: field.intMax ?? null,
+                intStep: field.intStep ?? null,
+            } satisfies IntCustomFieldConfig;
         case 'FloatStructFieldConfig':
             return {
                 ...baseConfig,
-                floatMin: field.floatMin ?? undefined,
-                floatMax: field.floatMax ?? undefined,
-            };
+                __typename: 'FloatCustomFieldConfig',
+                floatMin: field.floatMin ?? null,
+                floatMax: field.floatMax ?? null,
+                floatStep: field.floatStep ?? null,
+            } satisfies FloatCustomFieldConfig;
         case 'DateTimeStructFieldConfig':
             return {
                 ...baseConfig,
-                datetimeMin: field.datetimeMin ?? undefined,
-                datetimeMax: field.datetimeMax ?? undefined,
-            };
+                __typename: 'DateTimeCustomFieldConfig',
+                datetimeMin: field.datetimeMin ?? null,
+                datetimeMax: field.datetimeMax ?? null,
+                datetimeStep: field.datetimeStep ?? null,
+            } satisfies DateTimeCustomFieldConfig;
         default:
             return baseConfig;
     }
@@ -116,7 +115,7 @@ function createDateValidationSchema(minDate: Date | undefined, maxDate: Date | u
  * @param pattern - Optional regex pattern string for validation
  * @returns Zod string schema with optional pattern validation
  */
-function createStringValidationSchema(pattern?: string): ZodType {
+function createStringValidationSchema(pattern?: string | null): ZodType {
     let schema = z.string();
     if (pattern) {
         schema = schema.regex(new RegExp(pattern), {
@@ -134,37 +133,14 @@ function createStringValidationSchema(pattern?: string): ZodType {
  * @param max - Optional maximum value constraint
  * @returns Zod number schema with optional range validation
  */
-function createIntValidationSchema(min?: number, max?: number): ZodType {
+function createNumberValidationSchema(min?: number | null, max?: number | null): ZodType {
     let schema = z.number();
-    if (min !== undefined) {
+    if (min != null) {
         schema = schema.min(min, {
             message: `Value must be at least ${min}`,
         });
     }
-    if (max !== undefined) {
-        schema = schema.max(max, {
-            message: `Value must be at most ${max}`,
-        });
-    }
-    return schema;
-}
-
-/**
- * Creates a Zod validation schema for float fields with optional min/max constraints.
- * Used for float-type custom fields that may have numeric range limits.
- *
- * @param min - Optional minimum value constraint
- * @param max - Optional maximum value constraint
- * @returns Zod number schema with optional range validation
- */
-function createFloatValidationSchema(min?: number, max?: number): ZodType {
-    let schema = z.number();
-    if (min !== undefined) {
-        schema = schema.min(min, {
-            message: `Value must be at least ${min}`,
-        });
-    }
-    if (max !== undefined) {
+    if (max != null) {
         schema = schema.max(max, {
             message: `Value must be at most ${max}`,
         });
@@ -187,17 +163,23 @@ function createCustomFieldValidationSchema(customField: CustomFieldConfig): ZodT
         case 'localeString':
         case 'localeText':
         case 'string':
-            zodType = createStringValidationSchema(customField.pattern);
+            zodType = createStringValidationSchema((customField as StringCustomFieldConfig).pattern);
             break;
         case 'int':
-            zodType = createIntValidationSchema(customField.intMin, customField.intMax);
+            zodType = createNumberValidationSchema(
+                (customField as IntCustomFieldConfig).intMin,
+                (customField as IntCustomFieldConfig).intMax,
+            );
             break;
         case 'float':
-            zodType = createFloatValidationSchema(customField.floatMin, customField.floatMax);
+            zodType = createNumberValidationSchema(
+                (customField as FloatCustomFieldConfig).floatMin,
+                (customField as FloatCustomFieldConfig).floatMax,
+            );
             break;
         case 'datetime': {
-            const minDate = parseDate(customField.datetimeMin);
-            const maxDate = parseDate(customField.datetimeMax);
+            const minDate = parseDate((customField as DateTimeCustomFieldConfig).datetimeMin);
+            const maxDate = parseDate((customField as DateTimeCustomFieldConfig).datetimeMax);
             zodType = createDateValidationSchema(minDate, maxDate);
             break;
         }
@@ -227,7 +209,7 @@ function createStructFieldSchema(structFieldConfig: StructCustomFieldConfig): Zo
 
     const nestedSchema: ZodRawShape = {};
     for (const structSubField of structFieldConfig.fields) {
-        const config = mapGraphQLCustomFieldToConfig(structSubField as StructFieldConfig);
+        const config = mapGraphQLCustomFieldToConfig(structSubField);
         let subFieldType = createCustomFieldValidationSchema(config);
 
         // Handle list and nullable for struct sub-fields
@@ -253,7 +235,7 @@ function createStructFieldSchema(structFieldConfig: StructCustomFieldConfig): Zo
  * @param customField - Custom field config containing list/nullable flags
  * @returns Modified Zod schema with list/nullable modifiers applied
  */
-function applyListAndNullableModifiers(zodType: ZodType, customField: CustomFieldConfig): ZodType {
+function applyCustomFieldModifiers(zodType: ZodType, customField: CustomFieldConfig): ZodType {
     let modifiedType = zodType;
 
     if (customField.list) {
@@ -262,7 +244,9 @@ function applyListAndNullableModifiers(zodType: ZodType, customField: CustomFiel
     if (customField.nullable !== false) {
         modifiedType = modifiedType.optional().nullable();
     }
-
+    if (customField.readonly) {
+        modifiedType = modifiedType.readonly();
+    }
     return modifiedType;
 }
 
@@ -299,7 +283,7 @@ function processCustomFieldsSchema(
             zodType = createCustomFieldValidationSchema(customField);
         }
 
-        zodType = applyListAndNullableModifiers(zodType, customField);
+        zodType = applyCustomFieldModifiers(zodType, customField);
         const schemaPropertyName = getGraphQlInputName(customField);
         customFieldsSchema[schemaPropertyName] = zodType;
     }
@@ -319,7 +303,7 @@ export function createFormSchemaFromFields(
         const isEnum = isEnumType(field.type);
 
         if ((isScalar || isEnum) && field.name !== 'customFields') {
-            schemaConfig[field.name] = getZodTypeFromField(field, customFieldConfigs);
+            schemaConfig[field.name] = getZodTypeFromField(field);
         } else if (field.name === 'customFields') {
             const customFieldsSchema =
                 customFieldConfigs && customFieldConfigs.length > 0
@@ -391,7 +375,7 @@ export function getDefaultValueFromField(field: FieldInfo, defaultLanguageCode?:
     }
 }
 
-export function getZodTypeFromField(field: FieldInfo, customFieldConfigs?: CustomFieldConfig[]): ZodTypeAny {
+export function getZodTypeFromField(field: FieldInfo): ZodTypeAny {
     let zodType: ZodType;
 
     // This function is only used for non-custom fields, so we don't need custom field logic here

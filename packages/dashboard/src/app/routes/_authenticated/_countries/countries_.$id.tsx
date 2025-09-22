@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries_/$id'
         pageId,
         queryDocument: countryDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/countries', label: 'Countries' },
+            { path: '/countries', label: <Trans>Countries</Trans> },
             isNew ? <Trans>New country</Trans> : entity?.name,
         ],
     }),
@@ -61,14 +61,14 @@ function CountryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated country'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created country' : 'Successfully updated country'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update country'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create country' : 'Failed to update country'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -84,7 +84,7 @@ function CountryDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

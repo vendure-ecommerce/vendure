@@ -1,5 +1,4 @@
-'use client';
-
+import { useAllBulkActions } from '@/vdb/components/data-table/use-all-bulk-actions.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
@@ -7,11 +6,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
-import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
-import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
@@ -26,9 +22,7 @@ export function DataTableBulkActions<TData>({
     table,
     bulkActions,
 }: Readonly<DataTableBulkActionsProps<TData>>) {
-    const { pageId } = usePage();
-    const pageBlock = usePageBlock();
-    const blockId = pageBlock?.blockId;
+    const allBulkActions = useAllBulkActions(bulkActions);
 
     // Cache to store selected items across page changes
     const selectedItemsCache = useRef<Map<string, TData>>(new Map());
@@ -63,18 +57,15 @@ export function DataTableBulkActions<TData>({
     if (!shouldShow) {
         return null;
     }
-    const extendedBulkActions = pageId ? getBulkActions(pageId, blockId) : [];
-    const allBulkActions = [...extendedBulkActions, ...(bulkActions ?? [])];
-    allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
         <div
             className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-white shadow-2xl rounded-md border z-50"
-            style={{ 
-                height: 'auto', 
+            style={{
+                height: 'auto',
                 maxHeight: '60px',
                 bottom: position.bottom,
-                left: position.left
+                left: position.left,
             }}
         >
             <span className="text-sm text-muted-foreground">

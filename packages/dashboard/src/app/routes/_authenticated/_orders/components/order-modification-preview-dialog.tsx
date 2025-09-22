@@ -161,7 +161,7 @@ export function OrderModificationPreviewDialog({
                     {error && <div className="text-destructive py-2">{error}</div>}
                     {previewOrder && !loading && !error && (
                         <>
-                            <OrderTable order={previewOrder} />
+                            <OrderTable pageId="order-modification-preview" order={previewOrder} />
                             {/* Refund/payment UI using Alert */}
                             {priceDifference < 0 && (
                                 <>
@@ -245,6 +245,7 @@ export function OrderModificationPreviewDialog({
                                                                             render={({ field }) => (
                                                                                 <FormControl>
                                                                                     <MoneyInput
+                                                                                        {...field}
                                                                                         value={
                                                                                             field.value || 0
                                                                                         }

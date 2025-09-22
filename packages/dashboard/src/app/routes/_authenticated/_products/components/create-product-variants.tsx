@@ -1,5 +1,4 @@
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
-import { Button } from '@/vdb/components/ui/button.js';
 import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
@@ -9,11 +8,10 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { OptionValueInput } from './option-value-input.js';
+import { OptionGroupConfiguration, optionGroupSchema, OptionGroupsEditor } from './option-groups-editor.js';
 
 const getStockLocationsDocument = graphql(`
     query GetStockLocations($options: StockLocationListOptions) {
@@ -26,17 +24,6 @@ const getStockLocationsDocument = graphql(`
         }
     }
 `);
-
-// Define schemas for validation
-const optionValueSchema = z.object({
-    value: z.string().min(1, { message: 'Value cannot be empty' }),
-    id: z.string().min(1, { message: 'Value cannot be empty' }),
-});
-
-const optionGroupSchema = z.object({
-    name: z.string().min(1, { message: 'Option name is required' }),
-    values: z.array(optionValueSchema).min(1, { message: 'At least one value is required' }),
-});
 
 type VariantOption = {
     name: string;
@@ -88,9 +75,7 @@ const formSchema = z.object({
     variants: z.record(variantSchema),
 });
 
-type OptionGroupForm = z.infer<typeof optionGroupSchema>;
 type VariantForm = z.infer<typeof variantSchema>;
-type FormValues = z.infer<typeof formSchema>;
 
 interface CreateProductVariantsProps {
     currencyCode?: string;
@@ -107,80 +92,52 @@ export function CreateProductVariants({
     });
     const stockLocations = stockLocationsResult?.stockLocations.items ?? [];
 
-    const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
+    const [optionGroups, setOptionGroups] = useState<OptionGroupConfiguration['optionGroups']>([]);
+
+    const form = useForm<{ variants: Record<string, VariantForm> }>({
+        resolver: zodResolver(z.object({ variants: z.record(variantSchema) })),
         defaultValues: {
-            optionGroups: [],
             variants: {},
         },
         mode: 'onChange',
     });
 
-    const { control, watch, setValue } = form;
-    const {
-        fields: optionGroups,
-        append: appendOptionGroup,
-        remove: removeOptionGroup,
-    } = useFieldArray({
-        control,
-        name: 'optionGroups',
-    });
+    const { setValue } = form;
 
-    const watchedOptionGroups = watch('optionGroups');
     // memoize the variants
-    const variants = useMemo(
-        () => generateVariants(watchedOptionGroups),
-        [JSON.stringify(watchedOptionGroups)],
-    );
+    const variants = useMemo(() => generateVariants(optionGroups), [JSON.stringify(optionGroups)]);
 
     // Use the handleSubmit approach for the entire form
     useEffect(() => {
-        const subscription = form.watch((value, { name, type }) => {
-            if (value?.optionGroups) {
-                const formVariants = value.variants || {};
-                const activeVariants: VariantConfiguration['variants'] = [];
+        const subscription = form.watch(value => {
+            const formVariants = value?.variants || {};
+            const activeVariants: VariantConfiguration['variants'] = [];
 
-                variants.forEach(variant => {
-                    if (variant && typeof variant === 'object') {
-                        const formVariant = formVariants[variant.id];
-                        if (formVariant) {
-                            activeVariants.push({
-                                enabled: formVariant.enabled ?? true,
-                                sku: formVariant.sku ?? '',
-                                price: formVariant.price ?? '',
-                                stock: formVariant.stock ?? '',
-                                options: variant.options,
-                            });
-                        }
+            variants.forEach(variant => {
+                if (variant && typeof variant === 'object') {
+                    const formVariant = formVariants[variant.id];
+                    if (formVariant) {
+                        activeVariants.push({
+                            enabled: formVariant.enabled ?? true,
+                            sku: formVariant.sku ?? '',
+                            price: formVariant.price ?? '',
+                            stock: formVariant.stock ?? '',
+                            options: variant.options,
+                        });
                     }
-                });
+                }
+            });
 
-                const validOptionGroups = value.optionGroups
-                    .filter((group): group is NonNullable<typeof group> => !!group)
-                    .filter(group => typeof group.name === 'string' && Array.isArray(group.values))
-                    .map(group => ({
-                        name: group.name,
-                        values: (group.values || [])
-                            .filter((v): v is NonNullable<typeof v> => !!v)
-                            .filter(v => typeof v.value === 'string' && typeof v.id === 'string')
-                            .map(v => ({
-                                value: v.value,
-                                id: v.id,
-                            })),
-                    }))
-                    .filter(group => group.values.length > 0) as VariantConfiguration['optionGroups'];
+            const filteredData: VariantConfiguration = {
+                optionGroups,
+                variants: activeVariants,
+            };
 
-                const filteredData: VariantConfiguration = {
-                    optionGroups: validOptionGroups,
-                    variants: activeVariants,
-                };
-
-                onChange?.({ data: filteredData });
-            }
+            onChange?.({ data: filteredData });
         });
 
         return () => subscription.unsubscribe();
-    }, [form, onChange, variants]);
+    }, [form, onChange, variants, optionGroups]);
 
     // Initialize variant form values when variants change
     useEffect(() => {
@@ -202,64 +159,11 @@ export function CreateProductVariants({
         setValue('variants', updatedVariants);
     }, [variants, form, setValue]);
 
-    const handleAddOptionGroup = () => {
-        appendOptionGroup({ name: '', values: [] });
-    };
-
     return (
         <FormProvider {...form}>
-            {optionGroups.map((group, index) => (
-                <div key={group.id} className="grid grid-cols-[1fr_2fr_auto] gap-4 mb-6 items-start">
-                    <div>
-                        <FormField
-                            control={form.control}
-                            name={`optionGroups.${index}.name`}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        <Trans>Option</Trans>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="e.g. Size" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div>
-                        <FormItem>
-                            <FormLabel>
-                                <Trans>Option Values</Trans>
-                            </FormLabel>
-                            <FormControl>
-                                <OptionValueInput
-                                    groupName={watch(`optionGroups.${index}.name`) || ''}
-                                    groupIndex={index}
-                                    disabled={!watch(`optionGroups.${index}.name`)}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    </div>
-
-                    <div className="pt-8">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeOptionGroup(index)}
-                            title="Remove Option"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-            ))}
-
-            <Button type="button" variant="secondary" onClick={handleAddOptionGroup} className="mb-6">
-                <Plus className="mr-2 h-4 w-4" />
-                <Trans>Add Option</Trans>
-            </Button>
+            <div className="mb-6">
+                <OptionGroupsEditor onChange={data => setOptionGroups(data.optionGroups)} />
+            </div>
 
             {stockLocations.length === 0 ? (
                 <Alert variant="destructive">
@@ -321,6 +225,7 @@ export function CreateProductVariants({
                                                         <FormItem className="flex items-center space-x-2">
                                                             <FormControl>
                                                                 <Checkbox
+                                                                    defaultChecked={true}
                                                                     checked={field.value}
                                                                     onCheckedChange={field.onChange}
                                                                 />
@@ -405,7 +310,7 @@ export function CreateProductVariants({
 }
 
 // Generate all possible combinations of option values
-function generateVariants(groups: OptionGroupForm[]): GeneratedVariant[] {
+function generateVariants(groups: OptionGroupConfiguration['optionGroups']): GeneratedVariant[] {
     // If there are no groups, return a single variant with no options
     if (!groups.length)
         return [
@@ -427,7 +332,7 @@ function generateVariants(groups: OptionGroupForm[]): GeneratedVariant[] {
 
     // Generate combinations
     const generateCombinations = (
-        optionGroups: OptionGroupForm[],
+        optionGroups: OptionGroupConfiguration['optionGroups'],
         currentIndex: number,
         currentCombination: VariantOption[],
     ): GeneratedVariant[] => {

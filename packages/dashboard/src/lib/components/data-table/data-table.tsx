@@ -35,6 +35,14 @@ export interface FacetedFilter {
     options?: DataTableFacetedFilterOption[];
 }
 
+/**
+ * @description
+ * Props for configuring the {@link DataTable}.
+ *
+ * @docsCategory list-views
+ * @docsPage DataTable
+ * @since 3.4.0
+ */
 interface DataTableProps<TData> {
     children?: React.ReactNode;
     columns: ColumnDef<TData, any>[];
@@ -55,6 +63,7 @@ interface DataTableProps<TData> {
     disableViewOptions?: boolean;
     bulkActions?: BulkAction[];
     /**
+     * @description
      * This property allows full control over _all_ features of TanStack Table
      * when needed.
      */
@@ -62,6 +71,17 @@ interface DataTableProps<TData> {
     onRefresh?: () => void;
 }
 
+/**
+ * @description
+ * A data table which includes sorting, filtering, pagination, bulk actions, column controls etc.
+ *
+ * This is the building block of all data tables in the Dashboard.
+ *
+ * @docsCategory list-views
+ * @docsPage DataTable
+ * @since 3.4.0
+ * @docsWeight 0
+ */
 export function DataTable<TData>({
     children,
     columns,

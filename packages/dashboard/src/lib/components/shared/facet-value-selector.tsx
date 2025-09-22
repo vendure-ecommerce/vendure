@@ -29,10 +29,51 @@ export interface Facet {
     code: string;
 }
 
+/**
+ * @description
+ * A component for selecting facet values.
+ *
+ * @docsCategory components
+ * @docsPage FacetValueSelector
+ * @since 3.4.0
+ */
 interface FacetValueSelectorProps {
+    /**
+     * @description
+     * The function to call when a facet value is selected.
+     * 
+     * The `value` will have the following structure:
+     * 
+     * ```ts
+     * {
+     *     id: string;
+     *     name: string;
+     *     code: string;
+     *     facet: {
+     *         id: string;
+     *         name: string;
+     *         code: string;
+     *     };
+     * }
+     * ```
+     */
     onValueSelect: (value: FacetValue) => void;
+    /**
+     * @description
+     * Whether the selector is disabled.
+     */
     disabled?: boolean;
+    /**
+     * @description
+     * The placeholder text for the selector.
+     */
     placeholder?: string;
+    /**
+     * @description
+     * The number of facet values to display per page.
+     * 
+     * @default 4
+     */
     pageSize?: number;
 }
 
@@ -85,6 +126,20 @@ const getFacetValuesForFacetDocument = graphql(`
     }
 `);
 
+/**
+ * @description
+ * A component for selecting facet values.
+ * 
+ * @example
+ * ```tsx
+ * <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={disabled} />
+ * ```
+ *
+ * @docsCategory components
+ * @docsPage FacetValueSelector
+ * @docsWeight 0
+ * @since 3.4.0
+ */
 export function FacetValueSelector({
     onValueSelect,
     disabled,

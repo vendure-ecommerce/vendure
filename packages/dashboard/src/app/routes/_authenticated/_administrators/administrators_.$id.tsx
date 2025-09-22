@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_administrators/administra
         breadcrumb: (isNew, entity) => {
             const name = `${entity?.firstName} ${entity?.lastName}`;
             return [
-                { path: '/administrators', label: 'Administrators' },
+                { path: '/administrators', label: <Trans>Administrators</Trans> },
                 isNew ? <Trans>New administrator</Trans> : name,
             ];
         },
@@ -74,14 +74,14 @@ function AdministratorDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated administrator'));
+            toast(i18n.t(creatingNewEntity ? 'Successfully created administrator' : 'Successfully updated administrator'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update administrator'), {
+            toast(i18n.t(creatingNewEntity ? 'Failed to create administrator' : 'Failed to update administrator'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -101,7 +101,7 @@ function AdministratorDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

@@ -13,13 +13,15 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
 
 /**
@@ -44,7 +46,7 @@ function getChannelInitialsFromCode(code: string) {
 
 export function ChannelSwitcher() {
     const { isMobile } = useSidebar();
-    const { channels, activeChannel, selectedChannel, setSelectedChannel } = useChannel();
+    const { channels, activeChannel, setActiveChannel } = useChannel();
     const serverConfig = useServerConfig();
     const { formatLanguageName } = useLocalFormat();
     const {
@@ -52,9 +54,7 @@ export function ChannelSwitcher() {
         setContentLanguage,
     } = useUserSettings();
     const [showManageLanguagesDialog, setShowManageLanguagesDialog] = useState(false);
-
-    // Use the selected channel if available, otherwise fall back to the active channel
-    const displayChannel = selectedChannel || activeChannel;
+    const displayChannel = activeChannel;
 
     // Get available languages from server config
     const availableLanguages = serverConfig?.availableLanguages || [];
@@ -64,6 +64,16 @@ export function ChannelSwitcher() {
     const orderedChannels = displayChannel
         ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
         : channels;
+
+    useEffect(() => {
+        if (activeChannel?.availableLanguageCodes) {
+            // Ensure the current content language is a valid one for the active
+            // channel
+            if (!activeChannel.availableLanguageCodes.includes(contentLanguage as any)) {
+                setContentLanguage(activeChannel.defaultLanguageCode);
+            }
+        }
+    }, [activeChannel, contentLanguage]);
 
     return (
         <>
@@ -75,7 +85,11 @@ export function ChannelSwitcher() {
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <div
+                                    className={
+                                        'bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'
+                                    }
+                                >
                                     <span className="truncate font-semibold text-xs uppercase">
                                         {getChannelInitialsFromCode(displayChannel?.code || '')}
                                     </span>
@@ -109,10 +123,15 @@ export function ChannelSwitcher() {
                             {orderedChannels.map((channel, index) => (
                                 <div key={channel.code}>
                                     <DropdownMenuItem
-                                        onClick={() => setSelectedChannel(channel.id)}
+                                        onClick={() => setActiveChannel(channel.id)}
                                         className="gap-2 p-2"
                                     >
-                                        <div className="flex size-8 items-center justify-center rounded border">
+                                        <div
+                                            className={cn(
+                                                'flex size-8 items-center justify-center rounded border',
+                                                channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
+                                            )}
+                                        >
                                             <span className="truncate font-semibold text-xs uppercase">
                                                 {getChannelInitialsFromCode(channel.code)}
                                             </span>

@@ -14,27 +14,28 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod, twoStagePaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    CreateAddressInput,
     ErrorCode as AdminErrorCode,
+    CreateAddressInput,
     FulfillmentFragment,
     GlobalFlag,
     StockMovementType,
     UpdateProductVariantInput,
     VariantWithStockFragment,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { ErrorCode, PaymentInput } from './graphql/generated-e2e-shop-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { ErrorCode, PaymentInput } from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     GET_ORDER,
     GET_STOCK_MOVEMENT,
+    GET_STOCK_MOVEMENT_BY_TYPE,
     SETTLE_PAYMENT,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT_VARIANTS,
@@ -108,6 +109,14 @@ describe('Stock control', () => {
             Codegen.GetStockMovementQuery,
             Codegen.GetStockMovementQueryVariables
         >(GET_STOCK_MOVEMENT, { id: productId });
+        return product;
+    }
+
+    async function getProductWithStockMovementByType(productId: string, type: StockMovementType) {
+        const { product } = await adminClient.query<
+            Codegen.GetStockMovementByTypeQuery,
+            Codegen.GetStockMovementByTypeQueryVariables
+        >(GET_STOCK_MOVEMENT_BY_TYPE, { id: productId, type });
         return product;
     }
 
@@ -343,6 +352,23 @@ describe('Stock control', () => {
             expect(variant3.stockMovements.totalItems).toBe(2);
             expect(variant3.stockMovements.items[1].type).toBe(StockMovementType.ALLOCATION);
             expect(variant3.stockMovements.items[1].quantity).toBe(4);
+        });
+
+        it('returns all stockMovements filtered by type', async () => {
+            const product = await getProductWithStockMovementByType('T_2', StockMovementType.ALLOCATION);
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant1.stockMovements.totalItems).toBe(1);
+            expect(variant1.stockMovements.items[0].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant1.stockMovements.items[0].quantity).toBe(2);
+
+            expect(variant2.stockMovements.totalItems).toBe(1);
+            expect(variant2.stockMovements.items[0].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant2.stockMovements.items[0].quantity).toBe(3);
+
+            expect(variant3.stockMovements.totalItems).toBe(1);
+            expect(variant3.stockMovements.items[0].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant3.stockMovements.items[0].quantity).toBe(4);
         });
 
         it('stockAllocated is updated according to trackInventory setting', async () => {
@@ -1217,9 +1243,8 @@ describe('Stock control', () => {
 
                 expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
 
-                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const { activeOrder } =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 expect(activeOrder!.lines.length).toBe(0);
             });
 

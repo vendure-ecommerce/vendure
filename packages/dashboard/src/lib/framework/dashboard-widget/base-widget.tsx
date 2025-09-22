@@ -69,7 +69,7 @@ export function DashboardBaseWidget({
                 <CardHeader
                     ref={headerRef}
                     className={cn(
-                        'flex flex-row items-center',
+                        'flex flex-col lg:flex-row  items-start lg:items-center',
                         actions ? 'justify-between' : 'justify-start',
                     )}
                 >

@@ -8,8 +8,8 @@ import { NavMenuItem } from '../../nav-menu/nav-menu-extensions.js';
  * @description
  * Defines a custom route for the dashboard with optional navigation menu integration.
  *
- * @docsCategory extensions
- * @docsPage Navigation
+ * @docsCategory extensions-api
+ * @docsPage Routes
  * @since 3.4.0
  */
 export interface DashboardRouteDefinition {
@@ -27,6 +27,10 @@ export interface DashboardRouteDefinition {
      * @description
      * Optional navigation menu item configuration to add this route to the nav menu
      * on the left side of the dashboard.
+     *
+     * The `sectionId` specifies which nav menu section (e.g. "catalog", "customers")
+     * this item should appear in. It can also point to custom nav menu sections that
+     * have been defined using the `navSections` extension property.
      */
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
     /**
@@ -42,8 +46,12 @@ export interface DashboardRouteDefinition {
  * @description
  * Defines a custom navigation section in the dashboard sidebar.
  *
- * @docsCategory extensions
+ * Individual items can then be added to the section by defining routes in the
+ * `routes` property of your Dashboard extension.
+ *
+ * @docsCategory extensions-api
  * @docsPage Navigation
+ * @docsWeight 0
  * @since 3.4.0
  */
 export interface DashboardNavSectionDefinition {

@@ -103,7 +103,8 @@ const sidebars = {
                 },
                 'guides/developer-guide/custom-strategies-in-plugins/index',
                 'guides/developer-guide/channel-aware/index',
-                'guides/developer-guide/translateable/index',
+                'guides/developer-guide/translatable/index',
+                'guides/developer-guide/has-custom-fields/index',
                 'guides/developer-guide/cache/index',
                 'guides/developer-guide/dataloaders/index',
                 'guides/developer-guide/db-subscribers/index',
@@ -141,6 +142,7 @@ const sidebars = {
             items: [
                 'guides/extending-the-dashboard/getting-started/index',
                 'guides/extending-the-dashboard/extending-overview/index',
+
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
@@ -151,11 +153,11 @@ const sidebars = {
                     label: 'Custom Form Elements',
                     link: { type: 'doc', id: 'guides/extending-the-dashboard/custom-form-components/index' },
                     items: [
-                        'guides/extending-the-dashboard/custom-form-components/input-components',
-                        'guides/extending-the-dashboard/custom-form-components/display-components',
+                        'guides/extending-the-dashboard/custom-form-components/form-component-examples',
                         'guides/extending-the-dashboard/custom-form-components/relation-selectors',
                     ],
                 },
+                'guides/extending-the-dashboard/deployment/index',
                 'guides/extending-the-dashboard/tech-stack/index',
             ],
         },
