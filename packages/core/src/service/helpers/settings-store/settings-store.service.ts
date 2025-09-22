@@ -470,7 +470,7 @@ export class SettingsStoreService implements OnModuleInit {
     /**
      * @description
      * Check if the current user has permission to read a field.
-     * @since 3.4.0
+     * @since 3.5.0
      */
     hasReadPermission(ctx: RequestContext, key: string): boolean {
         try {
@@ -478,25 +478,17 @@ export class SettingsStoreService implements OnModuleInit {
             const requiredPermissions = fieldConfig.requiresPermission;
 
             if (requiredPermissions) {
-                if (
-                    typeof requiredPermissions === 'object' &&
-                    !Array.isArray(requiredPermissions) &&
-                    ('read' in requiredPermissions || 'write' in requiredPermissions)
-                ) {
+                if (this.isReadWritePermissionObject(requiredPermissions)) {
                     const readPerms = requiredPermissions.read;
                     if (readPerms) {
-                        const permissions = Array.isArray(readPerms) ? readPerms : [readPerms];
-                        return ctx.userHasPermissions(permissions as any);
+                        return this.checkSimplePermissions(ctx, readPerms);
                     }
                     // If no read permission specified but write is, fall back to authenticated
                     if (requiredPermissions.write) {
                         return ctx.userHasPermissions([Permission.Authenticated]);
                     }
                 } else {
-                    const permissions = Array.isArray(requiredPermissions)
-                        ? requiredPermissions
-                        : [requiredPermissions];
-                    return ctx.userHasPermissions(permissions as any);
+                    return this.checkSimplePermissions(ctx, requiredPermissions);
                 }
             }
 
@@ -509,7 +501,7 @@ export class SettingsStoreService implements OnModuleInit {
     /**
      * @description
      * Check if the current user has permission to write a field.
-     * @since 3.4.0
+     * @since 3.5.0
      */
     hasWritePermission(ctx: RequestContext, key: string): boolean {
         try {
@@ -517,25 +509,17 @@ export class SettingsStoreService implements OnModuleInit {
             const requiredPermissions = fieldConfig.requiresPermission;
 
             if (requiredPermissions) {
-                if (
-                    typeof requiredPermissions === 'object' &&
-                    !Array.isArray(requiredPermissions) &&
-                    ('read' in requiredPermissions || 'write' in requiredPermissions)
-                ) {
+                if (this.isReadWritePermissionObject(requiredPermissions)) {
                     const writePerms = requiredPermissions.write;
                     if (writePerms) {
-                        const permissions = Array.isArray(writePerms) ? writePerms : [writePerms];
-                        return ctx.userHasPermissions(permissions as any);
+                        return this.checkSimplePermissions(ctx, writePerms);
                     }
                     // If no write permission specified but read is, fall back to authenticated
                     if (requiredPermissions.read) {
                         return ctx.userHasPermissions([Permission.Authenticated]);
                     }
                 } else {
-                    const permissions = Array.isArray(requiredPermissions)
-                        ? requiredPermissions
-                        : [requiredPermissions];
-                    return ctx.userHasPermissions(permissions as any);
+                    return this.checkSimplePermissions(ctx, requiredPermissions);
                 }
             }
 
@@ -543,6 +527,35 @@ export class SettingsStoreService implements OnModuleInit {
         } catch (error) {
             return true;
         }
+    }
+
+    /**
+     * @description
+     * Helper method to check if a permission configuration is a read/write object.
+     */
+    private isReadWritePermissionObject(
+        permissions: any,
+    ): permissions is {
+        read?: Array<Permission | string> | Permission | string;
+        write?: Array<Permission | string> | Permission | string;
+    } {
+        return (
+            typeof permissions === 'object' &&
+            !Array.isArray(permissions) &&
+            ('read' in permissions || 'write' in permissions)
+        );
+    }
+
+    /**
+     * @description
+     * Helper method to check simple permissions (single permission, array, or string).
+     */
+    private checkSimplePermissions(
+        ctx: RequestContext,
+        permissions: Array<Permission | string> | Permission | string,
+    ): boolean {
+        const permissionArray = Array.isArray(permissions) ? permissions : [permissions];
+        return ctx.userHasPermissions(permissionArray as Permission[]);
     }
 
     /**

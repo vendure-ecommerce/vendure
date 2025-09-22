@@ -87,7 +87,7 @@ export interface SettingsStoreFieldConfig {
      *   write: dashboardSavedViews.Write
      * }
      * ```
-     * @since 3.4.0 - Added support for object with read/write properties
+     * @since 3.5.0 - Added support for object with read/write properties
      */
     requiresPermission?:
         | Array<Permission | string>

@@ -240,7 +240,7 @@ export class CrudPermissionDefinition extends PermissionDefinition {
  * @docsCategory auth
  * @docsPage PermissionDefinition
  * @docsWeight 2
- * @since 3.4.0
+ * @since 3.5.0
  */
 export class RwPermissionDefinition extends PermissionDefinition {
     constructor(
