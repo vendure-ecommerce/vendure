@@ -3,9 +3,10 @@ import { getDetailQueryOptions } from '@/vdb/framework/page/use-detail-page.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { redirect } from '@tanstack/react-router';
+import { OrderDetail } from '../components/order-detail-shared.js';
 import { orderDetailDocument } from '../orders.graphql.js';
 
-export async function loadRegularOrder(context: any, params: { id: string }) {
+export async function commonRegularOrderLoader(context: any, params: { id: string }): Promise<OrderDetail> {
     if (!params.id) {
         throw new Error('ID param is required');
     }
@@ -24,15 +25,51 @@ export async function loadRegularOrder(context: any, params: { id: string }) {
             to: `/orders/draft/${params.id}`,
         });
     }
+    return result.order;
+}
 
-    if (result.order.state === 'Modifying') {
+export async function loadRegularOrder(context: any, params: { id: string }) {
+    const order = await commonRegularOrderLoader(context, params);
+
+    if (order.state === 'Modifying') {
         throw redirect({
             to: `/orders/${params.id}/modify`,
         });
     }
 
     return {
-        breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, result.order.code],
+        breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, order.code],
+    };
+}
+
+export async function loadDraftOrder(context: any, params: { id: string }) {
+    const order = await commonRegularOrderLoader(context, params);
+
+    if (order.state !== 'Draft') {
+        throw redirect({
+            to: `/orders/${params.id}`,
+        });
+    }
+
+    return {
+        breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, order.code],
+    };
+}
+
+export async function loadModifyingOrder(context: any, params: { id: string }) {
+    const order = await commonRegularOrderLoader(context, params);
+    if (order.state !== 'Modifying') {
+        throw redirect({
+            to: `/orders/${params.id}`,
+        });
+    }
+
+    return {
+        breadcrumb: [
+            { path: '/orders', label: <Trans>Orders</Trans> },
+            order.code,
+            { label: <Trans>Modify</Trans> },
+        ],
     };
 }
 
