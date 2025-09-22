@@ -1,20 +1,13 @@
 import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
-import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useQuery } from '@tanstack/react-query';
-import { endOfDay, endOfMonth, startOfDay, startOfMonth, subDays, subMonths } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { differenceInDays, subDays } from 'date-fns';
+import { useMemo } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { orderSummaryQuery } from './order-summary-widget.graphql.js';
 
 const WIDGET_ID = 'orders-summary-widget';
-
-enum Range {
-    Today = 'today',
-    Yesterday = 'yesterday',
-    ThisWeek = 'thisWeek',
-    ThisMonth = 'thisMonth',
-}
 
 interface PercentageChangeProps {
     value: number;
@@ -34,63 +27,24 @@ function PercentageChange({ value }: PercentageChangeProps) {
 }
 
 export function OrdersSummaryWidget() {
-    const [range, setRange] = useState<Range>(Range.Today);
+    const { dateRange } = useWidgetFilters();
 
     const variables = useMemo(() => {
-        const now = new Date();
+        const rangeLength = differenceInDays(dateRange.to, dateRange.from) + 1;
+        // For the previous period, we go back by the same range length
+        const previousStart = subDays(dateRange.from, rangeLength);
+        const previousEnd = subDays(dateRange.to, rangeLength);
 
-        switch (range) {
-            case Range.Today: {
-                const today = now;
-                const yesterday = subDays(now, 1);
-
-                return {
-                    start: startOfDay(today).toISOString(),
-                    end: endOfDay(today).toISOString(),
-                    previousStart: startOfDay(yesterday).toISOString(),
-                    previousEnd: endOfDay(yesterday).toISOString(),
-                };
-            }
-            case Range.Yesterday: {
-                const yesterday = subDays(now, 1);
-                const dayBeforeYesterday = subDays(now, 2);
-
-                return {
-                    start: startOfDay(yesterday).toISOString(),
-                    end: endOfDay(yesterday).toISOString(),
-                    previousStart: startOfDay(dayBeforeYesterday).toISOString(),
-                    previousEnd: endOfDay(dayBeforeYesterday).toISOString(),
-                };
-            }
-            case Range.ThisWeek: {
-                const today = now;
-                const sixDaysAgo = subDays(now, 6);
-                const sevenDaysAgo = subDays(now, 7);
-                const thirteenDaysAgo = subDays(now, 13);
-
-                return {
-                    start: startOfDay(sixDaysAgo).toISOString(),
-                    end: endOfDay(today).toISOString(),
-                    previousStart: startOfDay(thirteenDaysAgo).toISOString(),
-                    previousEnd: endOfDay(sevenDaysAgo).toISOString(),
-                };
-            }
-            case Range.ThisMonth: {
-                const lastMonth = subMonths(now, 1);
-                const twoMonthsAgo = subMonths(now, 2);
-
-                return {
-                    start: startOfMonth(lastMonth).toISOString(),
-                    end: endOfMonth(lastMonth).toISOString(),
-                    previousStart: startOfMonth(twoMonthsAgo).toISOString(),
-                    previousEnd: endOfMonth(twoMonthsAgo).toISOString(),
-                };
-            }
-        }
-    }, [range]);
+        return {
+            start: dateRange.from.toISOString(),
+            end: dateRange.to.toISOString(),
+            previousStart: previousStart.toISOString(),
+            previousEnd: previousEnd.toISOString(),
+        };
+    }, [dateRange]);
 
     const { data } = useQuery({
-        queryKey: ['orders-summary', range],
+        queryKey: ['orders-summary', dateRange],
         queryFn: () =>
             api.query(orderSummaryQuery, {
                 start: variables.start,
@@ -99,7 +53,7 @@ export function OrdersSummaryWidget() {
     });
 
     const { data: previousData } = useQuery({
-        queryKey: ['orders-summary', 'previous', range],
+        queryKey: ['orders-summary', 'previous', dateRange],
         queryFn: () =>
             api.query(orderSummaryQuery, {
                 start: variables.previousStart,
@@ -126,16 +80,6 @@ export function OrdersSummaryWidget() {
             id={WIDGET_ID}
             title="Orders Summary"
             description="Your orders summary"
-            actions={
-                <Tabs defaultValue={range} onValueChange={value => setRange(value as Range)}>
-                    <TabsList>
-                        <TabsTrigger value={Range.Today}>Today</TabsTrigger>
-                        <TabsTrigger value={Range.Yesterday}>Yesterday</TabsTrigger>
-                        <TabsTrigger value={Range.ThisWeek}>This Week</TabsTrigger>
-                        <TabsTrigger value={Range.ThisMonth}>This Month</TabsTrigger>
-                    </TabsList>
-                </Tabs>
-            }
         >
             <div className="@container h-full">
                 <div className="flex flex-col h-full @md:flex-row gap-8 items-center justify-center @md:justify-evenly text-center tabular-nums">
