@@ -332,3 +332,11 @@ export const createProductVariantsDocument = graphql(`
         }
     }
 `);
+
+export const reindexDocument = graphql(`
+    mutation Reindex {
+        reindex {
+            id
+        }
+    }
+`);

@@ -3,9 +3,12 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, RefreshCwIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import {
     AssignFacetValuesToProductsBulkAction,
     AssignProductsToChannelBulkAction,
@@ -13,7 +16,7 @@ import {
     DuplicateProductsBulkAction,
     RemoveProductsFromChannelBulkAction,
 } from './components/product-bulk-actions.js';
-import { productListDocument } from './products.graphql.js';
+import { productListDocument, reindexDocument } from './products.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -21,6 +24,21 @@ export const Route = createFileRoute('/_authenticated/_products/products')({
 });
 
 function ProductListPage() {
+    const { i18n } = useLingui();
+    const reindexMutation = useMutation({
+        mutationFn: () => api.mutate(reindexDocument, {}),
+        onSuccess: () => {
+            toast.success(i18n.t('Search index rebuild started'));
+        },
+        onError: () => {
+            toast.error(i18n.t('Search index rebuild could not be started'));
+        },
+    });
+
+    const handleRebuildSearchIndex = () => {
+        reindexMutation.mutate();
+    };
+
     return (
         <ListPage
             pageId="product-list"
@@ -62,6 +80,12 @@ function ProductListPage() {
             ]}
         >
             <PageActionBarRight>
+                <PermissionGuard requires={['UpdateCatalog']}>
+                    <Button variant="outline" onClick={handleRebuildSearchIndex}>
+                        <RefreshCwIcon />
+                        <Trans>Rebuild search index</Trans>
+                    </Button>
+                </PermissionGuard>
                 <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
                     <Button asChild>
                         <Link to="./new">
