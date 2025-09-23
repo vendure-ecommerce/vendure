@@ -21,36 +21,32 @@ export function useSavedViews() {
     const queryClient = useQueryClient();
     const { pageId } = usePage();
     const pageBlock = usePageBlock({ optional: true });
-    const blockId = pageBlock?.blockId;
+    const blockId = pageBlock?.blockId || 'default';
 
     if (!pageId) {
         throw new Error('useSavedViews must be used within a Page context');
     }
-
-    // Create a unique scope combining pageId and blockId
-    // Only include blockId if it's not the default "list-table" block from ListPage
-    const scope = blockId && blockId !== 'list-table' ? `${pageId}.${blockId}` : pageId;
 
     const userViewsKey = 'vendure.dashboard.userSavedViews';
     const globalViewsKey = 'vendure.dashboard.globalSavedViews';
 
     // Query for user views
     const { data: userViewsData, isLoading: userViewsLoading } = useQuery({
-        queryKey: ['saved-views-user', scope],
+        queryKey: ['saved-views-user', pageId, blockId],
         queryFn: async () => {
             const result = await api.query(getSettingsStoreValueDocument, { key: userViewsKey });
             const allUserViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
-            return allUserViews[scope] || [];
+            return allUserViews[pageId]?.[blockId] || [];
         },
     });
 
     // Query for global views
     const { data: globalViewsData, isLoading: globalViewsLoading } = useQuery({
-        queryKey: ['saved-views-global', scope],
+        queryKey: ['saved-views-global', pageId, blockId],
         queryFn: async () => {
             const result = await api.query(getSettingsStoreValueDocument, { key: globalViewsKey });
             const allGlobalViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
-            return allGlobalViews[scope] || [];
+            return allGlobalViews[pageId]?.[blockId] || [];
         },
     });
 
@@ -61,15 +57,21 @@ export function useSavedViews() {
             const result = await api.query(getSettingsStoreValueDocument, { key: userViewsKey });
             const allUserViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
 
-            // Update the specific scope
-            const updatedViews = { ...allUserViews, [scope]: views };
+            // Update the specific page and block
+            const updatedViews = {
+                ...allUserViews,
+                [pageId]: {
+                    ...allUserViews[pageId],
+                    [blockId]: views,
+                },
+            };
 
             return api.mutate(setSettingsStoreValueDocument, {
                 input: { key: userViewsKey, value: updatedViews },
             });
         },
         onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ['saved-views-user', scope] });
+            void queryClient.invalidateQueries({ queryKey: ['saved-views-user', pageId, blockId] });
         },
     });
 
@@ -80,15 +82,21 @@ export function useSavedViews() {
             const result = await api.query(getSettingsStoreValueDocument, { key: globalViewsKey });
             const allGlobalViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
 
-            // Update the specific scope
-            const updatedViews = { ...allGlobalViews, [scope]: views };
+            // Update the specific page and block
+            const updatedViews = {
+                ...allGlobalViews,
+                [pageId]: {
+                    ...allGlobalViews[pageId],
+                    [blockId]: views,
+                },
+            };
 
             return api.mutate(setSettingsStoreValueDocument, {
                 input: { key: globalViewsKey, value: updatedViews },
             });
         },
         onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ['saved-views-global', scope] });
+            void queryClient.invalidateQueries({ queryKey: ['saved-views-global', pageId, blockId] });
         },
     });
 
@@ -99,8 +107,10 @@ export function useSavedViews() {
             scope: input.scope,
             filters: input.filters,
             searchTerm: input.searchTerm,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            pageId,
+            blockId: blockId === 'default' ? undefined : blockId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
 
         if (input.scope === 'user') {
@@ -129,7 +139,7 @@ export function useSavedViews() {
                           name: input.name ?? v.name,
                           filters: input.filters ?? v.filters,
                           searchTerm: input.searchTerm !== undefined ? input.searchTerm : v.searchTerm,
-                          updatedAt: new Date(),
+                          updatedAt: new Date().toISOString(),
                       }
                     : v,
             );
@@ -142,7 +152,7 @@ export function useSavedViews() {
                           name: input.name ?? v.name,
                           filters: input.filters ?? v.filters,
                           searchTerm: input.searchTerm !== undefined ? input.searchTerm : v.searchTerm,
-                          updatedAt: new Date(),
+                          updatedAt: new Date().toISOString(),
                       }
                     : v,
             );
@@ -173,8 +183,10 @@ export function useSavedViews() {
                 id: generateId(),
                 name: `${viewToDuplicate.name} (Copy)`,
                 scope: newScope,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                pageId,
+                blockId: blockId === 'default' ? undefined : blockId,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
             };
 
             if (newScope === 'user') {

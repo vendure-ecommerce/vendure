@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button.js';
 import { SaveViewDialog } from './save-view-dialog.js';
 import { ColumnFiltersState } from '@tanstack/react-table';
+import { useSavedViews } from '../../hooks/use-saved-views.js';
+import { isMatchingSavedView } from '../../utils/saved-views-utils.js';
 
 interface SaveViewButtonProps {
     filters: ColumnFiltersState;
@@ -16,10 +18,13 @@ export const SaveViewButton: React.FC<SaveViewButtonProps> = ({
     disabled,
 }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const { userViews, globalViews } = useSavedViews();
 
     const hasFilters = filters.length > 0 || (searchTerm && searchTerm.length > 0);
+    const matchesExistingView = isMatchingSavedView(filters, searchTerm || '', userViews, globalViews);
 
-    if (!hasFilters) {
+    // Don't show the button if there are no filters or if filters match an existing saved view
+    if (!hasFilters || matchesExistingView) {
         return null;
     }
 

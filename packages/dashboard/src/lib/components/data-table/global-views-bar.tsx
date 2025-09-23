@@ -3,6 +3,8 @@ import { ChevronDown } from 'lucide-react';
 import React from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { SavedView } from '../../types/saved-views.js';
+import { Trans } from '../../lib/trans.js';
+import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { PermissionGuard } from '../shared/permission-guard.js';
 import { Button } from '../ui/button.js';
 import {
@@ -16,9 +18,14 @@ import { ManageGlobalViewsButton } from './manage-global-views-button.js';
 interface GlobalViewsBarProps {
     onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
     currentFilters?: ColumnFiltersState;
+    currentSearchTerm?: string;
 }
 
-export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, currentFilters = [] }) => {
+export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
+    onApplyView,
+    currentFilters = [],
+    currentSearchTerm = ''
+}) => {
     const { globalViews, canManageGlobalViews } = useSavedViews();
 
     if (globalViews.length === 0) {
@@ -35,7 +42,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
     };
 
     const isViewActive = (view: SavedView) => {
-        return JSON.stringify(view.filters) === JSON.stringify(currentFilters);
+        return findMatchingSavedView(currentFilters, currentSearchTerm, [view]) !== undefined;
     };
 
     if (sortedViews.length <= 3) {
@@ -76,7 +83,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({ onApplyView, cur
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                        More Views
+                        <Trans>More views</Trans>
                         <ChevronDown className="h-3 w-3" />
                     </Button>
                 </DropdownMenuTrigger>

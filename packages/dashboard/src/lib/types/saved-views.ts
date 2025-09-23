@@ -6,8 +6,10 @@ export interface SavedView {
     scope: 'user' | 'global';
     filters: ColumnFiltersState;
     searchTerm?: string;
-    createdAt: Date;
-    updatedAt: Date;
+    pageId?: string;
+    blockId?: string;
+    createdAt: string; // ISO timestamp string
+    updatedAt: string; // ISO timestamp string
     createdBy?: string;
 }
 
@@ -17,7 +19,9 @@ export interface SavedViewsData {
 }
 
 export interface SavedViewsStore {
-    [pageId: string]: SavedView[];
+    [pageId: string]: {
+        [blockId: string]: SavedView[];
+    };
 }
 
 export interface SaveViewInput {

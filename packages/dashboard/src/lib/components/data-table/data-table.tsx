@@ -6,6 +6,7 @@ import { GlobalViewsBar } from '@/vdb/components/data-table/global-views-bar.js'
 import { MyViewsButton } from '@/vdb/components/data-table/my-views-button.js';
 import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
 import { SaveViewButton } from '@/vdb/components/data-table/save-view-button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
@@ -13,6 +14,7 @@ import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -114,7 +116,9 @@ export function DataTable<TData>({
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const { activeChannel } = useChannel();
     const { pageId } = usePage();
-    const { globalViews } = pageId && onFilterChange ? useSavedViews() : { globalViews: [] };
+    const savedViewsResult = useSavedViews();
+    const globalViews = pageId && onFilterChange ? savedViewsResult.globalViews : [];
+    const { i18n } = useLingui();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -203,7 +207,7 @@ export function DataTable<TData>({
                 <div className="flex items-center gap-2">
                     {onSearchTermChange && (
                         <Input
-                            placeholder="Filter..."
+                            placeholder={i18n.t('Filter...')}
                             value={searchTerm}
                             onChange={event => handleSearchChange(event.target.value)}
                             className="w-64"
@@ -221,7 +225,13 @@ export function DataTable<TData>({
                         ))}
                     </Suspense>
                     {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
-                    {pageId && onFilterChange && <MyViewsButton onApplyView={handleApplyView} />}
+                    {pageId && onFilterChange && (
+                        <MyViewsButton
+                            onApplyView={handleApplyView}
+                            currentFilters={columnFilters}
+                            currentSearchTerm={searchTerm}
+                        />
+                    )}
                 </div>
                 <div className="flex items-center gap-2">
                     {pageId && onFilterChange && (
@@ -237,10 +247,14 @@ export function DataTable<TData>({
                 <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
                     <div className="flex items-center">
                         {pageId && onFilterChange && (
-                            <GlobalViewsBar onApplyView={handleApplyView} currentFilters={columnFilters} />
+                            <GlobalViewsBar
+                                onApplyView={handleApplyView}
+                                currentFilters={columnFilters}
+                                currentSearchTerm={searchTerm}
+                            />
                         )}
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 items-center">
                         {columnFilters
                             .filter(f => !facetedFilters?.[f.id])
                             .map(f => {
@@ -260,6 +274,16 @@ export function DataTable<TData>({
                                     />
                                 );
                             })}
+                        {columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setColumnFilters([])}
+                                className="text-xs opacity-60 hover:opacity-100"
+                            >
+                                <Trans>Clear all</Trans>
+                            </Button>
+                        )}
                     </div>
                 </div>
             ) : null}
