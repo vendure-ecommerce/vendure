@@ -42,6 +42,7 @@ import { CollectionService } from './services/collection.service';
 import { CountryService } from './services/country.service';
 import { CustomerGroupService } from './services/customer-group.service';
 import { CustomerService } from './services/customer.service';
+import { EntitySlugService } from './services/entity-slug.service';
 import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
 import { FulfillmentService } from './services/fulfillment.service';
@@ -61,6 +62,7 @@ import { SearchService } from './services/search.service';
 import { SellerService } from './services/seller.service';
 import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
+import { SlugService } from './services/slug.service';
 import { StockLevelService } from './services/stock-level.service';
 import { StockLocationService } from './services/stock-location.service';
 import { StockMovementService } from './services/stock-movement.service';
@@ -79,6 +81,7 @@ const services = [
     CountryService,
     CustomerGroupService,
     CustomerService,
+    EntitySlugService,
     FacetService,
     FacetValueService,
     FulfillmentService,
@@ -98,6 +101,7 @@ const services = [
     SellerService,
     SessionService,
     ShippingMethodService,
+    SlugService,
     StockLevelService,
     StockLocationService,
     StockMovementService,

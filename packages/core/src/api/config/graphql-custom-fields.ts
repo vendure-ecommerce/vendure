@@ -10,6 +10,7 @@ import {
 } from 'graphql';
 
 import {
+    BaseTypedCustomFieldConfig,
     CustomFieldConfig,
     CustomFields,
     StructCustomFieldConfig,
@@ -751,7 +752,7 @@ function pascalCase(input: string) {
     return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
-function getDeprecationDirective(field: CustomFieldConfig): string {
+function getDeprecationDirective(field: BaseTypedCustomFieldConfig<any, any>): string {
     if (!field.deprecated) {
         return '';
     }

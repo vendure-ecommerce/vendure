@@ -1,0 +1,30 @@
+import { Injectable } from '@nestjs/common';
+
+import { ConfigService } from '../../config';
+
+/**
+ * @description
+ * A service that handles slug generation using the configured SlugStrategy.
+ *
+ * @docsCategory services
+ * @since 3.x.x
+ */
+@Injectable()
+export class SlugService {
+    constructor(private configService: ConfigService) {}
+
+    /**
+     * @description
+     * Generates a slug from the input string using the configured SlugStrategy.
+     *
+     * @param input The input string to be converted to a slug
+     * @returns A URL-friendly slug string
+     */
+    generate(input: string): string {
+        const strategy = this.configService.entityOptions.slugStrategy;
+        if (!strategy) {
+            throw new Error('No SlugStrategy configured');
+        }
+        return strategy.generate(input);
+    }
+}
