@@ -1,81 +1,130 @@
-import { HistoryEntry, HistoryEntryItem } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
-import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
-import { Trans } from '@/vdb/lib/trans.js';
-import { CheckIcon, SquarePen } from 'lucide-react';
+import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
+import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
+import { useState } from 'react';
+import { CustomerHistoryCustomerDetail } from './customer-history-types.js';
+import { customerHistoryUtils } from './customer-history-utils.js';
+import {
+    CustomerAddedToGroupComponent,
+    CustomerAddressCreatedComponent,
+    CustomerAddressDeletedComponent,
+    CustomerAddressUpdatedComponent,
+    CustomerDetailUpdatedComponent,
+    CustomerEmailUpdateRequestedComponent,
+    CustomerEmailUpdateVerifiedComponent,
+    CustomerNoteComponent,
+    CustomerPasswordResetRequestedComponent,
+    CustomerPasswordResetVerifiedComponent,
+    CustomerPasswordUpdatedComponent,
+    CustomerRegisteredComponent,
+    CustomerRemovedFromGroupComponent,
+    CustomerVerifiedComponent,
+} from './default-customer-history-components.js';
 
 interface CustomerHistoryProps {
-    customer: {
-        id: string;
-    };
-    historyEntries: Array<HistoryEntryItem>;
+    customer: CustomerHistoryCustomerDetail;
+    historyEntries: HistoryEntryItem[];
     onAddNote: (note: string, isPrivate: boolean) => void;
     onUpdateNote?: (entryId: string, note: string, isPrivate: boolean) => void;
     onDeleteNote?: (entryId: string) => void;
 }
 
 export function CustomerHistory({
+    customer,
     historyEntries,
     onAddNote,
     onUpdateNote,
     onDeleteNote,
-}: CustomerHistoryProps) {
-    const getTimelineIcon = (entry: CustomerHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'CUSTOMER_NOTE':
-                return <SquarePen className="h-4 w-4" />;
-            default:
-                return <CheckIcon className="h-4 w-4" />;
-        }
+}: Readonly<CustomerHistoryProps>) {
+    const [noteEditorOpen, setNoteEditorOpen] = useState(false);
+    const [noteEditorNote, setNoteEditorNote] = useState<{
+        noteId: string;
+        note: string;
+        isPrivate: boolean;
+    }>({
+        noteId: '',
+        note: '',
+        isPrivate: true,
+    });
+
+    const handleEditNote = (noteId: string, note: string, isPrivate: boolean) => {
+        setNoteEditorNote({ noteId, note, isPrivate });
+        setNoteEditorOpen(true);
     };
 
-    const getTitle = (entry: CustomerHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'CUSTOMER_NOTE':
-                return <Trans>Note added</Trans>;
-            default:
-                return <Trans>{entry.type.replace(/_/g, ' ').toLowerCase()}</Trans>;
-        }
+    const handleDeleteNote = (noteId: string) => {
+        onDeleteNote?.(noteId);
     };
+
+    const handleNoteEditorSave = (noteId: string, note: string, isPrivate: boolean) => {
+        onUpdateNote?.(noteId, note, isPrivate);
+    };
+
+    const { getTimelineIcon, getTitle, getIconColor, getActorName, isPrimaryEvent } =
+        customerHistoryUtils(customer);
+
+    const renderEntryContent = (entry: HistoryEntryItem, variant: 'primary' | 'secondary') => {
+        const props: HistoryEntryProps = {
+            entry,
+            title: getTitle(entry),
+            actorName: getActorName(entry),
+            timelineIcon: getTimelineIcon(entry),
+            timelineIconClassName: getIconColor(entry),
+            isPrimary: isPrimaryEvent(entry),
+            children: null,
+        };
+        if (entry.type === 'CUSTOMER_REGISTERED') {
+            return <CustomerRegisteredComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_VERIFIED') {
+            return <CustomerVerifiedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_DETAIL_UPDATED') {
+            return <CustomerDetailUpdatedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_ADDED_TO_GROUP') {
+            return <CustomerAddedToGroupComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_REMOVED_FROM_GROUP') {
+            return <CustomerRemovedFromGroupComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_ADDRESS_CREATED') {
+            return <CustomerAddressCreatedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_ADDRESS_UPDATED') {
+            return <CustomerAddressUpdatedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_ADDRESS_DELETED') {
+            return <CustomerAddressDeletedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_NOTE') {
+            return <CustomerNoteComponent {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />;
+        } else if (entry.type === 'CUSTOMER_PASSWORD_UPDATED') {
+            return <CustomerPasswordUpdatedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_PASSWORD_RESET_REQUESTED') {
+            return <CustomerPasswordResetRequestedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_PASSWORD_RESET_VERIFIED') {
+            return <CustomerPasswordResetVerifiedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_EMAIL_UPDATE_REQUESTED') {
+            return <CustomerEmailUpdateRequestedComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_EMAIL_UPDATE_VERIFIED') {
+            return <CustomerEmailUpdateVerifiedComponent {...props} />;
+        }
+        return null;
+    };
+
 
     return (
-        <div className="">
-            <div className="mb-4">
+        <>
+            <HistoryTimelineWithGrouping
+                historyEntries={historyEntries}
+                isPrimaryEvent={isPrimaryEvent}
+                renderEntryContent={renderEntryContent}
+            >
                 <HistoryNoteInput onAddNote={onAddNote} />
-            </div>
-            <HistoryTimeline onEditNote={onUpdateNote} onDeleteNote={onDeleteNote}>
-                {historyEntries.map(entry => (
-                    <HistoryEntry
-                        key={entry.id}
-                        entry={entry}
-                        isNoteEntry={entry.type === 'CUSTOMER_NOTE'}
-                        timelineIcon={getTimelineIcon(entry)}
-                        title={getTitle(entry)}
-                    >
-                        {entry.type === 'CUSTOMER_NOTE' && (
-                            <div className="flex items-center space-x-2">
-                                <Badge variant={entry.isPublic ? 'outline' : 'secondary'} className="text-xs">
-                                    {entry.isPublic ? 'Public' : 'Private'}
-                                </Badge>
-                                <span>{entry.data.note}</span>
-                            </div>
-                        )}
-                        <div className="text-sm text-muted-foreground">
-                            {entry.type === 'CUSTOMER_NOTE' && (
-                                <Trans>
-                                    From {entry.data.from} to {entry.data.to}
-                                </Trans>
-                            )}
-                            {entry.type === 'ORDER_PAYMENT_TRANSITION' && (
-                                <Trans>
-                                    Payment #{entry.data.paymentId} transitioned to {entry.data.to}
-                                </Trans>
-                            )}
-                        </div>
-                    </HistoryEntry>
-                ))}
-            </HistoryTimeline>
-        </div>
+            </HistoryTimelineWithGrouping>
+            <HistoryNoteEditor
+                open={noteEditorOpen}
+                onOpenChange={setNoteEditorOpen}
+                onNoteChange={handleNoteEditorSave}
+                note={noteEditorNote.note}
+                isPrivate={noteEditorNote.isPrivate}
+                noteId={noteEditorNote.noteId}
+            />
+        </>
     );
 }

@@ -1,11 +1,8 @@
 import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
-import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
-import { Button } from '@/vdb/components/ui/button.js';
+import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
-import { Trans } from '@/vdb/lib/trans.js';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import {
     OrderCancellationComponent,
@@ -36,7 +33,6 @@ export function OrderHistory({
     onUpdateNote,
     onDeleteNote,
 }: Readonly<OrderHistoryProps>) {
-    const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
     const [noteEditorOpen, setNoteEditorOpen] = useState(false);
     const [noteEditorNote, setNoteEditorNote] = useState<{
         noteId: string;
@@ -98,106 +94,15 @@ export function OrderHistory({
         return null;
     };
 
-    // Group consecutive secondary events
-    const groupedEntries: Array<
-        | { type: 'primary'; entry: HistoryEntryItem; index: number }
-        | {
-              type: 'secondary-group';
-              entries: Array<{ entry: HistoryEntryItem; index: number }>;
-              startIndex: number;
-          }
-    > = [];
-    let currentGroup: Array<{ entry: HistoryEntryItem; index: number }> = [];
-
-    for (let i = 0; i < historyEntries.length; i++) {
-        const entry = historyEntries[i];
-        const isSecondary = !isPrimaryEvent(entry);
-
-        if (isSecondary) {
-            currentGroup.push({ entry, index: i });
-        } else {
-            // If we have accumulated secondary events, add them as a group
-            if (currentGroup.length > 0) {
-                groupedEntries.push({
-                    type: 'secondary-group',
-                    entries: currentGroup,
-                    startIndex: currentGroup[0].index,
-                });
-                currentGroup = [];
-            }
-            // Add the primary event
-            groupedEntries.push({ type: 'primary', entry, index: i });
-        }
-    }
-
-    // Don't forget the last group if it exists
-    if (currentGroup.length > 0) {
-        groupedEntries.push({
-            type: 'secondary-group',
-            entries: currentGroup,
-            startIndex: currentGroup[0].index,
-        });
-    }
-
-    const toggleGroup = (groupIndex: number) => {
-        const newExpanded = new Set(expandedGroups);
-        if (newExpanded.has(groupIndex)) {
-            newExpanded.delete(groupIndex);
-        } else {
-            newExpanded.add(groupIndex);
-        }
-        setExpandedGroups(newExpanded);
-    };
-
     return (
-        <div className="">
-            <div className="mb-4">
+        <>
+            <HistoryTimelineWithGrouping
+                historyEntries={historyEntries}
+                isPrimaryEvent={isPrimaryEvent}
+                renderEntryContent={renderEntryContent}
+            >
                 <HistoryNoteInput onAddNote={onAddNote} />
-            </div>
-            <HistoryTimeline>
-                {groupedEntries.map((group, groupIndex) => {
-                    if (group.type === 'primary') {
-                        const entry = group.entry;
-                        return <div key={entry.id}>{renderEntryContent(entry)}</div>;
-                    } else {
-                        // Secondary group
-                        const shouldCollapse = group.entries.length > 2;
-                        const isExpanded = expandedGroups.has(groupIndex);
-                        const visibleEntries =
-                            shouldCollapse && !isExpanded ? group.entries.slice(0, 2) : group.entries;
-
-                        return (
-                            <div key={`group-${groupIndex}`}>
-                                {visibleEntries.map(({ entry }) => (
-                                    <div key={entry.id}>{renderEntryContent(entry)}</div>
-                                ))}
-                                {shouldCollapse && (
-                                    <div className="flex justify-center py-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => toggleGroup(groupIndex)}
-                                            className="text-muted-foreground hover:text-foreground h-6 text-xs"
-                                        >
-                                            {isExpanded ? (
-                                                <>
-                                                    <ChevronUp className="w-3 h-3 mr-1" />
-                                                    <Trans>Show less</Trans>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <ChevronDown className="w-3 h-3 mr-1" />
-                                                    <Trans>Show all ({group.entries.length - 2})</Trans>
-                                                </>
-                                            )}
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }
-                })}
-            </HistoryTimeline>
+            </HistoryTimelineWithGrouping>
             <HistoryNoteEditor
                 key={noteEditorNote.noteId}
                 note={noteEditorNote.note}
@@ -207,6 +112,6 @@ export function OrderHistory({
                 noteId={noteEditorNote.noteId}
                 isPrivate={noteEditorNote.isPrivate}
             />
-        </div>
+        </>
     );
 }
