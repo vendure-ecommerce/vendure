@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/too
 import { Trans } from '@/vdb/lib/trans.js';
 import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
 import { Column, ColumnDef } from '@tanstack/react-table';
-import { PlusCircle } from 'lucide-react';
+import { FilterIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export interface AddFilterMenuProps {
@@ -31,7 +31,7 @@ export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
                     <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="icon">
-                                <PlusCircle />
+                                <FilterIcon />
                             </Button>
                         </DropdownMenuTrigger>
                     </TooltipTrigger>

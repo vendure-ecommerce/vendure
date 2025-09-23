@@ -214,7 +214,7 @@ export function useSavedViews() {
 
     // Use UpdateSettings permission for managing global views
     const { hasPermissions } = usePermissions();
-    const canManageGlobalViews = hasPermissions(['UpdateSettings']);
+    const canManageGlobalViews = hasPermissions(['WriteDashboardGlobalViews']);
 
     return {
         userViews: userViewsData || [],
