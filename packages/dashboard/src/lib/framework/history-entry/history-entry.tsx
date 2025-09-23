@@ -1,18 +1,76 @@
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
 import { cn } from '@/vdb/lib/utils.js';
 import React from 'react';
-import { HistoryEntryDate } from './history-entry-date.js';
+import { HistoryEntryDate } from '../../components/shared/history-timeline/history-entry-date.js';
 
+/**
+ * @description
+ * The props for the {@link HistoryEntry} component.
+ *
+ * @docsCategory extensions-api
+ * @docsPage HistoryEntries
+ * @since 3.4.3
+ */
 export interface HistoryEntryProps {
+    /**
+     * @description
+     * The entry itself, which will get passed down to your custom component
+     */
     entry: HistoryEntryItem;
+    /**
+     * @description
+     * The title of the entry
+     */
     title: string | React.ReactNode;
-    timelineIcon: React.ReactNode;
+    /**
+     * @description
+     * An icon which is used to represent the entry. Note that this will only
+     * display if `isPrimary` is `true`.
+     */
+    timelineIcon?: React.ReactNode;
+    /**
+     * @description
+     * Optional tailwind classes to apply to the icon. For instance
+     *
+     * ```ts
+     * const success = 'bg-success text-success-foreground';
+     * const destructive = 'bg-danger text-danger-foreground';
+     * ```
+     */
     timelineIconClassName?: string;
+    /**
+     * @description
+     * The name to display of "who did the action". For instance:
+     *
+     * ```ts
+     * const getActorName = (entry: HistoryEntryItem) => {
+     *     if (entry.administrator) {
+     *         return `${entry.administrator.firstName} ${entry.administrator.lastName}`;
+     *     } else if (entity?.customer) {
+     *         return `${entity.customer.firstName} ${entity.customer.lastName}`;
+     *     }
+     *     return '';
+     * };
+     * ```
+     */
     actorName?: string;
     children: React.ReactNode;
+    /**
+     * @description
+     * When set to `true`, the timeline entry will feature the specified icon and will not
+     * be collapsible.
+     */
     isPrimary?: boolean;
 }
 
+/**
+ * @description
+ * A component which is used to display a history entry in the order/customer history timeline.
+ *
+ * @docsCategory extensions-api
+ * @docsPage HistoryEntries
+ * @since 3.4.3
+ */
 export function HistoryEntry({
     entry,
     timelineIcon,
@@ -32,7 +90,7 @@ export function HistoryEntry({
                         className={`rounded-full flex items-center justify-center ${isPrimary ? 'h-6 w-6' : 'h-2 w-2 border'} ${timelineIconClassName ?? ''}  ${isPrimary ? 'shadow-sm' : 'shadow-none'}`}
                     >
                         <div className={isPrimary ? 'text-current scale-80' : 'text-current scale-0'}>
-                            {timelineIcon}
+                            {timelineIcon ?? ''}
                         </div>
                     </div>
                 </div>

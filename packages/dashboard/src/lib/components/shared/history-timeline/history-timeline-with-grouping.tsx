@@ -1,34 +1,44 @@
-import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
+import { getCustomHistoryEntryForType } from '@/vdb/framework/history-entry/history-entry-extensions.js';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { ReactNode, useState } from 'react';
+import { CustomerHistoryCustomerDetail } from '../../../../app/routes/_authenticated/_customers/components/customer-history/customer-history-types.js';
+import { OrderHistoryOrderDetail } from '../../../../app/routes/_authenticated/_orders/components/order-history/order-history-types.js';
 import { HistoryTimeline } from './history-timeline.js';
 
-interface HistoryTimelineWithGroupingProps<T extends HistoryEntryItem> {
-    historyEntries: T[];
-    isPrimaryEvent: (entry: T) => boolean;
-    renderEntryContent: (entry: T, variant: 'primary' | 'secondary') => ReactNode;
-    children?: ReactNode; // For HistoryNoteInput or other content before timeline
+interface HistoryTimelineWithGroupingProps {
+    historyEntries: HistoryEntryItem[];
+    entity: OrderHistoryOrderDetail | CustomerHistoryCustomerDetail;
+    isPrimaryEvent: (entry: HistoryEntryItem) => boolean;
+    renderEntryContent: (entry: HistoryEntryItem) => ReactNode;
+    children?: ReactNode;
 }
 
-export function HistoryTimelineWithGrouping<T extends HistoryEntryItem>({
+type EntryWithIndex = {
+    entry: HistoryEntryItem;
+    index: number;
+};
+
+export function HistoryTimelineWithGrouping({
     historyEntries,
+    entity,
     isPrimaryEvent,
     renderEntryContent,
     children,
-}: HistoryTimelineWithGroupingProps<T>) {
+}: Readonly<HistoryTimelineWithGroupingProps>) {
     const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
 
     // Group consecutive secondary events
     const groupedEntries: Array<
-        | { type: 'primary'; entry: T; index: number }
+        | ({ type: 'primary' } & EntryWithIndex)
         | {
               type: 'secondary-group';
-              entries: Array<{ entry: T; index: number }>;
+              entries: Array<EntryWithIndex>;
               startIndex: number;
           }
     > = [];
-    let currentGroup: Array<{ entry: T; index: number }> = [];
+    let currentGroup: Array<EntryWithIndex> = [];
 
     for (let i = 0; i < historyEntries.length; i++) {
         const entry = historyEntries[i];
@@ -60,6 +70,15 @@ export function HistoryTimelineWithGrouping<T extends HistoryEntryItem>({
         });
     }
 
+    const renderEntry = (entry: HistoryEntryItem) => {
+        const CustomType = getCustomHistoryEntryForType(entry.type);
+        if (CustomType) {
+            return <CustomType entry={entry} entity={entity} />;
+        } else {
+            return renderEntryContent(entry);
+        }
+    };
+
     const toggleGroup = (groupIndex: number) => {
         const newExpanded = new Set(expandedGroups);
         if (newExpanded.has(groupIndex)) {
@@ -77,7 +96,7 @@ export function HistoryTimelineWithGrouping<T extends HistoryEntryItem>({
                 {groupedEntries.map((group, groupIndex) => {
                     if (group.type === 'primary') {
                         const entry = group.entry;
-                        return <div key={entry.id}>{renderEntryContent(entry, 'primary')}</div>;
+                        return <div key={entry.id}>{renderEntry(entry)}</div>;
                     } else {
                         // Secondary group
                         const shouldCollapse = group.entries.length > 2;
@@ -88,7 +107,7 @@ export function HistoryTimelineWithGrouping<T extends HistoryEntryItem>({
                         return (
                             <div key={`group-${groupIndex}`}>
                                 {visibleEntries.map(({ entry }) => (
-                                    <div key={entry.id}>{renderEntryContent(entry, 'secondary')}</div>
+                                    <div key={entry.id}>{renderEntry(entry)}</div>
                                 ))}
                                 {shouldCollapse && (
                                     <div className="flex justify-center py-2">

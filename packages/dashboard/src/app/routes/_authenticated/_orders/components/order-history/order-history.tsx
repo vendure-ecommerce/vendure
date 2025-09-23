@@ -1,8 +1,8 @@
-import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
+import { HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
 import { useState } from 'react';
 import {
     OrderCancellationComponent,
@@ -100,6 +100,7 @@ export function OrderHistory({
                 historyEntries={historyEntries}
                 isPrimaryEvent={isPrimaryEvent}
                 renderEntryContent={renderEntryContent}
+                entity={order}
             >
                 <HistoryNoteInput onAddNote={onAddNote} />
             </HistoryTimelineWithGrouping>

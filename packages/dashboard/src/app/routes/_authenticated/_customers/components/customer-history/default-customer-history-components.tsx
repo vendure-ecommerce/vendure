@@ -1,4 +1,3 @@
-import { HistoryEntry, HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
@@ -8,6 +7,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
+import { HistoryEntry, HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 

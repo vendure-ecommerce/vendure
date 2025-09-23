@@ -1,8 +1,8 @@
-import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
+import { HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
 import { useState } from 'react';
 import { CustomerHistoryCustomerDetail } from './customer-history-types.js';
 import { customerHistoryUtils } from './customer-history-utils.js';
@@ -65,7 +65,7 @@ export function CustomerHistory({
     const { getTimelineIcon, getTitle, getIconColor, getActorName, isPrimaryEvent } =
         customerHistoryUtils(customer);
 
-    const renderEntryContent = (entry: HistoryEntryItem, variant: 'primary' | 'secondary') => {
+    const renderEntryContent = (entry: HistoryEntryItem) => {
         const props: HistoryEntryProps = {
             entry,
             title: getTitle(entry),
@@ -92,7 +92,13 @@ export function CustomerHistory({
         } else if (entry.type === 'CUSTOMER_ADDRESS_DELETED') {
             return <CustomerAddressDeletedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_NOTE') {
-            return <CustomerNoteComponent {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />;
+            return (
+                <CustomerNoteComponent
+                    {...props}
+                    onEditNote={handleEditNote}
+                    onDeleteNote={handleDeleteNote}
+                />
+            );
         } else if (entry.type === 'CUSTOMER_PASSWORD_UPDATED') {
             return <CustomerPasswordUpdatedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_PASSWORD_RESET_REQUESTED') {
@@ -107,13 +113,13 @@ export function CustomerHistory({
         return null;
     };
 
-
     return (
         <>
             <HistoryTimelineWithGrouping
                 historyEntries={historyEntries}
                 isPrimaryEvent={isPrimaryEvent}
                 renderEntryContent={renderEntryContent}
+                entity={customer}
             >
                 <HistoryNoteInput onAddNote={onAddNote} />
             </HistoryTimelineWithGrouping>
