@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="158" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="165" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
@@ -169,7 +169,10 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
 
 <MemberInfo kind="property" type={`TypedDocumentNode&#60;any, { id: string }&#62;`}   />
 
-
+Providing the `deleteMutation` will automatically add a "delete" menu item to the
+actions column dropdown. Note that if this table already has a "delete" bulk action,
+you don't need to additionally provide a delete mutation, because the bulk action
+will be added to the action column dropdown already.
 ### transformVariables
 
 <MemberInfo kind="property" type={`(variables: V) =&#62; V`}   />
