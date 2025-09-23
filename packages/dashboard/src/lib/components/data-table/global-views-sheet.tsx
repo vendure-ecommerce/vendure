@@ -29,6 +29,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '../ui/alert-dialog.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface GlobalViewsSheetProps {
     open: boolean;
@@ -38,13 +39,14 @@ interface GlobalViewsSheetProps {
 export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpenChange }) => {
     const { globalViews, deleteView, updateView, duplicateView } = useSavedViews();
     const { handleApplyView } = useDataTableContext();
+    const { i18n } = useLingui();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     const handleViewApply = (view: SavedView) => {
         handleApplyView(view.filters, view.searchTerm);
-        toast.success(`Applied global view "${view.name}"`);
+        toast.success(i18n.t(`Applied global view "${view.name}"`));
     };
 
     const handleStartEdit = (view: SavedView) => {
@@ -57,11 +59,11 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
 
         try {
             await updateView({ id: editingId, name: editingName.trim() });
-            toast.success('Global view renamed successfully');
+            toast.success(i18n.t('Global view renamed successfully'));
             setEditingId(null);
             setEditingName('');
         } catch (error) {
-            toast.error('Failed to rename global view');
+            toast.error(i18n.t('Failed to rename global view'));
         }
     };
 
@@ -75,28 +77,28 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
 
         try {
             await deleteView(deleteConfirmId);
-            toast.success('Global view deleted successfully');
+            toast.success(i18n.t('Global view deleted successfully'));
             setDeleteConfirmId(null);
         } catch (error) {
-            toast.error('Failed to delete global view');
+            toast.error(i18n.t('Failed to delete global view'));
         }
     };
 
     const handleDuplicate = async (view: SavedView) => {
         try {
             await duplicateView(view.id, 'global');
-            toast.success('Global view duplicated successfully');
+            toast.success(i18n.t('Global view duplicated successfully'));
         } catch (error) {
-            toast.error('Failed to duplicate global view');
+            toast.error(i18n.t('Failed to duplicate global view'));
         }
     };
 
     const handleConvertToUser = async (view: SavedView) => {
         try {
             await duplicateView(view.id, 'user');
-            toast.success('Global view converted to personal view successfully');
+            toast.success(i18n.t('Global view converted to personal view successfully'));
         } catch (error) {
-            toast.error('Failed to convert global view to personal view');
+            toast.error(i18n.t('Failed to convert global view to personal view'));
         }
     };
 
@@ -105,17 +107,17 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
             <Sheet open={open} onOpenChange={onOpenChange}>
                 <SheetContent className="w-[400px] sm:w-[540px]">
                     <SheetHeader>
-                        <SheetTitle>Manage Global Views</SheetTitle>
+                        <SheetTitle><Trans>Manage Global Views</Trans></SheetTitle>
                         <SheetDescription>
-                            Manage global saved views that are visible to all users
+                            <Trans>Manage global saved views that are visible to all users</Trans>
                         </SheetDescription>
                     </SheetHeader>
                     <div className="mt-4">
                         {globalViews.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
-                                <p>No global views have been created yet.</p>
+                                <p><Trans>No global views have been created yet.</Trans></p>
                                 <p className="text-sm mt-2">
-                                    Save a view as "Global" to make it available to all users.
+                                    <Trans>Save a view as "Global" to make it available to all users.</Trans>
                                 </p>
                             </div>
                         ) : (
@@ -138,10 +140,10 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
                                                     className="flex-1"
                                                 />
                                                 <Button size="sm" onClick={handleSaveEdit}>
-                                                    Save
+                                                    <Trans>Save</Trans>
                                                 </Button>
                                                 <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                                    Cancel
+                                                    <Trans>Cancel</Trans>
                                                 </Button>
                                             </div>
                                         ) : (
@@ -152,7 +154,7 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
                                                         size="sm"
                                                         onClick={() => handleViewApply(view)}
                                                     >
-                                                        Apply
+                                                        <Trans>Apply</Trans>
                                                     </Button>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
@@ -163,22 +165,22 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem onClick={() => handleStartEdit(view)}>
                                                                 <Edit className="h-4 w-4 mr-2" />
-                                                                Rename
+                                                                <Trans>Rename</Trans>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => handleDuplicate(view)}>
                                                                 <Copy className="h-4 w-4 mr-2" />
-                                                                Duplicate
+                                                                <Trans>Duplicate</Trans>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => handleConvertToUser(view)}>
                                                                 <Copy className="h-4 w-4 mr-2" />
-                                                                Copy to Personal
+                                                                <Trans>Copy to Personal</Trans>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onClick={() => setDeleteConfirmId(view.id)}
                                                                 className="text-destructive"
                                                             >
                                                                 <Trash2 className="h-4 w-4 mr-2" />
-                                                                Delete
+                                                                <Trans>Delete</Trans>
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
@@ -196,14 +198,14 @@ export const GlobalViewsSheet: React.FC<GlobalViewsSheetProps> = ({ open, onOpen
             <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Global View</AlertDialogTitle>
+                        <AlertDialogTitle><Trans>Delete Global View</Trans></AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this global view? This action cannot be undone and will affect all users.
+                            <Trans>Are you sure you want to delete this global view? This action cannot be undone and will affect all users.</Trans>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                        <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}><Trans>Delete</Trans></AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

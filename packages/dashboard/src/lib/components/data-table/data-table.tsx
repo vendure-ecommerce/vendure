@@ -15,7 +15,6 @@ import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { DataTableProvider } from './data-table-context.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -33,6 +32,7 @@ import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import React, { Suspense, useEffect } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
+import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
 
@@ -210,142 +210,142 @@ export function DataTable<TData>({
             table={table}
         >
             <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                    {onSearchTermChange && (
-                        <Input
-                            placeholder={i18n.t('Filter...')}
-                            value={searchTerm}
-                            onChange={event => handleSearchChange(event.target.value)}
-                            className="w-64"
-                        />
-                    )}
-                    <Suspense>
-                        {Object.entries(facetedFilters ?? {}).map(([key, filter]) => (
-                            <DataTableFacetedFilter
-                                key={key}
-                                column={table.getColumn(key)}
-                                title={filter?.title}
-                                options={filter?.options}
-                                optionsFn={filter?.optionsFn}
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        {onSearchTermChange && (
+                            <Input
+                                placeholder={i18n.t('Filter...')}
+                                value={searchTerm}
+                                onChange={event => handleSearchChange(event.target.value)}
+                                className="w-64"
                             />
-                        ))}
-                    </Suspense>
-                    {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
-                    {pageId && onFilterChange && <MyViewsButton />}
-                </div>
-                <div className="flex items-center gap-2">
-                    {pageId && onFilterChange && <SaveViewButton />}
-                    {!disableViewOptions && <DataTableViewOptions table={table} />}
-                    {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
-                </div>
-            </div>
-
-            {(pageId && onFilterChange && globalViews.length > 0) ||
-            columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
-                <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
-                    <div className="flex items-center">
-                        {pageId && onFilterChange && <GlobalViewsBar />}
-                    </div>
-                    <div className="flex gap-1 items-center">
-                        {columnFilters
-                            .filter(f => !facetedFilters?.[f.id])
-                            .map(f => {
-                                const column = table.getColumn(f.id);
-                                const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
-                                return (
-                                    <DataTableFilterBadge
-                                        key={f.id}
-                                        filter={f}
-                                        currencyCode={currency}
-                                        dataType={
-                                            (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
-                                        }
-                                        onRemove={() =>
-                                            setColumnFilters(old => old.filter(x => x.id !== f.id))
-                                        }
-                                    />
-                                );
-                            })}
-                        {columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setColumnFilters([])}
-                                className="text-xs opacity-60 hover:opacity-100"
-                            >
-                                <Trans>Clear all</Trans>
-                            </Button>
                         )}
+                        <Suspense>
+                            {Object.entries(facetedFilters ?? {}).map(([key, filter]) => (
+                                <DataTableFacetedFilter
+                                    key={key}
+                                    column={table.getColumn(key)}
+                                    title={filter?.title}
+                                    options={filter?.options}
+                                    optionsFn={filter?.optionsFn}
+                                />
+                            ))}
+                        </Suspense>
+                        {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
+                        {pageId && onFilterChange && <MyViewsButton />}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {pageId && onFilterChange && <SaveViewButton />}
+                        {!disableViewOptions && <DataTableViewOptions table={table} />}
+                        {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
                     </div>
                 </div>
-            ) : null}
 
-            <div className="rounded-md border my-2 relative shadow-sm">
-                <Table>
-                    <TableHeader className="bg-muted/50">
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map(header => {
+                {(pageId && onFilterChange && globalViews.length > 0) ||
+                columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
+                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
+                        <div className="flex items-center">
+                            {pageId && onFilterChange && <GlobalViewsBar />}
+                        </div>
+                        <div className="flex gap-1 items-center">
+                            {columnFilters
+                                .filter(f => !facetedFilters?.[f.id])
+                                .map(f => {
+                                    const column = table.getColumn(f.id);
+                                    const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
                                     return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
-                                        </TableHead>
+                                        <DataTableFilterBadge
+                                            key={f.id}
+                                            filter={f}
+                                            currencyCode={currency}
+                                            dataType={
+                                                (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
+                                            }
+                                            onRemove={() =>
+                                                setColumnFilters(old => old.filter(x => x.id !== f.id))
+                                            }
+                                        />
                                     );
                                 })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {isLoading && !data?.length ? (
-                            Array.from({ length: pagination.pageSize }).map((_, index) => (
-                                <TableRow
-                                    key={`skeleton-${index}`}
-                                    className="animate-in fade-in duration-100"
+                            {columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setColumnFilters([])}
+                                    className="text-xs opacity-60 hover:opacity-100"
                                 >
-                                    {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
-                                        <TableCell
-                                            key={`skeleton-cell-${index}-${cellIndex}`}
-                                            className="h-12"
-                                        >
-                                            <Skeleton className="h-4 my-2 w-full" />
-                                        </TableCell>
-                                    ))}
+                                    <Trans>Clear all</Trans>
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                ) : null}
+
+                <div className="rounded-md border my-2 relative shadow-sm">
+                    <Table>
+                        <TableHeader className="bg-muted/50">
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => {
+                                        return (
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                          header.column.columnDef.header,
+                                                          header.getContext(),
+                                                      )}
+                                            </TableHead>
+                                        );
+                                    })}
                                 </TableRow>
-                            ))
-                        ) : table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map(row => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && 'selected'}
-                                    className="animate-in fade-in duration-100"
-                                >
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell key={cell.id} className="h-12">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {isLoading && !data?.length ? (
+                                Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                    <TableRow
+                                        key={`skeleton-${index}`}
+                                        className="animate-in fade-in duration-100"
+                                    >
+                                        {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
+                                            <TableCell
+                                                key={`skeleton-cell-${index}-${cellIndex}`}
+                                                className="h-12"
+                                            >
+                                                <Skeleton className="h-4 my-2 w-full" />
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map(row => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && 'selected'}
+                                        className="animate-in fade-in duration-100"
+                                    >
+                                        {row.getVisibleCells().map(cell => (
+                                            <TableCell key={cell.id} className="h-12">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow className="animate-in fade-in duration-100">
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        <Trans>No results</Trans>
+                                    </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow className="animate-in fade-in duration-100">
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {children}
-                    </TableBody>
-                </Table>
-                <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
+                            )}
+                            {children}
+                        </TableBody>
+                    </Table>
+                    <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
+                </div>
+                {onPageChange && totalItems != null && <DataTablePagination table={table} />}
             </div>
-            {onPageChange && totalItems != null && <DataTablePagination table={table} />}
-        </div>
         </DataTableProvider>
     );
 }

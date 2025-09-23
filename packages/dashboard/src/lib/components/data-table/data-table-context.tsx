@@ -1,34 +1,21 @@
 'use client';
 
-import React, { createContext, useContext, ReactNode } from 'react';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import React, { createContext, ReactNode, useContext } from 'react';
 
 interface DataTableContextValue {
-    // Filter and search state
     columnFilters: ColumnFiltersState;
     setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
     searchTerm: string;
     setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-
-    // Sorting state
     sorting: SortingState;
     setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-
-    // Page context
     pageId?: string;
-
-    // Callbacks
     onFilterChange?: (table: Table<any>, filters: ColumnFiltersState) => void;
     onSearchTermChange?: (searchTerm: string) => void;
     onRefresh?: () => void;
-
-    // Loading state
     isLoading?: boolean;
-
-    // Table instance (optional, will be set after table is initialized)
     table?: Table<any>;
-
-    // Apply view handler
     handleApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
 }
 

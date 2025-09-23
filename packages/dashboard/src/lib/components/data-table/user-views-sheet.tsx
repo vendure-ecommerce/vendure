@@ -29,6 +29,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '../ui/alert-dialog.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface UserViewsSheetProps {
     open: boolean;
@@ -38,13 +39,14 @@ interface UserViewsSheetProps {
 export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChange }) => {
     const { userViews, deleteView, updateView, duplicateView, canManageGlobalViews } = useSavedViews();
     const { handleApplyView } = useDataTableContext();
+    const { i18n } = useLingui();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     const handleViewApply = (view: SavedView) => {
         handleApplyView(view.filters, view.searchTerm);
-        toast.success(`Applied view "${view.name}"`);
+        toast.success(i18n.t(`Applied view "${view.name}"`));
     };
 
     const handleStartEdit = (view: SavedView) => {
@@ -57,11 +59,11 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
 
         try {
             await updateView({ id: editingId, name: editingName.trim() });
-            toast.success('View renamed successfully');
+            toast.success(i18n.t('View renamed successfully'));
             setEditingId(null);
             setEditingName('');
         } catch (error) {
-            toast.error('Failed to rename view');
+            toast.error(i18n.t('Failed to rename view'));
         }
     };
 
@@ -75,19 +77,19 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
 
         try {
             await deleteView(deleteConfirmId);
-            toast.success('View deleted successfully');
+            toast.success(i18n.t('View deleted successfully'));
             setDeleteConfirmId(null);
         } catch (error) {
-            toast.error('Failed to delete view');
+            toast.error(i18n.t('Failed to delete view'));
         }
     };
 
     const handleDuplicate = async (view: SavedView) => {
         try {
             await duplicateView(view.id, 'user');
-            toast.success('View duplicated successfully');
+            toast.success(i18n.t('View duplicated successfully'));
         } catch (error) {
-            toast.error('Failed to duplicate view');
+            toast.error(i18n.t('Failed to duplicate view'));
         }
     };
 
@@ -95,9 +97,9 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
         try {
             await duplicateView(view.id, 'global');
             await deleteView(view.id);
-            toast.success('View converted to global successfully');
+            toast.success(i18n.t('View converted to global successfully'));
         } catch (error) {
-            toast.error('Failed to convert view to global');
+            toast.error(i18n.t('Failed to convert view to global'));
         }
     };
 
@@ -106,17 +108,17 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
             <Sheet open={open} onOpenChange={onOpenChange}>
                 <SheetContent className="w-[400px] sm:w-[540px]">
                     <SheetHeader>
-                        <SheetTitle>My Saved Views</SheetTitle>
+                        <SheetTitle><Trans>My Saved Views</Trans></SheetTitle>
                         <SheetDescription>
-                            Manage your personal saved views for this table
+                            <Trans>Manage your personal saved views for this table</Trans>
                         </SheetDescription>
                     </SheetHeader>
                     <div className="mt-4">
                         {userViews.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
-                                <p>You haven't saved any views yet.</p>
+                                <p><Trans>You haven't saved any views yet.</Trans></p>
                                 <p className="text-sm mt-2">
-                                    Apply filters to the table and click "Save View" to get started.
+                                    <Trans>Apply filters to the table and click "Save View" to get started.</Trans>
                                 </p>
                             </div>
                         ) : (
@@ -139,10 +141,10 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
                                                     className="flex-1"
                                                 />
                                                 <Button size="sm" onClick={handleSaveEdit}>
-                                                    Save
+                                                    <Trans>Save</Trans>
                                                 </Button>
                                                 <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                                    Cancel
+                                                    <Trans>Cancel</Trans>
                                                 </Button>
                                             </div>
                                         ) : (
@@ -153,7 +155,7 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
                                                         size="sm"
                                                         onClick={() => handleViewApply(view)}
                                                     >
-                                                        Apply
+                                                        <Trans>Apply</Trans>
                                                     </Button>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
@@ -164,16 +166,16 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem onClick={() => handleStartEdit(view)}>
                                                                 <Edit className="h-4 w-4 mr-2" />
-                                                                Rename
+                                                                <Trans>Rename</Trans>
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => handleDuplicate(view)}>
                                                                 <Copy className="h-4 w-4 mr-2" />
-                                                                Duplicate
+                                                                <Trans>Duplicate</Trans>
                                                             </DropdownMenuItem>
                                                             {canManageGlobalViews && (
                                                                 <DropdownMenuItem onClick={() => handleConvertToGlobal(view)}>
                                                                     <Globe className="h-4 w-4 mr-2" />
-                                                                    Make Global
+                                                                    <Trans>Make Global</Trans>
                                                                 </DropdownMenuItem>
                                                             )}
                                                             <DropdownMenuItem
@@ -181,7 +183,7 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
                                                                 className="text-destructive"
                                                             >
                                                                 <Trash2 className="h-4 w-4 mr-2" />
-                                                                Delete
+                                                                <Trans>Delete</Trans>
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
@@ -199,14 +201,14 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChan
             <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Delete View</AlertDialogTitle>
+                        <AlertDialogTitle><Trans>Delete View</Trans></AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this view? This action cannot be undone.
+                            <Trans>Are you sure you want to delete this view? This action cannot be undone.</Trans>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                        <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}><Trans>Delete</Trans></AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

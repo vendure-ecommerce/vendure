@@ -107,7 +107,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                                         <DropdownMenuCheckboxItem
                                             className="capitalize"
                                             checked={column.getIsVisible()}
-                                            onCheckedChange={value => column.toggleVisibility(!!value)}
+                                            onCheckedChange={value => column.toggleVisibility(value)}
                                             onSelect={e => e.preventDefault()}
                                         >
                                             {column.id}
@@ -117,7 +117,9 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                             </SortableContext>
                         </DndContext>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleReset}>Reset</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleReset}>
+                            <Trans>Reset</Trans>
+                        </DropdownMenuItem>
                     </ScrollArea>
                 </DropdownMenuContent>
             </DropdownMenu>

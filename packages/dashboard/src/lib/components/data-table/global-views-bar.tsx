@@ -1,18 +1,18 @@
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
-import { SavedView } from '../../types/saved-views.js';
 import { Trans } from '../../lib/trans.js';
+import { SavedView } from '../../types/saved-views.js';
 import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { PermissionGuard } from '../shared/permission-guard.js';
 import { Button } from '../ui/button.js';
-import { useDataTableContext } from './data-table-context.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu.js';
+import { useDataTableContext } from './data-table-context.js';
 import { ManageGlobalViewsButton } from './manage-global-views-button.js';
 
 export const GlobalViewsBar: React.FC = () => {
@@ -23,7 +23,6 @@ export const GlobalViewsBar: React.FC = () => {
         return null;
     }
 
-    // Sort by creation date (oldest first)
     const sortedViews = [...globalViews].sort(
         (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
@@ -90,7 +89,7 @@ export const GlobalViewsBar: React.FC = () => {
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
-            <PermissionGuard requires={['ManageDashboardGlobalViews']}>
+            <PermissionGuard requires={['WriteDashboardGlobalViews']}>
                 {canManageGlobalViews && <ManageGlobalViewsButton />}
             </PermissionGuard>
         </div>
