@@ -1,4 +1,5 @@
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
+import { HistoryNoteEntry } from '@/vdb/components/shared/history-timeline/history-note-entry.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
@@ -10,7 +11,6 @@ import {
     OrderFulfillmentComponent,
     OrderFulfillmentTransitionComponent,
     OrderModifiedComponent,
-    OrderNoteComponent,
     OrderPaymentTransitionComponent,
     OrderRefundTransitionComponent,
     OrderStateTransitionComponent,
@@ -72,7 +72,7 @@ export function OrderHistory({
         };
         if (entry.type === 'ORDER_NOTE') {
             return (
-                <OrderNoteComponent {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />
+                <HistoryNoteEntry {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />
             );
         } else if (entry.type === 'ORDER_STATE_TRANSITION') {
             return <OrderStateTransitionComponent {...props} />;

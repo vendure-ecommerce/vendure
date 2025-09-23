@@ -1,4 +1,5 @@
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
+import { HistoryNoteEntry } from '@/vdb/components/shared/history-timeline/history-note-entry.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
@@ -7,20 +8,17 @@ import { useState } from 'react';
 import { CustomerHistoryCustomerDetail } from './customer-history-types.js';
 import { customerHistoryUtils } from './customer-history-utils.js';
 import {
-    CustomerAddedToGroupComponent,
+    CustomerAddRemoveGroupComponent,
     CustomerAddressCreatedComponent,
     CustomerAddressDeletedComponent,
     CustomerAddressUpdatedComponent,
     CustomerDetailUpdatedComponent,
     CustomerEmailUpdateRequestedComponent,
     CustomerEmailUpdateVerifiedComponent,
-    CustomerNoteComponent,
     CustomerPasswordResetRequestedComponent,
     CustomerPasswordResetVerifiedComponent,
     CustomerPasswordUpdatedComponent,
-    CustomerRegisteredComponent,
-    CustomerRemovedFromGroupComponent,
-    CustomerVerifiedComponent,
+    CustomerRegisteredOrVerifiedComponent,
 } from './default-customer-history-components.js';
 
 interface CustomerHistoryProps {
@@ -75,16 +73,12 @@ export function CustomerHistory({
             isPrimary: isPrimaryEvent(entry),
             children: null,
         };
-        if (entry.type === 'CUSTOMER_REGISTERED') {
-            return <CustomerRegisteredComponent {...props} />;
-        } else if (entry.type === 'CUSTOMER_VERIFIED') {
-            return <CustomerVerifiedComponent {...props} />;
+        if (entry.type === 'CUSTOMER_REGISTERED' || entry.type === 'CUSTOMER_VERIFIED') {
+            return <CustomerRegisteredOrVerifiedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_DETAIL_UPDATED') {
             return <CustomerDetailUpdatedComponent {...props} />;
-        } else if (entry.type === 'CUSTOMER_ADDED_TO_GROUP') {
-            return <CustomerAddedToGroupComponent {...props} />;
-        } else if (entry.type === 'CUSTOMER_REMOVED_FROM_GROUP') {
-            return <CustomerRemovedFromGroupComponent {...props} />;
+        } else if (entry.type === 'CUSTOMER_ADDED_TO_GROUP' || entry.type === 'CUSTOMER_REMOVED_FROM_GROUP') {
+            return <CustomerAddRemoveGroupComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_ADDRESS_CREATED') {
             return <CustomerAddressCreatedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_ADDRESS_UPDATED') {
@@ -93,11 +87,7 @@ export function CustomerHistory({
             return <CustomerAddressDeletedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_NOTE') {
             return (
-                <CustomerNoteComponent
-                    {...props}
-                    onEditNote={handleEditNote}
-                    onDeleteNote={handleDeleteNote}
-                />
+                <HistoryNoteEntry {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />
             );
         } else if (entry.type === 'CUSTOMER_PASSWORD_UPDATED') {
             return <CustomerPasswordUpdatedComponent {...props} />;
@@ -124,6 +114,7 @@ export function CustomerHistory({
                 <HistoryNoteInput onAddNote={onAddNote} />
             </HistoryTimelineWithGrouping>
             <HistoryNoteEditor
+                key={noteEditorNote.noteId}
                 open={noteEditorOpen}
                 onOpenChange={setNoteEditorOpen}
                 onNoteChange={handleNoteEditorSave}
