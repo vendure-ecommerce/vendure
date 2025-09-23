@@ -315,6 +315,10 @@ export const orderHistoryDocument = graphql(`
             updatedAt
             code
             currencyCode
+            customer {
+                firstName
+                lastName
+            }
             history(options: $options) {
                 totalItems
                 items {

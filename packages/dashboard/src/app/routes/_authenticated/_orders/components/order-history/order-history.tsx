@@ -1,34 +1,28 @@
-import { HistoryEntry, HistoryEntryItem } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { HistoryEntryItem, HistoryEntryProps } from '@/vdb/framework/extension-api/types/index.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import {
-    ArrowRightToLine,
-    Ban,
-    CheckIcon,
-    ChevronDown,
-    ChevronUp,
-    CreditCardIcon,
-    Edit3,
-    SquarePen,
-    Truck,
-    UserX,
-} from 'lucide-react';
+import { ResultOf } from 'gql.tada';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import { orderHistoryDocument } from '../../orders.graphql.js';
+import {
+    OrderCancellationComponent,
+    OrderCustomerUpdatedComponent,
+    OrderFulfillmentComponent,
+    OrderFulfillmentTransitionComponent,
+    OrderModifiedComponent,
+    OrderNoteComponent,
+    OrderPaymentTransitionComponent,
+    OrderRefundTransitionComponent,
+    OrderStateTransitionComponent,
+} from './default-order-history-components.js';
+import { orderHistoryUtils } from './order-history-utils.js';
 
 interface OrderHistoryProps {
-    order: {
-        id: string;
-        createdAt: string;
-        currencyCode: string;
-        customer?: {
-            firstName: string;
-            lastName: string;
-        } | null;
-    };
+    order: NonNullable<ResultOf<typeof orderHistoryDocument>>['order'];
     historyEntries: Array<HistoryEntryItem>;
     onAddNote: (note: string, isPrivate: boolean) => void;
     onUpdateNote?: (entryId: string, note: string, isPrivate: boolean) => void;
@@ -67,30 +61,41 @@ export function OrderHistory({
         onUpdateNote?.(noteId, note, isPrivate);
     };
 
-    const isPrimaryEvent = (entry: HistoryEntryItem) => {
-        // Based on Angular component's isFeatured method
-        switch (entry.type) {
-            case 'ORDER_STATE_TRANSITION':
-                return (
-                    entry.data.to === 'Delivered' ||
-                    entry.data.to === 'Cancelled' ||
-                    entry.data.to === 'Settled' ||
-                    entry.data.from === 'Created'
-                );
-            case 'ORDER_REFUND_TRANSITION':
-                return entry.data.to === 'Settled';
-            case 'ORDER_PAYMENT_TRANSITION':
-                return entry.data.to === 'Settled' || entry.data.to === 'Cancelled';
-            case 'ORDER_FULFILLMENT_TRANSITION':
-                return entry.data.to === 'Delivered' || entry.data.to === 'Shipped';
-            case 'ORDER_NOTE':
-            case 'ORDER_MODIFIED':
-            case 'ORDER_CUSTOMER_UPDATED':
-            case 'ORDER_CANCELLATION':
-                return true;
-            default:
-                return false; // All other events are secondary
+    const { getTimelineIcon, getTitle, getIconColor, getActorName, isPrimaryEvent } =
+        orderHistoryUtils(order);
+
+    const renderEntryContent = (entry: HistoryEntryItem) => {
+        const props: HistoryEntryProps = {
+            entry,
+            title: getTitle(entry),
+            actorName: getActorName(entry),
+            timelineIcon: getTimelineIcon(entry),
+            timelineIconClassName: getIconColor(entry),
+            isPrimary: isPrimaryEvent(entry),
+            children: null,
+        };
+        if (entry.type === 'ORDER_NOTE') {
+            return (
+                <OrderNoteComponent {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />
+            );
+        } else if (entry.type === 'ORDER_STATE_TRANSITION') {
+            return <OrderStateTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_PAYMENT_TRANSITION') {
+            return <OrderPaymentTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_REFUND_TRANSITION') {
+            return <OrderRefundTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_FULFILLMENT_TRANSITION') {
+            return <OrderFulfillmentTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_FULFILLMENT') {
+            return <OrderFulfillmentComponent {...props} />;
+        } else if (entry.type === 'ORDER_MODIFIED') {
+            return <OrderModifiedComponent {...props} />;
+        } else if (entry.type === 'ORDER_CUSTOMER_UPDATED') {
+            return <OrderCustomerUpdatedComponent {...props} />;
+        } else if (entry.type === 'ORDER_CANCELLATION') {
+            return <OrderCancellationComponent {...props} />;
         }
+        return null;
     };
 
     // Group consecutive secondary events
@@ -143,95 +148,6 @@ export function OrderHistory({
         }
         setExpandedGroups(newExpanded);
     };
-    const getTimelineIcon = (entry: OrderHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'ORDER_PAYMENT_TRANSITION':
-                return <CreditCardIcon className="h-4 w-4" />;
-            case 'ORDER_REFUND_TRANSITION':
-                return <CreditCardIcon className="h-4 w-4" />;
-            case 'ORDER_NOTE':
-                return <SquarePen className="h-4 w-4" />;
-            case 'ORDER_STATE_TRANSITION':
-                if (entry.data.to === 'Delivered') {
-                    return <CheckIcon className="h-4 w-4" />;
-                }
-                if (entry.data.to === 'Cancelled') {
-                    return <Ban className="h-4 w-4" />;
-                }
-                return <ArrowRightToLine className="h-4 w-4" />;
-            case 'ORDER_FULFILLMENT_TRANSITION':
-                if (entry.data.to === 'Shipped' || entry.data.to === 'Delivered') {
-                    return <Truck className="h-4 w-4" />;
-                }
-                return <ArrowRightToLine className="h-4 w-4" />;
-            case 'ORDER_FULFILLMENT':
-                return <Truck className="h-4 w-4" />;
-            case 'ORDER_MODIFIED':
-                return <Edit3 className="h-4 w-4" />;
-            case 'ORDER_CUSTOMER_UPDATED':
-                return <UserX className="h-4 w-4" />;
-            case 'ORDER_CANCELLATION':
-                return <Ban className="h-4 w-4" />;
-            default:
-                return <CheckIcon className="h-4 w-4" />;
-        }
-    };
-
-    const getTitle = (entry: OrderHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'ORDER_PAYMENT_TRANSITION':
-                if (entry.data.to === 'Settled') {
-                    return <Trans>Payment settled</Trans>;
-                }
-                if (entry.data.to === 'Authorized') {
-                    return <Trans>Payment authorized</Trans>;
-                }
-                if (entry.data.to === 'Declined' || entry.data.to === 'Cancelled') {
-                    return <Trans>Payment failed</Trans>;
-                }
-                return <Trans>Payment transitioned</Trans>;
-            case 'ORDER_REFUND_TRANSITION':
-                if (entry.data.to === 'Settled') {
-                    return <Trans>Refund settled</Trans>;
-                }
-                return <Trans>Refund transitioned</Trans>;
-            case 'ORDER_NOTE':
-                return <Trans>Note added</Trans>;
-            case 'ORDER_STATE_TRANSITION': {
-                if (entry.data.from === 'Created') {
-                    return <Trans>Order placed</Trans>;
-                }
-                if (entry.data.to === 'Delivered') {
-                    return <Trans>Order fulfilled</Trans>;
-                }
-                if (entry.data.to === 'Cancelled') {
-                    return <Trans>Order cancelled</Trans>;
-                }
-                if (entry.data.to === 'Shipped') {
-                    return <Trans>Order shipped</Trans>;
-                }
-                return <Trans>Order transitioned</Trans>;
-            }
-            case 'ORDER_FULFILLMENT_TRANSITION':
-                if (entry.data.to === 'Shipped') {
-                    return <Trans>Order shipped</Trans>;
-                }
-                if (entry.data.to === 'Delivered') {
-                    return <Trans>Order delivered</Trans>;
-                }
-                return <Trans>Fulfillment transitioned</Trans>;
-            case 'ORDER_FULFILLMENT':
-                return <Trans>Fulfillment created</Trans>;
-            case 'ORDER_MODIFIED':
-                return <Trans>Order modified</Trans>;
-            case 'ORDER_CUSTOMER_UPDATED':
-                return <Trans>Customer updated</Trans>;
-            case 'ORDER_CANCELLATION':
-                return <Trans>Order cancelled</Trans>;
-            default:
-                return <Trans>{entry.type.replace(/_/g, ' ').toLowerCase()}</Trans>;
-        }
-    };
 
     return (
         <div className="">
@@ -242,83 +158,7 @@ export function OrderHistory({
                 {groupedEntries.map((group, groupIndex) => {
                     if (group.type === 'primary') {
                         const entry = group.entry;
-                        return (
-                            <HistoryEntry
-                                key={entry.id}
-                                entry={entry}
-                                isNoteEntry={entry.type === 'ORDER_NOTE'}
-                                timelineIcon={getTimelineIcon(entry)}
-                                title={getTitle(entry)}
-                                isPrimary={true}
-                                customer={order.customer}
-                                onEditNote={handleEditNote}
-                                onDeleteNote={handleDeleteNote}
-                            >
-                                {entry.type === 'ORDER_NOTE' && (
-                                    <div className="space-y-2">
-                                        <p className="text-sm text-foreground">{entry.data.note}</p>
-                                        <div className="flex items-center gap-2">
-                                            <Badge
-                                                variant={entry.isPublic ? 'outline' : 'secondary'}
-                                                className="text-xs"
-                                            >
-                                                {entry.isPublic ? 'Public' : 'Private'}
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                )}
-                                {entry.type === 'ORDER_STATE_TRANSITION' && entry.data.from !== 'Created' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            From {entry.data.from} to {entry.data.to}
-                                        </Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_PAYMENT_TRANSITION' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Payment #{entry.data.paymentId} transitioned to {entry.data.to}
-                                        </Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_REFUND_TRANSITION' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>
-                                            Refund #{entry.data.refundId} transitioned to {entry.data.to}
-                                        </Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_FULFILLMENT_TRANSITION' &&
-                                    entry.data.from !== 'Created' && (
-                                        <p className="text-xs text-muted-foreground">
-                                            <Trans>
-                                                Fulfillment #{entry.data.fulfillmentId} from {entry.data.from}{' '}
-                                                to {entry.data.to}
-                                            </Trans>
-                                        </p>
-                                    )}
-                                {entry.type === 'ORDER_FULFILLMENT' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>Fulfillment #{entry.data.fulfillmentId} created</Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_MODIFIED' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>Order modification #{entry.data.modificationId}</Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_CUSTOMER_UPDATED' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>Customer information updated</Trans>
-                                    </p>
-                                )}
-                                {entry.type === 'ORDER_CANCELLATION' && (
-                                    <p className="text-xs text-muted-foreground">
-                                        <Trans>Order cancelled</Trans>
-                                    </p>
-                                )}
-                            </HistoryEntry>
-                        );
+                        return renderEntryContent(entry);
                     } else {
                         // Secondary group
                         const shouldCollapse = group.entries.length > 2;
@@ -328,85 +168,7 @@ export function OrderHistory({
 
                         return (
                             <div key={`group-${groupIndex}`}>
-                                {visibleEntries.map(({ entry }) => (
-                                    <HistoryEntry
-                                        key={entry.id}
-                                        entry={entry}
-                                        isNoteEntry={entry.type === 'ORDER_NOTE'}
-                                        timelineIcon={getTimelineIcon(entry)}
-                                        title={getTitle(entry)}
-                                        isPrimary={false}
-                                        customer={order.customer}
-                                        onEditNote={handleEditNote}
-                                        onDeleteNote={handleDeleteNote}
-                                    >
-                                        {entry.type === 'ORDER_NOTE' && (
-                                            <div className="space-y-1">
-                                                <p className="text-xs text-foreground">{entry.data.note}</p>
-                                                <Badge
-                                                    variant={entry.isPublic ? 'outline' : 'secondary'}
-                                                    className="text-xs"
-                                                >
-                                                    {entry.isPublic ? 'Public' : 'Private'}
-                                                </Badge>
-                                            </div>
-                                        )}
-                                        {entry.type === 'ORDER_STATE_TRANSITION' &&
-                                            entry.data.from !== 'Created' && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    <Trans>
-                                                        From {entry.data.from} to {entry.data.to}
-                                                    </Trans>
-                                                </p>
-                                            )}
-                                        {entry.type === 'ORDER_PAYMENT_TRANSITION' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Payment #{entry.data.paymentId} transitioned to{' '}
-                                                    {entry.data.to}
-                                                </Trans>
-                                            </p>
-                                        )}
-                                        {entry.type === 'ORDER_REFUND_TRANSITION' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>
-                                                    Refund #{entry.data.refundId} transitioned to{' '}
-                                                    {entry.data.to}
-                                                </Trans>
-                                            </p>
-                                        )}
-                                        {entry.type === 'ORDER_FULFILLMENT_TRANSITION' &&
-                                            entry.data.from !== 'Created' && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    <Trans>
-                                                        Fulfillment #{entry.data.fulfillmentId} from{' '}
-                                                        {entry.data.from} to {entry.data.to}
-                                                    </Trans>
-                                                </p>
-                                            )}
-                                        {entry.type === 'ORDER_FULFILLMENT' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>Fulfillment #{entry.data.fulfillmentId} created</Trans>
-                                            </p>
-                                        )}
-                                        {entry.type === 'ORDER_MODIFIED' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>Order modification #{entry.data.modificationId}</Trans>
-                                            </p>
-                                        )}
-                                        {entry.type === 'ORDER_CUSTOMER_UPDATED' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>Customer information updated</Trans>
-                                            </p>
-                                        )}
-                                        {entry.type === 'ORDER_CANCELLATION' && (
-                                            <p className="text-xs text-muted-foreground">
-                                                <Trans>Order cancelled</Trans>
-                                            </p>
-                                        )}
-                                    </HistoryEntry>
-                                ))}
-
+                                {visibleEntries.map(({ entry }) => renderEntryContent(entry))}
                                 {shouldCollapse && (
                                     <div className="flex justify-center py-2">
                                         <Button

@@ -61,13 +61,15 @@ export function OrderHistoryContainer({ orderId }: Readonly<OrderHistoryContaine
 
     return (
         <>
-            <OrderHistory
-                order={order}
-                historyEntries={historyEntries ?? []}
-                onAddNote={addNote}
-                onUpdateNote={updateNote}
-                onDeleteNote={deleteNote}
-            />
+            {order ? (
+                <OrderHistory
+                    order={order}
+                    historyEntries={historyEntries ?? []}
+                    onAddNote={addNote}
+                    onUpdateNote={updateNote}
+                    onDeleteNote={deleteNote}
+                />
+            ) : null}
             {hasNextPage && (
                 <Button type="button" variant="outline" onClick={() => fetchNextPage()}>
                     <Trans>Load more</Trans>
