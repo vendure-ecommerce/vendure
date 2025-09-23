@@ -1,4 +1,7 @@
+import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import React from 'react';
+
+import { OrderHistoryOrderDetail } from '../../../../app/routes/_authenticated/_orders/components/order-history/order-history-types.js';
 
 export interface HistoryEntryItem {
     id: string;
@@ -13,17 +16,7 @@ export interface HistoryEntryItem {
     data: any;
 }
 
-export interface HistoryEntryProps {
-    entry: HistoryEntryItem;
-    title: string | React.ReactNode;
-    timelineIcon: React.ReactNode;
-    timelineIconClassName?: string;
-    actorName?: string;
-    children: React.ReactNode;
-    isPrimary?: boolean;
-}
-
 export interface DashboardHistoryEntryComponent {
     type: string;
-    component: React.ComponentType<HistoryEntryProps>;
+    component: React.ComponentType<{ entry: HistoryEntryProps; entity: OrderHistoryOrderDetail }>;
 }

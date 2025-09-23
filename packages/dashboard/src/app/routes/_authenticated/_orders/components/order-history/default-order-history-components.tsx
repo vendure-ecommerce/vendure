@@ -1,4 +1,4 @@
-import { HistoryEntry } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryEntry, HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
@@ -8,7 +8,6 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
-import { HistoryEntryProps } from '@/vdb/framework/extension-api/types/history-entries.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 
@@ -112,8 +111,6 @@ export function OrderRefundTransitionComponent(props: Readonly<HistoryEntryProps
 
 export function OrderFulfillmentTransitionComponent(props: Readonly<HistoryEntryProps>) {
     const { entry } = props;
-    if (entry.data.from === 'Created') return null;
-
     return (
         <HistoryEntry {...props}>
             <p className="text-xs text-muted-foreground">

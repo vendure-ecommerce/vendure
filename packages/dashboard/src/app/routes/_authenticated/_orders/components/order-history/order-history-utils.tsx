@@ -1,6 +1,5 @@
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { ResultOf } from 'gql.tada';
 import {
     ArrowRightToLine,
     Ban,
@@ -11,9 +10,9 @@ import {
     Truck,
     UserX,
 } from 'lucide-react';
-import { orderHistoryDocument } from '../../orders.graphql.js';
+import { OrderHistoryOrderDetail } from './order-history-types.js';
 
-export function orderHistoryUtils(order: NonNullable<ResultOf<typeof orderHistoryDocument>>['order']) {
+export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
     const getTimelineIcon = (entry: HistoryEntryItem) => {
         switch (entry.type) {
             case 'ORDER_PAYMENT_TRANSITION':

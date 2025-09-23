@@ -1,13 +1,12 @@
+import { HistoryEntryProps } from '@/vdb/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { HistoryEntryItem, HistoryEntryProps } from '@/vdb/framework/extension-api/types/index.js';
+import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { ResultOf } from 'gql.tada';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { orderHistoryDocument } from '../../orders.graphql.js';
 import {
     OrderCancellationComponent,
     OrderCustomerUpdatedComponent,
@@ -19,10 +18,11 @@ import {
     OrderRefundTransitionComponent,
     OrderStateTransitionComponent,
 } from './default-order-history-components.js';
+import { OrderHistoryOrderDetail } from './order-history-types.js';
 import { orderHistoryUtils } from './order-history-utils.js';
 
 interface OrderHistoryProps {
-    order: NonNullable<ResultOf<typeof orderHistoryDocument>>['order'];
+    order: OrderHistoryOrderDetail;
     historyEntries: Array<HistoryEntryItem>;
     onAddNote: (note: string, isPrivate: boolean) => void;
     onUpdateNote?: (entryId: string, note: string, isPrivate: boolean) => void;
@@ -158,7 +158,7 @@ export function OrderHistory({
                 {groupedEntries.map((group, groupIndex) => {
                     if (group.type === 'primary') {
                         const entry = group.entry;
-                        return renderEntryContent(entry);
+                        return <div key={entry.id}>{renderEntryContent(entry)}</div>;
                     } else {
                         // Secondary group
                         const shouldCollapse = group.entries.length > 2;
@@ -168,7 +168,9 @@ export function OrderHistory({
 
                         return (
                             <div key={`group-${groupIndex}`}>
-                                {visibleEntries.map(({ entry }) => renderEntryContent(entry))}
+                                {visibleEntries.map(({ entry }) => (
+                                    <div key={entry.id}>{renderEntryContent(entry)}</div>
+                                ))}
                                 {shouldCollapse && (
                                     <div className="flex justify-center py-2">
                                         <Button
@@ -185,7 +187,7 @@ export function OrderHistory({
                                             ) : (
                                                 <>
                                                     <ChevronDown className="w-3 h-3 mr-1" />
-                                                    <Trans>Show all ({group.entries.length})</Trans>
+                                                    <Trans>Show all ({group.entries.length - 2})</Trans>
                                                 </>
                                             )}
                                         </Button>

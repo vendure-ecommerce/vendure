@@ -1,6 +1,17 @@
-import { HistoryEntryProps } from '@/vdb/framework/extension-api/types/index.js';
+import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
 import { cn } from '@/vdb/lib/utils.js';
+import React from 'react';
 import { HistoryEntryDate } from './history-entry-date.js';
+
+export interface HistoryEntryProps {
+    entry: HistoryEntryItem;
+    title: string | React.ReactNode;
+    timelineIcon: React.ReactNode;
+    timelineIconClassName?: string;
+    actorName?: string;
+    children: React.ReactNode;
+    isPrimary?: boolean;
+}
 
 export function HistoryEntry({
     entry,
@@ -14,13 +25,13 @@ export function HistoryEntry({
     return (
         <div key={entry.id} className="relative group">
             <div
-                className={`flex gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors ${!isPrimary ? 'opacity-75' : ''}`}
+                className={`flex gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors ${!isPrimary ? 'opacity-90' : ''}`}
             >
-                <div className={cn(`relative z-10 flex-shrink-0`, isPrimary ? '-ml-1' : '')}>
+                <div className={cn(`relative z-10 flex-shrink-0`, isPrimary ? 'ml-0' : 'ml-2 mt-1')}>
                     <div
-                        className={`rounded-full flex items-center justify-center ${isPrimary ? 'h-8 w-8' : 'h-6 w-6'} ${timelineIconClassName ?? ''} border-2 border-background ${isPrimary ? 'shadow-sm' : 'shadow-none'}`}
+                        className={`rounded-full flex items-center justify-center ${isPrimary ? 'h-6 w-6' : 'h-2 w-2 border'} ${timelineIconClassName ?? ''}  ${isPrimary ? 'shadow-sm' : 'shadow-none'}`}
                     >
-                        <div className={isPrimary ? 'text-current' : 'text-current scale-75'}>
+                        <div className={isPrimary ? 'text-current scale-80' : 'text-current scale-0'}>
                             {timelineIcon}
                         </div>
                     </div>
