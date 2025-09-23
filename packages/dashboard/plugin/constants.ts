@@ -1,4 +1,4 @@
-import { RwPermissionDefinition } from '@vendure/core/src';
+import { RwPermissionDefinition } from '@vendure/core';
 import { join } from 'path';
 
 export const DEFAULT_APP_PATH = join(__dirname, 'dist');
