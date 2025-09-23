@@ -29,7 +29,7 @@ describe('Slug generation', () => {
             it('generates a simple slug', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Test Product',
                     },
@@ -41,7 +41,7 @@ describe('Slug generation', () => {
             it('handles multiple spaces', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Test   Product   Name',
                     },
@@ -53,7 +53,7 @@ describe('Slug generation', () => {
             it('converts uppercase to lowercase', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'TEST PRODUCT NAME',
                     },
@@ -65,7 +65,7 @@ describe('Slug generation', () => {
             it('preserves numbers', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Product 123 Version 2',
                     },
@@ -79,7 +79,7 @@ describe('Slug generation', () => {
             it('removes special characters', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Product!@#$%^&*()_+Name',
                     },
@@ -91,7 +91,7 @@ describe('Slug generation', () => {
             it('handles special characters with spaces', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Product !@#$ Name',
                     },
@@ -103,7 +103,7 @@ describe('Slug generation', () => {
             it('handles diacritical marks (accents)', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Café Français naïve résumé',
                     },
@@ -115,7 +115,7 @@ describe('Slug generation', () => {
             it('handles German umlauts', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Über größer schön',
                     },
@@ -127,7 +127,7 @@ describe('Slug generation', () => {
             it('handles Spanish characters', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Niño Español Añejo',
                     },
@@ -139,7 +139,7 @@ describe('Slug generation', () => {
             it('handles non-Latin scripts (removes them)', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Product 商品 المنتج उत्पाद',
                     },
@@ -151,7 +151,7 @@ describe('Slug generation', () => {
             it('handles emoji (removes them)', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Cool Product 😎 🚀 Amazing',
                     },
@@ -163,7 +163,7 @@ describe('Slug generation', () => {
             it('handles punctuation and symbols', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Product: The Best! (Version 2.0) - New & Improved',
                     },
@@ -177,7 +177,7 @@ describe('Slug generation', () => {
             it('handles leading and trailing spaces', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: '   Test Product   ',
                     },
@@ -189,7 +189,7 @@ describe('Slug generation', () => {
             it('handles hyphens correctly', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Test--Product---Name',
                     },
@@ -201,7 +201,7 @@ describe('Slug generation', () => {
             it('handles leading and trailing hyphens', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: '-Test Product-',
                     },
@@ -213,7 +213,7 @@ describe('Slug generation', () => {
             it('handles empty string', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: '',
                     },
@@ -225,7 +225,7 @@ describe('Slug generation', () => {
             it('handles only special characters', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: '!@#$%^&*()',
                     },
@@ -237,7 +237,7 @@ describe('Slug generation', () => {
             it('handles mixed case with numbers and special chars', async () => {
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: '100% Natural & Organic Product #1',
                     },
@@ -266,7 +266,7 @@ describe('Slug generation', () => {
                 // Now try to generate slug for another product with the same base slug
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Laptop',
                     },
@@ -306,7 +306,7 @@ describe('Slug generation', () => {
                 // Now generate slug for another phone
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Phone',
                     },
@@ -335,7 +335,7 @@ describe('Slug generation', () => {
                 // Generate slug for the same product (updating scenario)
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'ProductTranslation',
+                        entityName: 'Product',
                         fieldName: 'slug',
                         inputValue: 'Tablet',
                         entityId: productId,
@@ -347,16 +347,57 @@ describe('Slug generation', () => {
             });
 
             it('works with different entity types', async () => {
-                // Test with CollectionTranslation entity
+                // Test with Collection entity (slug field is in CollectionTranslation)
                 const result = await adminClient.query(SLUG_FOR_ENTITY, {
                     input: {
-                        entityName: 'CollectionTranslation',
+                        entityName: 'Collection',
                         fieldName: 'slug',
                         inputValue: 'Summer Collection 2024',
                     },
                 });
 
                 expect(result.slugForEntity).toBe('summer-collection-2024');
+            });
+        });
+
+        describe('auto-detection functionality', () => {
+            it('auto-detects translation entity for slug field', async () => {
+                // Using base entity name, should automatically detect ProductTranslation
+                const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Auto Detection Test',
+                    },
+                });
+
+                expect(result.slugForEntity).toBe('auto-detection-test');
+            });
+
+            it('works with explicit translation entity names', async () => {
+                // Still works when explicitly using translation entity name
+                const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'ProductTranslation',
+                        fieldName: 'slug',
+                        inputValue: 'Explicit Translation Test',
+                    },
+                });
+
+                expect(result.slugForEntity).toBe('explicit-translation-test');
+            });
+
+            it('works with Collection entity auto-detection', async () => {
+                // Using base entity name, should automatically detect CollectionTranslation
+                const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Collection',
+                        fieldName: 'slug',
+                        inputValue: 'Collection Auto Detection',
+                    },
+                });
+
+                expect(result.slugForEntity).toBe('collection-auto-detection');
             });
         });
 
@@ -380,7 +421,7 @@ describe('Slug generation', () => {
                 try {
                     await adminClient.query(SLUG_FOR_ENTITY, {
                         input: {
-                            entityName: 'ProductTranslation',
+                            entityName: 'Product',
                             fieldName: 'nonExistentField',
                             inputValue: 'Test',
                         },

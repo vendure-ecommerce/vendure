@@ -268,7 +268,7 @@ export function addGraphQLCustomFields(
                     type ${publicEntityName}CustomFields {
                         ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
                     }
-    
+
                     extend type ${publicEntityName} {
                         customFields: ${publicEntityName}CustomFields
                     }
