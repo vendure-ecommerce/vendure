@@ -2,9 +2,9 @@ import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/hist
 import { HistoryNoteEntry } from '@/vdb/components/shared/history-timeline/history-note-entry.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
+import { useHistoryNoteEditor } from '@/vdb/components/shared/history-timeline/use-history-note-editor.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
 import { HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
-import { useState } from 'react';
 import {
     OrderCancellationComponent,
     OrderCustomerUpdatedComponent,
@@ -33,21 +33,7 @@ export function OrderHistory({
     onUpdateNote,
     onDeleteNote,
 }: Readonly<OrderHistoryProps>) {
-    const [noteEditorOpen, setNoteEditorOpen] = useState(false);
-    const [noteEditorNote, setNoteEditorNote] = useState<{
-        noteId: string;
-        note: string;
-        isPrivate: boolean;
-    }>({
-        noteId: '',
-        note: '',
-        isPrivate: true,
-    });
-
-    const handleEditNote = (noteId: string, note: string, isPrivate: boolean) => {
-        setNoteEditorNote({ noteId, note, isPrivate });
-        setNoteEditorOpen(true);
-    };
+    const { noteState, noteEditorOpen, handleEditNote, setNoteEditorOpen } = useHistoryNoteEditor();
 
     const handleDeleteNote = (noteId: string) => {
         onDeleteNote?.(noteId);
@@ -105,13 +91,13 @@ export function OrderHistory({
                 <HistoryNoteInput onAddNote={onAddNote} />
             </HistoryTimelineWithGrouping>
             <HistoryNoteEditor
-                key={noteEditorNote.noteId}
-                note={noteEditorNote.note}
+                key={noteState.noteId}
+                note={noteState.note}
                 onNoteChange={handleNoteEditorSave}
                 open={noteEditorOpen}
                 onOpenChange={setNoteEditorOpen}
-                noteId={noteEditorNote.noteId}
-                isPrivate={noteEditorNote.isPrivate}
+                noteId={noteState.noteId}
+                isPrivate={noteState.isPrivate}
             />
         </>
     );

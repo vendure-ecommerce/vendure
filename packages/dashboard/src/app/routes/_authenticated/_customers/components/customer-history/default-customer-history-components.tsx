@@ -141,51 +141,11 @@ export function CustomerPasswordResetVerifiedComponent(props: Readonly<HistoryEn
     );
 }
 
-export function CustomerEmailUpdateRequestedComponent({ entry }: Readonly<HistoryEntryProps>) {
+export function CustomerEmailUpdateComponent({ entry }: Readonly<HistoryEntryProps>) {
     const { oldEmailAddress, newEmailAddress } = entry.data || {};
 
     return (
         <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-                <Trans>Email update requested</Trans>
-            </p>
-            {(oldEmailAddress || newEmailAddress) && (
-                <details className="text-xs">
-                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                        <Trans>View details</Trans>
-                    </summary>
-                    <div className="mt-2 space-y-1">
-                        {oldEmailAddress && (
-                            <div>
-                                <span className="font-medium">
-                                    <Trans>Old email:</Trans>
-                                </span>{' '}
-                                {oldEmailAddress}
-                            </div>
-                        )}
-                        {newEmailAddress && (
-                            <div>
-                                <span className="font-medium">
-                                    <Trans>New email:</Trans>
-                                </span>{' '}
-                                {newEmailAddress}
-                            </div>
-                        )}
-                    </div>
-                </details>
-            )}
-        </div>
-    );
-}
-
-export function CustomerEmailUpdateVerifiedComponent({ entry }: Readonly<HistoryEntryProps>) {
-    const { oldEmailAddress, newEmailAddress } = entry.data || {};
-
-    return (
-        <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-                <Trans>Email update verified</Trans>
-            </p>
             {(oldEmailAddress || newEmailAddress) && (
                 <details className="text-xs">
                     <summary className="cursor-pointer text-muted-foreground hover:text-foreground">

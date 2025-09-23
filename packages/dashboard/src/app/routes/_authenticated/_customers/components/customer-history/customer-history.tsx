@@ -2,9 +2,9 @@ import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/hist
 import { HistoryNoteEntry } from '@/vdb/components/shared/history-timeline/history-note-entry.js';
 import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
+import { useHistoryNoteEditor } from '@/vdb/components/shared/history-timeline/use-history-note-editor.js';
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/history-entries.js';
 import { HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
-import { useState } from 'react';
 import { CustomerHistoryCustomerDetail } from './customer-history-types.js';
 import { customerHistoryUtils } from './customer-history-utils.js';
 import {
@@ -13,8 +13,7 @@ import {
     CustomerAddressDeletedComponent,
     CustomerAddressUpdatedComponent,
     CustomerDetailUpdatedComponent,
-    CustomerEmailUpdateRequestedComponent,
-    CustomerEmailUpdateVerifiedComponent,
+    CustomerEmailUpdateComponent,
     CustomerPasswordResetRequestedComponent,
     CustomerPasswordResetVerifiedComponent,
     CustomerPasswordUpdatedComponent,
@@ -36,21 +35,7 @@ export function CustomerHistory({
     onUpdateNote,
     onDeleteNote,
 }: Readonly<CustomerHistoryProps>) {
-    const [noteEditorOpen, setNoteEditorOpen] = useState(false);
-    const [noteEditorNote, setNoteEditorNote] = useState<{
-        noteId: string;
-        note: string;
-        isPrivate: boolean;
-    }>({
-        noteId: '',
-        note: '',
-        isPrivate: true,
-    });
-
-    const handleEditNote = (noteId: string, note: string, isPrivate: boolean) => {
-        setNoteEditorNote({ noteId, note, isPrivate });
-        setNoteEditorOpen(true);
-    };
+    const { noteState, noteEditorOpen, handleEditNote, setNoteEditorOpen } = useHistoryNoteEditor();
 
     const handleDeleteNote = (noteId: string) => {
         onDeleteNote?.(noteId);
@@ -95,10 +80,11 @@ export function CustomerHistory({
             return <CustomerPasswordResetRequestedComponent {...props} />;
         } else if (entry.type === 'CUSTOMER_PASSWORD_RESET_VERIFIED') {
             return <CustomerPasswordResetVerifiedComponent {...props} />;
-        } else if (entry.type === 'CUSTOMER_EMAIL_UPDATE_REQUESTED') {
-            return <CustomerEmailUpdateRequestedComponent {...props} />;
-        } else if (entry.type === 'CUSTOMER_EMAIL_UPDATE_VERIFIED') {
-            return <CustomerEmailUpdateVerifiedComponent {...props} />;
+        } else if (
+            entry.type === 'CUSTOMER_EMAIL_UPDATE_REQUESTED' ||
+            entry.type === 'CUSTOMER_EMAIL_UPDATE_VERIFIED'
+        ) {
+            return <CustomerEmailUpdateComponent {...props} />;
         }
         return null;
     };
@@ -114,13 +100,13 @@ export function CustomerHistory({
                 <HistoryNoteInput onAddNote={onAddNote} />
             </HistoryTimelineWithGrouping>
             <HistoryNoteEditor
-                key={noteEditorNote.noteId}
+                key={noteState.noteId}
                 open={noteEditorOpen}
                 onOpenChange={setNoteEditorOpen}
                 onNoteChange={handleNoteEditorSave}
-                note={noteEditorNote.note}
-                isPrivate={noteEditorNote.isPrivate}
-                noteId={noteEditorNote.noteId}
+                note={noteState.note}
+                isPrivate={noteState.isPrivate}
+                noteId={noteState.noteId}
             />
         </>
     );
