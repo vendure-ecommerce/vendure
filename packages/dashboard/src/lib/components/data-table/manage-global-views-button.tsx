@@ -1,4 +1,3 @@
-import { ColumnFiltersState } from '@tanstack/react-table';
 import { Settings } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '../ui/button.js';
@@ -6,11 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { GlobalViewsSheet } from './global-views-sheet.js';
 
-interface ManageGlobalViewsButtonProps {
-    onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
-}
-
-export const ManageGlobalViewsButton: React.FC<ManageGlobalViewsButtonProps> = ({ onApplyView }) => {
+export const ManageGlobalViewsButton: React.FC = () => {
     const [sheetOpen, setSheetOpen] = useState(false);
 
     return (
@@ -25,7 +20,7 @@ export const ManageGlobalViewsButton: React.FC<ManageGlobalViewsButtonProps> = (
                     <Trans>Manage global views</Trans>
                 </TooltipContent>
             </Tooltip>
-            <GlobalViewsSheet open={sheetOpen} onOpenChange={setSheetOpen} onApplyView={onApplyView} />
+            <GlobalViewsSheet open={sheetOpen} onOpenChange={setSheetOpen} />
         </>
     );
 };

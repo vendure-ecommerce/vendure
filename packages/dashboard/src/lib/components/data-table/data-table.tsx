@@ -15,6 +15,7 @@ import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { DataTableProvider } from './data-table-context.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -188,21 +189,27 @@ export function DataTable<TData>({
 
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
 
-    const handleApplyView = (filters: ColumnFiltersState, newSearchTerm?: string) => {
-        setColumnFilters(filters);
-        if (newSearchTerm !== undefined) {
-            setSearchTerm(newSearchTerm);
-            onSearchTermChange?.(newSearchTerm);
-        }
-    };
-
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
         onSearchTermChange?.(value);
     };
 
     return (
-        <div className="space-y-2">
+        <DataTableProvider
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            sorting={sorting}
+            setSorting={setSorting}
+            pageId={pageId}
+            onFilterChange={onFilterChange}
+            onSearchTermChange={onSearchTermChange}
+            onRefresh={onRefresh}
+            isLoading={isLoading}
+            table={table}
+        >
+            <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     {onSearchTermChange && (
@@ -225,18 +232,10 @@ export function DataTable<TData>({
                         ))}
                     </Suspense>
                     {onFilterChange && <AddFilterMenu columns={table.getAllColumns()} />}
-                    {pageId && onFilterChange && (
-                        <MyViewsButton
-                            onApplyView={handleApplyView}
-                            currentFilters={columnFilters}
-                            currentSearchTerm={searchTerm}
-                        />
-                    )}
+                    {pageId && onFilterChange && <MyViewsButton />}
                 </div>
                 <div className="flex items-center gap-2">
-                    {pageId && onFilterChange && (
-                        <SaveViewButton filters={columnFilters} searchTerm={searchTerm} />
-                    )}
+                    {pageId && onFilterChange && <SaveViewButton />}
                     {!disableViewOptions && <DataTableViewOptions table={table} />}
                     {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
                 </div>
@@ -246,13 +245,7 @@ export function DataTable<TData>({
             columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
                 <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
                     <div className="flex items-center">
-                        {pageId && onFilterChange && (
-                            <GlobalViewsBar
-                                onApplyView={handleApplyView}
-                                currentFilters={columnFilters}
-                                currentSearchTerm={searchTerm}
-                            />
-                        )}
+                        {pageId && onFilterChange && <GlobalViewsBar />}
                     </div>
                     <div className="flex gap-1 items-center">
                         {columnFilters
@@ -353,5 +346,6 @@ export function DataTable<TData>({
             </div>
             {onPageChange && totalItems != null && <DataTablePagination table={table} />}
         </div>
+        </DataTableProvider>
     );
 }

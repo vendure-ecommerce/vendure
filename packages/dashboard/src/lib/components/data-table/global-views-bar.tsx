@@ -1,4 +1,3 @@
-import { ColumnFiltersState } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
@@ -7,6 +6,7 @@ import { Trans } from '../../lib/trans.js';
 import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { PermissionGuard } from '../shared/permission-guard.js';
 import { Button } from '../ui/button.js';
+import { useDataTableContext } from './data-table-context.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,18 +15,9 @@ import {
 } from '../ui/dropdown-menu.js';
 import { ManageGlobalViewsButton } from './manage-global-views-button.js';
 
-interface GlobalViewsBarProps {
-    onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
-    currentFilters?: ColumnFiltersState;
-    currentSearchTerm?: string;
-}
-
-export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
-    onApplyView,
-    currentFilters = [],
-    currentSearchTerm = ''
-}) => {
+export const GlobalViewsBar: React.FC = () => {
     const { globalViews, canManageGlobalViews } = useSavedViews();
+    const { columnFilters, searchTerm, handleApplyView } = useDataTableContext();
 
     if (globalViews.length === 0) {
         return null;
@@ -37,12 +28,12 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
         (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
 
-    const handleApplyView = (view: SavedView) => {
-        onApplyView(view.filters, view.searchTerm);
+    const handleViewClick = (view: SavedView) => {
+        handleApplyView(view.filters, view.searchTerm);
     };
 
     const isViewActive = (view: SavedView) => {
-        return findMatchingSavedView(currentFilters, currentSearchTerm, [view]) !== undefined;
+        return findMatchingSavedView(columnFilters, searchTerm, [view]) !== undefined;
     };
 
     if (sortedViews.length <= 3) {
@@ -54,12 +45,12 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
                         key={view.id}
                         variant={isViewActive(view) ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => handleApplyView(view)}
+                        onClick={() => handleViewClick(view)}
                     >
                         {view.name}
                     </Button>
                 ))}
-                {canManageGlobalViews && <ManageGlobalViewsButton onApplyView={onApplyView} />}
+                {canManageGlobalViews && <ManageGlobalViewsButton />}
             </div>
         );
     }
@@ -75,7 +66,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
                     key={view.id}
                     variant={isViewActive(view) ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleApplyView(view)}
+                    onClick={() => handleViewClick(view)}
                 >
                     {view.name}
                 </Button>
@@ -91,7 +82,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
                     {dropdownViews.map(view => (
                         <DropdownMenuItem
                             key={view.id}
-                            onClick={() => handleApplyView(view)}
+                            onClick={() => handleViewClick(view)}
                             className={isViewActive(view) ? 'bg-primary' : ''}
                         >
                             {view.name}
@@ -100,7 +91,7 @@ export const GlobalViewsBar: React.FC<GlobalViewsBarProps> = ({
                 </DropdownMenuContent>
             </DropdownMenu>
             <PermissionGuard requires={['ManageDashboardGlobalViews']}>
-                {canManageGlobalViews && <ManageGlobalViewsButton onApplyView={onApplyView} />}
+                {canManageGlobalViews && <ManageGlobalViewsButton />}
             </PermissionGuard>
         </div>
     );

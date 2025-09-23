@@ -2,26 +2,21 @@ import { BookmarkPlus } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '../ui/button.js';
 import { SaveViewDialog } from './save-view-dialog.js';
-import { ColumnFiltersState } from '@tanstack/react-table';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { isMatchingSavedView } from '../../utils/saved-views-utils.js';
+import { useDataTableContext } from './data-table-context.js';
 
 interface SaveViewButtonProps {
-    filters: ColumnFiltersState;
-    searchTerm?: string;
     disabled?: boolean;
 }
 
-export const SaveViewButton: React.FC<SaveViewButtonProps> = ({
-    filters,
-    searchTerm,
-    disabled,
-}) => {
+export const SaveViewButton: React.FC<SaveViewButtonProps> = ({ disabled }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const { userViews, globalViews } = useSavedViews();
+    const { columnFilters, searchTerm } = useDataTableContext();
 
-    const hasFilters = filters.length > 0 || (searchTerm && searchTerm.length > 0);
-    const matchesExistingView = isMatchingSavedView(filters, searchTerm || '', userViews, globalViews);
+    const hasFilters = columnFilters.length > 0 || (searchTerm && searchTerm.length > 0);
+    const matchesExistingView = isMatchingSavedView(columnFilters, searchTerm || '', userViews, globalViews);
 
     // Don't show the button if there are no filters or if filters match an existing saved view
     if (!hasFilters || matchesExistingView) {
@@ -42,7 +37,7 @@ export const SaveViewButton: React.FC<SaveViewButtonProps> = ({
             <SaveViewDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                filters={filters}
+                filters={columnFilters}
                 searchTerm={searchTerm}
             />
         </>

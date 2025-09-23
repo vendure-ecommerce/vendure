@@ -1,7 +1,7 @@
 import { Copy, Edit, Globe, MoreHorizontal, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
-import { ColumnFiltersState } from '@tanstack/react-table';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
+import { useDataTableContext } from './data-table-context.js';
 import { Button } from '../ui/button.js';
 import { Input } from '../ui/input.js';
 import {
@@ -33,21 +33,17 @@ import {
 interface UserViewsSheetProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
 }
 
-export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
-    open,
-    onOpenChange,
-    onApplyView,
-}) => {
+export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({ open, onOpenChange }) => {
     const { userViews, deleteView, updateView, duplicateView, canManageGlobalViews } = useSavedViews();
+    const { handleApplyView } = useDataTableContext();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-    const handleApplyView = (view: SavedView) => {
-        onApplyView(view.filters, view.searchTerm);
+    const handleViewApply = (view: SavedView) => {
+        handleApplyView(view.filters, view.searchTerm);
         toast.success(`Applied view "${view.name}"`);
     };
 
@@ -155,7 +151,7 @@ export const UserViewsSheet: React.FC<UserViewsSheetProps> = ({
                                                 <div className="flex items-center gap-1">
                                                     <Button
                                                         size="sm"
-                                                        onClick={() => handleApplyView(view)}
+                                                        onClick={() => handleViewApply(view)}
                                                     >
                                                         Apply
                                                     </Button>
