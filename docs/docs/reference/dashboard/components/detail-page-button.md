@@ -36,17 +36,18 @@ navigate to detail views.
 ```
 
 ```ts title="Signature"
-function DetailPageButton(props: {
+function DetailPageButton(props: Readonly<{
     label: string | React.ReactNode;
     id?: string;
     href?: string;
     disabled?: boolean;
     search?: Record<string, string>;
-}): void
+    className?: string;
+}>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`{     label: string | React.ReactNode;     id?: string;     href?: string;     disabled?: boolean;     search?: Record&#60;string, string&#62;; }`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{     label: string | React.ReactNode;     id?: string;     href?: string;     disabled?: boolean;     search?: Record&#60;string, string&#62;;     className?: string; }&#62;`} />
 
