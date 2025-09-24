@@ -1,4 +1,6 @@
-import { SlugStrategy } from './slug-strategy';
+import { RequestContext } from '../../api/common/request-context';
+
+import { SlugGenerateParams, SlugStrategy } from './slug-strategy';
 
 /**
  * @description
@@ -12,21 +14,22 @@ import { SlugStrategy } from './slug-strategy';
  * @example
  * ```ts
  * const strategy = new DefaultSlugStrategy();
- * strategy.generate("Hello World!"); // "hello-world"
- * strategy.generate("Café Français"); // "cafe-francais"
- * strategy.generate("100% Natural"); // "100-natural"
+ * strategy.generate(ctx, { value: "Hello World!" }); // "hello-world"
+ * strategy.generate(ctx, { value: "Café Français" }); // "cafe-francais"
+ * strategy.generate(ctx, { value: "100% Natural" }); // "100-natural"
  * ```
  *
  * @docsCategory configuration
  * @since 3.x.x
  */
 export class DefaultSlugStrategy implements SlugStrategy {
-    generate(input: string): string {
-        if (!input) {
+    generate(ctx: RequestContext, params: SlugGenerateParams): string {
+        const { value } = params;
+        if (!value) {
             return '';
         }
 
-        const result = input
+        const result = value
             .normalize('NFD') // Normalize unicode characters
             .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
             .toLowerCase()

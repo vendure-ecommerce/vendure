@@ -1,4 +1,24 @@
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+
+/**
+ * @description
+ * Parameters for slug generation
+ */
+export interface SlugGenerateParams {
+    /**
+     * The input string to be converted to a slug
+     */
+    value: string;
+    /**
+     * The optional entity name (e.g., 'Product', 'Collection')
+     */
+    entityName?: string;
+    /**
+     * The optional field name (e.g., 'slug', 'code')
+     */
+    fieldName?: string;
+}
 
 /**
  * @description
@@ -9,8 +29,8 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * @example
  * ```ts
  * export class CustomSlugStrategy implements SlugStrategy {
- *   generate(input: string): string {
- *     return input
+ *   generate(ctx: RequestContext, params: SlugGenerateParams): string {
+ *     return params.value
  *       .toLowerCase()
  *       .replace(/[^a-z0-9]+/g, '-')
  *       .replace(/^-+|-+$/g, '');
@@ -26,8 +46,9 @@ export interface SlugStrategy extends InjectableStrategy {
      * @description
      * Generates a slug from the input string.
      *
-     * @param input The input string to be converted to a slug
+     * @param ctx The request context
+     * @param params The parameters for slug generation
      * @returns A URL-friendly slug string
      */
-    generate(input: string): string;
+    generate(ctx: RequestContext, params: SlugGenerateParams): string;
 }
