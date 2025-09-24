@@ -171,7 +171,11 @@ export function SlugInput({
 
     const shouldAutoGenerate = isReadonly && !value && watchFieldState.isDirty;
 
-    const { data: generatedSlug, isLoading, refetch } = useQuery({
+    const {
+        data: generatedSlug,
+        isLoading,
+        refetch,
+    } = useQuery({
         queryKey: ['slugForEntity', entityName, fieldName, debouncedWatchedValue, entityId],
         queryFn: async () => {
             if (!debouncedWatchedValue) {
@@ -183,7 +187,7 @@ export function SlugInput({
                     entityName,
                     fieldName,
                     inputValue: debouncedWatchedValue,
-                    entityId: String(entityId),
+                    entityId: entityId?.toString(),
                 },
             });
 
@@ -272,8 +276,16 @@ export function SlugInput({
                         size="sm"
                         onClick={toggleReadonly}
                         className="shrink-0"
-                        title={isManuallyReadonly ? i18n.t('Edit slug manually') : i18n.t('Generate slug automatically')}
-                        aria-label={isManuallyReadonly ? i18n.t('Edit slug manually') : i18n.t('Generate slug automatically')}
+                        title={
+                            isManuallyReadonly
+                                ? i18n.t('Edit slug manually')
+                                : i18n.t('Generate slug automatically')
+                        }
+                        aria-label={
+                            isManuallyReadonly
+                                ? i18n.t('Edit slug manually')
+                                : i18n.t('Generate slug automatically')
+                        }
                     >
                         {isManuallyReadonly ? <Edit className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
                     </Button>
