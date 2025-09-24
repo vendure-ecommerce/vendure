@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { FulfillmentHandlerSelector } from './components/fulfillment-handler-selector.js';
 import { ShippingCalculatorSelector } from './components/shipping-calculator-selector.js';
 import { ShippingEligibilityCheckerSelector } from './components/shipping-eligibility-checker-selector.js';
+import { TestSingleShippingMethodSheet } from './components/test-single-shipping-method-sheet.js';
 import {
     createShippingMethodDocument,
     shippingMethodDetailDocument,
@@ -84,18 +85,34 @@ function ShippingMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t(creatingNewEntity ? 'Successfully created shipping method' : 'Successfully updated shipping method'));
+            toast.success(
+                i18n.t(
+                    creatingNewEntity
+                        ? 'Successfully created shipping method'
+                        : 'Successfully updated shipping method',
+                ),
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create shipping method' : 'Failed to update shipping method'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                i18n.t(
+                    creatingNewEntity
+                        ? 'Failed to create shipping method'
+                        : 'Failed to update shipping method',
+                ),
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
+
+    const checker = form.watch('checker');
+    const calculator = form.watch('calculator');
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -104,6 +121,9 @@ function ShippingMethodDetailPage() {
             </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
+                    {!creatingNewEntity && entity && (
+                        <TestSingleShippingMethodSheet checker={checker} calculator={calculator} />
+                    )}
                     <PermissionGuard requires={['UpdateShippingMethod']}>
                         <Button
                             type="submit"

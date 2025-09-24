@@ -7,6 +7,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/vdb/compone
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import {
@@ -29,12 +30,12 @@ export interface TestOrderLine {
 }
 
 interface TestOrderBuilderProps {
-    currencyCode: string;
     onOrderLinesChange: (lines: TestOrderLine[]) => void;
 }
 
-export function TestOrderBuilder({ currencyCode, onOrderLinesChange }: TestOrderBuilderProps) {
+export function TestOrderBuilder({ onOrderLinesChange }: TestOrderBuilderProps) {
     const { formatCurrency } = useLocalFormat();
+    const { activeChannel } = useChannel();
     const [lines, setLines] = useState<TestOrderLine[]>(() => {
         try {
             const stored = localStorage.getItem('shippingTestOrder');
@@ -45,6 +46,7 @@ export function TestOrderBuilder({ currencyCode, onOrderLinesChange }: TestOrder
     });
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+    const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const subTotal = lines.reduce((sum, l) => sum + l.unitPriceWithTax * l.quantity, 0);
 
     useEffect(() => {
@@ -168,7 +170,7 @@ export function TestOrderBuilder({ currencyCode, onOrderLinesChange }: TestOrder
                     )}
                 </div>
             </AccordionTrigger>
-            <AccordionContent className="space-y-4">
+            <AccordionContent className="space-y-4 px-2">
                 {lines.length > 0 ? (
                     <div className="w-full">
                         <Table>

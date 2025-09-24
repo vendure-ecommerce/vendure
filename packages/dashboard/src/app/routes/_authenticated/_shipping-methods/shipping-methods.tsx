@@ -11,7 +11,7 @@ import {
     DeleteShippingMethodsBulkAction,
     RemoveShippingMethodsFromChannelBulkAction,
 } from './components/shipping-method-bulk-actions.js';
-import { TestShippingMethodDialog } from './components/test-shipping-method-dialog.js';
+import { TestShippingMethodsSheet } from './components/test-shipping-methods-sheet.js';
 import { shippingMethodListQuery } from './shipping-methods.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping-methods')({
@@ -66,7 +66,7 @@ function ShippingMethodListPage() {
                         </Link>
                     </Button>
                 </PermissionGuard>
-                <TestShippingMethodDialog />
+                <TestShippingMethodsSheet />
             </PageActionBarRight>
         </ListPage>
     );

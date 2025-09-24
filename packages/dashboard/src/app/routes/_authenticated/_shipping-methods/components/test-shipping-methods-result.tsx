@@ -1,10 +1,11 @@
+import { Money } from '@/vdb/components/data-display/money.js';
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { PlayIcon } from 'lucide-react';
+import { Check, PlayIcon } from 'lucide-react';
 
 export interface ShippingMethodQuote {
     id: string;
@@ -21,21 +22,20 @@ interface ShippingEligibilityTestResultProps {
     okToRun: boolean;
     testDataUpdated: boolean;
     hasTestedOnce: boolean;
-    currencyCode: string;
     onRunTest: () => void;
     loading?: boolean;
 }
 
-export function ShippingEligibilityTestResult({
+export function TestShippingMethodsResult({
     testResult,
     okToRun,
     testDataUpdated,
     hasTestedOnce,
-    currencyCode,
     onRunTest,
     loading = false,
 }: ShippingEligibilityTestResultProps) {
-    const { formatCurrency } = useLocalFormat();
+    const { activeChannel } = useChannel();
+    const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const hasResults = testResult && testResult.length > 0;
     const canRunTest = okToRun && testDataUpdated;
 
@@ -103,10 +103,14 @@ export function ShippingEligibilityTestResult({
                         {testResult.map(method => (
                             <div
                                 key={method.id}
-                                className="flex items-center justify-between p-3 border rounded-lg"
+                                className="flex items-center text-sm justify-between p-3 rounded-lg bg-muted/50"
                             >
                                 <div className="flex-1">
-                                    <div className="font-medium">{method.name}</div>
+                                    <div className="flex gap-1">
+                                        <Check className="h-5 w-5 text-success" />
+                                        <div className="">{method.name}</div>
+                                    </div>
+                                    <Badge variant="secondary">{method.code}</Badge>
                                     {method.description && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                             {method.description}
@@ -123,15 +127,11 @@ export function ShippingEligibilityTestResult({
                                     )}
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-medium">
-                                        {formatCurrency(method.priceWithTax, currencyCode)}
+                                    <Money value={method.priceWithTax} currency={currencyCode} />
+                                    <div className="text-xs text-muted-foreground">
+                                        <Trans>ex. tax:</Trans>{' '}
+                                        <Money value={method.price} currency={currencyCode} />
                                     </div>
-                                    {method.price !== method.priceWithTax && (
-                                        <div className="text-sm text-muted-foreground">
-                                            <Trans>excl. tax:</Trans>{' '}
-                                            {formatCurrency(method.price, currencyCode)}
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         ))}

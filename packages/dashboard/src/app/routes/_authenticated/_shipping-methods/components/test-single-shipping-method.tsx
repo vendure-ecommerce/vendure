@@ -1,16 +1,22 @@
 import { Accordion } from '@/vdb/components/ui/accordion.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useQuery } from '@tanstack/react-query';
+import { VariablesOf } from 'gql.tada';
 import { useCallback, useState } from 'react';
-import { testEligibleShippingMethodsDocument } from '../shipping-methods.graphql.js';
+import { testShippingMethodDocument } from '../shipping-methods.graphql.js';
 import { TestAddress, TestAddressForm } from './test-address-form.js';
 import { TestOrderBuilder, TestOrderLine } from './test-order-builder.js';
-import { TestShippingMethodsResult } from './test-shipping-methods-result.js';
+import { TestSingleMethodResult } from './test-single-method-result.js';
 
-export function TestShippingMethods() {
+interface TestSingleShippingMethodProps {
+    checker: VariablesOf<typeof testShippingMethodDocument>['input']['checker'];
+    calculator: VariablesOf<typeof testShippingMethodDocument>['input']['calculator'];
+}
+
+export function TestSingleShippingMethod({ checker, calculator }: Readonly<TestSingleShippingMethodProps>) {
     const [testAddress, setTestAddress] = useState<TestAddress | null>(null);
     const [testOrderLines, setTestOrderLines] = useState<TestOrderLine[]>([]);
-    const [testDataUpdated, setTestDataUpdated] = useState(true); // Start with true for initial test
+    const [testDataUpdated, setTestDataUpdated] = useState(true);
     const [hasTestedOnce, setHasTestedOnce] = useState(false);
     const [expandedAccordions, setExpandedAccordions] = useState<string[]>([
         'test-order',
@@ -20,16 +26,16 @@ export function TestShippingMethods() {
     const [lastTestedOrderLines, setLastTestedOrderLines] = useState<TestOrderLine[]>([]);
 
     const allTestDataPresent = !!(testAddress && testOrderLines && testOrderLines.length > 0);
+    console.log({ testAddress, testOrderLines });
 
     const { data, isLoading, refetch } = useQuery({
-        queryKey: ['testEligibleShippingMethods', testAddress, testOrderLines],
-        networkMode: 'always',
+        queryKey: ['testShippingMethod', testAddress, testOrderLines, checker, calculator],
         queryFn: async () => {
             if (!testAddress || !testOrderLines.length) {
-                return { testEligibleShippingMethods: [] };
+                return { testShippingMethod: null };
             }
 
-            return api.query(testEligibleShippingMethodsDocument, {
+            return api.query(testShippingMethodDocument, {
                 input: {
                     shippingAddress: {
                         fullName: testAddress.fullName,
@@ -46,18 +52,19 @@ export function TestShippingMethods() {
                         productVariantId: l.id,
                         quantity: l.quantity,
                     })),
+                    checker,
+                    calculator,
                 },
             });
         },
         enabled: false, // Only fetch when explicitly triggered via refetch()
     });
 
-    const testResult = data?.testEligibleShippingMethods || [];
+    const testResult = data?.testShippingMethod || undefined;
 
     const handleAddressChange = useCallback(
         (address: TestAddress) => {
             setTestAddress(address);
-            // Only mark as updated if the data actually changed from what was last tested
             if (hasTestedOnce && JSON.stringify(address) !== JSON.stringify(lastTestedAddress)) {
                 setTestDataUpdated(true);
             }
@@ -68,7 +75,6 @@ export function TestShippingMethods() {
     const handleOrderLinesChange = useCallback(
         (lines: TestOrderLine[]) => {
             setTestOrderLines(lines);
-            // Only mark as updated if the data actually changed from what was last tested
             if (hasTestedOnce && JSON.stringify(lines) !== JSON.stringify(lastTestedOrderLines)) {
                 setTestDataUpdated(true);
             }
@@ -99,7 +105,7 @@ export function TestShippingMethods() {
                 <TestAddressForm onAddressChange={handleAddressChange} />
             </Accordion>
 
-            <TestShippingMethodsResult
+            <TestSingleMethodResult
                 testResult={testResult}
                 okToRun={allTestDataPresent}
                 testDataUpdated={testDataUpdated}

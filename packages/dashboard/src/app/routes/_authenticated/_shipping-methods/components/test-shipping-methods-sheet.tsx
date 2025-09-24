@@ -12,7 +12,7 @@ import { TestTube } from 'lucide-react';
 import { useState } from 'react';
 import { TestShippingMethods } from './test-shipping-methods.js';
 
-export function TestShippingMethodDialog() {
+export function TestShippingMethodsSheet() {
     const [open, setOpen] = useState(false);
 
     return (

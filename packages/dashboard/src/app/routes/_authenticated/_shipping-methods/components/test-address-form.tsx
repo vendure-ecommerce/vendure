@@ -7,7 +7,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 // Query document to fetch available countries
@@ -44,17 +44,19 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
         defaultValues: (() => {
             try {
                 const stored = localStorage.getItem('shippingTestAddress');
-                return stored ? JSON.parse(stored) : {
-                    fullName: '',
-                    company: '',
-                    streetLine1: '',
-                    streetLine2: '',
-                    city: '',
-                    province: '',
-                    postalCode: '',
-                    countryCode: '',
-                    phoneNumber: '',
-                };
+                return stored
+                    ? JSON.parse(stored)
+                    : {
+                          fullName: '',
+                          company: '',
+                          streetLine1: '',
+                          streetLine2: '',
+                          city: '',
+                          province: '',
+                          postalCode: '',
+                          countryCode: '',
+                          phoneNumber: '',
+                      };
             } catch {
                 return {
                     fullName: '',
@@ -82,7 +84,7 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
 
     // Use form subscription instead of watch() to avoid infinite loops
     useEffect(() => {
-        const subscription = form.watch((value) => {
+        const subscription = form.watch(value => {
             const currentValueString = JSON.stringify(value);
 
             // Only update if values actually changed
@@ -104,6 +106,11 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
         return () => subscription.unsubscribe();
     }, [form, onAddressChange]);
 
+    useEffect(() => {
+        const initialAddress = form.getValues();
+        onAddressChange(initialAddress);
+    }, []);
+
     const currentValues = form.getValues();
 
     const getAddressSummary = () => {
@@ -113,7 +120,7 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
             currentValues.city,
             currentValues.province,
             currentValues.postalCode,
-            currentValues.countryCode
+            currentValues.countryCode,
         ].filter(Boolean);
         return parts.length > 0 ? parts.join(', ') : '';
     };
@@ -141,7 +148,7 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                     )}
                 </div>
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="px-2">
                 <Form {...form}>
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
@@ -149,9 +156,7 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                                 control={form.control}
                                 name="fullName"
                                 label={<Trans>Full Name</Trans>}
-                                render={({ field }) => (
-                                    <Input {...field} placeholder="John Smith" />
-                                )}
+                                render={({ field }) => <Input {...field} placeholder="John Smith" />}
                             />
                             <FormFieldWrapper
                                 control={form.control}
@@ -167,9 +172,7 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                             control={form.control}
                             name="streetLine1"
                             label={<Trans>Street Address</Trans>}
-                            render={({ field }) => (
-                                <Input {...field} placeholder="123 Main Street" />
-                            )}
+                            render={({ field }) => <Input {...field} placeholder="123 Main Street" />}
                         />
 
                         <FormFieldWrapper
@@ -177,7 +180,11 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                             name="streetLine2"
                             label={<Trans>Street Address 2</Trans>}
                             render={({ field }) => (
-                                <Input {...field} value={field.value || ''} placeholder="Apartment, suite, etc." />
+                                <Input
+                                    {...field}
+                                    value={field.value || ''}
+                                    placeholder="Apartment, suite, etc."
+                                />
                             )}
                         />
 
@@ -186,25 +193,19 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                                 control={form.control}
                                 name="city"
                                 label={<Trans>City</Trans>}
-                                render={({ field }) => (
-                                    <Input {...field} placeholder="New York" />
-                                )}
+                                render={({ field }) => <Input {...field} placeholder="New York" />}
                             />
                             <FormFieldWrapper
                                 control={form.control}
                                 name="province"
                                 label={<Trans>State / Province</Trans>}
-                                render={({ field }) => (
-                                    <Input {...field} placeholder="NY" />
-                                )}
+                                render={({ field }) => <Input {...field} placeholder="NY" />}
                             />
                             <FormFieldWrapper
                                 control={form.control}
                                 name="postalCode"
                                 label={<Trans>Postal Code</Trans>}
-                                render={({ field }) => (
-                                    <Input {...field} placeholder="10001" />
-                                )}
+                                render={({ field }) => <Input {...field} placeholder="10001" />}
                             />
                         </div>
 
@@ -238,7 +239,11 @@ export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
                                 name="phoneNumber"
                                 label={<Trans>Phone Number</Trans>}
                                 render={({ field }) => (
-                                    <Input {...field} value={field.value || ''} placeholder="+1 (555) 123-4567" />
+                                    <Input
+                                        {...field}
+                                        value={field.value || ''}
+                                        placeholder="+1 (555) 123-4567"
+                                    />
                                 )}
                             />
                         </div>
