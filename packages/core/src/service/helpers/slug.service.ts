@@ -27,6 +27,6 @@ export class SlugService {
         if (!strategy) {
             throw new Error('No SlugStrategy configured');
         }
-        return await strategy.generate(ctx, params);
+        return strategy.generate(ctx, params);
     }
 }

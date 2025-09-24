@@ -13,7 +13,6 @@ export class SlugResolver {
     @Query()
     @Allow(Permission.Authenticated)
     async slugForEntity(@Ctx() ctx: RequestContext, @Args() args: QuerySlugForEntityArgs): Promise<string> {
-        const { entityName, fieldName, inputValue, entityId } = args.input;
-        return this.entitySlugService.generateSlugFromInput(ctx, entityName, fieldName, inputValue, entityId);
+        return this.entitySlugService.generateSlugFromInput(ctx, args.input);
     }
 }

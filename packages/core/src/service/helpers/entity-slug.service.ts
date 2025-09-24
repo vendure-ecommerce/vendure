@@ -1,11 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { EntityMetadata, ObjectLiteral, Repository } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
-import { Logger } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 
 import { SlugService } from './slug.service';
+
+/**
+ * @description
+ * Parameters for entity slug generation
+ */
+export interface GenerateSlugFromInputParams {
+    /**
+     * The name of the entity (base entity, e.g., 'Product', 'Collection')
+     */
+    entityName: string;
+    /**
+     * The name of the field to check for uniqueness (e.g., 'slug', 'code')
+     */
+    fieldName: string;
+    /**
+     * The value to generate the slug from
+     */
+    inputValue: string;
+    /**
+     * Optional ID of the entity being updated
+     */
+    entityId?: string | number;
+}
 
 /**
  * @description
@@ -28,19 +51,11 @@ export class EntitySlugService {
      * Automatically detects if the field exists on the base entity or its translation entity.
      *
      * @param ctx The request context
-     * @param entityName The name of the entity (base entity, e.g., 'Product', 'Collection')
-     * @param fieldName The name of the field to check for uniqueness (e.g., 'slug', 'code')
-     * @param inputValue The value to generate the slug from
-     * @param entityId Optional ID of the entity being updated
+     * @param params Parameters for slug generation
      * @returns A unique slug string
      */
-    async generateSlugFromInput(
-        ctx: RequestContext,
-        entityName: string,
-        fieldName: string,
-        inputValue: string,
-        entityId?: string | number,
-    ): Promise<string> {
+    async generateSlugFromInput(ctx: RequestContext, params: GenerateSlugFromInputParams): Promise<string> {
+        const { entityName, fieldName, inputValue, entityId } = params;
         const { entityMetadata, actualEntityName } = this.findEntityWithField(entityName, fieldName);
 
         const repository = this.connection.getRepository(ctx, entityMetadata.target);
@@ -73,7 +88,7 @@ export class EntitySlugService {
         entityName: string,
         fieldName: string,
     ): {
-        entityMetadata: any;
+        entityMetadata: EntityMetadata;
         actualEntityName: string;
     } {
         // First, try to find the base entity
@@ -94,18 +109,20 @@ export class EntitySlugService {
             return { entityMetadata, actualEntityName: entityName };
         }
 
-        // If field doesn't exist on base entity, try the translation entity
-        const translationEntityName = `${entityName}Translation`;
-        const translationMetadata = this.connection.rawConnection.entityMetadatas.find(
-            metadata => metadata.name === translationEntityName,
-        );
+        // If field doesn't exist on base entity, try to find the translation entity through relations
+        const translationRelation = entityMetadata.relations.find(r => r.propertyName === 'translations');
+
+        if (!translationRelation) {
+            throw new UserInputError(`error.entity-has-no-field`, {
+                entityName,
+                fieldName,
+            });
+        }
+
+        // Get the translation entity metadata from the relation
+        const translationMetadata = this.connection.rawConnection.getMetadata(translationRelation.type);
 
         if (!translationMetadata) {
-            const availableEntities = this.connection.rawConnection.entityMetadatas.map(m => m.name);
-            Logger.debug(
-                `Translation entity ${translationEntityName} not found. Available entities:`,
-                availableEntities.filter(name => name.includes('Translation')).join(', '),
-            );
             throw new UserInputError(`error.entity-has-no-field`, {
                 entityName,
                 fieldName,
@@ -117,7 +134,7 @@ export class EntitySlugService {
         );
 
         if (translationEntityHasField) {
-            return { entityMetadata: translationMetadata, actualEntityName: translationEntityName };
+            return { entityMetadata: translationMetadata, actualEntityName: translationMetadata.name };
         }
 
         throw new UserInputError(`error.entity-has-no-field`, {
@@ -128,7 +145,7 @@ export class EntitySlugService {
 
     private async fieldValueExists(
         ctx: RequestContext,
-        repository: any,
+        repository: Repository<ObjectLiteral>,
         fieldName: string,
         value: string,
         excludeId?: string | number,
