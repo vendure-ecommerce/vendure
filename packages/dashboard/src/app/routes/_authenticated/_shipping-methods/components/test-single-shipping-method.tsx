@@ -26,7 +26,6 @@ export function TestSingleShippingMethod({ checker, calculator }: Readonly<TestS
     const [lastTestedOrderLines, setLastTestedOrderLines] = useState<TestOrderLine[]>([]);
 
     const allTestDataPresent = !!(testAddress && testOrderLines && testOrderLines.length > 0);
-    console.log({ testAddress, testOrderLines });
 
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['testShippingMethod', testAddress, testOrderLines, checker, calculator],
