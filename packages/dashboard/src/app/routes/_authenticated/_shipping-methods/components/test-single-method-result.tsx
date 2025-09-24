@@ -25,7 +25,7 @@ export function TestSingleMethodResult({
     hasTestedOnce,
     onRunTest,
     loading = false,
-}: TestSingleMethodResultProps) {
+}: Readonly<TestSingleMethodResultProps>) {
     const { activeChannel } = useChannel();
     const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const showEmptyState = testResult === undefined && hasTestedOnce && !testDataUpdated && !loading;

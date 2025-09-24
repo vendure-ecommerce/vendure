@@ -1,16 +1,15 @@
 import { Money } from '@/vdb/components/data-display/money.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import React from 'react';
 
 export function PriceDisplay({
     price,
     priceWithTax,
     currencyCode,
-}: {
+}: Readonly<{
     price: number;
     priceWithTax: number;
     currencyCode: string;
-}) {
+}>) {
     return (
         <div className="text-right">
             <Money value={priceWithTax} currency={currencyCode} />

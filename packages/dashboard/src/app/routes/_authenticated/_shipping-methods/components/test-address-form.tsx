@@ -39,7 +39,7 @@ interface TestAddressFormProps {
     onAddressChange: (address: TestAddress) => void;
 }
 
-export function TestAddressForm({ onAddressChange }: TestAddressFormProps) {
+export function TestAddressForm({ onAddressChange }: Readonly<TestAddressFormProps>) {
     const form = useForm<TestAddress>({
         defaultValues: (() => {
             try {

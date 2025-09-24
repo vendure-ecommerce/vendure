@@ -19,7 +19,10 @@ interface TestSingleShippingMethodDialogProps {
     calculator?: VariablesOf<typeof testShippingMethodDocument>['input']['calculator'];
 }
 
-export function TestSingleShippingMethodSheet({ checker, calculator }: TestSingleShippingMethodDialogProps) {
+export function TestSingleShippingMethodSheet({
+    checker,
+    calculator,
+}: Readonly<TestSingleShippingMethodDialogProps>) {
     const [open, setOpen] = useState(false);
 
     return (

@@ -33,7 +33,7 @@ interface TestOrderBuilderProps {
     onOrderLinesChange: (lines: TestOrderLine[]) => void;
 }
 
-export function TestOrderBuilder({ onOrderLinesChange }: TestOrderBuilderProps) {
+export function TestOrderBuilder({ onOrderLinesChange }: Readonly<TestOrderBuilderProps>) {
     const { formatCurrency } = useLocalFormat();
     const { activeChannel } = useChannel();
     const [lines, setLines] = useState<TestOrderLine[]>(() => {

@@ -32,7 +32,7 @@ export function TestShippingMethodsResult({
     hasTestedOnce,
     onRunTest,
     loading = false,
-}: ShippingEligibilityTestResultProps) {
+}: Readonly<ShippingEligibilityTestResultProps>) {
     const { activeChannel } = useChannel();
     const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const hasResults = testResult && testResult.length > 0;
