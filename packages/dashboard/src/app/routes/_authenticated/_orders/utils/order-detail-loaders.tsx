@@ -6,7 +6,7 @@ import { redirect } from '@tanstack/react-router';
 import { OrderDetail } from '../components/order-detail-shared.js';
 import { orderDetailDocument } from '../orders.graphql.js';
 
-export async function commonRegularOrderLoader(context: any, params: { id: string }): Promise<OrderDetail> {
+async function ensureOrderWithIdExists(context: any, params: { id: string }): Promise<OrderDetail> {
     if (!params.id) {
         throw new Error('ID param is required');
     }
@@ -18,13 +18,18 @@ export async function commonRegularOrderLoader(context: any, params: { id: strin
     if (!result.order) {
         throw new Error(`Order with the ID ${params.id} was not found`);
     }
+    return result.order;
+}
 
-    if (result.order.state === 'Draft') {
+export async function commonRegularOrderLoader(context: any, params: { id: string }): Promise<OrderDetail> {
+    const order = await ensureOrderWithIdExists(context, params);
+
+    if (order.state === 'Draft') {
         throw redirect({
             to: `/orders/draft/${params.id}`,
         });
     }
-    return result.order;
+    return order;
 }
 
 export async function loadRegularOrder(context: any, params: { id: string }) {
@@ -42,7 +47,7 @@ export async function loadRegularOrder(context: any, params: { id: string }) {
 }
 
 export async function loadDraftOrder(context: any, params: { id: string }) {
-    const order = await commonRegularOrderLoader(context, params);
+    const order = await ensureOrderWithIdExists(context, params);
 
     if (order.state !== 'Draft') {
         throw redirect({
