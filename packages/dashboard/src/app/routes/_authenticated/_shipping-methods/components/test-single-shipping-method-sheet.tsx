@@ -9,7 +9,7 @@ import {
 } from '@/vdb/components/ui/sheet.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { VariablesOf } from 'gql.tada';
-import { TestTube } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 import { useState } from 'react';
 import { testShippingMethodDocument } from '../shipping-methods.graphql.js';
 import { TestSingleShippingMethod } from './test-single-shipping-method.js';
@@ -25,9 +25,9 @@ export function TestSingleShippingMethodSheet({ checker, calculator }: TestSingl
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button variant="outline" size="sm">
-                    <TestTube className="mr-2 h-4 w-4" />
-                    <Trans>Test method</Trans>
+                <Button variant="secondary">
+                    <FlaskConical />
+                    <Trans>Test</Trans>
                 </Button>
             </SheetTrigger>
             <SheetContent className="w-[800px] sm:max-w-[800px]">

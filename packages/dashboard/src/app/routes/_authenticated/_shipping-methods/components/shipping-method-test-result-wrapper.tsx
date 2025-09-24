@@ -45,7 +45,7 @@ export function ShippingMethodTestResultWrapper({
                             size="sm"
                             className="ml-auto"
                         >
-                            <PlayIcon className="mr-2 h-4 w-4" />
+                            <PlayIcon className="mr-1 h-4 w-4" />
                             {runTestLabel}
                         </Button>
                     )}

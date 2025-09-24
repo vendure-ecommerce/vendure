@@ -8,7 +8,7 @@ import {
     SheetTrigger,
 } from '@/vdb/components/ui/sheet.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { TestTube } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 import { useState } from 'react';
 import { TestShippingMethods } from './test-shipping-methods.js';
 
@@ -19,8 +19,8 @@ export function TestShippingMethodsSheet() {
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <Button variant="secondary">
-                    <TestTube />
-                    <Trans>Test shipping method</Trans>
+                    <FlaskConical />
+                    <Trans>Test</Trans>
                 </Button>
             </SheetTrigger>
             <SheetContent className="w-[800px] sm:max-w-[800px]">

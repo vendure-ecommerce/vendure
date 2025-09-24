@@ -58,6 +58,7 @@ function ShippingMethodListPage() {
             ]}
         >
             <PageActionBarRight>
+                <TestShippingMethodsSheet />
                 <PermissionGuard requires={['CreateShippingMethod']}>
                     <Button asChild>
                         <Link to="./new">
@@ -66,7 +67,6 @@ function ShippingMethodListPage() {
                         </Link>
                     </Button>
                 </PermissionGuard>
-                <TestShippingMethodsSheet />
             </PageActionBarRight>
         </ListPage>
     );
