@@ -1,3 +1,4 @@
+import { SlugInput } from '@/vdb/components/data-input/index.js';
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -89,7 +90,11 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t(creatingNewEntity ? 'Successfully created collection' : 'Successfully updated collection'));
+            toast(
+                i18n.t(
+                    creatingNewEntity ? 'Successfully created collection' : 'Successfully updated collection',
+                ),
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -147,7 +152,15 @@ function CollectionDetailPage() {
                             control={form.control}
                             name="slug"
                             label={<Trans>Slug</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="slug"
+                                    watchFieldName="name"
+                                    entityName="Collection"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                     <TranslatableFormFieldWrapper

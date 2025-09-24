@@ -15,3 +15,6 @@ export * from './product-multi-selector-input.js';
 // Relation selector components
 export * from './relation-input.js';
 export * from './relation-selector.js';
+
+// Slug input component
+export * from './slug-input.js';

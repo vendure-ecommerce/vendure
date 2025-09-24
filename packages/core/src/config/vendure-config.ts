@@ -31,6 +31,7 @@ import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifi
 import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
+import { SlugStrategy } from './entity/slug-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -1112,6 +1113,15 @@ export interface EntityOptions {
      * @default []
      */
     metadataModifiers?: EntityMetadataModifier[];
+    /**
+     * @description
+     * Defines the strategy for generating slugs from input strings.
+     * Slugs are URL-friendly versions of text commonly used for entity identifiers in URLs.
+     *
+     * @since 3.5.0
+     * @default DefaultSlugStrategy
+     */
+    slugStrategy?: SlugStrategy;
 }
 
 /**

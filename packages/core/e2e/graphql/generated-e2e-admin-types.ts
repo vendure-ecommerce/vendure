@@ -12435,6 +12435,12 @@ export type GetCustomerIdsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetCustomerIdsQuery = { customers: { items: Array<{ id: string }> } };
 
+export type SlugForEntityQueryVariables = Exact<{
+    input: SlugForEntityInput;
+}>;
+
+export type SlugForEntityQuery = { slugForEntity: string };
+
 export type StockLocationFragment = { id: string; name: string; description: string };
 
 export type GetStockLocationQueryVariables = Exact<{
@@ -38881,6 +38887,42 @@ export const GetCustomerIdsDocument = {
         },
     ],
 } as unknown as DocumentNode<GetCustomerIdsQuery, GetCustomerIdsQueryVariables>;
+export const SlugForEntityDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'SlugForEntity' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SlugForEntityInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'slugForEntity' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<SlugForEntityQuery, SlugForEntityQueryVariables>;
 export const GetStockLocationDocument = {
     kind: 'Document',
     definitions: [

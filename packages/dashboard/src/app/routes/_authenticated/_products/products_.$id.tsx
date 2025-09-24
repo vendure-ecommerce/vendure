@@ -1,4 +1,5 @@
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { SlugInput } from '@/vdb/components/data-input/slug-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -81,7 +82,9 @@ function ProductDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product' : 'Successfully updated product'));
+            toast.success(
+                i18n.t(creatingNewEntity ? 'Successfully created product' : 'Successfully updated product'),
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -133,7 +136,15 @@ function ProductDetailPage() {
                             control={form.control}
                             name="slug"
                             label={<Trans>Slug</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    {...field}
+                                    entityName="Product"
+                                    fieldName="slug"
+                                    watchFieldName="name"
+                                    entityId={entity?.id}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
 
