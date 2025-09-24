@@ -5,6 +5,7 @@ import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
@@ -146,6 +147,7 @@ export function SlugInput({
     name,
     ...props
 }: SlugInputProps) {
+    const { i18n } = useLingui();
     const form = useFormContext();
     const { contentLanguage } = useUserSettings().settings;
     const isFormReadonly = isReadonlyField(fieldDef);
@@ -228,9 +230,9 @@ export function SlugInput({
                     placeholder={
                         isReadonly
                             ? value
-                                ? 'Slug is set'
-                                : 'Slug will be generated automatically...'
-                            : 'Enter slug manually'
+                                ? i18n.t('Slug is set')
+                                : i18n.t('Slug will be generated automatically...')
+                            : i18n.t('Enter slug manually')
                     }
                     className={cn(
                         'pr-8',
@@ -256,7 +258,8 @@ export function SlugInput({
                             size="sm"
                             onClick={handleRegenerate}
                             className="shrink-0"
-                            title="Regenerate slug from source field"
+                            title={i18n.t('Regenerate slug from source field')}
+                            aria-label={i18n.t('Regenerate slug from source field')}
                             disabled={!watchedValue || isLoading}
                         >
                             <RefreshCw className="h-4 w-4" />
@@ -269,7 +272,8 @@ export function SlugInput({
                         size="sm"
                         onClick={toggleReadonly}
                         className="shrink-0"
-                        title={isManuallyReadonly ? 'Edit slug manually' : 'Generate slug automatically'}
+                        title={isManuallyReadonly ? i18n.t('Edit slug manually') : i18n.t('Generate slug automatically')}
+                        aria-label={isManuallyReadonly ? i18n.t('Edit slug manually') : i18n.t('Generate slug automatically')}
                     >
                         {isManuallyReadonly ? <Edit className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
                     </Button>
