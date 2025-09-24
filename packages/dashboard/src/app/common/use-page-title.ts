@@ -15,13 +15,8 @@ export function usePageTitle() {
     useEffect(() => {
         const lastMatch = matches.at(-1);
         const breadcrumb = (lastMatch?.loaderData as any)?.breadcrumb;
-        let breadcrumbTitle = '';
-        if (typeof breadcrumb === 'function') {
-            breadcrumbTitle = renderNodeAsString(breadcrumb());
-        }
-        if (Array.isArray(breadcrumb) && breadcrumb.length > 0) {
-            breadcrumbTitle = breadcrumb.at(-1);
-        }
+
+        const breadcrumbTitle = normalizeBreadcrumb(breadcrumb);
         setPageTitle([breadcrumbTitle, DEFAULT_TITLE].filter(x => !!x).join(' • '));
     }, [matches]);
 
@@ -42,4 +37,50 @@ const renderNodeAsString = function (reactNode: React.ReactNode): string {
         string += renderNodeAsString((reactNode as ReactElement<any>).props.children);
     }
     return string;
+};
+
+/**
+ * Recursively normalizes a breadcrumb value to a string.
+ * Handles functions, arrays, objects with labels, and React nodes.
+ */
+export const normalizeBreadcrumb = (value: any, visited = new WeakSet()): string => {
+    // Handle null/undefined
+    if (value == null) {
+        return '';
+    }
+
+    // If it's a function, call it and normalize the result
+    if (typeof value === 'function') {
+        return normalizeBreadcrumb(value(), visited);
+    }
+
+    // If it's already a string, return it
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    // If it's an array, normalize the last element
+    if (Array.isArray(value)) {
+        if (value.length === 0) {
+            return '';
+        }
+        return normalizeBreadcrumb(value.at(-1), visited);
+    }
+
+    // For objects, check for circular references
+    if (typeof value === 'object') {
+        // Prevent circular reference infinite loops
+        if (visited.has(value)) {
+            return '';
+        }
+        visited.add(value);
+
+        // If it's an object with a label property, normalize the label
+        if ('label' in value) {
+            return normalizeBreadcrumb(value.label, visited);
+        }
+    }
+
+    // For everything else (React nodes, numbers, etc.), use renderNodeAsString
+    return renderNodeAsString(value);
 };
