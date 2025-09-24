@@ -1,47 +1,35 @@
 import { Accordion } from '@/vdb/components/ui/accordion.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
 import { testEligibleShippingMethodsDocument } from '../shipping-methods.graphql.js';
-import { TestAddress, TestAddressForm } from './test-address-form.js';
-import { TestOrderBuilder, TestOrderLine } from './test-order-builder.js';
+import { TestAddressForm } from './test-address-form.js';
+import { TestOrderBuilder } from './test-order-builder.js';
 import { TestShippingMethodsResult } from './test-shipping-methods-result.js';
+import { useShippingMethodTestState } from './use-shipping-method-test-state.js';
 
 export function TestShippingMethods() {
-    const [testAddress, setTestAddress] = useState<TestAddress | null>(null);
-    const [testOrderLines, setTestOrderLines] = useState<TestOrderLine[]>([]);
-    const [testDataUpdated, setTestDataUpdated] = useState(true); // Start with true for initial test
-    const [hasTestedOnce, setHasTestedOnce] = useState(false);
-    const [expandedAccordions, setExpandedAccordions] = useState<string[]>([
-        'test-order',
-        'shipping-address',
-    ]);
-    const [lastTestedAddress, setLastTestedAddress] = useState<TestAddress | null>(null);
-    const [lastTestedOrderLines, setLastTestedOrderLines] = useState<TestOrderLine[]>([]);
-
-    const allTestDataPresent = !!(testAddress && testOrderLines && testOrderLines.length > 0);
+    const {
+        testAddress,
+        testOrderLines,
+        testDataUpdated,
+        hasTestedOnce,
+        expandedAccordions,
+        setExpandedAccordions,
+        allTestDataPresent,
+        handleAddressChange,
+        handleOrderLinesChange,
+        markTestRun,
+    } = useShippingMethodTestState();
 
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['testEligibleShippingMethods', testAddress, testOrderLines],
-        networkMode: 'always',
         queryFn: async () => {
             if (!testAddress || !testOrderLines.length) {
                 return { testEligibleShippingMethods: [] };
             }
-
             return api.query(testEligibleShippingMethodsDocument, {
                 input: {
-                    shippingAddress: {
-                        fullName: testAddress.fullName,
-                        company: testAddress.company,
-                        streetLine1: testAddress.streetLine1,
-                        streetLine2: testAddress.streetLine2,
-                        city: testAddress.city,
-                        province: testAddress.province,
-                        postalCode: testAddress.postalCode,
-                        countryCode: testAddress.countryCode,
-                        phoneNumber: testAddress.phoneNumber,
-                    },
+                    shippingAddress: testAddress,
                     lines: testOrderLines.map(l => ({
                         productVariantId: l.id,
                         quantity: l.quantity,
@@ -49,40 +37,14 @@ export function TestShippingMethods() {
                 },
             });
         },
-        enabled: false, // Only fetch when explicitly triggered via refetch()
+        enabled: false,
     });
 
     const testResult = data?.testEligibleShippingMethods || [];
 
-    const handleAddressChange = useCallback(
-        (address: TestAddress) => {
-            setTestAddress(address);
-            // Only mark as updated if the data actually changed from what was last tested
-            if (hasTestedOnce && JSON.stringify(address) !== JSON.stringify(lastTestedAddress)) {
-                setTestDataUpdated(true);
-            }
-        },
-        [hasTestedOnce, lastTestedAddress],
-    );
-
-    const handleOrderLinesChange = useCallback(
-        (lines: TestOrderLine[]) => {
-            setTestOrderLines(lines);
-            // Only mark as updated if the data actually changed from what was last tested
-            if (hasTestedOnce && JSON.stringify(lines) !== JSON.stringify(lastTestedOrderLines)) {
-                setTestDataUpdated(true);
-            }
-        },
-        [hasTestedOnce, lastTestedOrderLines],
-    );
-
     const runTest = () => {
         if (allTestDataPresent) {
-            setTestDataUpdated(false);
-            setHasTestedOnce(true);
-            setLastTestedAddress(testAddress);
-            setLastTestedOrderLines(testOrderLines);
-            setExpandedAccordions([]); // Collapse all accordions
+            markTestRun();
             refetch();
         }
     };
