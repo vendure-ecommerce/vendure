@@ -50,5 +50,5 @@ export interface SlugStrategy extends InjectableStrategy {
      * @param params The parameters for slug generation
      * @returns A URL-friendly slug string
      */
-    generate(ctx: RequestContext, params: SlugGenerateParams): string;
+    generate(ctx: RequestContext, params: SlugGenerateParams): string | Promise<string>;
 }

@@ -44,7 +44,7 @@ export class EntitySlugService {
         const { entityMetadata, actualEntityName } = this.findEntityWithField(entityName, fieldName);
 
         const repository = this.connection.getRepository(ctx, entityMetadata.target);
-        const baseSlug = this.slugService.generate(ctx, {
+        const baseSlug = await this.slugService.generate(ctx, {
             value: inputValue,
             entityName: actualEntityName,
             fieldName,

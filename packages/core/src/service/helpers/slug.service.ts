@@ -22,11 +22,11 @@ export class SlugService {
      * @param params The parameters for slug generation
      * @returns A URL-friendly slug string
      */
-    generate(ctx: RequestContext, params: SlugGenerateParams): string {
+    async generate(ctx: RequestContext, params: SlugGenerateParams): Promise<string> {
         const strategy = this.configService.entityOptions.slugStrategy;
         if (!strategy) {
             throw new Error('No SlugStrategy configured');
         }
-        return strategy.generate(ctx, params);
+        return await strategy.generate(ctx, params);
     }
 }
