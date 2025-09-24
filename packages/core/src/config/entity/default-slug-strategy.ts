@@ -26,7 +26,7 @@ export class DefaultSlugStrategy implements SlugStrategy {
             return '';
         }
 
-        let result = input
+        const result = input
             .normalize('NFD') // Normalize unicode characters
             .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
             .toLowerCase()
@@ -34,14 +34,10 @@ export class DefaultSlugStrategy implements SlugStrategy {
             .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
             .replace(/\s+/g, '-'); // Replace spaces with hyphens
 
-        // Collapse multiple hyphens without regex to avoid ReDoS
-        while (result.includes('--')) {
-            result = result.replace(/--/g, '-');
-        }
-
-        // Remove leading and trailing hyphens without alternation
-        result = result.replace(/^-+/g, '').replace(/-+$/g, '');
-
-        return result;
+        // Split by hyphen, filter out empty strings, and rejoin to handle multiple hyphens
+        return result
+            .split('-')
+            .filter(part => part.length > 0)
+            .join('-');
     }
 }
