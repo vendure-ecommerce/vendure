@@ -315,6 +315,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1319,6 +1321,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1524,6 +1528,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1859,6 +1865,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2066,6 +2074,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2534,6 +2544,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2549,6 +2561,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -4933,6 +4947,8 @@ export type Query = {
     shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
     shippingMethod?: Maybe<ShippingMethod>;
     shippingMethods: ShippingMethodList;
+    /** Generate slug for entity */
+    slugForEntity: Scalars['String']['output'];
     stockLocation?: Maybe<StockLocation>;
     stockLocations: StockLocationList;
     tag: Tag;
@@ -5143,6 +5159,10 @@ export type QueryShippingMethodsArgs = {
     options?: InputMaybe<ShippingMethodListOptions>;
 };
 
+export type QuerySlugForEntityArgs = {
+    input: SlugForEntityInput;
+};
+
 export type QueryStockLocationArgs = {
     id: Scalars['ID']['input'];
 };
@@ -5300,6 +5320,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5717,6 +5739,13 @@ export type SinglePrice = {
     value: Scalars['Money']['output'];
 };
 
+export type SlugForEntityInput = {
+    entityId?: InputMaybe<Scalars['ID']['input']>;
+    entityName: Scalars['String']['input'];
+    fieldName: Scalars['String']['input'];
+    inputValue: Scalars['String']['input'];
+};
+
 export enum SortOrder {
     ASC = 'ASC',
     DESC = 'DESC',
@@ -5826,6 +5855,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5876,6 +5907,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6101,6 +6134,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -12222,12 +12257,6 @@ export type GetSettingsStoreValueQueryVariables = Exact<{
 
 export type GetSettingsStoreValueQuery = { getSettingsStoreValue?: any | null };
 
-export type GetSettingsStoreValuesQueryVariables = Exact<{
-    keys: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-export type GetSettingsStoreValuesQuery = { getSettingsStoreValues?: any | null };
-
 export type SetSettingsStoreValueMutationVariables = Exact<{
     input: SettingsStoreInput;
 }>;
@@ -12235,6 +12264,12 @@ export type SetSettingsStoreValueMutationVariables = Exact<{
 export type SetSettingsStoreValueMutation = {
     setSettingsStoreValue: { key: string; result: boolean; error?: string | null };
 };
+
+export type GetSettingsStoreValuesQueryVariables = Exact<{
+    keys: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+export type GetSettingsStoreValuesQuery = { getSettingsStoreValues?: any | null };
 
 export type SetSettingsStoreValuesMutationVariables = Exact<{
     inputs: Array<SettingsStoreInput> | SettingsStoreInput;
@@ -37850,48 +37885,6 @@ export const GetSettingsStoreValueDocument = {
         },
     ],
 } as unknown as DocumentNode<GetSettingsStoreValueQuery, GetSettingsStoreValueQueryVariables>;
-export const GetSettingsStoreValuesDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'GetSettingsStoreValues' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'ListType',
-                            type: {
-                                kind: 'NonNullType',
-                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-                            },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'getSettingsStoreValues' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'keys' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
-                            },
-                        ],
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<GetSettingsStoreValuesQuery, GetSettingsStoreValuesQueryVariables>;
 export const SetSettingsStoreValueDocument = {
     kind: 'Document',
     definitions: [
@@ -37936,6 +37929,48 @@ export const SetSettingsStoreValueDocument = {
         },
     ],
 } as unknown as DocumentNode<SetSettingsStoreValueMutation, SetSettingsStoreValueMutationVariables>;
+export const GetSettingsStoreValuesDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetSettingsStoreValues' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'ListType',
+                            type: {
+                                kind: 'NonNullType',
+                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'getSettingsStoreValues' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'keys' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'keys' } },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetSettingsStoreValuesQuery, GetSettingsStoreValuesQueryVariables>;
 export const SetSettingsStoreValuesDocument = {
     kind: 'Document',
     definitions: [
