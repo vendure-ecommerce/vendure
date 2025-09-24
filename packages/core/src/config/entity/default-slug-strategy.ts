@@ -20,7 +20,7 @@ import { SlugGenerateParams, SlugStrategy } from './slug-strategy';
  * ```
  *
  * @docsCategory configuration
- * @since 3.x.x
+ * @since 3.5.0
  */
 export class DefaultSlugStrategy implements SlugStrategy {
     generate(ctx: RequestContext, params: SlugGenerateParams): string {

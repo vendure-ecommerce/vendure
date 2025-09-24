@@ -8,7 +8,7 @@ import { ConfigService, SlugGenerateParams } from '../../config';
  * A service that handles slug generation using the configured SlugStrategy.
  *
  * @docsCategory services
- * @since 3.x.x
+ * @since 3.5.0
  */
 @Injectable()
 export class SlugService {

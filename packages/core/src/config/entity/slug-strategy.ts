@@ -39,7 +39,7 @@ export interface SlugGenerateParams {
  * ```
  *
  * @docsCategory configuration
- * @since 3.x.x
+ * @since 3.5.0
  */
 export interface SlugStrategy extends InjectableStrategy {
     /**

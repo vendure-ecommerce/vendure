@@ -36,7 +36,7 @@ export interface GenerateSlugFromInputParams {
  * and handling conflicts by appending numbers.
  *
  * @docsCategory services
- * @since 3.x.x
+ * @since 3.5.0
  */
 @Injectable()
 export class EntitySlugService {
