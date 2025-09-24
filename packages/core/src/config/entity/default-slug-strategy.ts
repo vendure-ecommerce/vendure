@@ -26,14 +26,22 @@ export class DefaultSlugStrategy implements SlugStrategy {
             return '';
         }
 
-        return input
+        let result = input
             .normalize('NFD') // Normalize unicode characters
             .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
             .toLowerCase()
             .trim()
             .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-            .replace(/\s+/g, '-') // Replace spaces with hyphens
-            .replace(/-+/g, '-') // Collapse multiple hyphens
-            .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+            .replace(/\s+/g, '-'); // Replace spaces with hyphens
+
+        // Collapse multiple hyphens without regex to avoid ReDoS
+        while (result.includes('--')) {
+            result = result.replace(/--/g, '-');
+        }
+
+        // Remove leading and trailing hyphens without alternation
+        result = result.replace(/^-+/g, '').replace(/-+$/g, '');
+
+        return result;
     }
 }
