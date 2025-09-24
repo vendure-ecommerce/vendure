@@ -3,20 +3,21 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
-import { Edit, Lock } from 'lucide-react';
+import { Edit, Lock, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-import { slugForEntityDocument } from './slug-input.graphql.js';
+const slugForEntityDocument = graphql(`
+    query SlugForEntity($input: SlugForEntityInput!) {
+        slugForEntity(input: $input)
+    }
+`);
 
-/**
- * Helper function to resolve the actual field path for watching.
- * Handles both translatable and non-translatable fields intelligently.
- */
 function resolveWatchFieldPath(
     currentFieldName: string,
     watchFieldName: string,
@@ -28,21 +29,17 @@ function resolveWatchFieldPath(
     if (translationsMatch) {
         const index = translationsMatch[1];
 
-        // First, check if the watch field exists in the translation
         if (formValues?.translations?.[index]?.hasOwnProperty(watchFieldName)) {
             return `translations.${index}.${watchFieldName}`;
         }
 
-        // If not in translation, check if it exists on the base entity
         if (formValues?.hasOwnProperty(watchFieldName)) {
             return watchFieldName;
         }
 
-        // Fallback to translation path (might be a new field)
         return `translations.${index}.${watchFieldName}`;
     }
 
-    // Not in translatable context - check if we have translations and the field exists there
     if (formValues?.translations && Array.isArray(formValues.translations)) {
         const translations = formValues.translations;
         const existingIndex = translations.findIndex(
@@ -50,7 +47,6 @@ function resolveWatchFieldPath(
         );
         const index = existingIndex === -1 ? (translations.length > 0 ? 0 : -1) : existingIndex;
 
-        // Check if the watch field exists in translations
         if (index >= 0 && translations[index]?.hasOwnProperty(watchFieldName)) {
             return `translations.${index}.${watchFieldName}`;
         }
@@ -100,8 +96,9 @@ export interface SlugInputProps extends DashboardFormComponentProps {
  * @description
  * A component for generating and displaying slugs based on a watched field.
  * The component watches a source field for changes, debounces the input,
- * and generates a unique slug via the Admin API. The input is readonly by default
- * but can be made editable with a toggle button.
+ * and generates a unique slug via the Admin API. The slug is only auto-generated
+ * when it's empty. For existing slugs, a regenerate button allows manual regeneration.
+ * The input is readonly by default but can be made editable with a toggle button.
  *
  * @example
  * ```tsx
@@ -167,9 +164,12 @@ export function SlugInput({
         name: actualWatchFieldName,
     });
 
+    const watchFieldState = form.getFieldState(actualWatchFieldName);
     const debouncedWatchedValue = useDebounce(watchedValue, 500);
 
-    const { data: generatedSlug, isLoading } = useQuery({
+    const shouldAutoGenerate = isReadonly && !value && watchFieldState.isDirty;
+
+    const { data: generatedSlug, isLoading, refetch } = useQuery({
         queryKey: ['slugForEntity', entityName, fieldName, debouncedWatchedValue, entityId],
         queryFn: async () => {
             if (!debouncedWatchedValue) {
@@ -187,11 +187,9 @@ export function SlugInput({
 
             return result.slugForEntity;
         },
-        enabled: !!debouncedWatchedValue && isReadonly,
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        enabled: !!debouncedWatchedValue && shouldAutoGenerate,
     });
 
-    // Update the form value when a new slug is generated (only in readonly mode)
     useEffect(() => {
         if (isReadonly && generatedSlug && generatedSlug !== value) {
             onChange?.(generatedSlug);
@@ -204,6 +202,19 @@ export function SlugInput({
         }
     };
 
+    const handleRegenerate = async () => {
+        if (watchedValue) {
+            const result = await refetch();
+            if (result.data) {
+                onChange?.(result.data);
+            }
+        }
+    };
+
+    const handleChange = (newValue: string) => {
+        onChange?.(newValue);
+    };
+
     const displayValue = isReadonly && generatedSlug ? generatedSlug : value || '';
     const showLoading = isLoading && isReadonly;
 
@@ -212,10 +223,14 @@ export function SlugInput({
             <div className="flex-1 relative">
                 <Input
                     value={displayValue}
-                    onChange={e => onChange?.(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     disabled={isReadonly}
                     placeholder={
-                        isReadonly ? 'Slug will be generated automatically...' : 'Enter slug manually'
+                        isReadonly
+                            ? value
+                                ? 'Slug is set'
+                                : 'Slug will be generated automatically...'
+                            : 'Enter slug manually'
                     }
                     className={cn(
                         'pr-8',
@@ -233,16 +248,32 @@ export function SlugInput({
             </div>
 
             {!isFormReadonly && (
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleReadonly}
-                    className="shrink-0"
-                    title={isManuallyReadonly ? 'Edit slug manually' : 'Generate slug automatically'}
-                >
-                    {isManuallyReadonly ? <Edit className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-                </Button>
+                <>
+                    {isManuallyReadonly && value && (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRegenerate}
+                            className="shrink-0"
+                            title="Regenerate slug from source field"
+                            disabled={!watchedValue || isLoading}
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
+                    )}
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={toggleReadonly}
+                        className="shrink-0"
+                        title={isManuallyReadonly ? 'Edit slug manually' : 'Generate slug automatically'}
+                    >
+                        {isManuallyReadonly ? <Edit className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                    </Button>
+                </>
             )}
         </div>
     );
