@@ -19,7 +19,7 @@ import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { PermissionsGrid } from './components/permissions-grid.js';
+import { PermissionsTableGrid } from './components/permissions-table-grid.js';
 import { createRoleDocument, roleDetailDocument, updateRoleDocument } from './roles.graphql.js';
 
 const pageId = 'role-detail';
@@ -61,7 +61,9 @@ function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t(creatingNewEntity ? 'Successfully created role' : 'Successfully updated role'));
+            toast.success(
+                i18n.t(creatingNewEntity ? 'Successfully created role' : 'Successfully updated role'),
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -132,7 +134,7 @@ function RoleDetailPage() {
                             name="permissions"
                             label={<Trans>Permissions</Trans>}
                             render={({ field }) => (
-                                <PermissionsGrid
+                                <PermissionsTableGrid
                                     value={field.value ?? []}
                                     onChange={value => field.onChange(value)}
                                 />
