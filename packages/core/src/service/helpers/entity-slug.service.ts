@@ -56,18 +56,33 @@ export class EntitySlugService {
      */
     async generateSlugFromInput(ctx: RequestContext, params: GenerateSlugFromInputParams): Promise<string> {
         const { entityName, fieldName, inputValue, entityId } = params;
-        const { entityMetadata, actualEntityName } = this.findEntityWithField(entityName, fieldName);
 
-        const repository = this.connection.getRepository(ctx, entityMetadata.target);
+        // Short-circuit for empty inputValue
         const baseSlug = await this.slugService.generate(ctx, {
             value: inputValue,
-            entityName: actualEntityName,
+            entityName,
             fieldName,
         });
+
+        if (!baseSlug) {
+            return baseSlug;
+        }
+
+        const { entityMetadata, resolvedColumnName, isTranslationEntity, ownerRelationColumnName } =
+            this.findEntityWithField(entityName, fieldName);
+
+        const repository = this.connection.getRepository(ctx, entityMetadata.target);
         let slug = baseSlug;
         let counter = 1;
 
-        while (await this.fieldValueExists(ctx, repository, fieldName, slug, entityId)) {
+        const exclusionConfig =
+            isTranslationEntity && entityId && ownerRelationColumnName
+                ? { columnName: ownerRelationColumnName, value: entityId }
+                : entityId
+                  ? { columnName: 'id', value: entityId }
+                  : undefined;
+
+        while (await this.fieldValueExists(ctx, repository, resolvedColumnName, slug, exclusionConfig)) {
             slug = `${baseSlug}-${counter}`;
             counter++;
         }
@@ -82,7 +97,7 @@ export class EntitySlugService {
      *
      * @param entityName The base entity name
      * @param fieldName The field name to find
-     * @returns Object containing entityMetadata and actualEntityName
+     * @returns Object containing entityMetadata, actualEntityName, resolvedColumnName, and isTranslationEntity
      */
     private findEntityWithField(
         entityName: string,
@@ -90,6 +105,9 @@ export class EntitySlugService {
     ): {
         entityMetadata: EntityMetadata;
         actualEntityName: string;
+        resolvedColumnName: string;
+        isTranslationEntity: boolean;
+        ownerRelationColumnName?: string;
     } {
         // First, try to find the base entity
         const entityMetadata = this.connection.rawConnection.entityMetadatas.find(
@@ -103,10 +121,15 @@ export class EntitySlugService {
         }
 
         // Check if the field exists on the base entity
-        const baseEntityHasField = entityMetadata.columns.find(col => col.propertyName === fieldName);
+        const baseEntityColumn = entityMetadata.columns.find(col => col.propertyName === fieldName);
 
-        if (baseEntityHasField) {
-            return { entityMetadata, actualEntityName: entityName };
+        if (baseEntityColumn) {
+            return {
+                entityMetadata,
+                actualEntityName: entityName,
+                resolvedColumnName: baseEntityColumn.databaseName,
+                isTranslationEntity: false,
+            };
         }
 
         // If field doesn't exist on base entity, try to find the translation entity through relations
@@ -129,12 +152,20 @@ export class EntitySlugService {
             });
         }
 
-        const translationEntityHasField = translationMetadata.columns.find(
-            col => col.propertyName === fieldName,
-        );
+        const translationColumn = translationMetadata.columns.find(col => col.propertyName === fieldName);
 
-        if (translationEntityHasField) {
-            return { entityMetadata: translationMetadata, actualEntityName: translationMetadata.name };
+        if (translationColumn) {
+            // Find the owner relation column (e.g., 'baseId', 'productId', etc.)
+            const ownerRelation = translationMetadata.relations.find(r => r.type === entityMetadata.target);
+            const ownerColumnName = ownerRelation?.joinColumns?.[0]?.databaseName || 'baseId';
+
+            return {
+                entityMetadata: translationMetadata,
+                actualEntityName: translationMetadata.name,
+                resolvedColumnName: translationColumn.databaseName,
+                isTranslationEntity: true,
+                ownerRelationColumnName: ownerColumnName,
+            };
         }
 
         throw new UserInputError(`error.entity-has-no-field`, {
@@ -144,16 +175,20 @@ export class EntitySlugService {
     }
 
     private async fieldValueExists(
-        ctx: RequestContext,
+        _ctx: RequestContext,
         repository: Repository<ObjectLiteral>,
-        fieldName: string,
+        resolvedColumnName: string,
         value: string,
-        excludeId?: string | number,
+        exclusionConfig?: { columnName: string; value: string | number },
     ): Promise<boolean> {
-        const qb = repository.createQueryBuilder('entity').where(`entity.${fieldName} = :value`, { value });
+        const qb = repository
+            .createQueryBuilder('entity')
+            .where(`entity.${resolvedColumnName} = :value`, { value });
 
-        if (excludeId) {
-            qb.andWhere('entity.id != :id', { id: excludeId });
+        if (exclusionConfig) {
+            qb.andWhere(`entity.${exclusionConfig.columnName} != :excludeValue`, {
+                excludeValue: exclusionConfig.value,
+            });
         }
 
         const count = await qb.getCount();

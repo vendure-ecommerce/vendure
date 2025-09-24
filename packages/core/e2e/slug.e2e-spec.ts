@@ -6,7 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { CREATE_PRODUCT } from './graphql/shared-definitions';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
+import { CREATE_COLLECTION, CREATE_PRODUCT } from './graphql/shared-definitions';
 
 describe('Slug generation', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
@@ -358,6 +359,266 @@ describe('Slug generation', () => {
 
                 expect(result.slugForEntity).toBe('summer-collection-2024');
             });
+
+            it('handles multi-language slug generation', async () => {
+                // Create a product with English translation first
+                const createProduct = await adminClient.query(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'English Product',
+                                slug: 'english-product',
+                                description: 'Product in English',
+                            },
+                        ],
+                    },
+                });
+
+                const productId = createProduct.createProduct.id;
+
+                // Test generating slug for German translation of the same product
+                const germanResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Deutsches Produkt',
+                        entityId: productId,
+                    },
+                });
+
+                expect(germanResult.slugForEntity).toBe('deutsches-produkt');
+
+                // Test generating slug for French translation
+                const frenchResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Produit Français',
+                        entityId: productId,
+                    },
+                });
+
+                expect(frenchResult.slugForEntity).toBe('produit-francais');
+            });
+
+            it('handles uniqueness across different language translations', async () => {
+                // Create first product with multiple language translations
+                const product1 = await adminClient.query(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Computer',
+                                slug: 'computer',
+                                description: 'A computer',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'Computer',
+                                slug: 'computer-de',
+                                description: 'Ein Computer',
+                            },
+                        ],
+                    },
+                });
+
+                // Generate slug for a new product with same English name
+                const englishSlugResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Computer',
+                    },
+                });
+
+                expect(englishSlugResult.slugForEntity).toBe('computer-1');
+
+                // Generate slug with German input that also conflicts
+                const germanSlugResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Computer DE',
+                    },
+                });
+
+                expect(germanSlugResult.slugForEntity).toBe('computer-de-1');
+
+                // Generate slug with French input that doesn't conflict
+                const frenchSlugResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Ordinateur',
+                    },
+                });
+
+                expect(frenchSlugResult.slugForEntity).toBe('ordinateur');
+            });
+
+            it('handles translation entity exclusion correctly with multiple languages', async () => {
+                // Create a product with multiple language translations
+                const createProduct = await adminClient.query(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Multilingual Product',
+                                slug: 'multilingual-product',
+                                description: 'Product in English',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'Mehrsprachiges Produkt',
+                                slug: 'mehrsprachiges-produkt',
+                                description: 'Produkt auf Deutsch',
+                            },
+                        ],
+                    },
+                });
+
+                const productId = createProduct.createProduct.id;
+
+                // Update English translation - should not conflict with itself
+                const englishUpdateResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Multilingual Product Updated',
+                        entityId: productId,
+                    },
+                });
+
+                expect(englishUpdateResult.slugForEntity).toBe('multilingual-product-updated');
+
+                // Update German translation - should not conflict with itself
+                const germanUpdateResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'Mehrsprachiges Produkt Aktualisiert',
+                        entityId: productId,
+                    },
+                });
+
+                expect(germanUpdateResult.slugForEntity).toBe('mehrsprachiges-produkt-aktualisiert');
+            });
+        });
+
+        describe('multi-language collections', () => {
+            it('generates unique slugs for collection translations', async () => {
+                // Create a collection with multiple language translations
+                const createCollection = await adminClient.query(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Tech Collection',
+                                slug: 'tech-collection',
+                                description: 'Technology products',
+                            },
+                            {
+                                languageCode: LanguageCode.fr,
+                                name: 'Collection Tech',
+                                slug: 'collection-tech',
+                                description: 'Produits technologiques',
+                            },
+                        ],
+                        filters: [],
+                    },
+                });
+
+                const collectionId = createCollection.createCollection.id;
+
+                // Test generating new slug for Spanish translation
+                const spanishResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Collection',
+                        fieldName: 'slug',
+                        inputValue: 'Colección Tecnológica',
+                        entityId: collectionId,
+                    },
+                });
+
+                expect(spanishResult.slugForEntity).toBe('coleccion-tecnologica');
+            });
+
+            it('handles collection slug conflicts across languages', async () => {
+                // Create collection with English name
+                await adminClient.query(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Fashion Collection',
+                                slug: 'fashion-collection',
+                                description: 'Fashion items',
+                            },
+                        ],
+                        filters: [],
+                    },
+                });
+
+                // Generate slug for another collection with similar name
+                const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Collection',
+                        fieldName: 'slug',
+                        inputValue: 'Fashion Collection',
+                    },
+                });
+
+                expect(result.slugForEntity).toBe('fashion-collection-1');
+
+                // Test with international name that transliterates to similar slug
+                const internationalResult = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Collection',
+                        fieldName: 'slug',
+                        inputValue: 'Façhion Collêction',
+                    },
+                });
+
+                expect(internationalResult.slugForEntity).toBe('fachion-collection');
+            });
+        });
+
+        describe('international character handling', () => {
+            it('handles various language scripts in slug generation', async () => {
+                // Test different language inputs
+                const testCases = [
+                    { input: 'Café Français', expected: 'cafe-francais' },
+                    { input: 'Niño Español', expected: 'nino-espanol' },
+                    { input: 'Größer Schön', expected: 'groer-schon' },
+                    { input: 'Naïve Résumé', expected: 'naive-resume' },
+                    { input: 'Crème Brûlée', expected: 'creme-brulee' },
+                    { input: 'Piñata Jalapeño', expected: 'pinata-jalapeno' },
+                ];
+
+                for (const testCase of testCases) {
+                    const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                        input: {
+                            entityName: 'Product',
+                            fieldName: 'slug',
+                            inputValue: testCase.input,
+                        },
+                    });
+                    expect(result.slugForEntity).toBe(testCase.expected);
+                }
+            });
+
+            it('handles mixed language input', async () => {
+                const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        fieldName: 'slug',
+                        inputValue: 'English Français Español Deutsch Mix',
+                    },
+                });
+
+                expect(result.slugForEntity).toBe('english-francais-espanol-deutsch-mix');
+            });
         });
 
         describe('auto-detection functionality', () => {
@@ -398,6 +659,27 @@ describe('Slug generation', () => {
                 });
 
                 expect(result.slugForEntity).toBe('collection-auto-detection');
+            });
+
+            it('auto-detects translation entities for different languages', async () => {
+                // Test that auto-detection works regardless of the intended language
+                const testCases = [
+                    { input: 'Auto Detection English', expected: 'auto-detection-english' },
+                    { input: 'Détection Automatique', expected: 'detection-automatique' },
+                    { input: 'Detección Automática', expected: 'deteccion-automatica' },
+                    { input: 'Automatische Erkennung', expected: 'automatische-erkennung' },
+                ];
+
+                for (const testCase of testCases) {
+                    const result = await adminClient.query(SLUG_FOR_ENTITY, {
+                        input: {
+                            entityName: 'Product',
+                            fieldName: 'slug',
+                            inputValue: testCase.input,
+                        },
+                    });
+                    expect(result.slugForEntity).toBe(testCase.expected);
+                }
             });
         });
 
