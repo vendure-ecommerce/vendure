@@ -1658,4 +1658,183 @@ describe('includeOnlySelectedListFields', () => {
             expect(result1).toBe(result2);
         });
     });
+
+    describe('column dependencies', () => {
+        it('should include dependency fields even when not explicitly selected', () => {
+            const document = parse(`
+                query CollectionList($options: CollectionListOptions) {
+                    collections(options: $options) {
+                        items {
+                            id
+                            name
+                            slug
+                            children {
+                                id
+                                name
+                            }
+                            breadcrumbs {
+                                id
+                                name
+                            }
+                            position
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            // Select only 'name' but declare dependencies on 'children' and 'breadcrumbs'
+            const result = includeOnlySelectedListFields(document, [
+                {
+                    name: 'name',
+                    isCustomField: false,
+                    dependencies: ['children', 'breadcrumbs'],
+                },
+            ]);
+
+            const resultQuery = normalizeQuery(print(result));
+
+            // Should include selected field
+            expect(resultQuery).toContain('name');
+
+            // Should include dependency fields
+            expect(resultQuery).toContain('children');
+            expect(resultQuery).toContain('breadcrumbs');
+
+            // Should exclude non-selected, non-dependency fields
+            expect(resultQuery).not.toContain('slug');
+            expect(resultQuery).not.toContain('position');
+        });
+
+        it('should handle multiple columns with different dependencies', () => {
+            const document = parse(`
+                query ProductList($options: ProductListOptions) {
+                    products(options: $options) {
+                        items {
+                            id
+                            name
+                            slug
+                            enabled
+                            variants {
+                                id
+                                name
+                            }
+                            assets {
+                                id
+                                preview
+                            }
+                            featuredAsset {
+                                id
+                                preview
+                            }
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            const result = includeOnlySelectedListFields(document, [
+                {
+                    name: 'name',
+                    isCustomField: false,
+                    dependencies: ['featuredAsset'], // For thumbnail display
+                },
+                {
+                    name: 'enabled',
+                    isCustomField: false,
+                    dependencies: ['variants'], // For variant count display
+                },
+            ]);
+
+            const resultQuery = normalizeQuery(print(result));
+
+            // Should include selected fields
+            expect(resultQuery).toContain('name');
+            expect(resultQuery).toContain('enabled');
+
+            // Should include dependency fields
+            expect(resultQuery).toContain('featuredAsset');
+            expect(resultQuery).toContain('variants');
+
+            // Should exclude non-selected, non-dependency fields
+            expect(resultQuery).not.toContain('slug');
+            expect(resultQuery).not.toContain('assets');
+        });
+
+        it('should cache correctly with dependencies', () => {
+            const document = parse(`
+                query TestList($options: TestListOptions) {
+                    tests(options: $options) {
+                        items {
+                            id
+                            name
+                            data
+                            metadata
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            const columnsWithDeps = [
+                {
+                    name: 'name',
+                    isCustomField: false,
+                    dependencies: ['metadata'],
+                },
+            ];
+
+            const result1 = includeOnlySelectedListFields(document, columnsWithDeps);
+            const result2 = includeOnlySelectedListFields(document, columnsWithDeps);
+
+            // Should return the same reference from cache
+            expect(result1).toBe(result2);
+        });
+
+        it('should handle dependencies with custom fields', () => {
+            const document = parse(`
+                query ProductList($options: ProductListOptions) {
+                    products(options: $options) {
+                        items {
+                            id
+                            name
+                            customFields {
+                                shortDescription
+                                isEcoFriendly
+                                relatedProducts {
+                                    id
+                                    name
+                                }
+                            }
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            const result = includeOnlySelectedListFields(document, [
+                {
+                    name: 'name',
+                    isCustomField: false,
+                    dependencies: ['customFields'], // Depends on custom fields for rendering logic
+                },
+                {
+                    name: 'shortDescription',
+                    isCustomField: true,
+                },
+            ]);
+
+            const resultQuery = normalizeQuery(print(result));
+
+            // Should include selected fields
+            expect(resultQuery).toContain('name');
+
+            // Should include customFields (as dependency and for custom field)
+            expect(resultQuery).toContain('customFields');
+            expect(resultQuery).toContain('shortDescription');
+
+            // Should include id for valid query
+            expect(resultQuery).toContain('id');
+        });
+    });
 });

@@ -90,7 +90,18 @@ export type AllItemFieldKeys<T extends TypedDocumentNode<any, any>> =
     | CustomFieldKeysOfItem<PaginatedListItemFields<T>>;
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>>;
+    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>> & {
+        meta?: {
+            /**
+             * @description
+             * Columns that rely on _other_ columns in order to correctly render,
+             * can declare those other columns as dependencies in order to ensure that
+             * those columns are always fetched, even when those columns are not explicitly
+             * included in the visible table columns.
+             */
+            dependencies?: Array<AllItemFieldKeys<T>>;
+        };
+    };
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -415,7 +426,11 @@ export function PaginatedListDataTable<
     // Get the actual visible columns and only fetch those
     const visibleColumns = columns
         .filter(c => columnVisibility[c.id as string])
-        .map(c => ({ name: c.id as string, isCustomField: (c.meta as any)?.isCustomField ?? false }));
+        .map(c => ({
+            name: c.id as string,
+            isCustomField: (c.meta as any)?.isCustomField ?? false,
+            dependencies: (c.meta as any)?.dependencies ?? [],
+        }));
     const minimalListQuery = includeOnlySelectedListFields(extendedListQuery, visibleColumns);
 
     const defaultQueryKey = [

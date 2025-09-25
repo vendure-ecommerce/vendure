@@ -58,11 +58,14 @@ function createDocumentFingerprint(document: DocumentNode): string {
  */
 function createCacheKey(
     document: DocumentNode,
-    selectedColumns: Array<{ name: string; isCustomField: boolean }>,
+    selectedColumns: Array<{ name: string; isCustomField: boolean; dependencies?: string[] }>,
 ): string {
     const docId = getDocumentId(document);
     const columnsKey = selectedColumns
-        .map(col => `${col.name}:${String(col.isCustomField)}`)
+        .map(col => {
+            const deps = col.dependencies ? col.dependencies.sort().join('+') : '';
+            return `${col.name}:${String(col.isCustomField)}${deps ? `:deps(${deps})` : ''}`;
+        })
         .sort()
         .join(',');
     return `${docId}|${columnsKey}`;
@@ -93,12 +96,28 @@ function createCacheKey(
  * and an array of selected columns, and returns a new document which only selects the
  * specified columns. So if `selectedColumns` equals `[{ name: 'id', isCustomField: false }]`,
  * then the resulting document's `items` fields would be `{ id }`.
+ *
+ * Columns can also declare dependencies on other fields that are required for rendering
+ * but not necessarily visible. For example:
+ * ```js
+ * selectedColumns = [{
+ *   name: 'name',
+ *   isCustomField: false,
+ *   dependencies: ['children', 'breadcrumbs'] // Always include these fields
+ * }]
+ * ```
+ * This ensures that cell renderers can safely access dependent fields even when they're
+ * not part of the visible column set.
+ *
+ * @param listQuery The GraphQL document to filter
+ * @param selectedColumns Array of column definitions with optional dependencies
  */
 export function includeOnlySelectedListFields<T extends DocumentNode>(
     listQuery: T,
     selectedColumns: Array<{
         name: string;
         isCustomField: boolean;
+        dependencies?: string[];
     }>,
 ): T {
     // If no columns selected, return the original document
@@ -115,9 +134,23 @@ export function includeOnlySelectedListFields<T extends DocumentNode>(
     // Get the query name to identify the main list query field
     const queryName = getQueryName(listQuery);
 
-    // Create a set of selected field names for quick lookup
-    const selectedFieldNames = new Set(selectedColumns.map(col => col.name));
-    const customFieldNames = new Set(selectedColumns.filter(col => col.isCustomField).map(col => col.name));
+    // Collect all required fields including dependencies
+    const allRequiredFields = new Set<string>();
+    const customFieldNames = new Set<string>();
+
+    selectedColumns.forEach(col => {
+        allRequiredFields.add(col.name);
+        if (col.isCustomField) {
+            customFieldNames.add(col.name);
+        }
+        // Add dependencies
+        col.dependencies?.forEach(dep => {
+            allRequiredFields.add(dep);
+            // Note: Dependencies are assumed to be regular fields unless they start with custom field patterns
+        });
+    });
+
+    const selectedFieldNames = allRequiredFields;
 
     // Collect all fragments from the document
     const fragments = collectFragments(listQuery);
