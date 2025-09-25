@@ -147,6 +147,40 @@ describe('ProductOption resolver', () => {
         expect(productOption?.name).toBe('Medium');
     });
 
+    it('productOptions query without groupId', async () => {
+        const { productOptions } = await adminClient.query<
+            Codegen.GetProductOptionsQuery,
+            Codegen.GetProductOptionsQueryVariables
+        >(GET_PRODUCT_OPTIONS, {});
+
+        expect(productOptions.items).toBeDefined();
+        expect(productOptions.totalItems).toBe(7);
+        // Should return all product options
+        const foundMediumOption = productOptions.items.find((o: any) => o.code === 'medium');
+        expect(foundMediumOption).toBeDefined();
+        expect(foundMediumOption?.name).toBe('Medium');
+        expect(foundMediumOption?.groupId).toBe(sizeGroup.id);
+    });
+
+    it('productOptions query with groupId', async () => {
+        const { productOptions } = await adminClient.query<
+            Codegen.GetProductOptionsQuery,
+            Codegen.GetProductOptionsQueryVariables
+        >(GET_PRODUCT_OPTIONS, {
+            groupId: sizeGroup.id,
+        });
+
+        expect(productOptions.items).toBeDefined();
+        expect(productOptions.totalItems).toBe(3);
+        // Should only return options from the specified group
+        productOptions.items.forEach((option: any) => {
+            expect(option.groupId).toBe(sizeGroup.id);
+        });
+        const foundMediumOption = productOptions.items.find((o: any) => o.code === 'medium');
+        expect(foundMediumOption).toBeDefined();
+        expect(foundMediumOption?.name).toBe('Medium');
+    });
+
     it('updateProductOption', async () => {
         const { updateProductOption } = await adminClient.query<
             Codegen.UpdateProductOptionMutation,
@@ -346,6 +380,20 @@ const DELETE_PRODUCT_OPTION = gql`
         deleteProductOption(id: $id) {
             result
             message
+        }
+    }
+`;
+
+const GET_PRODUCT_OPTIONS = gql`
+    query GetProductOptions($groupId: ID, $options: ProductOptionListOptions) {
+        productOptions(groupId: $groupId, options: $options) {
+            items {
+                id
+                code
+                name
+                groupId
+            }
+            totalItems
         }
     }
 `;

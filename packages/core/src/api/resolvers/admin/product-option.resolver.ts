@@ -10,7 +10,9 @@ import {
     QueryProductOptionArgs,
     QueryProductOptionGroupArgs,
     QueryProductOptionGroupsArgs,
+    QueryProductOptionsArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
@@ -88,6 +90,16 @@ export class ProductOptionResolver {
         @Relations(ProductOption) relations: RelationPaths<ProductOption>,
     ): Promise<Translated<ProductOption> | undefined> {
         return this.productOptionService.findOne(ctx, args.id, relations);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionsArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.productOptionService.findAll(ctx, args.options, args.groupId, relations);
     }
 
     @Transaction()
