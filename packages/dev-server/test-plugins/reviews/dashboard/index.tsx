@@ -19,6 +19,7 @@ import {
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
+import { ReviewSelectWithCreate } from './review-select-with-create';
 
 defineDashboardExtension({
     login: {
@@ -100,6 +101,10 @@ defineDashboardExtension({
             {
                 id: 'review-multi-select',
                 component: ReviewMultiSelect,
+            },
+            {
+                id: 'review-multi-select-with-create',
+                component: ReviewSelectWithCreate,
             },
         ],
     },
