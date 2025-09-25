@@ -425,7 +425,9 @@ export function PaginatedListDataTable<
     const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     // Get the actual visible columns and only fetch those
     const visibleColumns = columns
-        .filter(c => columnVisibility[c.id as string])
+        // Filter out invisible columns, but _always_ select "id"
+        // because it is usually needed.
+        .filter(c => columnVisibility[c.id as string] || c.id === 'id')
         .map(c => ({
             name: c.id as string,
             isCustomField: (c.meta as any)?.isCustomField ?? false,
