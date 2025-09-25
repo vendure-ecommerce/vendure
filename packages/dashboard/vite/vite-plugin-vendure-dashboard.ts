@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption } from 'vite';
@@ -109,7 +109,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         ...(options.disableTansStackRouterPlugin
             ? []
             : [
-                  TanStackRouterVite({
+                  tanstackRouter({
                       autoCodeSplitting: true,
                       routeFileIgnorePattern: '.graphql.ts|components|hooks|utils',
                       routesDirectory: path.join(packageRoot, 'src/app/routes'),

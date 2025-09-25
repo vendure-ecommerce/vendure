@@ -60,6 +60,16 @@ export const productVariantDetailDocument = graphql(
                         name
                     }
                 }
+                options {
+                    id
+                    name
+                    code
+                    group {
+                        id
+                        name
+                        code
+                    }
+                }
                 translations {
                     id
                     languageCode
