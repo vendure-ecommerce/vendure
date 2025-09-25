@@ -1,4 +1,5 @@
 import {
+    ArgumentNode,
     DocumentNode,
     FieldNode,
     FragmentDefinitionNode,
@@ -180,6 +181,117 @@ function getItemsFragments(document: DocumentNode, queryName: string): Set<strin
 }
 
 /**
+ * Context for filtering field selections
+ */
+interface FieldSelectionContext {
+    itemsField: FieldNode;
+    availableFields: Map<string, SelectionNode>;
+    fragmentSpreads: Map<string, FragmentSpreadNode>;
+    fragments: Record<string, FragmentDefinitionNode>;
+    neededFragments: Set<string>;
+    filteredSelections: SelectionNode[];
+}
+
+/**
+ * Check if a field is selected directly in the items field (not from a fragment)
+ */
+function isDirectField(fieldName: string, itemsField: FieldNode): boolean {
+    if (!itemsField.selectionSet) return false;
+    return itemsField.selectionSet.selections.some(
+        sel => sel.kind === Kind.FIELD && sel.name.value === fieldName,
+    );
+}
+
+/**
+ * Add a regular field to filtered selections
+ */
+function addRegularField(fieldName: string, context: FieldSelectionContext): void {
+    if (!context.availableFields.has(fieldName)) return;
+
+    if (isDirectField(fieldName, context.itemsField)) {
+        const fieldSelection = context.availableFields.get(fieldName);
+        if (fieldSelection) {
+            context.filteredSelections.push(fieldSelection);
+        }
+    } else {
+        // Field comes from a fragment - mark fragments as needed
+        for (const [fragName] of context.fragmentSpreads) {
+            const fragment = context.fragments[fragName];
+            if (fragment && fragmentContainsField(fragment, fieldName, context.fragments)) {
+                context.neededFragments.add(fragName);
+            }
+        }
+    }
+}
+
+/**
+ * Add custom fields to filtered selections
+ */
+function addCustomFields(customFieldNames: Set<string>, context: FieldSelectionContext): void {
+    if (customFieldNames.size === 0 || !context.availableFields.has('customFields')) return;
+
+    if (isDirectField('customFields', context.itemsField)) {
+        const customFieldsSelection = context.availableFields.get('customFields');
+        if (customFieldsSelection && customFieldsSelection.kind === Kind.FIELD) {
+            const filteredCustomFields = filterCustomFields(customFieldsSelection, customFieldNames);
+            if (filteredCustomFields) {
+                context.filteredSelections.push(filteredCustomFields);
+            }
+        }
+    } else {
+        // customFields comes from a fragment
+        for (const [fragName] of context.fragmentSpreads) {
+            const fragment = context.fragments[fragName];
+            if (fragment && fragmentContainsField(fragment, 'customFields', context.fragments)) {
+                context.neededFragments.add(fragName);
+            }
+        }
+    }
+}
+
+/**
+ * Ensure at least id field is included to maintain valid query
+ */
+function ensureIdField(context: FieldSelectionContext): void {
+    const hasValidFields =
+        context.filteredSelections.length > 0 &&
+        !(
+            context.filteredSelections.length === 1 &&
+            context.filteredSelections[0].kind === Kind.FIELD &&
+            context.filteredSelections[0].name.value === '__typename'
+        );
+
+    if (hasValidFields) return;
+
+    if (context.availableFields.has('id')) {
+        if (isDirectField('id', context.itemsField)) {
+            const idField = context.availableFields.get('id');
+            if (idField) {
+                context.filteredSelections.push(idField);
+            }
+        } else {
+            // id comes from a fragment
+            for (const [fragName] of context.fragmentSpreads) {
+                const fragment = context.fragments[fragName];
+                if (fragment && fragmentContainsField(fragment, 'id', context.fragments)) {
+                    const fragmentSpread = context.fragmentSpreads.get(fragName);
+                    if (fragmentSpread) {
+                        context.filteredSelections.push(fragmentSpread);
+                    }
+                    break;
+                }
+            }
+        }
+    } else {
+        // Create a minimal id field
+        context.filteredSelections.push({
+            kind: Kind.FIELD,
+            name: { kind: Kind.NAME, value: 'id' },
+        });
+    }
+}
+
+/**
  * Filter the items field to only include selected columns
  */
 function filterItemsField(
@@ -192,150 +304,70 @@ function filterItemsField(
         return itemsField;
     }
 
-    // Collect all available field names from direct selections and fragments
-    const availableFields = new Map<string, SelectionNode>();
-    const fragmentSpreads = new Map<string, FragmentSpreadNode>();
+    // Initialize context
+    const context: FieldSelectionContext = {
+        itemsField,
+        availableFields: new Map(),
+        fragmentSpreads: new Map(),
+        fragments,
+        neededFragments: new Set(),
+        filteredSelections: [],
+    };
 
-    // Process direct field selections and fragment spreads
+    // Collect available fields and fragment spreads
     for (const selection of itemsField.selectionSet.selections) {
         if (selection.kind === Kind.FIELD) {
-            availableFields.set(selection.name.value, selection);
+            context.availableFields.set(selection.name.value, selection);
         } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
-            fragmentSpreads.set(selection.name.value, selection);
+            context.fragmentSpreads.set(selection.name.value, selection);
             // Collect fields from this fragment
             const fragment = fragments[selection.name.value];
             if (fragment) {
-                collectFieldsFromFragment(fragment, fragments, availableFields);
+                collectFieldsFromFragment(fragment, fragments, context.availableFields);
             }
         }
     }
 
-    // Filter selections based on what's selected
-    const filteredSelections: SelectionNode[] = [];
-
-    // Always include __typename if it was in the original selection
-    if (availableFields.has('__typename')) {
-        const typenameField = availableFields.get('__typename');
+    // Add __typename if it was in the original selection
+    if (context.availableFields.has('__typename')) {
+        const typenameField = context.availableFields.get('__typename');
         if (typenameField) {
-            filteredSelections.push(typenameField);
+            context.filteredSelections.push(typenameField);
         }
     }
 
-    // Track which fragments are needed
-    const neededFragments = new Set<string>();
-
-    // Add selected fields
+    // Add selected regular fields
     for (const fieldName of selectedFieldNames) {
         if (fieldName === '__typename') continue;
-
-        // Check if field is available directly in items
-        if (availableFields.has(fieldName)) {
-            const isDirectField = itemsField.selectionSet.selections.some(
-                sel => sel.kind === Kind.FIELD && sel.name.value === fieldName,
-            );
-
-            if (isDirectField) {
-                const fieldSelection = availableFields.get(fieldName);
-                if (fieldSelection) {
-                    filteredSelections.push(fieldSelection);
-                }
-            } else {
-                // Field comes from a fragment
-                for (const [fragName] of fragmentSpreads) {
-                    const fragment = fragments[fragName];
-                    if (fragment && fragmentContainsField(fragment, fieldName, fragments)) {
-                        neededFragments.add(fragName);
-                    }
-                }
-            }
-        }
+        addRegularField(fieldName, context);
     }
 
-    // Handle custom fields
-    if (customFieldNames.size > 0 && availableFields.has('customFields')) {
-        const isDirectField = itemsField.selectionSet.selections.some(
-            sel => sel.kind === Kind.FIELD && sel.name.value === 'customFields',
-        );
-
-        if (isDirectField) {
-            const customFieldsSelection = availableFields.get('customFields');
-            if (customFieldsSelection && customFieldsSelection.kind === Kind.FIELD) {
-                const filteredCustomFields = filterCustomFields(customFieldsSelection, customFieldNames);
-                if (filteredCustomFields) {
-                    filteredSelections.push(filteredCustomFields);
-                }
-            }
-        } else {
-            // customFields comes from a fragment
-            for (const [fragName] of fragmentSpreads) {
-                const fragment = fragments[fragName];
-                if (fragment && fragmentContainsField(fragment, 'customFields', fragments)) {
-                    neededFragments.add(fragName);
-                }
-            }
-        }
-    }
+    // Add custom fields
+    addCustomFields(customFieldNames, context);
 
     // Add needed fragment spreads
-    for (const fragName of neededFragments) {
-        const fragmentSpread = fragmentSpreads.get(fragName);
+    for (const fragName of context.neededFragments) {
+        const fragmentSpread = context.fragmentSpreads.get(fragName);
         if (fragmentSpread) {
-            filteredSelections.push(fragmentSpread);
+            context.filteredSelections.push(fragmentSpread);
         }
     }
 
-    // Handle inline fragments - keep them as is for now
+    // Add inline fragments (keep as is for now)
     for (const selection of itemsField.selectionSet.selections) {
         if (selection.kind === Kind.INLINE_FRAGMENT) {
-            filteredSelections.push(selection);
+            context.filteredSelections.push(selection);
         }
     }
 
-    // If no fields were selected, at least include 'id' to maintain a valid query
-    if (
-        filteredSelections.length === 0 ||
-        (filteredSelections.length === 1 &&
-            filteredSelections[0].kind === Kind.FIELD &&
-            filteredSelections[0].name.value === '__typename')
-    ) {
-        // Try to find id field
-        if (availableFields.has('id')) {
-            const isDirectField = itemsField.selectionSet.selections.some(
-                sel => sel.kind === Kind.FIELD && sel.name.value === 'id',
-            );
-
-            if (isDirectField) {
-                const idField = availableFields.get('id');
-                if (idField) {
-                    filteredSelections.push(idField);
-                }
-            } else {
-                // id comes from a fragment
-                for (const [fragName] of fragmentSpreads) {
-                    const fragment = fragments[fragName];
-                    if (fragment && fragmentContainsField(fragment, 'id', fragments)) {
-                        const fragmentSpread = fragmentSpreads.get(fragName);
-                        if (fragmentSpread) {
-                            filteredSelections.push(fragmentSpread);
-                        }
-                        break;
-                    }
-                }
-            }
-        } else {
-            // Create a minimal id field
-            filteredSelections.push({
-                kind: Kind.FIELD,
-                name: { kind: Kind.NAME, value: 'id' },
-            });
-        }
-    }
+    // Ensure we have at least an id field
+    ensureIdField(context);
 
     return {
         ...itemsField,
         selectionSet: {
             ...itemsField.selectionSet,
-            selections: filteredSelections,
+            selections: context.filteredSelections,
         },
     };
 }
@@ -536,40 +568,8 @@ function removeUnusedFragments<T extends DocumentNode>(document: T): T {
  * Remove unused variables from the document to prevent GraphQL validation errors
  */
 function removeUnusedVariables<T extends DocumentNode>(document: T): T {
-    // First, collect all variable names that are actually used in the document
-    const usedVariables = new Set<string>();
-
-    // Helper function to recursively find variable usage
-    const findVariableUsage = (selections: readonly SelectionNode[]) => {
-        for (const selection of selections) {
-            if (selection.kind === Kind.FIELD) {
-                // Check field arguments for variable usage
-                if (selection.arguments) {
-                    for (const arg of selection.arguments) {
-                        collectVariablesFromValue(arg.value, usedVariables);
-                    }
-                }
-                // Recursively check nested selections
-                if (selection.selectionSet) {
-                    findVariableUsage(selection.selectionSet.selections);
-                }
-            } else if (selection.kind === Kind.INLINE_FRAGMENT && selection.selectionSet) {
-                findVariableUsage(selection.selectionSet.selections);
-            } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
-                // Fragment spreads don't directly contain variables, but we need to check the fragment definition
-                // This will be handled when we process fragment definitions
-            }
-        }
-    };
-
-    // Look through all operations and fragments to find used variables
-    for (const definition of document.definitions) {
-        if (definition.kind === Kind.OPERATION_DEFINITION) {
-            findVariableUsage(definition.selectionSet.selections);
-        } else if (definition.kind === Kind.FRAGMENT_DEFINITION) {
-            findVariableUsage(definition.selectionSet.selections);
-        }
-    }
+    const collector = new VariableUsageCollector();
+    const usedVariables = collector.collectFromDocument(document);
 
     // Filter out unused variable definitions from operations
     const modifiedDefinitions = document.definitions.map(definition => {
@@ -593,19 +593,107 @@ function removeUnusedVariables<T extends DocumentNode>(document: T): T {
 }
 
 /**
- * Recursively collect variables from a GraphQL value
+ * Variable usage collector that traverses GraphQL structures
  */
-function collectVariablesFromValue(value: any, usedVariables: Set<string>): void {
-    if (value.kind === Kind.VARIABLE) {
-        usedVariables.add((value as VariableNode).name.value);
-    } else if (value.kind === Kind.LIST) {
-        for (const item of value.values) {
-            collectVariablesFromValue(item, usedVariables);
-        }
-    } else if (value.kind === Kind.OBJECT) {
-        for (const field of value.fields) {
-            collectVariablesFromValue(field.value, usedVariables);
+class VariableUsageCollector {
+    private usedVariables = new Set<string>();
+
+    /**
+     * Collect variables from a GraphQL value (recursive)
+     */
+    private collectFromValue(value: any): void {
+        switch (value.kind) {
+            case Kind.VARIABLE:
+                this.usedVariables.add((value as VariableNode).name.value);
+                break;
+            case Kind.LIST:
+                value.values.forEach((item: any) => this.collectFromValue(item));
+                break;
+            case Kind.OBJECT:
+                value.fields.forEach((field: any) => this.collectFromValue(field.value));
+                break;
+            // For other value types (STRING, INT, FLOAT, BOOLEAN, NULL, ENUM), no variables to collect
         }
     }
-    // For other value types (STRING, INT, FLOAT, BOOLEAN, NULL, ENUM), no variables to collect
+
+    /**
+     * Collect variables from field arguments
+     */
+    private collectFromArguments(args: readonly ArgumentNode[]): void {
+        args.forEach(arg => this.collectFromValue(arg.value));
+    }
+
+    /**
+     * Collect variables from selection set (recursive)
+     */
+    private collectFromSelections(selections: readonly SelectionNode[]): void {
+        selections.forEach(selection => {
+            switch (selection.kind) {
+                case Kind.FIELD:
+                    if (selection.arguments) {
+                        this.collectFromArguments(selection.arguments);
+                    }
+                    if (selection.selectionSet) {
+                        this.collectFromSelections(selection.selectionSet.selections);
+                    }
+                    break;
+                case Kind.INLINE_FRAGMENT:
+                    if (selection.selectionSet) {
+                        this.collectFromSelections(selection.selectionSet.selections);
+                    }
+                    break;
+                case Kind.FRAGMENT_SPREAD:
+                    // Fragment spreads are handled when processing fragment definitions
+                    break;
+            }
+        });
+    }
+
+    /**
+     * Collect all used variables from a document
+     */
+    collectFromDocument(document: DocumentNode): Set<string> {
+        this.usedVariables.clear();
+
+        document.definitions.forEach(definition => {
+            if (
+                definition.kind === Kind.OPERATION_DEFINITION ||
+                definition.kind === Kind.FRAGMENT_DEFINITION
+            ) {
+                this.collectFromSelections(definition.selectionSet.selections);
+            }
+        });
+
+        return new Set(this.usedVariables);
+    }
+}
+
+/**
+ * Selection processor interface for different types of selection handling
+ */
+interface SelectionProcessor {
+    processField(field: FieldNode): void;
+    processFragmentSpread(spread: FragmentSpreadNode): void;
+    processInlineFragment(inline: any): void;
+}
+
+/**
+ * Helper class to iterate through selections with consistent patterns
+ */
+class SelectionTraverser {
+    static traverse(selections: readonly SelectionNode[], processor: SelectionProcessor): void {
+        for (const selection of selections) {
+            switch (selection.kind) {
+                case Kind.FIELD:
+                    processor.processField(selection);
+                    break;
+                case Kind.FRAGMENT_SPREAD:
+                    processor.processFragmentSpread(selection);
+                    break;
+                case Kind.INLINE_FRAGMENT:
+                    processor.processInlineFragment(selection);
+                    break;
+            }
+        }
+    }
 }
