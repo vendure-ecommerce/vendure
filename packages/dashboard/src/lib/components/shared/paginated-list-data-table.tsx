@@ -411,11 +411,6 @@ export function PaginatedListDataTable<
         defaultColumnOrder,
     });
 
-    console.log(
-        `columns`,
-        columns.map(c => c.id),
-    );
-
     const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     // Get the actual visible columns and only fetch those
     const visibleColumns = columns

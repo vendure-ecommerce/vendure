@@ -12,6 +12,62 @@ import {
 
 import { getQueryName } from './get-document-structure.js';
 
+// Simple LRU-style cache for memoization
+const filterCache = new Map<string, DocumentNode>();
+const MAX_CACHE_SIZE = 100;
+
+// Fast document fingerprinting using WeakMap for reference tracking
+const documentIds = new WeakMap<DocumentNode, string>();
+let documentCounter = 0;
+
+/**
+ * Get a fast, stable ID for a document node
+ */
+function getDocumentId(document: DocumentNode): string {
+    let id = documentIds.get(document);
+    if (!id) {
+        // For new documents, create a lightweight structural hash
+        id = createDocumentFingerprint(document);
+        documentIds.set(document, id);
+    }
+    return id;
+}
+
+/**
+ * Create a lightweight fingerprint of document structure (much faster than print())
+ */
+function createDocumentFingerprint(document: DocumentNode): string {
+    const parts: string[] = [];
+
+    for (const def of document.definitions) {
+        if (def.kind === Kind.OPERATION_DEFINITION) {
+            parts.push(`op:${def.operation}:${def.name?.value || 'anon'}`);
+            // Just count selections, don't traverse them
+            parts.push(`sel:${def.selectionSet.selections.length}`);
+        } else if (def.kind === Kind.FRAGMENT_DEFINITION) {
+            parts.push(`frag:${def.name.value}:${def.typeCondition.name.value}`);
+            parts.push(`sel:${def.selectionSet.selections.length}`);
+        }
+    }
+
+    return `doc_${++documentCounter}_${parts.join('_')}`;
+}
+
+/**
+ * Create a stable cache key from document and selected columns
+ */
+function createCacheKey(
+    document: DocumentNode,
+    selectedColumns: Array<{ name: string; isCustomField: boolean }>,
+): string {
+    const docId = getDocumentId(document);
+    const columnsKey = selectedColumns
+        .map(col => `${col.name}:${String(col.isCustomField)}`)
+        .sort()
+        .join(',');
+    return `${docId}|${columnsKey}`;
+}
+
 /**
  * @description
  * This function takes a list query document such as:
@@ -37,8 +93,6 @@ import { getQueryName } from './get-document-structure.js';
  * and an array of selected columns, and returns a new document which only selects the
  * specified columns. So if `selectedColumns` equals `[{ name: 'id', isCustomField: false }]`,
  * then the resulting document's `items` fields would be `{ id }`.
- *
- * @param listQuery
  */
 export function includeOnlySelectedListFields<T extends DocumentNode>(
     listQuery: T,
@@ -50,6 +104,12 @@ export function includeOnlySelectedListFields<T extends DocumentNode>(
     // If no columns selected, return the original document
     if (selectedColumns.length === 0) {
         return listQuery;
+    }
+
+    // Check cache first
+    const cacheKey = createCacheKey(listQuery, selectedColumns);
+    if (filterCache.has(cacheKey)) {
+        return filterCache.get(cacheKey) as T;
     }
 
     // Get the query name to identify the main list query field
@@ -126,7 +186,17 @@ export function includeOnlySelectedListFields<T extends DocumentNode>(
     const withoutUnusedFragments = removeUnusedFragments(modifiedDocument);
 
     // Remove unused variables to prevent GraphQL validation errors
-    return removeUnusedVariables(withoutUnusedFragments);
+    const result = removeUnusedVariables(withoutUnusedFragments);
+
+    // Cache the result with LRU eviction
+    if (filterCache.size >= MAX_CACHE_SIZE) {
+        const firstKey = filterCache.keys().next().value;
+        if (firstKey) {
+            filterCache.delete(firstKey);
+        }
+    }
+    filterCache.set(cacheKey, result);
+    return result;
 }
 
 /**
@@ -673,7 +743,9 @@ class VariableUsageCollector {
  */
 interface SelectionProcessor {
     processField(field: FieldNode): void;
+
     processFragmentSpread(spread: FragmentSpreadNode): void;
+
     processInlineFragment(inline: any): void;
 }
 

@@ -1598,4 +1598,64 @@ describe('includeOnlySelectedListFields', () => {
             expect(resultQuery).not.toContain('orders');
         });
     });
+
+    describe('memoization', () => {
+        it('should return the same reference for identical inputs', () => {
+            const document = parse(`
+                query ProductList($options: ProductListOptions) {
+                    products(options: $options) {
+                        items {
+                            id
+                            name
+                            slug
+                            enabled
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            const selectedColumns = [
+                { name: 'id', isCustomField: false },
+                { name: 'name', isCustomField: false },
+            ];
+
+            const result1 = includeOnlySelectedListFields(document, selectedColumns);
+            const result2 = includeOnlySelectedListFields(document, selectedColumns);
+
+            // Should return the exact same reference from cache
+            expect(result1).toBe(result2);
+        });
+
+        it('should handle different column orders consistently', () => {
+            const document = parse(`
+                query ProductList($options: ProductListOptions) {
+                    products(options: $options) {
+                        items {
+                            id
+                            name
+                            slug
+                        }
+                        totalItems
+                    }
+                }
+            `);
+
+            const columns1 = [
+                { name: 'name', isCustomField: false },
+                { name: 'id', isCustomField: false },
+            ];
+
+            const columns2 = [
+                { name: 'id', isCustomField: false },
+                { name: 'name', isCustomField: false },
+            ];
+
+            const result1 = includeOnlySelectedListFields(document, columns1);
+            const result2 = includeOnlySelectedListFields(document, columns2);
+
+            // Should return the same result regardless of column order (due to sorting in cache key)
+            expect(result1).toBe(result2);
+        });
+    });
 });
