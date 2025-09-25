@@ -17,7 +17,6 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
 /**
@@ -242,8 +241,6 @@ export function ListPage<
         });
     }
 
-    const listQueryWithCustomFields = addCustomFields(listQuery);
-
     return (
         <Page pageId={pageId}>
             <PageTitle>{title}</PageTitle>
@@ -251,7 +248,7 @@ export function ListPage<
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
                     <PaginatedListDataTable
-                        listQuery={listQueryWithCustomFields}
+                        listQuery={listQuery}
                         deleteMutation={deleteMutation}
                         transformVariables={transformVariables}
                         customizeColumns={customizeColumns as any}
