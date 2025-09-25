@@ -4923,6 +4923,7 @@ export type Query = {
     previewCollectionVariants: ProductVariantList;
     /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
     product?: Maybe<Product>;
+    productOption?: Maybe<ProductOption>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     productOptionGroups: Array<ProductOptionGroup>;
     /** Get a ProductVariant by id */
@@ -5092,6 +5093,10 @@ export type QueryPreviewCollectionVariantsArgs = {
 export type QueryProductArgs = {
     id?: InputMaybe<Scalars['ID']['input']>;
     slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryProductOptionArgs = {
+    id: Scalars['ID']['input'];
 };
 
 export type QueryProductOptionGroupArgs = {
@@ -12018,6 +12023,12 @@ export type CreateProductOptionMutation = {
         translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
     };
 };
+
+export type GetProductOptionQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type GetProductOptionQuery = { productOption?: { id: string; name: string; code: string } | null };
 
 export type UpdateProductOptionMutationVariables = Exact<{
     input: UpdateProductOptionInput;
@@ -36768,6 +36779,50 @@ export const CreateProductOptionDocument = {
         },
     ],
 } as unknown as DocumentNode<CreateProductOptionMutation, CreateProductOptionMutationVariables>;
+export const GetProductOptionDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetProductOption' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'productOption' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetProductOptionQuery, GetProductOptionQueryVariables>;
 export const UpdateProductOptionDocument = {
     kind: 'Document',
     definitions: [

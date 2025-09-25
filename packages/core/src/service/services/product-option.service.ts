@@ -9,6 +9,7 @@ import {
 import { ID } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
@@ -52,12 +53,16 @@ export class ProductOptionService {
             .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
+    findOne(
+        ctx: RequestContext,
+        id: ID,
+        relations: RelationPaths<ProductOption>,
+    ): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
             .findOne({
                 where: { id, deletedAt: IsNull() },
-                relations: ['group'],
+                relations: relations ?? ['group'],
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }

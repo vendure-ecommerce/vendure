@@ -1,6 +1,7 @@
 type Query {
     productOptionGroups(filterTerm: String): [ProductOptionGroup!]!
     productOptionGroup(id: ID!): ProductOptionGroup
+    productOption(id: ID!): ProductOption
 }
 
 type Mutation {

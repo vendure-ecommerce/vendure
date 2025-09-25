@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { omit } from '../../common/lib/omit';
 
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
@@ -134,6 +134,17 @@ describe('ProductOption resolver', () => {
             name: 'Medium',
         });
         mediumOption = createProductOption;
+    });
+
+    it('getProductOption', async () => {
+        const { productOption } = await adminClient.query<
+            Codegen.GetProductOptionQuery,
+            Codegen.GetProductOptionQueryVariables
+        >(GET_PRODUCT_OPTION, {
+            id: 'T_7',
+        });
+
+        expect(productOption?.name).toBe('Medium');
     });
 
     it('updateProductOption', async () => {
@@ -305,6 +316,16 @@ const CREATE_PRODUCT_OPTION = gql`
                 languageCode
                 name
             }
+        }
+    }
+`;
+
+const GET_PRODUCT_OPTION = gql`
+    query GetProductOption($id: ID!) {
+        productOption(id: $id) {
+            id
+            name
+            code
         }
     }
 `;
