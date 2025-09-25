@@ -19,6 +19,8 @@ import {
     StructField,
     TextCustomFieldConfig,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { FormEvent } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
 import { FieldInfo } from '../document-introspection/get-document-structure.js';
 
@@ -319,4 +321,36 @@ export function hasPermissionRequirement(input: ConfigurableFieldDef): boolean {
  */
 export function isNullableField(input: ConfigurableFieldDef): boolean {
     return isCustomFieldConfig(input) && Boolean(input.nullable);
+}
+
+/**
+ * Handles nested form submission to prevent event bubbling in nested forms.
+ * This is useful when you have a form inside a dialog that's within another form.
+ *
+ * @param form - The react-hook-form instance
+ * @param onSubmit - The submit handler function
+ * @returns An event handler that prevents propagation and handles the form submission
+ *
+ * @example
+ * ```tsx
+ * const form = useForm<FormSchema>({ resolver: zodResolver(formSchema) });
+ *
+ * return (
+ *   <form onSubmit={handleNestedFormSubmit(form, (data) => {
+ *     // Handle form submission
+ *   })}>
+ *     ...
+ *   </form>
+ * );
+ * ```
+ */
+export function handleNestedFormSubmit<TFieldValues extends Record<string, any>>(
+    form: UseFormReturn<TFieldValues>,
+    onSubmit: (data: TFieldValues) => void | Promise<void>,
+) {
+    return (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        void form.handleSubmit(onSubmit)(e);
+    };
 }
