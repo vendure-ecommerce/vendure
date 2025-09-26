@@ -7,7 +7,7 @@ import { useExtendedRouter } from '@/vdb/framework/page/use-extended-router.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { defaultLocale, dynamicActivate } from '@/vdb/providers/i18n-provider.js';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { AnyRoute, RouterOptions, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -15,16 +15,8 @@ import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
 
-// Register things for typesafety
-declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router;
-    }
-}
-
-export const router = createRouter({
-    routeTree,
-    defaultPreload: 'intent',
+const routerOptions: RouterOptions<AnyRoute, any> = {
+    defaultPreload: 'intent' as const,
     scrollRestoration: true,
     // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
     ...(import.meta.env.BASE_URL ? { basepath: import.meta.env.BASE_URL } : {}),
@@ -34,11 +26,12 @@ export const router = createRouter({
         queryClient,
     },
     defaultErrorComponent: ({ error }: { error: Error }) => <div>Uh Oh!!! {error.message}</div>,
-});
+};
 
 function InnerApp() {
     const auth = useAuth();
-    const extendedRouter = useExtendedRouter(router);
+    // Create the single router instance with extensions
+    const router = useExtendedRouter(routeTree, routerOptions);
     const serverConfig = useServerConfig();
     const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
 
@@ -50,10 +43,12 @@ function InnerApp() {
         setHasSetCustomFieldsMap(true);
     }, [serverConfig?.entityCustomFields.length]);
 
+    console.log('InnerApp render');
+
     return (
         <>
             {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
-                <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
+                <RouterProvider router={router} context={{ auth, queryClient }} />
             )}
         </>
     );
@@ -64,7 +59,7 @@ function App() {
     const { extensionsLoaded } = useDashboardExtensions();
     useEffect(() => {
         // With this method we dynamically load the catalogs
-        dynamicActivate(defaultLocale, () => {
+        void dynamicActivate(defaultLocale, () => {
             setI18nLoaded(true);
         });
         registerDefaults();
@@ -75,6 +70,8 @@ function App() {
             executeDashboardExtensionCallbacks();
         }
     }, [extensionsLoaded]);
+
+    console.log('App rendered', extensionsLoaded, i18nLoaded);
 
     return (
         i18nLoaded &&
