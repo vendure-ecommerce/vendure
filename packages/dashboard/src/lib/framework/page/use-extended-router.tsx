@@ -27,26 +27,65 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
 
         let authenticatedRoute: AnyRoute = router.routeTree.children[authenticatedRouteIndex];
 
-        const newRoutes: AnyRoute[] = [];
+        const newAuthenticatedRoutes: AnyRoute[] = [];
+        const newRootRoutes: AnyRoute[] = [];
+
         // Create new routes for each extension
         for (const [path, config] of extensionRoutes.entries()) {
             const pathWithoutLeadingSlash = path.startsWith('/') ? path.slice(1) : path;
-            if (
-                authenticatedRoute.children.findIndex((r: AnyRoute) => r.path === pathWithoutLeadingSlash) >
-                -1
-            ) {
-                // Skip if the route already exists
-                continue;
-            }
 
-            const newRoute: AnyRoute = createRoute({
-                path: `/${pathWithoutLeadingSlash}`,
-                getParentRoute: () => authenticatedRoute,
-                loader: config.loader,
-                component: () => config.component(newRoute),
-                errorComponent: ({ error }) => <ErrorPage message={error.message} />,
-            });
-            newRoutes.push(newRoute);
+            // Check if route should be authenticated (default is true)
+            const isAuthenticated = config.authenticated !== false;
+
+            if (isAuthenticated) {
+                // Check if the route already exists under authenticated route
+                if (
+                    authenticatedRoute.children.findIndex(
+                        (r: AnyRoute) => r.path === pathWithoutLeadingSlash,
+                    ) > -1
+                ) {
+                    // Skip if the route already exists
+                    continue;
+                }
+
+                const newRoute: AnyRoute = createRoute({
+                    path: `/${pathWithoutLeadingSlash}`,
+                    getParentRoute: () => authenticatedRoute,
+                    loader: config.loader,
+                    component: () => config.component(newRoute),
+                    errorComponent: ({ error }) => <ErrorPage message={error.message} />,
+                });
+                newAuthenticatedRoutes.push(newRoute);
+            } else {
+                // Check if the route already exists at the root level
+                // Check both by path and by id (which includes the leading slash)
+                const routeExists =
+                    router.routeTree.children.some(
+                        (r: AnyRoute) =>
+                            r.path === `/${pathWithoutLeadingSlash}` ||
+                            r.path === pathWithoutLeadingSlash ||
+                            r.id === `/${pathWithoutLeadingSlash}`,
+                    ) ||
+                    newRootRoutes.some(
+                        (r: AnyRoute) =>
+                            r.path === `/${pathWithoutLeadingSlash}` ||
+                            r.id === `/${pathWithoutLeadingSlash}`,
+                    );
+
+                if (routeExists) {
+                    // Skip if the route already exists
+                    continue;
+                }
+
+                const newRoute: AnyRoute = createRoute({
+                    path: `/${pathWithoutLeadingSlash}`,
+                    getParentRoute: () => router.routeTree,
+                    loader: config.loader,
+                    component: () => config.component(newRoute),
+                    errorComponent: ({ error }) => <ErrorPage message={error.message} />,
+                });
+                newRootRoutes.push(newRoute);
+            }
         }
 
         const childrenWithoutAuthenticated = router.routeTree.children.filter(
@@ -57,7 +96,8 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
         const newRouter = new Router({
             routeTree: router.routeTree.addChildren([
                 ...childrenWithoutAuthenticated,
-                authenticatedRoute.addChildren([...authenticatedRoute.children, ...newRoutes]),
+                authenticatedRoute.addChildren([...authenticatedRoute.children, ...newAuthenticatedRoutes]),
+                ...newRootRoutes,
             ]),
             basepath: router.basepath,
             defaultPreload: router.options.defaultPreload,

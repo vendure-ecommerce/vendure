@@ -40,6 +40,14 @@ export interface DashboardRouteDefinition {
      * [loader function](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#route-loaders)
      */
     loader?: RouteOptions['loader'];
+
+    /**
+     * @description
+     * Define if the route should be under the authentication context, i.e have the authenticated route
+     * as a parent.
+     * @default true
+     */
+    authenticated?: boolean;
 }
 
 /**
