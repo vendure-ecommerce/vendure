@@ -47,6 +47,9 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     const transformTsConfigPathMappings =
         pathAdapter?.transformTsConfigPathMappings ?? defaultPathAdapter.transformTsConfigPathMappings;
 
+    // 0. Clear the outputPath
+    fs.removeSync(outputPath);
+
     // 1. Compile TypeScript files
     const compileStart = Date.now();
     await compileTypeScript({

@@ -44,7 +44,11 @@ export const productDetailFragment = graphql(
                 slug
                 description
             }
-
+            optionGroups {
+                id
+                code
+                name
+            }
             facetValues {
                 id
                 name
