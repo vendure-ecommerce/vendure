@@ -131,7 +131,7 @@ export function addCustomFields<T, V extends Variables = Variables>(
                     sel => sel.kind === 'Field' && sel.name.value === 'items',
                 ) as FieldNode | undefined;
 
-                if (itemsField && itemsField.selectionSet) {
+                if (itemsField?.selectionSet) {
                     // For paginated lists, the type is like "ProductList" but we need "Product"
                     const entityTypeName = typeInfo.type.replace(/List$/, '');
                     targetNodes.push({

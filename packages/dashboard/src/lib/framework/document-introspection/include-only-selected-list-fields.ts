@@ -61,14 +61,19 @@ function createCacheKey(
     selectedColumns: Array<{ name: string; isCustomField: boolean; dependencies?: string[] }>,
 ): string {
     const docId = getDocumentId(document);
-    const columnsKey = selectedColumns
-        .map(col => {
-            const deps = col.dependencies ? col.dependencies.sort().join('+') : '';
-            return `${col.name}:${String(col.isCustomField)}${deps ? `:deps(${deps})` : ''}`;
-        })
-        .sort()
-        .join(',');
+    const columnsKey = sortJoin(
+        selectedColumns.map(col => {
+            const deps = col.dependencies ? sortJoin(col.dependencies, '+') : '';
+            const depsPart = deps ? `:deps(${deps})` : '';
+            return `${col.name}:${String(col.isCustomField)}${depsPart}`;
+        }),
+        ',',
+    );
     return `${docId}|${columnsKey}`;
+}
+
+function sortJoin<T>(arr: T[], separator: string): string {
+    return arr.slice(0).sort().join(separator);
 }
 
 /**
@@ -166,7 +171,8 @@ export function includeOnlySelectedListFields<T extends DocumentNode>(
                 const isQueryRoot =
                     ancestors.some(
                         ancestor =>
-                            ancestor instanceof Object &&
+                            ancestor &&
+                            typeof ancestor === 'object' &&
                             'kind' in ancestor &&
                             ancestor.kind === Kind.OPERATION_DEFINITION &&
                             ancestor.operation === 'query',
@@ -179,7 +185,7 @@ export function includeOnlySelectedListFields<T extends DocumentNode>(
                 // Look for the "items" field within the query root
                 if (node.selectionSet) {
                     const modifiedSelections = node.selectionSet.selections.map(selection => {
-                        if (selection.kind === Kind.FIELD && selection.name.value === 'items') {
+                        if (isFieldWithName(selection, 'items')) {
                             // Filter the items field to only include selected columns
                             return filterItemsField(
                                 selection,
@@ -246,37 +252,73 @@ function collectFragments(document: DocumentNode): Record<string, FragmentDefini
 }
 
 /**
+ * Check if a selection is a field with the given name
+ */
+function isFieldWithName(selection: SelectionNode, fieldName: string): selection is FieldNode {
+    return selection.kind === Kind.FIELD && selection.name.value === fieldName;
+}
+
+/**
+ * Check if a selection is a field with the given name and has a selection set
+ */
+function isFieldWithNameAndSelections(selection: SelectionNode, fieldName: string): selection is FieldNode {
+    return isFieldWithName(selection, fieldName) && !!selection.selectionSet;
+}
+
+/**
+ * Collect fragment spreads from a selection set
+ */
+function collectFragmentSpreads(selections: readonly SelectionNode[]): string[] {
+    const fragmentNames: string[] = [];
+    for (const selection of selections) {
+        if (selection.kind === Kind.FRAGMENT_SPREAD) {
+            fragmentNames.push(selection.name.value);
+        }
+    }
+    return fragmentNames;
+}
+
+/**
+ * Check if a selection is a field node
+ */
+function isField(selection: SelectionNode): selection is FieldNode {
+    return selection.kind === Kind.FIELD;
+}
+
+/**
+ * Find the items field within a query field's selections
+ */
+function findItemsFieldFragments(querySelections: readonly SelectionNode[]): string[] {
+    for (const selection of querySelections) {
+        if (isFieldWithNameAndSelections(selection, 'items') && selection.selectionSet) {
+            return collectFragmentSpreads(selection.selectionSet.selections);
+        }
+    }
+    return [];
+}
+
+/**
+ * Find the query field with the given name and process its items field
+ */
+function findQueryFieldFragments(selections: readonly SelectionNode[], queryName: string): string[] {
+    for (const selection of selections) {
+        if (isFieldWithNameAndSelections(selection, queryName) && selection.selectionSet) {
+            return findItemsFieldFragments(selection.selectionSet.selections);
+        }
+    }
+    return [];
+}
+
+/**
  * Get fragments that are directly used by the items field (not nested fragments)
  */
 function getItemsFragments(document: DocumentNode, queryName: string): Set<string> {
     const itemsFragments = new Set<string>();
 
-    // Find the items field
     for (const definition of document.definitions) {
         if (definition.kind === Kind.OPERATION_DEFINITION && definition.operation === 'query') {
-            for (const selection of definition.selectionSet.selections) {
-                if (
-                    selection.kind === Kind.FIELD &&
-                    selection.name.value === queryName &&
-                    selection.selectionSet
-                ) {
-                    // Found the query field (e.g., "facets")
-                    for (const querySelection of selection.selectionSet.selections) {
-                        if (
-                            querySelection.kind === Kind.FIELD &&
-                            querySelection.name.value === 'items' &&
-                            querySelection.selectionSet
-                        ) {
-                            // Found the items field - collect direct fragment spreads
-                            for (const itemsSelection of querySelection.selectionSet.selections) {
-                                if (itemsSelection.kind === Kind.FRAGMENT_SPREAD) {
-                                    itemsFragments.add(itemsSelection.name.value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            const fragmentNames = findQueryFieldFragments(definition.selectionSet.selections, queryName);
+            fragmentNames.forEach(name => itemsFragments.add(name));
         }
     }
 
@@ -300,9 +342,7 @@ interface FieldSelectionContext {
  */
 function isDirectField(fieldName: string, itemsField: FieldNode): boolean {
     if (!itemsField.selectionSet) return false;
-    return itemsField.selectionSet.selections.some(
-        sel => sel.kind === Kind.FIELD && sel.name.value === fieldName,
-    );
+    return itemsField.selectionSet.selections.some(sel => isFieldWithName(sel, fieldName));
 }
 
 /**
@@ -353,44 +393,155 @@ function addCustomFields(customFieldNames: Set<string>, context: FieldSelectionC
 }
 
 /**
+ * Check if context has only __typename as a field (which doesn't count as valid content)
+ */
+function hasOnlyTypenameField(context: FieldSelectionContext): boolean {
+    return (
+        context.filteredSelections.length === 1 &&
+        isFieldWithName(context.filteredSelections[0], '__typename')
+    );
+}
+
+/**
+ * Check if context has valid fields that make the query meaningful
+ */
+function hasValidFields(context: FieldSelectionContext): boolean {
+    return context.filteredSelections.length > 0 && !hasOnlyTypenameField(context);
+}
+
+/**
+ * Add id field directly from available fields
+ */
+function addDirectIdField(context: FieldSelectionContext): void {
+    const idField = context.availableFields.get('id');
+    if (idField) {
+        context.filteredSelections.push(idField);
+    }
+}
+
+/**
+ * Add id field from a fragment that contains it
+ */
+function addIdFieldFromFragment(context: FieldSelectionContext): void {
+    for (const [fragName] of context.fragmentSpreads) {
+        const fragment = context.fragments[fragName];
+        if (fragment && fragmentContainsField(fragment, 'id', context.fragments)) {
+            const fragmentSpread = context.fragmentSpreads.get(fragName);
+            if (fragmentSpread) {
+                context.filteredSelections.push(fragmentSpread);
+            }
+            break;
+        }
+    }
+}
+
+/**
+ * Create a minimal id field when none exists
+ */
+function createMinimalIdField(context: FieldSelectionContext): void {
+    context.filteredSelections.push({
+        kind: Kind.FIELD,
+        name: { kind: Kind.NAME, value: 'id' },
+    });
+}
+
+/**
  * Ensure at least id field is included to maintain valid query
  */
 function ensureIdField(context: FieldSelectionContext): void {
-    const hasValidFields =
-        context.filteredSelections.length > 0 &&
-        !(
-            context.filteredSelections.length === 1 &&
-            context.filteredSelections[0].kind === Kind.FIELD &&
-            context.filteredSelections[0].name.value === '__typename'
-        );
-
-    if (hasValidFields) return;
+    if (hasValidFields(context)) return;
 
     if (context.availableFields.has('id')) {
         if (isDirectField('id', context.itemsField)) {
-            const idField = context.availableFields.get('id');
-            if (idField) {
-                context.filteredSelections.push(idField);
-            }
+            addDirectIdField(context);
         } else {
-            // id comes from a fragment
-            for (const [fragName] of context.fragmentSpreads) {
-                const fragment = context.fragments[fragName];
-                if (fragment && fragmentContainsField(fragment, 'id', context.fragments)) {
-                    const fragmentSpread = context.fragmentSpreads.get(fragName);
-                    if (fragmentSpread) {
-                        context.filteredSelections.push(fragmentSpread);
-                    }
-                    break;
-                }
-            }
+            addIdFieldFromFragment(context);
         }
     } else {
-        // Create a minimal id field
-        context.filteredSelections.push({
-            kind: Kind.FIELD,
-            name: { kind: Kind.NAME, value: 'id' },
-        });
+        createMinimalIdField(context);
+    }
+}
+
+/**
+ * Initialize field selection context
+ */
+function initializeFieldSelectionContext(
+    itemsField: FieldNode,
+    fragments: Record<string, FragmentDefinitionNode>,
+): FieldSelectionContext {
+    return {
+        itemsField,
+        availableFields: new Map(),
+        fragmentSpreads: new Map(),
+        fragments,
+        neededFragments: new Set(),
+        filteredSelections: [],
+    };
+}
+
+/**
+ * Collect available fields and fragment spreads from selections
+ */
+function collectAvailableSelections(
+    context: FieldSelectionContext,
+    selections: readonly SelectionNode[],
+    fragments: Record<string, FragmentDefinitionNode>,
+): void {
+    for (const selection of selections) {
+        if (isField(selection)) {
+            context.availableFields.set(selection.name.value, selection);
+        } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
+            context.fragmentSpreads.set(selection.name.value, selection);
+            const fragment = fragments[selection.name.value];
+            if (fragment) {
+                collectFieldsFromFragment(fragment, fragments, context.availableFields);
+            }
+        }
+    }
+}
+
+/**
+ * Add __typename field if it exists in original selections
+ */
+function addTypenameField(context: FieldSelectionContext): void {
+    if (context.availableFields.has('__typename')) {
+        const typenameField = context.availableFields.get('__typename');
+        if (typenameField) {
+            context.filteredSelections.push(typenameField);
+        }
+    }
+}
+
+/**
+ * Add all selected regular fields
+ */
+function addSelectedFields(context: FieldSelectionContext, selectedFieldNames: Set<string>): void {
+    for (const fieldName of selectedFieldNames) {
+        if (fieldName === '__typename') continue;
+        addRegularField(fieldName, context);
+    }
+}
+
+/**
+ * Add needed fragment spreads to filtered selections
+ */
+function addNeededFragmentSpreads(context: FieldSelectionContext): void {
+    for (const fragName of context.neededFragments) {
+        const fragmentSpread = context.fragmentSpreads.get(fragName);
+        if (fragmentSpread) {
+            context.filteredSelections.push(fragmentSpread);
+        }
+    }
+}
+
+/**
+ * Add inline fragments from original selections
+ */
+function addInlineFragments(context: FieldSelectionContext, selections: readonly SelectionNode[]): void {
+    for (const selection of selections) {
+        if (selection.kind === Kind.INLINE_FRAGMENT) {
+            context.filteredSelections.push(selection);
+        }
     }
 }
 
@@ -407,63 +558,14 @@ function filterItemsField(
         return itemsField;
     }
 
-    // Initialize context
-    const context: FieldSelectionContext = {
-        itemsField,
-        availableFields: new Map(),
-        fragmentSpreads: new Map(),
-        fragments,
-        neededFragments: new Set(),
-        filteredSelections: [],
-    };
+    const context = initializeFieldSelectionContext(itemsField, fragments);
 
-    // Collect available fields and fragment spreads
-    for (const selection of itemsField.selectionSet.selections) {
-        if (selection.kind === Kind.FIELD) {
-            context.availableFields.set(selection.name.value, selection);
-        } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
-            context.fragmentSpreads.set(selection.name.value, selection);
-            // Collect fields from this fragment
-            const fragment = fragments[selection.name.value];
-            if (fragment) {
-                collectFieldsFromFragment(fragment, fragments, context.availableFields);
-            }
-        }
-    }
-
-    // Add __typename if it was in the original selection
-    if (context.availableFields.has('__typename')) {
-        const typenameField = context.availableFields.get('__typename');
-        if (typenameField) {
-            context.filteredSelections.push(typenameField);
-        }
-    }
-
-    // Add selected regular fields
-    for (const fieldName of selectedFieldNames) {
-        if (fieldName === '__typename') continue;
-        addRegularField(fieldName, context);
-    }
-
-    // Add custom fields
+    collectAvailableSelections(context, itemsField.selectionSet.selections, fragments);
+    addTypenameField(context);
+    addSelectedFields(context, selectedFieldNames);
     addCustomFields(customFieldNames, context);
-
-    // Add needed fragment spreads
-    for (const fragName of context.neededFragments) {
-        const fragmentSpread = context.fragmentSpreads.get(fragName);
-        if (fragmentSpread) {
-            context.filteredSelections.push(fragmentSpread);
-        }
-    }
-
-    // Add inline fragments (keep as is for now)
-    for (const selection of itemsField.selectionSet.selections) {
-        if (selection.kind === Kind.INLINE_FRAGMENT) {
-            context.filteredSelections.push(selection);
-        }
-    }
-
-    // Ensure we have at least an id field
+    addNeededFragmentSpreads(context);
+    addInlineFragments(context, itemsField.selectionSet.selections);
     ensureIdField(context);
 
     return {
@@ -484,7 +586,7 @@ function collectFieldsFromFragment(
     availableFields: Map<string, SelectionNode>,
 ): void {
     for (const selection of fragment.selectionSet.selections) {
-        if (selection.kind === Kind.FIELD) {
+        if (isField(selection)) {
             availableFields.set(selection.name.value, selection);
         } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
             const nestedFragment = fragments[selection.name.value];
@@ -504,7 +606,7 @@ function fragmentContainsField(
     fragments: Record<string, FragmentDefinitionNode>,
 ): boolean {
     for (const selection of fragment.selectionSet.selections) {
-        if (selection.kind === Kind.FIELD && selection.name.value === fieldName) {
+        if (isFieldWithName(selection, fieldName)) {
             return true;
         } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
             const nestedFragment = fragments[selection.name.value];
@@ -517,6 +619,111 @@ function fragmentContainsField(
 }
 
 /**
+ * Process a field selection for fragment filtering
+ */
+function processFragmentFieldSelection(
+    selection: FieldNode,
+    selectedFieldNames: Set<string>,
+    customFieldNames: Set<string>,
+    filteredSelections: SelectionNode[],
+): void {
+    const fieldName = selection.name.value;
+
+    if (fieldName === '__typename') {
+        filteredSelections.push(selection);
+    } else if (selectedFieldNames.has(fieldName)) {
+        filteredSelections.push(selection);
+    } else if (fieldName === 'customFields' && customFieldNames.size > 0) {
+        const filteredCustomFields = filterCustomFields(selection, customFieldNames);
+        if (filteredCustomFields) {
+            filteredSelections.push(filteredCustomFields);
+        }
+    }
+}
+
+/**
+ * Check if a fragment spread contains any selected fields
+ */
+function fragmentSpreadContainsSelectedFields(
+    spreadFragment: FragmentDefinitionNode,
+    selectedFieldNames: Set<string>,
+    fragments: Record<string, FragmentDefinitionNode>,
+): boolean {
+    for (const fieldName of selectedFieldNames) {
+        if (fragmentContainsField(spreadFragment, fieldName, fragments)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Process a fragment spread selection for fragment filtering
+ */
+function processFragmentSpreadSelection(
+    selection: FragmentSpreadNode,
+    selectedFieldNames: Set<string>,
+    fragments: Record<string, FragmentDefinitionNode>,
+    filteredSelections: SelectionNode[],
+): void {
+    const spreadFragment = fragments[selection.name.value];
+    if (
+        spreadFragment &&
+        fragmentSpreadContainsSelectedFields(spreadFragment, selectedFieldNames, fragments)
+    ) {
+        filteredSelections.push(selection);
+    }
+}
+
+/**
+ * Process all selections in a fragment
+ */
+function processFragmentSelections(
+    selections: readonly SelectionNode[],
+    selectedFieldNames: Set<string>,
+    customFieldNames: Set<string>,
+    fragments: Record<string, FragmentDefinitionNode>,
+): SelectionNode[] {
+    const filteredSelections: SelectionNode[] = [];
+
+    for (const selection of selections) {
+        if (isField(selection)) {
+            processFragmentFieldSelection(
+                selection,
+                selectedFieldNames,
+                customFieldNames,
+                filteredSelections,
+            );
+        } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
+            processFragmentSpreadSelection(selection, selectedFieldNames, fragments, filteredSelections);
+        } else if (selection.kind === Kind.INLINE_FRAGMENT) {
+            // Keep inline fragments for now - more complex filtering would need type info
+            filteredSelections.push(selection);
+        }
+    }
+
+    return filteredSelections;
+}
+
+/**
+ * Ensure fragment has at least one field by adding id if available
+ */
+function ensureFragmentHasFields(
+    filteredSelections: SelectionNode[],
+    originalSelections: readonly SelectionNode[],
+): void {
+    if (filteredSelections.length === 0) {
+        // Add id if it exists in the original fragment
+        for (const selection of originalSelections) {
+            if (isFieldWithName(selection, 'id')) {
+                filteredSelections.push(selection);
+                break;
+            }
+        }
+    }
+}
+
+/**
  * Filter a fragment to only include selected fields
  */
 function filterFragment(
@@ -525,53 +732,14 @@ function filterFragment(
     customFieldNames: Set<string>,
     fragments: Record<string, FragmentDefinitionNode>,
 ): FragmentDefinitionNode {
-    const filteredSelections: SelectionNode[] = [];
+    const filteredSelections = processFragmentSelections(
+        fragment.selectionSet.selections,
+        selectedFieldNames,
+        customFieldNames,
+        fragments,
+    );
 
-    for (const selection of fragment.selectionSet.selections) {
-        if (selection.kind === Kind.FIELD) {
-            const fieldName = selection.name.value;
-
-            if (fieldName === '__typename') {
-                filteredSelections.push(selection);
-            } else if (selectedFieldNames.has(fieldName)) {
-                filteredSelections.push(selection);
-            } else if (fieldName === 'customFields' && customFieldNames.size > 0) {
-                const filteredCustomFields = filterCustomFields(selection, customFieldNames);
-                if (filteredCustomFields) {
-                    filteredSelections.push(filteredCustomFields);
-                }
-            }
-        } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
-            // Check if the spread fragment contains any selected fields
-            const spreadFragment = fragments[selection.name.value];
-            if (spreadFragment) {
-                let hasSelectedFields = false;
-                for (const fieldName of selectedFieldNames) {
-                    if (fragmentContainsField(spreadFragment, fieldName, fragments)) {
-                        hasSelectedFields = true;
-                        break;
-                    }
-                }
-                if (hasSelectedFields) {
-                    filteredSelections.push(selection);
-                }
-            }
-        } else if (selection.kind === Kind.INLINE_FRAGMENT) {
-            // Keep inline fragments for now - more complex filtering would need type info
-            filteredSelections.push(selection);
-        }
-    }
-
-    // Ensure we have at least one field
-    if (filteredSelections.length === 0) {
-        // Add id if it exists in the original fragment
-        for (const selection of fragment.selectionSet.selections) {
-            if (selection.kind === Kind.FIELD && selection.name.value === 'id') {
-                filteredSelections.push(selection);
-                break;
-            }
-        }
-    }
+    ensureFragmentHasFields(filteredSelections, fragment.selectionSet.selections);
 
     return {
         ...fragment,
@@ -591,7 +759,7 @@ function filterCustomFields(customFieldsNode: FieldNode, customFieldNames: Set<s
     }
 
     const filteredSelections = customFieldsNode.selectionSet.selections.filter(selection => {
-        if (selection.kind === Kind.FIELD) {
+        if (isField(selection)) {
             return customFieldNames.has(selection.name.value);
         }
         // Keep fragments as they might contain selected custom fields
@@ -699,7 +867,7 @@ function removeUnusedVariables<T extends DocumentNode>(document: T): T {
  * Variable usage collector that traverses GraphQL structures
  */
 class VariableUsageCollector {
-    private usedVariables = new Set<string>();
+    private readonly usedVariables = new Set<string>();
 
     /**
      * Collect variables from a GraphQL value (recursive)
@@ -768,37 +936,5 @@ class VariableUsageCollector {
         });
 
         return new Set(this.usedVariables);
-    }
-}
-
-/**
- * Selection processor interface for different types of selection handling
- */
-interface SelectionProcessor {
-    processField(field: FieldNode): void;
-
-    processFragmentSpread(spread: FragmentSpreadNode): void;
-
-    processInlineFragment(inline: any): void;
-}
-
-/**
- * Helper class to iterate through selections with consistent patterns
- */
-class SelectionTraverser {
-    static traverse(selections: readonly SelectionNode[], processor: SelectionProcessor): void {
-        for (const selection of selections) {
-            switch (selection.kind) {
-                case Kind.FIELD:
-                    processor.processField(selection);
-                    break;
-                case Kind.FRAGMENT_SPREAD:
-                    processor.processFragmentSpread(selection);
-                    break;
-                case Kind.INLINE_FRAGMENT:
-                    processor.processInlineFragment(selection);
-                    break;
-            }
-        }
     }
 }
