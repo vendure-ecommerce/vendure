@@ -136,7 +136,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                         return <DisplayComponent id="vendure:asset" value={value} />;
                     }
                     if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
+                        return <DisplayComponent id="vendure:json" value={value} />;
                     }
                     return value;
                 },
