@@ -52,6 +52,7 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
                     path: `/${pathWithoutLeadingSlash}`,
                     getParentRoute: () => authenticatedRoute,
                     loader: config.loader,
+                    validateSearch: config.validateSearch,
                     component: () => config.component(newRoute),
                     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
                 });
@@ -81,6 +82,7 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
                     path: `/${pathWithoutLeadingSlash}`,
                     getParentRoute: () => router.routeTree,
                     loader: config.loader,
+                    validateSearch: config.validateSearch,
                     component: () => config.component(newRoute),
                     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
                 });

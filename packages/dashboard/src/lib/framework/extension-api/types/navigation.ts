@@ -43,6 +43,14 @@ export interface DashboardRouteDefinition {
 
     /**
      * @description
+     * Optional search parameter validation function.
+     * The value is a Tanstack Router
+     * [validateSearch function](https://tanstack.com/router/latest/docs/framework/react/guide/search-params#search-param-validation)
+     */
+    validateSearch?: RouteOptions['validateSearch'];
+
+    /**
+     * @description
      * Define if the route should be under the authentication context, i.e have the authenticated route
      * as a parent.
      * @default true
