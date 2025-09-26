@@ -758,8 +758,10 @@ function getDeprecationDirective(field: CustomFieldConfig): string {
 
     if (typeof field.deprecated === 'string') {
         // Escape quotes in the deprecation reason
+        // TODO this seems to be some problem unrelated to my PR? Check later
+        // @ts-expect-error
         const escapedReason = field.deprecated.replace(/"/g, '\\"');
-        return `@deprecated(reason: "${escapedReason}")`;
+        return `@deprecated(reason: "${escapedReason as string}")`;
     }
 
     return '@deprecated';

@@ -19,9 +19,10 @@ import {
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { Instrument } from '../../common/instrument-decorator';
-import { isEmailAddressLike, normalizeEmailAddress } from '../../common/utils';
+import { assertFound, isEmailAddressLike, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Role } from '../../entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
@@ -177,6 +178,31 @@ export class UserService {
             );
         user.authenticationMethods = [authenticationMethod];
         return this.connection.getRepository(ctx, User).save(user);
+    }
+
+    /**
+     * @description
+     * Creates a new User which will be responsible for the permissions of an API-Key.
+     *
+     * IMPORTANT: The caller is responsible for avoiding privilege escalations!
+     */
+    async createApiKeyUser(ctx: RequestContext, roles: Role[]): Promise<User> {
+        const newUser = await this.connection.getRepository(ctx, User).save(
+            new User({
+                identifier: `api-key-user-${Date.now()}`, // TODO think of something better here
+                roles,
+            }),
+        );
+
+        const userWithRelations = await assertFound(
+            this.connection.getRepository(ctx, User).findOne({
+                where: { id: newUser.id },
+                // ApiKeyUsers generally require roles and their channels, its important for sessions!
+                relations: { roles: { channels: true } },
+            }),
+        );
+
+        return userWithRelations;
     }
 
     async softDelete(ctx: RequestContext, userId: ID) {

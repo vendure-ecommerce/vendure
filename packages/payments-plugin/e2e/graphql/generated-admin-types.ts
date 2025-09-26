@@ -180,6 +180,59 @@ export type AlreadyRefundedError = ErrorResult & {
     refundId: Scalars['ID']['output'];
 };
 
+export type ApiKey = Node & {
+    createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    id: Scalars['ID']['output'];
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['output'];
+    translations: Array<ApiKeyTranslation>;
+    updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ApiKeyFilterParameter = {
+    _and?: InputMaybe<Array<ApiKeyFilterParameter>>;
+    _or?: InputMaybe<Array<ApiKeyFilterParameter>>;
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ApiKeyList = PaginatedList & {
+    items: Array<ApiKey>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ApiKeyListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ApiKeyFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ApiKeySortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ApiKeySortParameter = {
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ApiKeyTranslation = Node & {
+    createdAt: Scalars['DateTime']['output'];
+    id: Scalars['ID']['output'];
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['output'];
+    updatedAt: Scalars['DateTime']['output'];
+};
+
 export type ApplyCouponCodeResult =
     | CouponCodeExpiredError
     | CouponCodeInvalidError
@@ -319,6 +372,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -742,6 +797,34 @@ export type CreateAdministratorInput = {
     lastName: Scalars['String']['input'];
     password: Scalars['String']['input'];
     roleIds: Array<Scalars['ID']['input']>;
+};
+
+/**
+ * There is no User ID because you can only create API-Keys for yourself,
+ * which gets determined by the User who does the request.
+ */
+export type CreateApiKeyInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    /**
+     * Which roles to attach to this ApiKey.
+     * You may only grant roles which you, yourself have.
+     */
+    roleIds: Array<Scalars['ID']['input']>;
+    translations: Array<CreateApiKeyTranslationInput>;
+};
+
+export type CreateApiKeyResult = {
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+    apiKey: Scalars['String']['output'];
+    /** ID of the created ApiKey-Entity */
+    entityId: Scalars['ID']['output'];
+};
+
+export type CreateApiKeyTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['input'];
 };
 
 export type CreateAssetInput = {
@@ -1323,6 +1406,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1354,6 +1439,7 @@ export type CustomFieldConfig =
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
     Administrator: Array<CustomFieldConfig>;
+    ApiKey: Array<CustomFieldConfig>;
     Asset: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
@@ -1528,6 +1614,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1557,6 +1645,11 @@ export type DateTimeStructFieldConfig = StructField & {
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type DeleteApiKeyInput = {
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
 };
 
 export type DeleteAssetInput = {
@@ -1864,6 +1957,8 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2071,6 +2166,8 @@ export type InsufficientStockOnHandError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2204,11 +2301,6 @@ export enum JobState {
     RETRYING = 'RETRYING',
     RUNNING = 'RUNNING',
 }
-
-export type KeyValueInput = {
-    key: Scalars['String']['input'];
-    value: Scalars['JSON']['input'];
-};
 
 /**
  * @description
@@ -2544,6 +2636,8 @@ export type LanguageNotAvailableError = ErrorResult & {
 };
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2559,6 +2653,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -2815,6 +2911,12 @@ export type Mutation = {
     cancelPayment: CancelPaymentResult;
     /** Create a new Administrator */
     createAdministrator: Administrator;
+    /**
+     * Generates a new API-Key and attaches it to an Administrator.
+     * Returns the generated API-Key.
+     * API-Keys cannot be viewed again after creation.
+     */
+    createApiKey: CreateApiKeyResult;
     /** Create a new Asset */
     createAssets: Array<CreateAssetResult>;
     /** Create a new Channel */
@@ -2833,6 +2935,8 @@ export type Mutation = {
     createDraftOrder: Order;
     /** Create a new Facet */
     createFacet: Facet;
+    /** Create a single FacetValue */
+    createFacetValue: FacetValue;
     /** Create one or more FacetValues */
     createFacetValues: Array<FacetValue>;
     createMolliePaymentIntent: MolliePaymentIntentResult;
@@ -2868,6 +2972,8 @@ export type Mutation = {
     deleteAdministrator: DeletionResponse;
     /** Delete multiple Administrators */
     deleteAdministrators: Array<DeletionResponse>;
+    /** Deletes an API-Key */
+    deleteApiKey: DeletionResponse;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
@@ -3007,6 +3113,12 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
+    /**
+     * Replaces the old with a new API-Key.
+     * This is a convenience method to invalidate an API-Key without
+     * deleting the underlying roles and permissions.
+     */
+    rotateApiKey: RotateApiKeyResult;
     runPendingSearchIndexUpdates: Success;
     runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
@@ -3018,10 +3130,6 @@ export type Mutation = {
     setDraftOrderShippingAddress: Order;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
     setDraftOrderShippingMethod: SetOrderShippingMethodResult;
-    /** Set a single key-value pair (automatically scoped based on field configuration) */
-    setKeyValue: SetKeyValueResult;
-    /** Set multiple key-value pairs in a transaction (each automatically scoped) */
-    setKeyValues: Array<SetKeyValueResult>;
     setOrderCustomFields?: Maybe<Order>;
     /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
     setOrderCustomer?: Maybe<Order>;
@@ -3042,6 +3150,8 @@ export type Mutation = {
     updateActiveAdministrator: Administrator;
     /** Update an existing Administrator */
     updateAdministrator: Administrator;
+    /** Updates an API-Key */
+    updateApiKey: ApiKey;
     /** Update an existing Asset */
     updateAsset: Asset;
     /** Update an existing Channel */
@@ -3059,6 +3169,8 @@ export type Mutation = {
     updateCustomerNote: HistoryEntry;
     /** Update an existing Facet */
     updateFacet: Facet;
+    /** Update a single FacetValue */
+    updateFacetValue: FacetValue;
     /** Update one or more FacetValues */
     updateFacetValues: Array<FacetValue>;
     updateGlobalSettings: UpdateGlobalSettingsResult;
@@ -3206,6 +3318,10 @@ export type MutationCreateAdministratorArgs = {
     input: CreateAdministratorInput;
 };
 
+export type MutationCreateApiKeyArgs = {
+    input: CreateApiKeyInput;
+};
+
 export type MutationCreateAssetsArgs = {
     input: Array<CreateAssetInput>;
 };
@@ -3238,6 +3354,10 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationCreateFacetArgs = {
     input: CreateFacetInput;
+};
+
+export type MutationCreateFacetValueArgs = {
+    input: CreateFacetValueInput;
 };
 
 export type MutationCreateFacetValuesArgs = {
@@ -3314,6 +3434,10 @@ export type MutationDeleteAdministratorArgs = {
 
 export type MutationDeleteAdministratorsArgs = {
     ids: Array<Scalars['ID']['input']>;
+};
+
+export type MutationDeleteApiKeyArgs = {
+    input: DeleteApiKeyInput;
 };
 
 export type MutationDeleteAssetArgs = {
@@ -3590,6 +3714,10 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
 };
 
+export type MutationRotateApiKeyArgs = {
+    input: RotateApiKeyInput;
+};
+
 export type MutationRunScheduledTaskArgs = {
     id: Scalars['String']['input'];
 };
@@ -3618,14 +3746,6 @@ export type MutationSetDraftOrderShippingAddressArgs = {
 export type MutationSetDraftOrderShippingMethodArgs = {
     orderId: Scalars['ID']['input'];
     shippingMethodId: Scalars['ID']['input'];
-};
-
-export type MutationSetKeyValueArgs = {
-    input: KeyValueInput;
-};
-
-export type MutationSetKeyValuesArgs = {
-    inputs: Array<KeyValueInput>;
 };
 
 export type MutationSetOrderCustomFieldsArgs = {
@@ -3683,6 +3803,10 @@ export type MutationUpdateAdministratorArgs = {
     input: UpdateAdministratorInput;
 };
 
+export type MutationUpdateApiKeyArgs = {
+    input: UpdateApiKeyInput;
+};
+
 export type MutationUpdateAssetArgs = {
     input: UpdateAssetInput;
 };
@@ -3717,6 +3841,10 @@ export type MutationUpdateCustomerNoteArgs = {
 
 export type MutationUpdateFacetArgs = {
     input: UpdateFacetInput;
+};
+
+export type MutationUpdateFacetValueArgs = {
+    input: UpdateFacetValueInput;
 };
 
 export type MutationUpdateFacetValuesArgs = {
@@ -4321,6 +4449,8 @@ export enum Permission {
     Authenticated = 'Authenticated',
     /** Grants permission to create Administrator */
     CreateAdministrator = 'CreateAdministrator',
+    /** Grants permission to create ApiKey */
+    CreateApiKey = 'CreateApiKey',
     /** Grants permission to create Asset */
     CreateAsset = 'CreateAsset',
     /** Grants permission to create Products, Facets, Assets, Collections */
@@ -4365,6 +4495,8 @@ export enum Permission {
     CreateZone = 'CreateZone',
     /** Grants permission to delete Administrator */
     DeleteAdministrator = 'DeleteAdministrator',
+    /** Grants permission to delete ApiKey */
+    DeleteApiKey = 'DeleteApiKey',
     /** Grants permission to delete Asset */
     DeleteAsset = 'DeleteAsset',
     /** Grants permission to delete Products, Facets, Assets, Collections */
@@ -4413,6 +4545,8 @@ export enum Permission {
     Public = 'Public',
     /** Grants permission to read Administrator */
     ReadAdministrator = 'ReadAdministrator',
+    /** Grants permission to read ApiKey */
+    ReadApiKey = 'ReadApiKey',
     /** Grants permission to read Asset */
     ReadAsset = 'ReadAsset',
     /** Grants permission to read Products, Facets, Assets, Collections */
@@ -4459,6 +4593,8 @@ export enum Permission {
     SuperAdmin = 'SuperAdmin',
     /** Grants permission to update Administrator */
     UpdateAdministrator = 'UpdateAdministrator',
+    /** Grants permission to update ApiKey */
+    UpdateApiKey = 'UpdateApiKey',
     /** Grants permission to update Asset */
     UpdateAsset = 'UpdateAsset',
     /** Grants permission to update Products, Facets, Assets, Collections */
@@ -4947,6 +5083,8 @@ export type Query = {
     activeChannel: Channel;
     administrator?: Maybe<Administrator>;
     administrators: AdministratorList;
+    apiKey?: Maybe<ApiKey>;
+    apiKeys: ApiKeyList;
     /** Get a single Asset by id */
     asset?: Maybe<Asset>;
     /** Get a list of Assets */
@@ -4968,13 +5106,10 @@ export type Query = {
     /** Returns all configured EntityDuplicators. */
     entityDuplicators: Array<EntityDuplicatorDefinition>;
     facet?: Maybe<Facet>;
+    facetValue?: Maybe<FacetValue>;
     facetValues: FacetValueList;
     facets: FacetList;
     fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
-    /** Get value for a specific key (automatically scoped based on field configuration) */
-    getKeyValue?: Maybe<Scalars['JSON']['output']>;
-    /** Get multiple key-value pairs (each automatically scoped) */
-    getKeyValues?: Maybe<Scalars['JSON']['output']>;
     /** Get value for a specific key (automatically scoped based on field configuration) */
     getSettingsStoreValue?: Maybe<Scalars['JSON']['output']>;
     /** Get multiple key-value pairs (each automatically scoped) */
@@ -5046,6 +5181,14 @@ export type QueryAdministratorsArgs = {
     options?: InputMaybe<AdministratorListOptions>;
 };
 
+export type QueryApiKeyArgs = {
+    id: Scalars['ID']['input'];
+};
+
+export type QueryApiKeysArgs = {
+    options?: InputMaybe<ApiKeyListOptions>;
+};
+
 export type QueryAssetArgs = {
     id: Scalars['ID']['input'];
 };
@@ -5103,20 +5246,16 @@ export type QueryFacetArgs = {
     id: Scalars['ID']['input'];
 };
 
+export type QueryFacetValueArgs = {
+    id: Scalars['ID']['input'];
+};
+
 export type QueryFacetValuesArgs = {
     options?: InputMaybe<FacetValueListOptions>;
 };
 
 export type QueryFacetsArgs = {
     options?: InputMaybe<FacetListOptions>;
-};
-
-export type QueryGetKeyValueArgs = {
-    key: Scalars['String']['input'];
-};
-
-export type QueryGetKeyValuesArgs = {
-    keys: Array<Scalars['String']['input']>;
 };
 
 export type QueryGetSettingsStoreValueArgs = {
@@ -5399,6 +5538,8 @@ export type RegionTranslation = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -5526,6 +5667,16 @@ export type RoleSortParameter = {
     description?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type RotateApiKeyInput = {
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
+};
+
+export type RotateApiKeyResult = {
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+    apiKey: Scalars['String']['output'];
 };
 
 export type Sale = Node &
@@ -5671,12 +5822,6 @@ export type ServerConfig = {
 };
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
-
-export type SetKeyValueResult = {
-    error?: Maybe<Scalars['String']['output']>;
-    key: Scalars['String']['output'];
-    result: Scalars['Boolean']['output'];
-};
 
 export type SetOrderCustomerInput = {
     customerId: Scalars['ID']['input'];
@@ -5931,6 +6076,8 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -5981,6 +6128,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -6206,6 +6355,8 @@ export type TestShippingMethodResult = {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -6272,6 +6423,21 @@ export type UpdateAdministratorInput = {
     lastName?: InputMaybe<Scalars['String']['input']>;
     password?: InputMaybe<Scalars['String']['input']>;
     roleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+export type UpdateApiKeyInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
+    translations?: InputMaybe<Array<UpdateApiKeyTranslationInput>>;
+};
+
+export type UpdateApiKeyTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    id?: InputMaybe<Scalars['ID']['input']>;
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateAssetInput = {

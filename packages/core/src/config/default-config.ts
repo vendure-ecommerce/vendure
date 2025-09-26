@@ -13,6 +13,8 @@ import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-mem
 import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
 import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
+import { NoopApiKeyHashingStrategy } from './api-key-strategy/noop-api-key-hasing-strategy';
+import { RandomBytesApiKeyGenerationStrategy } from './api-key-strategy/random-bytes-api-key-generation-strategy';
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -113,6 +115,14 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
+        adminApiKeyAuthorizationOptions: {
+            hashingStrategy: new NoopApiKeyHashingStrategy(), // TODO replace with a real one after testing
+            generationStrategy: new RandomBytesApiKeyGenerationStrategy(),
+        },
+        shopApiKeyAuthorizationOptions: {
+            hashingStrategy: new NoopApiKeyHashingStrategy(), // TODO replace with a real one after testing
+            generationStrategy: new RandomBytesApiKeyGenerationStrategy(),
+        },
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
@@ -206,6 +216,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     customFields: {
         Address: [],
         Administrator: [],
+        ApiKey: [],
         Asset: [],
         Channel: [],
         Collection: [],
