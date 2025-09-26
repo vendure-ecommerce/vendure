@@ -114,25 +114,75 @@ export function addCustomFields<T, V extends Variables = Variables>(
     const customFields = options?.customFieldsMap || globalCustomFieldsMap;
 
     const targetNodes: Array<{ typeName: string; selectionSet: SelectionSetNode }> = [];
+    const topLevelFragments = new Set<string>();
 
-    const fragmentDefs = clone.definitions.filter(isFragmentDefinition);
-    for (const fragmentDef of fragmentDefs) {
-        targetNodes.push({
-            typeName: fragmentDef.typeCondition.name.value,
-            selectionSet: fragmentDef.selectionSet,
-        });
-    }
+    // First, identify which fragments are used at the top level (directly in items or in the main query)
     const queryDefs = clone.definitions.filter(isOperationDefinition);
 
     for (const queryDef of queryDefs) {
         const typeInfo = getOperationTypeInfo(queryDef);
         const fieldNode = queryDef.selectionSet.selections[0] as FieldNode;
         if (typeInfo && fieldNode?.selectionSet) {
+            let topLevelSelectionSet: SelectionSetNode | undefined;
+
+            // For paginated list queries, find the items field and add custom fields to its entity type
+            if (typeInfo.isPaginatedList) {
+                const itemsField = fieldNode.selectionSet.selections.find(
+                    sel => sel.kind === 'Field' && sel.name.value === 'items',
+                ) as FieldNode | undefined;
+
+                if (itemsField?.selectionSet) {
+                    // For paginated lists, the type is like "ProductList" but we need "Product"
+                    const entityTypeName = typeInfo.type.replace(/List$/, '');
+                    targetNodes.push({
+                        typeName: entityTypeName,
+                        selectionSet: itemsField.selectionSet,
+                    });
+                    topLevelSelectionSet = itemsField.selectionSet;
+                }
+            } else {
+                // For single entity queries, add custom fields to the top-level entity
+                targetNodes.push({
+                    typeName: typeInfo.type,
+                    selectionSet: fieldNode.selectionSet,
+                });
+                topLevelSelectionSet = fieldNode.selectionSet;
+            }
+
+            // Track which fragments are used at the top level (not in nested entities)
+            if (topLevelSelectionSet) {
+                for (const selection of topLevelSelectionSet.selections) {
+                    if (selection.kind === Kind.FRAGMENT_SPREAD) {
+                        topLevelFragments.add(selection.name.value);
+                    }
+                }
+            }
+        }
+    }
+
+    // Now add fragments
+    const fragmentDefs = clone.definitions.filter(isFragmentDefinition);
+
+    // Check if this document has query definitions - if not, add all fragments
+    const hasQueries = queryDefs.length > 0;
+
+    for (const fragmentDef of fragmentDefs) {
+        if (hasQueries) {
+            // If we have queries, only add custom fields to fragments used at the top level
+            // Skip fragments that are only used in nested contexts
+            if (topLevelFragments.has(fragmentDef.name.value)) {
+                targetNodes.push({
+                    typeName: fragmentDef.typeCondition.name.value,
+                    selectionSet: fragmentDef.selectionSet,
+                });
+            }
+        } else {
+            // For standalone fragments (no queries), add custom fields to all fragments
+            // since we don't know where they'll be used
             targetNodes.push({
-                typeName: typeInfo.type,
-                selectionSet: fieldNode.selectionSet,
+                typeName: fragmentDef.typeCondition.name.value,
+                selectionSet: fragmentDef.selectionSet,
             });
-            addTargetNodesRecursively(fieldNode.selectionSet, typeInfo.type, targetNodes);
         }
     }
 
@@ -270,25 +320,4 @@ function isOperationDefinition(value: DefinitionNode): value is OperationDefinit
 
 function isFieldNode(value: SelectionNode): value is FieldNode {
     return value.kind === Kind.FIELD;
-}
-
-function addTargetNodesRecursively(
-    selectionSet: SelectionSetNode,
-    parentTypeName: string,
-    targetNodes: Array<{ typeName: string; selectionSet: SelectionSetNode }>,
-) {
-    for (const selection of selectionSet.selections) {
-        if (selection.kind === 'Field' && selection.selectionSet) {
-            const fieldNode = selection;
-            const typeInfo = getOperationTypeInfo(fieldNode, parentTypeName); // Assuming this function can handle FieldNode
-            if (typeInfo && fieldNode.selectionSet) {
-                targetNodes.push({
-                    typeName: typeInfo.type,
-                    selectionSet: fieldNode.selectionSet,
-                });
-                // Recursively process the selection set of the current field
-                addTargetNodesRecursively(fieldNode.selectionSet, typeInfo.type, targetNodes);
-            }
-        }
-    }
 }

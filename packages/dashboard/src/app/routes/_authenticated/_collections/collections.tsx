@@ -96,13 +96,18 @@ function CollectionListPage() {
                 }}
                 customizeColumns={{
                     name: {
+                        meta: {
+                            // This column needs the following fields to always be available
+                            // in order to correctly render.
+                            dependencies: ['children', 'breadcrumbs'],
+                        },
                         header: 'Collection Name',
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;
                             return (
                                 <div
-                                    style={{ marginLeft: (row.original.breadcrumbs.length - 2) * 20 + 'px' }}
+                                    style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
                                     className="flex gap-2 items-center"
                                 >
                                     <Button
@@ -143,7 +148,7 @@ function CollectionListPage() {
                                     collectionId={row.original.id}
                                     collectionName={row.original.name}
                                 >
-                                    <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                                    <Trans>{row.original.productVariants?.totalItems} variants</Trans>
                                 </CollectionContentsSheet>
                             );
                         },

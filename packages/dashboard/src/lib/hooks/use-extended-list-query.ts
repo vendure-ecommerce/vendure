@@ -8,6 +8,11 @@ import { toast } from 'sonner';
 import { usePageBlock } from './use-page-block.js';
 import { usePage } from './use-page.js';
 
+/**
+ * @description
+ * Extends the given list query document with additional fields that can be
+ * supplied via the Dashboard Extension API.
+ */
 export function useExtendedListQuery<T extends DocumentNode>(listQuery: T) {
     const { pageId } = usePage();
     const { blockId } = usePageBlock() ?? {};

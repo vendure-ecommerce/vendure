@@ -196,6 +196,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                     />
                 ),
                 enableColumnFilter: false,
+                enableHiding: false,
                 cell: ({ row }) => {
                     return (
                         <Checkbox
@@ -224,6 +225,7 @@ function getRowActions(
         accessorKey: 'actions',
         header: () => <Trans>Actions</Trans>,
         enableColumnFilter: false,
+        enableHiding: false,
         cell: ({ row, table }) => {
             return (
                 <DropdownMenu>

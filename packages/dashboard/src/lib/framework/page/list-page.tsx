@@ -17,7 +17,6 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
 /**
@@ -48,6 +47,59 @@ export interface ListPageProps<
     deleteMutation?: TypedDocumentNode<any, { id: string }>;
     transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
+    /**
+     * @description
+     * Allows you to customize the rendering and other aspects of individual columns.
+     *
+     * By default, an appropriate component will be chosen to render the column data
+     * based on the data type of the field. However, in many cases you want to have
+     * more control over how the column data is rendered.
+     *
+     * @example
+     * ```tsx
+     * <ListPage
+     *   pageId="collection-list"
+     *   listQuery={collectionListDocument}
+     *   customizeColumns={{
+     *     // The key "name" matches one of the top-level fields of the
+     *     // list query type (Collection, in this example)
+     *     name: {
+     *       meta: {
+     *           // The Dashboard optimizes the list query `collectionListDocument` to
+     *           // only select field that are actually visible in the ListPage table.
+     *           // However, sometimes you want to render data from other fields, i.e.
+     *           // this column has a data dependency on the "children" and "breadcrumbs"
+     *           // fields in order to correctly render the "name" field.
+     *           // In this case, we can declare those data dependencies which means whenever
+     *           // the "name" column is visible, it will ensure the "children" and "breadcrumbs"
+     *           // fields are also selected in the query.
+     *           dependencies: ['children', 'breadcrumbs'],
+     *       },
+     *       header: 'Collection Name',
+     *       cell: ({ row }) => {
+     *         const isExpanded = row.getIsExpanded();
+     *         const hasChildren = !!row.original.children?.length;
+     *         return (
+     *           <div
+     *             style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
+     *             className="flex gap-2 items-center"
+     *           >
+     *             <Button
+     *               size="icon"
+     *               variant="secondary"
+     *               onClick={row.getToggleExpandedHandler()}
+     *               disabled={!hasChildren}
+     *               className={!hasChildren ? 'opacity-20' : ''}
+     *             >
+     *               {isExpanded ? <FolderOpen /> : <Folder />}
+     *             </Button>
+     *             <DetailPageButton id={row.original.id} label={row.original.name} />
+     *           </div>
+     *           );
+     *       },
+     *     },
+     * ```
+     */
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
     defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
@@ -242,8 +294,6 @@ export function ListPage<
         });
     }
 
-    const listQueryWithCustomFields = addCustomFields(listQuery);
-
     return (
         <Page pageId={pageId}>
             <PageTitle>{title}</PageTitle>
@@ -251,7 +301,7 @@ export function ListPage<
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
                     <PaginatedListDataTable
-                        listQuery={listQueryWithCustomFields}
+                        listQuery={listQuery}
                         deleteMutation={deleteMutation}
                         transformVariables={transformVariables}
                         customizeColumns={customizeColumns as any}
