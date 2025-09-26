@@ -20,7 +20,9 @@ export function buildElasticBody(
         facetValueIds,
         facetValueOperator,
         collectionId,
+        collectionIds,
         collectionSlug,
+        collectionSlugs,
         groupByProduct,
         groupBySKU,
         skip,
@@ -86,9 +88,17 @@ export function buildElasticBody(
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { collectionIds: collectionId } });
     }
+    if (collectionIds) {
+        ensureBoolFilterExists(query)
+        query.bool.filter.push({ terms: { collectionIds: Array.from(new Set(collectionIds)) } })
+    }
     if (collectionSlug) {
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { collectionSlugs: collectionSlug } });
+    }
+    if (collectionSlugs) {
+        ensureBoolFilterExists(query)
+        query.bool.filter.push({ terms: { collectionSlugs: Array.from(new Set(collectionSlugs)) } })
     }
     if (enabledOnly) {
         ensureBoolFilterExists(query);
