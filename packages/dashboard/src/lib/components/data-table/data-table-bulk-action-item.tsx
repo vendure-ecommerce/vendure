@@ -16,6 +16,13 @@ import {
 } from '../ui/alert-dialog.js';
 import { DropdownMenuItem } from '../ui/dropdown-menu.js';
 
+/**
+ * @description
+ *
+ * @docsCategory list-views
+ * @docsPage bulk-actions
+ * @since 3.4.0
+ */
 export interface DataTableBulkActionItemProps {
     label: React.ReactNode;
     icon?: LucideIcon;
@@ -25,6 +32,36 @@ export interface DataTableBulkActionItemProps {
     requiresPermission?: string[];
 }
 
+/**
+ * @description
+ * A component that should be used to implement any bulk actions for list pages & data tables.
+ *
+ * @example
+ * ```tsx
+ * import { DataTableBulkActionItem, Trans } from '\@vendure/dashboard';
+ * import { Check } from 'lucide-react';
+ *
+ * export const MyBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+ *
+ *   return (
+ *     <DataTableBulkActionItem
+ *       requiresPermission={['ReadMyCustomEntity']}
+ *       onClick={() => {
+ *         console.log('Selected items:', selection);
+ *       }}
+ *       label={<Trans>Delete</Trans>}
+ *       confirmationText={<Trans>Are you sure?</Trans>}
+ *       icon={Check}
+ *       className="text-destructive"
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @docsCategory list-views
+ * @docsPage bulk-actions
+ * @since 3.4.0
+ */
 export function DataTableBulkActionItem({
     label,
     icon: Icon,
@@ -32,7 +69,7 @@ export function DataTableBulkActionItem({
     className,
     onClick,
     requiresPermission,
-}: DataTableBulkActionItemProps) {
+}: Readonly<DataTableBulkActionItemProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const { hasPermissions } = usePermissions();
     const userHasPermission = hasPermissions(requiresPermission ?? []);

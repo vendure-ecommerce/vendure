@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="85" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="93" packageName="@vendure/dashboard" since="3.4.0" />
 
 A data table which includes sorting, filtering, pagination, bulk actions, column controls etc.
 
@@ -30,7 +30,7 @@ Parameters
 
 ## DataTableProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="46" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="54" packageName="@vendure/dashboard" since="3.4.0" />
 
 Props for configuring the <a href='/reference/dashboard/list-views/data-table#datatable'>DataTable</a>.
 
@@ -148,7 +148,7 @@ interface DataTableProps<TData> {
 
 ### bulkActions
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/data-table#bulkaction'>BulkAction</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/bulk-actions#bulkaction'>BulkAction</a>[]`}   />
 
 
 ### setTableOptions
@@ -199,42 +199,9 @@ It should accept `value` and other standard display props.
 </div>
 
 
-## BulkAction
-
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="46" packageName="@vendure/dashboard" since="3.4.0" />
-
-**Status: Developer Preview**
-
-A bulk action is a component that will be rendered in the bulk actions dropdown.
-
-```ts title="Signature"
-type BulkAction = {
-    order?: number;
-    component: BulkActionComponent<any>;
-}
-```
-
-<div className="members-wrapper">
-
-### order
-
-<MemberInfo kind="property" type={`number`}   />
-
-Optional order number to control the position of this bulk action in the dropdown.
-A larger number will appear lower in the list.
-### component
-
-<MemberInfo kind="property" type={`BulkActionComponent&#60;any&#62;`}   />
-
-The React component that will be rendered as the bulk action item.
-
-
-</div>
-
-
 ## DashboardDataTableExtensionDefinition
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="68" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="126" packageName="@vendure/dashboard" since="3.4.0" />
 
 This allows you to customize aspects of existing data tables in the dashboard.
 
@@ -264,7 +231,7 @@ for the standard list pages. However, some other pages may use a different block
 such as `'product-variants-table'` on the `'product-detail'` page.
 ### bulkActions
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/data-table#bulkaction'>BulkAction</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/bulk-actions#bulkaction'>BulkAction</a>[]`}   />
 
 An array of additional bulk actions that will be available on the data table.
 ### extendListDocument

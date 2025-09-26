@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SetSettingsStoreValueResult
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="179" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="209" packageName="@vendure/core" since="3.4.0" />
 
 Result type for settings store set operations, providing detailed feedback
 about the success or failure of each operation.

@@ -2497,6 +2497,32 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## ProductOptionFilterParameter
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductOptionFilterParameter</span> &#123;</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/admin/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/admin/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">groupId: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/admin/input-types#productoptionfilterparameter">ProductOptionFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/admin/input-types#productoptionfilterparameter">ProductOptionFilterParameter</a>!]</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## ProductOptionGroupTranslationInput
 
 <div class="graphql-code-block">
@@ -2508,6 +2534,59 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## ProductOptionListOptions
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductOptionListOptions</span> &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/reference/graphql-api/admin/input-types#productoptionsortparameter">ProductOptionSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/reference/graphql-api/admin/input-types#productoptionfilterparameter">ProductOptionFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/admin/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## ProductOptionSortParameter
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductOptionSortParameter</span> &#123;</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">groupId: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3351,6 +3430,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## SlugForEntityInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">SlugForEntityInput</span> &#123;</div>
+<div class="graphql-code-line ">entityName: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">fieldName: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">inputValue: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">entityId: <a href="/reference/graphql-api/admin/object-types#id">ID</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

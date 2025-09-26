@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## usePaginatedList
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="162" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="175" packageName="@vendure/dashboard" since="3.4.0" />
 
 Returns the context for the paginated list data table. Must be used within a PaginatedListDataTable.
 
