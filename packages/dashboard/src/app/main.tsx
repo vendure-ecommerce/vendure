@@ -15,11 +15,19 @@ import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
 
+const processedBaseUrl = (() => {
+    const baseUrl = import.meta.env.BASE_URL;
+    if (!baseUrl || baseUrl === '/') return undefined;
+    // Ensure leading slash, remove trailing slash
+    const normalized = baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl;
+    return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
+})();
+
 const routerOptions: RouterOptions<AnyRoute, any> = {
     defaultPreload: 'intent' as const,
     scrollRestoration: true,
     // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
-    ...(import.meta.env.BASE_URL ? { basepath: import.meta.env.BASE_URL } : {}),
+    ...(processedBaseUrl ? { basepath: processedBaseUrl } : {}),
     context: {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
