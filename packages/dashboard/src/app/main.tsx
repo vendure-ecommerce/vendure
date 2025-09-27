@@ -26,8 +26,7 @@ const processedBaseUrl = (() => {
 const routerOptions: RouterOptions<AnyRoute, any> = {
     defaultPreload: 'intent' as const,
     scrollRestoration: true,
-    // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
-    ...(processedBaseUrl ? { basepath: processedBaseUrl } : {}),
+    basepath: processedBaseUrl,
     context: {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
@@ -38,7 +37,6 @@ const routerOptions: RouterOptions<AnyRoute, any> = {
 
 function InnerApp() {
     const auth = useAuth();
-    // Create the single router instance with extensions
     const router = useExtendedRouter(routeTree, routerOptions);
     const serverConfig = useServerConfig();
     const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
@@ -50,8 +48,6 @@ function InnerApp() {
         setCustomFieldsMap(serverConfig.entityCustomFields);
         setHasSetCustomFieldsMap(true);
     }, [serverConfig?.entityCustomFields.length]);
-
-    console.log('InnerApp render');
 
     return (
         <>
@@ -78,8 +74,6 @@ function App() {
             executeDashboardExtensionCallbacks();
         }
     }, [extensionsLoaded]);
-
-    console.log('App rendered', extensionsLoaded, i18nLoaded);
 
     return (
         i18nLoaded &&

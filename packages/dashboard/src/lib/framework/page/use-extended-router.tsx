@@ -11,7 +11,7 @@ import { extensionRoutes } from './page-api.js';
  */
 export const useExtendedRouter = (
     baseRouteTree: AnyRoute,
-    routerOptions: Omit<RouterOptions<AnyRoute, any>, 'routeTree'>
+    routerOptions: Omit<RouterOptions<AnyRoute, any>, 'routeTree'>,
 ) => {
     const { extensionsLoaded } = useDashboardExtensions();
 
@@ -116,20 +116,17 @@ export const useExtendedRouter = (
             (r: AnyRoute) => r.id !== AUTHENTICATED_ROUTE_PREFIX,
         );
 
-        // Update the authenticated route with new children
         const updatedAuthenticatedRoute = authenticatedRoute.addChildren([
             ...authenticatedRoute.children,
             ...newAuthenticatedRoutes,
         ]);
 
-        // Build the extended route tree
         const extendedRouteTree: AnyRoute = routeTree.addChildren([
             ...childrenWithoutAuthenticated,
             updatedAuthenticatedRoute,
             ...newRootRoutes,
         ]);
 
-        // Create the final router with the extended route tree
         return createRouter({
             ...routerOptions,
             routeTree: extendedRouteTree,
