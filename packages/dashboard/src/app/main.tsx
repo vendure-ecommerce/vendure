@@ -7,7 +7,7 @@ import { useExtendedRouter } from '@/vdb/framework/page/use-extended-router.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { defaultLocale, dynamicActivate } from '@/vdb/providers/i18n-provider.js';
-import { AnyRoute, RouterOptions, RouterProvider } from '@tanstack/react-router';
+import { AnyRoute, createRouter, RouterOptions, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -34,6 +34,20 @@ const routerOptions: RouterOptions<AnyRoute, any> = {
     },
     defaultErrorComponent: ({ error }: { error: Error }) => <div>Uh Oh!!! {error.message}</div>,
 };
+
+// Create a type-only router instance for TypeScript type registration
+// The actual runtime router is created in InnerApp component
+const typeRouter = createRouter({
+    ...routerOptions,
+    routeTree,
+});
+
+// Register the router type for TypeScript
+declare module '@tanstack/react-router' {
+    interface Register {
+        router: typeof typeRouter;
+    }
+}
 
 function InnerApp() {
     const auth = useAuth();
