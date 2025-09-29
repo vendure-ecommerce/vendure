@@ -20,7 +20,7 @@ function CountryListPage() {
             pageId="country-list"
             listQuery={countriesListQuery}
             route={Route}
-            title="Countries"
+            title={<Trans>Countries</Trans>}
             defaultVisibility={{
                 name: true,
                 code: true,
@@ -47,7 +47,7 @@ function CountryListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}

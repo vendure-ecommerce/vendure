@@ -19,12 +19,12 @@ function CustomerGroupListPage() {
     return (
         <ListPage
             pageId="customer-group-list"
-            title="Customer Groups"
+            title={<Trans>Customer Groups</Trans>}
             listQuery={customerGroupListDocument}
             route={Route}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 customers: {

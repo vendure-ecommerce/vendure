@@ -26,7 +26,7 @@ function PromotionListPage() {
             pageId="promotion-list"
             listQuery={promotionListDocument}
             route={Route}
-            title="Promotions"
+            title={<Trans>Promotions</Trans>}
             defaultVisibility={{
                 name: true,
                 couponCode: true,
@@ -42,11 +42,11 @@ function PromotionListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: 'Enabled',
+                    header: () => <Trans>Enabled</Trans>,
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
             }}

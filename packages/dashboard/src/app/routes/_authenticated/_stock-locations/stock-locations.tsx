@@ -22,12 +22,12 @@ function StockLocationListPage() {
     return (
         <ListPage
             pageId="stock-location-list"
-            title="Stock Locations"
+            title={<Trans>Stock Locations</Trans>}
             listQuery={stockLocationListQuery}
             route={Route}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
@@ -56,7 +56,7 @@ function StockLocationListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Stock Location
+                            <Trans>New Stock Location</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

@@ -25,7 +25,7 @@ function RoleListPage() {
     return (
         <ListPage
             pageId="role-list"
-            title="Roles"
+            title={<Trans>Roles</Trans>}
             listQuery={roleListQuery}
             route={Route}
             defaultVisibility={{
@@ -36,7 +36,7 @@ function RoleListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: 'Code',
+                    header: () => <Trans>Code</Trans>,
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -48,7 +48,7 @@ function RoleListPage() {
                     },
                 },
                 permissions: {
-                    header: 'Permissions',
+                    header: () => <Trans>Permissions</Trans>,
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return (
@@ -62,7 +62,7 @@ function RoleListPage() {
                     },
                 },
                 channels: {
-                    header: 'Channels',
+                    header: () => <Trans>Channels</Trans>,
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return null;
@@ -92,7 +92,7 @@ function RoleListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Role
+                            <Trans>New Role</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

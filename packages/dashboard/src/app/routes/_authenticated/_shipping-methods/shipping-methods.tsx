@@ -25,7 +25,7 @@ function ShippingMethodListPage() {
             pageId="shipping-method-list"
             listQuery={shippingMethodListQuery}
             route={Route}
-            title="Shipping Methods"
+            title={<Trans>Shipping Methods</Trans>}
             defaultVisibility={{
                 name: true,
                 code: true,
@@ -33,7 +33,7 @@ function ShippingMethodListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}

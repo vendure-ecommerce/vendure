@@ -82,11 +82,9 @@ function FacetValueDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created facet value'
-                        : 'Successfully updated facet value',
-                ),
+                creatingNewEntity
+                    ? i18n.t('Successfully created facet value')
+                    : i18n.t('Successfully updated facet value'),
             );
             resetForm();
             const created = Array.isArray(data) ? data[0] : data;
@@ -96,7 +94,9 @@ function FacetValueDetailPage() {
         },
         onError: err => {
             toast(
-                i18n.t(creatingNewEntity ? 'Failed to create facet value' : 'Failed to update facet value'),
+                creatingNewEntity
+                    ? i18n.t('Failed to create facet value')
+                    : i18n.t('Failed to update facet value'),
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },

@@ -20,7 +20,7 @@ function SellerListPage() {
             pageId="seller-list"
             listQuery={sellerListQuery}
             route={Route}
-            title="Sellers"
+            title={<Trans>Sellers</Trans>}
             defaultVisibility={{
                 name: true,
             }}
@@ -31,7 +31,7 @@ function SellerListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
@@ -47,7 +47,7 @@ function SellerListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Seller
+                            <Trans>New Seller</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

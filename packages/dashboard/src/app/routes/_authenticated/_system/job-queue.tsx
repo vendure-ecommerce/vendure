@@ -9,7 +9,7 @@ import {
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';
@@ -77,6 +77,7 @@ const REFRESH_INTERVALS = [
 function JobQueuePage() {
     const refreshRef = useRef<() => void>(() => {
     });
+    const { i18n } = useLingui();
     const [refreshInterval, setRefreshInterval] = useState(10000);
 
     useEffect(() => {
@@ -94,13 +95,13 @@ function JobQueuePage() {
     return (
         <ListPage
             pageId="job-queue-list"
-            title="Job Queue"
+            title={<Trans>Job Queue</Trans>}
             defaultSort={[{ id: 'createdAt', desc: true }]}
             listQuery={jobListDocument}
             route={Route}
             customizeColumns={{
                 createdAt: {
-                    header: 'Created At',
+                    header: () => <Trans>Created At</Trans>,
                     cell: ({ row }) => (
                         <div title={row.original.createdAt}>
                             {formatRelative(new Date(row.original.createdAt), new Date())}
@@ -108,7 +109,7 @@ function JobQueuePage() {
                     ),
                 },
                 data: {
-                    header: 'Data',
+                    header: () => <Trans>Data</Trans>,
                     cell: ({ row }) => (
                         <PayloadDialog
                             payload={row.original.data}
@@ -116,18 +117,18 @@ function JobQueuePage() {
                             description={<Trans>The data that has been passed to the job</Trans>}
                             trigger={
                                 <Button size="sm" variant="secondary">
-                                    View data
+                                    <Trans>View data</Trans>
                                 </Button>
                             }
                         />
                     ),
                 },
                 queueName: {
-                    header: 'Queue',
+                    header: () => <Trans>Queue</Trans>,
                     cell: ({ row }) => <span className="font-mono">{row.original.queueName}</span>,
                 },
                 result: {
-                    header: 'Result',
+                    header: () => <Trans>Result</Trans>,
                     cell: ({ row }) => {
                         return row.original.result ? (
                             <PayloadDialog
@@ -136,7 +137,7 @@ function JobQueuePage() {
                                 description={<Trans>The result of the job</Trans>}
                                 trigger={
                                     <Button size="sm" variant="secondary">
-                                        View result
+                                        <Trans>View result</Trans>
                                     </Button>
                                 }
                             />
@@ -148,7 +149,7 @@ function JobQueuePage() {
                     },
                 },
                 state: {
-                    header: 'State',
+                    header: () => <Trans>State</Trans>,
                     cell: ({ row, table }) => {
                         const cancelJobMutation = useMutation({
                             mutationFn: (jobId: string) => api.mutate(cancelJobDocument, { jobId }),
@@ -197,7 +198,7 @@ function JobQueuePage() {
                     },
                 },
                 duration: {
-                    header: 'Duration',
+                    header: () => <Trans>Duration</Trans>,
                     cell: ({ row }) => {
                         return row.original.duration ? `${row.original.duration}ms` : null;
                     },
@@ -214,7 +215,7 @@ function JobQueuePage() {
             }}
             facetedFilters={{
                 queueName: {
-                    title: 'Queue',
+                    title: i18n.t('Queue'),
                     optionsFn: async () => {
                         return api.query(jobQueueListDocument).then(r => {
                             return r.jobQueues.map(queue => ({
@@ -225,7 +226,7 @@ function JobQueuePage() {
                     },
                 },
                 state: {
-                    title: 'State',
+                    title: i18n.t('State'),
                     options: STATES,
                 },
             }}
@@ -238,7 +239,9 @@ function JobQueuePage() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
                             <RefreshCw className="h-4 w-4" />
-                            <span>Auto refresh: {currentInterval?.label}</span>
+                            <span>
+                                <Trans>Auto refresh: {currentInterval?.label}</Trans>
+                            </span>
                             <ChevronDown className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>

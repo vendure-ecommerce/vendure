@@ -104,13 +104,13 @@ function ScheduledTasksPage() {
     const columnHelper = createColumnHelper<ScheduledTask>();
     const columns = [
         columnHelper.accessor('id', {
-            header: 'ID',
+            header: i18n.t('ID'),
         }),
         columnHelper.accessor('description', {
-            header: 'Description',
+            header: i18n.t('Description'),
         }),
         columnHelper.accessor('enabled', {
-            header: 'Enabled',
+            header: i18n.t('Enabled'),
             cell: ({ row }) => {
                 return row.original.enabled ? (
                     <Badge variant="success">
@@ -124,13 +124,13 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('schedule', {
-            header: 'Schedule Pattern',
+            header: i18n.t('Schedule Pattern'),
         }),
         columnHelper.accessor('scheduleDescription', {
-            header: 'Schedule',
+            header: i18n.t('Schedule'),
         }),
         columnHelper.accessor('lastExecutedAt', {
-            header: 'Last Executed',
+            header: i18n.t('Last Executed'),
             cell: ({ row }) => {
                 return row.original.lastExecutedAt ? (
                     <div title={row.original.lastExecutedAt}>
@@ -142,7 +142,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('nextExecutionAt', {
-            header: 'Next Execution',
+            header: i18n.t('Next Execution'),
             cell: ({ row }) => {
                 return row.original.nextExecutionAt ? (
                     formatDate(row.original.nextExecutionAt, intlDateOptions)
@@ -152,7 +152,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('isRunning', {
-            header: 'Running',
+            header: i18n.t('Running'),
             cell: ({ row }) => {
                 return row.original.isRunning ? (
                     <Badge variant="success">
@@ -166,7 +166,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('lastResult', {
-            header: 'Last Result',
+            header: i18n.t('Last Result'),
             cell: ({ row }) => {
                 return row.original.lastResult ? (
                     <PayloadDialog
@@ -175,7 +175,7 @@ function ScheduledTasksPage() {
                         description={<Trans>The result of the job</Trans>}
                         trigger={
                             <Button size="sm" variant="secondary">
-                                View result
+                                <Trans>View result</Trans>
                             </Button>
                         }
                     />
@@ -188,7 +188,7 @@ function ScheduledTasksPage() {
         }),
         columnHelper.display({
             id: 'actions',
-            header: 'Actions',
+            header: i18n.t('Actions'),
             cell: ({ row }) => {
                 return (
                     <DropdownMenu>
@@ -228,7 +228,9 @@ function ScheduledTasksPage() {
 
     return (
         <Page pageId="scheduled-tasks-list">
-            <PageTitle>Scheduled Tasks</PageTitle>
+            <PageTitle>
+                <Trans>Scheduled Tasks</Trans>
+            </PageTitle>
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
                     <DataTable

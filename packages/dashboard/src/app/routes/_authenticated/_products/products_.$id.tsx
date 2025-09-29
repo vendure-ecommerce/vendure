@@ -84,7 +84,7 @@ function ProductDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast.success(
-                i18n.t(creatingNewEntity ? 'Successfully created product' : 'Successfully updated product'),
+                creatingNewEntity ? i18n.t('Successfully created product') : i18n.t('Successfully updated product'),
             );
             resetForm();
             if (creatingNewEntity) {
@@ -92,7 +92,7 @@ function ProductDetailPage() {
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product' : 'Failed to update product'), {
+            toast.error(creatingNewEntity ? i18n.t('Failed to create product') : i18n.t('Failed to update product'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

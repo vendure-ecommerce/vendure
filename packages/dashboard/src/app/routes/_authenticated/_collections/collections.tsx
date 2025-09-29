@@ -82,7 +82,7 @@ function CollectionListPage() {
         <>
             <ListPage
                 pageId="collection-list"
-                title="Collections"
+                title={<Trans>Collections</Trans>}
                 listQuery={collectionListDocument}
                 transformVariables={input => {
                     const filterTerm = input.options?.filter?.name?.contains;
@@ -101,7 +101,7 @@ function CollectionListPage() {
                             // in order to correctly render.
                             dependencies: ['children', 'breadcrumbs'],
                         },
-                        header: 'Collection Name',
+                        header: () => <Trans>Collection Name</Trans>,
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;
@@ -141,7 +141,7 @@ function CollectionListPage() {
                         },
                     },
                     productVariants: {
-                        header: 'Contents',
+                        header: () => <Trans>Contents</Trans>,
                         cell: ({ row }) => {
                             return (
                                 <CollectionContentsSheet

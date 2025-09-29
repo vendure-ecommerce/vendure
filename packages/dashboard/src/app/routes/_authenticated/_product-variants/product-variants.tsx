@@ -45,7 +45,7 @@ function ProductListPage() {
             ]}
             customizeColumns={{
                 name: {
-                    header: 'Product Name',
+                    header: () => <Trans>Product Name</Trans>,
                     cell: ({ row: { original } }) => (
                         <DetailPageButton id={original.id} label={original.name} />
                     ),

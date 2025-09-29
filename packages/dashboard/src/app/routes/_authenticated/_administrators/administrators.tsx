@@ -20,7 +20,7 @@ function AdministratorListPage() {
     return (
         <ListPage
             pageId="administrator-list"
-            title="Administrators"
+            title={<Trans>Administrators</Trans>}
             listQuery={administratorListDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
@@ -32,7 +32,7 @@ function AdministratorListPage() {
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    header: <Trans>Name</Trans>,
                     cell: ({ row }) => (
                         <DetailPageButton
                             id={row.original.id}

@@ -21,7 +21,7 @@ function ChannelListPage() {
     return (
         <ListPage
             pageId="channel-list"
-            title="Channels"
+            title={<Trans>Channels</Trans>}
             listQuery={channelListQuery}
             route={Route}
             defaultVisibility={{
@@ -39,7 +39,7 @@ function ChannelListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: 'Code',
+                    header: () => <Trans>Code</Trans>,
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -50,13 +50,13 @@ function ChannelListPage() {
                     },
                 },
                 seller: {
-                    header: 'Seller',
+                    header: () => <Trans>Seller</Trans>,
                     cell: ({ row }) => {
                         return row.original.seller?.name;
                     },
                 },
                 defaultLanguageCode: {
-                    header: 'Default Language',
+                    header: () => <Trans>Default Language</Trans>,
                     cell: ({ row }) => {
                         return formatLanguageName(row.original.defaultLanguageCode);
                     },
@@ -74,7 +74,7 @@ function ChannelListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Channel
+                            <Trans>New Channel</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

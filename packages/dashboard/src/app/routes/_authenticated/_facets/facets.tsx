@@ -61,7 +61,7 @@ function FacetListPage() {
     return (
         <ListPage
             pageId="facet-list"
-            title="Facets"
+            title={<Trans>Facets</Trans>}
             listQuery={facetListDocument}
             defaultVisibility={{
                 name: true,
@@ -70,6 +70,7 @@ function FacetListPage() {
             }}
             customizeColumns={{
                 name: {
+                    id: 'name',
                     header: () => <Trans>Facet Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },

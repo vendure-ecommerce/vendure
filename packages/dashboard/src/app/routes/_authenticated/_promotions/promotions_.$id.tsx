@@ -99,19 +99,19 @@ function PromotionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Promotion') {
-                toast.success(i18n.t(creatingNewEntity ? 'Successfully created promotion' : 'Successfully updated promotion'));
+                toast.success(creatingNewEntity ? i18n.t('Successfully created promotion') : i18n.t('Successfully updated promotion'));
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
+                toast.error(creatingNewEntity ? i18n.t('Failed to create promotion') : i18n.t('Failed to update promotion'), {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
+            toast.error(creatingNewEntity ? i18n.t('Failed to create promotion') : i18n.t('Failed to update promotion'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

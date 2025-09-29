@@ -91,9 +91,7 @@ function CollectionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity ? 'Successfully created collection' : 'Successfully updated collection',
-                ),
+                creatingNewEntity ? i18n.t('Successfully created collection') : i18n.t('Successfully updated collection'),
             );
             resetForm();
             if (creatingNewEntity) {
@@ -101,7 +99,7 @@ function CollectionDetailPage() {
             }
         },
         onError: err => {
-            toast(i18n.t(creatingNewEntity ? 'Failed to create collection' : 'Failed to update collection'), {
+            toast(creatingNewEntity ? i18n.t('Failed to create collection') : i18n.t('Failed to update collection'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers')({
 function CustomerListPage() {
     return (
         <ListPage
-            title="Customers"
+            title={<Trans>Customers</Trans>}
             pageId="customer-list"
             listQuery={customerListDocument}
             onSearchTermChange={searchTerm => {
@@ -42,7 +42,7 @@ function CustomerListPage() {
             route={Route}
             customizeColumns={{
                 user: {
-                    header: 'Status',
+                    header: () => <Trans>Status</Trans>,
                     cell: ({ cell }) => {
                         const value = cell.getValue();
                         return <CustomerStatusBadge user={value} />;
@@ -51,7 +51,8 @@ function CustomerListPage() {
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    id: 'name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => {
                         const value = `${row.original.firstName} ${row.original.lastName}`;
                         return <DetailPageButton id={row.original.id} label={value} />;

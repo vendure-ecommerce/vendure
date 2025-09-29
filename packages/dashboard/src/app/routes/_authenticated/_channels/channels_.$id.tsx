@@ -83,9 +83,7 @@ function ChannelDetailPage() {
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
                 toast(
-                    i18n.t(
-                        creatingNewEntity ? 'Successfully created channel' : 'Successfully updated channel',
-                    ),
+                    creatingNewEntity ? i18n.t('Successfully created channel') : i18n.t('Successfully updated channel'),
                 );
                 refreshChannels();
                 resetForm();
@@ -93,13 +91,13 @@ function ChannelDetailPage() {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast(i18n.t(creatingNewEntity ? 'Failed to create channel' : 'Failed to update channel'), {
+                toast(creatingNewEntity ? i18n.t('Failed to create channel') : i18n.t('Failed to update channel'), {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast(i18n.t(creatingNewEntity ? 'Failed to create channel' : 'Failed to update channel'), {
+            toast(creatingNewEntity ? i18n.t('Failed to create channel') : i18n.t('Failed to update channel'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

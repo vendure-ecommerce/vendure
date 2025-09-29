@@ -62,7 +62,7 @@ function RoleDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast.success(
-                i18n.t(creatingNewEntity ? 'Successfully created role' : 'Successfully updated role'),
+                creatingNewEntity ? i18n.t('Successfully created role') : i18n.t('Successfully updated role'),
             );
             resetForm();
             if (creatingNewEntity) {
@@ -70,7 +70,7 @@ function RoleDetailPage() {
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create role' : 'Failed to update role'), {
+            toast.error(creatingNewEntity ? i18n.t('Failed to create role') : i18n.t('Failed to update role'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

@@ -90,9 +90,9 @@ function CustomerDetailPage() {
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
                 toast.success(
-                    i18n.t(
-                        creatingNewEntity ? 'Successfully created customer' : 'Successfully updated customer',
-                    ),
+                    creatingNewEntity
+                        ? i18n.t('Successfully created customer')
+                        : i18n.t('Successfully updated customer'),
                 );
                 resetForm();
                 if (creatingNewEntity) {
@@ -100,7 +100,9 @@ function CustomerDetailPage() {
                 }
             } else {
                 toast.error(
-                    i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'),
+                    creatingNewEntity
+                        ? i18n.t('Failed to create customer')
+                        : i18n.t('Failed to update customer'),
                     {
                         description: data.message,
                     },
@@ -109,7 +111,7 @@ function CustomerDetailPage() {
         },
         onError: err => {
             toast.error(
-                i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'),
+                creatingNewEntity ? i18n.t('Failed to create customer') : i18n.t('Failed to update customer'),
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },

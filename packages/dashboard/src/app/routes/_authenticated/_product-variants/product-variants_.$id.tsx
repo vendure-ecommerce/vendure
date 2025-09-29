@@ -97,14 +97,14 @@ function ProductVariantDetailPage() {
         },
         params: { id: params.id },
         onSuccess: data => {
-            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product variant' : 'Successfully updated product variant'));
+            toast.success(creatingNewEntity ? i18n.t('Successfully created product variant') : i18n.t('Successfully updated product variant'));
             resetForm();
             if (creatingNewEntity) {
                 navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product variant' : 'Failed to update product variant'), {
+            toast.error(creatingNewEntity ? i18n.t('Failed to create product variant') : i18n.t('Failed to update product variant'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

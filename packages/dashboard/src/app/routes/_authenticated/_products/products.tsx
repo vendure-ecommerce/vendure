@@ -43,10 +43,10 @@ function ProductListPage() {
         <ListPage
             pageId="product-list"
             listQuery={productListDocument}
-            title="Products"
+            title={<Trans>Products</Trans>}
             customizeColumns={{
                 name: {
-                    header: 'Product Name',
+                    header: () => <Trans>Product Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}

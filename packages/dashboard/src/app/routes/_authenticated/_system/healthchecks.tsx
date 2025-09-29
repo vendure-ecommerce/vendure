@@ -39,15 +39,21 @@ function HealthchecksPage() {
 
     return (
         <Page>
-            <PageTitle>Healthchecks</PageTitle>
+            <PageTitle>
+                <Trans>Health checks</Trans>
+            </PageTitle>
             <PageActionBar>
-                <Button onClick={() => refetch()}>Refresh</Button>
+                <Button onClick={() => refetch()}>
+                    <Trans>Refresh</Trans>
+                </Button>
             </PageActionBar>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <span> Current status</span>
+                            <span>
+                                <Trans>Current status</Trans>
+                            </span>
                             <span className="text-sm font-normal text-muted-foreground">
                                 <Trans>Last updated {formatRelative(dataUpdatedAt, new Date())}</Trans>
                             </span>
