@@ -13,10 +13,6 @@ export const defaultLocale = 'en';
  * @param locale any locale string
  */
 export async function dynamicActivate(locale: string, onActivate?: () => void) {
-    // Temporarily disabled because Lingui macros do not work when the dashboard is packaged in an npm module.
-    // Related issue: https://github.com/kentcdodds/babel-plugin-macros/issues/87
-
-    console.log('dynamicActivate', locale);
     const { messages } = await import(`../../i18n/locales/${locale}.po`);
     i18n.load(locale, messages);
     i18n.activate(locale);
@@ -25,5 +21,4 @@ export async function dynamicActivate(locale: string, onActivate?: () => void) {
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
     return <LinguiI18nProvider i18n={i18n}>{children}</LinguiI18nProvider>;
-    // return <>{children}</>;
 }

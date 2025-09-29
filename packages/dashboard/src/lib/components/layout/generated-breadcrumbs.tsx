@@ -5,11 +5,12 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from '@/vdb/components/ui/breadcrumb.js';
+import type { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
+import { getNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
+import { useLingui } from '@lingui/react';
 import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { getNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
-import type { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 
 export interface BreadcrumbPair {
     label: string | React.ReactElement;
@@ -24,6 +25,7 @@ export function GeneratedBreadcrumbs() {
     const matches = useRouterState({ select: s => s.matches });
     const currentPath = useRouterState({ select: s => s.location.pathname });
     const router = useRouter();
+    const { i18n } = useLingui();
     const navMenuConfig = getNavMenuConfig();
     const basePath = router.basepath || '';
 
@@ -51,9 +53,7 @@ export function GeneratedBreadcrumbs() {
     const rawCrumbs: BreadcrumbPair[] = React.useMemo(() => {
         return matches
             .filter(match => match.loaderData?.breadcrumb)
-            .flatMap(({ pathname, loaderData }) => 
-                normalizeBreadcrumb(loaderData.breadcrumb, pathname)
-            );
+            .flatMap(({ pathname, loaderData }) => normalizeBreadcrumb(loaderData.breadcrumb, pathname));
     }, [matches]);
 
     const isBaseRoute = (p: string) => p === basePath || p === `${basePath}/`;
@@ -83,7 +83,7 @@ export function GeneratedBreadcrumbs() {
         for (const item of section.items) {
             if (!item?.url) continue;
             if (pathMatches(cleanPath, item.url)) {
-                return { label: section.title, path: item.url };
+                return { label: i18n.t(section.title), path: item.url };
             }
         }
         return undefined;
@@ -94,7 +94,7 @@ export function GeneratedBreadcrumbs() {
         cleanPath: string,
     ): BreadcrumbPair | undefined => {
         if ('url' in section && section.url && pathMatches(cleanPath, section.url)) {
-            return { label: section.title, path: section.url };
+            return { label: i18n.t(section.title), path: section.url };
         }
         return undefined;
     };
@@ -119,8 +119,8 @@ export function GeneratedBreadcrumbs() {
     );
     const breadcrumbs: BreadcrumbPair[] = React.useMemo(() => {
         const arr = sectionCrumb ? [sectionCrumb, ...pageCrumbs] : pageCrumbs;
-        return arr.filter((c, i, self) =>
-            self.findIndex(x => x.path === c.path && x.label === c.label) === i,
+        return arr.filter(
+            (c, i, self) => self.findIndex(x => x.path === c.path && x.label === c.label) === i,
         );
     }, [sectionCrumb, pageCrumbs]);
     return (

@@ -11,6 +11,8 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
+import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
@@ -41,6 +43,12 @@ function InnerApp() {
     const extendedRouter = useExtendedRouter(router);
     const serverConfig = useServerConfig();
     const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
+    const { settings } = useUserSettings();
+    const { loadAndActivateLocale } = useUiLanguageLoader();
+
+    useEffect(() => {
+        void loadAndActivateLocale(settings.displayLanguage);
+    }, [settings.displayLanguage]);
 
     useEffect(() => {
         if (!serverConfig) {

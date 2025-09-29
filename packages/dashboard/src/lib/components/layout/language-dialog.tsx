@@ -1,7 +1,8 @@
 import { CurrencyCode } from '@/vdb/constants.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';
@@ -11,21 +12,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 export function LanguageDialog() {
     const { i18n } = uiConfig;
-    const { i18n: linguiI18n } = useLingui();
+    const { loadAndActivateLocale } = useUiLanguageLoader();
     const { availableLocales, availableLanguages } = i18n;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
-    const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();
+    const { formatCurrency, formatLanguageName, formatRegionName, formatCurrencyName, formatDate } =
+        useLocalFormat();
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
+    const orderedAvailableLanguages = availableLanguages.slice().sort((a, b) => a.localeCompare(b));
+    const orderedAvailableLocales = availableLocales.slice().sort((a, b) => a.localeCompare(b));
     const handleLanguageChange = async (value: string) => {
-        console.log(value);
         setDisplayLanguage(value);
-        console.log(linguiI18n);
-        // linguiI18n.activate(value);
-        const { messages } = await import(`../../../i18n/locales/${value}.po`);
-        linguiI18n.load(value, messages);
-        linguiI18n.activate(value);
+        void loadAndActivateLocale(value);
     };
 
     return (
@@ -45,9 +44,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a language" />
                         </SelectTrigger>
                         <SelectContent>
-                            {availableLanguages.map(language => (
-                                <SelectItem key={language} value={language}>
-                                    {formatLanguageName(language)}
+                            {orderedAvailableLanguages.map(language => (
+                                <SelectItem key={language} value={language} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{language}</span>
+                                    <span>{formatLanguageName(language)}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -62,9 +62,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a locale" />
                         </SelectTrigger>
                         <SelectContent>
-                            {availableLocales.map(locale => (
-                                <SelectItem key={locale} value={locale}>
-                                    {formatLanguageName(locale)}
+                            {orderedAvailableLocales.map(locale => (
+                                <SelectItem key={locale} value={locale} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{locale}</span>
+                                    <span>{formatRegionName(locale)}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
