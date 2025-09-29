@@ -1,6 +1,6 @@
 import { getListQueryDocuments } from '@/vdb/framework/data-table/data-table-extensions.js';
 import { extendDocument } from '@/vdb/framework/document-extension/extend-document.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { DocumentNode } from 'graphql';
 import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';

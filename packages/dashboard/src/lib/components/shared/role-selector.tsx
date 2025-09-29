@@ -1,6 +1,6 @@
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { MultiSelect } from './multi-select.js';
 

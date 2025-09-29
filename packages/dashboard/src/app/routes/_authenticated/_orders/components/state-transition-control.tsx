@@ -5,7 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { EllipsisVertical, CircleDashed, CircleCheck, CircleX } from 'lucide-react';
 

@@ -9,7 +9,7 @@ import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from
 import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import { AssignFacetValuesDialog } from '../../_products/components/assign-facet-values-dialog.js';

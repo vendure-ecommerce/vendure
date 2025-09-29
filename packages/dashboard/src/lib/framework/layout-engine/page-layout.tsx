@@ -23,7 +23,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
 import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
@@ -119,12 +119,12 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 }
 
 function PageContent({
-    pageHeader,
-    pageContent,
-    form,
-    submitHandler,
-    ...props
-}: {
+                         pageHeader,
+                         pageContent,
+                         form,
+                         submitHandler,
+                         ...props
+                     }: {
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     form?: UseFormReturn<any>;
@@ -146,11 +146,11 @@ function PageContent({
 }
 
 export function PageContentWithOptionalForm({
-    form,
-    pageHeader,
-    pageContent,
-    submitHandler,
-}: {
+                                                form,
+                                                pageHeader,
+                                                pageContent,
+                                                submitHandler,
+                                            }: {
     form?: UseFormReturn<any>;
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
@@ -425,9 +425,9 @@ function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
  * @since 3.3.0
  */
 export function PageActionBarRight({
-    children,
-    dropdownMenuItems,
-}: Readonly<{
+                                       children,
+                                       dropdownMenuItems,
+                                   }: Readonly<{
     children: React.ReactNode;
     dropdownMenuItems?: InlineDropdownItem[];
 }>) {
@@ -458,9 +458,9 @@ export function PageActionBarRight({
 }
 
 function PageActionBarItem({
-    item,
-    page,
-}: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
+                               item,
+                               page,
+                           }: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
@@ -469,9 +469,9 @@ function PageActionBarItem({
 }
 
 function PageActionBarDropdown({
-    items,
-    page,
-}: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
+                                   items,
+                                   page,
+                               }: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -550,13 +550,13 @@ export type PageBlockProps = {
  * @since 3.3.0
  */
 export function PageBlock({
-    children,
-    title,
-    description,
-    className,
-    blockId,
-    column,
-}: Readonly<PageBlockProps>) {
+                              children,
+                              title,
+                              description,
+                              className,
+                              blockId,
+                              column,
+                          }: Readonly<PageBlockProps>) {
     const contextValue = useMemo(
         () => ({
             blockId,
@@ -595,10 +595,10 @@ export function PageBlock({
  * @since 3.3.0
  */
 export function FullWidthPageBlock({
-    children,
-    className,
-    blockId,
-}: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
+                                       children,
+                                       className,
+                                       blockId,
+                                   }: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
     const contextValue = useMemo(() => ({ blockId, column: 'main' as const }), [blockId]);
     return (
         <PageBlockContext.Provider value={contextValue}>
@@ -625,10 +625,10 @@ export function FullWidthPageBlock({
  * @since 3.3.0
  */
 export function CustomFieldsPageBlock({
-    column,
-    entityType,
-    control,
-}: Readonly<{
+                                          column,
+                                          entityType,
+                                          control,
+                                      }: Readonly<{
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;

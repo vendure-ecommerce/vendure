@@ -9,7 +9,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Label } from '@/vdb/components/ui/label.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 
 type SettleRefundDialogProps = {
@@ -20,11 +20,11 @@ type SettleRefundDialogProps = {
 };
 
 export function SettleRefundDialog({
-    open,
-    onOpenChange,
-    onSettle,
-    isLoading,
-}: Readonly<SettleRefundDialogProps>) {
+                                       open,
+                                       onOpenChange,
+                                       onSettle,
+                                       isLoading,
+                                   }: Readonly<SettleRefundDialogProps>) {
     const [transactionId, setTransactionId] = useState('');
 
     const handleSettle = () => {

@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
 import { HistoryEntry, HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 
 interface HistoryNoteEntryProps extends Readonly<HistoryEntryProps> {

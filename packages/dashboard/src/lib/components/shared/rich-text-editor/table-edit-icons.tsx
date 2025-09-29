@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Editor } from '@tiptap/react';
 import { MoreHorizontalIcon, MoreVerticalIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';

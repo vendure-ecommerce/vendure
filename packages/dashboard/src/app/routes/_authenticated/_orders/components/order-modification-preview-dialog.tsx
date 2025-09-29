@@ -17,7 +17,7 @@ import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { CheckIcon } from 'lucide-react';
@@ -47,12 +47,12 @@ interface PaymentRefundForm {
 }
 
 export function OrderModificationPreviewDialog({
-    open,
-    onOpenChange,
-    orderSnapshot,
-    modifyOrderInput,
-    onResolve,
-}: Readonly<OrderModificationPreviewDialogProps>) {
+                                                   open,
+                                                   onOpenChange,
+                                                   orderSnapshot,
+                                                   modifyOrderInput,
+                                                   onResolve,
+                                               }: Readonly<OrderModificationPreviewDialogProps>) {
     const { i18n } = useLingui();
     const { formatCurrency } = useLocalFormat();
     // Use a ref to track the last input sent to avoid duplicate calls
@@ -221,7 +221,7 @@ export function OrderModificationPreviewDialog({
                                                                             refundForm.setValue(
                                                                                 `payments.${payment.id}`,
                                                                                 currentRefundAmount +
-                                                                                    amountToAdd,
+                                                                                amountToAdd,
                                                                             );
                                                                         }
                                                                     }}

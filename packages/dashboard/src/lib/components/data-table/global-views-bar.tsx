@@ -1,7 +1,7 @@
+import { Trans } from '@lingui/react/macro';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
-import { Trans } from '../../lib/trans.js';
 import { SavedView } from '../../types/saved-views.js';
 import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { PermissionGuard } from '../shared/permission-guard.js';

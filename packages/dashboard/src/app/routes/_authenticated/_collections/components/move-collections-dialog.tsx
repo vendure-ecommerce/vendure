@@ -16,7 +16,7 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { ChevronRight, Folder, FolderOpen, Search } from 'lucide-react';
 
 import { collectionListForMoveDocument, moveCollectionDocument } from '../collections.graphql.js';

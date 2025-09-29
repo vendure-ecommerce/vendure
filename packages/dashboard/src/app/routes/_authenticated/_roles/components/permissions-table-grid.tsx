@@ -3,7 +3,7 @@ import { Switch } from '@/vdb/components/ui/switch.js';
 import { Table, TableBody, TableCell, TableRow } from '@/vdb/components/ui/table.js';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
 import { useGroupedPermissions } from '@/vdb/hooks/use-grouped-permissions.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { ServerConfig } from '@/vdb/providers/server-config.js';
 import { InfoIcon } from 'lucide-react';
 
@@ -14,10 +14,10 @@ interface PermissionsTableGridProps {
 }
 
 export function PermissionsTableGrid({
-    value,
-    onChange,
-    readonly = false,
-}: Readonly<PermissionsTableGridProps>) {
+                                         value,
+                                         onChange,
+                                         readonly = false,
+                                     }: Readonly<PermissionsTableGridProps>) {
     const { i18n } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 

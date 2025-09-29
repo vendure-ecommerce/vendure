@@ -7,7 +7,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/vdb/components/ui/sheet.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { VariablesOf } from 'gql.tada';
 import { FlaskConical } from 'lucide-react';
 import { useState } from 'react';
@@ -20,9 +20,9 @@ interface TestSingleShippingMethodDialogProps {
 }
 
 export function TestSingleShippingMethodSheet({
-    checker,
-    calculator,
-}: Readonly<TestSingleShippingMethodDialogProps>) {
+                                                  checker,
+                                                  calculator,
+                                              }: Readonly<TestSingleShippingMethodDialogProps>) {
     const [open, setOpen] = useState(false);
 
     return (

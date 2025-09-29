@@ -14,7 +14,7 @@ import {
     DialogTitle,
 } from '@/vdb/components/ui/dialog.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 import { getDetailQueryOptions } from '@/vdb/framework/page/use-detail-page.js';
 
@@ -60,6 +60,7 @@ export function AssignFacetValuesDialog({
     const [facetValuesRemoved, setFacetValuesRemoved] = useState(false);
     const [removedFacetValues, setRemovedFacetValues] = useState<Set<string>>(new Set());
     const queryClient = useQueryClient();
+    const entityIdsLength = entityIds.length;
 
     // Fetch existing facet values for the entities
     const { data: entitiesData, isLoading } = useQuery({
@@ -71,7 +72,7 @@ export function AssignFacetValuesDialog({
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(i18n.t(`Successfully updated facet values for ${entityIds.length} ${entityType}`));
+            toast.success(i18n.t(`Successfully updated facet values for ${entityIdsLength} ${entityType}`));
             onSuccess?.();
             onOpenChange(false);
             // Reset state
@@ -84,7 +85,7 @@ export function AssignFacetValuesDialog({
             });
         },
         onError: () => {
-            toast.error(`Failed to update facet values for ${entityIds.length} ${entityType}`);
+            toast.error(`Failed to update facet values for ${entityIdsLength} ${entityType}`);
         },
     });
 

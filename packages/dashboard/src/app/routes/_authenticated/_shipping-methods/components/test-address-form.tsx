@@ -5,7 +5,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -47,16 +47,16 @@ export function TestAddressForm({ onAddressChange }: Readonly<TestAddressFormPro
                 return stored
                     ? JSON.parse(stored)
                     : {
-                          fullName: '',
-                          company: '',
-                          streetLine1: '',
-                          streetLine2: '',
-                          city: '',
-                          province: '',
-                          postalCode: '',
-                          countryCode: '',
-                          phoneNumber: '',
-                      };
+                        fullName: '',
+                        company: '',
+                        streetLine1: '',
+                        streetLine2: '',
+                        city: '',
+                        province: '',
+                        postalCode: '',
+                        countryCode: '',
+                        phoneNumber: '',
+                    };
             } catch {
                 return {
                     fullName: '',

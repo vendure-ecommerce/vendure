@@ -6,7 +6,7 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 interface RemoveFromChannelBulkActionProps {
     selection: any[];
@@ -44,21 +44,23 @@ export function RemoveFromChannelBulkAction({
     const { refetchPaginatedList } = usePaginatedList();
     const { activeChannel } = useChannel();
     const { i18n } = useLingui();
+    const selectionLength = selection.length;
     const { mutate } = useMutation({
         mutationFn,
         onSuccess: result => {
             const message =
                 successMessage ||
-                i18n.t(`Successfully removed ${selection.length} ${entityType} from channel`);
+                i18n.t(`Successfully removed ${selectionLength} ${entityType} from channel`);
             toast.success(message);
             refetchPaginatedList();
             table.resetRowSelection();
             onSuccess?.(result);
         },
         onError: error => {
+            const onErrorMessage = error.message;
             const message =
                 errorMessage ||
-                `Failed to remove ${selection.length} ${entityType} from channel: ${error.message}`;
+                `Failed to remove ${selectionLength} ${entityType} from channel: ${onErrorMessage}`;
             toast.error(message);
         },
     });

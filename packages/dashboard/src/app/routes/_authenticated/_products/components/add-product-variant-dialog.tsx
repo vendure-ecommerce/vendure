@@ -14,7 +14,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf, VariablesOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -75,9 +75,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AddProductVariantDialog({
-    productId,
-    onSuccess,
-}: {
+                                            productId,
+                                            onSuccess,
+                                        }: {
     productId: string;
     onSuccess?: () => void;
 }) {

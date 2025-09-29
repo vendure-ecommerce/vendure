@@ -6,7 +6,7 @@ export default defineConfig({
     catalogs: [
         {
             path: '<rootDir>/src/i18n/locales/{locale}',
-            include: ['<rootDir>'],
+            include: ['<rootDir>/src'],
         },
     ],
 });

@@ -1,6 +1,7 @@
+import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { PluginOption } from 'vite';
 
@@ -104,8 +105,6 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
     }
 
     return [
-        // TODO: solve https://github.com/kentcdodds/babel-plugin-macros/issues/87
-        // lingui(),
         ...(options.disableTansStackRouterPlugin
             ? []
             : [
@@ -117,10 +116,11 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
                   }),
               ]),
         react({
-            // babel: {
-            //     plugins: ['@lingui/babel-plugin-lingui-macro'],
-            // },
+            plugins: [['@lingui/swc-plugin', {}]],
         }),
+
+        // TODO: solve https://github.com/kentcdodds/babel-plugin-macros/issues/87
+        lingui({}),
         themeVariablesPlugin({ theme: options.theme }),
         dashboardTailwindSourcePlugin(),
         tailwindcss(),

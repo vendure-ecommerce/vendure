@@ -2,7 +2,7 @@ import { OverriddenFormComponent } from '@/vdb/framework/form-engine/overridden-
 import { LocationWrapper } from '@/vdb/framework/layout-engine/location-wrapper.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Controller, ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 import { FormFieldWrapper } from './form-field-wrapper.js';
@@ -35,17 +35,17 @@ export type TranslatableFormFieldProps<TFieldValues extends TranslatableEntity |
     name: TFieldValues extends TranslatableEntity
         ? keyof Omit<NonNullable<TFieldValues['translations']>[number], 'languageCode'>
         : TFieldValues extends TranslatableEntity[]
-          ? keyof Omit<NonNullable<TFieldValues[number]['translations']>[number], 'languageCode'>
-          : never;
+            ? keyof Omit<NonNullable<TFieldValues[number]['translations']>[number], 'languageCode'>
+            : never;
 };
 
 export const TranslatableFormField = <
     TFieldValues extends TranslatableEntity | TranslatableEntity[] = TranslatableEntity,
 >({
-    name,
-    label,
-    ...props
-}: TranslatableFormFieldProps<TFieldValues>) => {
+      name,
+      label,
+      ...props
+  }: TranslatableFormFieldProps<TFieldValues>) => {
     const { formatLanguageName } = useLocalFormat();
     const { contentLanguage } = useUserSettings().settings;
     const formValues = props.control?._formValues;
@@ -76,7 +76,7 @@ export type TranslatableFormFieldWrapperProps<
 /**
  * @description
  * This is the equivalent of the {@link FormFieldWrapper} component, but for translatable fields.
- * 
+ *
  * @example
  * ```tsx
  * <PageBlock column="main" blockId="main-form">
@@ -112,13 +112,13 @@ export type TranslatableFormFieldWrapperProps<
 export const TranslatableFormFieldWrapper = <
     TFieldValues extends TranslatableEntity | TranslatableEntity[] = TranslatableEntity,
 >({
-    name,
-    label,
-    description,
-    render,
-    renderFormControl,
-    ...props
-}: TranslatableFormFieldWrapperProps<TFieldValues>) => {
+      name,
+      label,
+      description,
+      render,
+      renderFormControl,
+      ...props
+  }: TranslatableFormFieldWrapperProps<TFieldValues>) => {
     return (
         <LocationWrapper identifier={name as string}>
             <TranslatableFormField

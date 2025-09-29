@@ -27,7 +27,7 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
@@ -89,21 +89,31 @@ function CustomerDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
-                toast.success(i18n.t(creatingNewEntity ? 'Successfully created customer' : 'Successfully updated customer'));
+                toast.success(
+                    i18n.t(
+                        creatingNewEntity ? 'Successfully created customer' : 'Successfully updated customer',
+                    ),
+                );
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
-                    description: data.message,
-                });
+                toast.error(
+                    i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'),
+                    {
+                        description: data.message,
+                    },
+                );
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'),
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

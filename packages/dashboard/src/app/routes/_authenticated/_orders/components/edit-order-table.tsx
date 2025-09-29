@@ -5,7 +5,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import {
     ColumnDef,
     flexRender,
@@ -53,16 +53,16 @@ export interface OrderTableProps {
 }
 
 export function EditOrderTable({
-    order,
-    eligibleShippingMethods,
-    onAddItem,
-    onAdjustLine,
-    onRemoveLine,
-    onSetShippingMethod,
-    onApplyCouponCode,
-    onRemoveCouponCode,
-    displayTotals = true,
-}: Readonly<OrderTableProps>) {
+                                   order,
+                                   eligibleShippingMethods,
+                                   onAddItem,
+                                   onAdjustLine,
+                                   onRemoveLine,
+                                   onSetShippingMethod,
+                                   onApplyCouponCode,
+                                   onRemoveCouponCode,
+                                   displayTotals = true,
+                               }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const currencyCode = order.currencyCode;
     const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
@@ -169,9 +169,9 @@ export function EditOrderTable({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
+                                                    header.column.columnDef.header,
+                                                    header.getContext(),
+                                                )}
                                         </TableHead>
                                     );
                                 })}
@@ -181,14 +181,14 @@ export function EditOrderTable({
                     <TableBody>
                         {table.getRowModel().rows?.length
                             ? table.getRowModel().rows.map(row => (
-                                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                      {row.getVisibleCells().map(cell => (
-                                          <TableCell key={cell.id}>
-                                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                          </TableCell>
-                                      ))}
-                                  </TableRow>
-                              ))
+                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
                             : null}
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-12">

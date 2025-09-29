@@ -12,7 +12,7 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
@@ -83,9 +83,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function CreateProductOptionsDialog({
-    productId,
-    onSuccess,
-}: {
+                                               productId,
+                                               onSuccess,
+                                           }: {
     productId: string;
     onSuccess?: () => void;
 }) {
@@ -378,9 +378,9 @@ export function CreateProductOptionsDialog({
                                                         ...form.getValues('existingVariantOptionIds'),
                                                     ];
                                                     newValues[
-                                                        (productData?.product?.optionGroups?.length || 0) +
-                                                            groupIndex
-                                                    ] = e.target.value;
+                                                    (productData?.product?.optionGroups?.length || 0) +
+                                                    groupIndex
+                                                        ] = e.target.value;
                                                     form.setValue('existingVariantOptionIds', newValues);
                                                 }}
                                             >

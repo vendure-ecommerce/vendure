@@ -10,7 +10,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { ChevronRight, Loader2, Plus } from 'lucide-react';
@@ -41,9 +41,9 @@ interface FacetValueSelectorProps {
     /**
      * @description
      * The function to call when a facet value is selected.
-     * 
+     *
      * The `value` will have the following structure:
-     * 
+     *
      * ```ts
      * {
      *     id: string;
@@ -71,7 +71,7 @@ interface FacetValueSelectorProps {
     /**
      * @description
      * The number of facet values to display per page.
-     * 
+     *
      * @default 4
      */
     pageSize?: number;
@@ -129,7 +129,7 @@ const getFacetValuesForFacetDocument = graphql(`
 /**
  * @description
  * A component for selecting facet values.
- * 
+ *
  * @example
  * ```tsx
  * <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={disabled} />
@@ -141,11 +141,11 @@ const getFacetValuesForFacetDocument = graphql(`
  * @since 3.4.0
  */
 export function FacetValueSelector({
-    onValueSelect,
-    disabled,
-    placeholder = 'Search facet values...',
-    pageSize = 4,
-}: FacetValueSelectorProps) {
+                                       onValueSelect,
+                                       disabled,
+                                       placeholder = 'Search facet values...',
+                                       pageSize = 4,
+                                   }: FacetValueSelectorProps) {
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedFacetId, setExpandedFacetId] = useState<string | null>(null);

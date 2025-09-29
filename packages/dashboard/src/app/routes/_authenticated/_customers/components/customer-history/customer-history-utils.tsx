@@ -1,5 +1,5 @@
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { CheckIcon, Edit3, KeyIcon, Mail, MapPin, SquarePen, User, UserCheck, Users } from 'lucide-react';
 import { CustomerHistoryCustomerDetail } from './customer-history-types.js';
 

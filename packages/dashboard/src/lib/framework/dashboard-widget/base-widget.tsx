@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { DashboardBaseWidgetProps } from '@/vdb/framework/extension-api/types/index.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
@@ -20,13 +20,13 @@ export const useWidgetDimensions = () => {
 };
 
 export function DashboardBaseWidget({
-    id,
-    config,
-    children,
-    title,
-    description,
-    actions,
-}: DashboardBaseWidgetProps) {
+                                        id,
+                                        config,
+                                        children,
+                                        title,
+                                        description,
+                                        actions,
+                                    }: DashboardBaseWidgetProps) {
     const headerRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);

@@ -1,6 +1,5 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { useLingui } from '@/vdb/lib/trans.js';
 import {
     closestCenter,
     DndContext,
@@ -18,6 +17,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useLingui } from '@lingui/react/macro';
 import { GripVertical, Plus, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
@@ -169,7 +169,11 @@ function convertToFlatArray(itemsWithIds: ListItemWithId[]): any[] {
     return itemsWithIds.map(item => item.value);
 }
 
-export const CustomFieldListInput = ({ renderInput, defaultValue, ...fieldProps }: CustomFieldListInputProps) => {
+export const CustomFieldListInput = ({
+    renderInput,
+    defaultValue,
+    ...fieldProps
+}: CustomFieldListInputProps) => {
     const { value, onChange, disabled } = fieldProps;
     const { i18n } = useLingui();
     const sensors = useSensors(

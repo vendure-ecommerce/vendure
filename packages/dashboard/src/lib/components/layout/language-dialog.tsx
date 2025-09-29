@@ -1,7 +1,7 @@
 import { CurrencyCode } from '@/vdb/constants.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';
@@ -11,11 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 export function LanguageDialog() {
     const { i18n } = uiConfig;
+    const { i18n: linguiI18n } = useLingui();
     const { availableLocales, availableLanguages } = i18n;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
     const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+
+    const handleLanguageChange = async (value: string) => {
+        console.log(value);
+        setDisplayLanguage(value);
+        console.log(linguiI18n);
+        // linguiI18n.activate(value);
+        const { messages } = await import(`../../../i18n/locales/${value}.po`);
+        linguiI18n.load(value, messages);
+        linguiI18n.activate(value);
+    };
 
     return (
         <DialogContent>
@@ -29,7 +40,7 @@ export function LanguageDialog() {
                     <Label>
                         <Trans>Display language</Trans>
                     </Label>
-                    <Select defaultValue={settings.displayLanguage} onValueChange={setDisplayLanguage}>
+                    <Select defaultValue={settings.displayLanguage} onValueChange={handleLanguageChange}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a language" />
                         </SelectTrigger>

@@ -23,7 +23,7 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { channelDetailDocument, createChannelDocument, updateChannelDocument } from './channels.graphql.js';
@@ -82,7 +82,11 @@ function ChannelDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
-                toast(i18n.t(creatingNewEntity ? 'Successfully created channel' : 'Successfully updated channel'));
+                toast(
+                    i18n.t(
+                        creatingNewEntity ? 'Successfully created channel' : 'Successfully updated channel',
+                    ),
+                );
                 refreshChannels();
                 resetForm();
                 if (creatingNewEntity) {

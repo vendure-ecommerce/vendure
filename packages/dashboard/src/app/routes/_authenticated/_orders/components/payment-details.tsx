@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/compo
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { JsonEditor } from 'json-edit-react';
 import { ChevronDown } from 'lucide-react';
@@ -184,9 +184,11 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                     )}
                 </div>
                 <Collapsible className="mt-2 border-t pt-2">
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm hover:underline text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1 -m-1">
+                    <CollapsibleTrigger
+                        className="flex items-center justify-between w-full text-sm hover:underline text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1 -m-1">
                         <Trans>Payment metadata</Trans>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+                        <ChevronDown
+                            className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-2">
                         <JsonEditor
@@ -201,9 +203,11 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                 </Collapsible>
                 {payment.refunds && payment.refunds.length > 0 && (
                     <Collapsible className="mt-2 border-t pt-2">
-                        <CollapsibleTrigger className="flex items-center justify-between w-full text-sm hover:underline text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1 -m-1">
+                        <CollapsibleTrigger
+                            className="flex items-center justify-between w-full text-sm hover:underline text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1 -m-1">
                             <Trans>Refunds ({payment.refunds.length})</Trans>
-                            <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+                            <ChevronDown
+                                className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-3">
                             {payment.refunds.map(refund => (

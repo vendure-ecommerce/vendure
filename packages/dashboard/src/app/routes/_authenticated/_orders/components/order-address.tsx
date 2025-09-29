@@ -2,7 +2,7 @@ import { Separator } from '@/vdb/components/ui/separator.js';
 import { ResultOf } from 'gql.tada';
 import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 type OrderAddress = Omit<ResultOf<typeof orderAddressFragment>, 'country'> & {
     country: string | { code: string; name: string } | null;

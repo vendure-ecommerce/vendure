@@ -20,7 +20,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Theme } from '@/vdb/providers/theme-provider.js';
 import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';

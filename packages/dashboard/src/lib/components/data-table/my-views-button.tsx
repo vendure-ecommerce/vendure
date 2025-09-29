@@ -2,7 +2,7 @@ import { Bookmark } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 import { Button } from '../ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { UserViewsSheet } from './user-views-sheet.js';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
@@ -24,7 +24,7 @@ export const MyViewsButton: React.FC = () => {
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
-                            variant={activeView ? "default" : "outline"}
+                            variant={activeView ? 'default' : 'outline'}
                             size="icon"
                             onClick={() => setSheetOpen(true)}
                         >

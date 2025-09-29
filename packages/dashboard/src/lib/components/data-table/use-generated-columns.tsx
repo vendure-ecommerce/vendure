@@ -7,7 +7,7 @@ import {
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useMutation } from '@tanstack/react-query';
 import { AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';

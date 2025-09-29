@@ -1,7 +1,7 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent } from '@/vdb/components/ui/card.js';
 import { Input } from '@/vdb/components/ui/input.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';

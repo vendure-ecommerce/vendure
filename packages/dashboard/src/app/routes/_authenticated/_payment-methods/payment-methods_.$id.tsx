@@ -19,7 +19,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PaymentEligibilityCheckerSelector } from './components/payment-eligibility-checker-selector.js';
@@ -67,15 +67,15 @@ function PaymentMethodDetailPage() {
                 description: entity.description,
                 checker: entity.checker?.code
                     ? {
-                          code: entity.checker?.code,
-                          arguments: entity.checker?.args,
-                      }
+                        code: entity.checker?.code,
+                        arguments: entity.checker?.args,
+                    }
                     : null,
                 handler: entity.handler?.code
                     ? {
-                          code: entity.handler?.code,
-                          arguments: entity.handler?.args,
-                      }
+                        code: entity.handler?.code,
+                        arguments: entity.handler?.args,
+                    }
                     : null,
                 translations: entity.translations.map(translation => ({
                     id: translation.id,

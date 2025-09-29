@@ -1,5 +1,5 @@
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -63,13 +63,13 @@ export interface DataTableBulkActionItemProps {
  * @since 3.4.0
  */
 export function DataTableBulkActionItem({
-    label,
-    icon: Icon,
-    confirmationText,
-    className,
-    onClick,
-    requiresPermission,
-}: Readonly<DataTableBulkActionItemProps>) {
+                                            label,
+                                            icon: Icon,
+                                            confirmationText,
+                                            className,
+                                            onClick,
+                                            requiresPermission,
+                                        }: Readonly<DataTableBulkActionItemProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const { hasPermissions } = usePermissions();
     const userHasPermission = hasPermissions(requiresPermission ?? []);

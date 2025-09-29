@@ -10,7 +10,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { VariablesOf } from 'gql.tada';
@@ -143,10 +143,10 @@ function ModifyOrderPage() {
     }
 
     function handleAdjustLine({
-        lineId,
-        quantity,
-        customFields,
-    }: {
+                                  lineId,
+                                  quantity,
+                                  customFields,
+                              }: {
         lineId: string;
         quantity: number;
         customFields: Record<string, any>;
@@ -170,14 +170,14 @@ function ModifyOrderPage() {
                 const existing = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
                 const adjustOrderLines = existing
                     ? (prev.adjustOrderLines ?? []).map(l =>
-                          l.orderLineId === lineId
-                              ? { ...l, quantity, customFields: normalizedCustomFields }
-                              : l,
-                      )
+                        l.orderLineId === lineId
+                            ? { ...l, quantity, customFields: normalizedCustomFields }
+                            : l,
+                    )
                     : [
-                          ...(prev.adjustOrderLines ?? []),
-                          { orderLineId: lineId, quantity, customFields: normalizedCustomFields },
-                      ];
+                        ...(prev.adjustOrderLines ?? []),
+                        { orderLineId: lineId, quantity, customFields: normalizedCustomFields },
+                    ];
                 return { ...prev, adjustOrderLines };
             });
         }
@@ -200,8 +200,8 @@ function ModifyOrderPage() {
                 const existingAdjustment = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
                 const adjustOrderLines = existingAdjustment
                     ? (prev.adjustOrderLines ?? []).map(l =>
-                          l.orderLineId === lineId ? { ...l, quantity: 0 } : l,
-                      )
+                        l.orderLineId === lineId ? { ...l, quantity: 0 } : l,
+                    )
                     : [...(prev.adjustOrderLines ?? []), { orderLineId: lineId, quantity: 0 }];
                 return {
                     ...prev,
@@ -289,19 +289,19 @@ function ModifyOrderPage() {
                 const variantInfo = addedVariants.get(item.productVariantId);
                 return variantInfo
                     ? ({
-                          id: `added-${item.productVariantId}`,
-                          featuredAsset: variantInfo.productAsset ?? null,
-                          productVariant: {
-                              id: variantInfo.productVariantId,
-                              name: variantInfo.productVariantName,
-                              sku: variantInfo.sku,
-                          },
-                          unitPrice: variantInfo.price ?? 0,
-                          unitPriceWithTax: variantInfo.priceWithTax ?? 0,
-                          quantity: item.quantity,
-                          linePrice: (variantInfo.price ?? 0) * item.quantity,
-                          linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
-                      } as unknown as Order['lines'][number])
+                        id: `added-${item.productVariantId}`,
+                        featuredAsset: variantInfo.productAsset ?? null,
+                        productVariant: {
+                            id: variantInfo.productVariantId,
+                            name: variantInfo.productVariantName,
+                            sku: variantInfo.sku,
+                        },
+                        unitPrice: variantInfo.price ?? 0,
+                        unitPriceWithTax: variantInfo.priceWithTax ?? 0,
+                        quantity: item.quantity,
+                        linePrice: (variantInfo.price ?? 0) * item.quantity,
+                        linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
+                    } as unknown as Order['lines'][number])
                     : null;
             })
             .filter(x => x != null);
@@ -311,24 +311,24 @@ function ModifyOrderPage() {
             couponCodes: input.couponCodes ?? [],
             shippingLines: input.shippingMethodIds
                 ? input.shippingMethodIds
-                      .map(shippingMethodId => {
-                          const shippingMethod =
-                              eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder.find(
-                                  method => method.id === shippingMethodId,
-                              );
-                          if (!shippingMethod) {
-                              return;
-                          }
-                          return {
-                              shippingMethod: {
-                                  ...shippingMethod,
-                                  fulfillmentHandlerCode: 'manual',
-                              },
-                              discountedPriceWithTax: shippingMethod?.priceWithTax ?? 0,
-                              id: shippingMethodId,
-                          };
-                      })
-                      .filter(x => x !== undefined)
+                    .map(shippingMethodId => {
+                        const shippingMethod =
+                            eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder.find(
+                                method => method.id === shippingMethodId,
+                            );
+                        if (!shippingMethod) {
+                            return;
+                        }
+                        return {
+                            shippingMethod: {
+                                ...shippingMethod,
+                                fulfillmentHandlerCode: 'manual',
+                            },
+                            discountedPriceWithTax: shippingMethod?.priceWithTax ?? 0,
+                            id: shippingMethodId,
+                        };
+                    })
+                    .filter(x => x !== undefined)
                 : entity.shippingLines,
         };
     }

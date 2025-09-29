@@ -9,7 +9,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Save } from 'lucide-react';
@@ -20,9 +20,9 @@ import { addOptionGroupToProductDocument, createProductOptionGroupDocument } fro
 import { OptionGroup, optionGroupSchema, SingleOptionGroupEditor } from './option-groups-editor.js';
 
 export function AddOptionGroupDialog({
-    productId,
-    onSuccess,
-}: Readonly<{
+                                         productId,
+                                         onSuccess,
+                                     }: Readonly<{
     productId: string;
     onSuccess?: () => void;
 }>) {

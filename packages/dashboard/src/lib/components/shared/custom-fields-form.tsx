@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/ta
 import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { useLingui } from '@/vdb/lib/trans.js';
 import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
+import { useLingui } from '@lingui/react/macro';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
 import { Control } from 'react-hook-form';
@@ -151,10 +151,7 @@ function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldI
                             <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
                             <FormControl>
                                 {hasCustomFormComponent ? (
-                                    <CustomFormComponent
-                                        fieldDef={fieldDef}
-                                        {...field}
-                                    />
+                                    <CustomFormComponent fieldDef={fieldDef} {...field} />
                                 ) : (
                                     <FormControlAdapter
                                         fieldDef={fieldDef}
@@ -185,10 +182,7 @@ function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldI
                             getTranslation={getTranslation}
                             fieldName={fieldProps.field.name}
                         >
-                            <CustomFormComponent
-                                fieldDef={fieldDef}
-                                {...fieldProps.field}
-                            />
+                            <CustomFormComponent fieldDef={fieldDef} {...fieldProps.field} />
                         </CustomFieldFormItem>
                     )}
                 />
@@ -215,10 +209,7 @@ function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldI
                                         {...field}
                                         disabled={isReadonly}
                                         renderInput={(index, inputField) => (
-                                            <StructFormInput
-                                                {...inputField}
-                                                fieldDef={fieldDef}
-                                            />
+                                            <StructFormInput {...inputField} fieldDef={fieldDef} />
                                         )}
                                         defaultValue={{}} // Empty struct object as default
                                         isFullWidth={true} // Structs should always be full-width
@@ -243,10 +234,7 @@ function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldI
                         <FormItem>
                             <FormLabel>{getTranslation(fieldDef.label) ?? fieldDef.name}</FormLabel>
                             <FormControl>
-                                <StructFormInput
-                                    {...field}
-                                    fieldDef={fieldDef}
-                                />
+                                <StructFormInput {...field} fieldDef={fieldDef} />
                             </FormControl>
                             <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
                             <FormMessage />
@@ -269,11 +257,7 @@ function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldI
                         getTranslation={getTranslation}
                         fieldName={fieldDef.name}
                     >
-                        <FormControlAdapter
-                            fieldDef={fieldDef}
-                            field={field}
-                            valueMode="native"
-                        />
+                        <FormControlAdapter fieldDef={fieldDef} field={field} valueMode="native" />
                     </CustomFieldFormItem>
                 )}
             />

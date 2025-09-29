@@ -9,7 +9,7 @@ import {
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';
@@ -75,7 +75,8 @@ const REFRESH_INTERVALS = [
 ];
 
 function JobQueuePage() {
-    const refreshRef = useRef<() => void>(() => {});
+    const refreshRef = useRef<() => void>(() => {
+    });
     const [refreshInterval, setRefreshInterval] = useState(10000);
 
     useEffect(() => {
@@ -162,10 +163,10 @@ function JobQueuePage() {
                                     row.original.state === 'PENDING'
                                         ? 'secondary'
                                         : row.original.state === 'COMPLETED'
-                                          ? 'success'
-                                          : row.original.state === 'FAILED'
-                                            ? 'destructive'
-                                            : 'outline'
+                                            ? 'success'
+                                            : row.original.state === 'FAILED'
+                                                ? 'destructive'
+                                                : 'outline'
                                 }
                             >
                                 {state && <state.icon />}

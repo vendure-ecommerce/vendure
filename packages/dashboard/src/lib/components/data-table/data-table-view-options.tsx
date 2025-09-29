@@ -20,7 +20,7 @@ import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>;

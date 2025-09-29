@@ -1,4 +1,4 @@
-import { useLingui } from '../../lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 
 export type StockLevel = {
     stockOnHand: number;

@@ -20,7 +20,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, ParsedLocation, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -53,8 +53,8 @@ export const Route = createFileRoute(
         const result = isNew
             ? null
             : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(extendedQueryDocument, { id: params.id }),
-              );
+                getDetailQueryOptions(extendedQueryDocument, { id: params.id }),
+            );
         const productResult = await context.queryClient.fetchQuery({
             queryKey: [pageId, 'productIdName', params.productId],
             queryFn: () => api.query(productIdNameDocument, { id: params.productId }),

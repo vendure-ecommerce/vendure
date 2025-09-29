@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { DefinedInitialDataOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -94,17 +94,17 @@ type QueryData = {
  * ```
  */
 export function ConfigurableOperationMultiSelector({
-    value,
-    onChange,
-    queryDocument,
-    queryOptions,
-    queryKey,
-    dataPath,
-    buttonText,
-    dropdownTitle,
-    emptyText = 'No options found',
-    showEnhancedDropdown = true,
-}: Readonly<ConfigurableOperationMultiSelectorProps>) {
+                                                       value,
+                                                       onChange,
+                                                       queryDocument,
+                                                       queryOptions,
+                                                       queryKey,
+                                                       dataPath,
+                                                       buttonText,
+                                                       dropdownTitle,
+                                                       emptyText = 'No options found',
+                                                       showEnhancedDropdown = true,
+                                                   }: Readonly<ConfigurableOperationMultiSelectorProps>) {
     const { data } = useQuery<QueryData>(
         queryOptions || {
             queryKey: [queryKey],
@@ -195,8 +195,10 @@ export function ConfigurableOperationMultiSelector({
                                                 onCombinationModeChange(index, newValue)
                                             }
                                             name={''}
-                                            ref={() => {}}
-                                            onBlur={() => {}}
+                                            ref={() => {
+                                            }}
+                                            onBlur={() => {
+                                            }}
                                             position={index}
                                         />
                                     </div>

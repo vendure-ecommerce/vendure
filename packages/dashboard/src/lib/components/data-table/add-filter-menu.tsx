@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { FilterIcon } from 'lucide-react';

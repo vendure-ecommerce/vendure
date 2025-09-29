@@ -6,7 +6,7 @@ import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-ta
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 
@@ -68,8 +68,9 @@ export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ se
                         if ('id' in item) {
                             // Do nothing
                         } else if ('message' in item) {
-                            errors.push(item.message);
-                            toast.error(i18n.t(`Failed to remove facet from channel: ${item.message}`));
+                            const message = item.message;
+                            errors.push(message);
+                            toast.error(i18n.t(`Failed to remove facet from channel: ${message}`));
                         }
                     }
 
