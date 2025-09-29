@@ -16,16 +16,16 @@ export const DeleteAssetsBulkAction = ({
     selection: AssetFragment[];
     refetch: () => void;
 }) => {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const selectionLength = selection.length;
     const { mutate } = useMutation({
         mutationFn: api.mutate(deleteAssetsDocument),
         onSuccess: (result: ResultOf<typeof deleteAssetsDocument>) => {
             if (result.deleteAssets.result === 'DELETED') {
-                toast.success(i18n.t(`Deleted ${selectionLength} assets`));
+                toast.success(t`Deleted ${selectionLength} assets`);
             } else {
                 const message = result.deleteAssets.message;
-                toast.error(i18n.t(`Failed to delete assets: ${message}`));
+                toast.error(t`Failed to delete assets: ${message}`);
             }
             refetch();
         },

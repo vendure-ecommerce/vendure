@@ -65,7 +65,7 @@ const runScheduledTaskDocument = graphql(`
 type ScheduledTask = ResultOf<typeof getScheduledTasksDocument>['scheduledTasks'][number];
 
 function ScheduledTasksPage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { data } = useQuery({
         queryKey: ['scheduledTasks'],
         queryFn: () => api.query(getScheduledTasksDocument),
@@ -84,10 +84,10 @@ function ScheduledTasksPage() {
         mutationFn: api.mutate(runScheduledTaskDocument),
         onSuccess: result => {
             if ((result as ResultOf<typeof runScheduledTaskDocument>).runScheduledTask.success) {
-                toast.success(i18n.t(`Scheduled task will be executed`));
+                toast.success(t`Scheduled task will be executed`);
                 queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
             } else {
-                toast.error(i18n.t(`Scheduled task could not be executed`));
+                toast.error(t`Scheduled task could not be executed`);
             }
         },
     });
@@ -104,13 +104,13 @@ function ScheduledTasksPage() {
     const columnHelper = createColumnHelper<ScheduledTask>();
     const columns = [
         columnHelper.accessor('id', {
-            header: i18n.t('ID'),
+            header: t`ID`,
         }),
         columnHelper.accessor('description', {
-            header: i18n.t('Description'),
+            header: t`Description`,
         }),
         columnHelper.accessor('enabled', {
-            header: i18n.t('Enabled'),
+            header: t`Enabled`,
             cell: ({ row }) => {
                 return row.original.enabled ? (
                     <Badge variant="success">
@@ -124,13 +124,13 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('schedule', {
-            header: i18n.t('Schedule Pattern'),
+            header: t`Schedule Pattern`,
         }),
         columnHelper.accessor('scheduleDescription', {
-            header: i18n.t('Schedule'),
+            header: t`Schedule`,
         }),
         columnHelper.accessor('lastExecutedAt', {
-            header: i18n.t('Last Executed'),
+            header: t`Last Executed`,
             cell: ({ row }) => {
                 return row.original.lastExecutedAt ? (
                     <div title={row.original.lastExecutedAt}>
@@ -142,7 +142,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('nextExecutionAt', {
-            header: i18n.t('Next Execution'),
+            header: t`Next Execution`,
             cell: ({ row }) => {
                 return row.original.nextExecutionAt ? (
                     formatDate(row.original.nextExecutionAt, intlDateOptions)
@@ -152,7 +152,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('isRunning', {
-            header: i18n.t('Running'),
+            header: t`Running`,
             cell: ({ row }) => {
                 return row.original.isRunning ? (
                     <Badge variant="success">
@@ -166,7 +166,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('lastResult', {
-            header: i18n.t('Last Result'),
+            header: t`Last Result`,
             cell: ({ row }) => {
                 return row.original.lastResult ? (
                     <PayloadDialog
@@ -188,7 +188,7 @@ function ScheduledTasksPage() {
         }),
         columnHelper.display({
             id: 'actions',
-            header: i18n.t('Actions'),
+            header: t`Actions`,
             cell: ({ row }) => {
                 return (
                     <DropdownMenu>

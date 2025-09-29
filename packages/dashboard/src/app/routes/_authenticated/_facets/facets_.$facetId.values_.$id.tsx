@@ -52,7 +52,7 @@ function FacetValueDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -82,9 +82,7 @@ function FacetValueDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                creatingNewEntity
-                    ? i18n.t('Successfully created facet value')
-                    : i18n.t('Successfully updated facet value'),
+                creatingNewEntity ? t`Successfully created facet value` : t`Successfully updated facet value`,
             );
             resetForm();
             const created = Array.isArray(data) ? data[0] : data;
@@ -93,14 +91,9 @@ function FacetValueDetailPage() {
             }
         },
         onError: err => {
-            toast(
-                creatingNewEntity
-                    ? i18n.t('Failed to create facet value')
-                    : i18n.t('Failed to update facet value'),
-                {
-                    description: err instanceof Error ? err.message : 'Unknown error',
-                },
-            );
+            toast(creatingNewEntity ? t`Failed to create facet value` : t`Failed to update facet value`, {
+                description: err instanceof Error ? err.message : 'Unknown error',
+            });
         },
     });
 

@@ -18,6 +18,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
@@ -46,6 +47,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 
 export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
     const { setTableSettings } = useUserSettings();
+    const { getTranslatedFieldName } = useDynamicTranslations();
     const page = usePage();
     const columns = table
         .getAllColumns()
@@ -110,7 +112,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                                             onCheckedChange={value => column.toggleVisibility(value)}
                                             onSelect={e => e.preventDefault()}
                                         >
-                                            {column.id}
+                                            {getTranslatedFieldName(column.id)}
                                         </DropdownMenuCheckboxItem>
                                     </SortableItem>
                                 ))}

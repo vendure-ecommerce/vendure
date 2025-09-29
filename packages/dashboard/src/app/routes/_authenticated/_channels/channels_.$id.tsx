@@ -49,7 +49,7 @@ function ChannelDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { refreshChannels } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
@@ -82,22 +82,20 @@ function ChannelDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
-                toast(
-                    creatingNewEntity ? i18n.t('Successfully created channel') : i18n.t('Successfully updated channel'),
-                );
+                toast(creatingNewEntity ? t`Successfully created channel` : t`Successfully updated channel`);
                 refreshChannels();
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast(creatingNewEntity ? i18n.t('Failed to create channel') : i18n.t('Failed to update channel'), {
+                toast(creatingNewEntity ? t`Failed to create channel` : t`Failed to update channel`, {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast(creatingNewEntity ? i18n.t('Failed to create channel') : i18n.t('Failed to update channel'), {
+            toast(creatingNewEntity ? t`Failed to create channel` : t`Failed to update channel`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

@@ -33,7 +33,6 @@ function ShippingMethodListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}

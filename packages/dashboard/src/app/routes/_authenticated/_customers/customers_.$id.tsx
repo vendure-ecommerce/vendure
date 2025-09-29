@@ -66,7 +66,7 @@ function CustomerDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [newAddressOpen, setNewAddressOpen] = useState(false);
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
@@ -90,32 +90,22 @@ function CustomerDetailPage() {
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
                 toast.success(
-                    creatingNewEntity
-                        ? i18n.t('Successfully created customer')
-                        : i18n.t('Successfully updated customer'),
+                    creatingNewEntity ? t`Successfully created customer` : t`Successfully updated customer`,
                 );
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(
-                    creatingNewEntity
-                        ? i18n.t('Failed to create customer')
-                        : i18n.t('Failed to update customer'),
-                    {
-                        description: data.message,
-                    },
-                );
+                toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
+                    description: data.message,
+                });
             }
         },
         onError: err => {
-            toast.error(
-                creatingNewEntity ? i18n.t('Failed to create customer') : i18n.t('Failed to update customer'),
-                {
-                    description: err instanceof Error ? err.message : 'Unknown error',
-                },
-            );
+            toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
+                description: err instanceof Error ? err.message : 'Unknown error',
+            });
         },
     });
 
@@ -126,7 +116,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast.error(i18n.t('Failed to create address'));
+            toast.error(t`Failed to create address`);
         },
     });
 
@@ -136,7 +126,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to add customer to group'));
+            toast(t`Failed to add customer to group`);
         },
     });
 
@@ -146,7 +136,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to remove customer from group'));
+            toast(t`Failed to remove customer from group`);
         },
     });
 

@@ -42,11 +42,9 @@ function PromotionListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: () => <Trans>Enabled</Trans>,
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
             }}

@@ -32,7 +32,8 @@ function AdministratorListPage() {
             }}
             additionalColumns={{
                 name: {
-                    header: <Trans>Name</Trans>,
+                    id: 'name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => (
                         <DetailPageButton
                             id={row.original.id}
@@ -41,7 +42,8 @@ function AdministratorListPage() {
                     ),
                 },
                 roles: {
-                    header: 'Roles',
+                    id: 'roles',
+                    header: () => <Trans>Roles</Trans>,
                     cell: ({ row }) => {
                         return (
                             <div className="flex flex-wrap gap-2">

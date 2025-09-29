@@ -19,7 +19,7 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
 });
 
 function TaxRateListPage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="tax-rate-list"
@@ -44,14 +44,14 @@ function TaxRateListPage() {
             }}
             facetedFilters={{
                 enabled: {
-                    title: i18n.t('Enabled'),
+                    title: t`Enabled`,
                     options: [
-                        { label: i18n.t('Enabled'), value: true },
-                        { label: i18n.t('Disabled'), value: false },
+                        { label: t`Enabled`, value: true },
+                        { label: t`Disabled`, value: false },
                     ],
                 },
                 category: {
-                    title: i18n.t('Category'),
+                    title: t`Category`,
                     optionsFn: async () => {
                         const { taxCategories } = await api.query(taxCategoryListQuery);
                         return taxCategories.items.map(category => ({
@@ -61,7 +61,7 @@ function TaxRateListPage() {
                     },
                 },
                 zone: {
-                    title: i18n.t('Zone'),
+                    title: t`Zone`,
                     optionsFn: async () => {
                         const { zones } = await api.query(zoneListQuery);
                         return zones.items.map(zone => ({

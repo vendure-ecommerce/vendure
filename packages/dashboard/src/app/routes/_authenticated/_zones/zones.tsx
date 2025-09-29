@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_authenticated/_zones/zones')({
 });
 
 function ZoneListPage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="zone-list"
@@ -28,13 +28,12 @@ function ZoneListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
             additionalColumns={{
                 regions: {
-                    header: i18n.t('Regions'),
+                    header: t`Regions`,
                     cell: ({ row }) => (
                         <ZoneCountriesSheet zoneId={row.original.id} zoneName={row.original.name}>
                             <Trans>Edit members</Trans>

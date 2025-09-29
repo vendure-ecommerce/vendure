@@ -119,7 +119,7 @@ export function DataTable<TData>({
     const { pageId } = usePage();
     const savedViewsResult = useSavedViews();
     const globalViews = pageId && onFilterChange ? savedViewsResult.globalViews : [];
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -214,7 +214,7 @@ export function DataTable<TData>({
                     <div className="flex items-center gap-2">
                         {onSearchTermChange && (
                             <Input
-                                placeholder={i18n.t('Filter...')}
+                                placeholder={t`Filter...`}
                                 value={searchTerm}
                                 onChange={event => handleSearchChange(event.target.value)}
                                 className="w-64"

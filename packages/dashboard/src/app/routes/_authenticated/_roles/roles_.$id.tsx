@@ -43,7 +43,7 @@ function RoleDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,16 +61,14 @@ function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(
-                creatingNewEntity ? i18n.t('Successfully created role') : i18n.t('Successfully updated role'),
-            );
+            toast.success(creatingNewEntity ? t`Successfully created role` : t`Successfully updated role`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create role') : i18n.t('Failed to update role'), {
+            toast.error(creatingNewEntity ? t`Failed to create role` : t`Failed to update role`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

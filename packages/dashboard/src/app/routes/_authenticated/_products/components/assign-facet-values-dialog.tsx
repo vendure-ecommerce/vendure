@@ -55,7 +55,7 @@ export function AssignFacetValuesDialog({
     detailDocument,
     onSuccess,
 }: AssignFacetValuesDialogProps) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [selectedValues, setSelectedValues] = useState<FacetValue[]>([]);
     const [facetValuesRemoved, setFacetValuesRemoved] = useState(false);
     const [removedFacetValues, setRemovedFacetValues] = useState<Set<string>>(new Set());
@@ -72,7 +72,7 @@ export function AssignFacetValuesDialog({
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(i18n.t(`Successfully updated facet values for ${entityIdsLength} ${entityType}`));
+            toast.success(t`Successfully updated facet values for ${entityIdsLength} ${entityType}`);
             onSuccess?.();
             onOpenChange(false);
             // Reset state

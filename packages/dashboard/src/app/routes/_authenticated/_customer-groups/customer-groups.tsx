@@ -24,11 +24,9 @@ function CustomerGroupListPage() {
             route={Route}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 customers: {
-                    header: () => <Trans>Values</Trans>,
                     cell: ({ cell }) => {
                         const value = cell.getValue();
                         if (!value) {

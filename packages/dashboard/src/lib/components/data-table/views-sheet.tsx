@@ -35,7 +35,7 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
     const { userViews, globalViews, deleteView, updateView, duplicateView, canManageGlobalViews } =
         useSavedViews();
     const { handleApplyView } = useDataTableContext();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -46,9 +46,7 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
     const handleViewApply = (view: SavedView) => {
         handleApplyView(view.filters, view.searchTerm);
         const viewName = view.name;
-        const message = isGlobal
-            ? i18n.t(`Applied global view "${viewName}"`)
-            : i18n.t(`Applied view "${viewName}"`);
+        const message = isGlobal ? t`Applied global view "${viewName}"` : t`Applied view "${viewName}"`;
         toast.success(message);
     };
 
@@ -62,16 +60,12 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
 
         try {
             await updateView({ id: editingId, name: editingName.trim() });
-            const message = isGlobal
-                ? i18n.t('Global view renamed successfully')
-                : i18n.t('View renamed successfully');
+            const message = isGlobal ? t`Global view renamed successfully` : t`View renamed successfully`;
             toast.success(message);
             setEditingId(null);
             setEditingName('');
         } catch (error) {
-            const message = isGlobal
-                ? i18n.t('Failed to rename global view')
-                : i18n.t('Failed to rename view');
+            const message = isGlobal ? t`Failed to rename global view` : t`Failed to rename view`;
             toast.error(message);
         }
     };
@@ -86,15 +80,11 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
 
         try {
             await deleteView(deleteConfirmId);
-            const message = isGlobal
-                ? i18n.t('Global view deleted successfully')
-                : i18n.t('View deleted successfully');
+            const message = isGlobal ? t`Global view deleted successfully` : t`View deleted successfully`;
             toast.success(message);
             setDeleteConfirmId(null);
         } catch (error) {
-            const message = isGlobal
-                ? i18n.t('Failed to delete global view')
-                : i18n.t('Failed to delete view');
+            const message = isGlobal ? t`Failed to delete global view` : t`Failed to delete view`;
             toast.error(message);
         }
     };
@@ -103,13 +93,11 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
         try {
             await duplicateView(view.id, type);
             const message = isGlobal
-                ? i18n.t('Global view duplicated successfully')
-                : i18n.t('View duplicated successfully');
+                ? t`Global view duplicated successfully`
+                : t`View duplicated successfully`;
             toast.success(message);
         } catch (error) {
-            const message = isGlobal
-                ? i18n.t('Failed to duplicate global view')
-                : i18n.t('Failed to duplicate view');
+            const message = isGlobal ? t`Failed to duplicate global view` : t`Failed to duplicate view`;
             toast.error(message);
         }
     };
@@ -117,9 +105,9 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
     const handleConvertToUser = async (view: SavedView) => {
         try {
             await duplicateView(view.id, 'user');
-            toast.success(i18n.t('Global view converted to personal view successfully'));
+            toast.success(t`Global view converted to personal view successfully`);
         } catch (error) {
-            toast.error(i18n.t('Failed to convert global view to personal view'));
+            toast.error(t`Failed to convert global view to personal view`);
         }
     };
 
@@ -127,9 +115,9 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
         try {
             await duplicateView(view.id, 'global');
             await deleteView(view.id);
-            toast.success(i18n.t('View converted to global successfully'));
+            toast.success(t`View converted to global successfully`);
         } catch (error) {
-            toast.error(i18n.t('Failed to convert view to global'));
+            toast.error(t`Failed to convert view to global`);
         }
     };
 

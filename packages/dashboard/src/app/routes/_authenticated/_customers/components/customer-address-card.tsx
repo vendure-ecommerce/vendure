@@ -37,15 +37,15 @@ export function CustomerAddressCard({
     onDelete?: () => void;
 }) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { mutate: deleteAddress } = useMutation({
         mutationFn: api.mutate(deleteCustomerAddressDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Address deleted successfully'));
+            toast.success(t`Address deleted successfully`);
             onDelete?.();
         },
         onError: () => {
-            toast.error(i18n.t('Failed to delete address'));
+            toast.error(t`Failed to delete address`);
         },
     });
 
@@ -53,11 +53,11 @@ export function CustomerAddressCard({
     const { mutate: updateAddress } = useMutation({
         mutationFn: api.mutate(updateCustomerAddressDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Address updated successfully'));
+            toast.success(t`Address updated successfully`);
             onUpdate?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to update address'));
+            toast.error(t`Failed to update address`);
             console.error('Error updating address:', error);
         },
     });
@@ -138,8 +138,8 @@ export function CustomerAddressCard({
                     )}
                     {deletable && (
                         <ConfirmationDialog
-                            title={i18n.t('Delete Address')}
-                            description={i18n.t('Are you sure you want to delete this address?')}
+                            title={t`Delete Address`}
+                            description={t`Are you sure you want to delete this address?`}
                             onConfirm={() => {
                                 deleteAddress({ id: address.id });
                                 onDelete?.();

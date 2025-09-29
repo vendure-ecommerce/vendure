@@ -104,7 +104,7 @@ function createBaseEntityConfig(
     return {
         idKey: 'id',
         labelKey,
-        placeholder: i18n.t(`Search ${entityNameLower}...`),
+        placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
         }),
@@ -564,12 +564,12 @@ export function DefaultRelationInput({
     ref,
     disabled,
 }: Readonly<DashboardFormComponentProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     if (!fieldDef || !isRelationCustomFieldConfig(fieldDef)) {
         return null;
     }
     const entityName = fieldDef.entity;
-    const ENTITY_CONFIGS = createEntityConfigs(i18n);
+    const ENTITY_CONFIGS = createEntityConfigs(t);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {

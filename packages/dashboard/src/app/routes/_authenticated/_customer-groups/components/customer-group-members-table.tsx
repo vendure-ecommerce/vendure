@@ -46,19 +46,19 @@ export function CustomerGroupMembersTable({
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
 
     const { mutate: addCustomerToGroup } = useMutation({
         mutationFn: api.mutate(addCustomerToGroupDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Customer added to group'));
+            toast.success(t`Customer added to group`);
             queryClient.invalidateQueries({
                 queryKey: [PaginatedListDataTableKey, customerGroupMemberListDocument],
             });
         },
         onError: () => {
-            toast.error(i18n.t('Failed to add customer to group'));
+            toast.error(t`Failed to add customer to group`);
         },
     });
 

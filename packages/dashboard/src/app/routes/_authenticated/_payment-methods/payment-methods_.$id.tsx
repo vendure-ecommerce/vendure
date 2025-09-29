@@ -51,7 +51,7 @@ function PaymentMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -67,15 +67,15 @@ function PaymentMethodDetailPage() {
                 description: entity.description,
                 checker: entity.checker?.code
                     ? {
-                        code: entity.checker?.code,
-                        arguments: entity.checker?.args,
-                    }
+                          code: entity.checker?.code,
+                          arguments: entity.checker?.args,
+                      }
                     : null,
                 handler: entity.handler?.code
                     ? {
-                        code: entity.handler?.code,
-                        arguments: entity.handler?.args,
-                    }
+                          code: entity.handler?.code,
+                          arguments: entity.handler?.args,
+                      }
                     : null,
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
@@ -95,16 +95,23 @@ function PaymentMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(creatingNewEntity ? i18n.t('Successfully created payment method') : i18n.t('Successfully updated payment method'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created payment method`
+                    : t`Successfully updated payment method`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create payment method') : i18n.t('Failed to update payment method'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create payment method` : t`Failed to update payment method`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

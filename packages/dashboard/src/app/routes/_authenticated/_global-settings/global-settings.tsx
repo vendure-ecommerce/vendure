@@ -48,7 +48,7 @@ function GlobalSettingsPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending } = useDetailPage({
         queryDocument: globalSettingsDocument,
@@ -67,19 +67,19 @@ function GlobalSettingsPage() {
         params: { id: 'undefined' },
         onSuccess: async data => {
             if (data.__typename === 'GlobalSettings') {
-                toast(i18n.t('Successfully updated global settings'));
+                toast(t`Successfully updated global settings`);
                 form.reset(form.getValues());
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast(i18n.t('Failed to update global settings'), {
+                toast(t`Failed to update global settings`, {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update global settings'), {
+            toast(t`Failed to update global settings`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

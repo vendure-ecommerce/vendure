@@ -46,7 +46,7 @@ function FacetDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -76,14 +76,14 @@ function FacetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(creatingNewEntity ? i18n.t('Successfully created facet') : i18n.t('Successfully updated facet'));
+            toast(creatingNewEntity ? t`Successfully created facet` : t`Successfully updated facet`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(creatingNewEntity ? i18n.t('Failed to create facet') : i18n.t('Failed to update facet'), {
+            toast(creatingNewEntity ? t`Failed to create facet` : t`Failed to update facet`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

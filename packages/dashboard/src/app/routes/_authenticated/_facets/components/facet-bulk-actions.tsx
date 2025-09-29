@@ -46,7 +46,7 @@ export const AssignFacetsToChannelBulkAction: BulkActionComponent<any> = ({ sele
 
 export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const { activeChannel } = useChannel();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     return (
         <RemoveFromChannelBulkAction
@@ -70,14 +70,14 @@ export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ se
                         } else if ('message' in item) {
                             const message = item.message;
                             errors.push(message);
-                            toast.error(i18n.t(`Failed to remove facet from channel: ${message}`));
+                            toast.error(t`Failed to remove facet from channel: ${message}`);
                         }
                     }
 
                     const successCount = selection.length - errors.length;
 
                     if (successCount > 0) {
-                        toast.success(i18n.t(`Successfully removed ${successCount} facets from channel`));
+                        toast.success(t`Successfully removed ${successCount} facets from channel`);
                     }
                 }
             }}

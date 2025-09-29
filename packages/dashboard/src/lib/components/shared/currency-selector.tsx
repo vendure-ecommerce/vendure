@@ -13,7 +13,7 @@ export interface CurrencySelectorProps<T extends boolean> {
 export function CurrencySelector<T extends boolean>(props: CurrencySelectorProps<T>) {
     const { formatCurrencyName } = useLocalFormat();
     const { value, onChange, multiple, availableCurrencyCodes } = props;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const items = (availableCurrencyCodes ?? Object.values(CurrencyCode)).map(currencyCode => ({
         value: currencyCode,
@@ -26,8 +26,8 @@ export function CurrencySelector<T extends boolean>(props: CurrencySelectorProps
             onChange={onChange}
             multiple={multiple}
             items={items}
-            placeholder={i18n.t('Select a currency')}
-            searchPlaceholder={i18n.t('Search currencies...')}
+            placeholder={t`Select a currency`}
+            searchPlaceholder={t`Search currencies...`}
         />
     );
 }

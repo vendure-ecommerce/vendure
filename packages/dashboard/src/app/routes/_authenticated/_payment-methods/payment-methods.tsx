@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
 });
 
 function PaymentMethodListPage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="payment-method-list"
@@ -39,7 +39,7 @@ function PaymentMethodListPage() {
             }}
             facetedFilters={{
                 enabled: {
-                    title: i18n.t('Enabled'),
+                    title: t`Enabled`,
                     options: [
                         { label: 'Enabled', value: true },
                         { label: 'Disabled', value: false },
@@ -48,11 +48,9 @@ function PaymentMethodListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: () => <Trans>Enabled</Trans>,
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
             }}

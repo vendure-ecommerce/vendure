@@ -1,3 +1,4 @@
+import { DataTableCellComponent } from '@/vdb/components/data-table/types.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -16,8 +17,7 @@ import {
     RemoveFacetsFromChannelBulkAction,
 } from './components/facet-bulk-actions.js';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
-import { deleteFacetDocument, facetListDocument } from './facets.graphql.js';
-import { DataTableCellComponent } from '@/vdb/components/data-table/types.js';
+import { facetListDocument } from './facets.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,
@@ -71,7 +71,6 @@ function FacetListPage() {
             customizeColumns={{
                 name: {
                     id: 'name',
-                    header: () => <Trans>Facet Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 isPrivate: {

@@ -53,7 +53,7 @@ function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -91,7 +91,7 @@ function CollectionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                creatingNewEntity ? i18n.t('Successfully created collection') : i18n.t('Successfully updated collection'),
+                creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -99,7 +99,7 @@ function CollectionDetailPage() {
             }
         },
         onError: err => {
-            toast(creatingNewEntity ? i18n.t('Failed to create collection') : i18n.t('Failed to update collection'), {
+            toast(creatingNewEntity ? t`Failed to create collection` : t`Failed to update collection`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

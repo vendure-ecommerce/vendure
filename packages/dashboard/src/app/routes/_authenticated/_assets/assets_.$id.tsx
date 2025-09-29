@@ -45,7 +45,7 @@ export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
 
 function AssetDetailPage() {
     const params = Route.useParams();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const imageRef = useRef<HTMLImageElement>(null);
     const [size, setSize] = useState<PreviewPreset>('medium');
@@ -67,11 +67,11 @@ function AssetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated asset'));
+            toast(t`Successfully updated asset`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update asset'), {
+            toast(t`Failed to update asset`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

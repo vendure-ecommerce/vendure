@@ -20,7 +20,7 @@ function TaxCategoryListPage() {
         <ListPage
             pageId="tax-category-list"
             listQuery={taxCategoryListQuery}
-            route={Route}   
+            route={Route}
             title={<Trans>Tax Categories</Trans>}
             defaultVisibility={{
                 name: true,
@@ -37,11 +37,9 @@ function TaxCategoryListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 isDefault: {
-                    header: () => <Trans>Default</Trans>,
                     cell: ({ row }) => (
                         <Badge variant={row.original.isDefault ? 'success' : 'destructive'}>
                             <Trans>{row.original.isDefault ? 'Yes' : 'No'}</Trans>

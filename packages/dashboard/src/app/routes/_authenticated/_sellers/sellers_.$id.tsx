@@ -39,7 +39,7 @@ function SellerDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -55,14 +55,14 @@ function SellerDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(creatingNewEntity ? i18n.t('Successfully created seller') : i18n.t('Successfully updated seller'));
+            toast(creatingNewEntity ? t`Successfully created seller` : t`Successfully updated seller`);
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(creatingNewEntity ? i18n.t('Failed to create seller') : i18n.t('Failed to update seller'), {
+            toast(creatingNewEntity ? t`Failed to create seller` : t`Failed to update seller`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

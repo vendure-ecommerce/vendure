@@ -61,7 +61,7 @@ function ProductVariantDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { activeChannel } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
@@ -97,16 +97,23 @@ function ProductVariantDetailPage() {
         },
         params: { id: params.id },
         onSuccess: data => {
-            toast.success(creatingNewEntity ? i18n.t('Successfully created product variant') : i18n.t('Successfully updated product variant'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created product variant`
+                    : t`Successfully updated product variant`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create product variant') : i18n.t('Failed to update product variant'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create product variant` : t`Failed to update product variant`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

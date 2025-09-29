@@ -29,7 +29,7 @@ interface CustomFieldsFormProps {
 }
 
 export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readonly<CustomFieldsFormProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const customFields = useCustomFieldConfig(entityType);
 
     const getCustomFieldBaseName = (fieldDef: CustomFieldConfig) => {
@@ -97,7 +97,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
             <TabsList>
                 {groupedFields.map(group => (
                     <TabsTrigger key={group.tabName} value={group.tabName}>
-                        {group.tabName === 'general' ? i18n.t('General') : group.tabName}
+                        {group.tabName === 'general' ? t`General` : group.tabName}
                     </TabsTrigger>
                 ))}
             </TabsList>

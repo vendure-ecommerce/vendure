@@ -71,7 +71,7 @@ type ProductVariantInfo = {
 function ModifyOrderPage() {
     const params = Route.useParams();
     const navigate = useNavigate({ from: '/orders/$id/modify' });
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
     const { form, submitHandler, entity } = useDetailPage({
         pageId,
@@ -84,11 +84,11 @@ function ModifyOrderPage() {
         },
         params: { id: params.id },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated order'));
+            toast(t`Successfully updated order`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update order'), {
+            toast(t`Failed to update order`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -143,10 +143,10 @@ function ModifyOrderPage() {
     }
 
     function handleAdjustLine({
-                                  lineId,
-                                  quantity,
-                                  customFields,
-                              }: {
+        lineId,
+        quantity,
+        customFields,
+    }: {
         lineId: string;
         quantity: number;
         customFields: Record<string, any>;
@@ -170,14 +170,14 @@ function ModifyOrderPage() {
                 const existing = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
                 const adjustOrderLines = existing
                     ? (prev.adjustOrderLines ?? []).map(l =>
-                        l.orderLineId === lineId
-                            ? { ...l, quantity, customFields: normalizedCustomFields }
-                            : l,
-                    )
+                          l.orderLineId === lineId
+                              ? { ...l, quantity, customFields: normalizedCustomFields }
+                              : l,
+                      )
                     : [
-                        ...(prev.adjustOrderLines ?? []),
-                        { orderLineId: lineId, quantity, customFields: normalizedCustomFields },
-                    ];
+                          ...(prev.adjustOrderLines ?? []),
+                          { orderLineId: lineId, quantity, customFields: normalizedCustomFields },
+                      ];
                 return { ...prev, adjustOrderLines };
             });
         }
@@ -200,8 +200,8 @@ function ModifyOrderPage() {
                 const existingAdjustment = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
                 const adjustOrderLines = existingAdjustment
                     ? (prev.adjustOrderLines ?? []).map(l =>
-                        l.orderLineId === lineId ? { ...l, quantity: 0 } : l,
-                    )
+                          l.orderLineId === lineId ? { ...l, quantity: 0 } : l,
+                      )
                     : [...(prev.adjustOrderLines ?? []), { orderLineId: lineId, quantity: 0 }];
                 return {
                     ...prev,
@@ -289,19 +289,19 @@ function ModifyOrderPage() {
                 const variantInfo = addedVariants.get(item.productVariantId);
                 return variantInfo
                     ? ({
-                        id: `added-${item.productVariantId}`,
-                        featuredAsset: variantInfo.productAsset ?? null,
-                        productVariant: {
-                            id: variantInfo.productVariantId,
-                            name: variantInfo.productVariantName,
-                            sku: variantInfo.sku,
-                        },
-                        unitPrice: variantInfo.price ?? 0,
-                        unitPriceWithTax: variantInfo.priceWithTax ?? 0,
-                        quantity: item.quantity,
-                        linePrice: (variantInfo.price ?? 0) * item.quantity,
-                        linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
-                    } as unknown as Order['lines'][number])
+                          id: `added-${item.productVariantId}`,
+                          featuredAsset: variantInfo.productAsset ?? null,
+                          productVariant: {
+                              id: variantInfo.productVariantId,
+                              name: variantInfo.productVariantName,
+                              sku: variantInfo.sku,
+                          },
+                          unitPrice: variantInfo.price ?? 0,
+                          unitPriceWithTax: variantInfo.priceWithTax ?? 0,
+                          quantity: item.quantity,
+                          linePrice: (variantInfo.price ?? 0) * item.quantity,
+                          linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
+                      } as unknown as Order['lines'][number])
                     : null;
             })
             .filter(x => x != null);
@@ -311,24 +311,24 @@ function ModifyOrderPage() {
             couponCodes: input.couponCodes ?? [],
             shippingLines: input.shippingMethodIds
                 ? input.shippingMethodIds
-                    .map(shippingMethodId => {
-                        const shippingMethod =
-                            eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder.find(
-                                method => method.id === shippingMethodId,
-                            );
-                        if (!shippingMethod) {
-                            return;
-                        }
-                        return {
-                            shippingMethod: {
-                                ...shippingMethod,
-                                fulfillmentHandlerCode: 'manual',
-                            },
-                            discountedPriceWithTax: shippingMethod?.priceWithTax ?? 0,
-                            id: shippingMethodId,
-                        };
-                    })
-                    .filter(x => x !== undefined)
+                      .map(shippingMethodId => {
+                          const shippingMethod =
+                              eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder.find(
+                                  method => method.id === shippingMethodId,
+                              );
+                          if (!shippingMethod) {
+                              return;
+                          }
+                          return {
+                              shippingMethod: {
+                                  ...shippingMethod,
+                                  fulfillmentHandlerCode: 'manual',
+                              },
+                              discountedPriceWithTax: shippingMethod?.priceWithTax ?? 0,
+                              id: shippingMethodId,
+                          };
+                      })
+                      .filter(x => x !== undefined)
                 : entity.shippingLines,
         };
     }

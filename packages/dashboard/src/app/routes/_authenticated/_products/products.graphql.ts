@@ -15,6 +15,7 @@ export const productListDocument = graphql(`
                 name
                 slug
                 enabled
+                description
             }
             totalItems
         }

@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_profile/profile')({
 });
 
 function ProfilePage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, isPending } = useDetailPage({
         queryDocument: activeAdministratorDocument,
@@ -58,11 +58,11 @@ function ProfilePage() {
         },
         params: { id: 'undefined' },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated profile'));
+            toast(t`Successfully updated profile`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update profile'), {
+            toast(t`Failed to update profile`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

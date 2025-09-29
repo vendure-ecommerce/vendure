@@ -36,7 +36,6 @@ function RoleListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: () => <Trans>Code</Trans>,
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -48,7 +47,6 @@ function RoleListPage() {
                     },
                 },
                 permissions: {
-                    header: () => <Trans>Permissions</Trans>,
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return (
@@ -62,7 +60,6 @@ function RoleListPage() {
                     },
                 },
                 channels: {
-                    header: () => <Trans>Channels</Trans>,
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return null;

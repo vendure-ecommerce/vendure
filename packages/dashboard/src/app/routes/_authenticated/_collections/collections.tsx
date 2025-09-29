@@ -101,7 +101,6 @@ function CollectionListPage() {
                             // in order to correctly render.
                             dependencies: ['children', 'breadcrumbs'],
                         },
-                        header: () => <Trans>Collection Name</Trans>,
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;

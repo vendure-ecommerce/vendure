@@ -79,7 +79,7 @@ export function DeleteBulkAction({
     table,
 }: Readonly<DeleteBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
 
     const { mutate } = useMutation({
@@ -105,14 +105,14 @@ export function DeleteBulkAction({
             }
 
             if (0 < deleted) {
-                toast.success(i18n.t(`Deleted ${deleted} ${entityName}`));
+                toast.success(t`Deleted ${deleted} ${entityName}`);
             }
             if (0 < failed) {
                 const allErrors = errors.join(', ');
                 const errorMessage =
                     errors.length > 0
-                        ? i18n.t(`Failed to delete ${failed} ${entityName}: ${allErrors}`)
-                        : i18n.t(`Failed to delete ${failed} ${entityName}`);
+                        ? t`Failed to delete ${failed} ${entityName}: ${allErrors}`
+                        : t`Failed to delete ${failed} ${entityName}`;
                 toast.error(errorMessage);
             }
 

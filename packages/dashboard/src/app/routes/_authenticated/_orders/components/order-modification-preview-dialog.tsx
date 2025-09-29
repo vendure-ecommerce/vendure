@@ -47,13 +47,13 @@ interface PaymentRefundForm {
 }
 
 export function OrderModificationPreviewDialog({
-                                                   open,
-                                                   onOpenChange,
-                                                   orderSnapshot,
-                                                   modifyOrderInput,
-                                                   onResolve,
-                                               }: Readonly<OrderModificationPreviewDialogProps>) {
-    const { i18n } = useLingui();
+    open,
+    onOpenChange,
+    orderSnapshot,
+    modifyOrderInput,
+    onResolve,
+}: Readonly<OrderModificationPreviewDialogProps>) {
+    const { t } = useLingui();
     const { formatCurrency } = useLocalFormat();
     // Use a ref to track the last input sent to avoid duplicate calls
     const lastInputRef = useRef<ModifyOrderInput | null>(null);
@@ -99,7 +99,7 @@ export function OrderModificationPreviewDialog({
         previewMutation.data?.modifyOrder?.__typename === 'Order' ? previewMutation.data.modifyOrder : null;
     const error =
         previewMutation.data && previewMutation.data.modifyOrder?.__typename !== 'Order'
-            ? previewMutation.data.modifyOrder?.message || i18n.t('Unknown error')
+            ? previewMutation.data.modifyOrder?.message || t`Unknown error`
             : previewMutation.error?.message || null;
     const loading = previewMutation.isPending;
 
@@ -221,7 +221,7 @@ export function OrderModificationPreviewDialog({
                                                                             refundForm.setValue(
                                                                                 `payments.${payment.id}`,
                                                                                 currentRefundAmount +
-                                                                                amountToAdd,
+                                                                                    amountToAdd,
                                                                             );
                                                                         }
                                                                     }}
@@ -303,7 +303,7 @@ export function OrderModificationPreviewDialog({
                                                             <Textarea
                                                                 {...field}
                                                                 className="bg-background"
-                                                                placeholder={i18n.t('Enter refund note')}
+                                                                placeholder={t`Enter refund note`}
                                                             />
                                                         )}
                                                     />

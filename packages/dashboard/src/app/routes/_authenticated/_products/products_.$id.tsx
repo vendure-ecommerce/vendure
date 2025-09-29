@@ -54,7 +54,7 @@ function ProductDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
@@ -84,7 +84,7 @@ function ProductDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast.success(
-                creatingNewEntity ? i18n.t('Successfully created product') : i18n.t('Successfully updated product'),
+                creatingNewEntity ? t`Successfully created product` : t`Successfully updated product`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -92,7 +92,7 @@ function ProductDetailPage() {
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create product') : i18n.t('Failed to update product'), {
+            toast.error(creatingNewEntity ? t`Failed to create product` : t`Failed to update product`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

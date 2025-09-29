@@ -54,7 +54,7 @@ export function AssignToChannelDialog({
     additionalFields,
     additionalData = {},
 }: Readonly<AssignToChannelDialogProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
     const { channels, activeChannel } = useChannel();
     const entityIdsLength = entityIds.length;
@@ -65,7 +65,7 @@ export function AssignToChannelDialog({
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(i18n.t(`Successfully assigned ${entityIdsLength} ${entityType} to channel`));
+            toast.success(t`Successfully assigned ${entityIdsLength} ${entityType} to channel`);
             onSuccess?.();
             onOpenChange(false);
         },
@@ -104,7 +104,7 @@ export function AssignToChannelDialog({
                         </label>
                         <Select value={selectedChannelId} onValueChange={setSelectedChannelId}>
                             <SelectTrigger>
-                                <SelectValue placeholder={i18n.t('Select a channel')} />
+                                <SelectValue placeholder={t`Select a channel`} />
                             </SelectTrigger>
                             <SelectContent>
                                 {availableChannels.map(channel => (

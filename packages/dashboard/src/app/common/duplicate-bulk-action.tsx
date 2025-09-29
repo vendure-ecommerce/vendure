@@ -31,7 +31,7 @@ export function DuplicateBulkAction({
     table,
 }: Readonly<DuplicateBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [isDuplicating, setIsDuplicating] = useState(false);
     const [progress, setProgress] = useState({ completed: 0, total: 0 });
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -94,7 +94,7 @@ export function DuplicateBulkAction({
             // Show results
             if (results.success > 0) {
                 const count = results.success;
-                toast.success(i18n.t(`Successfully duplicated ${count} ${entityName}`));
+                toast.success(t`Successfully duplicated ${count} ${entityName}`);
             }
             if (results.failed > 0) {
                 const errorMessage =

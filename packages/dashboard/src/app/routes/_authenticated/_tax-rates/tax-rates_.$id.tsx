@@ -46,7 +46,7 @@ function TaxRateDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -67,14 +67,16 @@ function TaxRateDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(creatingNewEntity ? i18n.t('Successfully created tax rate') : i18n.t('Successfully updated tax rate'));
+            toast.success(
+                creatingNewEntity ? t`Successfully created tax rate` : t`Successfully updated tax rate`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create tax rate') : i18n.t('Failed to update tax rate'), {
+            toast.error(creatingNewEntity ? t`Failed to create tax rate` : t`Failed to update tax rate`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

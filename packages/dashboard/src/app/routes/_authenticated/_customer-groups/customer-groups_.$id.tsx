@@ -45,7 +45,7 @@ function CustomerGroupDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,16 +61,23 @@ function CustomerGroupDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(creatingNewEntity ? i18n.t('Successfully created customer group') : i18n.t('Successfully updated customer group'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created customer group`
+                    : t`Successfully updated customer group`,
+            );
             resetForm();
             if (creatingNewEntity && data?.id) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(creatingNewEntity ? i18n.t('Failed to create customer group') : i18n.t('Failed to update customer group'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create customer group` : t`Failed to update customer group`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

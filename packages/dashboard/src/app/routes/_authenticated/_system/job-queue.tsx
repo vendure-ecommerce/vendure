@@ -75,9 +75,8 @@ const REFRESH_INTERVALS = [
 ];
 
 function JobQueuePage() {
-    const refreshRef = useRef<() => void>(() => {
-    });
-    const { i18n } = useLingui();
+    const refreshRef = useRef<() => void>(() => {});
+    const { t } = useLingui();
     const [refreshInterval, setRefreshInterval] = useState(10000);
 
     useEffect(() => {
@@ -101,7 +100,6 @@ function JobQueuePage() {
             route={Route}
             customizeColumns={{
                 createdAt: {
-                    header: () => <Trans>Created At</Trans>,
                     cell: ({ row }) => (
                         <div title={row.original.createdAt}>
                             {formatRelative(new Date(row.original.createdAt), new Date())}
@@ -109,7 +107,6 @@ function JobQueuePage() {
                     ),
                 },
                 data: {
-                    header: () => <Trans>Data</Trans>,
                     cell: ({ row }) => (
                         <PayloadDialog
                             payload={row.original.data}
@@ -124,11 +121,9 @@ function JobQueuePage() {
                     ),
                 },
                 queueName: {
-                    header: () => <Trans>Queue</Trans>,
                     cell: ({ row }) => <span className="font-mono">{row.original.queueName}</span>,
                 },
                 result: {
-                    header: () => <Trans>Result</Trans>,
                     cell: ({ row }) => {
                         return row.original.result ? (
                             <PayloadDialog
@@ -149,7 +144,6 @@ function JobQueuePage() {
                     },
                 },
                 state: {
-                    header: () => <Trans>State</Trans>,
                     cell: ({ row, table }) => {
                         const cancelJobMutation = useMutation({
                             mutationFn: (jobId: string) => api.mutate(cancelJobDocument, { jobId }),
@@ -164,10 +158,10 @@ function JobQueuePage() {
                                     row.original.state === 'PENDING'
                                         ? 'secondary'
                                         : row.original.state === 'COMPLETED'
-                                            ? 'success'
-                                            : row.original.state === 'FAILED'
-                                                ? 'destructive'
-                                                : 'outline'
+                                          ? 'success'
+                                          : row.original.state === 'FAILED'
+                                            ? 'destructive'
+                                            : 'outline'
                                 }
                             >
                                 {state && <state.icon />}
@@ -198,7 +192,6 @@ function JobQueuePage() {
                     },
                 },
                 duration: {
-                    header: () => <Trans>Duration</Trans>,
                     cell: ({ row }) => {
                         return row.original.duration ? `${row.original.duration}ms` : null;
                     },
@@ -215,7 +208,7 @@ function JobQueuePage() {
             }}
             facetedFilters={{
                 queueName: {
-                    title: i18n.t('Queue'),
+                    title: t`Queue`,
                     optionsFn: async () => {
                         return api.query(jobQueueListDocument).then(r => {
                             return r.jobQueues.map(queue => ({
@@ -226,7 +219,7 @@ function JobQueuePage() {
                     },
                 },
                 state: {
-                    title: i18n.t('State'),
+                    title: t`State`,
                     options: STATES,
                 },
             }}

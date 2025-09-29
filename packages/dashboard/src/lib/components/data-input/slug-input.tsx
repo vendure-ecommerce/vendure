@@ -147,7 +147,7 @@ export function SlugInput({
     name,
     ...props
 }: SlugInputProps) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const form = useFormContext();
     const { contentLanguage } = useUserSettings().settings;
     const isFormReadonly = isReadonlyField(fieldDef);
@@ -234,9 +234,9 @@ export function SlugInput({
                     placeholder={
                         isReadonly
                             ? value
-                                ? i18n.t('Slug is set')
-                                : i18n.t('Slug will be generated automatically...')
-                            : i18n.t('Enter slug manually')
+                                ? t`Slug is set`
+                                : t`Slug will be generated automatically...`
+                            : t`Enter slug manually`
                     }
                     className={cn(
                         'pr-8',
@@ -262,8 +262,8 @@ export function SlugInput({
                             size="sm"
                             onClick={handleRegenerate}
                             className="shrink-0"
-                            title={i18n.t('Regenerate slug from source field')}
-                            aria-label={i18n.t('Regenerate slug from source field')}
+                            title={t`Regenerate slug from source field`}
+                            aria-label={t`Regenerate slug from source field`}
                             disabled={!watchedValue || isLoading}
                         >
                             <RefreshCw className="h-4 w-4" />
@@ -276,15 +276,9 @@ export function SlugInput({
                         size="sm"
                         onClick={toggleReadonly}
                         className="shrink-0"
-                        title={
-                            isManuallyReadonly
-                                ? i18n.t('Edit slug manually')
-                                : i18n.t('Generate slug automatically')
-                        }
+                        title={isManuallyReadonly ? t`Edit slug manually` : t`Generate slug automatically`}
                         aria-label={
-                            isManuallyReadonly
-                                ? i18n.t('Edit slug manually')
-                                : i18n.t('Generate slug automatically')
+                            isManuallyReadonly ? t`Edit slug manually` : t`Generate slug automatically`
                         }
                     >
                         {isManuallyReadonly ? <Edit className="h-4 w-4" /> : <Lock className="h-4 w-4" />}

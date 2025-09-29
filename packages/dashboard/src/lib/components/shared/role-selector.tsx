@@ -24,7 +24,7 @@ export interface RoleSelectorProps<T extends boolean> {
 
 export function RoleSelector<T extends boolean>(props: RoleSelectorProps<T>) {
     const { value, onChange, multiple } = props;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { data } = useQuery({
         queryKey: ['roles'],
@@ -49,8 +49,8 @@ export function RoleSelector<T extends boolean>(props: RoleSelectorProps<T>) {
             onChange={onChange}
             multiple={multiple}
             items={items}
-            placeholder={i18n.t('Select a role')}
-            searchPlaceholder={i18n.t('Search roles...')}
+            placeholder={t`Select a role`}
+            searchPlaceholder={t`Search roles...`}
         />
     );
 }

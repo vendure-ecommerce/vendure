@@ -8,8 +8,8 @@ import {
     CommandItem,
 } from '@/vdb/components/ui/command.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
-import { Trans, useLingui } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -34,14 +34,14 @@ interface ProductOptionSelectProps {
 }
 
 export function ProductOptionSelect({
-                                        group,
-                                        value,
-                                        onChange,
-                                        onCreateOption,
-                                    }: Readonly<ProductOptionSelectProps>) {
+    group,
+    value,
+    onChange,
+    onCreateOption,
+}: Readonly<ProductOptionSelectProps>) {
     const [open, setOpen] = useState(false);
     const [newOptionInput, setNewOptionInput] = useState('');
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     return (
         <FormFieldWrapper
@@ -63,7 +63,7 @@ export function ProductOptionSelect({
                     <PopoverContent className="w-full p-0">
                         <Command>
                             <CommandInput
-                                placeholder={i18n.t('Search {name}...').replace('{name}', group.name)}
+                                placeholder={t`Search {name}...`.replace('{name}', group.name)}
                                 onValueChange={setNewOptionInput}
                             />
                             <CommandEmpty className="py-2">

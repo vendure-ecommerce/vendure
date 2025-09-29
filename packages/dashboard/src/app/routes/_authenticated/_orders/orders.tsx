@@ -24,7 +24,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 function OrderListPage() {
     const serverConfig = useServerConfig();
     const navigate = useNavigate();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { mutate: createDraftOrder } = useMutation({
         mutationFn: api.mutate(createDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof createDraftOrderDocument>) => {
@@ -61,19 +61,15 @@ function OrderListPage() {
             route={Route}
             customizeColumns={{
                 total: {
-                    header: () => <Trans>Total</Trans>,
                     cell: OrderMoneyCell,
                 },
                 totalWithTax: {
-                    header: () => <Trans>Total with Tax</Trans>,
                     cell: OrderMoneyCell,
                 },
                 state: {
-                    header: () => <Trans>State</Trans>,
                     cell: OrderStateCell,
                 },
                 code: {
-                    header: () => <Trans>Code</Trans>,
                     cell: ({ cell, row }) => {
                         const value = cell.getValue() as string;
                         const id = row.original.id;
@@ -81,7 +77,6 @@ function OrderListPage() {
                     },
                 },
                 customer: {
-                    header: () => <Trans>Customer</Trans>,
                     cell: CustomerCell,
                 },
                 shippingLines: {
@@ -101,7 +96,7 @@ function OrderListPage() {
             }}
             facetedFilters={{
                 state: {
-                    title: i18n.t('State'),
+                    title: t`State`,
                     options:
                         serverConfig?.orderProcess.map(state => {
                             return {

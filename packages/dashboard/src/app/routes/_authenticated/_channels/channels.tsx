@@ -39,7 +39,6 @@ function ChannelListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: () => <Trans>Code</Trans>,
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -50,13 +49,11 @@ function ChannelListPage() {
                     },
                 },
                 seller: {
-                    header: () => <Trans>Seller</Trans>,
                     cell: ({ row }) => {
                         return row.original.seller?.name;
                     },
                 },
                 defaultLanguageCode: {
-                    header: () => <Trans>Default Language</Trans>,
                     cell: ({ row }) => {
                         return formatLanguageName(row.original.defaultLanguageCode);
                     },

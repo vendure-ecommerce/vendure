@@ -53,8 +53,8 @@ export const Route = createFileRoute(
         const result = isNew
             ? null
             : await context.queryClient.ensureQueryData(
-                getDetailQueryOptions(extendedQueryDocument, { id: params.id }),
-            );
+                  getDetailQueryOptions(extendedQueryDocument, { id: params.id }),
+              );
         const productResult = await context.queryClient.fetchQuery({
             queryKey: [pageId, 'productIdName', params.productId],
             queryFn: () => api.query(productIdNameDocument, { id: params.productId }),
@@ -94,7 +94,7 @@ function ProductOptionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
