@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Error de extensión de consulta"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "La página continuará con la consulta predeterminada."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Error al extender el documento de consulta"
@@ -37,18 +49,6 @@ msgstr "La extensión de consulta contiene sintaxis GraphQL no válida"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Error de extensión de consulta: "
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Error de extensión de consulta"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "La página continuará con la consulta predeterminada."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -2525,9 +2525,24 @@ msgstr "Idioma"
 msgid "Language: {0}"
 msgstr "Idioma: {0}"
 
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "Últimos 30 días"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "Últimos 7 días"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "Última Ejecución"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "Mes pasado"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
@@ -2690,6 +2705,11 @@ msgstr "Modificar pedido"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
 msgstr "Recursos Monitoreados"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "Mes hasta la fecha"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
@@ -3788,6 +3808,10 @@ msgstr "Seleccionar país"
 msgid "Select customer"
 msgstr "Seleccionar cliente"
 
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "Seleccionar rango de fechas"
+
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
 msgstr "Seleccione el idioma de visualización"
@@ -4378,6 +4402,11 @@ msgstr "Este es un rol predeterminado y no se puede modificar"
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "Este es el contenido de la colección <0>{collectionName}</0>."
 
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "Este mes"
+
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
 msgstr "Este producto tiene variantes existentes pero no tiene grupos de opciones definidos. Debe agregar grupos de opciones antes de crear nuevas variantes."
@@ -4386,10 +4415,20 @@ msgstr "Este producto tiene variantes existentes pero no tiene grupos de opcione
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
 msgstr "Las condiciones de verificación de elegibilidad de este método de envío no se cumplen para el pedido y la dirección de envío actuales."
 
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "Esta semana"
+
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "Título"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "Hoy"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
@@ -4684,6 +4723,11 @@ msgstr "Ancho"
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "Con seleccionados..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "Ayer"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"

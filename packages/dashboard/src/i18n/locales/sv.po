@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Frågeförlängningsfel"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Sidan kommer fortsätta med standardfrågan."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Misslyckades att förlänga frågedokument"
@@ -37,18 +49,6 @@ msgstr "Frågeförlängning innehåller ogiltig GraphQL-syntax"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Frågeförlängningsfel:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Frågeförlängningsfel"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Sidan kommer fortsätta med standardfrågan."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -2525,9 +2525,24 @@ msgstr "Språk"
 msgid "Language: {0}"
 msgstr "Språk: {0}"
 
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "Senaste 30 dagarna"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "Senaste 7 dagarna"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "Senast kördes"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "Förra månaden"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
@@ -2690,6 +2705,11 @@ msgstr "Ändra beställning"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
 msgstr "Övervakade resurser"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "Månad hittills"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
@@ -3788,6 +3808,10 @@ msgstr "Välj land"
 msgid "Select customer"
 msgstr "Välj kund"
 
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "Välj datumintervall"
+
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
 msgstr "Välj visningsspråk"
@@ -4378,6 +4402,11 @@ msgstr "Detta är en standardroll och kan inte ändras"
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "Detta är innehållet i kollektionen <0>{collectionName}</0>."
 
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "Denna månad"
+
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
 msgstr "Denna produkt har befintliga varianter men inga alternativgrupper definierade. Du behöver lägga till alternativgrupper innan du skapar nya varianter."
@@ -4386,10 +4415,20 @@ msgstr "Denna produkt har befintliga varianter men inga alternativgrupper defini
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
 msgstr "Denna fraktmetods berättigandevillkor är inte uppfyllda för nuvarande beställning och leveransadress."
 
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "Denna vecka"
+
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "Titel"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "Idag"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
@@ -4684,6 +4723,11 @@ msgstr "Bredd"
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "Med valda..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "Igår"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"

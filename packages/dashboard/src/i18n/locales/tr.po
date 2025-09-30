@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Sorgu uzatma hatası"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Sayfa varsayılan sorgu ile devam edecek."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Sorgu belgesi uzatılamadı"
@@ -37,18 +49,6 @@ msgstr "Sorgu uzatma geçersiz GraphQL sözdizimi içeriyor"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Sorgu uzatma hatası:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Sorgu uzatma hatası"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Sayfa varsayılan sorgu ile devam edecek."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -2525,9 +2525,24 @@ msgstr "Dil"
 msgid "Language: {0}"
 msgstr "Dil: {0}"
 
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "Son 30 gün"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "Son 7 gün"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "Son Çalıştırılma"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "Geçen ay"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
@@ -2690,6 +2705,11 @@ msgstr "Siparişi değiştir"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
 msgstr "İzlenen Kaynaklar"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "Ay başından bugüne"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
@@ -3788,6 +3808,10 @@ msgstr "Ülke seç"
 msgid "Select customer"
 msgstr "Müşteri seç"
 
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "Tarih aralığı seçin"
+
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
 msgstr "Görüntüleme dili seçin"
@@ -4378,6 +4402,11 @@ msgstr "Bu varsayılan bir Rol'dür ve değiştirilemez"
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "Bu, <0>{collectionName}</0> koleksiyonunun içeriğidir."
 
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "Bu ay"
+
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
 msgstr "Bu ürünün mevcut varyantları var ancak seçenek grubu tanımlanmamış. Yeni varyantlar oluşturmadan önce seçenek grupları eklemeniz gerekir."
@@ -4386,10 +4415,20 @@ msgstr "Bu ürünün mevcut varyantları var ancak seçenek grubu tanımlanmamı
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
 msgstr "Bu kargo yönteminin uygunluk kontrolü koşulları mevcut sipariş ve kargo adresi için karşılanmamaktadır."
 
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "Bu hafta"
+
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "Başlık"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "Bugün"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
@@ -4684,6 +4723,11 @@ msgstr "Genişlik"
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "Seçiliyle..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "Dün"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"

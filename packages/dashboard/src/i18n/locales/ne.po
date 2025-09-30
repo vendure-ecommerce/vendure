@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "क्वेरी विस्तार त्रुटि"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "क्वेरी कागजात विस्तार गर्न असफल"
@@ -37,18 +49,6 @@ msgstr "क्वेरी विस्तारमा अवैध GraphQL स�
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "क्वेरी विस्तार त्रुटि:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "क्वेरी विस्तार त्रुटि"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -2525,9 +2525,24 @@ msgstr "भाषा"
 msgid "Language: {0}"
 msgstr "भाषा: {0}"
 
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "पछिल्लो 30 दिन"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "पछिल्लो 7 दिन"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "अन्तिम कार्यान्वयन"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "गत महिना"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
@@ -2690,6 +2705,11 @@ msgstr "अर्डर परिमार्जन गर्नुहोस्"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
 msgstr "निगरानी गरिएका स्रोतहरू"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "महिनाको सुरुदेखि आजसम्म"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
@@ -3788,6 +3808,10 @@ msgstr "देश चयन गर्नुहोस्"
 msgid "Select customer"
 msgstr "ग्राहक चयन गर्नुहोस्"
 
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "मिति दायरा चयन गर्नुहोस्"
+
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
 msgstr "प्रदर्शन भाषा चयन गर्नुहोस्"
@@ -4378,6 +4402,11 @@ msgstr "यो पूर्वनिर्धारित भूमिका ह
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "यो <0>{collectionName}</0> संग्रहको सामग्री हो।"
 
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "यो महिना"
+
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
 msgstr "यो उत्पादनमा अवस्थित भेरियन्टहरू छन् तर कुनै विकल्प समूहहरू परिभाषित छैनन्। नयाँ भेरियन्टहरू सिर्जना गर्नु अघि तपाईंले विकल्प समूहहरू थप्नुपर्छ।"
@@ -4386,10 +4415,20 @@ msgstr "यो उत्पादनमा अवस्थित भेरिय
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
 msgstr "यो ढुवानी विधिको योग्यता जाँचकर्ता शर्तहरू हालको अर्डर र ढुवानी ठेगानाको लागि पूरा भएका छैनन्।"
 
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "यो हप्ता"
+
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "शीर्षक"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "आज"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
@@ -4684,6 +4723,11 @@ msgstr "चौडाइ"
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "चयन गरिएकासँग..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "हिजो"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"

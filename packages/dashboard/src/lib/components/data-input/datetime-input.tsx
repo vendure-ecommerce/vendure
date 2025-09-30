@@ -17,6 +17,22 @@ import { CalendarClock } from 'lucide-react';
 
 /**
  * @description
+ * Returns a `Locale` object that can be passed to the react-day-picker
+ * `locale` prop.
+ */
+export function useDayPickerLocale() {
+    const { bcp47Tag } = useDisplayLocale();
+    const [calendarLocale, setCalendarLocale] = useState<Locale | undefined>(undefined);
+    useEffect(() => {
+        import('react-day-picker/locale').then(mod => {
+            setCalendarLocale(bcpTagToDatePickerLocale(bcp47Tag, mod));
+        });
+    }, [bcp47Tag]);
+    return calendarLocale;
+}
+
+/**
+ * @description
  * A component for selecting a date and time.
  *
  * @docsCategory form-components
@@ -24,16 +40,9 @@ import { CalendarClock } from 'lucide-react';
  */
 export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
     const readOnly = isReadonlyField(fieldDef);
-    const { bcp47Tag } = useDisplayLocale();
-    const [calendarLocale, setCalendarLocale] = useState<Locale | undefined>(undefined);
+    const locale = useDayPickerLocale();
     const date = value && value instanceof Date ? value.toISOString() : (value ?? '');
     const [isOpen, setIsOpen] = React.useState(false);
-
-    useEffect(() => {
-        import('react-day-picker/locale').then(mod => {
-            setCalendarLocale(bcpTagToDatePickerLocale(bcp47Tag, mod));
-        });
-    }, [bcp47Tag]);
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -76,7 +85,7 @@ export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardF
                 <div className="sm:flex">
                     <Calendar
                         mode="single"
-                        locale={calendarLocale}
+                        locale={locale}
                         selected={new Date(date)}
                         onSelect={handleDateSelect}
                         initialFocus

@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "خطای گسترش پرس‌وجو"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "صفحه با پرس‌وجوی پیش‌فرض ادامه می‌یابد."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "گسترش سند پرس‌وجو ناموفق بود"
@@ -37,18 +49,6 @@ msgstr "گسترش پرس‌وجو حاوی نحو نامعتبر GraphQL است
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "خطای گسترش پرس‌وجو:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "خطای گسترش پرس‌وجو"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "صفحه با پرس‌وجوی پیش‌فرض ادامه می‌یابد."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -2525,9 +2525,24 @@ msgstr "زبان"
 msgid "Language: {0}"
 msgstr "زبان: {0}"
 
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "30 روز گذشته"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "7 روز گذشته"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "آخرین اجرا"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "ماه گذشته"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
@@ -2690,6 +2705,11 @@ msgstr "تغییر سفارش"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
 msgstr "منابع نظارت شده"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "از ابتدای ماه تاکنون"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
@@ -3788,6 +3808,10 @@ msgstr "انتخاب کشور"
 msgid "Select customer"
 msgstr "انتخاب مشتری"
 
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "انتخاب بازه تاریخ"
+
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
 msgstr "زبان نمایش را انتخاب کنید"
@@ -4378,6 +4402,11 @@ msgstr "این یک نقش پیش‌فرض است و نمی‌تواند تغی�
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "این محتویات مجموعه <0>{collectionName}</0> است."
 
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "این ماه"
+
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
 msgstr "این محصول دارای انواع موجود است اما هیچ گروه گزینه‌ای تعریف نشده است. قبل از ایجاد انواع جدید باید گروه‌های گزینه اضافه کنید."
@@ -4386,10 +4415,20 @@ msgstr "این محصول دارای انواع موجود است اما هیچ 
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
 msgstr "شرایط بررسی صلاحیت این روش ارسال برای سفارش فعلی و آدرس ارسال برآورده نشده است."
 
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "این هفته"
+
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "عنوان"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "امروز"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
@@ -4684,6 +4723,11 @@ msgstr "عرض"
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "با موارد انتخاب شده..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "دیروز"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"
