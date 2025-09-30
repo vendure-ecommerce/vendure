@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SystemOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1124" packageName="@vendure/core" since="1.6.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1134" packageName="@vendure/core" since="1.6.0" />
 
 Options relating to system functions.
 

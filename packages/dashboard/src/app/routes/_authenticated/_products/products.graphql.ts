@@ -44,7 +44,11 @@ export const productDetailFragment = graphql(
                 slug
                 description
             }
-
+            optionGroups {
+                id
+                code
+                name
+            }
             facetValues {
                 id
                 name
@@ -329,6 +333,14 @@ export const createProductVariantsDocument = graphql(`
         createProductVariants(input: $input) {
             id
             name
+        }
+    }
+`);
+
+export const reindexDocument = graphql(`
+    mutation Reindex {
+        reindex {
+            id
         }
     }
 `);

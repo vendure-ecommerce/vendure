@@ -136,7 +136,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                         return <DisplayComponent id="vendure:asset" value={value} />;
                     }
                     if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
+                        return <DisplayComponent id="vendure:json" value={value} />;
                     }
                     return value;
                 },
@@ -196,6 +196,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                     />
                 ),
                 enableColumnFilter: false,
+                enableHiding: false,
                 cell: ({ row }) => {
                     return (
                         <Checkbox
@@ -224,6 +225,7 @@ function getRowActions(
         accessorKey: 'actions',
         header: () => <Trans>Actions</Trans>,
         enableColumnFilter: false,
+        enableHiding: false,
         cell: ({ row, table }) => {
             return (
                 <DropdownMenu>

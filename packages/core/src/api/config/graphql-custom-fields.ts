@@ -10,6 +10,7 @@ import {
 } from 'graphql';
 
 import {
+    BaseTypedCustomFieldConfig,
     CustomFieldConfig,
     CustomFields,
     StructCustomFieldConfig,
@@ -267,7 +268,7 @@ export function addGraphQLCustomFields(
                     type ${publicEntityName}CustomFields {
                         ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
                     }
-    
+
                     extend type ${publicEntityName} {
                         customFields: ${publicEntityName}CustomFields
                     }
@@ -751,7 +752,7 @@ function pascalCase(input: string) {
     return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
-function getDeprecationDirective(field: CustomFieldConfig): string {
+function getDeprecationDirective(field: BaseTypedCustomFieldConfig<any, any>): string {
     if (!field.deprecated) {
         return '';
     }
@@ -761,7 +762,7 @@ function getDeprecationDirective(field: CustomFieldConfig): string {
         // TODO this seems to be some problem unrelated to my PR? Check later
         // @ts-expect-error
         const escapedReason = field.deprecated.replace(/"/g, '\\"');
-        return `@deprecated(reason: "${escapedReason as string}")`;
+        return `@deprecated(reason: "${escapedReason}")`;
     }
 
     return '@deprecated';

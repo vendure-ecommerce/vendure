@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SettingsStoreRegistration
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="89" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="119" packageName="@vendure/core" since="3.4.0" />
 
 Configuration for registering a namespace of settings store fields.
 

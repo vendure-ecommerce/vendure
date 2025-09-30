@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaginatedListDataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="334" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="347" packageName="@vendure/dashboard" since="3.4.0" />
 
 A wrapper around the <a href='/reference/dashboard/list-views/data-table#datatable'>DataTable</a> component, which automatically configures functionality common to
 list queries that implement the `PaginatedList` interface, which is the common way of representing lists
@@ -130,7 +130,7 @@ Parameters
 
 ## PaginatedListDataTableProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="185" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="198" packageName="@vendure/dashboard" since="3.4.0" />
 
 Props to configure the <a href='/reference/dashboard/list-views/paginated-list-data-table#paginatedlistdatatable'>PaginatedListDataTable</a> component.
 
@@ -262,7 +262,7 @@ interface PaginatedListDataTableProps<T extends TypedDocumentNode<U, V>, U exten
 
 ### bulkActions
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/data-table#bulkaction'>BulkAction</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/bulk-actions#bulkaction'>BulkAction</a>[]`}   />
 
 
 ### disableViewOptions

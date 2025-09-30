@@ -38,6 +38,7 @@ import { SearchResolver } from './resolvers/admin/search.resolver';
 import { SellerResolver } from './resolvers/admin/seller.resolver';
 import { SettingsStoreAdminResolver } from './resolvers/admin/settings-store.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
+import { SlugResolver } from './resolvers/admin/slug.resolver';
 import { StockLocationResolver } from './resolvers/admin/stock-location.resolver';
 import { TagResolver } from './resolvers/admin/tag.resolver';
 import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
@@ -120,6 +121,7 @@ const adminResolvers = [
     SearchResolver,
     ScheduledTaskResolver,
     ShippingMethodResolver,
+    SlugResolver,
     StockLocationResolver,
     TagResolver,
     TaxCategoryResolver,

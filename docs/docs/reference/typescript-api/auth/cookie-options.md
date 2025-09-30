@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CookieOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="254" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="255" packageName="@vendure/core" />
 
 Options for the handling of the cookies used to track sessions (only applicable if
 `authOptions.tokenMethod` is set to `'cookie'`). These options are passed directly

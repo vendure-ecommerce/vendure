@@ -4,8 +4,10 @@ import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
 const API_URL =
-    (uiConfig.api.host !== "auto" ? uiConfig.api.host : `${window.location.protocol}//${window.location.hostname}`) +
-    `:${(uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port)}` +
+    (uiConfig.api.host !== 'auto'
+        ? uiConfig.api.host
+        : `${window.location.protocol}//${window.location.hostname}`) +
+    `:${uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port}` +
     `/${uiConfig.api.adminApiPath}`;
 
 export const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';

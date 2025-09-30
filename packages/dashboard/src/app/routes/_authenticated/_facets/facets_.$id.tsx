@@ -1,3 +1,4 @@
+import { SlugInput } from '@/vdb/components/data-input/index.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -32,7 +33,10 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$id')({
         pageId,
         queryDocument: facetDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/facets', label: <Trans>Facets</Trans> }, isNew ? <Trans>New facet</Trans> : entity?.name];
+            return [
+                { path: '/facets', label: <Trans>Facets</Trans> },
+                isNew ? <Trans>New facet</Trans> : entity?.name,
+            ];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -124,7 +128,15 @@ function FacetDetailPage() {
                             control={form.control}
                             name="code"
                             label={<Trans>Code</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="code"
+                                    watchFieldName="name"
+                                    entityName="Facet"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                 </PageBlock>

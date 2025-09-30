@@ -1,12 +1,10 @@
-import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { SentryAdminTestResolver } from './api/admin-test.resolver';
 import { testApiExtensions } from './api/api-extensions';
 import { ErrorTestService } from './api/error-test.service';
 import { SENTRY_PLUGIN_OPTIONS } from './constants';
-import { SentryApolloPlugin } from './sentry-apollo-plugin';
-import { SentryContextMiddleware } from './sentry-context.middleware';
 import { SentryErrorHandlerStrategy } from './sentry-error-handler-strategy';
 import { SentryService } from './sentry.service';
 import { SentryPluginOptions } from './types';
@@ -35,15 +33,30 @@ const SentryOptionsProvider = {
  *
  * ## Installation
  *
- * Install this plugin as well as the `@sentry/node` package:
- *
  * ```sh
- * npm install --save \@vendure/sentry-plugin \@sentry/node
+ * npm install --save \@vendure/sentry-plugin
  * ```
  *
  * ## Configuration
  *
- * Before using the plugin, you must configure it with the DSN provided by Sentry:
+ * Setting up the Sentry plugin requires two steps:
+ *
+ * ### Step 1: Preload the Sentry instrument file
+ *
+ * The Sentry SDK must be initialized before your application starts. This is done by preloading
+ * the instrument file when starting your Vendure server:
+ *
+ * ```sh
+ * node --import \@vendure/sentry-plugin/instrument ./dist/index.js
+ * ```
+ *
+ * Or if using TypeScript directly with tsx:
+ *
+ * ```sh
+ * tsx --import \@vendure/sentry-plugin/instrument ./src/index.ts
+ * ```
+ *
+ * ### Step 2: Add the SentryPlugin to your Vendure config
  *
  * ```ts
  * import { VendureConfig } from '\@vendure/core';
@@ -55,13 +68,8 @@ const SentryOptionsProvider = {
  *         // ...
  *         // highlight-start
  *         SentryPlugin.init({
- *             dsn: process.env.SENTRY_DSN,
  *             // Optional configuration
  *             includeErrorTestMutation: true,
- *             enableTracing: true,
- *             // you can also pass in any of the options from \@sentry/node
- *             // for instance:
- *             tracesSampleRate: 1.0,
  *         }),
  *         // highlight-end
  *     ],
@@ -70,13 +78,24 @@ const SentryOptionsProvider = {
  *
  * ## Tracing
  *
- * This plugin includes built-in support for [tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/), which allows you to see the performance of your
- * GraphQL resolvers in the Sentry dashboard. To enable tracing, set the `enableTracing` option to `true` as shown above.
+ * This plugin includes built-in support for [tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/), which allows you to see the performance of your.
+ * To enable tracing, preload the instrument file as described in [Step 1](#step-1-preload-the-sentry-instrument-file).
+ * This make sure that the Sentry SDK is initialized before any other code is executed.
+ *
+ * You can also set the `tracesSampleRate` and `profilesSampleRate` options to control the sample rate for
+ * tracing and profiling, with the following environment variables:
+ *
+ * - `SENTRY_TRACES_SAMPLE_RATE`
+ * - `SENTRY_PROFILES_SAMPLE_RATE`
+ *
+ * The sample rate for tracing should be between 0 and 1. The sample rate for profiling should be between 0 and 1.
+ *
+ * By default, both are set to `undefined`, which means that tracing and profiling are disabled.
  *
  * ## Instrumenting your own code
  *
  * You may want to add your own custom spans to your code. To do so, you can use the `Sentry` object
- * just as you would in any Node application. For example:
+ * from the `\@sentry/node` package. For example:
  *
  * ```ts
  * import * as Sentry from "\@sentry/node";
@@ -109,12 +128,8 @@ const SentryOptionsProvider = {
     imports: [PluginCommonModule],
     providers: [SentryOptionsProvider, SentryService, ErrorTestService],
     configuration: config => {
-        config.apiOptions.apolloServerPlugins.push(
-            new SentryApolloPlugin({
-                enableTracing: !!SentryPlugin.options.enableTracing,
-            }),
-        );
         config.systemOptions.errorHandlers.push(new SentryErrorHandlerStrategy());
+        config.plugins.push(SentryModule.forRoot());
         return config;
     },
     adminApiExtensions: {
@@ -124,12 +139,8 @@ const SentryOptionsProvider = {
     exports: [SentryService],
     compatibility: '^3.0.0',
 })
-export class SentryPlugin implements NestModule {
+export class SentryPlugin {
     static options: SentryPluginOptions = {} as any;
-
-    configure(consumer: MiddlewareConsumer): any {
-        consumer.apply(SentryContextMiddleware).forRoutes('*');
-    }
 
     static init(options: SentryPluginOptions) {
         this.options = options;

@@ -2,11 +2,21 @@
     "name": "@vendure/sentry-plugin",
     "version": "3.4.2",
     "license": "GPL-3.0-or-later",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "files": [
-        "lib/**/*"
+        "dist/**/*"
     ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./instrument": {
+            "types": "./dist/instrument.d.ts",
+            "default": "./dist/instrument.js"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/vendure-ecommerce/vendure"
@@ -21,12 +31,12 @@
     "publishConfig": {
         "access": "public"
     },
-    "peerDependencies": {
-        "@sentry/node": "^7.106.1"
-    },
     "devDependencies": {
-        "@sentry/node": "^7.106.1",
         "@vendure/common": "3.4.2",
         "@vendure/core": "3.4.2"
+    },
+    "dependencies": {
+        "@sentry/nestjs": "^10.2.0",
+        "@sentry/profiling-node": "^10.2.0"
     }
 }
