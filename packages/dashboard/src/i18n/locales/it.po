@@ -14,18 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Errore di estensione query"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "La pagina continuerà con la query predefinita."
-
-#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Impossibile estendere il documento query"
@@ -49,6 +37,18 @@ msgstr "L'estensione query contiene sintassi GraphQL non valida"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Errore estensione query: "
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Errore di estensione query"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "La pagina continuerà con la query predefinita."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -781,7 +781,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:78
+#: src/lib/framework/dashboard-widget/base-widget.tsx:80
 msgid "{title}"
 msgstr "{title}"
 
@@ -807,6 +807,11 @@ msgstr "È richiesto un rimborso di {formattedDiff}. Seleziona gli importi dei p
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
 msgstr "Azioni"
+
+#: src/lib/components/layout/channel-switcher.tsx:167
+msgctxt "active language"
+msgid "Active"
+msgstr "Attivo"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
@@ -1153,6 +1158,10 @@ msgstr "Lingue disponibili"
 msgid "Available:"
 msgstr "Disponibile:"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:72
+msgid "Average Order Value"
+msgstr "Valore medio dell'ordine"
+
 #: src/lib/components/shared/facet-value-selector.tsx:288
 msgid "Back to search"
 msgstr "Torna alla ricerca"
@@ -1245,7 +1254,7 @@ msgstr "Lingue canale"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:121
+#: src/lib/components/layout/channel-switcher.tsx:117
 msgid "Channels"
 msgstr "Canali"
 
@@ -1286,6 +1295,7 @@ msgstr "Fai clic su \"Esegui test\" per testare questo metodo di spedizione."
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:80
 msgid "Code"
 msgstr "Codice"
 
@@ -1455,6 +1465,11 @@ msgstr "Creato il"
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
 msgstr "Creazione in corso..."
+
+#: src/lib/components/layout/channel-switcher.tsx:138
+msgctxt "current channel"
+msgid "Current"
+msgstr "Corrente"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
 msgid "Current facet values"
@@ -1747,6 +1762,10 @@ msgstr "Modifica valori attributo"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 msgid "Edit image"
 msgstr "Modifica immagine"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Edit Layout"
+msgstr "Modifica layout"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Edit link"
@@ -2432,6 +2451,10 @@ msgstr "Inserisci immagine"
 msgid "Insert link"
 msgstr "Inserisci link"
 
+#: src/app/routes/_authenticated/index.tsx:181
+msgid "Insights"
+msgstr "Approfondimenti"
+
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "is after"
 msgstr "è dopo"
@@ -2497,6 +2520,11 @@ msgstr "Coda lavori"
 msgid "Language"
 msgstr "Lingua"
 
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/layout/channel-switcher.tsx:103
+msgid "Language: {0}"
+msgstr "Lingua: {0}"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "Ultima esecuzione"
@@ -2515,6 +2543,10 @@ msgstr "Ultimo risultato"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:58
 msgid "Last updated {0}"
 msgstr "Ultimo aggiornamento {0}"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Latest Orders"
+msgstr "Ultimi ordini"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "less than"
@@ -2600,7 +2632,7 @@ msgstr "Gestisci viste globali"
 msgid "Manage Global Views"
 msgstr "Gestisci viste globali"
 
-#: src/lib/components/layout/channel-switcher.tsx:184
+#: src/lib/components/layout/channel-switcher.tsx:181
 #: src/lib/components/layout/manage-languages-dialog.tsx:258
 msgid "Manage Languages"
 msgstr "Gestisci lingue"
@@ -2641,6 +2673,10 @@ msgstr "Metadati"
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
 msgid "Method"
 msgstr "Metodo"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:63
+msgid "Metrics"
+msgstr "Metriche"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
@@ -3119,6 +3155,10 @@ msgstr "O"
 msgid "Order cancelled"
 msgstr "Ordine annullato"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:69
+msgid "Order Count"
+msgstr "Numero di ordini"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "Ordine consegnato"
@@ -3145,6 +3185,10 @@ msgstr "Riga ordine aggiornata"
 msgid "Order lines"
 msgstr "Righe ordine"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:64
+msgid "Order metrics"
+msgstr "Metriche degli ordini"
+
 #. placeholder {0}: entry.data.modificationId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
 msgid "Order modification #{0}"
@@ -3167,6 +3211,10 @@ msgstr "Ordine effettuato"
 msgid "Order shipped"
 msgstr "Ordine spedito"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:70
+msgid "Order Total"
+msgstr "Totale ordine"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
 msgid "Order transitioned"
 msgstr "Ordine transitato"
@@ -3180,6 +3228,10 @@ msgstr "Ordine transitato"
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
 msgid "Orders"
 msgstr "Ordini"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:84
+msgid "Orders Summary"
+msgstr "Riepilogo ordini"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
 msgid "Out-of-stock threshold"
@@ -3284,6 +3336,10 @@ msgstr "Numero di telefono"
 #: src/lib/components/shared/customer-address-form.tsx:263
 msgid "Phone Number"
 msgstr "Numero di telefono"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:90
+msgid "Placed At"
+msgstr "Effettuato il"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
 msgid "Please add products and complete the shipping address to run the test."
@@ -3577,9 +3633,17 @@ msgstr "Salva modifiche"
 msgid "Save Changes"
 msgstr "Salva modifiche"
 
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Save Layout"
+msgstr "Salva layout"
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
 msgstr "Salva gruppo opzioni"
+
+#: src/lib/components/data-table/save-view-button.tsx:31
+msgid "Save View"
+msgstr "Salva vista"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
@@ -4347,12 +4411,21 @@ msgstr "Token"
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:100
 msgid "Total"
 msgstr "Totale"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:90
+msgid "Total Orders"
+msgstr "Totale ordini"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
 msgstr "Rimborso totale:"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:100
+msgid "Total Revenue"
+msgstr "Ricavi totali"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
@@ -4482,6 +4555,14 @@ msgstr "Usa soglia globale esaurimento scorte"
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
 msgstr "Nome utente"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensions deve essere utilizzato all'interno di un DashboardBaseWidget"
+
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFilters deve essere utilizzato all'interno di un WidgetFiltersProvider"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
@@ -4615,6 +4696,14 @@ msgstr "Non hai il permesso di visualizzare le impostazioni linguistiche globali
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
 msgstr "Non hai ancora salvato nessuna vista."
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Your latest orders"
+msgstr "I tuoi ultimi ordini"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:85
+msgid "Your orders summary"
+msgstr "Riepilogo dei tuoi ordini"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64

@@ -14,18 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Ошибка расширения запроса"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Страница продолжит работу с запросом по умолчанию."
-
-#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Не удалось расширить документ запроса"
@@ -49,6 +37,18 @@ msgstr "Расширение запроса содержит недопусти�
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Ошибка расширения запроса: "
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Ошибка расширения запроса"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Страница продолжит работу с запросом по умолчанию."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -781,7 +781,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:78
+#: src/lib/framework/dashboard-widget/base-widget.tsx:80
 msgid "{title}"
 msgstr "{title}"
 
@@ -807,6 +807,11 @@ msgstr "Требуется возврат в размере {formattedDiff}. В�
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
 msgstr "Действия"
+
+#: src/lib/components/layout/channel-switcher.tsx:167
+msgctxt "active language"
+msgid "Active"
+msgstr "Активный"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
@@ -1153,6 +1158,10 @@ msgstr "Доступные языки"
 msgid "Available:"
 msgstr "Доступно:"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:72
+msgid "Average Order Value"
+msgstr "Средняя сумма заказа"
+
 #: src/lib/components/shared/facet-value-selector.tsx:288
 msgid "Back to search"
 msgstr "Вернуться к поиску"
@@ -1245,7 +1254,7 @@ msgstr "Языки канала"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:121
+#: src/lib/components/layout/channel-switcher.tsx:117
 msgid "Channels"
 msgstr "Каналы"
 
@@ -1286,6 +1295,7 @@ msgstr "Нажмите «Запустить тест» для проверки �
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:80
 msgid "Code"
 msgstr "Код"
 
@@ -1455,6 +1465,11 @@ msgstr "Дата создания"
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
 msgstr "Создание..."
+
+#: src/lib/components/layout/channel-switcher.tsx:138
+msgctxt "current channel"
+msgid "Current"
+msgstr "Текущий"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
 msgid "Current facet values"
@@ -1747,6 +1762,10 @@ msgstr "Редактировать значения фасета"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 msgid "Edit image"
 msgstr "Редактировать изображение"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Edit Layout"
+msgstr "Изменить макет"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Edit link"
@@ -2432,6 +2451,10 @@ msgstr "Вставить изображение"
 msgid "Insert link"
 msgstr "Вставить ссылку"
 
+#: src/app/routes/_authenticated/index.tsx:181
+msgid "Insights"
+msgstr "Аналитика"
+
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "is after"
 msgstr "после"
@@ -2497,6 +2520,11 @@ msgstr "Очередь задач"
 msgid "Language"
 msgstr "Язык"
 
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/layout/channel-switcher.tsx:103
+msgid "Language: {0}"
+msgstr "Язык: {0}"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "Последнее выполнение"
@@ -2515,6 +2543,10 @@ msgstr "Последний результат"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:58
 msgid "Last updated {0}"
 msgstr "Последнее обновление {0}"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Latest Orders"
+msgstr "Последние заказы"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "less than"
@@ -2600,7 +2632,7 @@ msgstr "Управление глобальными представлениям
 msgid "Manage Global Views"
 msgstr "Управление глобальными представлениями"
 
-#: src/lib/components/layout/channel-switcher.tsx:184
+#: src/lib/components/layout/channel-switcher.tsx:181
 #: src/lib/components/layout/manage-languages-dialog.tsx:258
 msgid "Manage Languages"
 msgstr "Управление языками"
@@ -2641,6 +2673,10 @@ msgstr "Метаданные"
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
 msgid "Method"
 msgstr "Метод"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:63
+msgid "Metrics"
+msgstr "Метрики"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
@@ -3119,6 +3155,10 @@ msgstr "ИЛИ"
 msgid "Order cancelled"
 msgstr "Заказ отменён"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:69
+msgid "Order Count"
+msgstr "Количество заказов"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "Заказ доставлен"
@@ -3145,6 +3185,10 @@ msgstr "Строка заказа обновлена"
 msgid "Order lines"
 msgstr "Строки заказа"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:64
+msgid "Order metrics"
+msgstr "Метрики заказов"
+
 #. placeholder {0}: entry.data.modificationId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
 msgid "Order modification #{0}"
@@ -3167,6 +3211,10 @@ msgstr "Заказ размещён"
 msgid "Order shipped"
 msgstr "Заказ отправлен"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:70
+msgid "Order Total"
+msgstr "Сумма заказа"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
 msgid "Order transitioned"
 msgstr "Заказ переведён"
@@ -3180,6 +3228,10 @@ msgstr "Заказ переведён"
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
 msgid "Orders"
 msgstr "Заказы"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:84
+msgid "Orders Summary"
+msgstr "Сводка по заказам"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
 msgid "Out-of-stock threshold"
@@ -3284,6 +3336,10 @@ msgstr "Номер телефона"
 #: src/lib/components/shared/customer-address-form.tsx:263
 msgid "Phone Number"
 msgstr "Номер телефона"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:90
+msgid "Placed At"
+msgstr "Оформлен"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
 msgid "Please add products and complete the shipping address to run the test."
@@ -3577,9 +3633,17 @@ msgstr "Сохранить изменения"
 msgid "Save Changes"
 msgstr "Сохранить изменения"
 
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Save Layout"
+msgstr "Сохранить макет"
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
 msgstr "Сохранить группу опций"
+
+#: src/lib/components/data-table/save-view-button.tsx:31
+msgid "Save View"
+msgstr "Сохранить вид"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
@@ -4347,12 +4411,21 @@ msgstr "Токен"
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:100
 msgid "Total"
 msgstr "Итого"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:90
+msgid "Total Orders"
+msgstr "Всего заказов"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
 msgstr "Итого возврат:"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:100
+msgid "Total Revenue"
+msgstr "Общая выручка"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
@@ -4482,6 +4555,14 @@ msgstr "Использовать глобальный порог отсутст�
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
 msgstr "Имя пользователя"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensions должен использоваться внутри DashboardBaseWidget"
+
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFilters должен использоваться внутри WidgetFiltersProvider"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
@@ -4615,6 +4696,14 @@ msgstr "У вас нет разрешения на просмотр глобал
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
 msgstr "Вы ещё не сохранили ни одного представления."
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Your latest orders"
+msgstr "Ваши последние заказы"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:85
+msgid "Your orders summary"
+msgstr "Сводка по вашим заказам"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64

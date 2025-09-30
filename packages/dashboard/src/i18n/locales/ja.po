@@ -14,18 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "クエリ拡張エラー"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "ページはデフォルトのクエリで続行されます。"
-
-#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "クエリドキュメントの拡張に失敗しました"
@@ -49,6 +37,18 @@ msgstr "クエリ拡張に無効なGraphQL構文が含まれています"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "クエリ拡張エラー："
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "クエリ拡張エラー"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "ページはデフォルトのクエリで続行されます。"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -781,7 +781,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:78
+#: src/lib/framework/dashboard-widget/base-widget.tsx:80
 msgid "{title}"
 msgstr "{title}"
 
@@ -807,6 +807,11 @@ msgstr "{formattedDiff} の返金が必要です。支払い金額を選択し�
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
 msgstr "アクション"
+
+#: src/lib/components/layout/channel-switcher.tsx:167
+msgctxt "active language"
+msgid "Active"
+msgstr "アクティブ"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
@@ -1153,6 +1158,10 @@ msgstr "利用可能な言語"
 msgid "Available:"
 msgstr "利用可能："
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:72
+msgid "Average Order Value"
+msgstr "平均注文額"
+
 #: src/lib/components/shared/facet-value-selector.tsx:288
 msgid "Back to search"
 msgstr "検索に戻る"
@@ -1245,7 +1254,7 @@ msgstr "チャネル言語"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:121
+#: src/lib/components/layout/channel-switcher.tsx:117
 msgid "Channels"
 msgstr "チャネル"
 
@@ -1286,6 +1295,7 @@ msgstr "「テストを実行」をクリックして、この配送方法をテ
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:80
 msgid "Code"
 msgstr "コード"
 
@@ -1455,6 +1465,11 @@ msgstr "作成日時"
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
 msgstr "作成中..."
+
+#: src/lib/components/layout/channel-switcher.tsx:138
+msgctxt "current channel"
+msgid "Current"
+msgstr "現在"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
 msgid "Current facet values"
@@ -1747,6 +1762,10 @@ msgstr "ファセット値を編集"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 msgid "Edit image"
 msgstr "画像を編集"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Edit Layout"
+msgstr "レイアウトを編集"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Edit link"
@@ -2432,6 +2451,10 @@ msgstr "画像を挿入"
 msgid "Insert link"
 msgstr "リンクを挿入"
 
+#: src/app/routes/_authenticated/index.tsx:181
+msgid "Insights"
+msgstr "インサイト"
+
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "is after"
 msgstr "より後"
@@ -2497,6 +2520,11 @@ msgstr "ジョブキュー"
 msgid "Language"
 msgstr "言語"
 
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/layout/channel-switcher.tsx:103
+msgid "Language: {0}"
+msgstr "言語: {0}"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "最終実行"
@@ -2515,6 +2543,10 @@ msgstr "最終結果"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:58
 msgid "Last updated {0}"
 msgstr "最終更新{0}"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Latest Orders"
+msgstr "最新の注文"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "less than"
@@ -2600,7 +2632,7 @@ msgstr "グローバルビューを管理"
 msgid "Manage Global Views"
 msgstr "グローバルビューを管理"
 
-#: src/lib/components/layout/channel-switcher.tsx:184
+#: src/lib/components/layout/channel-switcher.tsx:181
 #: src/lib/components/layout/manage-languages-dialog.tsx:258
 msgid "Manage Languages"
 msgstr "言語を管理"
@@ -2641,6 +2673,10 @@ msgstr "メタデータ"
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
 msgid "Method"
 msgstr "メソッド"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:63
+msgid "Metrics"
+msgstr "指標"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
@@ -3119,6 +3155,10 @@ msgstr "OR"
 msgid "Order cancelled"
 msgstr "注文をキャンセルしました"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:69
+msgid "Order Count"
+msgstr "注文数"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "注文を配達しました"
@@ -3145,6 +3185,10 @@ msgstr "注文ラインを更新しました"
 msgid "Order lines"
 msgstr "注文ライン"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:64
+msgid "Order metrics"
+msgstr "注文指標"
+
 #. placeholder {0}: entry.data.modificationId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
 msgid "Order modification #{0}"
@@ -3167,6 +3211,10 @@ msgstr "注文を確定しました"
 msgid "Order shipped"
 msgstr "注文を発送しました"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:70
+msgid "Order Total"
+msgstr "注文合計"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
 msgid "Order transitioned"
 msgstr "注文を遷移しました"
@@ -3180,6 +3228,10 @@ msgstr "注文を遷移しました"
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
 msgid "Orders"
 msgstr "注文"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:84
+msgid "Orders Summary"
+msgstr "注文サマリー"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
 msgid "Out-of-stock threshold"
@@ -3284,6 +3336,10 @@ msgstr "電話番号"
 #: src/lib/components/shared/customer-address-form.tsx:263
 msgid "Phone Number"
 msgstr "電話番号"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:90
+msgid "Placed At"
+msgstr "注文日時"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
 msgid "Please add products and complete the shipping address to run the test."
@@ -3577,9 +3633,17 @@ msgstr "変更を保存"
 msgid "Save Changes"
 msgstr "変更を保存"
 
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Save Layout"
+msgstr "レイアウトを保存"
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
 msgstr "オプショングループを保存"
+
+#: src/lib/components/data-table/save-view-button.tsx:31
+msgid "Save View"
+msgstr "ビューを保存"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
@@ -4347,12 +4411,21 @@ msgstr "トークン"
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:100
 msgid "Total"
 msgstr "合計"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:90
+msgid "Total Orders"
+msgstr "総注文数"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
 msgstr "返金合計："
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:100
+msgid "Total Revenue"
+msgstr "総収益"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
@@ -4482,6 +4555,14 @@ msgstr "グローバル在庫切れしきい値を使用"
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
 msgstr "ユーザー名"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensionsはDashboardBaseWidget内で使用する必要があります"
+
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFiltersはWidgetFiltersProvider内で使用する必要があります"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
@@ -4615,6 +4696,14 @@ msgstr "グローバル言語設定を表示する権限がありません"
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
 msgstr "まだビューを保存していません。"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Your latest orders"
+msgstr "最新の注文"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:85
+msgid "Your orders summary"
+msgstr "注文サマリー"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64

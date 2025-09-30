@@ -18,8 +18,8 @@ import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
@@ -99,13 +99,9 @@ export function ChannelSwitcher() {
                                         <ChannelCodeLabel code={displayChannel?.code} />
                                     </span>
                                     <span className="truncate text-xs">
-                                        {hasMultipleLanguages ? (
-                                            <span className="cursor-pointer hover:text-foreground">
-                                                Language: {formatLanguageName(contentLanguage)}
-                                            </span>
-                                        ) : (
-                                            <span>Language: {formatLanguageName(contentLanguage)}</span>
-                                        )}
+                                        <span>
+                                            <Trans>Language: {formatLanguageName(contentLanguage)}</Trans>
+                                        </span>
                                     </span>
                                 </div>
                                 <ChevronsUpDown className="ml-auto" />
@@ -139,7 +135,7 @@ export function ChannelSwitcher() {
                                         <ChannelCodeLabel code={channel.code} />
                                         {channel.id === displayChannel?.id && (
                                             <span className="ml-auto text-xs text-muted-foreground">
-                                                Current
+                                                <Trans context="current channel">Current</Trans>
                                             </span>
                                         )}
                                     </DropdownMenuItem>
@@ -160,8 +156,7 @@ export function ChannelSwitcher() {
                                                         onClick={() => setContentLanguage(languageCode)}
                                                         className={`gap-2 p-2 ${contentLanguage === languageCode ? 'bg-accent' : ''}`}
                                                     >
-                                                        <div
-                                                            className="flex w-6 h-5 items-center justify-center rounded border">
+                                                        <div className="flex w-6 h-5 items-center justify-center rounded border">
                                                             <span className="truncate font-medium text-xs">
                                                                 {languageCode.toUpperCase()}
                                                             </span>
@@ -169,7 +164,9 @@ export function ChannelSwitcher() {
                                                         <span>{formatLanguageName(languageCode)}</span>
                                                         {contentLanguage === languageCode && (
                                                             <span className="ml-auto text-xs text-muted-foreground">
-                                                                Active
+                                                                <Trans context="active language">
+                                                                    Active
+                                                                </Trans>
                                                             </span>
                                                         )}
                                                     </DropdownMenuItem>
@@ -196,8 +193,7 @@ export function ChannelSwitcher() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
                                 <Link to={'/channels/new'}>
-                                    <div
-                                        className="bg-background flex size-6 items-center justify-center rounded-md border">
+                                    <div className="bg-background flex size-6 items-center justify-center rounded-md border">
                                         <Plus className="size-4" />
                                     </div>
                                     <div className="text-muted-foreground font-medium">Add channel</div>

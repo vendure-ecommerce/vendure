@@ -1,5 +1,6 @@
 'use client';
 
+import { useLingui } from '@lingui/react/macro';
 import { createContext, useContext, PropsWithChildren } from 'react';
 
 export interface DefinedDateRange {
@@ -25,9 +26,10 @@ export function WidgetFiltersProvider({
 }
 
 export function useWidgetFilters() {
+    const { t } = useLingui();
     const context = useContext(WidgetFiltersContext);
     if (context === undefined) {
-        throw new Error('useWidgetFilters must be used within a WidgetFiltersProvider');
+        throw new Error(t`useWidgetFilters must be used within a WidgetFiltersProvider`);
     }
     return context;
 }

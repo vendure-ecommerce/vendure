@@ -14,18 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "क्वेरी विस्तार त्रुटि"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
-
-#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "क्वेरी कागजात विस्तार गर्न असफल"
@@ -49,6 +37,18 @@ msgstr "क्वेरी विस्तारमा अवैध GraphQL स�
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "क्वेरी विस्तार त्रुटि:"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "क्वेरी विस्तार त्रुटि"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -781,7 +781,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:78
+#: src/lib/framework/dashboard-widget/base-widget.tsx:80
 msgid "{title}"
 msgstr "{title}"
 
@@ -807,6 +807,11 @@ msgstr "{formattedDiff} को फिर्ता आवश्यक छ। भ�
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
 msgstr "कार्यहरू"
+
+#: src/lib/components/layout/channel-switcher.tsx:167
+msgctxt "active language"
+msgid "Active"
+msgstr "सक्रिय"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
@@ -1153,6 +1158,10 @@ msgstr "उपलब्ध भाषाहरू"
 msgid "Available:"
 msgstr "उपलब्ध:"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:72
+msgid "Average Order Value"
+msgstr "औसत अर्डर मूल्य"
+
 #: src/lib/components/shared/facet-value-selector.tsx:288
 msgid "Back to search"
 msgstr "खोजीमा फर्कनुहोस्"
@@ -1245,7 +1254,7 @@ msgstr "च्यानल भाषाहरू"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:121
+#: src/lib/components/layout/channel-switcher.tsx:117
 msgid "Channels"
 msgstr "च्यानलहरू"
 
@@ -1286,6 +1295,7 @@ msgstr "यो ढुवानी विधि परीक्षण गर्�
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:80
 msgid "Code"
 msgstr "कोड"
 
@@ -1455,6 +1465,11 @@ msgstr "सिर्जना मिति"
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
 msgstr "सिर्जना गर्दै..."
+
+#: src/lib/components/layout/channel-switcher.tsx:138
+msgctxt "current channel"
+msgid "Current"
+msgstr "हालको"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
 msgid "Current facet values"
@@ -1747,6 +1762,10 @@ msgstr "विशेषता मानहरू सम्पादन गर्
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 msgid "Edit image"
 msgstr "छवि सम्पादन गर्नुहोस्"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Edit Layout"
+msgstr "लेआउट सम्पादन गर्नुहोस्"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Edit link"
@@ -2432,6 +2451,10 @@ msgstr "छवि घुसाउनुहोस्"
 msgid "Insert link"
 msgstr "लिङ्क घुसाउनुहोस्"
 
+#: src/app/routes/_authenticated/index.tsx:181
+msgid "Insights"
+msgstr "अन्तर्दृष्टि"
+
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "is after"
 msgstr "पछि छ"
@@ -2497,6 +2520,11 @@ msgstr "कार्य पंक्ति"
 msgid "Language"
 msgstr "भाषा"
 
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/layout/channel-switcher.tsx:103
+msgid "Language: {0}"
+msgstr "भाषा: {0}"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
 msgstr "अन्तिम कार्यान्वयन"
@@ -2515,6 +2543,10 @@ msgstr "अन्तिम परिणाम"
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:58
 msgid "Last updated {0}"
 msgstr "अन्तिम अपडेट {0}"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Latest Orders"
+msgstr "नवीनतम अर्डरहरू"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "less than"
@@ -2600,7 +2632,7 @@ msgstr "ग्लोबल दृश्यहरू व्यवस्थाप�
 msgid "Manage Global Views"
 msgstr "ग्लोबल दृश्यहरू व्यवस्थापन गर्नुहोस्"
 
-#: src/lib/components/layout/channel-switcher.tsx:184
+#: src/lib/components/layout/channel-switcher.tsx:181
 #: src/lib/components/layout/manage-languages-dialog.tsx:258
 msgid "Manage Languages"
 msgstr "भाषाहरू व्यवस्थापन गर्नुहोस्"
@@ -2641,6 +2673,10 @@ msgstr "मेटाडेटा"
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
 msgid "Method"
 msgstr "विधि"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:63
+msgid "Metrics"
+msgstr "मेट्रिक्स"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
@@ -3119,6 +3155,10 @@ msgstr "वा"
 msgid "Order cancelled"
 msgstr "अर्डर रद्द गरियो"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:69
+msgid "Order Count"
+msgstr "अर्डर संख्या"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "अर्डर वितरण गरियो"
@@ -3145,6 +3185,10 @@ msgstr "अर्डर लाइन अपडेट गरियो"
 msgid "Order lines"
 msgstr "अर्डर लाइनहरू"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:64
+msgid "Order metrics"
+msgstr "अर्डर मेट्रिक्स"
+
 #. placeholder {0}: entry.data.modificationId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
 msgid "Order modification #{0}"
@@ -3167,6 +3211,10 @@ msgstr "अर्डर राखियो"
 msgid "Order shipped"
 msgstr "अर्डर पठाइयो"
 
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:70
+msgid "Order Total"
+msgstr "कुल अर्डर"
+
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
 msgid "Order transitioned"
 msgstr "अर्डर संक्रमण भयो"
@@ -3180,6 +3228,10 @@ msgstr "अर्डर संक्रमण भयो"
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
 msgid "Orders"
 msgstr "अर्डरहरू"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:84
+msgid "Orders Summary"
+msgstr "अर्डर सारांश"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
 msgid "Out-of-stock threshold"
@@ -3284,6 +3336,10 @@ msgstr "फोन नम्बर"
 #: src/lib/components/shared/customer-address-form.tsx:263
 msgid "Phone Number"
 msgstr "फोन नम्बर"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:90
+msgid "Placed At"
+msgstr "राखिएको मिति"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
 msgid "Please add products and complete the shipping address to run the test."
@@ -3577,9 +3633,17 @@ msgstr "परिवर्तनहरू सुरक्षित गर्न�
 msgid "Save Changes"
 msgstr "परिवर्तनहरू सुरक्षित गर्नुहोस्"
 
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Save Layout"
+msgstr "लेआउट सुरक्षित गर्नुहोस्"
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
 msgstr "विकल्प समूह सुरक्षित गर्नुहोस्"
+
+#: src/lib/components/data-table/save-view-button.tsx:31
+msgid "Save View"
+msgstr "दृश्य सुरक्षित गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
@@ -4347,12 +4411,21 @@ msgstr "टोकन"
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:100
 msgid "Total"
 msgstr "कुल"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:90
+msgid "Total Orders"
+msgstr "कुल अर्डरहरू"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
 msgstr "कुल रिफन्ड:"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:100
+msgid "Total Revenue"
+msgstr "कुल राजस्व"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
@@ -4482,6 +4555,14 @@ msgstr "ग्लोबल स्टक बाहिर थ्रेसहोल
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
 msgstr "प्रयोगकर्ता नाम"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensions लाई DashboardBaseWidget भित्र प्रयोग गर्नुपर्छ"
+
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFilters लाई WidgetFiltersProvider भित्र प्रयोग गर्नुपर्छ"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
@@ -4615,6 +4696,14 @@ msgstr "तपाईंसँग ग्लोबल भाषा सेटिङ
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
 msgstr "तपाईंले अझै कुनै दृश्यहरू सुरक्षित गर्नुभएको छैन।"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Your latest orders"
+msgstr "तपाईंको नवीनतम अर्डरहरू"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:85
+msgid "Your orders summary"
+msgstr "तपाईंको अर्डर सारांश"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
