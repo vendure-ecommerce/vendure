@@ -7,6 +7,7 @@ import {
 } from '@/vdb/components/ui/breadcrumb.js';
 import type { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { getNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { useLingui } from '@lingui/react';
 import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
@@ -27,6 +28,7 @@ export function GeneratedBreadcrumbs() {
     const router = useRouter();
     const { i18n } = useLingui();
     const navMenuConfig = getNavMenuConfig();
+    const { bcp47Tag } = useDisplayLocale();
     const basePath = router.basepath || '';
 
     const normalizeBreadcrumb = (breadcrumb: any, pathname: string): BreadcrumbPair[] => {
@@ -83,7 +85,7 @@ export function GeneratedBreadcrumbs() {
         for (const item of section.items) {
             if (!item?.url) continue;
             if (pathMatches(cleanPath, item.url)) {
-                return { label: i18n.t(section.title), path: item.url };
+                return { label: section.title, path: item.url };
             }
         }
         return undefined;
@@ -94,7 +96,7 @@ export function GeneratedBreadcrumbs() {
         cleanPath: string,
     ): BreadcrumbPair | undefined => {
         if ('url' in section && section.url && pathMatches(cleanPath, section.url)) {
-            return { label: i18n.t(section.title), path: section.url };
+            return { label: section.title, path: section.url };
         }
         return undefined;
     };
@@ -130,7 +132,7 @@ export function GeneratedBreadcrumbs() {
                     <Fragment key={`${path}-${index}`}>
                         <BreadcrumbItem className="hidden md:block">
                             <BreadcrumbLink asChild>
-                                <Link to={path}>{label}</Link>
+                                <Link to={path}>{typeof label === 'string' ? i18n.t(label) : label}</Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         {index < arr.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}

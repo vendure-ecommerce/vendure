@@ -1,5 +1,7 @@
 import { useUserSettings } from './use-user-settings.js';
 
+const rtlLanguageCodes = ['ar', 'he', 'fa', 'ur', 'ps'];
+
 /**
  * @description
  * Returns information about the current display language & region.
@@ -10,11 +12,13 @@ import { useUserSettings } from './use-user-settings.js';
  *   bcp47Tag,
  *   humanReadableLanguageAndLocale,
  *   humanReadableLanguage,
+ *   isRTL,
  * } = useDisplayLocale();
  *
  * console.log(bcp47Tag) // "en-GB"
  * console.log(humanReadableLanguage) // "English"
  * console.log(humanReadableLanguageAndLocale) // "British English"
+ * console.log(isRTL) // false
  * ```
  *
  * @docsCategory hooks
@@ -28,6 +32,7 @@ export function useDisplayLocale() {
     const humanReadableLanguageAndLocale = new Intl.DisplayNames([bcp47Tag], { type: 'language' }).of(
         bcp47Tag,
     );
+    const isRTL = rtlLanguageCodes.includes(language);
     const humanReadableLanguage = new Intl.DisplayNames([bcp47Tag], { type: 'language' }).of(language);
-    return { bcp47Tag, humanReadableLanguageAndLocale, humanReadableLanguage };
+    return { bcp47Tag, humanReadableLanguageAndLocale, humanReadableLanguage, isRTL };
 }
