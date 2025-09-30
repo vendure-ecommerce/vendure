@@ -70,8 +70,8 @@ function parsePOFile(filePath) {
                     // Unescape common escape sequences
                     const unescapedText = msgidText
                         .replace(/\\"/g, '"')
-                        .replace(/\\\\/g, '\\')
-                        .replace(/\\n/g, '\n');
+                        .replace(/\\n/g, '\n')
+                        .replace(/\\\\/g, '\\');
 
                     if (unescapedText) {
                         // Skip empty msgid (header)
