@@ -2,15 +2,18 @@
 
 import { format } from 'date-fns';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/vdb/components/ui/button.js';
 import { Calendar } from '@/vdb/components/ui/calendar.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { ScrollArea, ScrollBar } from '@/vdb/components/ui/scroll-area.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { cn } from '@/vdb/lib/utils.js';
-import { CalendarClock } from 'lucide-react';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
+import { cn } from '@/vdb/lib/utils.js';
+import type { Locale } from 'date-fns/locale';
+import { CalendarClock } from 'lucide-react';
 
 /**
  * @description
@@ -21,8 +24,16 @@ import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
  */
 export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
     const readOnly = isReadonlyField(fieldDef);
+    const { bcp47Tag } = useDisplayLocale();
+    const [calendarLocale, setCalendarLocale] = useState<Locale | undefined>(undefined);
     const date = value && value instanceof Date ? value.toISOString() : (value ?? '');
     const [isOpen, setIsOpen] = React.useState(false);
+
+    useEffect(() => {
+        import('react-day-picker/locale').then(mod => {
+            setCalendarLocale(bcpTagToDatePickerLocale(bcp47Tag, mod));
+        });
+    }, [bcp47Tag]);
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -65,6 +76,7 @@ export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardF
                 <div className="sm:flex">
                     <Calendar
                         mode="single"
+                        locale={calendarLocale}
                         selected={new Date(date)}
                         onSelect={handleDateSelect}
                         initialFocus
@@ -136,4 +148,22 @@ export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardF
             </PopoverContent>
         </Popover>
     );
+}
+
+function bcpTagToDatePickerLocale(
+    tag: string,
+    module: typeof import('react-day-picker/locale'),
+): Locale | undefined {
+    switch (tag) {
+        case 'zh-Hans':
+            return module.zhCN;
+        case 'zh-Hant':
+            return module.zhTW;
+        case 'pt-BR':
+            return module.ptBR;
+        default: {
+            const lang = tag.split('-').at(0);
+            return lang ? module[lang as keyof typeof module] : undefined;
+        }
+    }
 }
