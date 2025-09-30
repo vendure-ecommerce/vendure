@@ -721,7 +721,7 @@ msgstr "删除备注失败"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
-msgstr ""
+msgstr "!="
 
 #. placeholder {0}: action.label
 #. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
@@ -737,85 +737,85 @@ msgstr ""
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
 msgid "{0}"
-msgstr ""
+msgstr "{0}"
 
 #. placeholder {0}: value.totalItems
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
 msgid "{0} customers"
-msgstr ""
+msgstr "{0} 位客户"
 
 #. placeholder {0}: selectedIds.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:401
 msgid "{0} items selected"
-msgstr ""
+msgstr "已选择 {0} 个项目"
 
 #. placeholder {0}: quantity.max
 #. placeholder {1}: line.quantity
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:258
 msgid "{0} of {1} available to fulfill"
-msgstr ""
+msgstr "{1} 个中有 {0} 个可履行"
 
 #. placeholder {0}: selection.length
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:72
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
-msgstr ""
+msgstr "已选择 {0} 个"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
 #: src/app/routes/_authenticated/_collections/collections.tsx:150
 msgid "{0} variants"
-msgstr ""
+msgstr "{0} 个变体"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:396
 #: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
-msgstr ""
+msgstr "{buttonText}"
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
 msgid "{label}"
-msgstr ""
+msgstr "{label}"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:63
 msgid "{operator}"
-msgstr ""
+msgstr "{operator}"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:78
 msgid "{title}"
-msgstr ""
+msgstr "{title}"
 
 #. placeholder {0}: list.totalItems - 3
 #: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "+ {0} more"
-msgstr ""
+msgstr "+ {0} 个更多"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx:168
 msgid "+ {leftOver} more"
-msgstr ""
+msgstr "+ {leftOver} 个更多"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
-msgstr ""
+msgstr "="
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
-msgstr ""
+msgstr "需要退款 {formattedDiff}。选择付款金额并输入备注以继续。"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
-msgstr ""
+msgstr "操作"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
-msgstr ""
+msgstr "添加「{newOptionInput}」"
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
 msgid "Add a manual payment of {0}"
-msgstr ""
+msgstr "添加 {0} 的手动付款"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
 msgid "Add a new address to the customer."
@@ -3386,7 +3386,7 @@ msgstr "商品"
 #: src/app/routes/_authenticated/_profile/profile.tsx:74
 #: src/lib/components/layout/nav-user.tsx:106
 msgid "Profile"
-msgstr ""
+msgstr "个人资料"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:20
@@ -3839,11 +3839,11 @@ msgstr "配送地址已更改"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
 msgid "Shipping address set for order"
-msgstr ""
+msgstr "订单已设置配送地址"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
 msgid "Shipping address unset for order"
-msgstr ""
+msgstr "订单已取消配送地址"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:123
 msgid "Shipping method changed"
@@ -3859,7 +3859,7 @@ msgstr "配送方式不适用于此订单"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
 msgid "Shipping method set for order"
-msgstr ""
+msgstr "订单已设置配送方式"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19

@@ -810,7 +810,7 @@ msgstr "Acciones"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
-msgstr ""
+msgstr "Agregar \\\"{newOptionInput}\\\""
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
@@ -1062,7 +1062,7 @@ msgstr "Aplicar filtro"
 
 #: src/lib/components/data-table/views-sheet.tsx:155
 msgid "Apply filters to the table and click \"Save View\" to get started."
-msgstr ""
+msgstr "Aplique filtros a la tabla y haga clic en \\\"Guardar vista\\\" para comenzar."
 
 #. placeholder {0}: selection.length
 #: src/app/common/delete-bulk-action.tsx:141
@@ -1274,7 +1274,7 @@ msgstr "Limpiar filtros"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:43
 msgid "Click \"Run Test\" to test this shipping method."
-msgstr ""
+msgstr "Haga clic en \\\"Ejecutar prueba\\\" para probar este método de envío."
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
@@ -1415,7 +1415,7 @@ msgstr "Crear"
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:161
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:178
 msgid "Create \"{0}\""
-msgstr ""
+msgstr "Crear \\\"{0}\\\""
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
 msgid "Create {createCount} variants"
@@ -2937,7 +2937,7 @@ msgstr "No se encontraron clientes"
 
 #: src/app/common/duplicate-entity-dialog.tsx:99
 msgid "No duplicator found with code \"{duplicatorCode}\" for {entityName}s"
-msgstr ""
+msgstr "No se encontró duplicador con código \\\"{duplicatorCode}\\\" para {entityName}"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:52
 msgid "No eligible shipping methods found for this order."
@@ -3485,11 +3485,11 @@ msgstr "Quitar"
 
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:81
 msgid "Remove from current channel"
-msgstr ""
+msgstr "Eliminar del canal actual"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
-msgstr ""
+msgstr "Eliminar grupo"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:85
 msgid "Remove item"
@@ -3497,24 +3497,24 @@ msgstr "Quitar elemento"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
-msgstr ""
+msgstr "Eliminar enlace"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:199
 msgid "Removed coupon codes"
-msgstr ""
+msgstr "Códigos de cupón eliminados"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:49
 msgid "Removed from group"
-msgstr ""
+msgstr "Eliminado del grupo"
 
 #. placeholder {0}: removedLines.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:175
 msgid "Removing {0} item(s)"
-msgstr ""
+msgstr "Eliminando {0} elemento(s)"
 
 #: src/lib/components/data-table/views-sheet.tsx:240
 msgid "Rename"
-msgstr ""
+msgstr "Renombrar"
 
 #: src/lib/components/data-table/data-table-view-options.tsx:123
 msgid "Reset"
@@ -3522,7 +3522,7 @@ msgstr "Restablecer"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
 msgid "Review the changes before applying them to the order."
-msgstr ""
+msgstr "Revise los cambios antes de aplicarlos al pedido."
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:150
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:46
@@ -3538,7 +3538,7 @@ msgstr "Ejecutar"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:30
 msgid "Run Test"
-msgstr ""
+msgstr "Ejecutar prueba"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:155
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:159
@@ -3551,7 +3551,7 @@ msgstr "Misma ventana"
 
 #: src/lib/components/layout/language-dialog.tsx:79
 msgid "Sample Formatting"
-msgstr ""
+msgstr "Formato de ejemplo"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
 #: src/lib/components/data-table/views-sheet.tsx:210
@@ -3561,12 +3561,12 @@ msgstr "Guardar"
 
 #: src/lib/components/data-table/views-sheet.tsx:144
 msgid "Save a view as \"Global\" to make it available to all users."
-msgstr ""
+msgstr "Guarde una vista como \\\"Global\\\" para que esté disponible para todos los usuarios."
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
 #: src/lib/components/shared/customer-address-form.tsx:329
 msgid "Save Address"
-msgstr ""
+msgstr "Guardar dirección"
 
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:122
 msgid "Save changes"
@@ -3575,32 +3575,32 @@ msgstr "Guardar cambios"
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
 msgid "Save Changes"
-msgstr ""
+msgstr "Guardar cambios"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
-msgstr ""
+msgstr "Guardar grupo de opciones"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
 msgid "Saving..."
-msgstr ""
+msgstr "Guardando..."
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:130
 msgid "Schedule"
-msgstr ""
+msgstr "Programación"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:127
 msgid "Schedule Pattern"
-msgstr ""
+msgstr "Patrón de programación"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:90
 msgid "Scheduled task could not be executed"
-msgstr ""
+msgstr "No se pudo ejecutar la tarea programada"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:87
 msgid "Scheduled task will be executed"
-msgstr ""
+msgstr "Se ejecutará la tarea programada"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:29
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:232
@@ -3609,79 +3609,79 @@ msgstr "Tareas programadas"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:66
 msgid "Search {name}..."
-msgstr ""
+msgstr "Buscar {name}..."
 
 #: src/lib/components/shared/channel-selector.tsx:48
 msgid "Search channels..."
-msgstr ""
+msgstr "Buscar canales..."
 
 #: src/lib/components/shared/currency-selector.tsx:30
 msgid "Search currencies..."
-msgstr ""
+msgstr "Buscar monedas..."
 
 #: src/app/routes/_authenticated/_products/products.tsx:34
 msgid "Search index rebuild could not be started"
-msgstr ""
+msgstr "No se pudo iniciar la reconstrucción del índice de búsqueda"
 
 #: src/app/routes/_authenticated/_products/products.tsx:31
 msgid "Search index rebuild started"
-msgstr ""
+msgstr "Reconstrucción del índice de búsqueda iniciada"
 
 #: src/lib/components/shared/language-selector.tsx:45
 msgid "Search languages..."
-msgstr ""
+msgstr "Buscar idiomas..."
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:107
 msgid "Search payment methods..."
-msgstr ""
+msgstr "Buscar métodos de pago..."
 
 #: src/lib/components/shared/role-selector.tsx:53
 msgid "Search roles..."
-msgstr ""
+msgstr "Buscar roles..."
 
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
 #: src/lib/components/data-input/default-relation-input.tsx:616
 msgid "Select {0}"
-msgstr ""
+msgstr "Seleccionar {0}"
 
 #. placeholder {0}: selectedItems.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:367
 msgid "Select {0} Items"
-msgstr ""
+msgstr "Seleccionar {0} elementos"
 
 #. placeholder {0}: entityName.toLowerCase()
 #: src/lib/components/data-input/default-relation-input.tsx:603
 msgid "Select {0}s"
-msgstr ""
+msgstr "Seleccionar {0}"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:107
 #: src/lib/components/shared/channel-selector.tsx:47
 msgid "Select a channel"
-msgstr ""
+msgstr "Seleccione un canal"
 
 #. placeholder {0}: entityIds.length
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:95
 msgid "Select a channel to assign {0} {entityType} to"
-msgstr ""
+msgstr "Seleccione un canal al que asignar {0} {entityType}"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
 #: src/lib/components/shared/customer-address-form.tsx:240
 msgid "Select a country"
-msgstr ""
+msgstr "Seleccione un país"
 
 #: src/lib/components/shared/currency-selector.tsx:29
 msgid "Select a currency"
-msgstr ""
+msgstr "Seleccione una moneda"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
 msgid "Select a destination collection"
-msgstr ""
+msgstr "Seleccione una colección de destino"
 
 #: src/lib/components/shared/language-selector.tsx:44
 msgid "Select a language"
-msgstr ""
+msgstr "Seleccione un idioma"
 
 #: src/lib/components/shared/role-selector.tsx:52
 msgid "Select a role"
@@ -3690,7 +3690,7 @@ msgstr "Seleccionar un rol"
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
 msgid "Select a target collection to move {0} to."
-msgstr ""
+msgstr "Seleccione una colección de destino a la que mover {0}."
 
 #: src/lib/components/shared/tax-category-selector.tsx:50
 msgid "Select a tax category"
@@ -3702,19 +3702,19 @@ msgstr "Seleccionar una zona"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:51
 msgid "Select address"
-msgstr ""
+msgstr "Seleccionar dirección"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:58
 msgid "Select an address"
-msgstr ""
+msgstr "Seleccione una dirección"
 
 #: src/lib/components/data-input/select-with-options.tsx:81
 msgid "Select an option"
-msgstr ""
+msgstr "Seleccione una opción"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:296
 msgid "Select Available Languages"
-msgstr ""
+msgstr "Seleccionar idiomas disponibles"
 
 #: src/lib/components/shared/country-selector.tsx:73
 msgid "Select country"
@@ -3722,48 +3722,48 @@ msgstr "Seleccionar país"
 
 #: src/lib/components/shared/customer-selector.tsx:78
 msgid "Select customer"
-msgstr ""
+msgstr "Seleccionar cliente"
 
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
-msgstr ""
+msgstr "Seleccione el idioma de visualización"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:358
 msgid "Select from globally available languages for this channel"
-msgstr ""
+msgstr "Seleccione entre los idiomas disponibles globalmente para este canal"
 
 #: src/lib/components/data-input/relation-selector.tsx:410
 msgid "Select item"
-msgstr ""
+msgstr "Seleccionar elemento"
 
 #: src/lib/components/data-input/relation-selector.tsx:407
 msgid "Select items"
-msgstr ""
+msgstr "Seleccionar elementos"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
 msgid "Select next state"
-msgstr ""
+msgstr "Seleccionar siguiente estado"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
 msgid "Select quantities to fulfill and configure the fulfillment handler"
-msgstr ""
+msgstr "Seleccione las cantidades a cumplir y configure el gestor de cumplimiento"
 
 #: src/lib/components/shared/seller-selector.tsx:76
 msgid "Select seller"
-msgstr ""
+msgstr "Seleccionar vendedor"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
 msgid "Select the next state for the order"
-msgstr ""
+msgstr "Seleccione el siguiente estado del pedido"
 
 #. placeholder {0}: productData.product.variants[0].name
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:328
 msgid "Select which options should apply to the existing variant \"{0}\""
-msgstr ""
+msgstr "Seleccione qué opciones deben aplicarse a la variante existente \\\"{0}\\\""
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:316
 msgid "Selected Items"
-msgstr ""
+msgstr "Elementos seleccionados"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:156
 msgid "Seller"
@@ -3771,11 +3771,11 @@ msgstr "Vendedor"
 
 #: src/app/routes/_authenticated/_orders/orders_.$aggregateOrderId_.seller-orders.$sellerOrderId.tsx:36
 msgid "Seller order"
-msgstr ""
+msgstr "Pedido del vendedor"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id.tsx:23
 msgid "Seller orders"
-msgstr ""
+msgstr "Pedidos del vendedor"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:31
 #: src/app/routes/_authenticated/_sellers/sellers.tsx:14
@@ -3785,11 +3785,11 @@ msgstr "Vendedores"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:383
 msgid "Set custom fields"
-msgstr ""
+msgstr "Establecer campos personalizados"
 
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:97
 msgid "Set Focal Point"
-msgstr ""
+msgstr "Establecer punto focal"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:145
 msgid "Set link"
@@ -3797,26 +3797,26 @@ msgstr "Establecer enlace"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:113
 msgid "Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
-msgstr ""
+msgstr "Establece los idiomas disponibles para todos los canales. Los canales individuales pueden admitir un subconjunto de estos idiomas."
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:131
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
-msgstr ""
+msgstr "Establece el nivel de stock en el que esta variante se considera agotada. El uso de un valor negativo habilita el soporte de pedidos pendientes. Puede ser anulado por las variantes de producto."
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:267
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:285
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
-msgstr ""
+msgstr "Establece el nivel de stock en el que esta variante se considera agotada. El uso de un valor negativo habilita el soporte de pedidos pendientes."
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:142
 msgid "Settle payment"
-msgstr ""
+msgstr "Liquidar pago"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:264
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:49
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:74
 msgid "Settle refund"
-msgstr ""
+msgstr "Liquidar reembolso"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
@@ -4238,7 +4238,7 @@ msgstr "Prueba"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:68
 msgid "Test data has been updated. Click \"Run Test\" to see updated results."
-msgstr ""
+msgstr "Los datos de prueba se han actualizado. Haga clic en \\\"Ejecutar prueba\\\" para ver los resultados actualizados."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:163
 msgid "Test Order"
@@ -4250,77 +4250,77 @@ msgstr "Resultados de Prueba"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:39
 msgid "Test Shipping Method"
-msgstr ""
+msgstr "Probar método de envío"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:29
 msgid "Test shipping methods"
-msgstr ""
+msgstr "Probar métodos de envío"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:42
 msgid "Test this shipping method by simulating an order to see if it's eligible and what the shipping cost would be."
-msgstr ""
+msgstr "Pruebe este método de envío simulando un pedido para ver si es elegible y cuál sería el costo de envío."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:32
 msgid "Test your shipping methods by simulating a new order."
-msgstr ""
+msgstr "Pruebe sus métodos de envío simulando un nuevo pedido."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:31
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:46
 msgid "Testing shipping method..."
-msgstr ""
+msgstr "Probando método de envío..."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:56
 msgid "Testing shipping methods..."
-msgstr ""
+msgstr "Probando métodos de envío..."
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:114
 msgid "The data that has been passed to the job"
-msgstr ""
+msgstr "Los datos que se han pasado al trabajo"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:132
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:175
 msgid "The result of the job"
-msgstr ""
+msgstr "El resultado del trabajo"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:117
 msgid "The selected permissions will be applied to the these channels."
-msgstr ""
+msgstr "Los permisos seleccionados se aplicarán a estos canales."
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:147
 msgid "The token is used to specify the channel when making API requests."
-msgstr ""
+msgstr "El token se utiliza para especificar el canal al realizar solicitudes de API."
 
 #: src/lib/components/layout/nav-user.tsx:118
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-sheet.tsx:39
 msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
-msgstr ""
+msgstr "Estos son los clientes del grupo de clientes <0>{customerGroupName}</0>."
 
 #: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:35
 msgid "These are the facet values for the <0>{facetName}</0> facet."
-msgstr ""
+msgstr "Estos son los valores de la faceta <0>{facetName}</0>."
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:311
 msgid "These languages will be available for all channels to use"
-msgstr ""
+msgstr "Estos idiomas estarán disponibles para que los usen todos los canales"
 
 #: src/app/routes/_authenticated/_roles/roles.tsx:54
 msgid "This is a default Role and cannot be modified"
-msgstr ""
+msgstr "Este es un rol predeterminado y no se puede modificar"
 
 #: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:39
 msgid "This is the contents of the <0>{collectionName}</0> collection."
-msgstr ""
+msgstr "Este es el contenido de la colección <0>{collectionName}</0>."
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
-msgstr ""
+msgstr "Este producto tiene variantes existentes pero no tiene grupos de opciones definidos. Debe agregar grupos de opciones antes de crear nuevas variantes."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:79
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
-msgstr ""
+msgstr "Las condiciones de verificación de elegibilidad de este método de envío no se cumplen para el pedido y la dirección de envío actuales."
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
@@ -4330,19 +4330,19 @@ msgstr "Título"
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
 msgid "Toggle all"
-msgstr ""
+msgstr "Alternar todo"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:158
 msgid "Toggle header column"
-msgstr ""
+msgstr "Alternar columna de encabezado"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:210
 msgid "Toggle header row"
-msgstr ""
+msgstr "Alternar fila de encabezado"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:145
 msgid "Token"
-msgstr ""
+msgstr "Token"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
@@ -4352,7 +4352,7 @@ msgstr "Total"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
-msgstr ""
+msgstr "Reembolso total:"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
@@ -4360,7 +4360,7 @@ msgstr "Rastrear"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:148
 msgid "Track inventory by default"
-msgstr ""
+msgstr "Rastrear inventario por defecto"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:112
 msgid "Tracking code"
@@ -4371,11 +4371,11 @@ msgstr "Código de seguimiento"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:239
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:58
 msgid "Transaction ID"
-msgstr ""
+msgstr "ID de transacción"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:161
 msgid "Transaction ID is required"
-msgstr ""
+msgstr "Se requiere ID de transacción"
 
 #. placeholder {0}: getTranslatedFulfillmentState(state)
 #. placeholder {0}: getTranslatedOrderState(state)
@@ -4384,15 +4384,15 @@ msgstr ""
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
-msgstr ""
+msgstr "Transición a {0}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:84
 msgid "Transition to {suggestedState}"
-msgstr ""
+msgstr "Transición a {suggestedState}"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
 msgid "Transition to selected state"
-msgstr ""
+msgstr "Transición al estado seleccionado"
 
 #: src/lib/components/data-table/filters/data-table-boolean-filter.tsx:50
 msgid "True"
@@ -4400,7 +4400,7 @@ msgstr "Verdadero"
 
 #: src/lib/components/shared/facet-value-selector.tsx:273
 msgid "Type at least 2 characters to search..."
-msgstr ""
+msgstr "Escriba al menos 2 caracteres para buscar..."
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
 msgid "Unit price"
@@ -4417,7 +4417,7 @@ msgstr "Error desconocido"
 
 #: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:28
 msgid "Unverified"
-msgstr ""
+msgstr "No verificado"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:101
@@ -4451,11 +4451,11 @@ msgstr "Actualizar"
 
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:47
 msgid "Update the note content or visibility"
-msgstr ""
+msgstr "Actualizar el contenido o la visibilidad de la nota"
 
 #: src/lib/framework/layout-engine/page-layout.tsx:407
 msgid "Updated"
-msgstr ""
+msgstr "Actualizado"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx:355
 msgid "Upload"
@@ -4463,33 +4463,33 @@ msgstr "Subir"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:214
 msgid "Usage limit"
-msgstr ""
+msgstr "Límite de uso"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
 #: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Use as the default billing address"
-msgstr ""
+msgstr "Usar como dirección de facturación predeterminada"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
 #: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Use as the default shipping address"
-msgstr ""
+msgstr "Usar como dirección de envío predeterminada"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 msgid "Use global out-of-stock threshold"
-msgstr ""
+msgstr "Usar umbral de agotamiento global"
 
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
-msgstr ""
+msgstr "Nombre de usuario"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
-msgstr ""
+msgstr "Usando estrategia de autenticación externa: {strategy}"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:13
 msgid "Using native authentication strategy"
-msgstr ""
+msgstr "Usando estrategia de autenticación nativa"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:88
 msgid "Values"
@@ -4501,11 +4501,11 @@ msgstr "Variante"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
 msgid "Variant deleted successfully"
-msgstr ""
+msgstr "Variante eliminada correctamente"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
 msgid "Variant updated successfully"
-msgstr ""
+msgstr "Variante actualizada correctamente"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:297
 msgid "Variants"
@@ -4513,24 +4513,24 @@ msgstr "Variantes"
 
 #: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:18
 msgid "Verified"
-msgstr ""
+msgstr "Verificado"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:33
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:86
 msgid "View changes"
-msgstr ""
+msgstr "Ver cambios"
 
 #: src/lib/components/data-table/views-sheet.tsx:118
 msgid "View converted to global successfully"
-msgstr ""
+msgstr "Vista convertida a global correctamente"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:117
 msgid "View data"
-msgstr ""
+msgstr "Ver datos"
 
 #: src/lib/components/data-table/views-sheet.tsx:83
 msgid "View deleted successfully"
-msgstr ""
+msgstr "Vista eliminada correctamente"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:152
 msgid "View details"
@@ -4538,62 +4538,62 @@ msgstr "Ver detalles"
 
 #: src/lib/components/data-table/views-sheet.tsx:97
 msgid "View duplicated successfully"
-msgstr ""
+msgstr "Vista duplicada correctamente"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:113
 msgid "View job data"
-msgstr ""
+msgstr "Ver datos del trabajo"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:131
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:174
 msgid "View job result"
-msgstr ""
+msgstr "Ver resultado del trabajo"
 
 #: src/lib/components/data-table/views-sheet.tsx:63
 msgid "View renamed successfully"
-msgstr ""
+msgstr "Vista renombrada correctamente"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:135
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:178
 msgid "View result"
-msgstr ""
+msgstr "Ver resultado"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:53
 msgid "View values"
-msgstr ""
+msgstr "Ver valores"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:77
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilidad"
 
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to admins only"
-msgstr ""
+msgstr "Visible solo para administradores"
 
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
-msgstr ""
+msgstr "Visible para el cliente"
 
 #: src/lib/components/login/login-form.tsx:89
 msgid "Welcome back!"
-msgstr ""
+msgstr "¡Bienvenido de nuevo!"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:145
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:122
 msgid "When enabled, a product is available in the shop"
-msgstr ""
+msgstr "Cuando está habilitado, un producto está disponible en la tienda"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
 msgid "When enabled, a promotion is available in the shop"
-msgstr ""
+msgstr "Cuando está habilitada, una promoción está disponible en la tienda"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
 msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
-msgstr ""
+msgstr "Cuando esto está habilitado, los precios ingresados en el catálogo de productos incluirán el impuesto para la zona fiscal predeterminada."
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:150
 msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
-msgstr ""
+msgstr "Cuando se rastrea, los niveles de stock de las variantes de producto se ajustarán automáticamente al venderse. Esta configuración puede ser anulada por las variantes de producto individuales."
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:179
 msgid "Width"
@@ -4602,19 +4602,19 @@ msgstr "Ancho"
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:77
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
-msgstr ""
+msgstr "Con seleccionados..."
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"
-msgstr ""
+msgstr "No tiene permiso para ver la configuración del canal"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:279
 msgid "You don't have permission to view global language settings"
-msgstr ""
+msgstr "No tiene permiso para ver la configuración de idioma global"
 
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
-msgstr ""
+msgstr "Aún no ha guardado ninguna vista."
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64

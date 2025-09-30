@@ -721,7 +721,7 @@ msgstr "Falha ao excluir nota"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
-msgstr ""
+msgstr "!="
 
 #. placeholder {0}: action.label
 #. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
@@ -737,85 +737,85 @@ msgstr ""
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
 msgid "{0}"
-msgstr ""
+msgstr "{0}"
 
 #. placeholder {0}: value.totalItems
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
 msgid "{0} customers"
-msgstr ""
+msgstr "{0} clientes"
 
 #. placeholder {0}: selectedIds.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:401
 msgid "{0} items selected"
-msgstr ""
+msgstr "{0} itens selecionados"
 
 #. placeholder {0}: quantity.max
 #. placeholder {1}: line.quantity
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:258
 msgid "{0} of {1} available to fulfill"
-msgstr ""
+msgstr "{0} de {1} disponíveis para atender"
 
 #. placeholder {0}: selection.length
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:72
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
-msgstr ""
+msgstr "{0} selecionados"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
 #: src/app/routes/_authenticated/_collections/collections.tsx:150
 msgid "{0} variants"
-msgstr ""
+msgstr "{0} variantes"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:396
 #: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
-msgstr ""
+msgstr "{buttonText}"
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
 msgid "{label}"
-msgstr ""
+msgstr "{label}"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:63
 msgid "{operator}"
-msgstr ""
+msgstr "{operator}"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:78
 msgid "{title}"
-msgstr ""
+msgstr "{title}"
 
 #. placeholder {0}: list.totalItems - 3
 #: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "+ {0} more"
-msgstr ""
+msgstr "+ {0} mais"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx:168
 msgid "+ {leftOver} more"
-msgstr ""
+msgstr "+ {leftOver} mais"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
-msgstr ""
+msgstr "="
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
-msgstr ""
+msgstr "Um reembolso de {formattedDiff} é necessário. Selecione os valores de pagamento e insira uma nota para prosseguir."
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
-msgstr ""
+msgstr "Ações"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
-msgstr ""
+msgstr "Adicionar \"{newOptionInput}\""
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
 msgid "Add a manual payment of {0}"
-msgstr ""
+msgstr "Adicionar um pagamento manual de {0}"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
 msgid "Add a new address to the customer."
@@ -3386,7 +3386,7 @@ msgstr "Produtos"
 #: src/app/routes/_authenticated/_profile/profile.tsx:74
 #: src/lib/components/layout/nav-user.tsx:106
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:20
@@ -3839,11 +3839,11 @@ msgstr "Endereço de entrega alterado"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
 msgid "Shipping address set for order"
-msgstr ""
+msgstr "Endereço de entrega definido para o pedido"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
 msgid "Shipping address unset for order"
-msgstr ""
+msgstr "Endereço de entrega removido para o pedido"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:123
 msgid "Shipping method changed"
@@ -3859,7 +3859,7 @@ msgstr "Método de envio não é elegível para este pedido"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
 msgid "Shipping method set for order"
-msgstr ""
+msgstr "Método de entrega definido para o pedido"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19

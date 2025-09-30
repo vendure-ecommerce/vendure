@@ -219,69 +219,69 @@ msgstr "Widget de resumo de encomendas"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
 msgid "fulfillmentState.Created"
-msgstr ""
+msgstr "Criado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:8
 msgid "fulfillmentState.Pending"
-msgstr ""
+msgstr "Pendente"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:9
 #: src/i18n/common-strings.ts:12
 msgid "fulfillmentState.Cancelled"
-msgstr ""
+msgstr "Cancelado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:10
 msgid "fulfillmentState.Shipped"
-msgstr ""
+msgstr "Enviado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:11
 msgid "fulfillmentState.Delivered"
-msgstr ""
+msgstr "Entregue"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:15
 msgid "paymentState.Created"
-msgstr ""
+msgstr "Criado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:16
 msgid "paymentState.Authorized"
-msgstr ""
+msgstr "Autorizado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:17
 #: src/i18n/common-strings.ts:24
 msgid "paymentState.Settled"
-msgstr ""
+msgstr "Liquidado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:18
 msgid "paymentState.Declined"
-msgstr ""
+msgstr "Recusado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:19
 msgid "paymentState.Error"
-msgstr ""
+msgstr "Erro"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:20
 msgid "paymentState.Cancelled"
-msgstr ""
+msgstr "Cancelado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:23
 msgid "paymentState.Pending"
-msgstr ""
+msgstr "Pendente"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:25
 msgid "paymentState.Failed"
-msgstr ""
+msgstr "Falhado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:28
@@ -321,42 +321,42 @@ msgstr "Pagamento liquidado"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:35
 msgid "orderState.PartiallyShipped"
-msgstr ""
+msgstr "Parcialmente Enviado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:36
 msgid "orderState.Shipped"
-msgstr ""
+msgstr "Enviado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:37
 msgid "orderState.PartiallyDelivered"
-msgstr ""
+msgstr "Parcialmente Entregue"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:38
 msgid "orderState.Delivered"
-msgstr ""
+msgstr "Entregue"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:39
 msgid "orderState.Modifying"
-msgstr ""
+msgstr "A Modificar"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:40
 msgid "orderState.ArrangingAdditionalPayment"
-msgstr ""
+msgstr "A Organizar Pagamento Adicional"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:43
 msgid "fieldName.attempts"
-msgstr ""
+msgstr "Tentativas"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:44
 msgid "fieldName.availableCurrencyCodes"
-msgstr ""
+msgstr "Códigos de moeda disponíveis"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:45
@@ -386,7 +386,7 @@ msgstr "Filhos"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:50
 msgid "fieldName.code"
-msgstr ""
+msgstr "Código"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:51
@@ -396,12 +396,12 @@ msgstr "Código de cupão"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:52
 msgid "fieldName.createdAt"
-msgstr ""
+msgstr "Criado em"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:53
 msgid "fieldName.currencyCode"
-msgstr ""
+msgstr "Código de moeda"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:54
@@ -426,12 +426,12 @@ msgstr "Campos personalizados"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:58
 msgid "fieldName.data"
-msgstr ""
+msgstr "Dados"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:59
 msgid "fieldName.defaultCurrencyCode"
-msgstr ""
+msgstr "Código de moeda predefinido"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:60
@@ -466,7 +466,7 @@ msgstr "Endereço de e-mail"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:66
 msgid "fieldName.enabled"
-msgstr ""
+msgstr "Ativado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:67
@@ -496,7 +496,7 @@ msgstr "Código do manipulador de atendimento"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:72
 msgid "fieldName.id"
-msgstr ""
+msgstr "ID"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:73
@@ -521,7 +521,7 @@ msgstr "Apelido"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:77
 msgid "fieldName.name"
-msgstr ""
+msgstr "Nome"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:78
@@ -571,22 +571,22 @@ msgstr "Variantes de produtos"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:87
 msgid "fieldName.progress"
-msgstr ""
+msgstr "Progresso"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:88
 msgid "fieldName.queueName"
-msgstr ""
+msgstr "Nome da fila"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:89
 msgid "fieldName.result"
-msgstr ""
+msgstr "Resultado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:90
 msgid "fieldName.retries"
-msgstr ""
+msgstr "Tentativas"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:91
@@ -596,7 +596,7 @@ msgstr "Vendedor"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:92
 msgid "fieldName.settledAt"
-msgstr ""
+msgstr "Liquidado em"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:93
@@ -616,7 +616,7 @@ msgstr "Slug"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:96
 msgid "fieldName.startedAt"
-msgstr ""
+msgstr "Iniciado em"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:97
@@ -626,7 +626,7 @@ msgstr "Começa em"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:98
 msgid "fieldName.state"
-msgstr ""
+msgstr "Estado"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:99
@@ -651,12 +651,12 @@ msgstr "Total com IVA"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:103
 msgid "fieldName.type"
-msgstr ""
+msgstr "Tipo"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:104
 msgid "fieldName.updatedAt"
-msgstr ""
+msgstr "Atualizado em"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:105
@@ -721,7 +721,7 @@ msgstr "Falha ao eliminar nota"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
-msgstr ""
+msgstr "!="
 
 #. placeholder {0}: action.label
 #. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
@@ -737,85 +737,85 @@ msgstr ""
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
 msgid "{0}"
-msgstr ""
+msgstr "{0}"
 
 #. placeholder {0}: value.totalItems
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
 msgid "{0} customers"
-msgstr ""
+msgstr "{0} clientes"
 
 #. placeholder {0}: selectedIds.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:401
 msgid "{0} items selected"
-msgstr ""
+msgstr "{0} itens selecionados"
 
 #. placeholder {0}: quantity.max
 #. placeholder {1}: line.quantity
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:258
 msgid "{0} of {1} available to fulfill"
-msgstr ""
+msgstr "{0} de {1} disponíveis para satisfazer"
 
 #. placeholder {0}: selection.length
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:72
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
-msgstr ""
+msgstr "{0} selecionados"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
 #: src/app/routes/_authenticated/_collections/collections.tsx:150
 msgid "{0} variants"
-msgstr ""
+msgstr "{0} variantes"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:396
 #: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
-msgstr ""
+msgstr "{buttonText}"
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
 msgid "{label}"
-msgstr ""
+msgstr "{label}"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:63
 msgid "{operator}"
-msgstr ""
+msgstr "{operator}"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:78
 msgid "{title}"
-msgstr ""
+msgstr "{title}"
 
 #. placeholder {0}: list.totalItems - 3
 #: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "+ {0} more"
-msgstr ""
+msgstr "+ {0} mais"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx:168
 msgid "+ {leftOver} more"
-msgstr ""
+msgstr "+ {leftOver} mais"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
-msgstr ""
+msgstr "="
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
-msgstr ""
+msgstr "É necessário um reembolso de {formattedDiff}. Selecione os valores de pagamento e insira uma nota para prosseguir."
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
-msgstr ""
+msgstr "Ações"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
-msgstr ""
+msgstr "Adicionar \"{newOptionInput}\""
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
 msgid "Add a manual payment of {0}"
-msgstr ""
+msgstr "Adicionar um pagamento manual de {0}"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
 msgid "Add a new address to the customer."
@@ -1177,11 +1177,11 @@ msgstr "Morada de faturação alterada"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:174
 msgid "Billing address set for order"
-msgstr ""
+msgstr "Endereço de faturação definido para a encomenda"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
-msgstr ""
+msgstr "Endereço de faturação removido da encomenda"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
@@ -1223,7 +1223,7 @@ msgstr "Cancelar modificação"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:153
 msgid "Cancel payment"
-msgstr ""
+msgstr "Cancelar pagamento"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
 msgid "Category"
@@ -1301,7 +1301,7 @@ msgstr "Coleções"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
 msgid "Collections moved successfully"
-msgstr ""
+msgstr "Coleções movidas com sucesso"
 
 #: src/lib/components/data-table/data-table-view-options.tsx:93
 msgid "Column settings"
@@ -1380,11 +1380,11 @@ msgstr "Código de cupão"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
 msgid "Coupon code removed from order"
-msgstr ""
+msgstr "Código de cupão removido da encomenda"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:217
 msgid "Coupon code set for order"
-msgstr ""
+msgstr "Código de cupão definido para a encomenda"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
@@ -3386,7 +3386,7 @@ msgstr "Produtos"
 #: src/app/routes/_authenticated/_profile/profile.tsx:74
 #: src/lib/components/layout/nav-user.tsx:106
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:20
@@ -3839,11 +3839,11 @@ msgstr "Morada de envio alterada"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
 msgid "Shipping address set for order"
-msgstr ""
+msgstr "Endereço de envio definido para a encomenda"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
 msgid "Shipping address unset for order"
-msgstr ""
+msgstr "Endereço de envio removido da encomenda"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:123
 msgid "Shipping method changed"
@@ -3859,7 +3859,7 @@ msgstr "Método de envio não é elegível para esta encomenda"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
 msgid "Shipping method set for order"
-msgstr ""
+msgstr "Método de envio definido para a encomenda"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
