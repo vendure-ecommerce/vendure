@@ -7,7 +7,7 @@ import { useExtendedRouter } from '@/vdb/framework/page/use-extended-router.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { defaultLocale, dynamicActivate } from '@/vdb/providers/i18n-provider.js';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { AnyRoute, createRouter, RouterOptions, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -20,30 +20,43 @@ import { setDocumentDirection } from './common/set-document-direction.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
 
-// Register things for typesafety
-declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router;
-    }
-}
+const processedBaseUrl = (() => {
+    const baseUrl = import.meta.env.BASE_URL;
+    if (!baseUrl || baseUrl === '/') return undefined;
+    // Ensure leading slash, remove trailing slash
+    const normalized = baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl;
+    return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
+})();
 
-export const router = createRouter({
-    routeTree,
-    defaultPreload: 'intent',
+const routerOptions: RouterOptions<AnyRoute, any> = {
+    defaultPreload: 'intent' as const,
     scrollRestoration: true,
-    // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
-    ...(import.meta.env.BASE_URL ? { basepath: import.meta.env.BASE_URL } : {}),
+    basepath: processedBaseUrl,
     context: {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
         queryClient,
     },
     defaultErrorComponent: ({ error }: { error: Error }) => <div>Uh Oh!!! {error.message}</div>,
+};
+
+// Create a type-only router instance for TypeScript type registration
+// The actual runtime router is created in InnerApp component
+const typeRouter = createRouter({
+    ...routerOptions,
+    routeTree,
 });
+
+// Register the router type for TypeScript
+declare module '@tanstack/react-router' {
+    interface Register {
+        router: typeof typeRouter;
+    }
+}
 
 function InnerApp() {
     const auth = useAuth();
-    const extendedRouter = useExtendedRouter(router);
+    const router = useExtendedRouter(routeTree, routerOptions);
     const serverConfig = useServerConfig();
     const { isRTL } = useDisplayLocale();
     const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
@@ -70,7 +83,7 @@ function InnerApp() {
         <>
             <DirectionProvider dir={isRTL ? 'rtl' : 'ltr'}>
                 {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
-                    <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
+                    <RouterProvider router={router} context={{ auth, queryClient }} />
                 )}
             </DirectionProvider>
         </>
@@ -82,7 +95,7 @@ function App() {
     const { extensionsLoaded } = useDashboardExtensions();
     useEffect(() => {
         // With this method we dynamically load the catalogs
-        dynamicActivate(defaultLocale, () => {
+        void dynamicActivate(defaultLocale, () => {
             setI18nLoaded(true);
         });
         registerDefaults();

@@ -20,6 +20,7 @@ import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
 import { ReviewSelectWithCreate } from './review-select-with-create';
+import { routeWithoutAuth } from './route-without-auth';
 
 defineDashboardExtension({
     login: {
@@ -47,7 +48,7 @@ defineDashboardExtension({
             ),
         },
     },
-    routes: [reviewList, reviewDetail],
+    routes: [reviewList, reviewDetail, routeWithoutAuth],
     widgets: [
         {
             id: 'custom-widget',
