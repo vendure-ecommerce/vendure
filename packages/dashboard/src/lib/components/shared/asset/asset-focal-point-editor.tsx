@@ -17,7 +17,7 @@ export interface AssetFocalPointEditorProps {
     children?: React.ReactNode;
 }
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }

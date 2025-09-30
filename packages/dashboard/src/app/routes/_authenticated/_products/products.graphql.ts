@@ -61,25 +61,34 @@ export const productDetailFragment = graphql(
     [assetFragment],
 );
 
-export const productVariantListDocument = graphql(`
-    query ProductVariantList($options: ProductVariantListOptions, $productId: ID) {
-        productVariants(options: $options, productId: $productId) {
-            items {
-                id
-                name
-                sku
-                currencyCode
-                price
-                priceWithTax
-                stockLevels {
-                    stockOnHand
-                    stockAllocated
+export const productVariantListDocument = graphql(
+    `
+        query ProductVariantList($options: ProductVariantListOptions, $productId: ID) {
+            productVariants(options: $options, productId: $productId) {
+                items {
+                    id
+                    createdAt
+                    updatedAt
+                    featuredAsset {
+                        ...Asset
+                    }
+                    name
+                    sku
+                    enabled
+                    currencyCode
+                    price
+                    priceWithTax
+                    stockLevels {
+                        stockOnHand
+                        stockAllocated
+                    }
                 }
+                totalItems
             }
-            totalItems
         }
-    }
-`);
+    `,
+    [assetFragment],
+);
 
 export const productDetailDocument = graphql(
     `

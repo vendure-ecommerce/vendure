@@ -773,6 +773,24 @@ describe('EmailPlugin', () => {
 
             expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code as string}`);
         });
+
+        it('supports BCC address', async () => {
+            onSend.mockClear();
+            const bccHandler = orderConfirmationHandler.setOptionalAddressFields(event => ({
+                bcc: 'bcc@example.com',
+            }));
+
+            const initResult = await initPluginWithHandlers([bccHandler], {
+                templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../templates')),
+            });
+
+            await eventBus.publish(
+                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
+            );
+            await pause();
+
+            expect(onSend.mock.calls[0][0].bcc).toBe('bcc@example.com');
+        });
     });
 
     describe('error handling', () => {

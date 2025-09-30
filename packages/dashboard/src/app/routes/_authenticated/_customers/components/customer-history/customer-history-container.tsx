@@ -63,13 +63,13 @@ export function CustomerHistoryContainer({ customerId }: Readonly<CustomerHistor
         <>
             <CustomerHistory
                 customer={customer}
-                historyEntries={historyEntries ?? []}
+                historyEntries={historyEntries}
                 onAddNote={addNote}
                 onUpdateNote={updateNote}
                 onDeleteNote={deleteNote}
             />
             {hasNextPage && (
-                <Button type="button" variant="outline" onClick={() => fetchNextPage()}>
+                <Button type="button" variant="outline" onClick={() => fetchNextPage?.()}>
                     <Trans>Load more</Trans>
                 </Button>
             )}

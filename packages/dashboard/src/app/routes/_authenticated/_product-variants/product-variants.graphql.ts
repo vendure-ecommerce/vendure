@@ -14,6 +14,7 @@ export const productVariantListDocument = graphql(
                     }
                     name
                     sku
+                    enabled
                     currencyCode
                     price
                     priceWithTax

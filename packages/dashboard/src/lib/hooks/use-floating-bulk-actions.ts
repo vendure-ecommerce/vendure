@@ -32,7 +32,9 @@ export function useFloatingBulkActions({
         }
 
         const updatePosition = () => {
-            const container = document.querySelector(containerSelector)?.closest('div') as HTMLElement;
+            // Find the container by searching upwards from the current component
+            const currentElement = document.activeElement || document.body;
+            const container = currentElement.closest(containerSelector) as HTMLElement;
             if (!container) return;
 
             const containerRect = container.getBoundingClientRect();

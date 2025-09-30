@@ -8,7 +8,7 @@ import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
+import { administratorListDocument } from './administrators.graphql.js';
 import { DeleteAdministratorsBulkAction } from './components/administrator-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
@@ -22,7 +22,6 @@ function AdministratorListPage() {
             pageId="administrator-list"
             title="Administrators"
             listQuery={administratorListDocument}
-            deleteMutation={deleteAdministratorDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
                 return {
