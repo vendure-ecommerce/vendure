@@ -5,7 +5,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
-"Language: de\n"
+"Language: zh_Hans\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: \n"
@@ -17,481 +17,481 @@ msgstr ""
 #: src/lib/hooks/use-extended-detail-query.ts:23
 #: src/lib/hooks/use-extended-list-query.ts:64
 msgid "Query extension error"
-msgstr "Abfrageerweiterungsfehler"
+msgstr "查询扩展错误"
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-detail-query.ts:25
 #: src/lib/hooks/use-extended-list-query.ts:66
 msgid "The page will continue with the default query."
-msgstr "Die Seite wird mit der Standardabfrage fortfahren."
+msgstr "页面将继续使用默认查询。"
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
-msgstr "Fehler beim Erweitern des Abfragedokuments"
+msgstr "扩展查询文档失败"
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:43
 msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "Abfrageerweiterung ist ungültig: muss mindestens ein Top-Level-Feld haben"
+msgstr "查询扩展无效：必须至少有一个顶级字段"
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:47
 msgid "Query extension mismatch: "
-msgstr "Abfrageerweiterung stimmt nicht überein: "
+msgstr "查询扩展不匹配："
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:49
 msgid "Query extension contains invalid GraphQL syntax"
-msgstr "Abfrageerweiterung enthält ungültige GraphQL-Syntax"
+msgstr "查询扩展包含无效的 GraphQL 语法"
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
-msgstr "Abfrageerweiterungsfehler: "
+msgstr "查询扩展错误："
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
 msgid "Insights"
-msgstr "Erkenntnisse"
+msgstr "洞察"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:30
 msgid "Catalog"
-msgstr "Katalog"
+msgstr "目录"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:37
 msgid "Products"
-msgstr "Produkte"
+msgstr "商品"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:44
 msgid "Product Variants"
-msgstr "Produktvarianten"
+msgstr "商品变体"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:51
 msgid "Facets"
-msgstr "Facetten"
+msgstr "属性"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:58
 msgid "Collections"
-msgstr "Sammlungen"
+msgstr "集合"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:65
 msgid "Assets"
-msgstr "Assets"
+msgstr "资源"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:74
 msgid "Sales"
-msgstr "Verkäufe"
+msgstr "销售"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:81
 msgid "Orders"
-msgstr "Bestellungen"
+msgstr "订单"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:90
 #: src/lib/framework/defaults.ts:97
 msgid "Customers"
-msgstr "Kunden"
+msgstr "客户"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:104
 msgid "Customer Groups"
-msgstr "Kundengruppen"
+msgstr "客户组"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:113
 msgid "Marketing"
-msgstr "Marketing"
+msgstr "营销"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:120
 msgid "Promotions"
-msgstr "Aktionen"
+msgstr "促销"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:129
 msgid "System"
-msgstr "System"
+msgstr "系统"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:136
 msgid "Job Queue"
-msgstr "Job-Warteschlange"
+msgstr "作业队列"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:143
 msgid "Healthchecks"
-msgstr "Gesundheitsprüfungen"
+msgstr "健康检查"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:150
 msgid "Scheduled Tasks"
-msgstr "Geplante Aufgaben"
+msgstr "计划任务"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:159
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr "设置"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:166
 msgid "Sellers"
-msgstr "Verkäufer"
+msgstr "卖家"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:173
 msgid "Channels"
-msgstr "Kanäle"
+msgstr "渠道"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:180
 msgid "Stock Locations"
-msgstr "Lagerorte"
+msgstr "库存位置"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:187
 msgid "Administrators"
-msgstr "Administratoren"
+msgstr "管理员"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:194
 msgid "Roles"
-msgstr "Rollen"
+msgstr "角色"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:201
 msgid "Shipping Methods"
-msgstr "Versandmethoden"
+msgstr "配送方式"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:208
 msgid "Payment Methods"
-msgstr "Zahlungsmethoden"
+msgstr "支付方式"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:215
 msgid "Tax Categories"
-msgstr "Steuerkategorien"
+msgstr "税务类别"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:222
 msgid "Tax Rates"
-msgstr "Steuersätze"
+msgstr "税率"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:229
 msgid "Countries"
-msgstr "Länder"
+msgstr "国家"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:236
 msgid "Zones"
-msgstr "Zonen"
+msgstr "区域"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:243
 msgid "Global Settings"
-msgstr "Globale Einstellungen"
+msgstr "全局设置"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:255
 msgid "Metrics Widget"
-msgstr "Metriken-Widget"
+msgstr "指标小部件"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:263
 msgid "Latest Orders Widget"
-msgstr "Neueste Bestellungen Widget"
+msgstr "最新订单小部件"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:270
 msgid "Orders Summary Widget"
-msgstr "Bestellungsübersicht Widget"
+msgstr "订单摘要小部件"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
 msgid "fulfillmentState.Created"
-msgstr "Erstellt"
+msgstr "已创建"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:8
 msgid "fulfillmentState.Pending"
-msgstr "Ausstehend"
+msgstr "待处理"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:9
 #: src/i18n/common-strings.ts:12
 msgid "fulfillmentState.Cancelled"
-msgstr "Storniert"
+msgstr "已取消"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:10
 msgid "fulfillmentState.Shipped"
-msgstr "Versandt"
+msgstr "已发货"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:11
 msgid "fulfillmentState.Delivered"
-msgstr "Geliefert"
+msgstr "已送达"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:15
 msgid "paymentState.Created"
-msgstr "Erstellt"
+msgstr "已创建"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:16
 msgid "paymentState.Authorized"
-msgstr "Autorisiert"
+msgstr "已授权"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:17
 #: src/i18n/common-strings.ts:24
 msgid "paymentState.Settled"
-msgstr "Abgewickelt"
+msgstr "已结算"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:18
 msgid "paymentState.Declined"
-msgstr "Abgelehnt"
+msgstr "已拒绝"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:19
 msgid "paymentState.Error"
-msgstr "Fehler"
+msgstr "错误"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:20
 msgid "paymentState.Cancelled"
-msgstr "Storniert"
+msgstr "已取消"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:23
 msgid "paymentState.Pending"
-msgstr "Ausstehend"
+msgstr "待处理"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:25
 msgid "paymentState.Failed"
-msgstr "Fehlgeschlagen"
+msgstr "失败"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:28
 msgid "orderState.Created"
-msgstr "Erstellt"
+msgstr "已创建"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:29
 msgid "orderState.Draft"
-msgstr "Entwurf"
+msgstr "草稿"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:30
 msgid "orderState.AddingItems"
-msgstr "Artikel hinzufügen"
+msgstr "添加商品中"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:31
 msgid "orderState.Cancelled"
-msgstr "Storniert"
+msgstr "已取消"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:32
 msgid "orderState.ArrangingPayment"
-msgstr "Zahlung einrichten"
+msgstr "安排支付中"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:33
 msgid "orderState.PaymentAuthorized"
-msgstr "Zahlung autorisiert"
+msgstr "支付已授权"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:34
 msgid "orderState.PaymentSettled"
-msgstr "Zahlung abgewickelt"
+msgstr "支付已完成"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:35
 msgid "orderState.PartiallyShipped"
-msgstr "Teilweise versandt"
+msgstr "部分已发货"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:36
 msgid "orderState.Shipped"
-msgstr "Versandt"
+msgstr "已发货"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:37
 msgid "orderState.PartiallyDelivered"
-msgstr "Teilweise geliefert"
+msgstr "部分已送达"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:38
 msgid "orderState.Delivered"
-msgstr "Geliefert"
+msgstr "已送达"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:39
 msgid "orderState.Modifying"
-msgstr "Wird geändert"
+msgstr "修改中"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:40
 msgid "orderState.ArrangingAdditionalPayment"
-msgstr "Zusätzliche Zahlung einrichten"
+msgstr "安排额外付款"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:43
 msgid "fieldName.attempts"
-msgstr "Versuche"
+msgstr "尝试次数"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:44
 msgid "fieldName.availableCurrencyCodes"
-msgstr "Verfügbare Währungscodes"
+msgstr "可用货币代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:45
 msgid "fieldName.availableLanguageCodes"
-msgstr "Verfügbare Sprachcodes"
+msgstr "可用语言代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:46
 msgid "fieldName.breadcrumbs"
-msgstr "Brotkrümel"
+msgstr "面包屑导航"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:47
 msgid "fieldName.category"
-msgstr "Kategorie"
+msgstr "类别"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:48
 msgid "fieldName.channels"
-msgstr "Kanäle"
+msgstr "渠道"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:49
 msgid "fieldName.children"
-msgstr "Kinder"
+msgstr "子项"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:50
 msgid "fieldName.code"
-msgstr "Code"
+msgstr "代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:51
 msgid "fieldName.couponCode"
-msgstr "Gutscheincode"
+msgstr "优惠券代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:52
 msgid "fieldName.createdAt"
-msgstr "Erstellt am"
+msgstr "创建时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:53
 msgid "fieldName.currencyCode"
-msgstr "Währungscode"
+msgstr "货币代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:54
 msgid "fieldName.customer"
-msgstr "Kunde"
+msgstr "客户"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:55
 msgid "fieldName.customerGroup"
-msgstr "Kundengruppe"
+msgstr "客户组"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:56
 msgid "fieldName.customers"
-msgstr "Kunden"
+msgstr "客户"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:57
 msgid "fieldName.customFields"
-msgstr "Benutzerdefinierte Felder"
+msgstr "自定义字段"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:58
 msgid "fieldName.data"
-msgstr "Daten"
+msgstr "数据"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:59
 msgid "fieldName.defaultCurrencyCode"
-msgstr "Standard-Währungscode"
+msgstr "默认货币代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:60
 msgid "fieldName.defaultLanguageCode"
-msgstr "Standard-Sprachcode"
+msgstr "默认语言代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:61
 msgid "fieldName.defaultShippingZone"
-msgstr "Standard-Versandzone"
+msgstr "默认配送区域"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:62
 msgid "fieldName.defaultTaxZone"
-msgstr "Standard-Steuerzone"
+msgstr "默认税务区域"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:63
 msgid "fieldName.description"
-msgstr "Beschreibung"
+msgstr "描述"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:64
 msgid "fieldName.duration"
-msgstr "Dauer"
+msgstr "时长"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:65
 msgid "fieldName.emailAddress"
-msgstr "E-Mail-Adresse"
+msgstr "电子邮件地址"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:66
 msgid "fieldName.enabled"
-msgstr "Aktiviert"
+msgstr "已启用"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:67
 msgid "fieldName.endsAt"
-msgstr "Endet am"
+msgstr "结束时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:68
 msgid "fieldName.error"
-msgstr "Fehler"
+msgstr "错误"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:69
 msgid "fieldName.featuredAsset"
-msgstr "Haupt-Asset"
+msgstr "特色资源"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:70
 msgid "fieldName.firstName"
-msgstr "Vorname"
+msgstr "名"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:71
 msgid "fieldName.fulfillmentHandlerCode"
-msgstr "Erfüllungshandler-Code"
+msgstr "履行处理器代码"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:72
@@ -501,107 +501,107 @@ msgstr "ID"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:73
 msgid "fieldName.isDefault"
-msgstr "Ist Standard"
+msgstr "默认"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:74
 msgid "fieldName.isPrivate"
-msgstr "Ist privat"
+msgstr "私有"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:75
 msgid "fieldName.isSettled"
-msgstr "Ist abgewickelt"
+msgstr "已完成"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:76
 msgid "fieldName.lastName"
-msgstr "Nachname"
+msgstr "姓"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:77
 msgid "fieldName.name"
-msgstr "Name"
+msgstr "名称"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:78
 msgid "fieldName.orderPlacedAt"
-msgstr "Bestellung aufgegeben am"
+msgstr "订单下单时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:79
 msgid "fieldName.parentId"
-msgstr "Eltern-ID"
+msgstr "父级 ID"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:80
 msgid "fieldName.perCustomerUsageLimit"
-msgstr "Verwendungslimit pro Kunde"
+msgstr "每位客户使用限制"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:81
 msgid "fieldName.permissions"
-msgstr "Berechtigungen"
+msgstr "权限"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:82
 msgid "fieldName.position"
-msgstr "Position"
+msgstr "位置"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:83
 msgid "fieldName.price"
-msgstr "Preis"
+msgstr "价格"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:84
 msgid "fieldName.priceWithTax"
-msgstr "Preis mit Steuer"
+msgstr "含税价格"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:85
 msgid "fieldName.pricesIncludeTax"
-msgstr "Preise inklusive Steuer"
+msgstr "价格含税"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:86
 msgid "fieldName.productVariants"
-msgstr "Produktvarianten"
+msgstr "商品变体"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:87
 msgid "fieldName.progress"
-msgstr "Fortschritt"
+msgstr "进度"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:88
 msgid "fieldName.queueName"
-msgstr "Warteschlangenname"
+msgstr "队列名称"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:89
 msgid "fieldName.result"
-msgstr "Ergebnis"
+msgstr "结果"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:90
 msgid "fieldName.retries"
-msgstr "Wiederholungen"
+msgstr "重试次数"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:91
 msgid "fieldName.seller"
-msgstr "Verkäufer"
+msgstr "卖家"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:92
 msgid "fieldName.settledAt"
-msgstr "Abgewickelt am"
+msgstr "结算时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:93
 msgid "fieldName.shippingLines"
-msgstr "Versandlinien"
+msgstr "配送行"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:94
@@ -616,112 +616,112 @@ msgstr "Slug"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:96
 msgid "fieldName.startedAt"
-msgstr "Gestartet am"
+msgstr "开始时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:97
 msgid "fieldName.startsAt"
-msgstr "Startet am"
+msgstr "开始时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:98
 msgid "fieldName.state"
-msgstr "Status"
+msgstr "状态"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:99
 msgid "fieldName.stockLevels"
-msgstr "Lagerbestände"
+msgstr "库存水平"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:100
 msgid "fieldName.token"
-msgstr "Token"
+msgstr "令牌"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:101
 msgid "fieldName.total"
-msgstr "Gesamt"
+msgstr "总计"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:102
 msgid "fieldName.totalWithTax"
-msgstr "Gesamt mit Steuer"
+msgstr "含税总计"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:103
 msgid "fieldName.type"
-msgstr "Typ"
+msgstr "类型"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:104
 msgid "fieldName.updatedAt"
-msgstr "Aktualisiert am"
+msgstr "更新时间"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:105
 msgid "fieldName.usageLimit"
-msgstr "Verwendungslimit"
+msgstr "使用限制"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:106
 msgid "fieldName.user"
-msgstr "Benutzer"
+msgstr "用户"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:107
 msgid "fieldName.value"
-msgstr "Wert"
+msgstr "值"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:108
 msgid "fieldName.valueList"
-msgstr "Werteliste"
+msgstr "值列表"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:109
 msgid "fieldName.zone"
-msgstr "Zone"
+msgstr "区域"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:99
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:104
 msgid "Note added successfully"
-msgstr "Notiz erfolgreich hinzugefügt"
+msgstr "备注已成功添加"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:103
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:108
 msgid "Failed to add note"
-msgstr "Fehler beim Hinzufügen der Notiz"
+msgstr "添加备注失败"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:120
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:125
 msgid "Note updated successfully"
-msgstr "Notiz erfolgreich aktualisiert"
+msgstr "备注已成功更新"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:124
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:129
 msgid "Failed to update note"
-msgstr "Fehler beim Aktualisieren der Notiz"
+msgstr "更新备注失败"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:140
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:146
 msgid "Note deleted successfully"
-msgstr "Notiz erfolgreich gelöscht"
+msgstr "备注已成功删除"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:144
 #: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:150
 msgid "Failed to delete note"
-msgstr "Fehler beim Löschen der Notiz"
+msgstr "删除备注失败"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
-msgstr "!="
+msgstr ""
 
 #. placeholder {0}: action.label
 #. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
@@ -737,374 +737,374 @@ msgstr "!="
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
 msgid "{0}"
-msgstr "{0}"
+msgstr ""
 
 #. placeholder {0}: value.totalItems
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
 msgid "{0} customers"
-msgstr "{0} Kunden"
+msgstr ""
 
 #. placeholder {0}: selectedIds.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:401
 msgid "{0} items selected"
-msgstr "{0} Elemente ausgewählt"
+msgstr ""
 
 #. placeholder {0}: quantity.max
 #. placeholder {1}: line.quantity
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:258
 msgid "{0} of {1} available to fulfill"
-msgstr "{0} von {1} verfügbar zur Erfüllung"
+msgstr ""
 
 #. placeholder {0}: selection.length
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:72
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
-msgstr "{0} ausgewählt"
+msgstr ""
 
 #. placeholder {0}: row.original.productVariants?.totalItems
 #: src/app/routes/_authenticated/_collections/collections.tsx:150
 msgid "{0} variants"
-msgstr "{0} Varianten"
+msgstr ""
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:396
 #: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
-msgstr "{buttonText}"
+msgstr ""
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
 msgid "{label}"
-msgstr "{label}"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx:63
 msgid "{operator}"
-msgstr "{operator}"
+msgstr ""
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:78
 msgid "{title}"
-msgstr "{title}"
+msgstr ""
 
 #. placeholder {0}: list.totalItems - 3
 #: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "+ {0} more"
-msgstr "+ {0} weitere"
+msgstr ""
 
 #: src/app/routes/_authenticated/_collections/collections.tsx:168
 msgid "+ {leftOver} more"
-msgstr "+ {leftOver} weitere"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
-msgstr "="
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
-msgstr "Eine Rückerstattung von {formattedDiff} ist erforderlich. Wählen Sie Zahlungsbeträge und geben Sie eine Notiz ein, um fortzufahren."
+msgstr ""
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
 #: src/lib/components/data-table/use-generated-columns.tsx:231
 msgid "Actions"
-msgstr "Aktionen"
+msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
 msgid "Add \"{newOptionInput}\""
-msgstr "\"{newOptionInput}\" hinzufügen"
+msgstr ""
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
 msgid "Add a manual payment of {0}"
-msgstr "Manuelle Zahlung von {0} hinzufügen"
+msgstr ""
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
 msgid "Add a new address to the customer."
-msgstr "Neue Adresse zum Kunden hinzufügen."
+msgstr "为客户添加新地址。"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:318
 msgid "Add another option group"
-msgstr "Weitere Optionsgruppe hinzufügen"
+msgstr "添加另一个选项组"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:132
 msgid "Add asset"
-msgstr "Asset hinzufügen"
+msgstr "添加资源"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
 msgid "Add column after"
-msgstr "Spalte danach hinzufügen"
+msgstr "在后面添加列"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:145
 msgid "Add column before"
-msgstr "Spalte davor hinzufügen"
+msgstr "在前面添加列"
 
 #: src/app/routes/_authenticated/_countries/countries.tsx:65
 msgid "Add Country"
-msgstr "Land hinzufügen"
+msgstr "添加国家"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:247
 msgid "Add coupon code"
-msgstr "Gutscheincode hinzufügen"
+msgstr "添加优惠券代码"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:129
 msgid "Add customer"
-msgstr "Kunde hinzufügen"
+msgstr "添加客户"
 
 #: src/lib/components/shared/customer-group-selector.tsx:46
 msgid "Add customer groups"
-msgstr "Kundengruppen hinzufügen"
+msgstr "添加客户组"
 
 #: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:102
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:169
 msgid "Add facet value"
-msgstr "Facettenwert hinzufügen"
+msgstr "添加属性值"
 
 #: src/lib/components/shared/facet-value-selector.tsx:256
 msgid "Add facet values"
-msgstr "Facettenwerte hinzufügen"
+msgstr "添加属性值"
 
 #: src/lib/components/data-table/add-filter-menu.tsx:39
 msgid "Add filter"
-msgstr "Filter hinzufügen"
+msgstr "添加筛选器"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:289
 msgid "Add item"
-msgstr "Element hinzufügen"
+msgstr "添加项目"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:221
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:227
 msgid "Add new address"
-msgstr "Neue Adresse hinzufügen"
+msgstr "添加新地址"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:311
 msgid "Add option"
-msgstr "Option hinzufügen"
+msgstr "添加选项"
 
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:175
 msgid "Add Option"
-msgstr "Option hinzufügen"
+msgstr "添加选项"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:97
 msgid "Add option group"
-msgstr "Optionsgruppe hinzufügen"
+msgstr "添加选项组"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:103
 msgid "Add option group to product"
-msgstr "Optionsgruppe zum Produkt hinzufügen"
+msgstr "将选项组添加到商品"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:149
 msgid "Add option value"
-msgstr "Optionswert hinzufügen"
+msgstr "添加选项值"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:134
 msgid "Add option value to {groupName}"
-msgstr "Optionswert zu {groupName} hinzufügen"
+msgstr "向 {groupName} 添加选项值"
 
 #. placeholder {0}: entityIds.length
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:159
 msgid "Add or remove facet values for {0} {entityType}"
-msgstr "Facettenwerte für {0} {entityType} hinzufügen oder entfernen"
+msgstr "为 {0} {entityType} 添加或删除属性值"
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:177
 msgid "Add payment ({0})"
-msgstr "Zahlung hinzufügen ({0})"
+msgstr "添加支付 ({0})"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:127
 msgid "Add payment to order"
-msgstr "Zahlung zur Bestellung hinzufügen"
+msgstr "向订单添加支付"
 
 #. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:121
 msgid "Add payment to order ({0})"
-msgstr "Zahlung zur Bestellung hinzufügen ({0})"
+msgstr "向订单添加支付 ({0})"
 
 #: src/app/routes/_authenticated/_products/components/product-options-table.tsx:105
 msgid "Add product option"
-msgstr "Produktoption hinzufügen"
+msgstr "添加商品选项"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:249
 msgid "Add product options first"
-msgstr "Zuerst Produktoptionen hinzufügen"
+msgstr "请先添加商品选项"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
 msgid "Add product variant"
-msgstr "Produktvariante hinzufügen"
+msgstr "添加商品变体"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:231
 msgid "Add products to create a test order"
-msgstr "Produkte hinzufügen, um eine Testbestellung zu erstellen"
+msgstr "添加商品以创建测试订单"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:203
 msgid "Add row after"
-msgstr "Zeile danach hinzufügen"
+msgstr "在后面添加行"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:197
 msgid "Add row before"
-msgstr "Zeile davor hinzufügen"
+msgstr "在前面添加行"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
 msgid "Add Stock to Location"
-msgstr "Bestand zum Standort hinzufügen"
+msgstr "向位置添加库存"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:141
 msgid "Add tags..."
-msgstr "Tags hinzufügen..."
+msgstr "添加标签..."
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:243
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:270
 msgid "Add variant"
-msgstr "Variante hinzufügen"
+msgstr "添加变体"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:187
 msgid "Added coupon codes"
-msgstr "Gutscheincodes hinzugefügt"
+msgstr "已添加优惠券代码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:47
 msgid "Added to group"
-msgstr "Zur Gruppe hinzugefügt"
+msgstr "已添加到组"
 
 #. placeholder {0}: addedLines.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:161
 msgid "Adding {0} item(s)"
-msgstr "{0} Artikel werden hinzugefügt"
+msgstr "正在添加 {0} 个项目"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:175
 msgid "Adding..."
-msgstr "Hinzufügen..."
+msgstr "正在添加..."
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:321
 msgid "Additional payment required"
-msgstr "Zusätzliche Zahlung erforderlich"
+msgstr "需要额外支付"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:51
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:62
 msgid "Address created"
-msgstr "Adresse erstellt"
+msgstr "地址已创建"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:55
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:104
 msgid "Address deleted"
-msgstr "Adresse gelöscht"
+msgstr "地址已删除"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:44
 msgid "Address deleted successfully"
-msgstr "Adresse erfolgreich gelöscht"
+msgstr "地址已成功删除"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:53
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:78
 msgid "Address updated"
-msgstr "Adresse aktualisiert"
+msgstr "地址已更新"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:56
 msgid "Address updated successfully"
-msgstr "Adresse erfolgreich aktualisiert"
+msgstr "地址已成功更新"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:200
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:464
 msgid "Addresses"
-msgstr "Adressen"
+msgstr "地址"
 
 #. placeholder {0}: adjustedLines.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:130
 msgid "Adjusting {0} lines"
-msgstr "{0} Positionen anpassen"
+msgstr "正在调整 {0} 行"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:39
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:16
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:23
 msgid "Administrators"
-msgstr "Administratoren"
+msgstr "管理员"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "after"
-msgstr "nach"
+msgstr "之后"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:67
 msgid "All resources are up and running"
-msgstr "Alle Ressourcen sind verfügbar und laufen"
+msgstr "所有资源正在运行"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:222
 msgid "Allocated"
-msgstr "Zugewiesen"
+msgstr "已分配"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:170
 msgid "Amount"
-msgstr "Betrag"
+msgstr "金额"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:324
 msgid "An additional payment of {formattedDiff} will be required."
-msgstr "Eine zusätzliche Zahlung von {formattedDiff} wird erforderlich sein."
+msgstr "需要额外支付 {formattedDiff}。"
 
 #: src/lib/components/data-input/combination-mode-input.tsx:44
 msgid "AND"
-msgstr "UND"
+msgstr "与"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
 #: src/lib/components/shared/customer-address-form.tsx:154
 msgid "Apartment, suite, etc."
-msgstr "Wohnung, Suite, etc."
+msgstr "公寓、套房等"
 
 #: src/lib/components/data-table/views-sheet.tsx:49
 msgid "Applied global view \"{viewName}\""
-msgstr "Globale Ansicht „{viewName}\" angewendet"
+msgstr "已应用全局视图\"{viewName}\""
 
 #: src/lib/components/data-table/views-sheet.tsx:49
 msgid "Applied view \"{viewName}\""
-msgstr "Ansicht „{viewName}\" angewendet"
+msgstr "已应用视图\"{viewName}\""
 
 #: src/lib/components/data-table/views-sheet.tsx:227
 msgid "Apply"
-msgstr "Anwenden"
+msgstr "应用"
 
 #: src/lib/components/data-table/data-table-filter-dialog.tsx:66
 msgid "Apply filter"
-msgstr "Filter anwenden"
+msgstr "应用筛选器"
 
 #: src/lib/components/data-table/views-sheet.tsx:155
 msgid "Apply filters to the table and click \"Save View\" to get started."
-msgstr "Filter auf die Tabelle anwenden und \"Ansicht speichern\" klicken, um loszulegen."
+msgstr "对表格应用筛选器，然后点击\"保存视图\"开始。"
 
 #. placeholder {0}: selection.length
 #: src/app/common/delete-bulk-action.tsx:141
 msgid "Are you sure you want to delete {0} {entityName}?"
-msgstr "Möchten Sie wirklich {0} {entityName} löschen?"
+msgstr "确定要删除 {0} {entityName} 吗？"
 
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:42
 msgid "Are you sure you want to delete {selectionLength} assets?"
-msgstr "Möchten Sie wirklich {selectionLength} Assets löschen?"
+msgstr "确定要删除 {selectionLength} 个资源吗？"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:142
 msgid "Are you sure you want to delete this address?"
-msgstr "Möchten Sie diese Adresse wirklich löschen?"
+msgstr "确定要删除此地址吗？"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:287
 msgid "Are you sure you want to delete this draft order?"
-msgstr "Möchten Sie diesen Bestellentwurf wirklich löschen?"
+msgstr "确定要删除此草稿订单吗？"
 
 #: src/lib/components/data-table/views-sheet.tsx:168
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
-msgstr "Möchten Sie diese globale Ansicht wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden und betrifft alle Benutzer."
+msgstr "确定要删除此全局视图吗？此操作无法撤销，将影响所有用户。"
 
 #: src/lib/components/data-table/use-generated-columns.tsx:322
 msgid "Are you sure you want to delete this item? This action cannot be undone."
-msgstr "Möchten Sie dieses Element wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+msgstr "确定要删除此项目吗？此操作无法撤销。"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:236
 msgid "Are you sure you want to delete this variant?"
-msgstr "Möchten Sie diese Variante wirklich löschen?"
+msgstr "确定要删除此变体吗？"
 
 #: src/lib/components/data-table/views-sheet.tsx:173
 msgid "Are you sure you want to delete this view? This action cannot be undone."
-msgstr "Möchten Sie diese Ansicht wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+msgstr "确定要删除此视图吗？此操作无法撤销。"
 
 #: src/lib/components/shared/navigation-confirmation.tsx:47
 msgid "Are you sure you want to navigate away from this page? Any unsaved changes will be lost."
-msgstr "Möchten Sie diese Seite wirklich verlassen? Alle nicht gespeicherten Änderungen gehen verloren."
+msgstr "确定要离开此页面吗？任何未保存的更改都将丢失。"
 
 #. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:83
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
-msgstr "Möchten Sie wirklich {0} {entityType} aus dem aktuellen Kanal entfernen?"
+msgstr "确定要从当前渠道中删除 {0} {entityType} 吗？"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
@@ -1113,80 +1113,80 @@ msgstr "Möchten Sie wirklich {0} {entityType} aus dem aktuellen Kanal entfernen
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:310
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:208
 msgid "Assets"
-msgstr "Assets"
+msgstr "资源"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:125
 msgid "Assign"
-msgstr "Zuweisen"
+msgstr "分配"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:92
 msgid "Assign {entityType} to channel"
-msgstr "{entityType} zu Kanal zuweisen"
+msgstr "将 {entityType} 分配给渠道"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:325
 msgid "Assign options to existing variant"
-msgstr "Optionen zu bestehender Variante zuweisen"
+msgstr "将选项分配给现有变体"
 
 #: src/lib/components/shared/assign-to-channel-bulk-action.tsx:55
 msgid "Assign to channel"
-msgstr "Zu Kanal zuweisen"
+msgstr "分配给渠道"
 
 #. placeholder {0}: currentInterval?.label
 #: src/app/routes/_authenticated/_system/job-queue.tsx:236
 msgid "Auto refresh: {0}"
-msgstr "Automatische Aktualisierung: {0}"
+msgstr "自动刷新：{0}"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:176
 msgid "Available currencies"
-msgstr "Verfügbare Währungen"
+msgstr "可用货币"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:164
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:111
 msgid "Available languages"
-msgstr "Verfügbare Sprachen"
+msgstr "可用语言"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:340
 msgid "Available Languages"
-msgstr "Verfügbare Sprachen"
+msgstr "可用语言"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:235
 msgid "Available:"
-msgstr "Verfügbar:"
+msgstr "可用："
 
 #: src/lib/components/shared/facet-value-selector.tsx:288
 msgid "Back to search"
-msgstr "Zurück zur Suche"
+msgstr "返回搜索"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:28
 msgid "before"
-msgstr "vor"
+msgstr "之前"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:32
 msgid "between"
-msgstr "zwischen"
+msgstr "之间"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:493
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:433
 msgid "Billing address"
-msgstr "Rechnungsadresse"
+msgstr "账单地址"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:116
 msgid "Billing address changed"
-msgstr "Rechnungsadresse geändert"
+msgstr "账单地址已更改"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:174
 msgid "Billing address set for order"
-msgstr "Rechnungsadresse für Bestellung festgelegt"
+msgstr "已为订单设置账单地址"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
-msgstr "Rechnungsadresse für Bestellung entfernt"
+msgstr "已从订单移除账单地址"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
 msgid "Calculator"
-msgstr "Rechner"
+msgstr "计算器"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
@@ -1211,35 +1211,35 @@ msgstr "Rechner"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "取消"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:184
 msgid "Cancel Job"
-msgstr "Job abbrechen"
+msgstr "取消作业"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:397
 msgid "Cancel modification"
-msgstr "Änderung abbrechen"
+msgstr "取消修改"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:153
 msgid "Cancel payment"
-msgstr "Zahlung stornieren"
+msgstr "取消付款"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
 msgid "Category"
-msgstr "Kategorie"
+msgstr "类别"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:103
 msgid "Channel"
-msgstr "Kanal"
+msgstr "渠道"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:187
 msgid "Channel defaults"
-msgstr "Kanal-Standards"
+msgstr "渠道默认值"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:323
 msgid "Channel Languages"
-msgstr "Kanal-Sprachen"
+msgstr "渠道语言"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:40
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
@@ -1247,34 +1247,34 @@ msgstr "Kanal-Sprachen"
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
 #: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
-msgstr "Kanäle"
+msgstr "渠道"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:195
 #: src/lib/components/shared/customer-address-form.tsx:175
 msgid "City"
-msgstr "Stadt"
+msgstr "城市"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:323
 msgid "Clear"
-msgstr "Leeren"
+msgstr "清除"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
 #: src/lib/components/data-table/data-table.tsx:277
 msgid "Clear all"
-msgstr "Alle löschen"
+msgstr "全部清除"
 
 #: src/lib/components/data-table/data-table-filter-dialog.tsx:54
 msgid "Clear filter"
-msgstr "Filter löschen"
+msgstr "清除筛选器"
 
 #: src/lib/components/data-table/data-table-faceted-filter.tsx:163
 msgid "Clear filters"
-msgstr "Filter löschen"
+msgstr "清除筛选器"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:43
 msgid "Click \"Run Test\" to test this shipping method."
-msgstr "Klicken Sie auf \"Test ausführen\", um diese Versandmethode zu testen."
+msgstr "点击\"运行测试\"以测试此配送方式。"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
@@ -1287,104 +1287,104 @@ msgstr "Klicken Sie auf \"Test ausführen\", um diese Versandmethode zu testen."
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
 msgid "Code"
-msgstr "Code"
+msgstr "代码"
 
 #: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:36
 msgid "Collection contents for {collectionName}"
-msgstr "Sammlungsinhalte für {collectionName}"
+msgstr "{collectionName} 的集合内容"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
 #: src/app/routes/_authenticated/_collections/collections.tsx:29
 #: src/app/routes/_authenticated/_collections/collections.tsx:85
 msgid "Collections"
-msgstr "Sammlungen"
+msgstr "集合"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
 msgid "Collections moved successfully"
-msgstr "Sammlungen erfolgreich verschoben"
+msgstr "集合移动成功"
 
 #: src/lib/components/data-table/data-table-view-options.tsx:93
 msgid "Column settings"
-msgstr "Spalteneinstellungen"
+msgstr "列设置"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:164
 #: src/lib/components/shared/customer-address-form.tsx:116
 msgid "Company"
-msgstr "Unternehmen"
+msgstr "公司"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:308
 msgid "Complete draft"
-msgstr "Entwurf abschließen"
+msgstr "完成草稿"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:226
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
 msgid "Conditions"
-msgstr "Bedingungen"
+msgstr "条件"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:261
 msgid "Configure available languages for your store and channels"
-msgstr "Verfügbare Sprachen für Ihren Shop und Ihre Kanäle konfigurieren"
+msgstr "为您的商店和渠道配置可用语言"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:359
 #: src/lib/components/shared/navigation-confirmation.tsx:58
 msgid "Confirm"
-msgstr "Bestätigen"
+msgstr "确认"
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:113
 msgid "Confirm Action"
-msgstr "Aktion bestätigen"
+msgstr "确认操作"
 
 #: src/lib/components/data-table/use-generated-columns.tsx:319
 msgid "Confirm deletion"
-msgstr "Löschung bestätigen"
+msgstr "确认删除"
 
 #: src/lib/components/shared/navigation-confirmation.tsx:44
 msgid "Confirm navigation"
-msgstr "Navigation bestätigen"
+msgstr "确认导航"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:56
 msgid "contains"
-msgstr "enthält"
+msgstr "包含"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
 #: src/app/routes/_authenticated/_collections/collections.tsx:143
 msgid "Contents"
-msgstr "Inhalte"
+msgstr "内容"
 
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
-msgstr "Fortfahren"
+msgstr "继续"
 
 #: src/lib/components/data-table/views-sheet.tsx:253
 msgid "Copy to Personal"
-msgstr "In persönlich kopieren"
+msgstr "复制到个人"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:34
 #: src/app/routes/_authenticated/_countries/countries.tsx:14
 #: src/app/routes/_authenticated/_countries/countries.tsx:23
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:103
 msgid "Countries"
-msgstr "Länder"
+msgstr "国家"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:216
 #: src/lib/components/shared/customer-address-form.tsx:230
 msgid "Country"
-msgstr "Land"
+msgstr "国家"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:196
 msgid "Coupon code"
-msgstr "Gutscheincode"
+msgstr "优惠券代码"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
 msgid "Coupon code removed from order"
-msgstr "Gutscheincode aus Bestellung entfernt"
+msgstr "优惠券代码已从订单中移除"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:217
 msgid "Coupon code set for order"
-msgstr "Gutscheincode für Bestellung festgelegt"
+msgstr "已为订单设置优惠券代码"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
@@ -1409,176 +1409,176 @@ msgstr "Gutscheincode für Bestellung festgelegt"
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 msgid "Create"
-msgstr "Erstellen"
+msgstr "创建"
 
 #. placeholder {0}: searchValue.trim()
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:161
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:178
 msgid "Create \"{0}\""
-msgstr "\"{0}\" erstellen"
+msgstr "创建\"{0}\""
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
 msgid "Create {createCount} variants"
-msgstr "{createCount} Varianten erstellen"
+msgstr "创建 {createCount} 个变体"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:249
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:408
 msgid "Create options"
-msgstr "Optionen erstellen"
+msgstr "创建选项"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:255
 msgid "Create product options"
-msgstr "Produktoptionen erstellen"
+msgstr "创建商品选项"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:364
 msgid "Create variant"
-msgstr "Variante erstellen"
+msgstr "创建变体"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
 msgid "Create Variants"
-msgstr "Varianten erstellen"
+msgstr "创建变体"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
 msgid "Create variants for your product"
-msgstr "Varianten für Ihr Produkt erstellen"
+msgstr "为您的商品创建变体"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
 #: src/lib/framework/layout-engine/page-layout.tsx:394
 msgid "Created"
-msgstr "Erstellt"
+msgstr "已创建"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:174
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:221
 msgid "Created at"
-msgstr "Erstellt am"
+msgstr "创建于"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
-msgstr "Erstelle..."
+msgstr "正在创建..."
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
 msgid "Current facet values"
-msgstr "Aktuelle Facetten-Werte"
+msgstr "当前属性值"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:55
 msgid "Current status"
-msgstr "Aktueller Status"
+msgstr "当前状态"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:362
 msgid "Custom fields"
-msgstr "Benutzerdefinierte Felder"
+msgstr "自定义字段"
 
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:42
 msgid "Custom Fields"
-msgstr "Benutzerdefinierte Felder"
+msgstr "自定义字段"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:150
 msgid "Custom fields changed"
-msgstr "Benutzerdefinierte Felder geändert"
+msgstr "自定义字段已更改"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:450
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:388
 #: src/lib/components/shared/role-code-label.tsx:8
 msgid "Customer"
-msgstr "Kunde"
+msgstr "客户"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:55
 msgid "Customer added to group"
-msgstr "Kunde zur Gruppe hinzugefügt"
+msgstr "客户已添加到组"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:45
 msgid "Customer details updated"
-msgstr "Kundendetails aktualisiert"
+msgstr "客户详情已更新"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-sheet.tsx:36
 msgid "Customer group members for {customerGroupName}"
-msgstr "Kundengruppenmitglieder für {customerGroupName}"
+msgstr "{customerGroupName} 的客户组成员"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:255
 msgid "Customer groups"
-msgstr "Kundengruppen"
+msgstr "客户组"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:37
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:15
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:22
 msgid "Customer Groups"
-msgstr "Kundengruppen"
+msgstr "客户组"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:30
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:249
 msgid "Customer history"
-msgstr "Kundenverlauf"
+msgstr "客户历史"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:84
 msgid "Customer information updated"
-msgstr "Kundeninformationen aktualisiert"
+msgstr "客户信息已更新"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:56
 msgid "Customer not found"
-msgstr "Kunde nicht gefunden"
+msgstr "未找到客户"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:39
 msgid "Customer registered"
-msgstr "Kunde registriert"
+msgstr "客户已注册"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:153
 msgid "Customer set for order"
-msgstr "Kunde für Bestellung festgelegt"
+msgstr "订单已设置客户"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:98
 msgid "Customer updated"
-msgstr "Kunde aktualisiert"
+msgstr "客户已更新"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:41
 msgid "Customer verified"
-msgstr "Kunde verifiziert"
+msgstr "客户已验证"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:114
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:58
 #: src/app/routes/_authenticated/_customers/customers.tsx:15
 #: src/app/routes/_authenticated/_customers/customers.tsx:21
 msgid "Customers"
-msgstr "Kunden"
+msgstr "客户"
 
 #: src/lib/components/layout/nav-user.tsx:131
 msgctxt "theme"
 msgid "Dark"
-msgstr "Dunkel"
+msgstr "深色"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
 #: src/lib/components/shared/customer-address-form.tsx:310
 msgid "Default Billing Address"
-msgstr "Standard-Rechnungsadresse"
+msgstr "默认账单地址"
 
 #: src/lib/components/shared/channel-code-label.tsx:5
 msgid "Default channel"
-msgstr "Standardkanal"
+msgstr "默认渠道"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:205
 msgid "Default currency"
-msgstr "Standardwährung"
+msgstr "默认货币"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:192
 msgid "Default language"
-msgstr "Standardsprache"
+msgstr "默认语言"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:368
 msgid "Default Language"
-msgstr "Standardsprache"
+msgstr "默认语言"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
 #: src/lib/components/shared/customer-address-form.tsx:290
 msgid "Default Shipping Address"
-msgstr "Standard-Versandadresse"
+msgstr "默认配送地址"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:226
 msgid "Default shipping zone"
-msgstr "Standard-Versandzone"
+msgstr "默认配送区域"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:218
 msgid "Default tax zone"
-msgstr "Standard-Steuerzone"
+msgstr "默认税务区域"
 
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
@@ -1588,47 +1588,47 @@ msgstr "Standard-Steuerzone"
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
-msgstr "Löschen"
+msgstr "删除"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:141
 msgid "Delete Address"
-msgstr "Adresse löschen"
+msgstr "删除地址"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:166
 msgid "Delete column"
-msgstr "Spalte löschen"
+msgstr "删除列"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:293
 msgid "Delete draft"
-msgstr "Entwurf löschen"
+msgstr "删除草稿"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:286
 msgid "Delete draft order"
-msgstr "Bestellentwurf löschen"
+msgstr "删除草稿订单"
 
 #: src/lib/components/data-table/views-sheet.tsx:163
 msgid "Delete Global View"
-msgstr "Globale Ansicht löschen"
+msgstr "删除全局视图"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:218
 msgid "Delete row"
-msgstr "Zeile löschen"
+msgstr "删除行"
 
 #: src/lib/components/data-table/views-sheet.tsx:163
 msgid "Delete View"
-msgstr "Ansicht löschen"
+msgstr "删除视图"
 
 #: src/app/common/delete-bulk-action.tsx:108
 msgid "Deleted {deleted} {entityName}"
-msgstr "{deleted} {entityName} gelöscht"
+msgstr "已删除 {deleted} {entityName}"
 
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:25
 msgid "Deleted {selectionLength} assets"
-msgstr "{selectionLength} Assets gelöscht"
+msgstr "已删除 {selectionLength} 个资源"
 
 #: src/lib/components/data-table/use-generated-columns.tsx:293
 msgid "Deleted successfully"
-msgstr "Erfolgreich gelöscht"
+msgstr "成功删除"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:167
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:14
@@ -1640,159 +1640,159 @@ msgstr "Erfolgreich gelöscht"
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
 msgid "Description"
-msgstr "Beschreibung"
+msgstr "描述"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:166
 msgid "Description (alt)"
-msgstr "Beschreibung (Alt-Text)"
+msgstr "描述（替代文本）"
 
 #: src/lib/components/layout/dev-mode-indicator.tsx:12
 #: src/lib/components/layout/nav-user.tsx:144
 msgid "Dev Mode"
-msgstr "Entwicklermodus"
+msgstr "开发者模式"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:220
 msgid "Disable"
-msgstr "Deaktivieren"
+msgstr "禁用"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:50
 #: src/lib/components/layout/nav-user.tsx:155
 msgid "Disabled"
-msgstr "Deaktiviert"
+msgstr "已禁用"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
 msgid "Discount"
-msgstr "Rabatt"
+msgstr "折扣"
 
 #: src/lib/components/layout/language-dialog.tsx:42
 msgid "Display language"
-msgstr "Anzeigesprache"
+msgstr "显示语言"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
 msgid "Do not track"
-msgstr "Nicht verfolgen"
+msgstr "不跟踪"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:58
 msgid "does not contain"
-msgstr "enthält nicht"
+msgstr "不包含"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:280
 #: src/app/routes/_authenticated/_orders/orders.tsx:113
 msgid "Draft order"
-msgstr "Entwurfsbestellung"
+msgstr "草稿订单"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:241
 msgid "Draft order completed"
-msgstr "Bestellentwurf abgeschlossen"
+msgstr "草稿订单已完成"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:258
 msgid "Draft order deleted"
-msgstr "Bestellentwurf gelöscht"
+msgstr "草稿订单已删除"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:72
 msgid "Drag to reorder"
-msgstr "Zum Sortieren ziehen"
+msgstr "拖动以重新排序"
 
 #: src/app/common/duplicate-bulk-action.tsx:131
 #: src/app/common/duplicate-entity-dialog.tsx:111
 #: src/lib/components/data-table/views-sheet.tsx:246
 msgid "Duplicate"
-msgstr "Duplizieren"
+msgstr "复制"
 
 #. placeholder {0}: entityName.toLowerCase()
 #: src/app/common/duplicate-entity-dialog.tsx:83
 msgid "Duplicate {0}s"
-msgstr "{0} duplizieren"
+msgstr "复制 {0}"
 
 #. placeholder {0}: progress.completed
 #. placeholder {1}: progress.total
 #: src/app/common/duplicate-bulk-action.tsx:127
 msgid "Duplicating... ({0}/{1})"
-msgstr "Dupliziere... ({0}/{1})"
+msgstr "正在复制... ({0}/{1})"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:269
 msgid "e.g. Size"
-msgstr "z.B. Größe"
+msgstr "例如：尺寸"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:290
 msgid "e.g. Small"
-msgstr "z.B. Klein"
+msgstr "例如：小号"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:144
 msgid "e.g., Red, Large, Cotton"
-msgstr "z.B. Rot, Groß, Baumwolle"
+msgstr "例如：红色、大号、棉质"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:474
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:500
 #: src/lib/components/shared/asset/asset-gallery.tsx:457
 #: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr "编辑"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:129
 msgid "Edit Address"
-msgstr "Adresse bearbeiten"
+msgstr "编辑地址"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:95
 msgid "Edit asset"
-msgstr "Asset bearbeiten"
+msgstr "编辑资源"
 
 #: src/app/routes/_authenticated/_product-variants/components/product-variant-bulk-actions.tsx:95
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:156
 #: src/app/routes/_authenticated/_products/components/product-bulk-actions.tsx:89
 msgid "Edit facet values"
-msgstr "Facetten-Werte bearbeiten"
+msgstr "编辑属性值"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 msgid "Edit image"
-msgstr "Bild bearbeiten"
+msgstr "编辑图片"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Edit link"
-msgstr "Link bearbeiten"
+msgstr "编辑链接"
 
 #: src/app/routes/_authenticated/_zones/zones.tsx:39
 msgid "Edit members"
-msgstr "Mitglieder bearbeiten"
+msgstr "编辑成员"
 
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:44
 msgid "Edit Note"
-msgstr "Notiz bearbeiten"
+msgstr "编辑备注"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:195
 msgid "Edit or delete existing tags"
-msgstr "Vorhandene Tags bearbeiten oder löschen"
+msgstr "编辑或删除现有标签"
 
 #: src/lib/components/data-input/slug-input.tsx:279
 #: src/lib/components/data-input/slug-input.tsx:281
 msgid "Edit slug manually"
-msgstr "Slug manuell bearbeiten"
+msgstr "手动编辑 slug"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:132
 msgid "Edit the address details below."
-msgstr "Bearbeiten Sie die Adressdaten unten."
+msgstr "编辑下面的地址详情。"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:185
 msgid "Email address"
-msgstr "E-Mail-Adresse"
+msgstr "电子邮件地址"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:138
 #: src/app/routes/_authenticated/_profile/profile.tsx:104
 msgid "Email Address or identifier"
-msgstr "E-Mail-Adresse oder Bezeichner"
+msgstr "电子邮件地址或标识符"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:63
 msgid "Email update requested"
-msgstr "E-Mail-Aktualisierung angefordert"
+msgstr "已请求电子邮件更新"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:65
 msgid "Email update verified"
-msgstr "E-Mail-Aktualisierung verifiziert"
+msgstr "电子邮件更新已验证"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:220
 msgid "Enable"
-msgstr "Aktivieren"
+msgstr "启用"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
@@ -1807,94 +1807,94 @@ msgstr "Aktivieren"
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:49
 #: src/lib/components/layout/nav-user.tsx:152
 msgid "Enabled"
-msgstr "Aktiviert"
+msgstr "已启用"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:185
 msgid "Ends at"
-msgstr "Endet am"
+msgstr "结束于"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:306
 msgid "Enter refund note"
-msgstr "Rückerstattungsnotiz eingeben"
+msgstr "输入退款备注"
 
 #: src/lib/components/data-input/slug-input.tsx:239
 msgid "Enter slug manually"
-msgstr "Slug manuell eingeben"
+msgstr "手动输入 slug"
 
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:52
 msgid "Enter the transaction ID for this refund settlement"
-msgstr "Geben Sie die Transaktions-ID für diese Rückerstattungsabrechnung ein"
+msgstr "输入此退款结算的交易 ID"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:163
 msgid "Enter transaction ID"
-msgstr "Transaktions-ID eingeben"
+msgstr "输入交易 ID"
 
 #: src/lib/framework/layout-engine/page-layout.tsx:367
 msgid "Entity Information"
-msgstr "Entitätsinformationen"
+msgstr "实体信息"
 
 #: src/lib/components/shared/error-page.tsx:18
 msgid "Error"
-msgstr "Fehler"
+msgstr "错误"
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:46
 msgid "Error loading customer history: {0}"
-msgstr "Fehler beim Laden des Kundenverlaufs: {0}"
+msgstr "加载客户历史出错：{0}"
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:46
 msgid "Error loading order history: {0}"
-msgstr "Fehler beim Laden des Bestellverlaufs: {0}"
+msgstr "加载订单历史出错：{0}"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:183
 msgid "Error message"
-msgstr "Fehlermeldung"
+msgstr "错误消息"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
 msgid "Error transitioning to state"
-msgstr "Fehler beim Übergang zum Status"
+msgstr "转换到状态时出错"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:72
 msgid "Every 10 seconds"
-msgstr "Alle 10 Sekunden"
+msgstr "每 10 秒"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:73
 msgid "Every 30 seconds"
-msgstr "Alle 30 Sekunden"
+msgstr "每 30 秒"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:71
 msgid "Every 5 seconds"
-msgstr "Alle 5 Sekunden"
+msgstr "每 5 秒"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:74
 msgid "Every 60 seconds"
-msgstr "Alle 60 Sekunden"
+msgstr "每 60 秒"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/price-display.tsx:17
 msgid "ex. tax:"
-msgstr "exkl. Steuer:"
+msgstr "不含税："
 
 #: src/lib/components/layout/nav-user.tsx:98
 msgid "Explore Enterprise Edition"
-msgstr "Enterprise Edition erkunden"
+msgstr "探索企业版"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:122
 msgid "Facet"
-msgstr "Facette"
+msgstr "属性"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:301
 msgid "Facet values"
-msgstr "Facetten-Werte"
+msgstr "属性值"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:199
 msgid "Facet Values"
-msgstr "Facetten-Werte"
+msgstr "属性值"
 
 #: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:32
 msgid "Facet values for {facetName}"
-msgstr "Facetten-Werte für {facetName}"
+msgstr "{facetName} 的属性值"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:39
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
@@ -1902,498 +1902,498 @@ msgstr "Facetten-Werte für {facetName}"
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
 #: src/lib/components/shared/facet-value-selector.tsx:321
 msgid "Facets"
-msgstr "Facetten"
+msgstr "属性"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:61
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:129
 msgid "Failed to add customer to group"
-msgstr "Fehler beim Hinzufügen des Kunden zur Gruppe"
+msgstr "将客户添加到组失败"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:103
 msgid "Failed to add option value"
-msgstr "Fehler beim Hinzufügen des Optionswerts"
+msgstr "添加选项值失败"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:52
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:58
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:86
 msgid "Failed to add payment"
-msgstr "Fehler beim Hinzufügen der Zahlung"
+msgstr "添加支付失败"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:78
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:82
 msgid "Failed to cancel payment"
-msgstr "Fehler beim Stornieren der Zahlung"
+msgstr "取消支付失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:110
 msgid "Failed to convert global view to personal view"
-msgstr "Fehler beim Umwandeln der globalen Ansicht in persönliche Ansicht"
+msgstr "将全局视图转换为个人视图失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:120
 msgid "Failed to convert view to global"
-msgstr "Fehler beim Umwandeln der Ansicht in globale Ansicht"
+msgstr "将视图转换为全局失败"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:119
 msgid "Failed to create address"
-msgstr "Fehler beim Erstellen der Adresse"
+msgstr "创建地址失败"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
 msgid "Failed to create channel"
-msgstr "Fehler beim Erstellen des Kanals"
+msgstr "创建渠道失败"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
 msgid "Failed to create collection"
-msgstr "Fehler beim Erstellen der Sammlung"
+msgstr "创建集合失败"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
 msgid "Failed to create country"
-msgstr "Fehler beim Erstellen des Lands"
+msgstr "创建国家失败"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
 msgid "Failed to create customer"
-msgstr "Fehler beim Erstellen des Kunden"
+msgstr "创建客户失败"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
 msgid "Failed to create customer group"
-msgstr "Fehler beim Erstellen der Kundengruppe"
+msgstr "创建客户组失败"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
 msgid "Failed to create facet"
-msgstr "Fehler beim Erstellen der Facette"
+msgstr "创建属性失败"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
 msgid "Failed to create facet value"
-msgstr "Fehler beim Erstellen des Facettenwerts"
+msgstr "创建属性值失败"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:86
 msgid "Failed to create option group"
-msgstr "Fehler beim Erstellen der Optionsgruppe"
+msgstr "创建选项组失败"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
 msgid "Failed to create payment method"
-msgstr "Fehler beim Erstellen der Zahlungsmethode"
+msgstr "创建支付方式失败"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:95
 msgid "Failed to create product"
-msgstr "Fehler beim Erstellen des Produkts"
+msgstr "创建商品失败"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:124
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:209
 msgid "Failed to create product options"
-msgstr "Fehler beim Erstellen der Produktoptionen"
+msgstr "创建商品选项失败"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:112
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
 msgid "Failed to create product variant"
-msgstr "Fehler beim Erstellen der Produktvariante"
+msgstr "创建商品变体失败"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:111
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:119
 msgid "Failed to create promotion"
-msgstr "Fehler beim Erstellen der Aktion"
+msgstr "创建促销失败"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
 msgid "Failed to create role"
-msgstr "Fehler beim Erstellen der Rolle"
+msgstr "创建角色失败"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
 msgid "Failed to create seller"
-msgstr "Fehler beim Erstellen des Verkäufers"
+msgstr "创建卖家失败"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
 msgid "Failed to create stock location"
-msgstr "Fehler beim Erstellen des Lagerorts"
+msgstr "创建库存位置失败"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
 msgid "Failed to create tax category"
-msgstr "Fehler beim Erstellen der Steuerkategorie"
+msgstr "创建税务类别失败"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
 msgid "Failed to create tax rate"
-msgstr "Fehler beim Erstellen des Steuersatzes"
+msgstr "创建税率失败"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
 msgid "Failed to create zone"
-msgstr "Fehler beim Erstellen der Zone"
+msgstr "创建区域失败"
 
 #: src/lib/components/data-table/use-generated-columns.tsx:295
 #: src/lib/components/data-table/use-generated-columns.tsx:301
 msgid "Failed to delete"
-msgstr "Fehler beim Löschen"
+msgstr "删除失败"
 
 #: src/app/common/delete-bulk-action.tsx:115
 msgid "Failed to delete {failed} {entityName}"
-msgstr "Fehler beim Löschen von {failed} {entityName}"
+msgstr "删除 {failed} {entityName} 失败"
 
 #: src/app/common/delete-bulk-action.tsx:114
 msgid "Failed to delete {failed} {entityName}: {allErrors}"
-msgstr "Fehler beim Löschen von {failed} {entityName}: {allErrors}"
+msgstr "删除 {failed} {entityName} 失败：{allErrors}"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:48
 msgid "Failed to delete address"
-msgstr "Fehler beim Löschen der Adresse"
+msgstr "删除地址失败"
 
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:28
 msgid "Failed to delete assets: {message}"
-msgstr "Fehler beim Löschen der Assets: {message}"
+msgstr "删除资源失败：{message}"
 
 #: src/lib/components/data-table/views-sheet.tsx:87
 msgid "Failed to delete global view"
-msgstr "Fehler beim Löschen der globalen Ansicht"
+msgstr "删除全局视图失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:87
 msgid "Failed to delete view"
-msgstr "Fehler beim Löschen der Ansicht"
+msgstr "删除视图失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:100
 msgid "Failed to duplicate global view"
-msgstr "Fehler beim Duplizieren der globalen Ansicht"
+msgstr "复制全局视图失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:100
 msgid "Failed to duplicate view"
-msgstr "Fehler beim Duplizieren der Ansicht"
+msgstr "复制视图失败"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:79
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:85
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:187
 msgid "Failed to fulfill order"
-msgstr "Fehler beim Erfüllen der Bestellung"
+msgstr "履行订单失败"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:290
 msgid "Failed to load global settings"
-msgstr "Fehler beim Laden der globalen Einstellungen"
+msgstr "加载全局设置失败"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
 msgid "Failed to modify order"
-msgstr "Fehler beim Ändern der Bestellung"
+msgstr "修改订单失败"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:290
 msgid "Failed to move collections"
-msgstr "Fehler beim Verschieben der Sammlungen"
+msgstr "移动集合失败"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
 msgid "Failed to remove customer from group"
-msgstr "Fehler beim Entfernen des Kunden aus der Gruppe"
+msgstr "从组中删除客户失败"
 
 #: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:73
 msgid "Failed to remove facet from channel: {message}"
-msgstr "Fehler beim Entfernen der Facette aus dem Kanal: {message}"
+msgstr "从渠道中删除属性失败：{message}"
 
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename global view"
-msgstr "Fehler beim Umbenennen der globalen Ansicht"
+msgstr "重命名全局视图失败"
 
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename view"
-msgstr "Fehler beim Umbenennen der Ansicht"
+msgstr "重命名视图失败"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:48
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:52
 msgid "Failed to settle payment"
-msgstr "Fehler beim Abwickeln der Zahlung"
+msgstr "完成支付失败"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:94
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:98
 msgid "Failed to settle refund"
-msgstr "Fehler beim Abwickeln der Rückerstattung"
+msgstr "完成退款失败"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
 msgid "Failed to transition order to state"
-msgstr "Fehler beim Übergang der Bestellung zum Status"
+msgstr "将订单转换到状态失败"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:60
 msgid "Failed to update address"
-msgstr "Fehler beim Aktualisieren der Adresse"
+msgstr "更新地址失败"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:74
 msgid "Failed to update asset"
-msgstr "Fehler beim Aktualisieren des Assets"
+msgstr "更新资源失败"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
 msgid "Failed to update channel"
-msgstr "Fehler beim Aktualisieren des Kanals"
+msgstr "更新渠道失败"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
 msgid "Failed to update collection"
-msgstr "Fehler beim Aktualisieren der Sammlung"
+msgstr "更新集合失败"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
 msgid "Failed to update country"
-msgstr "Fehler beim Aktualisieren des Lands"
+msgstr "更新国家失败"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
 msgid "Failed to update customer"
-msgstr "Fehler beim Aktualisieren des Kunden"
+msgstr "更新客户失败"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
 msgid "Failed to update customer group"
-msgstr "Fehler beim Aktualisieren der Kundengruppe"
+msgstr "更新客户组失败"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
 msgid "Failed to update facet"
-msgstr "Fehler beim Aktualisieren der Facette"
+msgstr "更新属性失败"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
 msgid "Failed to update facet value"
-msgstr "Fehler beim Aktualisieren des Facettenwerts"
+msgstr "更新属性值失败"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:42
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:46
 msgid "Failed to update fulfillment state"
-msgstr "Fehler beim Aktualisieren des Erfüllungsstatus"
+msgstr "更新履行状态失败"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:76
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:82
 msgid "Failed to update global settings"
-msgstr "Fehler beim Aktualisieren der globalen Einstellungen"
+msgstr "更新全局设置失败"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:91
 msgid "Failed to update order"
-msgstr "Fehler beim Aktualisieren der Bestellung"
+msgstr "更新订单失败"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
 msgid "Failed to update payment method"
-msgstr "Fehler beim Aktualisieren der Zahlungsmethode"
+msgstr "更新支付方式失败"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:63
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:67
 msgid "Failed to update payment state"
-msgstr "Fehler beim Aktualisieren des Zahlungsstatus"
+msgstr "更新支付状态失败"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:95
 msgid "Failed to update product"
-msgstr "Fehler beim Aktualisieren des Produkts"
+msgstr "更新商品失败"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:112
 msgid "Failed to update product variant"
-msgstr "Fehler beim Aktualisieren der Produktvariante"
+msgstr "更新商品变体失败"
 
 #: src/app/routes/_authenticated/_profile/profile.tsx:65
 msgid "Failed to update profile"
-msgstr "Fehler beim Aktualisieren des Profils"
+msgstr "更新个人资料失败"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:111
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:119
 msgid "Failed to update promotion"
-msgstr "Fehler beim Aktualisieren der Aktion"
+msgstr "更新促销失败"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
 msgid "Failed to update role"
-msgstr "Fehler beim Aktualisieren der Rolle"
+msgstr "更新角色失败"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
 msgid "Failed to update seller"
-msgstr "Fehler beim Aktualisieren des Verkäufers"
+msgstr "更新卖家失败"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
 msgid "Failed to update stock location"
-msgstr "Fehler beim Aktualisieren des Lagerorts"
+msgstr "更新库存位置失败"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
 msgid "Failed to update tax category"
-msgstr "Fehler beim Aktualisieren der Steuerkategorie"
+msgstr "更新税务类别失败"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
 msgid "Failed to update tax rate"
-msgstr "Fehler beim Aktualisieren des Steuersatzes"
+msgstr "更新税率失败"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
 msgid "Failed to update zone"
-msgstr "Fehler beim Aktualisieren der Zone"
+msgstr "更新区域失败"
 
 #: src/lib/components/data-table/filters/data-table-boolean-filter.tsx:53
 msgid "False"
-msgstr "Falsch"
+msgstr "否"
 
 #: src/lib/components/data-table/data-table-filter-dialog.tsx:34
 msgid "Filter by {columnId}"
-msgstr "Nach {columnId} filtern"
+msgstr "按 {columnId} 筛选"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:366
 msgid "Filter by collection name"
-msgstr "Nach Sammlungsname filtern"
+msgstr "按集合名称筛选"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:104
 msgid "Filter by tags"
-msgstr "Nach Tags filtern"
+msgstr "按标签筛选"
 
 #: src/lib/components/data-table/data-table.tsx:217
 msgid "Filter..."
-msgstr "Filter..."
+msgstr "筛选..."
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
 msgid "Filters"
-msgstr "Filter"
+msgstr "筛选器"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:126
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:173
 #: src/app/routes/_authenticated/_profile/profile.tsx:92
 msgid "First name"
-msgstr "Vorname"
+msgstr "名"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:152
 msgid "Focal Point"
-msgstr "Fokuspunkt"
+msgstr "焦点"
 
 #. placeholder {0}: testResult.length
 #. placeholder {1}: testResult.length !== 1 ? 's' : ''
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:62
 msgid "Found {0} eligible shipping method{1}"
-msgstr "{0} geeignete Versandmethode{1} gefunden"
+msgstr "找到 {0} 个符合条件的配送方式"
 
 #. placeholder {0}: entry.data.from
 #. placeholder {1}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:11
 msgid "From {0} to {1}"
-msgstr "Von {0} zu {1}"
+msgstr "从 {0} 到 {1}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:219
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:225
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
 msgid "Fulfill order"
-msgstr "Bestellung erfüllen"
+msgstr "履行订单"
 
 #. placeholder {0}: fulfillment.lines.reduce((acc, line) => acc + line.quantity, 0)
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:121
 msgid "Fulfilled items ({0})"
-msgstr "Erfüllte Artikel ({0})"
+msgstr "已履行的项目 ({0})"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:308
 msgid "Fulfilling..."
-msgstr "Erfülle..."
+msgstr "正在履行..."
 
 #. placeholder {0}: entry.data.fulfillmentId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:63
 msgid "Fulfillment #{0} created"
-msgstr "Erfüllung #{0} erstellt"
+msgstr "已创建履行 #{0}"
 
 #. placeholder {0}: entry.data.fulfillmentId
 #. placeholder {1}: entry.data.from
 #. placeholder {2}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:50
 msgid "Fulfillment #{0} from {1} to {2}"
-msgstr "Erfüllung #{0} von {1} zu {2}"
+msgstr "履行 #{0}，从 {1} 到 {2}"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:94
 msgid "Fulfillment created"
-msgstr "Erfüllung erstellt"
+msgstr "履行已创建"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
 msgid "Fulfillment details"
-msgstr "Erfüllungsdetails"
+msgstr "履行详情"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
 msgid "Fulfillment handler"
-msgstr "Erfüllungs-Handler"
+msgstr "履行处理器"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:105
 msgid "Fulfillment ID"
-msgstr "Erfüllungs-ID"
+msgstr "履行 ID"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:39
 msgid "Fulfillment state updated successfully"
-msgstr "Erfüllungsstatus erfolgreich aktualisiert"
+msgstr "履行状态已成功更新"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:92
 msgid "Fulfillment transitioned"
-msgstr "Erfüllung übertragen"
+msgstr "履行已转换"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:158
 #: src/lib/components/shared/customer-address-form.tsx:99
 msgid "Full Name"
-msgstr "Vollständiger Name"
+msgstr "全名"
 
 #: src/lib/components/shared/custom-fields-form.tsx:100
 msgid "General"
-msgstr "Allgemein"
+msgstr "常规"
 
 #: src/lib/components/data-input/slug-input.tsx:279
 #: src/lib/components/data-input/slug-input.tsx:281
 msgid "Generate slug automatically"
-msgstr "Slug automatisch generieren"
+msgstr "自动生成 slug"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:270
 msgid "Global Languages"
-msgstr "Globale Sprachen"
+msgstr "全局语言"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:129
 msgid "Global out of stock threshold"
-msgstr "Globale Grenzwerte für Lagerausfälle"
+msgstr "全局缺货阈值"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:41
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:91
 msgid "Global Settings"
-msgstr "Globale Einstellungen"
+msgstr "全局设置"
 
 #: src/lib/components/data-table/views-sheet.tsx:108
 msgid "Global view converted to personal view successfully"
-msgstr "Globale Ansicht erfolgreich in persönliche Ansicht umgewandelt"
+msgstr "全局视图已成功转换为个人视图"
 
 #: src/lib/components/data-table/views-sheet.tsx:83
 msgid "Global view deleted successfully"
-msgstr "Globale Ansicht erfolgreich gelöscht"
+msgstr "全局视图已成功删除"
 
 #: src/lib/components/data-table/views-sheet.tsx:96
 msgid "Global view duplicated successfully"
-msgstr "Globale Ansicht erfolgreich dupliziert"
+msgstr "全局视图已成功复制"
 
 #: src/lib/components/data-table/views-sheet.tsx:63
 msgid "Global view renamed successfully"
-msgstr "Globale Ansicht erfolgreich umbenannt"
+msgstr "全局视图已成功重命名"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:40
 msgid "greater than"
-msgstr "größer als"
+msgstr "大于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:43
 msgid "greater than or equal"
-msgstr "größer oder gleich"
+msgstr "大于或等于"
 
 #: src/app/routes/_authenticated/_product-variants/components/variant-price-detail.tsx:82
 msgid "Gross price: <0/>"
-msgstr "Bruttopreis: <0/>"
+msgstr "总价：<0/>"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:76
 msgid "Heading 1"
-msgstr "Überschrift 1"
+msgstr "标题 1"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:77
 msgid "Heading 2"
-msgstr "Überschrift 2"
+msgstr "标题 2"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:78
 msgid "Heading 3"
-msgstr "Überschrift 3"
+msgstr "标题 3"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:79
 msgid "Heading 4"
-msgstr "Überschrift 4"
+msgstr "标题 4"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:80
 msgid "Heading 5"
-msgstr "Überschrift 5"
+msgstr "标题 5"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:81
 msgid "Heading 6"
-msgstr "Überschrift 6"
+msgstr "标题 6"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:43
 msgid "Health checks"
-msgstr "Gesundheitsprüfungen"
+msgstr "健康检查"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:13
 msgid "Healthchecks"
-msgstr "Gesundheitsprüfungen"
+msgstr "健康检查"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:191
 msgid "Height"
-msgstr "Höhe"
+msgstr "高度"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:107
 msgid "ID"
@@ -2401,170 +2401,170 @@ msgstr "ID"
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:65
 msgid "Identifier"
-msgstr "Bezeichner"
+msgstr "标识符"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:178
 msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
-msgstr "Falls aktiviert, werden die Filter von der übergeordneten Sammlung übernommen und mit den Filtern dieser Sammlung kombiniert."
+msgstr "如果启用，筛选器将从父集合继承，并与此集合上设置的筛选器组合。"
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:33
 msgid "Image"
-msgstr "Bild"
+msgstr "图片"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:36
 msgid "in"
-msgstr "in"
+msgstr "在"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:176
 msgid "Inherit filters"
-msgstr "Filter erben"
+msgstr "继承筛选器"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:250
 msgid "Inherit from global settings"
-msgstr "Von globalen Einstellungen übernehmen"
+msgstr "从全局设置继承"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:208
 msgid "Insert image"
-msgstr "Bild einfügen"
+msgstr "插入图片"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
 msgid "Insert link"
-msgstr "Link einfügen"
+msgstr "插入链接"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:30
 msgid "is after"
-msgstr "ist nach"
+msgstr "在之后"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:28
 msgid "is before"
-msgstr "ist vor"
+msgstr "在之前"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:32
 msgid "is between"
-msgstr "ist zwischen"
+msgstr "在之间"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:115
 msgid "Is default tax category"
-msgstr "Ist Standard-Steuerkategorie"
+msgstr "默认税务类别"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "is equal to"
-msgstr "ist gleich"
+msgstr "等于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:40
 msgid "is greater than"
-msgstr "ist größer als"
+msgstr "大于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:45
 msgid "is greater than or equal to"
-msgstr "ist größer oder gleich"
+msgstr "大于或等于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:36
 msgid "is in"
-msgstr "ist in"
+msgstr "在"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "is less than"
-msgstr "ist kleiner als"
+msgstr "小于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:53
 msgid "is less than or equal to"
-msgstr "ist kleiner oder gleich"
+msgstr "小于或等于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "is not equal to"
-msgstr "ist nicht gleich"
+msgstr "不等于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:38
 msgid "is not in"
-msgstr "ist nicht in"
+msgstr "不在"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:34
 msgid "is null"
-msgstr "ist null"
+msgstr "为空"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:105
 msgid "Item added to order"
-msgstr "Element zur Bestellung hinzugefügt"
+msgstr "项目已添加到订单"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:33
 #: src/app/routes/_authenticated/_system/job-queue.tsx:97
 msgid "Job Queue"
-msgstr "Job-Warteschlange"
+msgstr "作业队列"
 
 #: src/lib/components/layout/nav-user.tsx:112
 msgid "Language"
-msgstr "Sprache"
+msgstr "语言"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
 msgid "Last Executed"
-msgstr "Zuletzt ausgeführt"
+msgstr "上次执行"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
 #: src/app/routes/_authenticated/_profile/profile.tsx:98
 msgid "Last name"
-msgstr "Nachname"
+msgstr "姓"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:169
 msgid "Last Result"
-msgstr "Letztes Ergebnis"
+msgstr "上次结果"
 
 #. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:58
 msgid "Last updated {0}"
-msgstr "Zuletzt aktualisiert {0}"
+msgstr "上次更新 {0}"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:48
 msgid "less than"
-msgstr "kleiner als"
+msgstr "小于"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:51
 msgid "less than or equal"
-msgstr "kleiner oder gleich"
+msgstr "小于或等于"
 
 #: src/lib/components/layout/nav-user.tsx:127
 msgctxt "theme"
 msgid "Light"
-msgstr "Hell"
+msgstr "浅色"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:90
 msgid "Link href"
-msgstr "Link-URL"
+msgstr "链接 href"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:115
 msgid "Link target"
-msgstr "Link-Ziel"
+msgstr "链接目标"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:103
 msgid "Link title"
-msgstr "Link-Titel"
+msgstr "链接标题"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:73
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:75
 msgid "Load more"
-msgstr "Mehr laden"
+msgstr "加载更多"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:63
 msgid "Loading addresses..."
-msgstr "Lade Adressen..."
+msgstr "正在加载地址..."
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:376
 msgid "Loading collections..."
-msgstr "Lade Sammlungen..."
+msgstr "正在加载集合..."
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "Loading global settings..."
-msgstr "Lade globale Einstellungen..."
+msgstr "正在加载全局设置..."
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:158
 msgid "Loading preview…"
-msgstr "Lade Vorschau..."
+msgstr "正在加载预览..."
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:91
 msgid "Loading tags..."
-msgstr "Lade Tags..."
+msgstr "正在加载标签..."
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:124
 #: src/lib/components/data-input/product-multi-selector-input.tsx:82
@@ -2574,122 +2574,122 @@ msgstr "Lade Tags..."
 #: src/lib/components/shared/facet-value-selector.tsx:275
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "Loading..."
-msgstr "Lade..."
+msgstr "正在加载..."
 
 #: src/lib/components/layout/language-dialog.tsx:60
 msgid "Locale"
-msgstr "Gebietsschema"
+msgstr "区域设置"
 
 #: src/lib/components/layout/nav-user.tsx:165
 msgid "Log out"
-msgstr "Abmelden"
+msgstr "退出"
 
 #: src/lib/components/data-table/views-sheet.tsx:263
 msgid "Make Global"
-msgstr "Global machen"
+msgstr "设为全局"
 
 #: src/lib/components/data-table/views-sheet.tsx:130
 msgid "Manage global saved views that are visible to all users"
-msgstr "Globale gespeicherte Ansichten verwalten, die für alle Benutzer sichtbar sind"
+msgstr "管理对所有用户可见的全局保存视图"
 
 #: src/lib/components/data-table/manage-global-views-button.tsx:20
 msgid "Manage global views"
-msgstr "Globale Ansichten verwalten"
+msgstr "管理全局视图"
 
 #: src/lib/components/data-table/views-sheet.tsx:125
 msgid "Manage Global Views"
-msgstr "Globale Ansichten verwalten"
+msgstr "管理全局视图"
 
 #: src/lib/components/layout/channel-switcher.tsx:184
 #: src/lib/components/layout/manage-languages-dialog.tsx:258
 msgid "Manage Languages"
-msgstr "Sprachen verwalten"
+msgstr "管理语言"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:215
 msgid "Manage tags"
-msgstr "Tags verwalten"
+msgstr "管理标签"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:192
 msgid "Manage Tags"
-msgstr "Tags verwalten"
+msgstr "管理标签"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:252
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:173
 msgid "Manage variants"
-msgstr "Varianten verwalten"
+msgstr "管理变体"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:56
 msgid "Manage Variants"
-msgstr "Varianten verwalten"
+msgstr "管理变体"
 
 #: src/lib/components/data-table/views-sheet.tsx:132
 msgid "Manage your personal saved views for this table"
-msgstr "Ihre persönlichen gespeicherten Ansichten für diese Tabelle verwalten"
+msgstr "管理此表格的个人保存视图"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:60
 msgid "matches regex"
-msgstr "entspricht regex"
+msgstr "匹配正则表达式"
 
 #: src/lib/components/layout/language-dialog.tsx:96
 msgid "Medium date"
-msgstr "Mittleres Datum"
+msgstr "中等日期"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:245
 msgid "Metadata"
-msgstr "Metadaten"
+msgstr "元数据"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
 msgid "Method"
-msgstr "Methode"
+msgstr "方法"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
 msgid "Modify"
-msgstr "Ändern"
+msgstr "修改"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:392
 msgid "Modify order"
-msgstr "Bestellung ändern"
+msgstr "修改订单"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:83
 msgid "Monitored Resources"
-msgstr "Überwachte Ressourcen"
+msgstr "监控资源"
 
 #: src/lib/components/data-table/global-views-bar.tsx:76
 msgid "More views"
-msgstr "Weitere Ansichten"
+msgstr "更多视图"
 
 #: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:112
 msgid "Move"
-msgstr "Verschieben"
+msgstr "移动"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:336
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
 msgid "Move Collections"
-msgstr "Sammlungen verschieben"
+msgstr "移动集合"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
 msgid "Move to the top level"
-msgstr "An die oberste Ebene verschieben"
+msgstr "移动到顶层"
 
 #. placeholder {0}: collectionsToMove.length
 #. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
 #. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
 msgid "Moving {0} collection{1} into {2}"
-msgstr "Verschiebe {0} Sammlung{1} nach {2}"
+msgstr "正在将 {0} 个集合移动到 {2}"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:421
 msgid "Moving..."
-msgstr "Verschiebe..."
+msgstr "正在移动..."
 
 #: src/lib/components/data-table/my-views-button.tsx:35
 msgid "My saved views"
-msgstr "Meine gespeicherten Ansichten"
+msgstr "我的保存视图"
 
 #: src/lib/components/data-table/views-sheet.tsx:125
 msgid "My Saved Views"
-msgstr "Meine gespeicherten Ansichten"
+msgstr "我的保存视图"
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:36
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:146
@@ -2712,464 +2712,464 @@ msgstr "Meine gespeicherten Ansichten"
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
 msgid "Name"
-msgstr "Name"
+msgstr "名称"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:140
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:150
 msgid "Never"
-msgstr "Niemals"
+msgstr "从不"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:40
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:106
 msgid "New administrator"
-msgstr "Neuer Administrator"
+msgstr "新管理员"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:39
 msgid "New asset"
-msgstr "Neues Asset"
+msgstr "新资源"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:41
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:113
 msgid "New channel"
-msgstr "Neuer Kanal"
+msgstr "新渠道"
 
 #: src/app/routes/_authenticated/_channels/channels.tsx:74
 msgid "New Channel"
-msgstr "Neuer Kanal"
+msgstr "新渠道"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:46
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:116
 msgid "New collection"
-msgstr "Neue Sammlung"
+msgstr "新集合"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx:242
 msgid "New Collection"
-msgstr "Neue Sammlung"
+msgstr "新集合"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:35
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:79
 msgid "New country"
-msgstr "Neues Land"
+msgstr "新国家"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:59
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:147
 msgid "New customer"
-msgstr "Neuer Kunde"
+msgstr "新客户"
 
 #: src/app/routes/_authenticated/_customers/customers.tsx:82
 msgid "New Customer"
-msgstr "Neuer Kunde"
+msgstr "新客户"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:38
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:87
 msgid "New customer group"
-msgstr "Neue Kundengruppe"
+msgstr "新客户组"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:65
 msgid "New Customer Group"
-msgstr "Neue Kundengruppe"
+msgstr "新客户组"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:166
 msgid "New email:"
-msgstr "Neue E-Mail:"
+msgstr "新电子邮件："
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:38
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:94
 msgid "New facet"
-msgstr "Neue Facette"
+msgstr "新属性"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:130
 msgid "New Facet"
-msgstr "Neue Facette"
+msgstr "新属性"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:41
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:103
 msgid "New facet value"
-msgstr "Neuer Facetten-Wert"
+msgstr "新属性值"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:253
 msgid "New facet values to add:"
-msgstr "Neue Facetten-Werte hinzufügen:"
+msgstr "要添加的新属性值："
 
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:86
 msgid "New option"
-msgstr "Neue Option"
+msgstr "新选项"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:43
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:121
 msgid "New payment method"
-msgstr "Neue Zahlungsmethode"
+msgstr "新支付方式"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
 msgid "New Payment Method"
-msgstr "Neue Zahlungsmethode"
+msgstr "新支付方式"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:46
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:103
 msgid "New product"
-msgstr "Neues Produkt"
+msgstr "新商品"
 
 #: src/app/routes/_authenticated/_products/products.tsx:92
 msgid "New Product"
-msgstr "Neues Produkt"
+msgstr "新商品"
 
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:154
 msgid "New product option"
-msgstr "Neue Produktoption"
+msgstr "新商品选项"
 
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:133
 msgid "New product option group"
-msgstr "Neue Produktoptionsgruppe"
+msgstr "新商品选项组"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:125
 msgid "New product variant"
-msgstr "Neue Produktvariante"
+msgstr "新商品变体"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:127
 msgid "New promotion"
-msgstr "Neue Aktion"
+msgstr "新促销"
 
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:75
 msgid "New Promotion"
-msgstr "Neue Aktion"
+msgstr "新促销"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:35
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:79
 msgid "New role"
-msgstr "Neue Rolle"
+msgstr "新角色"
 
 #: src/app/routes/_authenticated/_roles/roles.tsx:92
 msgid "New Role"
-msgstr "Neue Rolle"
+msgstr "新角色"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:32
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:73
 msgid "New seller"
-msgstr "Neuer Verkäufer"
+msgstr "新卖家"
 
 #: src/app/routes/_authenticated/_sellers/sellers.tsx:49
 msgid "New Seller"
-msgstr "Neuer Verkäufer"
+msgstr "新卖家"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:44
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:120
 msgid "New shipping method"
-msgstr "Neue Versandmethode"
+msgstr "新配送方式"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
 msgid "New Shipping Method"
-msgstr "Neue Versandmethode"
+msgstr "新配送方式"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:39
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:90
 msgid "New stock location"
-msgstr "Neuer Lagerort"
+msgstr "新库存位置"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:58
 msgid "New Stock Location"
-msgstr "Neuer Lagerort"
+msgstr "新库存位置"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:89
 msgid "New tax category"
-msgstr "Neue Steuerkategorie"
+msgstr "新税务类别"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:62
 msgid "New Tax Category"
-msgstr "Neue Steuerkategorie"
+msgstr "新税务类别"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:38
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:87
 msgid "New tax rate"
-msgstr "Neuer Steuersatz"
+msgstr "新税率"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:103
 msgid "New Tax Rate"
-msgstr "Neuer Steuersatz"
+msgstr "新税率"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:129
 msgid "New window"
-msgstr "Neues Fenster"
+msgstr "新窗口"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:35
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:77
 msgid "New zone"
-msgstr "Neue Zone"
+msgstr "新区域"
 
 #: src/app/routes/_authenticated/_zones/zones.tsx:56
 msgid "New Zone"
-msgstr "Neue Zone"
+msgstr "新区域"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:145
 msgid "Next Execution"
-msgstr "Nächste Ausführung"
+msgstr "下次执行"
 
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:92
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:102
 msgid "No actions available"
-msgstr "Keine Aktionen verfügbar"
+msgstr "无可用操作"
 
 #: src/app/routes/_authenticated/_orders/components/order-address.tsx:30
 msgid "No address"
-msgstr "Keine Adresse"
+msgstr "无地址"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:67
 msgid "No addresses found"
-msgstr "Keine Adressen gefunden"
+msgstr "未找到地址"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:513
 msgid "No billing address"
-msgstr "Keine Rechnungsadresse"
+msgstr "无账单地址"
 
 #: src/lib/components/shared/country-selector.tsx:88
 msgid "No countries found"
-msgstr "Keine Länder gefunden"
+msgstr "未找到国家"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:460
 msgid "No customer"
-msgstr "Kein Kunde"
+msgstr "无客户"
 
 #: src/lib/components/shared/customer-selector.tsx:90
 msgid "No customers found"
-msgstr "Keine Kunden gefunden"
+msgstr "未找到客户"
 
 #: src/app/common/duplicate-entity-dialog.tsx:99
 msgid "No duplicator found with code \"{duplicatorCode}\" for {entityName}s"
-msgstr "Kein Duplikator mit Code \"{duplicatorCode}\" für {entityName} gefunden"
+msgstr "未找到代码为\"{duplicatorCode}\"的 {entityName} 复制器"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:52
 msgid "No eligible shipping methods found for this order."
-msgstr "Keine geeigneten Versandmethoden für diese Bestellung gefunden."
+msgstr "未找到此订单的符合条件的配送方式。"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:235
 msgid "No facet values"
-msgstr "Keine Facetten-Werte"
+msgstr "无属性值"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
 msgid "No fulfillments"
-msgstr "Keine Erfüllungen"
+msgstr "无履行"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:354
 msgid "No global languages configured"
-msgstr "Keine globalen Sprachen konfiguriert"
+msgstr "未配置全局语言"
 
 #: src/lib/components/data-table/views-sheet.tsx:141
 msgid "No global views have been created yet."
-msgstr "Es wurden noch keine globalen Ansichten erstellt."
+msgstr "尚未创建全局视图。"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:90
 msgid "No items found"
-msgstr "Keine Artikel gefunden"
+msgstr "未找到项目"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:331
 msgid "No items selected"
-msgstr "Keine Artikel ausgewählt"
+msgstr "未选择项目"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:217
 msgid "No modifications made"
-msgstr "Keine Änderungen vorgenommen"
+msgstr "未进行修改"
 
 #: src/lib/components/data-input/relation-selector.tsx:458
 #: src/lib/components/shared/facet-value-selector.tsx:314
 msgid "No more items"
-msgstr "Keine weiteren Artikel"
+msgstr "没有更多项目"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:259
 msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
-msgstr "Noch keine Optionsgruppen definiert. Fügen Sie Optionsgruppen hinzu, um verschiedene Varianten Ihres Produkts zu erstellen (z.B. Größe, Farbe, Material)"
+msgstr "尚未定义选项组。添加选项组以创建商品的不同变体（例如：尺寸、颜色、材质）"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:336
 msgid "No payment or refund is required for these changes."
-msgstr "Für diese Änderungen ist keine Zahlung oder Rückerstattung erforderlich."
+msgstr "这些更改不需要支付或退款。"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:333
 msgid "No payment or refund required"
-msgstr "Keine Zahlung oder Rückerstattung erforderlich"
+msgstr "不需要支付或退款"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:141
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:184
 msgid "No result yet"
-msgstr "Noch kein Ergebnis"
+msgstr "尚无结果"
 
 #: src/lib/components/data-table/data-table.tsx:338
 msgid "No results"
-msgstr "Keine Ergebnisse"
+msgstr "无结果"
 
 #: src/lib/components/data-input/relation-selector.tsx:430
 #: src/lib/components/shared/facet-value-selector.tsx:277
 msgid "No results found"
-msgstr "Keine Ergebnisse gefunden"
+msgstr "未找到结果"
 
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "No sellers found"
-msgstr "Keine Verkäufer gefunden"
+msgstr "未找到卖家"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:487
 msgid "No shipping address"
-msgstr "Keine Versandadresse"
+msgstr "无配送地址"
 
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:59
 msgid "No shipping methods available"
-msgstr "Keine Versandmethoden verfügbar"
+msgstr "无可用配送方式"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
 msgid "No stock locations available on current channel"
-msgstr "Keine Lagerorte im aktuellen Kanal verfügbar"
+msgstr "当前渠道无可用库存位置"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:128
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:166
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:99
 msgid "No tags found"
-msgstr "Keine Tags gefunden"
+msgstr "未找到标签"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:111
 msgid "No tags selected"
-msgstr "Keine Tags ausgewählt"
+msgstr "未选择标签"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
 #: src/lib/components/shared/translatable-form-field.tsx:62
 msgid "No translation found for {0}"
-msgstr "Keine Übersetzung für {0} gefunden"
+msgstr "未找到 {0} 的翻译"
 
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:75
 msgid "Normal"
-msgstr "Normal"
+msgstr "正常"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:38
 msgid "not in"
-msgstr "nicht in"
+msgstr "不在"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:163
 msgid "Not Running"
-msgstr "Läuft nicht"
+msgstr "未运行"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:158
 msgid "Not set"
-msgstr "Nicht gesetzt"
+msgstr "未设置"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:43
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:69
 msgid "Note added"
-msgstr "Notiz hinzugefügt"
+msgstr "备注已添加"
 
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:21
 msgid "Note is private"
-msgstr "Notiz ist privat"
+msgstr "备注为私有"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:70
 msgid "Off"
-msgstr "Aus"
+msgstr "关"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:158
 msgid "Old email:"
-msgstr "Alte E-Mail:"
+msgstr "旧电子邮件："
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:269
 msgid "Option"
-msgstr "Option"
+msgstr "选项"
 
 #. placeholder {0}: groupIndex + 1
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:368
 msgid "Option group {0}"
-msgstr "Optionsgruppe {0}"
+msgstr "选项组 {0}"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:267
 msgid "Option group name"
-msgstr "Name der Optionsgruppe"
+msgstr "选项组名称"
 
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:81
 msgid "Option Group Name"
-msgstr "Name der Optionsgruppe"
+msgstr "选项组名称"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:190
 msgid "Option group removed"
-msgstr "Optionsgruppe entfernt"
+msgstr "选项组已删除"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:255
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
 msgid "Option Groups"
-msgstr "Optionsgruppen"
+msgstr "选项组"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:288
 msgid "Option name"
-msgstr "Optionsname"
+msgstr "选项名称"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:142
 msgid "Option value name"
-msgstr "Name des Optionswerts"
+msgstr "选项值名称"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:275
 msgid "Option values"
-msgstr "Optionswerte"
+msgstr "选项值"
 
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:90
 msgid "Option Values"
-msgstr "Optionswerte"
+msgstr "选项值"
 
 #: src/lib/components/data-input/combination-mode-input.tsx:56
 msgid "OR"
-msgstr "ODER"
+msgstr "或"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:94
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:78
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:100
 msgid "Order cancelled"
-msgstr "Bestellung storniert"
+msgstr "订单已取消"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
-msgstr "Bestellung zugestellt"
+msgstr "订单已送达"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:75
 msgid "Order fulfilled"
-msgstr "Bestellung erfüllt"
+msgstr "订单已履行"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
 msgid "Order history"
-msgstr "Bestellverlauf"
+msgstr "订单历史"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:137
 msgid "Order line removed"
-msgstr "Bestellzeile entfernt"
+msgstr "订单行已删除"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:121
 msgid "Order line updated"
-msgstr "Bestellzeile aktualisiert"
+msgstr "订单行已更新"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:241
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:402
 msgid "Order lines"
-msgstr "Bestellpositionen"
+msgstr "订单行"
 
 #. placeholder {0}: entry.data.modificationId
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
 msgid "Order modification #{0}"
-msgstr "Bestellungsmodifikation #{0}"
+msgstr "订单修改 #{0}"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:96
 msgid "Order modified"
-msgstr "Bestellung geändert"
+msgstr "订单已修改"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:56
 msgid "Order not found"
-msgstr "Bestellung nicht gefunden"
+msgstr "未找到订单"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:72
 msgid "Order placed"
-msgstr "Bestellung aufgegeben"
+msgstr "订单已下单"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:81
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:87
 msgid "Order shipped"
-msgstr "Bestellung versandt"
+msgstr "订单已发货"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
 msgid "Order transitioned"
-msgstr "Bestellung übertragen"
+msgstr "订单已转换"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:246
 #: src/app/routes/_authenticated/_orders/orders.tsx:21
@@ -3179,133 +3179,133 @@ msgstr "Bestellung übertragen"
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:73
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
 msgid "Orders"
-msgstr "Bestellungen"
+msgstr "订单"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
 msgid "Out-of-stock threshold"
-msgstr "Grenzwert für Lagerausfall"
+msgstr "缺货阈值"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:144
 #: src/app/routes/_authenticated/_profile/profile.tsx:110
 #: src/lib/components/login/login-form.tsx:128
 msgid "Password"
-msgstr "Passwort"
+msgstr "密码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:59
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:128
 msgid "Password reset requested"
-msgstr "Passwort-Zurücksetzung angefordert"
+msgstr "已请求重置密码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:61
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:138
 msgid "Password reset verified"
-msgstr "Passwort-Zurücksetzung verifiziert"
+msgstr "密码重置已验证"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:57
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:118
 msgid "Password updated"
-msgstr "Passwort aktualisiert"
+msgstr "密码已更新"
 
 #. placeholder {0}: entry.data.paymentId
 #. placeholder {1}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:24
 msgid "Payment #{0} transitioned to {1}"
-msgstr "Zahlung #{0} übertragen an {1}"
+msgstr "支付 #{0} 已转换到 {1}"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:57
 msgid "Payment authorized"
-msgstr "Zahlung autorisiert"
+msgstr "支付已授权"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:75
 msgid "Payment cancelled successfully"
-msgstr "Zahlung erfolgreich storniert"
+msgstr "支付已成功取消"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
 msgid "Payment details"
-msgstr "Zahlungsdetails"
+msgstr "支付详情"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:172
 msgid "Payment eligibility checker"
-msgstr "Zahlungsberechtigungsprüfer"
+msgstr "支付资格检查器"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:60
 msgid "Payment failed"
-msgstr "Zahlung fehlgeschlagen"
+msgstr "支付失败"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:191
 msgid "Payment metadata"
-msgstr "Zahlungsmetadaten"
+msgstr "支付元数据"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:146
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:168
 msgid "Payment method"
-msgstr "Zahlungsmethode"
+msgstr "支付方式"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:147
 msgid "Payment method is required"
-msgstr "Zahlungsmethode ist erforderlich"
+msgstr "支付方式为必填项"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
 #: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
 #: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
 msgid "Payment Methods"
-msgstr "Zahlungsmethoden"
+msgstr "支付方式"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:54
 msgid "Payment settled"
-msgstr "Zahlung abgerechnet"
+msgstr "支付已完成"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:45
 msgid "Payment settled successfully"
-msgstr "Zahlung erfolgreich abgewickelt"
+msgstr "支付已成功完成"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:60
 msgid "Payment state updated successfully"
-msgstr "Zahlungsstatus erfolgreich aktualisiert"
+msgstr "支付状态已成功更新"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:62
 msgid "Payment transitioned"
-msgstr "Zahlung übertragen"
+msgstr "支付已转换"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:202
 msgid "Per customer usage limit"
-msgstr "Nutzungslimit pro Kunde"
+msgstr "每位客户使用限制"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:133
 msgid "Permissions"
-msgstr "Berechtigungen"
+msgstr "权限"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:191
 msgid "Phone number"
-msgstr "Telefonnummer"
+msgstr "电话号码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:240
 #: src/lib/components/shared/customer-address-form.tsx:263
 msgid "Phone Number"
-msgstr "Telefonnummer"
+msgstr "电话号码"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
 msgid "Please add products and complete the shipping address to run the test."
-msgstr "Bitte fügen Sie Produkte hinzu und vervollständigen Sie die Versandadresse, um den Test durchzuführen."
+msgstr "请添加商品并填写配送地址以运行测试。"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:308
 msgid "Please select a target collection"
-msgstr "Bitte wählen Sie eine Zielsammlung aus"
+msgstr "请选择目标集合"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:207
 #: src/lib/components/shared/customer-address-form.tsx:213
 msgid "Postal Code"
-msgstr "Postleitzahl"
+msgstr "邮政编码"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:439
 msgid "Preview changes"
-msgstr "Änderungen vorschauen"
+msgstr "预览更改"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:149
 msgid "Preview order modifications"
-msgstr "Bestelländerungen vorschauen"
+msgstr "预览订单修改"
 
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:185
@@ -3313,64 +3313,64 @@ msgstr "Bestelländerungen vorschauen"
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/lib/components/layout/language-dialog.tsx:108
 msgid "Price"
-msgstr "Preis"
+msgstr "价格"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:170
 msgid "Price and tax"
-msgstr "Preis und Steuer"
+msgstr "价格和税费"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:142
 msgid "Price conversion factor"
-msgstr "Preisumrechnungsfaktor"
+msgstr "价格转换系数"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:234
 msgid "Prices include tax for default tax zone"
-msgstr "Preise enthalten Steuern für Standard-Steuerzone"
+msgstr "价格包含默认税务区域的税费"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:82
 msgid "private"
-msgstr "privat"
+msgstr "私有"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:134
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:112
 msgid "Private"
-msgstr "Privat"
+msgstr "私有"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:135
 msgid "Private collections are not visible in the shop"
-msgstr "Private Sammlungen sind im Shop nicht sichtbar"
+msgstr "私有集合在商店中不可见"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:113
 msgid "Private facets are not visible in the shop"
-msgstr "Private Facetten sind im Shop nicht sichtbar"
+msgstr "私有属性在商店中不可见"
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
 msgid "Product"
-msgstr "Produkt"
+msgstr "商品"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:156
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:133
 msgid "Product name"
-msgstr "Produktname"
+msgstr "商品名称"
 
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:173
 msgid "Product Option Group"
-msgstr "Produktoptionsgruppe"
+msgstr "商品选项组"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:291
 msgid "Product options"
-msgstr "Produktoptionen"
+msgstr "商品选项"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:191
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:174
 msgid "Product Options"
-msgstr "Produktoptionen"
+msgstr "商品选项"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:54
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
 msgid "Product Variants"
-msgstr "Produktvarianten"
+msgstr "商品变体"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:49
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
@@ -3380,149 +3380,149 @@ msgstr "Produktvarianten"
 #: src/app/routes/_authenticated/_products/products.tsx:23
 #: src/app/routes/_authenticated/_products/products.tsx:46
 msgid "Products"
-msgstr "Produkte"
+msgstr "商品"
 
 #: src/app/routes/_authenticated/_profile/profile.tsx:30
 #: src/app/routes/_authenticated/_profile/profile.tsx:74
 #: src/lib/components/layout/nav-user.tsx:106
 msgid "Profile"
-msgstr "Profil"
+msgstr ""
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:20
 #: src/app/routes/_authenticated/_promotions/promotions.tsx:29
 msgid "Promotions"
-msgstr "Aktionen"
+msgstr "促销"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:82
 msgid "public"
-msgstr "öffentlich"
+msgstr "公开"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
 msgid "Quantity"
-msgstr "Menge"
+msgstr "数量"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:211
 msgid "Queue"
-msgstr "Warteschlange"
+msgstr "队列"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:122
 msgid "Rate"
-msgstr "Satz"
+msgstr "费率"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:233
 msgid "Reason"
-msgstr "Grund"
+msgstr "原因"
 
 #: src/app/routes/_authenticated/_products/products.tsx:85
 msgid "Rebuild search index"
-msgstr "Suchindex neu erstellen"
+msgstr "重建搜索索引"
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:47
 msgid "Refresh"
-msgstr "Aktualisieren"
+msgstr "刷新"
 
 #: src/lib/components/data-table/refresh-button.tsx:45
 msgid "Refresh data"
-msgstr "Daten aktualisieren"
+msgstr "刷新数据"
 
 #. placeholder {0}: entry.data.refundId
 #. placeholder {1}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:37
 msgid "Refund #{0} transitioned to {1}"
-msgstr "Rückerstattung #{0} übertragen zu {1}"
+msgstr "退款 #{0} 已转换到 {1}"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:229
 msgid "Refund from this method"
-msgstr "Rückerstattung von dieser Methode"
+msgstr "从此方式退款"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:215
 msgid "Refund ID"
-msgstr "Rückerstattungs-ID"
+msgstr "退款 ID"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:170
 msgid "Refund required"
-msgstr "Rückerstattung erforderlich"
+msgstr "需要退款"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:65
 msgid "Refund settled"
-msgstr "Rückerstattung abgerechnet"
+msgstr "退款已完成"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:90
 msgid "Refund settled successfully"
-msgstr "Rückerstattung erfolgreich abgewickelt"
+msgstr "退款已成功完成"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:67
 msgid "Refund transitioned"
-msgstr "Rückerstattung übertragen"
+msgstr "退款已转换"
 
 #. placeholder {0}: payment.refunds.length
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:208
 msgid "Refunds ({0})"
-msgstr "Rückerstattungen ({0})"
+msgstr "退款 ({0})"
 
 #: src/lib/components/data-input/slug-input.tsx:265
 #: src/lib/components/data-input/slug-input.tsx:266
 msgid "Regenerate slug from source field"
-msgstr "Slug aus Quellfeld regenerieren"
+msgstr "从源字段重新生成 slug"
 
 #: src/app/routes/_authenticated/_zones/zones.tsx:36
 msgid "Regions"
-msgstr "Regionen"
+msgstr "地区"
 
 #: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:23
 msgid "Registered"
-msgstr "Registriert"
+msgstr "已注册"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:289
 msgid "Remaining:"
-msgstr "Verbleibend:"
+msgstr "剩余："
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:472
 msgid "Remove"
-msgstr "Entfernen"
+msgstr "删除"
 
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:81
 msgid "Remove from current channel"
-msgstr "Aus aktuellem Kanal entfernen"
+msgstr "从当前渠道中删除"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
-msgstr "Gruppe entfernen"
+msgstr "删除组"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:85
 msgid "Remove item"
-msgstr "Element entfernen"
+msgstr "删除项目"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
-msgstr "Link entfernen"
+msgstr "删除链接"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:199
 msgid "Removed coupon codes"
-msgstr "Entfernte Gutscheincodes"
+msgstr "已删除优惠券代码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:49
 msgid "Removed from group"
-msgstr "Aus Gruppe entfernt"
+msgstr "已从组中删除"
 
 #. placeholder {0}: removedLines.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:175
 msgid "Removing {0} item(s)"
-msgstr "Entferne {0} Artikel"
+msgstr "正在删除 {0} 个项目"
 
 #: src/lib/components/data-table/views-sheet.tsx:240
 msgid "Rename"
-msgstr "Umbenennen"
+msgstr "重命名"
 
 #: src/lib/components/data-table/data-table-view-options.tsx:123
 msgid "Reset"
-msgstr "Zurücksetzen"
+msgstr "重置"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
 msgid "Review the changes before applying them to the order."
-msgstr "Überprüfen Sie die Änderungen, bevor Sie sie auf die Bestellung anwenden."
+msgstr "在将更改应用到订单之前，请先查看更改。"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:150
 #: src/app/routes/_authenticated/_administrators/administrators.tsx:46
@@ -3530,351 +3530,351 @@ msgstr "Überprüfen Sie die Änderungen, bevor Sie sie auf die Bestellung anwen
 #: src/app/routes/_authenticated/_roles/roles.tsx:19
 #: src/app/routes/_authenticated/_roles/roles.tsx:28
 msgid "Roles"
-msgstr "Rollen"
+msgstr "角色"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:210
 msgid "Run"
-msgstr "Ausführen"
+msgstr "运行"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:30
 msgid "Run Test"
-msgstr "Test ausführen"
+msgstr "运行测试"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:155
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:159
 msgid "Running"
-msgstr "Läuft"
+msgstr "正在运行"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:126
 msgid "Same window"
-msgstr "Gleiches Fenster"
+msgstr "相同窗口"
 
 #: src/lib/components/layout/language-dialog.tsx:79
 msgid "Sample Formatting"
-msgstr "Beispielformatierung"
+msgstr "示例格式"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
 #: src/lib/components/data-table/views-sheet.tsx:210
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
 msgid "Save"
-msgstr "Speichern"
+msgstr "保存"
 
 #: src/lib/components/data-table/views-sheet.tsx:144
 msgid "Save a view as \"Global\" to make it available to all users."
-msgstr "Speichern Sie eine Ansicht als \"Global\", um sie für alle Benutzer verfügbar zu machen."
+msgstr "将视图保存为\"全局\"以使其对所有用户可用。"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
 #: src/lib/components/shared/customer-address-form.tsx:329
 msgid "Save Address"
-msgstr "Adresse speichern"
+msgstr "保存地址"
 
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:122
 msgid "Save changes"
-msgstr "Änderungen speichern"
+msgstr "保存更改"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
 msgid "Save Changes"
-msgstr "Änderungen speichern"
+msgstr "保存更改"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
 msgid "Save option group"
-msgstr "Optionsgruppe speichern"
+msgstr "保存选项组"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
 #: src/lib/components/layout/manage-languages-dialog.tsx:399
 msgid "Saving..."
-msgstr "Speichere..."
+msgstr "正在保存..."
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:130
 msgid "Schedule"
-msgstr "Zeitplan"
+msgstr "时间表"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:127
 msgid "Schedule Pattern"
-msgstr "Zeitplan-Muster"
+msgstr "时间表模式"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:90
 msgid "Scheduled task could not be executed"
-msgstr "Geplante Aufgabe konnte nicht ausgeführt werden"
+msgstr "无法执行计划任务"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:87
 msgid "Scheduled task will be executed"
-msgstr "Geplante Aufgabe wird ausgeführt"
+msgstr "将执行计划任务"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:29
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:232
 msgid "Scheduled Tasks"
-msgstr "Geplante Aufgaben"
+msgstr "计划任务"
 
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:66
 msgid "Search {name}..."
-msgstr "{name} suchen..."
+msgstr "搜索 {name}..."
 
 #: src/lib/components/shared/channel-selector.tsx:48
 msgid "Search channels..."
-msgstr "Kanäle suchen..."
+msgstr "搜索渠道..."
 
 #: src/lib/components/shared/currency-selector.tsx:30
 msgid "Search currencies..."
-msgstr "Währungen suchen..."
+msgstr "搜索货币..."
 
 #: src/app/routes/_authenticated/_products/products.tsx:34
 msgid "Search index rebuild could not be started"
-msgstr "Suchindex-Neuerstellung konnte nicht gestartet werden"
+msgstr "无法开始重建搜索索引"
 
 #: src/app/routes/_authenticated/_products/products.tsx:31
 msgid "Search index rebuild started"
-msgstr "Suchindex-Neuerstellung gestartet"
+msgstr "已开始重建搜索索引"
 
 #: src/lib/components/shared/language-selector.tsx:45
 msgid "Search languages..."
-msgstr "Sprachen suchen..."
+msgstr "搜索语言..."
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:107
 msgid "Search payment methods..."
-msgstr "Zahlungsmethoden suchen..."
+msgstr "搜索支付方式..."
 
 #: src/lib/components/shared/role-selector.tsx:53
 msgid "Search roles..."
-msgstr "Rollen suchen..."
+msgstr "搜索角色..."
 
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
 #: src/lib/components/data-input/default-relation-input.tsx:616
 msgid "Select {0}"
-msgstr "{0} auswählen"
+msgstr "选择 {0}"
 
 #. placeholder {0}: selectedItems.length
 #: src/lib/components/data-input/product-multi-selector-input.tsx:367
 msgid "Select {0} Items"
-msgstr "{0} Artikel auswählen"
+msgstr "选择 {0} 个项目"
 
 #. placeholder {0}: entityName.toLowerCase()
 #: src/lib/components/data-input/default-relation-input.tsx:603
 msgid "Select {0}s"
-msgstr "{0} auswählen"
+msgstr "选择 {0}"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:107
 #: src/lib/components/shared/channel-selector.tsx:47
 msgid "Select a channel"
-msgstr "Kanal auswählen"
+msgstr "选择一个渠道"
 
 #. placeholder {0}: entityIds.length
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:95
 msgid "Select a channel to assign {0} {entityType} to"
-msgstr "Kanal auswählen, dem {0} {entityType} zugeordnet werden soll"
+msgstr "选择要将 {0} {entityType} 分配到的渠道"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
 #: src/lib/components/shared/customer-address-form.tsx:240
 msgid "Select a country"
-msgstr "Land auswählen"
+msgstr "选择一个国家"
 
 #: src/lib/components/shared/currency-selector.tsx:29
 msgid "Select a currency"
-msgstr "Währung auswählen"
+msgstr "选择一种货币"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
 msgid "Select a destination collection"
-msgstr "Zielsammlung auswählen"
+msgstr "选择目标集合"
 
 #: src/lib/components/shared/language-selector.tsx:44
 msgid "Select a language"
-msgstr "Sprache auswählen"
+msgstr "选择一种语言"
 
 #: src/lib/components/shared/role-selector.tsx:52
 msgid "Select a role"
-msgstr "Rolle auswählen"
+msgstr "选择一个角色"
 
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
 msgid "Select a target collection to move {0} to."
-msgstr "Zielsammlung auswählen, um {0} dorthin zu verschieben."
+msgstr "选择要将 {0} 移动到的目标集合。"
 
 #: src/lib/components/shared/tax-category-selector.tsx:50
 msgid "Select a tax category"
-msgstr "Steuerkategorie auswählen"
+msgstr "选择一个税务类别"
 
 #: src/lib/components/shared/zone-selector.tsx:50
 msgid "Select a zone"
-msgstr "Zone auswählen"
+msgstr "选择一个区域"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:51
 msgid "Select address"
-msgstr "Adresse auswählen"
+msgstr "选择地址"
 
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:58
 msgid "Select an address"
-msgstr "Eine Adresse auswählen"
+msgstr "选择一个地址"
 
 #: src/lib/components/data-input/select-with-options.tsx:81
 msgid "Select an option"
-msgstr "Eine Option auswählen"
+msgstr "选择一个选项"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:296
 msgid "Select Available Languages"
-msgstr "Verfügbare Sprachen auswählen"
+msgstr "选择可用语言"
 
 #: src/lib/components/shared/country-selector.tsx:73
 msgid "Select country"
-msgstr "Land auswählen"
+msgstr "选择国家"
 
 #: src/lib/components/shared/customer-selector.tsx:78
 msgid "Select customer"
-msgstr "Kunde auswählen"
+msgstr "选择客户"
 
 #: src/lib/components/layout/language-dialog.tsx:36
 msgid "Select display language"
-msgstr "Anzeigesprache auswählen"
+msgstr "选择显示语言"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:358
 msgid "Select from globally available languages for this channel"
-msgstr "Aus global verfügbaren Sprachen für diesen Kanal auswählen"
+msgstr "从此渠道的全局可用语言中选择"
 
 #: src/lib/components/data-input/relation-selector.tsx:410
 msgid "Select item"
-msgstr "Artikel auswählen"
+msgstr "选择项目"
 
 #: src/lib/components/data-input/relation-selector.tsx:407
 msgid "Select items"
-msgstr "Artikel auswählen"
+msgstr "选择项目"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
 msgid "Select next state"
-msgstr "Nächsten Status auswählen"
+msgstr "选择下一个状态"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
 msgid "Select quantities to fulfill and configure the fulfillment handler"
-msgstr "Mengen zum Erfüllen auswählen und Erfüllungs-Handler konfigurieren"
+msgstr "选择要履行的数量并配置履行处理器"
 
 #: src/lib/components/shared/seller-selector.tsx:76
 msgid "Select seller"
-msgstr "Verkäufer auswählen"
+msgstr "选择卖家"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
 msgid "Select the next state for the order"
-msgstr "Nächsten Status für die Bestellung auswählen"
+msgstr "选择订单的下一个状态"
 
 #. placeholder {0}: productData.product.variants[0].name
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:328
 msgid "Select which options should apply to the existing variant \"{0}\""
-msgstr "Wählen Sie aus, welche Optionen für die vorhandene Variante \"{0}\" gelten sollen"
+msgstr "选择应用于现有变体\"{0}\"的选项"
 
 #: src/lib/components/data-input/product-multi-selector-input.tsx:316
 msgid "Selected Items"
-msgstr "Ausgewählte Artikel"
+msgstr "已选项目"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:156
 msgid "Seller"
-msgstr "Verkäufer"
+msgstr "卖家"
 
 #: src/app/routes/_authenticated/_orders/orders_.$aggregateOrderId_.seller-orders.$sellerOrderId.tsx:36
 msgid "Seller order"
-msgstr "Verkäuferbestellung"
+msgstr "卖家订单"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id.tsx:23
 msgid "Seller orders"
-msgstr "Verkäuferbestellungen"
+msgstr "卖家订单"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:31
 #: src/app/routes/_authenticated/_sellers/sellers.tsx:14
 #: src/app/routes/_authenticated/_sellers/sellers.tsx:23
 msgid "Sellers"
-msgstr "Verkäufer"
+msgstr "卖家"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:383
 msgid "Set custom fields"
-msgstr "Benutzerdefinierte Felder setzen"
+msgstr "设置自定义字段"
 
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:97
 msgid "Set Focal Point"
-msgstr "Fokuspunkt setzen"
+msgstr "设置焦点"
 
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:145
 msgid "Set link"
-msgstr "Link setzen"
+msgstr "设置链接"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:113
 msgid "Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
-msgstr "Legt die Sprachen fest, die für alle Kanäle verfügbar sind. Einzelne Kanäle können dann eine Teilmenge dieser Sprachen unterstützen."
+msgstr "设置所有渠道可用的语言。然后，各个渠道可以支持这些语言的子集。"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:131
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
-msgstr "Legt den Lagerbestand fest, bei dem diese Variante als nicht vorrätig gilt. Ein negativer Wert ermöglicht die Unterstützung von Nachbestellungen. Kann von Produktvarianten überschrieben werden."
+msgstr "设置将此变体视为缺货的库存水平。使用负值可启用延期交货支持。可由商品变体覆盖。"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:267
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:285
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
-msgstr "Legt den Lagerbestand fest, bei dem diese Variante als nicht vorrätig gilt. Ein negativer Wert ermöglicht die Unterstützung von Nachbestellungen."
+msgstr "设置将此变体视为缺货的库存水平。使用负值可启用延期交货支持。"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:142
 msgid "Settle payment"
-msgstr "Zahlung abwickeln"
+msgstr "完成支付"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:264
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:49
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:74
 msgid "Settle refund"
-msgstr "Rückerstattung abrechnen"
+msgstr "完成退款"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
 msgid "Shipping"
-msgstr "Versand"
+msgstr "配送"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:467
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
 msgid "Shipping address"
-msgstr "Versandadresse"
+msgstr "配送地址"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:142
 msgid "Shipping Address"
-msgstr "Versandadresse"
+msgstr "配送地址"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:109
 msgid "Shipping address changed"
-msgstr "Versandadresse geändert"
+msgstr "配送地址已更改"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
 msgid "Shipping address set for order"
-msgstr "Lieferadresse für Bestellung festgelegt"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
 msgid "Shipping address unset for order"
-msgstr "Lieferadresse für Bestellung entfernt"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:123
 msgid "Shipping method changed"
-msgstr "Versandmethode geändert"
+msgstr "配送方式已更改"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:58
 msgid "Shipping method is eligible for this order"
-msgstr "Versandmethode ist für diese Bestellung berechtigt"
+msgstr "配送方式适用于此订单"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:76
 msgid "Shipping method is not eligible for this order"
-msgstr "Versandmethode ist für diese Bestellung nicht berechtigt"
+msgstr "配送方式不适用于此订单"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
 msgid "Shipping method set for order"
-msgstr "Versandmethode für Bestellung festgelegt"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
 msgid "Shipping Methods"
-msgstr "Versandmethoden"
+msgstr "配送方式"
 
 #: src/lib/components/layout/language-dialog.tsx:102
 msgid "Short date"
-msgstr "Kurzes Datum"
+msgstr "短日期"
 
 #. placeholder {0}: filteredTags.length
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:167
 msgid "Showing all {0} results"
-msgstr "Zeige alle {0} Ergebnisse"
+msgstr "显示所有 {0} 个结果"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:163
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
@@ -3891,491 +3891,491 @@ msgstr "Slug"
 
 #: src/lib/components/data-input/slug-input.tsx:237
 msgid "Slug is set"
-msgstr "Slug ist festgelegt"
+msgstr "Slug 已设置"
 
 #: src/lib/components/data-input/slug-input.tsx:238
 msgid "Slug will be generated automatically..."
-msgstr "Slug wird automatisch generiert..."
+msgstr "Slug 将自动生成..."
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx:74
 msgid "Some resources are down"
-msgstr "Einige Ressourcen sind nicht verfügbar"
+msgstr "某些资源已关闭"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:138
 msgid "Source"
-msgstr "Quelle"
+msgstr "来源"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:174
 msgid "Starts at"
-msgstr "Beginnt am"
+msgstr "开始于"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
 #: src/app/routes/_authenticated/_orders/orders.tsx:99
 #: src/app/routes/_authenticated/_system/job-queue.tsx:222
 msgid "State"
-msgstr "Status"
+msgstr "州/省"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:201
 msgid "State / Province"
-msgstr "Bundesland / Provinz"
+msgstr "州/省"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
 #: src/lib/components/shared/customer-address-form.tsx:192
 msgid "State/Province"
-msgstr "Bundesland/Provinz"
+msgstr "州/省"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:252
 #: src/app/routes/_authenticated/_customers/customers.tsx:45
 msgid "Status"
-msgstr "Status"
+msgstr "状态"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:201
 msgid "Stock"
-msgstr "Lager"
+msgstr "库存"
 
 #: src/lib/components/shared/stock-level-label.tsx:18
 msgid "Stock allocated"
-msgstr "Zugewiesener Bestand"
+msgstr "库存已分配"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:208
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
 msgid "Stock level"
-msgstr "Lagerbestand"
+msgstr "库存水平"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:233
 msgid "Stock levels"
-msgstr "Lagerbestände"
+msgstr "库存水平"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:38
 #: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:18
 #: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:25
 msgid "Stock Locations"
-msgstr "Lagerorte"
+msgstr "库存位置"
 
 #: src/lib/components/shared/stock-level-label.tsx:18
 msgid "Stock on hand"
-msgstr "Lagerbestand"
+msgstr "现有库存"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
 msgid "Stock on Hand"
-msgstr "Lagerbestand"
+msgstr "现有库存"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:174
 #: src/lib/components/shared/customer-address-form.tsx:137
 msgid "Street Address"
-msgstr "Straßenadresse"
+msgstr "街道地址"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:181
 msgid "Street Address 2"
-msgstr "Straßenadresse 2"
+msgstr "街道地址 2"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
 msgid "Sub total"
-msgstr "Zwischensumme"
+msgstr "小计"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:219
 msgid "Subtotal"
-msgstr "Zwischensumme"
+msgstr "小计"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:97
 msgid "Successfully added option value"
-msgstr "Optionswert erfolgreich hinzugefügt"
+msgstr "已成功添加选项值"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:49
 msgid "Successfully added payment to order"
-msgstr "Zahlung erfolgreich zur Bestellung hinzugefügt"
+msgstr "已成功向订单添加支付"
 
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:68
 msgid "Successfully assigned {entityIdsLength} {entityType} to channel"
-msgstr "{entityIdsLength} {entityType} erfolgreich zu Kanal zugewiesen"
+msgstr "已成功将 {entityIdsLength} {entityType} 分配给渠道"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
 msgid "Successfully created channel"
-msgstr "Kanal erfolgreich erstellt"
+msgstr "已成功创建渠道"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
 msgid "Successfully created collection"
-msgstr "Sammlung erfolgreich erstellt"
+msgstr "已成功创建集合"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
 msgid "Successfully created country"
-msgstr "Land erfolgreich erstellt"
+msgstr "已成功创建国家"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
 msgid "Successfully created customer"
-msgstr "Kunde erfolgreich erstellt"
+msgstr "已成功创建客户"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:66
 msgid "Successfully created customer group"
-msgstr "Kundengruppe erfolgreich erstellt"
+msgstr "已成功创建客户组"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
 msgid "Successfully created facet"
-msgstr "Facette erfolgreich erstellt"
+msgstr "已成功创建属性"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
 msgid "Successfully created facet value"
-msgstr "Facettenwert erfolgreich erstellt"
+msgstr "已成功创建属性值"
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:82
 msgid "Successfully created option group"
-msgstr "Optionsgruppe erfolgreich erstellt"
+msgstr "已成功创建选项组"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:100
 msgid "Successfully created payment method"
-msgstr "Zahlungsmethode erfolgreich erstellt"
+msgstr "已成功创建支付方式"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:87
 msgid "Successfully created product"
-msgstr "Produkt erfolgreich erstellt"
+msgstr "已成功创建商品"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:119
 msgid "Successfully created product options"
-msgstr "Produktoptionen erfolgreich erstellt"
+msgstr "已成功创建商品选项"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:102
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
 msgid "Successfully created product variant"
-msgstr "Produktvariante erfolgreich erstellt"
+msgstr "已成功创建商品变体"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:103
 msgid "Successfully created promotion"
-msgstr "Aktion erfolgreich erstellt"
+msgstr "已成功创建促销"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
 msgid "Successfully created role"
-msgstr "Rolle erfolgreich erstellt"
+msgstr "已成功创建角色"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
 msgid "Successfully created seller"
-msgstr "Verkäufer erfolgreich erstellt"
+msgstr "已成功创建卖家"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:69
 msgid "Successfully created stock location"
-msgstr "Lagerort erfolgreich erstellt"
+msgstr "已成功创建库存位置"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
 msgid "Successfully created tax category"
-msgstr "Steuerkategorie erfolgreich erstellt"
+msgstr "已成功创建税务类别"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
 msgid "Successfully created tax rate"
-msgstr "Steuersatz erfolgreich erstellt"
+msgstr "已成功创建税率"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
 msgid "Successfully created zone"
-msgstr "Zone erfolgreich erstellt"
+msgstr "已成功创建区域"
 
 #: src/app/common/duplicate-bulk-action.tsx:97
 msgid "Successfully duplicated {count} {entityName}"
-msgstr "{count} {entityName} erfolgreich dupliziert"
+msgstr "已成功复制 {count} {entityName}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:76
 msgid "Successfully fulfilled order"
-msgstr "Bestellung erfolgreich erfüllt"
+msgstr "已成功履行订单"
 
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:52
 msgid "Successfully removed {selectionLength} {entityType} from channel"
-msgstr "{selectionLength} {entityType} erfolgreich aus Kanal entfernt"
+msgstr "已成功从渠道中删除 {selectionLength} {entityType}"
 
 #: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:80
 msgid "Successfully removed {successCount} facets from channel"
-msgstr "{successCount} Facetten erfolgreich aus Kanal entfernt"
+msgstr "已成功从渠道中删除 {successCount} 个属性"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:70
 msgid "Successfully updated asset"
-msgstr "Asset erfolgreich aktualisiert"
+msgstr "已成功更新资源"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
 msgid "Successfully updated channel"
-msgstr "Kanal erfolgreich aktualisiert"
+msgstr "已成功更新渠道"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
 msgid "Successfully updated collection"
-msgstr "Sammlung erfolgreich aktualisiert"
+msgstr "已成功更新集合"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
 msgid "Successfully updated country"
-msgstr "Land erfolgreich aktualisiert"
+msgstr "已成功更新国家"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
 msgid "Successfully updated customer"
-msgstr "Kunde erfolgreich aktualisiert"
+msgstr "已成功更新客户"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:67
 msgid "Successfully updated customer group"
-msgstr "Kundengruppe erfolgreich aktualisiert"
+msgstr "已成功更新客户组"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
 msgid "Successfully updated facet"
-msgstr "Facette erfolgreich aktualisiert"
+msgstr "已成功更新属性"
 
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
 msgid "Successfully updated facet value"
-msgstr "Facettenwert erfolgreich aktualisiert"
+msgstr "已成功更新属性值"
 
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:75
 msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
-msgstr "Facettenwerte für {entityIdsLength} {entityType} erfolgreich aktualisiert"
+msgstr "已成功为 {entityIdsLength} {entityType} 更新属性值"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:70
 msgid "Successfully updated global settings"
-msgstr "Globale Einstellungen erfolgreich aktualisiert"
+msgstr "已成功更新全局设置"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:87
 msgid "Successfully updated order"
-msgstr "Bestellung erfolgreich aktualisiert"
+msgstr "已成功更新订单"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:101
 msgid "Successfully updated payment method"
-msgstr "Zahlungsmethode erfolgreich aktualisiert"
+msgstr "已成功更新支付方式"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:87
 msgid "Successfully updated product"
-msgstr "Produkt erfolgreich aktualisiert"
+msgstr "已成功更新商品"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:103
 msgid "Successfully updated product variant"
-msgstr "Produktvariante erfolgreich aktualisiert"
+msgstr "已成功更新商品变体"
 
 #: src/app/routes/_authenticated/_profile/profile.tsx:61
 msgid "Successfully updated profile"
-msgstr "Profil erfolgreich aktualisiert"
+msgstr "已成功更新个人资料"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:103
 msgid "Successfully updated promotion"
-msgstr "Aktion erfolgreich aktualisiert"
+msgstr "已成功更新促销"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
 msgid "Successfully updated role"
-msgstr "Rolle erfolgreich aktualisiert"
+msgstr "已成功更新角色"
 
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
 msgid "Successfully updated seller"
-msgstr "Verkäufer erfolgreich aktualisiert"
+msgstr "已成功更新卖家"
 
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:70
 msgid "Successfully updated stock location"
-msgstr "Lagerort erfolgreich aktualisiert"
+msgstr "已成功更新库存位置"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
 msgid "Successfully updated tax category"
-msgstr "Steuerkategorie erfolgreich aktualisiert"
+msgstr "已成功更新税务类别"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
 msgid "Successfully updated tax rate"
-msgstr "Steuersatz erfolgreich aktualisiert"
+msgstr "已成功更新税率"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
 msgid "Successfully updated zone"
-msgstr "Zone erfolgreich aktualisiert"
+msgstr "已成功更新区域"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:420
 msgid "Summary of modifications"
-msgstr "Zusammenfassung der Änderungen"
+msgstr "修改摘要"
 
 #: src/lib/components/shared/role-code-label.tsx:6
 msgid "Super Admin"
-msgstr "Super Admin"
+msgstr "超级管理员"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
 msgid "Surcharge"
-msgstr "Aufschlag"
+msgstr "附加费"
 
 #: src/lib/components/layout/nav-user.tsx:135
 msgctxt "theme"
 msgid "System"
-msgstr "System"
+msgstr "系统"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:104
 msgid "Tags"
-msgstr "Tags"
+msgstr "标签"
 
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:20
 msgid "Tax base"
-msgstr "Steuerbasis"
+msgstr "税基"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:38
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:15
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:24
 msgid "Tax Categories"
-msgstr "Steuerkategorien"
+msgstr "税务类别"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:175
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:136
 msgid "Tax category"
-msgstr "Steuerkategorie"
+msgstr "税务类别"
 
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:17
 msgid "Tax rate"
-msgstr "Steuersatz"
+msgstr "税率"
 
 #: src/app/routes/_authenticated/_product-variants/components/variant-price-detail.tsx:79
 msgid "Tax rate: {taxRate}%"
-msgstr "Steuersatz: {taxRate}%"
+msgstr "税率：{taxRate}%"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
 msgid "Tax Rates"
-msgstr "Steuersätze"
+msgstr "税率"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
 msgid "Tax summary"
-msgstr "Steuerübersicht"
+msgstr "税费摘要"
 
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:23
 msgid "Tax total"
-msgstr "Steuersumme"
+msgstr "税费总计"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:23
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:33
 msgid "Test"
-msgstr "Test"
+msgstr "测试"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:68
 msgid "Test data has been updated. Click \"Run Test\" to see updated results."
-msgstr "Testdaten wurden aktualisiert. Klicken Sie auf \"Test ausführen\", um aktualisierte Ergebnisse zu sehen."
+msgstr "测试数据已更新。点击\"运行测试\"以查看更新的结果。"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:163
 msgid "Test Order"
-msgstr "Testbestellung"
+msgstr "测试订单"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:39
 msgid "Test Results"
-msgstr "Testergebnisse"
+msgstr "测试结果"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:39
 msgid "Test Shipping Method"
-msgstr "Versandmethode testen"
+msgstr "测试配送方式"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:29
 msgid "Test shipping methods"
-msgstr "Versandmethoden testen"
+msgstr "测试配送方式"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:42
 msgid "Test this shipping method by simulating an order to see if it's eligible and what the shipping cost would be."
-msgstr "Testen Sie diese Versandmethode, indem Sie eine Bestellung simulieren, um zu sehen, ob sie berechtigt ist und wie hoch die Versandkosten wären."
+msgstr "通过模拟订单测试此配送方式，以查看其是否适用以及配送成本是多少。"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:32
 msgid "Test your shipping methods by simulating a new order."
-msgstr "Testen Sie Ihre Versandmethoden, indem Sie eine neue Bestellung simulieren."
+msgstr "通过模拟新订单来测试您的配送方式。"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:31
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:46
 msgid "Testing shipping method..."
-msgstr "Teste Versandmethode..."
+msgstr "正在测试配送方式..."
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:56
 msgid "Testing shipping methods..."
-msgstr "Teste Versandmethoden..."
+msgstr "正在测试配送方式..."
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:114
 msgid "The data that has been passed to the job"
-msgstr "Die Daten, die an den Job weitergegeben wurden"
+msgstr "传递给作业的数据"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:132
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:175
 msgid "The result of the job"
-msgstr "Das Ergebnis des Jobs"
+msgstr "作业的结果"
 
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:117
 msgid "The selected permissions will be applied to the these channels."
-msgstr "Die ausgewählten Berechtigungen werden auf diese Kanäle angewendet."
+msgstr "所选权限将应用于这些渠道。"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:147
 msgid "The token is used to specify the channel when making API requests."
-msgstr "Das Token wird verwendet, um den Kanal bei API-Anfragen zu spezifizieren."
+msgstr "在进行 API 请求时使用令牌来指定渠道。"
 
 #: src/lib/components/layout/nav-user.tsx:118
 msgid "Theme"
-msgstr "Theme"
+msgstr "主题"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-sheet.tsx:39
 msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
-msgstr "Dies sind die Kunden in der Kundengruppe <0>{customerGroupName}</0>."
+msgstr "这些是 <0>{customerGroupName}</0> 客户组中的客户。"
 
 #: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:35
 msgid "These are the facet values for the <0>{facetName}</0> facet."
-msgstr "Dies sind die Facetten-Werte für die Facette <0>{facetName}</0>."
+msgstr "这些是 <0>{facetName}</0> 属性的属性值。"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:311
 msgid "These languages will be available for all channels to use"
-msgstr "Diese Sprachen stehen allen Kanälen zur Verfügung"
+msgstr "这些语言将可供所有渠道使用"
 
 #: src/app/routes/_authenticated/_roles/roles.tsx:54
 msgid "This is a default Role and cannot be modified"
-msgstr "Dies ist eine Standardrolle und kann nicht geändert werden"
+msgstr "这是默认角色，无法修改"
 
 #: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:39
 msgid "This is the contents of the <0>{collectionName}</0> collection."
-msgstr "Dies ist der Inhalt der Sammlung <0>{collectionName}</0>."
+msgstr "这是 <0>{collectionName}</0> 集合的内容。"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
 msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
-msgstr "Dieses Produkt hat bereits Varianten, aber keine Optionsgruppen definiert. Sie müssen Optionsgruppen hinzufügen, bevor Sie neue Varianten erstellen."
+msgstr "此商品有现有变体，但未定义选项组。您需要在创建新变体之前添加选项组。"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:79
 msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
-msgstr "Die Berechtigungsprüferbedingungen dieser Versandmethode sind für die aktuelle Bestellung und Versandadresse nicht erfüllt."
+msgstr "此配送方式的资格检查器条件不符合当前订单和配送地址。"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
-msgstr "Titel"
+msgstr "标题"
 
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
 #: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
 msgid "Toggle all"
-msgstr "Alle umschalten"
+msgstr "全部切换"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:158
 msgid "Toggle header column"
-msgstr "Kopfzeile-Spalte umschalten"
+msgstr "切换标题列"
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:210
 msgid "Toggle header row"
-msgstr "Kopfzeile umschalten"
+msgstr "切换标题行"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:145
 msgid "Token"
-msgstr "Token"
+msgstr "令牌"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
 msgid "Total"
-msgstr "Gesamt"
+msgstr "总计"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
 msgid "Total refund:"
-msgstr "Gesamtrückerstattung:"
+msgstr "退款总计："
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
-msgstr "Verfolgen"
+msgstr "跟踪"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:148
 msgid "Track inventory by default"
-msgstr "Inventar standardmäßig verfolgen"
+msgstr "默认跟踪库存"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:112
 msgid "Tracking code"
-msgstr "Verfolgungscode"
+msgstr "跟踪代码"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:160
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:178
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:239
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:58
 msgid "Transaction ID"
-msgstr "Transaktions-ID"
+msgstr "交易 ID"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:161
 msgid "Transaction ID is required"
-msgstr "Transaktions-ID ist erforderlich"
+msgstr "交易 ID 为必填项"
 
 #. placeholder {0}: getTranslatedFulfillmentState(state)
 #. placeholder {0}: getTranslatedOrderState(state)
@@ -4384,27 +4384,27 @@ msgstr "Transaktions-ID ist erforderlich"
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
-msgstr "Übergang zu {0}"
+msgstr "转换到 {0}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:84
 msgid "Transition to {suggestedState}"
-msgstr "Übergang zu {suggestedState}"
+msgstr "转换到 {suggestedState}"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
 msgid "Transition to selected state"
-msgstr "Zum ausgewählten Status übergehen"
+msgstr "转换到选定状态"
 
 #: src/lib/components/data-table/filters/data-table-boolean-filter.tsx:50
 msgid "True"
-msgstr "Wahr"
+msgstr "是"
 
 #: src/lib/components/shared/facet-value-selector.tsx:273
 msgid "Type at least 2 characters to search..."
-msgstr "Geben Sie mindestens 2 Zeichen ein, um zu suchen..."
+msgstr "至少输入 2 个字符进行搜索..."
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
 msgid "Unit price"
-msgstr "Stückpreis"
+msgstr "单价"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:102
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:87
@@ -4413,11 +4413,11 @@ msgstr "Stückpreis"
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:104
 msgid "Unknown error"
-msgstr "Unbekannter Fehler"
+msgstr "未知错误"
 
 #: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:28
 msgid "Unverified"
-msgstr "Nicht verifiziert"
+msgstr "未验证"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:101
@@ -4447,182 +4447,182 @@ msgstr "Nicht verifiziert"
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 #: src/lib/framework/page/detail-page.tsx:205
 msgid "Update"
-msgstr "Aktualisieren"
+msgstr "更新"
 
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:47
 msgid "Update the note content or visibility"
-msgstr "Notizinhalt oder Sichtbarkeit aktualisieren"
+msgstr "更新备注内容或可见性"
 
 #: src/lib/framework/layout-engine/page-layout.tsx:407
 msgid "Updated"
-msgstr "Aktualisiert"
+msgstr "已更新"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx:355
 msgid "Upload"
-msgstr "Hochladen"
+msgstr "上传"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:214
 msgid "Usage limit"
-msgstr "Nutzungslimit"
+msgstr "使用限制"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
 #: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Use as the default billing address"
-msgstr "Als Standard-Rechnungsadresse verwenden"
+msgstr "用作默认账单地址"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
 #: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Use as the default shipping address"
-msgstr "Als Standard-Versandadresse verwenden"
+msgstr "用作默认配送地址"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 msgid "Use global out-of-stock threshold"
-msgstr "Globale Grenzwerte für Lagerausfälle verwenden"
+msgstr "使用全局缺货阈值"
 
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
-msgstr "Benutzername"
+msgstr "用户名"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
 msgid "Using external authentication strategy: {strategy}"
-msgstr "Verwende externe Authentifizierungsstrategie: {strategy}"
+msgstr "使用外部身份验证策略：{strategy}"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:13
 msgid "Using native authentication strategy"
-msgstr "Verwende native Authentifizierungsstrategie"
+msgstr "使用本地身份验证策略"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:88
 msgid "Values"
-msgstr "Werte"
+msgstr "值"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
 msgid "Variant"
-msgstr "Variante"
+msgstr "变体"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
 msgid "Variant deleted successfully"
-msgstr "Variante erfolgreich gelöscht"
+msgstr "变体已成功删除"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
 msgid "Variant updated successfully"
-msgstr "Variante erfolgreich aktualisiert"
+msgstr "变体已成功更新"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:297
 msgid "Variants"
-msgstr "Varianten"
+msgstr "变体"
 
 #: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:18
 msgid "Verified"
-msgstr "Verifiziert"
+msgstr "已验证"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:33
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:86
 msgid "View changes"
-msgstr "Änderungen anzeigen"
+msgstr "查看更改"
 
 #: src/lib/components/data-table/views-sheet.tsx:118
 msgid "View converted to global successfully"
-msgstr "Ansicht erfolgreich in globale Ansicht umgewandelt"
+msgstr "视图已成功转换为全局"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:117
 msgid "View data"
-msgstr "Daten anzeigen"
+msgstr "查看数据"
 
 #: src/lib/components/data-table/views-sheet.tsx:83
 msgid "View deleted successfully"
-msgstr "Ansicht erfolgreich gelöscht"
+msgstr "视图已成功删除"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:152
 msgid "View details"
-msgstr "Details anzeigen"
+msgstr "查看详情"
 
 #: src/lib/components/data-table/views-sheet.tsx:97
 msgid "View duplicated successfully"
-msgstr "Ansicht erfolgreich dupliziert"
+msgstr "视图已成功复制"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:113
 msgid "View job data"
-msgstr "Job-Daten anzeigen"
+msgstr "查看作业数据"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:131
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:174
 msgid "View job result"
-msgstr "Job-Ergebnis anzeigen"
+msgstr "查看作业结果"
 
 #: src/lib/components/data-table/views-sheet.tsx:63
 msgid "View renamed successfully"
-msgstr "Ansicht erfolgreich umbenannt"
+msgstr "视图已成功重命名"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:135
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:178
 msgid "View result"
-msgstr "Ergebnis anzeigen"
+msgstr "查看结果"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:53
 msgid "View values"
-msgstr "Werte anzeigen"
+msgstr "查看值"
 
 #: src/app/routes/_authenticated/_facets/facets.tsx:77
 msgid "Visibility"
-msgstr "Sichtbarkeit"
+msgstr "可见性"
 
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to admins only"
-msgstr "Nur für Administratoren sichtbar"
+msgstr "仅管理员可见"
 
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
-msgstr "Für Kunden sichtbar"
+msgstr "客户可见"
 
 #: src/lib/components/login/login-form.tsx:89
 msgid "Welcome back!"
-msgstr "Willkommen zurück!"
+msgstr "欢迎回来！"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:145
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:122
 msgid "When enabled, a product is available in the shop"
-msgstr "Wenn aktiviert, ist ein Produkt im Shop verfügbar"
+msgstr "启用后，商品在商店中可用"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
 msgid "When enabled, a promotion is available in the shop"
-msgstr "Wenn aktiviert, ist eine Aktion im Shop verfügbar"
+msgstr "启用后，促销在商店中可用"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
 msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
-msgstr "Wenn dies aktiviert ist, sind die im Produktkatalog eingegebenen Preise in der Steuer für die Standard-Steuerzone enthalten."
+msgstr "启用后，商品目录中输入的价格将包含默认税务区域的税费。"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:150
 msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
-msgstr "Bei Verfolgung werden die Lagerbestände der Produktvarianten beim Verkauf automatisch angepasst. Diese Einstellung kann von einzelnen Produktvarianten überschrieben werden."
+msgstr "跟踪后，商品变体库存水平将在售出时自动调整。此设置可由各个商品变体覆盖。"
 
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:179
 msgid "Width"
-msgstr "Breite"
+msgstr "宽度"
 
 #: src/lib/components/data-table/data-table-bulk-actions.tsx:77
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
-msgstr "Mit ausgewählten..."
+msgstr "对所选..."
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:333
 msgid "You don't have permission to view channel settings"
-msgstr "Sie haben keine Berechtigung, die Kanaleinstellungen anzuzeigen"
+msgstr "您没有查看渠道设置的权限"
 
 #: src/lib/components/layout/manage-languages-dialog.tsx:279
 msgid "You don't have permission to view global language settings"
-msgstr "Sie haben keine Berechtigung, die globalen Spracheinstellungen anzuzeigen"
+msgstr "您没有查看全局语言设置的权限"
 
 #: src/lib/components/data-table/views-sheet.tsx:152
 msgid "You haven't saved any views yet."
-msgstr "Sie haben noch keine Ansichten gespeichert."
+msgstr "您尚未保存任何视图。"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
 msgid "Zone"
-msgstr "Zone"
+msgstr "区域"
 
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
 #: src/app/routes/_authenticated/_zones/zones.tsx:15
 #: src/app/routes/_authenticated/_zones/zones.tsx:25
 msgid "Zones"
-msgstr "Zonen"
+msgstr "区域"

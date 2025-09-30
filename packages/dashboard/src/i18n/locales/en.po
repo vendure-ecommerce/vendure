@@ -719,1143 +719,6 @@ msgstr "Note deleted successfully"
 msgid "Failed to delete note"
 msgstr "Failed to delete note"
 
-#. js-lingui-explicit-id
-#: src/lib/components/shared/stock-level-label.tsx:19
-#~ msgid "Stock on hand"
-#~ msgstr "Stock on hand"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/stock-level-label.tsx:19
-#~ msgid "Stock allocated"
-#~ msgstr "Stock allocated"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/role-selector.tsx:52
-#~ msgid "Select a role"
-#~ msgstr "Select a role"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/role-selector.tsx:53
-#~ msgid "Search roles..."
-#~ msgstr "Search roles..."
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/language-selector.tsx:44
-#~ msgid "Select a language"
-#~ msgstr "Select a language"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/language-selector.tsx:45
-#~ msgid "Search languages..."
-#~ msgstr "Search languages..."
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/currency-selector.tsx:29
-#~ msgid "Select a currency"
-#~ msgstr "Select a currency"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/currency-selector.tsx:30
-#~ msgid "Search currencies..."
-#~ msgstr "Search currencies..."
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
-#: src/lib/components/shared/customer-address-form.tsx:240
-#~ msgid "Select a country"
-#~ msgstr "Select a country"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/assign-to-channel-dialog.tsx:107
-#: src/lib/components/shared/channel-selector.tsx:47
-#~ msgid "Select a channel"
-#~ msgstr "Select a channel"
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/channel-selector.tsx:48
-#~ msgid "Search channels..."
-#~ msgstr "Search channels..."
-
-#. js-lingui-explicit-id
-#: src/lib/components/shared/custom-fields-form.tsx:100
-#~ msgid "General"
-#~ msgstr "General"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/use-generated-columns.tsx:288
-#~ msgid "Deleted successfully"
-#~ msgstr "Deleted successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/use-generated-columns.tsx:290
-#: src/lib/components/data-table/use-generated-columns.tsx:296
-#~ msgid "Failed to delete"
-#~ msgstr "Failed to delete"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:66
-#~ msgid "Global view renamed successfully"
-#~ msgstr "Global view renamed successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:67
-#~ msgid "View renamed successfully"
-#~ msgstr "View renamed successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:73
-#~ msgid "Failed to rename global view"
-#~ msgstr "Failed to rename global view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:74
-#~ msgid "Failed to rename view"
-#~ msgstr "Failed to rename view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:90
-#~ msgid "Global view deleted successfully"
-#~ msgstr "Global view deleted successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:91
-#~ msgid "View deleted successfully"
-#~ msgstr "View deleted successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:96
-#~ msgid "Failed to delete global view"
-#~ msgstr "Failed to delete global view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:97
-#~ msgid "Failed to delete view"
-#~ msgstr "Failed to delete view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:106
-#~ msgid "Global view duplicated successfully"
-#~ msgstr "Global view duplicated successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:107
-#~ msgid "View duplicated successfully"
-#~ msgstr "View duplicated successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:111
-#~ msgid "Failed to duplicate global view"
-#~ msgstr "Failed to duplicate global view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:112
-#~ msgid "Failed to duplicate view"
-#~ msgstr "Failed to duplicate view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:120
-#~ msgid "Global view converted to personal view successfully"
-#~ msgstr "Global view converted to personal view successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:122
-#~ msgid "Failed to convert global view to personal view"
-#~ msgstr "Failed to convert global view to personal view"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:130
-#~ msgid "View converted to global successfully"
-#~ msgstr "View converted to global successfully"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/views-sheet.tsx:132
-#~ msgid "Failed to convert view to global"
-#~ msgstr "Failed to convert view to global"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:237
-#~ msgid "Slug is set"
-#~ msgstr "Slug is set"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:238
-#~ msgid "Slug will be generated automatically..."
-#~ msgstr "Slug will be generated automatically..."
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:239
-#~ msgid "Enter slug manually"
-#~ msgstr "Enter slug manually"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:265
-#: src/lib/components/data-input/slug-input.tsx:266
-#~ msgid "Regenerate slug from source field"
-#~ msgstr "Regenerate slug from source field"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:281
-#: src/lib/components/data-input/slug-input.tsx:286
-#~ msgid "Edit slug manually"
-#~ msgstr "Edit slug manually"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/slug-input.tsx:282
-#: src/lib/components/data-input/slug-input.tsx:287
-#~ msgid "Generate slug automatically"
-#~ msgstr "Generate slug automatically"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-table/data-table.tsx:217
-#~ msgid "Filter..."
-#~ msgstr "Filter..."
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/custom-field-list-input.tsx:72
-#~ msgid "Drag to reorder"
-#~ msgstr "Drag to reorder"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/custom-field-list-input.tsx:85
-#~ msgid "Remove item"
-#~ msgstr "Remove item"
-
-#. js-lingui-explicit-id
-#: src/lib/components/data-input/custom-field-list-input.tsx:289
-#~ msgid "Add item"
-#~ msgstr "Add item"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:59
-#~ msgid "Successfully created zone"
-#~ msgstr "Successfully created zone"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:59
-#~ msgid "Successfully updated zone"
-#~ msgstr "Successfully updated zone"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:66
-#~ msgid "Failed to create zone"
-#~ msgstr "Failed to create zone"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:66
-#~ msgid "Failed to update zone"
-#~ msgstr "Failed to update zone"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_zones/zones.tsx:36
-#~ msgid "Regions"
-#~ msgstr "Regions"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:47
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:49
-#~ msgid "Enabled"
-#~ msgstr "Enabled"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:50
-#~ msgid "Disabled"
-#~ msgstr "Disabled"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
-#~ msgid "Category"
-#~ msgstr "Category"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
-#~ msgid "Zone"
-#~ msgstr "Zone"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:66
-#~ msgid "Successfully created tax category"
-#~ msgstr "Successfully created tax category"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:66
-#~ msgid "Successfully updated tax category"
-#~ msgstr "Successfully updated tax category"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:73
-#~ msgid "Failed to create tax category"
-#~ msgstr "Failed to create tax category"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:73
-#~ msgid "Failed to update tax category"
-#~ msgstr "Failed to update tax category"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
-#~ msgid "Successfully created tax rate"
-#~ msgstr "Successfully created tax rate"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
-#~ msgid "Successfully updated tax rate"
-#~ msgstr "Successfully updated tax rate"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:77
-#~ msgid "Failed to create tax rate"
-#~ msgstr "Failed to create tax rate"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:77
-#~ msgid "Failed to update tax rate"
-#~ msgstr "Failed to update tax rate"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:67
-#~ msgid "Successfully created stock location"
-#~ msgstr "Successfully created stock location"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:67
-#~ msgid "Successfully updated stock location"
-#~ msgstr "Successfully updated stock location"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:74
-#~ msgid "Failed to create stock location"
-#~ msgstr "Failed to create stock location"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:74
-#~ msgid "Failed to update stock location"
-#~ msgstr "Failed to update stock location"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:87
-#~ msgid "Scheduled task will be executed"
-#~ msgstr "Scheduled task will be executed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:90
-#~ msgid "Scheduled task could not be executed"
-#~ msgstr "Scheduled task could not be executed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:107
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
-#~ msgid "Description"
-#~ msgstr "Description"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:127
-#~ msgid "Schedule Pattern"
-#~ msgstr "Schedule Pattern"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:130
-#~ msgid "Schedule"
-#~ msgstr "Schedule"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
-#~ msgid "Last Executed"
-#~ msgstr "Last Executed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:145
-#~ msgid "Next Execution"
-#~ msgstr "Next Execution"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:155
-#~ msgid "Running"
-#~ msgstr "Running"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:169
-#~ msgid "Last Result"
-#~ msgstr "Last Result"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
-#~ msgid "Actions"
-#~ msgstr "Actions"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:65
-#~ msgid "Successfully created role"
-#~ msgstr "Successfully created role"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:65
-#~ msgid "Successfully updated role"
-#~ msgstr "Successfully updated role"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:73
-#~ msgid "Failed to create role"
-#~ msgstr "Failed to create role"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:73
-#~ msgid "Failed to update role"
-#~ msgstr "Failed to update role"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
-#~ msgid "Successfully created seller"
-#~ msgstr "Successfully created seller"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
-#~ msgid "Successfully updated seller"
-#~ msgstr "Successfully updated seller"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
-#~ msgid "Failed to create seller"
-#~ msgstr "Failed to create seller"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
-#~ msgid "Failed to update seller"
-#~ msgstr "Failed to update seller"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_system/job-queue.tsx:211
-#~ msgid "Queue"
-#~ msgstr "Queue"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders.tsx:99
-#: src/app/routes/_authenticated/_system/job-queue.tsx:222
-#~ msgid "State"
-#~ msgstr "State"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products.tsx:31
-#~ msgid "Search index rebuild started"
-#~ msgstr "Search index rebuild started"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products.tsx:34
-#~ msgid "Search index rebuild could not be started"
-#~ msgstr "Search index rebuild could not be started"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_profile/profile.tsx:61
-#~ msgid "Successfully updated profile"
-#~ msgstr "Successfully updated profile"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_profile/profile.tsx:65
-#~ msgid "Failed to update profile"
-#~ msgstr "Failed to update profile"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
-#~ msgid "Successfully created promotion"
-#~ msgstr "Successfully created promotion"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
-#~ msgid "Successfully updated promotion"
-#~ msgstr "Successfully updated promotion"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:108
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:114
-#~ msgid "Failed to create promotion"
-#~ msgstr "Failed to create promotion"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:108
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:114
-#~ msgid "Failed to update promotion"
-#~ msgstr "Failed to update promotion"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
-#~ msgid "Successfully created product"
-#~ msgstr "Successfully created product"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
-#~ msgid "Successfully updated product"
-#~ msgstr "Successfully updated product"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
-#~ msgid "Failed to create product"
-#~ msgstr "Failed to create product"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
-#~ msgid "Failed to update product"
-#~ msgstr "Failed to update product"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:97
-#~ msgid "Successfully added option value"
-#~ msgstr "Successfully added option value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:103
-#~ msgid "Failed to add option value"
-#~ msgstr "Failed to add option value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:102
-#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:87
-#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:104
-#~ msgid "Unknown error"
-#~ msgstr "Unknown error"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:144
-#~ msgid "e.g., Red, Large, Cotton"
-#~ msgstr "e.g., Red, Large, Cotton"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
-#~ msgid "Variant updated successfully"
-#~ msgstr "Variant updated successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
-#~ msgid "Variant deleted successfully"
-#~ msgstr "Variant deleted successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:190
-#~ msgid "Option group removed"
-#~ msgstr "Option group removed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:236
-#~ msgid "Are you sure you want to delete this variant?"
-#~ msgstr "Are you sure you want to delete this variant?"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/product-option-select.tsx:66
-#~ msgid "Search {name}..."
-#~ msgstr "Search {name}..."
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:82
-#~ msgid "Successfully created option group"
-#~ msgstr "Successfully created option group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:86
-#~ msgid "Failed to create option group"
-#~ msgstr "Failed to create option group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:100
-#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
-#~ msgid "Successfully created product variant"
-#~ msgstr "Successfully created product variant"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:107
-#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
-#~ msgid "Failed to create product variant"
-#~ msgstr "Failed to create product variant"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:98
-#~ msgid "Successfully created payment method"
-#~ msgstr "Successfully created payment method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:98
-#~ msgid "Successfully updated payment method"
-#~ msgstr "Successfully updated payment method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:105
-#~ msgid "Failed to create payment method"
-#~ msgstr "Failed to create payment method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:105
-#~ msgid "Failed to update payment method"
-#~ msgstr "Failed to update payment method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:87
-#~ msgid "Successfully updated order"
-#~ msgstr "Successfully updated order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:91
-#~ msgid "Failed to update order"
-#~ msgstr "Failed to update order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:119
-#~ msgid "Successfully created product options"
-#~ msgstr "Successfully created product options"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:124
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:209
-#~ msgid "Failed to create product options"
-#~ msgstr "Failed to create product options"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:269
-#~ msgid "e.g. Size"
-#~ msgstr "e.g. Size"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:292
-#~ msgid "e.g. Small"
-#~ msgstr "e.g. Small"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:105
-#~ msgid "Item added to order"
-#~ msgstr "Item added to order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:121
-#~ msgid "Order line updated"
-#~ msgstr "Order line updated"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:137
-#~ msgid "Order line removed"
-#~ msgstr "Order line removed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:153
-#~ msgid "Customer set for order"
-#~ msgstr "Customer set for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
-#~ msgid "Shipping address set for order"
-#~ msgstr "Shipping address set for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:174
-#~ msgid "Billing address set for order"
-#~ msgstr "Billing address set for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
-#~ msgid "Shipping address unset for order"
-#~ msgstr "Shipping address unset for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
-#~ msgid "Billing address unset for order"
-#~ msgstr "Billing address unset for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
-#~ msgid "Shipping method set for order"
-#~ msgstr "Shipping method set for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:217
-#~ msgid "Coupon code set for order"
-#~ msgstr "Coupon code set for order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
-#~ msgid "Coupon code removed from order"
-#~ msgstr "Coupon code removed from order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:241
-#~ msgid "Draft order completed"
-#~ msgstr "Draft order completed"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:258
-#~ msgid "Draft order deleted"
-#~ msgstr "Draft order deleted"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:286
-#~ msgid "Delete draft order"
-#~ msgstr "Delete draft order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:287
-#~ msgid "Are you sure you want to delete this draft order?"
-#~ msgstr "Are you sure you want to delete this draft order?"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:45
-#~ msgid "Payment settled successfully"
-#~ msgstr "Payment settled successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:48
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:52
-#~ msgid "Failed to settle payment"
-#~ msgstr "Failed to settle payment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:60
-#~ msgid "Payment state updated successfully"
-#~ msgstr "Payment state updated successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:64
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:69
-#~ msgid "Failed to update payment state"
-#~ msgstr "Failed to update payment state"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:77
-#~ msgid "Payment cancelled successfully"
-#~ msgstr "Payment cancelled successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:80
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:84
-#~ msgid "Failed to cancel payment"
-#~ msgstr "Failed to cancel payment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:92
-#~ msgid "Refund settled successfully"
-#~ msgstr "Refund settled successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:96
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:100
-#~ msgid "Failed to settle refund"
-#~ msgstr "Failed to settle refund"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:144
-#~ msgid "Settle payment"
-#~ msgstr "Settle payment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:155
-#~ msgid "Cancel payment"
-#~ msgstr "Cancel payment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:100
-#~ msgid "Successfully updated product variant"
-#~ msgstr "Successfully updated product variant"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:107
-#~ msgid "Failed to update product variant"
-#~ msgstr "Failed to update product variant"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:76
-#~ msgid "Successfully fulfilled order"
-#~ msgstr "Successfully fulfilled order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:79
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:85
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:187
-#~ msgid "Failed to fulfill order"
-#~ msgstr "Failed to fulfill order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
-#~ msgid "Failed to transition order to state"
-#~ msgstr "Failed to transition order to state"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
-#~ msgid "Failed to modify order"
-#~ msgstr "Failed to modify order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:52
-#~ msgid "Successfully added payment to order"
-#~ msgstr "Successfully added payment to order"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:55
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:61
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:89
-#~ msgid "Failed to add payment"
-#~ msgstr "Failed to add payment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:110
-#~ msgid "Search payment methods..."
-#~ msgstr "Search payment methods..."
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:147
-#~ msgid "Payment method is required"
-#~ msgstr "Payment method is required"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:161
-#~ msgid "Transaction ID is required"
-#~ msgstr "Transaction ID is required"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:163
-#~ msgid "Enter transaction ID"
-#~ msgstr "Enter transaction ID"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
-#~ msgid "Successfully created facet"
-#~ msgstr "Successfully created facet"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
-#~ msgid "Successfully updated facet"
-#~ msgstr "Successfully updated facet"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
-#~ msgid "Failed to create facet"
-#~ msgstr "Failed to create facet"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
-#~ msgid "Failed to update facet"
-#~ msgstr "Failed to update facet"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
-#~ msgid "Successfully created facet value"
-#~ msgstr "Successfully created facet value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:87
-#~ msgid "Successfully updated facet value"
-#~ msgstr "Successfully updated facet value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:98
-#~ msgid "Failed to create facet value"
-#~ msgstr "Failed to create facet value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:99
-#~ msgid "Failed to update facet value"
-#~ msgstr "Failed to update facet value"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:70
-#~ msgid "Successfully updated global settings"
-#~ msgstr "Successfully updated global settings"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:76
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:82
-#~ msgid "Failed to update global settings"
-#~ msgstr "Failed to update global settings"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:306
-#~ msgid "Enter refund note"
-#~ msgstr "Enter refund note"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:44
-#~ msgid "Address deleted successfully"
-#~ msgstr "Address deleted successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:48
-#~ msgid "Failed to delete address"
-#~ msgstr "Failed to delete address"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:56
-#~ msgid "Address updated successfully"
-#~ msgstr "Address updated successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:60
-#~ msgid "Failed to update address"
-#~ msgstr "Failed to update address"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:141
-#~ msgid "Delete Address"
-#~ msgstr "Delete Address"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:142
-#~ msgid "Are you sure you want to delete this address?"
-#~ msgstr "Are you sure you want to delete this address?"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:64
-#~ msgid "Successfully created customer group"
-#~ msgstr "Successfully created customer group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:64
-#~ msgid "Successfully updated customer group"
-#~ msgstr "Successfully updated customer group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:71
-#~ msgid "Failed to create customer group"
-#~ msgstr "Failed to create customer group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:71
-#~ msgid "Failed to update customer group"
-#~ msgstr "Failed to update customer group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:55
-#~ msgid "Customer added to group"
-#~ msgstr "Customer added to group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:61
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
-#~ msgid "Failed to add customer to group"
-#~ msgstr "Failed to add customer to group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
-#~ msgid "Successfully created country"
-#~ msgstr "Successfully created country"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
-#~ msgid "Successfully updated country"
-#~ msgstr "Successfully updated country"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
-#~ msgid "Failed to create country"
-#~ msgstr "Failed to create country"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
-#~ msgid "Failed to update country"
-#~ msgstr "Failed to update country"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
-#~ msgid "Successfully created collection"
-#~ msgstr "Successfully created collection"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
-#~ msgid "Successfully updated collection"
-#~ msgstr "Successfully updated collection"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
-#~ msgid "Failed to create collection"
-#~ msgstr "Failed to create collection"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
-#~ msgid "Failed to update collection"
-#~ msgstr "Failed to update collection"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:94
-#~ msgid "Successfully created customer"
-#~ msgstr "Successfully created customer"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:95
-#~ msgid "Successfully updated customer"
-#~ msgstr "Successfully updated customer"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:104
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:114
-#~ msgid "Failed to create customer"
-#~ msgstr "Failed to create customer"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:105
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:114
-#~ msgid "Failed to update customer"
-#~ msgstr "Failed to update customer"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:129
-#~ msgid "Failed to create address"
-#~ msgstr "Failed to create address"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:149
-#~ msgid "Failed to remove customer from group"
-#~ msgstr "Failed to remove customer from group"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:86
-#~ msgid "Successfully created channel"
-#~ msgstr "Successfully created channel"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:86
-#~ msgid "Successfully updated channel"
-#~ msgstr "Successfully updated channel"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:94
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:100
-#~ msgid "Failed to create channel"
-#~ msgstr "Failed to create channel"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:94
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:100
-#~ msgid "Failed to update channel"
-#~ msgstr "Failed to update channel"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:70
-#~ msgid "Successfully updated asset"
-#~ msgstr "Successfully updated asset"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:74
-#~ msgid "Failed to update asset"
-#~ msgstr "Failed to update asset"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
-#~ msgid "Collections moved successfully"
-#~ msgstr "Collections moved successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:290
-#~ msgid "Failed to move collections"
-#~ msgstr "Failed to move collections"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:308
-#~ msgid "Please select a target collection"
-#~ msgstr "Please select a target collection"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:366
-#~ msgid "Filter by collection name"
-#~ msgstr "Filter by collection name"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:39
-#~ msgid "Fulfillment state updated successfully"
-#~ msgstr "Fulfillment state updated successfully"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:42
-#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:46
-#~ msgid "Failed to update fulfillment state"
-#~ msgstr "Failed to update fulfillment state"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:3
-#~ msgid "Created"
-#~ msgstr "Created"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:4
-#~ msgid "Draft"
-#~ msgstr "Draft"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:5
-#~ msgid "AddingItems"
-#~ msgstr "AddingItems"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:6
-#~ msgid "Cancelled"
-#~ msgstr "Cancelled"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:7
-#~ msgid "ArrangingPayment"
-#~ msgstr "ArrangingPayment"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:8
-#~ msgid "PaymentAuthorized"
-#~ msgstr "PaymentAuthorized"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:9
-#~ msgid "PaymentSettled"
-#~ msgstr "PaymentSettled"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:10
-#~ msgid "PartiallyShipped"
-#~ msgstr "PartiallyShipped"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:11
-#~ msgid "Shipped"
-#~ msgstr "Shipped"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:12
-#~ msgid "PartiallyDelivered"
-#~ msgstr "PartiallyDelivered"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:13
-#~ msgid "Delivered"
-#~ msgstr "Delivered"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:14
-#~ msgid "Modifying"
-#~ msgstr "Modifying"
-
-#. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:15
-#~ msgid "ArrangingAdditionalPayment"
-#~ msgstr "ArrangingAdditionalPayment"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:86
-#~ msgid "Successfully updated shipping method"
-#~ msgstr "Successfully updated shipping method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:93
-#~ msgid "Failed to update shipping method"
-#~ msgstr "Failed to update shipping method"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:74
-#~ msgid "Successfully updated administrator"
-#~ msgstr "Successfully updated administrator"
-
-#. js-lingui-explicit-id
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:83
-#~ msgid "Failed to update administrator"
-#~ msgstr "Failed to update administrator"
-
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
 msgstr "!="
@@ -1914,11 +777,6 @@ msgstr "{buttonText}"
 msgid "{label}"
 msgstr "{label}"
 
-#: src/lib/components/data-table/data-table-filter-dialog.tsx:44
-#~ msgctxt "filter-operator"
-#~ msgid "{op}"
-#~ msgstr "{op}"
-
 #: src/lib/components/data-table/human-readable-operator.tsx:63
 msgid "{operator}"
 msgstr "{operator}"
@@ -1963,11 +821,6 @@ msgstr "Add a manual payment of {0}"
 msgid "Add a new address to the customer."
 msgstr "Add a new address to the customer."
 
-#: src/app/routes/_authenticated/_promotions/components/promotion-actions-selector.tsx:94
-#~ msgctxt "Add new promotion action"
-#~ msgid "Add action"
-#~ msgstr "Add action"
-
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:318
 msgid "Add another option group"
 msgstr "Add another option group"
@@ -1983,16 +836,6 @@ msgstr "Add column after"
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:145
 msgid "Add column before"
 msgstr "Add column before"
-
-#: src/app/routes/_authenticated/_promotions/components/promotion-conditions-selector.tsx:94
-#~ msgctxt "Add new promotion condition"
-#~ msgid "Add condition"
-#~ msgstr "Add condition"
-
-#: src/app/routes/_authenticated/_collections/components/collection-filters-selector.tsx:78
-#~ msgctxt "Add new collection filter"
-#~ msgid "Add condition"
-#~ msgstr "Add condition"
 
 #: src/app/routes/_authenticated/_countries/countries.tsx:65
 msgid "Add Country"
@@ -2450,10 +1293,6 @@ msgstr "Code"
 msgid "Collection contents for {collectionName}"
 msgstr "Collection contents for {collectionName}"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:104
-#~ msgid "Collection Name"
-#~ msgstr "Collection Name"
-
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
 #: src/app/routes/_authenticated/_collections/collections.tsx:29
 #: src/app/routes/_authenticated/_collections/collections.tsx:85
@@ -2578,10 +1417,6 @@ msgstr "Create"
 msgid "Create \"{0}\""
 msgstr "Create \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:214
-#~ msgid "Create {0} variants"
-#~ msgstr "Create {0} variants"
-
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
 msgid "Create {createCount} variants"
 msgstr "Create {createCount} variants"
@@ -2616,10 +1451,6 @@ msgstr "Created"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:221
 msgid "Created at"
 msgstr "Created at"
-
-#: src/app/routes/_authenticated/_system/job-queue.tsx:104
-#~ msgid "Created At"
-#~ msgstr "Created At"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
 msgid "Creating..."
@@ -2714,14 +1545,6 @@ msgstr "Customers"
 msgctxt "theme"
 msgid "Dark"
 msgstr "Dark"
-
-#: src/app/routes/_authenticated/_system/job-queue.tsx:112
-#~ msgid "Data"
-#~ msgstr "Data"
-
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:44
-#~ msgid "Default"
-#~ msgstr "Default"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
 #: src/lib/components/shared/customer-address-form.tsx:310
@@ -2887,10 +1710,6 @@ msgstr "Duplicate {0}s"
 #: src/app/common/duplicate-bulk-action.tsx:127
 msgid "Duplicating... ({0}/{1})"
 msgstr "Duplicating... ({0}/{1})"
-
-#: src/app/routes/_authenticated/_system/job-queue.tsx:201
-#~ msgid "Duration"
-#~ msgstr "Duration"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:269
 msgid "e.g. Size"
@@ -3063,10 +1882,6 @@ msgstr "Explore Enterprise Edition"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:122
 msgid "Facet"
 msgstr "Facet"
-
-#: src/app/routes/_authenticated/_facets/facets.tsx:74
-#~ msgid "Facet Name"
-#~ msgstr "Facet Name"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:301
@@ -3511,11 +2326,6 @@ msgstr "Global Languages"
 msgid "Global out of stock threshold"
 msgstr "Global out of stock threshold"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:35
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:88
-#~ msgid "Global settings"
-#~ msgstr "Global settings"
-
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:41
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:91
 msgid "Global Settings"
@@ -3769,10 +2579,6 @@ msgstr "Loading..."
 #: src/lib/components/layout/language-dialog.tsx:60
 msgid "Locale"
 msgstr "Locale"
-
-#: src/lib/framework/layout-engine/location-wrapper.tsx:69
-#~ msgid "Location Details"
-#~ msgstr "Location Details"
 
 #: src/lib/components/layout/nav-user.tsx:165
 msgid "Log out"
@@ -4313,10 +3119,6 @@ msgstr "OR"
 msgid "Order cancelled"
 msgstr "Order cancelled"
 
-#: src/app/routes/_authenticated/_orders/components/order-history/order-history.tsx:42
-#~ msgid "Order created"
-#~ msgstr "Order created"
-
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "Order delivered"
@@ -4551,11 +3353,6 @@ msgstr "Product"
 msgid "Product name"
 msgstr "Product name"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants.tsx:48
-#: src/app/routes/_authenticated/_products/products.tsx:49
-#~ msgid "Product Name"
-#~ msgstr "Product Name"
-
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:173
 msgid "Product Option Group"
 msgstr "Product Option Group"
@@ -4722,10 +3519,6 @@ msgstr "Rename"
 #: src/lib/components/data-table/data-table-view-options.tsx:123
 msgid "Reset"
 msgstr "Reset"
-
-#: src/app/routes/_authenticated/_system/job-queue.tsx:131
-#~ msgid "Result"
-#~ msgstr "Result"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
 msgid "Review the changes before applying them to the order."
@@ -4951,14 +3744,6 @@ msgstr "Select items"
 msgid "Select next state"
 msgstr "Select next state"
 
-#: src/app/routes/_authenticated/_payment-methods/components/payment-eligibility-checker-selector.tsx:86
-#~ msgid "Select Payment Eligibility Checker"
-#~ msgstr "Select Payment Eligibility Checker"
-
-#: src/app/routes/_authenticated/_payment-methods/components/payment-handler-selector.tsx:86
-#~ msgid "Select Payment Handler"
-#~ msgstr "Select Payment Handler"
-
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
 msgid "Select quantities to fulfill and configure the fulfillment handler"
 msgstr "Select quantities to fulfill and configure the fulfillment handler"
@@ -4966,16 +3751,6 @@ msgstr "Select quantities to fulfill and configure the fulfillment handler"
 #: src/lib/components/shared/seller-selector.tsx:76
 msgid "Select seller"
 msgstr "Select seller"
-
-#: src/app/routes/_authenticated/_shipping-methods/components/shipping-calculator-selector.tsx:87
-#~ msgctxt "Add new promotion action"
-#~ msgid "Select Shipping Calculator"
-#~ msgstr "Select Shipping Calculator"
-
-#: src/app/routes/_authenticated/_shipping-methods/components/shipping-eligibility-checker-selector.tsx:87
-#~ msgctxt "Add new promotion action"
-#~ msgid "Select Shipping Eligibility Checker"
-#~ msgstr "Select Shipping Eligibility Checker"
 
 #: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
 msgid "Select the next state for the order"
@@ -5473,10 +4248,6 @@ msgstr "Test Order"
 msgid "Test Results"
 msgstr "Test Results"
 
-#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-method-dialog.tsx:19
-#~ msgid "Test shipping method"
-#~ msgstr "Test shipping method"
-
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:39
 msgid "Test Shipping Method"
 msgstr "Test Shipping Method"
@@ -5583,17 +4354,9 @@ msgstr "Total"
 msgid "Total refund:"
 msgstr "Total refund:"
 
-#: src/app/routes/_authenticated/_orders/orders.tsx:68
-#~ msgid "Total with Tax"
-#~ msgstr "Total with Tax"
-
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
 msgid "Track"
 msgstr "Track"
-
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#~ msgid "Track inventory"
-#~ msgstr "Track inventory"
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:148
 msgid "Track inventory by default"
@@ -5715,10 +4478,6 @@ msgstr "Use as the default shipping address"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 msgid "Use global out-of-stock threshold"
 msgstr "Use global out-of-stock threshold"
-
-#: src/components/login-form.tsx:44
-#~ msgid "User"
-#~ msgstr "User"
 
 #: src/lib/components/login/login-form.tsx:112
 msgid "Username"
