@@ -60,7 +60,6 @@ export const productDetailFragment = graphql(
                     code
                 }
             }
-            customFields
         }
     `,
     [assetFragment],
@@ -109,45 +108,45 @@ export const productDetailDocument = graphql(
     [productDetailFragment],
 );
 
-export const productDetailWithVariantsDocument = graphql(
-    `
-        query ProductDetailWithVariants($id: ID!) {
-            product(id: $id) {
-                ...ProductDetail
-                variantList {
-                    totalItems
-                }
-                optionGroups {
+export const productDetailWithVariantsDocument = graphql(`
+    query ProductDetailWithVariants($id: ID!) {
+        product(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            variantList {
+                totalItems
+            }
+            optionGroups {
+                id
+                code
+                name
+                options {
                     id
                     code
                     name
-                    options {
-                        id
-                        code
-                        name
-                    }
                 }
-                variants {
+            }
+            variants {
+                id
+                name
+                sku
+                price
+                currencyCode
+                priceWithTax
+                createdAt
+                updatedAt
+                options {
                     id
+                    code
                     name
-                    sku
-                    price
-                    currencyCode
-                    priceWithTax
-                    createdAt
-                    updatedAt
-                    options {
-                        id
-                        code
-                        name
-                        groupId
-                    }
+                    groupId
                 }
             }
         }
-    `,
-    [productDetailFragment],
-);
+    }
+`);
 
 export const createProductDocument = graphql(`
     mutation CreateProduct($input: CreateProductInput!) {
