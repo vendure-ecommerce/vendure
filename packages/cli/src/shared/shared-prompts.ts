@@ -21,7 +21,7 @@ export async function analyzeProject(options: {
 
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
-        const tsConfigFile = await selectTsConfigFile();
+        const tsConfigFile = selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
         const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject(
@@ -48,13 +48,35 @@ export async function selectPlugin(project: Project, cancelledMessage: string): 
         process.exit(0);
     }
 
+    // Detect duplicate plugin names
+    const pluginNames = pluginClasses.map(c => c.getName() as string);
+    const nameCounts = pluginNames.reduce(
+        (acc, name) => {
+            acc[name] = (acc[name] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    const projectRoot = project.getDirectory('.')?.getPath() || project.getRootDirectories()[0].getPath();
+
     const targetPlugin = await withInteractiveTimeout(async () => {
         return await select({
             message: 'To which plugin would you like to add the feature?',
-            options: pluginClasses.map(c => ({
-                value: c,
-                label: c.getName() as string,
-            })),
+            options: pluginClasses.map(c => {
+                const name = c.getName() as string;
+                const hasDuplicates = nameCounts[name] > 1;
+                let label = name;
+                if (hasDuplicates) {
+                    const fullPath = c.getSourceFile().getFilePath();
+                    const relativePath = fullPath.replace(projectRoot, '').replace(/^\//, '');
+                    label = `${name} (${relativePath})`;
+                }
+                return {
+                    value: c,
+                    label,
+                };
+            }),
             maxItems: 10,
         });
     });
@@ -126,13 +148,35 @@ export async function selectMultiplePluginClasses(
         return pluginClasses.map(pc => new VendurePluginRef(pc));
     }
 
+    // Detect duplicate plugin names for multiselect
+    const pluginNames = pluginClasses.map(c => c.getName() as string);
+    const nameCounts = pluginNames.reduce(
+        (acc, name) => {
+            acc[name] = (acc[name] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    const projectRoot = project.getDirectory('.')?.getPath() || project.getRootDirectories()[0].getPath();
+
     const targetPlugins = await withInteractiveTimeout(async () => {
         return await multiselect({
             message: 'Select one or more plugins (use ↑, ↓, space to select)',
-            options: pluginClasses.map(c => ({
-                value: c,
-                label: c.getName() as string,
-            })),
+            options: pluginClasses.map(c => {
+                const name = c.getName() as string;
+                const hasDuplicates = nameCounts[name] > 1;
+                let label = name;
+                if (hasDuplicates) {
+                    const fullPath = c.getSourceFile().getFilePath();
+                    const relativePath = fullPath.replace(projectRoot, '').replace(/^\//, '');
+                    label = `${name} (${relativePath})`;
+                }
+                return {
+                    value: c,
+                    label,
+                };
+            }),
         });
     });
 
