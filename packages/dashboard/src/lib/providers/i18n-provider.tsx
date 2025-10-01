@@ -1,11 +1,8 @@
+import { loadI18nMessages } from '@/vdb/lib/load-i18n-messages.js';
 import { i18n } from '@lingui/core';
 import { I18nProvider as LinguiI18nProvider } from '@lingui/react';
 import React from 'react';
 
-export const locales = {
-    en: 'English',
-    de: 'Deutsch',
-};
 export const defaultLocale = 'en';
 
 /**
@@ -13,7 +10,7 @@ export const defaultLocale = 'en';
  * @param locale any locale string
  */
 export async function dynamicActivate(locale: string, onActivate?: () => void) {
-    const { messages } = await import(`../../i18n/locales/${locale}.po`);
+    const messages = await loadI18nMessages(locale);
     i18n.load(locale, messages);
     i18n.activate(locale);
     onActivate?.();

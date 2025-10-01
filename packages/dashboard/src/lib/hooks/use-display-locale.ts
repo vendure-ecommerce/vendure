@@ -28,7 +28,9 @@ export function useDisplayLocale() {
     const { settings } = useUserSettings();
     const language = settings.displayLanguage.replace(/[_-]/, '-');
     const locale = settings.displayLocale;
-    const bcp47Tag = language.match(/[_-]/) ? language.replace(/[_-]/, '-') : [language, locale].join('-');
+    const bcp47Tag = language.match(/[_-]/)
+        ? language.replace(/[_-]/, '-')
+        : [language, locale].filter(x => !!x).join('-');
     const humanReadableLanguageAndLocale = new Intl.DisplayNames([bcp47Tag], { type: 'language' }).of(
         bcp47Tag,
     );

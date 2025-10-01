@@ -1,3 +1,4 @@
+import { loadI18nMessages } from '@/vdb/lib/load-i18n-messages.js';
 import { useLingui } from '@lingui/react/macro';
 
 let currentlyLoading: string | null = null;
@@ -19,7 +20,7 @@ export function useUiLanguageLoader() {
             return;
         }
         currentlyLoading = locale;
-        const { messages } = await import(`../../i18n/locales/${locale}.po`);
+        const messages = await loadI18nMessages(locale);
         i18n.load(locale, messages);
         i18n.activate(locale);
         currentlyLoading = null;
