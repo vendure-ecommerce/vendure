@@ -5,7 +5,6 @@ import { ServerConfigProvider } from '@/vdb/providers/server-config.js';
 import { ThemeProvider } from '@/vdb/providers/theme-provider.js';
 import { UserSettingsProvider } from '@/vdb/providers/user-settings.js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 
 export const queryClient = new QueryClient();
@@ -23,9 +22,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         </AuthProvider>
                     </ThemeProvider>
                 </UserSettingsProvider>
-                {process.env.NODE_ENV === 'development' && (
-                    <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-                )}
             </QueryClientProvider>
         </I18nProvider>
     );
