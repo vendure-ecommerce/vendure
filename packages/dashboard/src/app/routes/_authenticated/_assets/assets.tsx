@@ -1,6 +1,6 @@
 import { AssetGallery } from '@/vdb/components/shared/asset/asset-gallery.js';
 import { Page, PageBlock, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { DeleteAssetsBulkAction } from './components/asset-bulk-actions.js';
 

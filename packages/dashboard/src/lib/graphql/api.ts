@@ -3,10 +3,12 @@ import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
-const API_URL =
-    (uiConfig.api.host !== 'auto'
+const host =
+    uiConfig.api.host !== 'auto'
         ? uiConfig.api.host
-        : `${window.location.protocol}//${window.location.hostname}`) +
+        : `${window.location.protocol}//${window.location.hostname}`;
+const API_URL =
+    host +
     `:${uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port}` +
     `/${uiConfig.api.adminApiPath}`;
 

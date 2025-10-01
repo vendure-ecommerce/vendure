@@ -1,6 +1,5 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { useLingui } from '@/vdb/lib/trans.js';
 import {
     closestCenter,
     DndContext,
@@ -18,6 +17,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useLingui } from '@lingui/react/macro';
 import { GripVertical, Plus, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
@@ -53,7 +53,7 @@ function SortableItem({
     field,
     isFullWidth = false,
 }: Readonly<SortableItemProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: itemWithId._id,
         disabled,
@@ -69,7 +69,7 @@ function SortableItem({
             {...attributes}
             {...listeners}
             className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
-            title={i18n.t('Drag to reorder')}
+            title={t`Drag to reorder`}
         >
             <GripVertical className="h-4 w-4" />
         </div>
@@ -82,7 +82,7 @@ function SortableItem({
             size="sm"
             onClick={() => onRemove(itemWithId._id)}
             className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-            title={i18n.t('Remove item')}
+            title={t`Remove item`}
         >
             <X className="h-3 w-3" />
         </Button>
@@ -169,9 +169,13 @@ function convertToFlatArray(itemsWithIds: ListItemWithId[]): any[] {
     return itemsWithIds.map(item => item.value);
 }
 
-export const CustomFieldListInput = ({ renderInput, defaultValue, ...fieldProps }: CustomFieldListInputProps) => {
+export const CustomFieldListInput = ({
+    renderInput,
+    defaultValue,
+    ...fieldProps
+}: CustomFieldListInputProps) => {
     const { value, onChange, disabled } = fieldProps;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -282,7 +286,7 @@ export const CustomFieldListInput = ({ renderInput, defaultValue, ...fieldProps 
             {!disabled && (
                 <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="w-full">
                     <Plus className="h-4 w-4 mr-2" />
-                    {i18n.t('Add item')}
+                    {t`Add item`}
                 </Button>
             )}
         </div>

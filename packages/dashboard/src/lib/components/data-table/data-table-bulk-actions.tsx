@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
@@ -19,9 +19,9 @@ interface DataTableBulkActionsProps<TData> {
 }
 
 export function DataTableBulkActions<TData>({
-    table,
-    bulkActions,
-}: Readonly<DataTableBulkActionsProps<TData>>) {
+                                                table,
+                                                bulkActions,
+                                            }: Readonly<DataTableBulkActionsProps<TData>>) {
     const allBulkActions = useAllBulkActions(bulkActions);
 
     // Cache to store selected items across page changes

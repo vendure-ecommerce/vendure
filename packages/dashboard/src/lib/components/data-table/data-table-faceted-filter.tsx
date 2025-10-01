@@ -16,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 
 export interface DataTableFacetedFilterOption {
     label: string;
@@ -159,7 +160,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                                         onSelect={() => column?.setFilterValue(undefined)}
                                         className="justify-center text-center"
                                     >
-                                        Clear filters
+                                        <Trans>Clear filters</Trans>
                                     </CommandItem>
                                 </CommandGroup>
                             </>

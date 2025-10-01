@@ -23,6 +23,7 @@ import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { endOfDay, startOfMonth } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
@@ -73,6 +74,7 @@ function DashboardPage() {
     const [editMode, setEditMode] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const prevEditModeRef = useRef(editMode);
+    const { t } = useLingui();
     const [dateRange, setDateRange] = useState<DefinedDateRange>({
         from: startOfMonth(new Date()),
         to: endOfDay(new Date()),
@@ -175,7 +177,9 @@ function DashboardPage() {
 
     return (
         <Page pageId="insights">
-            <PageTitle>Insights</PageTitle>
+            <PageTitle>
+                <Trans>Insights</Trans>
+            </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
                     <DateRangePicker
@@ -187,7 +191,7 @@ function DashboardPage() {
                         variant={editMode ? 'default' : 'outline'}
                         onClick={() => setEditMode(prev => !prev)}
                     >
-                        {editMode ? 'Save Layout' : 'Edit Layout'}
+                        {editMode ? t`Save Layout` : t`Edit Layout`}
                     </Button>
                 </PageActionBarRight>
             </PageActionBar>

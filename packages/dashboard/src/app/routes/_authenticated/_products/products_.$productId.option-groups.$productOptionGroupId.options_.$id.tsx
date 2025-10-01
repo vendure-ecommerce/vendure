@@ -20,7 +20,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, ParsedLocation, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -94,7 +94,7 @@ function ProductOptionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,

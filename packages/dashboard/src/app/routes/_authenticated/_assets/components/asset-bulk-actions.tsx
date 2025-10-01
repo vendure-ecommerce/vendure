@@ -6,7 +6,7 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { api } from '@/vdb/graphql/api.js';
 import { AssetFragment } from '@/vdb/graphql/fragments.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { deleteAssetsDocument } from '../assets.graphql.js';
 
 export const DeleteAssetsBulkAction = ({
@@ -16,19 +16,21 @@ export const DeleteAssetsBulkAction = ({
     selection: AssetFragment[];
     refetch: () => void;
 }) => {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
+    const selectionLength = selection.length;
     const { mutate } = useMutation({
         mutationFn: api.mutate(deleteAssetsDocument),
         onSuccess: (result: ResultOf<typeof deleteAssetsDocument>) => {
             if (result.deleteAssets.result === 'DELETED') {
-                toast.success(i18n.t(`Deleted ${selection.length} assets`));
+                toast.success(t`Deleted ${selectionLength} assets`);
             } else {
-                toast.error(i18n.t(`Failed to delete assets: ${result.deleteAssets.message}`));
+                const message = result.deleteAssets.message;
+                toast.error(t`Failed to delete assets: ${message}`);
             }
             refetch();
         },
         onError: () => {
-            toast.error(`Failed to delete ${selection.length} assets`);
+            toast.error(`Failed to delete ${selectionLength} assets`);
         },
     });
 
@@ -37,7 +39,7 @@ export const DeleteAssetsBulkAction = ({
             requiresPermission={['DeleteCatalog', 'DeleteAsset']}
             onClick={() => mutate({ input: { assetIds: selection.map(s => s.id) } })}
             label={<Trans>Delete</Trans>}
-            confirmationText={<Trans>Are you sure you want to delete {selection.length} assets?</Trans>}
+            confirmationText={<Trans>Are you sure you want to delete {selectionLength} assets?</Trans>}
             icon={TrashIcon}
             className="text-destructive"
         />

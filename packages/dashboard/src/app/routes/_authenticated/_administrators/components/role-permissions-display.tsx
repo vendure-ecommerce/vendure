@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/vdb/
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useGroupedPermissions } from '@/vdb/hooks/use-grouped-permissions.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 
 const rolesByIdDocument = graphql(`
@@ -29,7 +29,7 @@ interface RolePermissionsDisplayProps {
 }
 
 export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsDisplayProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 
     const { data } = useQuery({

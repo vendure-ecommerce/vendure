@@ -1,5 +1,5 @@
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { ResultOf } from 'gql.tada';
 import { Check } from 'lucide-react';
 import { testShippingMethodDocument } from '../shipping-methods.graphql.js';
@@ -19,13 +19,13 @@ interface TestSingleMethodResultProps {
 }
 
 export function TestSingleMethodResult({
-    testResult,
-    okToRun,
-    testDataUpdated,
-    hasTestedOnce,
-    onRunTest,
-    loading = false,
-}: Readonly<TestSingleMethodResultProps>) {
+                                           testResult,
+                                           okToRun,
+                                           testDataUpdated,
+                                           hasTestedOnce,
+                                           onRunTest,
+                                           loading = false,
+                                       }: Readonly<TestSingleMethodResultProps>) {
     const { activeChannel } = useChannel();
     const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const showEmptyState = testResult === undefined && hasTestedOnce && !testDataUpdated && !loading;

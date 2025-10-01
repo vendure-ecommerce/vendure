@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/vdb/graphql/api.js';
 import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { formatFileSize } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
@@ -153,18 +153,18 @@ export interface AssetGalleryProps {
  * @docsWeight 0
  */
 export function AssetGallery({
-    onSelect,
-    selectable = true,
-    multiSelect = undefined,
-    initialSelectedAssets = [],
-    pageSize = 24,
-    fixedHeight = false,
-    showHeader = true,
-    className = '',
-    onFilesDropped,
-    bulkActions,
-    displayBulkActions = true,
-}: AssetGalleryProps) {
+                                 onSelect,
+                                 selectable = true,
+                                 multiSelect = undefined,
+                                 initialSelectedAssets = [],
+                                 pageSize = 24,
+                                 fixedHeight = false,
+                                 showHeader = true,
+                                 className = '',
+                                 onFilesDropped,
+                                 bulkActions,
+                                 displayBulkActions = true,
+                             }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
@@ -380,7 +380,8 @@ export function AssetGallery({
                 <input {...getInputProps()} />
 
                 {isDragActive && (
-                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
+                    <div
+                        className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
                         <Upload className="h-12 w-12 text-primary mb-2" />
                         <p className="text-center font-medium">Drop files here to upload</p>
                     </div>

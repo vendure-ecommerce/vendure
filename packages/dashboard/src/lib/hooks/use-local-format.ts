@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { useDisplayLocale } from './use-display-locale.js';
 import { useServerConfig } from './use-server-config.js';
 
 /**
@@ -26,7 +27,8 @@ import { useServerConfig } from './use-server-config.js';
 export function useLocalFormat() {
     const { moneyStrategyPrecision } = useServerConfig() ?? { moneyStrategyPrecision: 2 };
     const precisionFactor = useMemo(() => Math.pow(10, moneyStrategyPrecision), [moneyStrategyPrecision]);
-    const locale = 'en';
+    const { bcp47Tag } = useDisplayLocale();
+    const locale = bcp47Tag;
 
     const toMajorUnits = useCallback(
         (value: number): number => {
@@ -119,6 +121,17 @@ export function useLocalFormat() {
         [locale],
     );
 
+    const formatRegionName = useCallback(
+        (value: string): string => {
+            try {
+                return new Intl.DisplayNames([locale], { type: 'region' }).of(value) ?? value;
+            } catch (e: any) {
+                return value;
+            }
+        },
+        [locale],
+    );
+
     const formatCurrencyName = useCallback(
         (currencyCode: string, display: 'full' | 'symbol' | 'name' = 'full'): string => {
             if (!currencyCode) return '';
@@ -154,6 +167,7 @@ export function useLocalFormat() {
         formatDate,
         formatRelativeDate,
         formatLanguageName,
+        formatRegionName,
         formatCurrencyName,
         toMajorUnits,
         toMinorUnits,

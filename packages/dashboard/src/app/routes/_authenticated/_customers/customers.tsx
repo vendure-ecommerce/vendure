@@ -3,7 +3,7 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCustomersBulkAction } from './components/customer-bulk-actions.js';
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers')({
 function CustomerListPage() {
     return (
         <ListPage
-            title="Customers"
+            title={<Trans>Customers</Trans>}
             pageId="customer-list"
             listQuery={customerListDocument}
             onSearchTermChange={searchTerm => {
@@ -42,7 +42,7 @@ function CustomerListPage() {
             route={Route}
             customizeColumns={{
                 user: {
-                    header: 'Status',
+                    header: () => <Trans>Status</Trans>,
                     cell: ({ cell }) => {
                         const value = cell.getValue();
                         return <CustomerStatusBadge user={value} />;
@@ -51,7 +51,8 @@ function CustomerListPage() {
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    id: 'name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => {
                         const value = `${row.original.firstName} ${row.original.lastName}`;
                         return <DetailPageButton id={row.original.id} label={value} />;

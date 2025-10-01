@@ -9,7 +9,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';

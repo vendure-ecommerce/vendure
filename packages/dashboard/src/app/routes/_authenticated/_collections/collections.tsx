@@ -4,7 +4,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
@@ -82,7 +82,7 @@ function CollectionListPage() {
         <>
             <ListPage
                 pageId="collection-list"
-                title="Collections"
+                title={<Trans>Collections</Trans>}
                 listQuery={collectionListDocument}
                 transformVariables={input => {
                     const filterTerm = input.options?.filter?.name?.contains;
@@ -101,7 +101,6 @@ function CollectionListPage() {
                             // in order to correctly render.
                             dependencies: ['children', 'breadcrumbs'],
                         },
-                        header: 'Collection Name',
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;
@@ -141,7 +140,7 @@ function CollectionListPage() {
                         },
                     },
                     productVariants: {
-                        header: 'Contents',
+                        header: () => <Trans>Contents</Trans>,
                         cell: ({ row }) => {
                             return (
                                 <CollectionContentsSheet

@@ -16,7 +16,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -48,7 +48,7 @@ function AdministratorDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -74,16 +74,27 @@ function AdministratorDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t(creatingNewEntity ? 'Successfully created administrator' : 'Successfully updated administrator'));
+            toast(
+                i18n.t(
+                    creatingNewEntity
+                        ? 'Successfully created administrator'
+                        : 'Successfully updated administrator',
+                ),
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t(creatingNewEntity ? 'Failed to create administrator' : 'Failed to update administrator'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast(
+                i18n.t(
+                    creatingNewEntity ? 'Failed to create administrator' : 'Failed to update administrator',
+                ),
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

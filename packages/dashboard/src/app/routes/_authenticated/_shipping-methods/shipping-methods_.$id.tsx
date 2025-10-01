@@ -18,7 +18,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { FulfillmentHandlerSelector } from './components/fulfillment-handler-selector.js';
@@ -52,7 +52,7 @@ function ShippingMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,

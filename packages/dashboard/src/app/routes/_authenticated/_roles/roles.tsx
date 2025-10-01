@@ -7,7 +7,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@/vdb/constants.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
@@ -25,7 +25,7 @@ function RoleListPage() {
     return (
         <ListPage
             pageId="role-list"
-            title="Roles"
+            title={<Trans>Roles</Trans>}
             listQuery={roleListQuery}
             route={Route}
             defaultVisibility={{
@@ -36,7 +36,6 @@ function RoleListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: 'Code',
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -48,7 +47,6 @@ function RoleListPage() {
                     },
                 },
                 permissions: {
-                    header: 'Permissions',
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return (
@@ -62,7 +60,6 @@ function RoleListPage() {
                     },
                 },
                 channels: {
-                    header: 'Channels',
                     cell: ({ row }) => {
                         if (SYSTEM_ROLES.includes(row.original.code)) {
                             return null;
@@ -92,7 +89,7 @@ function RoleListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Role
+                            <Trans>New Role</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

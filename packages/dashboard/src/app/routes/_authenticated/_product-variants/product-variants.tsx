@@ -3,7 +3,7 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import {
     AssignFacetValuesToProductVariantsBulkAction,
@@ -45,7 +45,6 @@ function ProductListPage() {
             ]}
             customizeColumns={{
                 name: {
-                    header: 'Product Name',
                     cell: ({ row: { original } }) => (
                         <DetailPageButton id={original.id} label={original.name} />
                     ),

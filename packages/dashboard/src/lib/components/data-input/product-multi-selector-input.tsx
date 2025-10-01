@@ -13,7 +13,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Plus, X } from 'lucide-react';
@@ -93,13 +93,13 @@ function EmptyState() {
 }
 
 function ProductList({
-    items,
-    mode,
-    selectedIds,
-    getItemId,
-    getItemName,
-    toggleSelection,
-}: Readonly<{
+                         items,
+                         mode,
+                         selectedIds,
+                         getItemId,
+                         getItemName,
+                         toggleSelection,
+                     }: Readonly<{
     items: SearchItem[];
     mode: 'product' | 'variant';
     selectedIds: Set<string>;
@@ -163,12 +163,12 @@ function ProductList({
 }
 
 function ProductMultiSelectorDialog({
-    mode,
-    initialSelectionIds = [],
-    onSelectionChange,
-    open,
-    onOpenChange,
-}: Readonly<ProductMultiSelectorProps>) {
+                                        mode,
+                                        initialSelectionIds = [],
+                                        onSelectionChange,
+                                        open,
+                                        onOpenChange,
+                                    }: Readonly<ProductMultiSelectorProps>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedItems, setSelectedItems] = useState<SearchItem[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

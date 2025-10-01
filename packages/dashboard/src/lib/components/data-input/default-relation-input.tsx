@@ -1,5 +1,5 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ControllerRenderProps } from 'react-hook-form';
 import { MultiRelationInput, SingleRelationInput } from './relation-input.js';
@@ -100,10 +100,11 @@ function createBaseEntityConfig(
     labelKey: 'name' | 'code' | 'emailAddress' = 'name',
     searchField: string = 'name',
 ) {
+    const entityNameLower = entityName.toLowerCase();
     return {
         idKey: 'id',
         labelKey,
-        placeholder: i18n.t(`Search ${entityName.toLowerCase()}s...`),
+        placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
         }),
@@ -563,12 +564,12 @@ export function DefaultRelationInput({
     ref,
     disabled,
 }: Readonly<DashboardFormComponentProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     if (!fieldDef || !isRelationCustomFieldConfig(fieldDef)) {
         return null;
     }
     const entityName = fieldDef.entity;
-    const ENTITY_CONFIGS = createEntityConfigs(i18n);
+    const ENTITY_CONFIGS = createEntityConfigs(t);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {

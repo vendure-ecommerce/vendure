@@ -10,8 +10,8 @@ import {
 } from '@/vdb/components/ui/command.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Check, Filter, Loader2, X } from 'lucide-react';

@@ -9,7 +9,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import {
     ColumnDef,
     flexRender,

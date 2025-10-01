@@ -5,7 +5,7 @@ import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { administratorListDocument } from './administrators.graphql.js';
@@ -20,7 +20,7 @@ function AdministratorListPage() {
     return (
         <ListPage
             pageId="administrator-list"
-            title="Administrators"
+            title={<Trans>Administrators</Trans>}
             listQuery={administratorListDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
@@ -32,7 +32,8 @@ function AdministratorListPage() {
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    id: 'name',
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => (
                         <DetailPageButton
                             id={row.original.id}
@@ -41,7 +42,8 @@ function AdministratorListPage() {
                     ),
                 },
                 roles: {
-                    header: 'Roles',
+                    id: 'roles',
+                    header: () => <Trans>Roles</Trans>,
                     cell: ({ row }) => {
                         return (
                             <div className="flex flex-wrap gap-2">

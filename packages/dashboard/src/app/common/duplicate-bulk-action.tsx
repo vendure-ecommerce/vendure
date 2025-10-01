@@ -8,7 +8,7 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { duplicateEntityDocument } from '@/vdb/graphql/common-operations.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { DuplicateEntityDialog } from './duplicate-entity-dialog.js';
 
 interface DuplicateBulkActionProps {
@@ -31,7 +31,7 @@ export function DuplicateBulkAction({
     table,
 }: Readonly<DuplicateBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [isDuplicating, setIsDuplicating] = useState(false);
     const [progress, setProgress] = useState({ completed: 0, total: 0 });
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -93,9 +93,8 @@ export function DuplicateBulkAction({
 
             // Show results
             if (results.success > 0) {
-                toast.success(
-                    i18n.t(`Successfully duplicated ${results.success} ${entityName.toLowerCase()}s`),
-                );
+                const count = results.success;
+                toast.success(t`Successfully duplicated ${count} ${entityName}`);
             }
             if (results.failed > 0) {
                 const errorMessage =

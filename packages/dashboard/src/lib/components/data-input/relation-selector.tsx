@@ -10,7 +10,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { getQueryName } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';

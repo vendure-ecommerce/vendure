@@ -2,7 +2,7 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/vdb/components/ui/button.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';

@@ -7,7 +7,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/vdb/components/ui/sheet.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { FlaskConical } from 'lucide-react';
 import { useState } from 'react';
 import { TestShippingMethods } from './test-shipping-methods.js';

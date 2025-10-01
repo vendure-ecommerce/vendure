@@ -2,7 +2,7 @@ import { Settings } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '../ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { GlobalViewsSheet } from './global-views-sheet.js';
 
 export const ManageGlobalViewsButton: React.FC = () => {

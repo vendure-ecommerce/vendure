@@ -9,17 +9,17 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/vdb/components/ui/alert-dialog.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 
 export function ConfirmationDialog({
-    title,
-    description,
-    onConfirm,
-    children,
-    confirmText,
-    cancelText,
-}: {
+                                       title,
+                                       description,
+                                       onConfirm,
+                                       children,
+                                       confirmText,
+                                       cancelText,
+                                   }: {
     title: string;
     description: string;
     onConfirm: () => void;

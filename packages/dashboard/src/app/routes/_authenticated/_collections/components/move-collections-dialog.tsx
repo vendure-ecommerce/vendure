@@ -16,7 +16,7 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { ChevronRight, Folder, FolderOpen, Search } from 'lucide-react';
 
 import { collectionListForMoveDocument, moveCollectionDocument } from '../collections.graphql.js';
@@ -217,7 +217,7 @@ export function MoveCollectionsDialog({
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
     const collectionNameCache = useRef<Map<string, string>>(new Map());
     const queryClient = useQueryClient();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const collectionForMoveKey = ['collectionsForMove', debouncedSearchTerm];
     const childCollectionsForMoveKey = (collectionId?: string) =>
         collectionId ? ['childCollectionsForMove', collectionId] : ['childCollectionsForMove'];
@@ -280,14 +280,14 @@ export function MoveCollectionsDialog({
     const moveCollectionsMutation = useMutation({
         mutationFn: api.mutate(moveCollectionDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Collections moved successfully'));
+            toast.success(t`Collections moved successfully`);
             queryClient.invalidateQueries({ queryKey: collectionForMoveKey });
             queryClient.invalidateQueries({ queryKey: childCollectionsForMoveKey() });
             onSuccess?.();
             onOpenChange(false);
         },
         onError: error => {
-            toast.error(i18n.t('Failed to move collections'));
+            toast.error(t`Failed to move collections`);
             console.error('Move collections error:', error);
         },
     });
@@ -305,7 +305,7 @@ export function MoveCollectionsDialog({
 
     const handleMove = () => {
         if (!selectedCollectionId) {
-            toast.error(i18n.t('Please select a target collection'));
+            toast.error(t`Please select a target collection`);
             return;
         }
         // Move to a specific parent using moveCollection
@@ -363,7 +363,7 @@ export function MoveCollectionsDialog({
                         <div className="relative mb-3">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder={i18n.t('Filter by collection name')}
+                                placeholder={t`Filter by collection name`}
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
                                 className="pl-10"

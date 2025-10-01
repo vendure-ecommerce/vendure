@@ -1,7 +1,7 @@
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -64,7 +64,7 @@ export function CustomerAddressForm<T>({
     onSubmit,
     onCancel,
 }: CustomerAddressFormProps<T>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     // Fetch available countries
     const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
@@ -237,7 +237,7 @@ export function CustomerAddressForm<T>({
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={i18n.t('Select a country')} />
+                                            <SelectValue placeholder={t`Select a country`} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>

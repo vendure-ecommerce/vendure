@@ -8,8 +8,8 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
-import { Trans } from '@/vdb/lib/trans.js';
-import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
+import { Trans } from '@lingui/react/macro';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { FilterIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ export interface AddFilterMenuProps {
 export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
     const [selectedColumn, setSelectedColumn] = useState<ColumnDef<any> | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+    const { getTranslatedFieldName } = useDynamicTranslations();
     const filterableColumns = columns.filter(column => column.getCanFilter());
 
     return (
@@ -48,7 +48,7 @@ export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
                                 setIsDialogOpen(true);
                             }}
                         >
-                            {camelCaseToTitleCase(column.id)}
+                            {getTranslatedFieldName(column.id)}
                         </DropdownMenuItem>
                     ))}
                 </DropdownMenuContent>

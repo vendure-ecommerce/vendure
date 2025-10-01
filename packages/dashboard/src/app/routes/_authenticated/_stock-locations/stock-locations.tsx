@@ -3,7 +3,7 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import {
@@ -22,12 +22,11 @@ function StockLocationListPage() {
     return (
         <ListPage
             pageId="stock-location-list"
-            title="Stock Locations"
+            title={<Trans>Stock Locations</Trans>}
             listQuery={stockLocationListQuery}
             route={Route}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
@@ -56,7 +55,7 @@ function StockLocationListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Stock Location
+                            <Trans>New Stock Location</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

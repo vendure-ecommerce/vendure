@@ -10,7 +10,7 @@ import { addCustomFields } from '@/vdb/framework/document-introspection/add-cust
 import { getFieldsFromDocumentNode } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { JsonEditor } from 'json-edit-react';
 import { EllipsisVertical } from 'lucide-react';
 import { useMemo } from 'react';

@@ -19,7 +19,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { FacetValuesTable } from './components/facet-values-table.js';
@@ -46,7 +46,7 @@ function FacetDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -76,14 +76,14 @@ function FacetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t(creatingNewEntity ? 'Successfully created facet' : 'Successfully updated facet'));
+            toast(creatingNewEntity ? t`Successfully created facet` : t`Successfully updated facet`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t(creatingNewEntity ? 'Failed to create facet' : 'Failed to update facet'), {
+            toast(creatingNewEntity ? t`Failed to create facet` : t`Failed to update facet`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

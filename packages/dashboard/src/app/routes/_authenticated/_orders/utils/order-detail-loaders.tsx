@@ -1,7 +1,7 @@
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { getDetailQueryOptions } from '@/vdb/framework/page/use-detail-page.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { redirect } from '@tanstack/react-router';
 import { OrderDetail } from '../components/order-detail-shared.js';
 import { orderDetailDocument } from '../orders.graphql.js';
