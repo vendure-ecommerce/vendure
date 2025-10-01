@@ -378,7 +378,8 @@ export interface AuthOptions {
      * * 'bearer': Upon login, the token is returned in the response and should be then stored by the
      *   client app. Each request should include the header `Authorization: Bearer <token>`.
      * * 'api-key': The mutation `createApiKey` will return a generated API-Key once, which should then be
-     *   stored by the User. Each request should include the header `Authorization: Basic <base64-encoded-token>`.
+     *   stored by the User. Each request should include the API-Key inside the header defined by `apiKeyHeaderKey`
+     * ('vendure-api-key' by default).
      *
      * Note that if the bearer method is used, Vendure will automatically expose the configured
      * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
@@ -404,7 +405,13 @@ export interface AuthOptions {
      * @default 'vendure-auth-token'
      */
     authTokenHeaderKey?: string;
-    // TODO could add a apiKeyHeaderKey in case we want a custom header like "x-api-key" if so change the docs of tokenmethod too
+    /**
+     * @description
+     * Defines which header will be used to read the API-Key when using the 'api-key' method.
+     *
+     * @default 'vendure-api-key'
+     */
+    apiKeyHeaderKey?: string;
     /**
      * @description
      * Session duration, i.e. the time which must elapse from the last authenticated request

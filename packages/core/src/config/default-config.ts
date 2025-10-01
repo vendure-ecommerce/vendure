@@ -1,5 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
+    DEFAULT_APIKEY_HEADER_KEY,
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
     DEFAULT_CHANNEL_TOKEN_KEY,
     SUPER_ADMIN_USER_IDENTIFIER,
@@ -105,6 +106,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             sameSite: 'lax',
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
+        apiKeyHeaderKey: DEFAULT_APIKEY_HEADER_KEY,
         sessionDuration: '1y',
         sessionCacheStrategy: new DefaultSessionCacheStrategy(),
         sessionCacheTTL: 300,

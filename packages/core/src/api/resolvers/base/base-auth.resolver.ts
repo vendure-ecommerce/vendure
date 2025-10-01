@@ -68,6 +68,7 @@ export class BaseAuthResolver {
         const extraction = await extractSessionToken(
             req,
             this.configService.authOptions.tokenMethod,
+            this.configService.authOptions.apiKeyHeaderKey,
             apiKeyHashingStrategy,
         );
 

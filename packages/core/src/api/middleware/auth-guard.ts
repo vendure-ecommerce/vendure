@@ -145,7 +145,12 @@ export class AuthGuard implements CanActivate {
         apiKeyHashingStrategy: ApiKeyHashingStrategy,
     ): Promise<CachedSession | undefined> {
         const sessionToken = (
-            await extractSessionToken(req, this.configService.authOptions.tokenMethod, apiKeyHashingStrategy)
+            await extractSessionToken(
+                req,
+                this.configService.authOptions.tokenMethod,
+                this.configService.authOptions.apiKeyHeaderKey,
+                apiKeyHashingStrategy,
+            )
         )?.token;
 
         let serializedSession: CachedSession | undefined;
