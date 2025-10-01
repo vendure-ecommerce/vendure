@@ -804,7 +804,7 @@ msgstr "{formattedDiff} को फिर्ता आवश्यक छ। भ�
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
-#: src/lib/components/data-table/use-generated-columns.tsx:231
+#: src/lib/components/data-table/use-generated-columns.tsx:229
 msgid "Actions"
 msgstr "कार्यहरू"
 
@@ -923,7 +923,7 @@ msgstr "अर्डरमा भुक्तानी थप्नुहोस�
 msgid "Add payment to order ({0})"
 msgstr "अर्डरमा भुक्तानी थप्नुहोस् ({0})"
 
-#: src/app/routes/_authenticated/_products/components/product-options-table.tsx:105
+#: src/app/routes/_authenticated/_products/components/product-options-table.tsx:108
 msgid "Add product option"
 msgstr "उत्पादन विकल्प थप्नुहोस्"
 
@@ -1090,7 +1090,7 @@ msgstr "के तपाईं निश्चित हुनुहुन्छ
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं यो ग्लोबल दृश्य मेट्न चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन र सबै प्रयोगकर्ताहरूलाई असर गर्नेछ।"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:322
+#: src/lib/components/data-table/use-generated-columns.tsx:320
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं यो वस्तु मेट्न चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।"
 
@@ -1208,7 +1208,7 @@ msgstr "क्याल्कुलेटर"
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:119
-#: src/lib/components/data-table/use-generated-columns.tsx:329
+#: src/lib/components/data-table/use-generated-columns.tsx:327
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
 #: src/lib/components/layout/manage-languages-dialog.tsx:396
@@ -1291,7 +1291,7 @@ msgstr "यो ढुवानी विधि परीक्षण गर्�
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:140
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:159
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
@@ -1345,7 +1345,7 @@ msgstr "पुष्टि गर्नुहोस्"
 msgid "Confirm Action"
 msgstr "कार्य पुष्टि गर्नुहोस्"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:319
+#: src/lib/components/data-table/use-generated-columns.tsx:317
 msgid "Confirm deletion"
 msgstr "मेटाउने पुष्टि गर्नुहोस्"
 
@@ -1408,7 +1408,7 @@ msgstr "अर्डरको लागि कुपन कोड सेट ग�
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:134
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:142
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:163
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:135
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
@@ -1551,8 +1551,8 @@ msgstr "ग्राहक प्रमाणित गरियो"
 
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:114
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:58
-#: src/app/routes/_authenticated/_customers/customers.tsx:15
-#: src/app/routes/_authenticated/_customers/customers.tsx:21
+#: src/app/routes/_authenticated/_customers/customers.tsx:16
+#: src/app/routes/_authenticated/_customers/customers.tsx:22
 msgid "Customers"
 msgstr "ग्राहकहरू"
 
@@ -1598,8 +1598,8 @@ msgstr "पूर्वनिर्धारित कर क्षेत्र"
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:343
+#: src/lib/components/data-table/use-generated-columns.tsx:310
+#: src/lib/components/data-table/use-generated-columns.tsx:341
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1641,7 +1641,7 @@ msgstr "{deleted} {entityName} मेटियो"
 msgid "Deleted {selectionLength} assets"
 msgstr "{selectionLength} सम्पत्तिहरू मेटियो"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:293
+#: src/lib/components/data-table/use-generated-columns.tsx:291
 msgid "Deleted successfully"
 msgstr "सफलतापूर्वक मेटियो"
 
@@ -1997,6 +1997,10 @@ msgstr "भुक्तानी विधि सिर्जना गर्न
 msgid "Failed to create product"
 msgstr "उत्पादन सिर्जना गर्न असफल"
 
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:117
+msgid "Failed to create product option group"
+msgstr "उत्पादन विकल्प समूह सिर्जना गर्न असफल"
+
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:124
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:209
 msgid "Failed to create product options"
@@ -2036,8 +2040,8 @@ msgstr "कर दर सिर्जना गर्न असफल"
 msgid "Failed to create zone"
 msgstr "क्षेत्र सिर्जना गर्न असफल"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:295
-#: src/lib/components/data-table/use-generated-columns.tsx:301
+#: src/lib/components/data-table/use-generated-columns.tsx:293
+#: src/lib/components/data-table/use-generated-columns.tsx:299
 msgid "Failed to delete"
 msgstr "मेट्न असफल"
 
@@ -2186,6 +2190,10 @@ msgstr "भुक्तानी स्थिति अपडेट गर्न
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:95
 msgid "Failed to update product"
 msgstr "उत्पादन अपडेट गर्न असफल"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:118
+msgid "Failed to update product option group"
+msgstr "उत्पादन विकल्प समूह अद्यावधिक गर्न असफल"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:112
 msgid "Failed to update product variant"
@@ -2418,7 +2426,7 @@ msgstr "उचाइ"
 msgid "ID"
 msgstr "ID"
 
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:65
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:64
 msgid "Identifier"
 msgstr "पहिचानकर्ता"
 
@@ -2751,14 +2759,14 @@ msgstr "मेरो सुरक्षित दृश्यहरू"
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:146
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:108
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
-#: src/app/routes/_authenticated/_customers/customers.tsx:55
+#: src/app/routes/_authenticated/_customers/customers.tsx:68
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:134
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:303
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:153
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:149
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:185
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:157
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
@@ -2812,7 +2820,7 @@ msgstr "नयाँ देश"
 msgid "New customer"
 msgstr "नयाँ ग्राहक"
 
-#: src/app/routes/_authenticated/_customers/customers.tsx:82
+#: src/app/routes/_authenticated/_customers/customers.tsx:93
 msgid "New Customer"
 msgstr "नयाँ ग्राहक"
 
@@ -2865,7 +2873,7 @@ msgstr "नयाँ भुक्तानी विधि"
 msgid "New product"
 msgstr "नयाँ उत्पादन"
 
-#: src/app/routes/_authenticated/_products/products.tsx:92
+#: src/app/routes/_authenticated/_products/products.tsx:98
 msgid "New Product"
 msgstr "नयाँ उत्पादन"
 
@@ -2873,7 +2881,7 @@ msgstr "नयाँ उत्पादन"
 msgid "New product option"
 msgstr "नयाँ उत्पादन विकल्प"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:133
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:129
 msgid "New product option group"
 msgstr "नयाँ उत्पादन विकल्प समूह"
 
@@ -3438,7 +3446,7 @@ msgid "Product options"
 msgstr "उत्पादन विकल्पहरू"
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:191
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:174
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:170
 msgid "Product Options"
 msgstr "उत्पादन विकल्पहरू"
 
@@ -3491,7 +3499,7 @@ msgstr "दर"
 msgid "Reason"
 msgstr "कारण"
 
-#: src/app/routes/_authenticated/_products/products.tsx:85
+#: src/app/routes/_authenticated/_products/products.tsx:91
 msgid "Rebuild search index"
 msgstr "खोज सूचकांक पुनर्निर्माण गर्नुहोस्"
 
@@ -4014,7 +4022,7 @@ msgid "State/Province"
 msgstr "राज्य/प्रान्त"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:252
-#: src/app/routes/_authenticated/_customers/customers.tsx:45
+#: src/app/routes/_authenticated/_customers/customers.tsx:46
 msgid "Status"
 msgstr "स्थिति"
 
@@ -4118,6 +4126,10 @@ msgstr "भुक्तानी विधि सफलतापूर्वक 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:87
 msgid "Successfully created product"
 msgstr "उत्पादन सफलतापूर्वक सिर्जना गरियो"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:106
+msgid "Successfully created product option group"
+msgstr "उत्पादन विकल्प समूह सफलतापूर्वक सिर्जना गरियो"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:119
 msgid "Successfully created product options"
@@ -4224,6 +4236,10 @@ msgstr "भुक्तानी विधि सफलतापूर्वक 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:87
 msgid "Successfully updated product"
 msgstr "उत्पादन सफलतापूर्वक अपडेट गरियो"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:107
+msgid "Successfully updated product option group"
+msgstr "उत्पादन विकल्प समूह सफलतापूर्वक अद्यावधिक गरियो"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:103
 msgid "Successfully updated product variant"
@@ -4546,7 +4562,7 @@ msgstr "प्रमाणित नगरिएको"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:134
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:142
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:163
 #: src/app/routes/_authenticated/_profile/profile.tsx:82
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:135
