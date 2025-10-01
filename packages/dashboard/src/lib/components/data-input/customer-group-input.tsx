@@ -6,13 +6,11 @@ import { CustomerGroupSelector } from '../shared/customer-group-selector.js';
 
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 
-const customerGroupsDocument = graphql(`
-    query GetCustomerGroups($options: CustomerGroupListOptions) {
-        customerGroups(options: $options) {
-            items {
-                id
-                name
-            }
+const customerGroupDocument = graphql(`
+    query GetCustomerGroup($id: ID!) {
+        customerGroup(id: $id) {
+            id
+            name
         }
     }
 `);
@@ -22,47 +20,43 @@ export interface CustomerGroup {
     name: string;
 }
 
-export function CustomerGroupInput({ value, onChange, disabled }: Readonly<DashboardFormComponentProps>) {
-    const ids = decodeIds(value);
-    const { data: groups } = useQuery({
-        queryKey: ['customerGroups', ids],
+export function CustomerGroupInput({
+    value,
+    onChange,
+    disabled,
+    fieldDef,
+}: Readonly<DashboardFormComponentProps>) {
+    console.log(fieldDef);
+    const { data } = useQuery({
+        queryKey: ['customerGroups', value],
         queryFn: () =>
-            api.query(customerGroupsDocument, {
-                options: {
-                    filter: {
-                        id: { in: ids },
-                    },
-                },
+            api.query(customerGroupDocument, {
+                id: value,
             }),
+        enabled: !!value,
     });
 
     const onValueSelectHandler = (value: CustomerGroup) => {
-        const newIds = new Set([...ids, value.id]);
-        onChange(JSON.stringify(Array.from(newIds)));
+        onChange(value.id);
     };
 
-    const onValueRemoveHandler = (id: string) => {
-        const newIds = new Set(ids.filter(existingId => existingId !== id));
-        onChange(JSON.stringify(Array.from(newIds)));
+    const onValueRemoveHandler = () => {
+        onChange(null);
     };
 
     return (
         <div>
             <div className="flex flex-wrap gap-2 mb-2">
-                {groups?.customerGroups.items.map(group => (
-                    <CustomerGroupChip key={group.id} group={group} onRemove={onValueRemoveHandler} />
-                ))}
+                {data?.customerGroup ? (
+                    <CustomerGroupChip
+                        key={data.customerGroup.id}
+                        group={data.customerGroup}
+                        onRemove={onValueRemoveHandler}
+                    />
+                ) : null}
             </div>
 
             <CustomerGroupSelector onSelect={onValueSelectHandler} readOnly={disabled} />
         </div>
     );
-}
-
-function decodeIds(idsString: string): string[] {
-    try {
-        return JSON.parse(idsString);
-    } catch (error) {
-        return [];
-    }
 }
