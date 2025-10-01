@@ -1,11 +1,10 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/react-table';
 import { PlusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { deleteProductOptionDocument } from '../product-option-groups.graphql.js';
@@ -19,7 +18,6 @@ export const productOptionListDocument = graphql(`
                 updatedAt
                 name
                 code
-                customFields
             }
             totalItems
         }
@@ -39,12 +37,16 @@ export function ProductOptionsTable({
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+        name: true,
+        code: true,
+    });
     const refreshRef = useRef<() => void>(() => {});
 
     return (
         <>
             <PaginatedListDataTable
-                listQuery={addCustomFields(productOptionListDocument)}
+                listQuery={productOptionListDocument}
                 deleteMutation={deleteProductOptionDocument}
                 page={page}
                 itemsPerPage={pageSize}
@@ -57,6 +59,7 @@ export function ProductOptionsTable({
                 onSortChange={(_, sorting) => {
                     setSorting(sorting);
                 }}
+                onColumnVisibilityChange={(_, value) => setColumnVisibility(value)}
                 onFilterChange={(_, filters) => {
                     setFilters(filters);
                 }}
@@ -85,9 +88,9 @@ export function ProductOptionsTable({
                         },
                     };
                 }}
+                defaultVisibility={columnVisibility}
                 customizeColumns={{
                     name: {
-                        header: 'Name',
                         cell: ({ row }) => (
                             <DetailPageButton
                                 id={row.original.id}

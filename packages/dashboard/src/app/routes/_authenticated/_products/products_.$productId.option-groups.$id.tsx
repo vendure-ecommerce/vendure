@@ -102,11 +102,9 @@ function ProductOptionGroupDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created product option group'
-                        : 'Successfully updated product option group',
-                ),
+                creatingNewEntity
+                    ? t`Successfully created product option group`
+                    : t`Successfully updated product option group`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -115,11 +113,9 @@ function ProductOptionGroupDetailPage() {
         },
         onError: err => {
             toast(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Failed to create product option group'
-                        : 'Failed to update product option group',
-                ),
+                creatingNewEntity
+                    ? t`Failed to create product option group`
+                    : t`Failed to update product option group`,
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },
