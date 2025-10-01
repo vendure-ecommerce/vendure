@@ -10,6 +10,10 @@ export const customerListDocument = graphql(`
                 firstName
                 lastName
                 emailAddress
+                groups {
+                    id
+                    name
+                }
                 user {
                     id
                     verified

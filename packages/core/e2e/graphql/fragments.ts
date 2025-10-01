@@ -23,6 +23,8 @@ export const ADMINISTRATOR_FRAGMENT = gql`
 export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
         id
+        createdAt
+        updatedAt
         name
         fileSize
         mimeType

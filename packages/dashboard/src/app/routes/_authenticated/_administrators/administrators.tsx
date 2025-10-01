@@ -32,7 +32,7 @@ function AdministratorListPage() {
             }}
             additionalColumns={{
                 name: {
-                    id: 'name',
+                    meta: { dependencies: ['id', 'firstName', 'lastName'] },
                     header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => (
                         <DetailPageButton
@@ -42,12 +42,12 @@ function AdministratorListPage() {
                     ),
                 },
                 roles: {
-                    id: 'roles',
+                    meta: { dependencies: ['user'] },
                     header: () => <Trans>Roles</Trans>,
                     cell: ({ row }) => {
                         return (
                             <div className="flex flex-wrap gap-2">
-                                {row.original.user.roles.map(role => {
+                                {row.original.user?.roles.map(role => {
                                     return (
                                         <Badge variant="secondary" key={role.id}>
                                             <RoleCodeLabel code={role.code} />
@@ -61,7 +61,6 @@ function AdministratorListPage() {
             }}
             customizeColumns={{
                 emailAddress: {
-                    id: 'Identifier',
                     header: () => <Trans>Identifier</Trans>,
                     cell: ({ row }) => {
                         return <div>{row.original.emailAddress}</div>;
@@ -70,6 +69,7 @@ function AdministratorListPage() {
             }}
             defaultVisibility={{
                 emailAddress: true,
+                name: true,
             }}
             defaultColumnOrder={['name', 'emailAddress', 'roles']}
             bulkActions={[
