@@ -35,7 +35,7 @@ type TranslationFile = {
  * This Vite plugin compiles
  * @param options
  */
-export function translationsPlugin(options: TranslationsPluginOptions): Promise<Plugin> {
+export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
     const { externalPoFiles = [], localesDir = 'src/i18n/locales', outputPath = 'assets/i18n' } = options;
 
     const linguiConfig = getConfig({ configPath: path.join(options.packageRoot, 'lingui.config.js') });
