@@ -174,8 +174,9 @@ function PromotionDetailPage() {
                             label={<Trans>Starts at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
@@ -185,8 +186,9 @@ function PromotionDetailPage() {
                             label={<Trans>Ends at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
