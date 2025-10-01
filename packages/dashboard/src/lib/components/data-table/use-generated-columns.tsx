@@ -10,7 +10,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
+import { AccessorFnColumnDef, AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -36,12 +36,7 @@ import {
 } from '../ui/alert-dialog.js';
 import { Button } from '../ui/button.js';
 import { Checkbox } from '../ui/checkbox.js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '../ui/dropdown-menu.js';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu.js';
 import { DataTableColumnHeader } from './data-table-column-header.js';
 
 /**
@@ -78,7 +73,10 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     includeSelectionColumn?: boolean;
     includeActionsColumn?: boolean;
     enableSorting?: boolean;
-}>) {
+}>): {
+    columns: Array<AccessorKeyColumnDef<any> | AccessorFnColumnDef<any>>;
+    customFieldColumnNames: string[];
+} {
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
     const allBulkActions = useAllBulkActions(bulkActions ?? []);
 

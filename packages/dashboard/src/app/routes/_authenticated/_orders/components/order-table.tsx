@@ -160,7 +160,7 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
         enableSorting: false,
     });
 
-    const columnVisibility = getColumnVisibility(fields, defaultColumnVisibility, customFieldColumnNames);
+    const columnVisibility = getColumnVisibility(columns, defaultColumnVisibility, customFieldColumnNames);
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
     const data = order.lines;
 

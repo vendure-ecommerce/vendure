@@ -14,7 +14,7 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { ColumnFiltersState, ColumnSort, SortingState, Table } from '@tanstack/react-table';
 import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
 import React from 'react';
-import { getColumnVisibility } from '../data-table/data-table-utils.js';
+import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
@@ -89,19 +89,23 @@ export type AllItemFieldKeys<T extends TypedDocumentNode<any, any>> =
     | keyof PaginatedListItemFields<T>
     | CustomFieldKeysOfItem<PaginatedListItemFields<T>>;
 
-export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>> & {
-        meta?: {
-            /**
-             * @description
-             * Columns that rely on _other_ columns in order to correctly render,
-             * can declare those other columns as dependencies in order to ensure that
-             * those columns are always fetched, even when those columns are not explicitly
-             * included in the visible table columns.
-             */
-            dependencies?: Array<AllItemFieldKeys<T>>;
-        };
+export type ColumnDefWithMetaDependencies<T extends TypedDocumentNode<any, any>> = Partial<
+    ColumnDef<T, any>
+> & {
+    meta?: {
+        /**
+         * @description
+         * Columns that rely on _other_ columns in order to correctly render,
+         * can declare those other columns as dependencies in order to ensure that
+         * those columns are always fetched, even when those columns are not explicitly
+         * included in the visible table columns.
+         */
+        dependencies?: Array<AllItemFieldKeys<T>>;
     };
+};
+
+export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
+    [Key in AllItemFieldKeys<T>]?: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -145,7 +149,7 @@ export type ListQueryOptionsShape = {
 };
 
 export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
-    [key: string]: ColumnDef<PaginatedListItemFields<T>>;
+    [key: string]: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export interface PaginatedListContext {
@@ -419,15 +423,14 @@ export function PaginatedListDataTable<
         bulkActions,
         deleteMutation,
         additionalColumns,
-        defaultColumnOrder,
+        defaultColumnOrder: getStandardizedDefaultColumnOrder(defaultColumnOrder),
     });
-
-    const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
+    const columnVisibility = getColumnVisibility(columns, defaultVisibility, customFieldColumnNames);
     // Get the actual visible columns and only fetch those
     const visibleColumns = columns
         // Filter out invisible columns, but _always_ select "id"
         // because it is usually needed.
-        .filter(c => columnVisibility[c.id as string] || c.id === 'id')
+        .filter(c => columnVisibility[c.id as string] !== false || c.id === 'id')
         .map(c => ({
             name: c.id as string,
             isCustomField: (c.meta as any)?.isCustomField ?? false,

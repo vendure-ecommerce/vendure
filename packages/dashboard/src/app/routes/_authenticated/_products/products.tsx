@@ -54,6 +54,12 @@ function ProductListPage() {
                     name: { contains: searchTerm },
                 };
             }}
+            defaultVisibility={{
+                name: true,
+                featuredAsset: true,
+                slug: true,
+                enabled: true,
+            }}
             route={Route}
             bulkActions={[
                 {

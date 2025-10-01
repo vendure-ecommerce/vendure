@@ -1,5 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
@@ -43,15 +44,27 @@ function CustomerListPage() {
             customizeColumns={{
                 user: {
                     header: () => <Trans>Status</Trans>,
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
+                    cell: ({ row }) => {
+                        const value = row.original.user;
                         return <CustomerStatusBadge user={value} />;
+                    },
+                },
+                groups: {
+                    cell: ({ row }) => {
+                        return row.original.groups?.map(g => (
+                            <Badge variant="secondary" key={g.id}>
+                                {g.name}
+                            </Badge>
+                        ));
                     },
                 },
             }}
             additionalColumns={{
                 name: {
                     id: 'name',
+                    meta: {
+                        dependencies: ['id', 'firstName', 'lastName'],
+                    },
                     header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => {
                         const value = `${row.original.firstName} ${row.original.lastName}`;
@@ -61,11 +74,9 @@ function CustomerListPage() {
             }}
             defaultColumnOrder={['name', 'emailAddress', 'user', 'createdAt']}
             defaultVisibility={{
-                id: false,
-                createdAt: false,
-                updatedAt: false,
-                firstName: false,
-                lastName: false,
+                name: true,
+                emailAddress: true,
+                user: true,
             }}
             bulkActions={[
                 {
