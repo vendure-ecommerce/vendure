@@ -42,10 +42,10 @@
     "dependencies": {
         "@apollo/server": "^4.11.3",
         "@graphql-tools/stitch": "^9.4.5",
-        "@nestjs/apollo": "^13.0.4",
+        "@nestjs/apollo": "~13.1.0",
         "@nestjs/common": "^11.0.12",
         "@nestjs/core": "^11.0.12",
-        "@nestjs/graphql": "^13.0.4",
+        "@nestjs/graphql": "~13.1.0",
         "@nestjs/platform-express": "^11.0.12",
         "@nestjs/terminus": "^11.0.0",
         "@nestjs/typeorm": "^11.0.0",
