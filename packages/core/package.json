@@ -1,6 +1,6 @@
 {
     "name": "@vendure/core",
-    "version": "3.4.2",
+    "version": "3.4.3",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -42,14 +42,14 @@
     "dependencies": {
         "@apollo/server": "^4.11.3",
         "@graphql-tools/stitch": "^9.4.5",
-        "@nestjs/apollo": "^13.0.4",
+        "@nestjs/apollo": "~13.1.0",
         "@nestjs/common": "^11.0.12",
         "@nestjs/core": "^11.0.12",
-        "@nestjs/graphql": "^13.0.4",
+        "@nestjs/graphql": "~13.1.0",
         "@nestjs/platform-express": "^11.0.12",
         "@nestjs/terminus": "^11.0.0",
         "@nestjs/typeorm": "^11.0.0",
-        "@vendure/common": "3.4.2",
+        "@vendure/common": "3.4.3",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
         "cookie-session": "^2.1.0",
