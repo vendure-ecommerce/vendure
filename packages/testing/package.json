@@ -41,7 +41,7 @@
         "@vendure/common": "3.4.3",
         "faker": "^4.1.0",
         "form-data": "^4.0.0",
-        "graphql": "^16.10.0",
+        "graphql": "^16.11.0",
         "graphql-tag": "^2.12.6",
         "node-fetch": "^2.7.0",
         "sql.js": "1.13.0"

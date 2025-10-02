@@ -24,6 +24,9 @@
     "dependencies": {
         "graphql-query-complexity": "^0.12.0"
     },
+    "peerDependencies": {
+      "@apollo/server": "^5.0.0"
+    },
     "devDependencies": {
         "@vendure/common": "3.4.3",
         "@vendure/core": "3.4.3"
