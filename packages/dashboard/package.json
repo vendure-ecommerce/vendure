@@ -106,8 +106,6 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@uidotdev/usehooks": "^2.4.1",
-    "@vendure/common": "3.4.2",
-    "@vendure/core": "3.4.2",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitejs/plugin-react-swc": "^4.1.0",
     "acorn": "^8.11.3",
@@ -148,6 +146,8 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@types/node": "^22.13.4",
+    "@vendure/common": "3.4.3",
+    "@vendure/core": "3.4.3",
     "eslint": "^9.19.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.0.0",
