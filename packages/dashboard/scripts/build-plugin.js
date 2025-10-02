@@ -14,8 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const sourcePackageJson = path.join(__dirname, '../plugin/package.json');
+const sourceHtmlFile = path.join(__dirname, '../plugin/default-page.html');
 const outputDir = path.join(__dirname, '../dist/plugin');
 const outputPackageJson = path.join(outputDir, 'package.json');
+const outputHtmlFile = path.join(outputDir, 'default-page.html');
 
 try {
     // Ensure output directory exists
@@ -30,6 +32,15 @@ try {
         console.log(`Copied package.json from ${sourcePackageJson} to ${outputPackageJson}`);
     } else {
         console.error(`Source package.json not found at: ${sourcePackageJson}`);
+        process.exit(1);
+    }
+
+    // Copy default-page.html
+    if (fs.existsSync(sourceHtmlFile)) {
+        fs.copyFileSync(sourceHtmlFile, outputHtmlFile);
+        console.log(`Copied default-page.html from ${sourceHtmlFile} to ${outputHtmlFile}`);
+    } else {
+        console.error(`Source default-page.html not found at: ${sourceHtmlFile}`);
         process.exit(1);
     }
 

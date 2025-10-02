@@ -11,7 +11,9 @@ import {
 } from '@vendure/core';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
+import * as fs from 'fs';
 import * as http from 'http';
+import * as path from 'path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
@@ -160,12 +162,12 @@ export class DashboardPlugin implements NestModule {
         return DashboardPlugin;
     }
 
-    async configure(consumer: MiddlewareConsumer) {
+    configure(consumer: MiddlewareConsumer) {
         if (this.processContext.isWorker) {
             return;
         }
         if (!DashboardPlugin.options) {
-            Logger.info(
+            Logger.warn(
                 `DashboardPlugin's init() method was not called. The Dashboard UI will not be served.`,
                 loggerCtx,
             );
@@ -173,25 +175,9 @@ export class DashboardPlugin implements NestModule {
         }
         const { route, appDir, viteDevServerPort = 5173 } = DashboardPlugin.options;
 
-        Logger.info('Creating dashboard middleware', loggerCtx);
+        Logger.verbose('Creating dashboard middleware', loggerCtx);
 
-        const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
-        if (isViteRunning) {
-            Logger.info(
-                `Vite dev server detected on port ${viteDevServerPort}, proxying requests`,
-                loggerCtx,
-            );
-            const proxyHandler = createProxyHandler({
-                label: 'Dashboard Vite Dev Server',
-                route,
-                port: viteDevServerPort,
-                basePath: route,
-            });
-            consumer.apply(proxyHandler).forRoutes(route);
-        } else {
-            Logger.info(`No Vite dev server detected, serving static files from ${appDir}`, loggerCtx);
-            consumer.apply(this.createStaticServer(appDir)).forRoutes(route);
-        }
+        consumer.apply(this.createDynamicHandler(route, appDir, viteDevServerPort)).forRoutes(route);
 
         registerPluginStartupMessage('Dashboard UI', route);
     }
@@ -240,5 +226,147 @@ export class DashboardPlugin implements NestModule {
 
             req.end();
         });
+    }
+
+    private checkBuiltFiles(appDir: string): boolean {
+        try {
+            const indexPath = path.join(appDir, 'index.html');
+            return fs.existsSync(indexPath);
+        } catch {
+            return false;
+        }
+    }
+
+    private createDefaultPage() {
+        const limiter = rateLimit({
+            windowMs: 60 * 1000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        });
+
+        const defaultPageServer = express.Router();
+        defaultPageServer.use(limiter);
+
+        defaultPageServer.use((req, res) => {
+            try {
+                const htmlPath = path.join(__dirname, 'default-page.html');
+                const defaultHtml = fs.readFileSync(htmlPath, 'utf8');
+                res.setHeader('Content-Type', 'text/html');
+                res.send(defaultHtml);
+            } catch (error) {
+                res.status(500).send('Unable to load default page');
+            }
+        });
+
+        return defaultPageServer;
+    }
+
+    private createDynamicHandler(route: string, appDir: string, viteDevServerPort: number) {
+        const limiter = rateLimit({
+            windowMs: 60 * 1000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        });
+
+        // Pre-create handlers to avoid recreating them on each request
+        const proxyHandler = createProxyHandler({
+            label: 'Dashboard Vite Dev Server',
+            route,
+            port: viteDevServerPort,
+            basePath: route,
+        });
+
+        const staticServer = this.createStaticServer(appDir);
+        const defaultPage = this.createDefaultPage();
+
+        // Track current mode to log changes
+        let currentMode: 'vite' | 'built' | 'default' | null = null;
+
+        const dynamicRouter = express.Router();
+        dynamicRouter.use(limiter);
+
+        // Add status endpoint for polling (localhost only for security)
+        dynamicRouter.get(
+            '/__status',
+            (req, res, next) => {
+                const clientIp = req.ip || req.connection.remoteAddress || req.socket.remoteAddress;
+                const isLocalhost =
+                    clientIp === '127.0.0.1' ||
+                    clientIp === '::1' ||
+                    clientIp === '::ffff:127.0.0.1' ||
+                    clientIp === 'localhost';
+
+                if (!isLocalhost) {
+                    return res.status(403).json({ error: 'Access denied' });
+                }
+
+                next();
+            },
+            async (req, res) => {
+                try {
+                    const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
+                    const hasBuiltFiles = this.checkBuiltFiles(appDir);
+
+                    res.json({
+                        viteRunning: isViteRunning,
+                        hasBuiltFiles,
+                        mode: isViteRunning ? 'vite' : hasBuiltFiles ? 'built' : 'default',
+                    });
+                } catch (error) {
+                    res.status(500).json({ error: 'Status check failed' });
+                }
+            },
+        );
+
+        dynamicRouter.use(async (req, res, next) => {
+            try {
+                // Check for Vite dev server first (highest priority)
+                const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
+                const hasBuiltFiles = this.checkBuiltFiles(appDir);
+
+                // Determine new mode
+                const newMode: 'vite' | 'built' | 'default' = isViteRunning
+                    ? 'vite'
+                    : hasBuiltFiles
+                      ? 'built'
+                      : 'default';
+
+                // Log mode change
+                if (currentMode !== newMode) {
+                    const modeDescriptions = {
+                        vite: 'Vite dev server (with HMR)',
+                        built: 'built static files',
+                        default: 'default getting-started page',
+                    };
+
+                    if (currentMode !== null) {
+                        Logger.info(
+                            `Dashboard mode changed: ${currentMode} → ${newMode} (serving ${modeDescriptions[newMode]})`,
+                            loggerCtx,
+                        );
+                    }
+                    currentMode = newMode;
+                }
+
+                // Route to appropriate handler
+                if (isViteRunning) {
+                    return proxyHandler(req, res, next);
+                }
+
+                if (hasBuiltFiles) {
+                    return staticServer(req, res, next);
+                }
+
+                // Fall back to default page
+                return defaultPage(req, res, next);
+            } catch (error) {
+                Logger.error(`Dashboard dynamic handler error: ${String(error)}`, loggerCtx);
+                res.status(500).send('Dashboard unavailable');
+            }
+        });
+
+        return dynamicRouter;
     }
 }
