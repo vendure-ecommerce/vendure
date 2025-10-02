@@ -2,4 +2,4 @@
 
 This package contains utilities for writing end-to-end tests for Vendure.
 
-For documentation, see [https://docs.vendure.io/guides/developer-guide/testing/](https://docs.vendure.io/guides/developer-guide/testing/)
+For documentation, see https://docs.vendure.io/guides/developer-guide/testing/
