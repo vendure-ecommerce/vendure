@@ -14,6 +14,7 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -68,27 +69,32 @@ export class RoleService {
         await this.ensureRolesHaveValidPermissions();
     }
 
-    findAll(
+    async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Role>,
         relations?: RelationPaths<Role>,
     ): Promise<PaginatedList<Role>> {
-        return this.listQueryBuilder
-            .build(Role, options, { relations: unique([...(relations ?? []), 'channels']), ctx })
-            .getManyAndCount()
-            .then(async ([items, totalItems]) => {
-                const visibleRoles: Role[] = [];
-                for (const item of items) {
-                    const canRead = await this.activeUserCanReadRole(ctx, item);
-                    if (canRead) {
-                        visibleRoles.push(item);
-                    }
-                }
-                return {
-                    items: visibleRoles,
-                    totalItems,
-                };
-            });
+        // Compute the set of Role IDs the active user can read (channel + permission check) up front to ensure sort/skip/take operate only over visible Roles.
+        const allRoles = await this.connection.getRepository(ctx, Role).find({ relations: ['channels'] });
+        const visibleRoleIds: ID[] = [];
+        for (const role of allRoles) {
+            if (await this.activeUserCanReadRole(ctx, role)) {
+                visibleRoleIds.push(role.id);
+            }
+        }
+
+        if (visibleRoleIds.length === 0) {
+            return { items: [], totalItems: 0 };
+        }
+
+        const [items, totalItems] = await this.listQueryBuilder
+            .build(Role, options, {
+                relations: unique([...(relations ?? []), 'channels']),
+                ctx,
+            })
+            .andWhere({ id: In(visibleRoleIds) })
+            .getManyAndCount();
+        return { items, totalItems };
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
