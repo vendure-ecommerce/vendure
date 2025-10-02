@@ -36,11 +36,11 @@ function createPluginOptions(
     return pluginClasses.map(c => {
         const name = c.getName() as string;
         const hasDuplicates = nameCounts[name] > 1;
-        let label = name;
+        let label = pc.bold(name);
         if (hasDuplicates) {
             const fullPath = c.getSourceFile().getFilePath();
             const relativePath = path.relative(projectRoot, fullPath);
-            label = `${name} ${pc.dim(`(${relativePath})`)}`;
+            label = `${pc.bold(name)} ${pc.dim(pc.italic(`(${relativePath})`))}`;
         }
         return {
             value: c,
