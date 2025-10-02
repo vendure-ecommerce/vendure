@@ -43,6 +43,12 @@ const defaultSettings: UserSettings = {
 };
 
 export interface UserSettingsContextType {
+    /**
+     * @description
+     * Whether the server-side SettingsStore is available to use
+     * (i.e. the Vendure instance has the DashboardPlugin configured)
+     */
+    settingsStoreIsAvailable: boolean;
     settings: UserSettings;
     setDisplayLanguage: (language: string) => void;
     setDisplayLocale: (locale: string | undefined) => void;
@@ -86,18 +92,35 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     };
 
     const [settings, setSettings] = useState<UserSettings>(loadSettings);
+    const [settingsStoreIsAvailable, setSettingsStoreIsAvailable] = useState<boolean>(true);
     const [serverSettings, setServerSettings] = useState<UserSettings | null>(null);
     const [isReady, setIsReady] = useState(false);
     const previousContentLanguage = useRef(settings.contentLanguage);
     const saveInProgressRef = useRef(false);
 
     // Load settings from server on mount
-    const { data: serverSettingsResponse, isSuccess: serverSettingsLoaded } = useQuery({
+    const {
+        data: serverSettingsResponse,
+        isSuccess: serverSettingsLoaded,
+        error,
+    } = useQuery({
         queryKey: ['user-settings', SETTINGS_STORE_KEY],
-        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY }),
+        queryFn: () => {
+            console.log('runnign query, settingsStoreAvailable:', settingsStoreIsAvailable);
+            return api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY });
+        },
         retry: false,
         staleTime: 0,
+        enabled: settingsStoreIsAvailable,
     });
+
+    if (
+        settingsStoreIsAvailable &&
+        error?.message.includes('Settings store field not registered: vendure.dashboard.userSettings')
+    ) {
+        logSettingsStoreWarning();
+        setSettingsStoreIsAvailable(false);
+    }
 
     // Mutation to save settings to server
     const saveToServerMutation = useMutation({
@@ -152,7 +175,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 
     // Save to server when settings differ from server state
     useEffect(() => {
-        if (isReady && serverSettings && !saveInProgressRef.current) {
+        if (settingsStoreIsAvailable && isReady && serverSettings && !saveInProgressRef.current) {
             const serverDiffers = JSON.stringify(serverSettings) !== JSON.stringify(settings);
 
             if (serverDiffers) {
@@ -177,6 +200,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     };
 
     const contextValue: UserSettingsContextType = {
+        settingsStoreIsAvailable,
         settings,
         setDisplayLanguage: language => updateSetting('displayLanguage', language),
         setDisplayLocale: locale => updateSetting('displayLocale', locale),
@@ -201,3 +225,21 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
 };
+
+function logSettingsStoreWarning() {
+    // eslint-disable-next-line no-console
+    console.warn(
+        [
+            `User settings could not be fetched from the Vendure server.`,
+            `This suggests that the DashboardPlugin is not configured.`,
+            `Check your VendureConfig and ensure the DashboardPlugin is in your plugins array.`,
+            ``,
+            `By setting up the DashboardPlugin, you can take advantage of:`,
+            ` - Persisted settings across browsers and devices`,
+            ` - Saved views on list pages`,
+            ` - Metrics on the Insights page`,
+            ``,
+            `https://docs.vendure.io/reference/core-plugins/dashboard-plugin/`,
+        ].join('\n'),
+    );
+}
