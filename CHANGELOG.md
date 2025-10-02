@@ -1,3 +1,33 @@
+## <small>3.4.3 (2025-10-02)</small>
+
+
+#### Fixes
+
+* **core** Ensure `surcharges` relation is loaded in assignToChannels (#3812) ([9d58978](https://github.com/vendure-ecommerce/vendure/commit/9d58978)), closes [#3812](https://github.com/vendure-ecommerce/vendure/issues/3812)
+* **core** Set apollo dependency to fix hung install ([28a9831](https://github.com/vendure-ecommerce/vendure/commit/28a9831))
+* **dashboard** Add bulk actions to product variants table ([c3f1d1b](https://github.com/vendure-ecommerce/vendure/commit/c3f1d1b))
+* **dashboard** Add missing columns to product variants table ([0577e24](https://github.com/vendure-ecommerce/vendure/commit/0577e24))
+* **dashboard** Clear temp dir on compilation ([a0bbe09](https://github.com/vendure-ecommerce/vendure/commit/a0bbe09))
+* **dashboard** Fix asset detail preview display ([03b03ac](https://github.com/vendure-ecommerce/vendure/commit/03b03ac))
+* **dashboard** Fix asset focal point positioning ([d574be4](https://github.com/vendure-ecommerce/vendure/commit/d574be4))
+* **dashboard** Fix display of collection children column ([946409d](https://github.com/vendure-ecommerce/vendure/commit/946409d))
+* **dashboard** Fix position of bulk actions when in sheet ([2902e30](https://github.com/vendure-ecommerce/vendure/commit/2902e30))
+* **dashboard** Fix runtime issue caused by dependency bundling ([7d3b2b4](https://github.com/vendure-ecommerce/vendure/commit/7d3b2b4))
+* **dashboard** Implement entity duplicator dialog ([0328d46](https://github.com/vendure-ecommerce/vendure/commit/0328d46))
+* **dashboard** Improve layout of permissions grid (#3827) ([5c3ae0f](https://github.com/vendure-ecommerce/vendure/commit/5c3ae0f)), closes [#3827](https://github.com/vendure-ecommerce/vendure/issues/3827)
+
+#### Features
+
+* **dashboard** Add entity info dropdown to page action bar (#3819) ([98fd82d](https://github.com/vendure-ecommerce/vendure/commit/98fd82d)), closes [#3819](https://github.com/vendure-ecommerce/vendure/issues/3819)
+* **dashboard** Add support for Asset tags (#3822) ([5c6967f](https://github.com/vendure-ecommerce/vendure/commit/5c6967f)), closes [#3822](https://github.com/vendure-ecommerce/vendure/issues/3822)
+* **dashboard** Add support for custom history entries (#3831) ([1db50a6](https://github.com/vendure-ecommerce/vendure/commit/1db50a6)), closes [#3831](https://github.com/vendure-ecommerce/vendure/issues/3831)
+* **dashboard** Dashboard permissions on nav menu & custom fields (#3824) ([b95ad17](https://github.com/vendure-ecommerce/vendure/commit/b95ad17)), closes [#3824](https://github.com/vendure-ecommerce/vendure/issues/3824)
+* **dashboard** Expose bulk actions per row in data tables (#3820) ([de79737](https://github.com/vendure-ecommerce/vendure/commit/de79737)), closes [#3820](https://github.com/vendure-ecommerce/vendure/issues/3820)
+* **dashboard** Implement meta title based on breadcrumb (#3834) ([cb0463d](https://github.com/vendure-ecommerce/vendure/commit/cb0463d)), closes [#3834](https://github.com/vendure-ecommerce/vendure/issues/3834)
+* **dashboard** Implement testing of shipping methods (#3833) ([a0df5be](https://github.com/vendure-ecommerce/vendure/commit/a0df5be)), closes [#3833](https://github.com/vendure-ecommerce/vendure/issues/3833)
+* **dashboard** Improve toolbar display of rich text editor (#3817) ([9b15ecc](https://github.com/vendure-ecommerce/vendure/commit/9b15ecc)), closes [#3817](https://github.com/vendure-ecommerce/vendure/issues/3817)
+* **dashboard** Support for split orders (#3829) ([f31c386](https://github.com/vendure-ecommerce/vendure/commit/f31c386)), closes [#3829](https://github.com/vendure-ecommerce/vendure/issues/3829)
+
 ## <small>3.4.2 (2025-09-11)</small>
 
 
