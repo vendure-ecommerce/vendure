@@ -64,8 +64,7 @@ export interface DashboardActionBarItem {
  * @docsPage page-blocks
  * @since 3.3.0
  */
-export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | 'replace' };
-
+export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | 'replace' | 'remove' };
 /**
  * @description
  * The location of a page block in the dashboard. The location can be found by turning on
@@ -92,10 +91,19 @@ export type PageBlockLocation = {
  * @docsWeight 0
  * @since 3.3.0
  */
-export interface DashboardPageBlockDefinition {
-    id: string;
-    title?: React.ReactNode;
-    location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
-    requiresPermission?: string | string[];
-}
+export type DashboardPageBlockDefinition =
+    | {
+          id: string;
+          title?: React.ReactNode;
+          location: PageBlockLocation & {
+              position: { blockId: string; order: 'before' | 'after' | 'replace' };
+          };
+          component: React.FunctionComponent<{ context: PageContextValue }>;
+          requiresPermission?: string | string[];
+      }
+    | {
+          id?: string;
+          location: PageBlockLocation & {
+              position: { blockId: string; order: 'remove' };
+          };
+      };

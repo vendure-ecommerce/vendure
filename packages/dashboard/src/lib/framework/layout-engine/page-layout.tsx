@@ -236,22 +236,29 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                 (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
             if (extensionBlock) {
-                const ExtensionBlock = (
-                    <PageBlock
-                        key={childBlock.key}
-                        column={extensionBlock.location.column}
-                        blockId={extensionBlock.id}
-                        title={extensionBlock.title}
-                    >
-                        {<extensionBlock.component context={page} />}
-                    </PageBlock>
-                );
-                if (extensionBlock.location.position.order === 'before') {
-                    finalChildArray.push(ExtensionBlock, childBlock);
-                } else if (extensionBlock.location.position.order === 'after') {
-                    finalChildArray.push(childBlock, ExtensionBlock);
-                } else if (extensionBlock.location.position.order === 'replace') {
-                    finalChildArray.push(ExtensionBlock);
+                if (extensionBlock.location.position.order === 'remove') {
+                    // Don't push anything - effectively removes the block
+                } else {
+                    const ExtensionBlock = extensionBlock.component ? (
+                        <PageBlock
+                            key={childBlock.key}
+                            column={extensionBlock.location.column}
+                            blockId={extensionBlock.id}
+                            title={extensionBlock.title}
+                        >
+                            {<extensionBlock.component context={page} />}
+                        </PageBlock>
+                    ) : null;
+                    
+                    if (ExtensionBlock) {
+                        if (extensionBlock.location.position.order === 'before') {
+                            finalChildArray.push(ExtensionBlock, childBlock);
+                        } else if (extensionBlock.location.position.order === 'after') {
+                            finalChildArray.push(childBlock, ExtensionBlock);
+                        } else if (extensionBlock.location.position.order === 'replace') {
+                            finalChildArray.push(ExtensionBlock);
+                        }
+                    }
                 }
             } else {
                 finalChildArray.push(childBlock);
