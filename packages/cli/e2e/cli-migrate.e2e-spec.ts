@@ -1,19 +1,9 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { CliTestProject, createProblematicTsConfig, createTestProject } from './cli-test-utils';
 
 describe('CLI Migrate Command E2E', () => {
     let testProject: CliTestProject;
-
-    beforeAll(() => {
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const { execSync } = require('child_process');
-            execSync('npm run build', { cwd: __dirname + '/..', stdio: 'inherit' });
-        } catch (error) {
-            throw new Error('Failed to build CLI before running e2e tests. Run "npm run build" first.');
-        }
-    });
 
     afterEach(() => {
         if (testProject) {
