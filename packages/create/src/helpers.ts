@@ -218,8 +218,8 @@ export function getDependencies(
         `@vendure/core${vendurePkgVersion}`,
         `@vendure/email-plugin${vendurePkgVersion}`,
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
-        `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         `@vendure/graphiql-plugin${vendurePkgVersion}`,
+        `@vendure/dashboard${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
     ];

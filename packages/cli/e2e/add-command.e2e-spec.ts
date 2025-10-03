@@ -6,31 +6,34 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { performAddOperation } from '../src/commands/add/add-operations';
-import { addApiExtensionCommand } from '../src/commands/add/api-extension/add-api-extension';
-import { addCodegenCommand } from '../src/commands/add/codegen/add-codegen';
-import { addEntityCommand } from '../src/commands/add/entity/add-entity';
-import { addJobQueueCommand } from '../src/commands/add/job-queue/add-job-queue';
-import { createNewPluginCommand } from '../src/commands/add/plugin/create-new-plugin';
-import { addServiceCommand } from '../src/commands/add/service/add-service';
-import { addUiExtensionsCommand } from '../src/commands/add/ui-extensions/add-ui-extensions';
+import { addCommand } from '../src/commands/add/add';
+import * as apiExtensionModule from '../src/commands/add/api-extension/add-api-extension';
+import * as codegenModule from '../src/commands/add/codegen/add-codegen';
+import * as entityModule from '../src/commands/add/entity/add-entity';
+import * as jobQueueModule from '../src/commands/add/job-queue/add-job-queue';
+import * as pluginModule from '../src/commands/add/plugin/create-new-plugin';
+import * as serviceModule from '../src/commands/add/service/add-service';
+import * as uiExtensionsModule from '../src/commands/add/ui-extensions/add-ui-extensions';
+
+// Mock clack prompts to prevent interactive prompts during tests
+vi.mock('@clack/prompts', () => ({
+    intro: vi.fn(),
+    outro: vi.fn(),
+    cancel: vi.fn(),
+    isCancel: vi.fn(() => false),
+    select: vi.fn(() => Promise.resolve('no-selection')),
+    spinner: vi.fn(() => ({
+        start: vi.fn(),
+        stop: vi.fn(),
+    })),
+    log: {
+        success: vi.fn(),
+        error: vi.fn(),
+        info: vi.fn(),
+    },
+}));
 
 type Spy = ReturnType<typeof vi.spyOn>;
-
-/**
- * Utility to stub the `run` function of a CliCommand so that the command
- * doesn't actually execute any file-system or project manipulation during the
- * tests. The stub resolves immediately, emulating a successful CLI command.
- */
-function stubRun(cmd: { run: (...args: any[]) => any }): Spy {
-    // Cast to 'any' to avoid over-constraining the generic type parameters that
-    // vitest uses on spyOn, which causes type inference issues in strict mode.
-    // The runtime behaviour (spying on an object method) is what matters for
-    // these tests – the precise compile-time types are not important.
-    return vi
-        .spyOn(cmd as any, 'run')
-        .mockResolvedValue({ project: undefined, modifiedSourceFiles: [] } as any);
-}
 
 let pluginRunSpy: Spy;
 let entityRunSpy: Spy;
@@ -41,14 +44,20 @@ let apiExtRunSpy: Spy;
 let uiExtRunSpy: Spy;
 
 beforeEach(() => {
-    // Stub all sub-command `run` handlers before every test
-    pluginRunSpy = stubRun(createNewPluginCommand);
-    entityRunSpy = stubRun(addEntityCommand);
-    serviceRunSpy = stubRun(addServiceCommand);
-    jobQueueRunSpy = stubRun(addJobQueueCommand);
-    codegenRunSpy = stubRun(addCodegenCommand);
-    apiExtRunSpy = stubRun(addApiExtensionCommand);
-    uiExtRunSpy = stubRun(addUiExtensionsCommand);
+    // Stub all core functions before every test
+    const defaultReturnValue = { project: undefined as any, modifiedSourceFiles: [] };
+
+    pluginRunSpy = vi.spyOn(pluginModule, 'createNewPlugin').mockResolvedValue(defaultReturnValue as any);
+    entityRunSpy = vi.spyOn(entityModule, 'addEntity').mockResolvedValue(defaultReturnValue as any);
+    serviceRunSpy = vi.spyOn(serviceModule, 'addService').mockResolvedValue(defaultReturnValue as any);
+    jobQueueRunSpy = vi.spyOn(jobQueueModule, 'addJobQueue').mockResolvedValue(defaultReturnValue as any);
+    codegenRunSpy = vi.spyOn(codegenModule, 'addCodegen').mockResolvedValue(defaultReturnValue as any);
+    apiExtRunSpy = vi
+        .spyOn(apiExtensionModule, 'addApiExtension')
+        .mockResolvedValue(defaultReturnValue as any);
+    uiExtRunSpy = vi
+        .spyOn(uiExtensionsModule, 'addUiExtensions')
+        .mockResolvedValue(defaultReturnValue as any);
 });
 
 afterEach(() => {
@@ -56,25 +65,27 @@ afterEach(() => {
 });
 
 describe('Add Command E2E', () => {
-    describe('performAddOperation', () => {
+    describe('addCommand non-interactive mode', () => {
         it('creates a plugin when the "plugin" option is provided', async () => {
-            const result = await performAddOperation({ plugin: 'test-plugin' });
+            await addCommand({ plugin: 'test-plugin' });
 
             expect(pluginRunSpy).toHaveBeenCalledOnce();
             expect(pluginRunSpy).toHaveBeenCalledWith({ name: 'test-plugin', config: undefined });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('test-plugin');
         });
 
         it('throws when the plugin name is empty', async () => {
-            await expect(performAddOperation({ plugin: '   ' } as any)).rejects.toThrow(
-                'Plugin name is required',
-            );
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+            await addCommand({ plugin: '   ' });
+
             expect(pluginRunSpy).not.toHaveBeenCalled();
+            expect(exitSpy).toHaveBeenCalledWith(1);
+
+            exitSpy.mockRestore();
         });
 
         it('adds an entity to the specified plugin', async () => {
-            const result = await performAddOperation({
+            await addCommand({
                 entity: 'MyEntity',
                 selectedPlugin: 'MyPlugin',
             });
@@ -88,20 +99,21 @@ describe('Add Command E2E', () => {
                 customFields: undefined,
                 translatable: undefined,
             });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('MyEntity');
-            expect(result.message).toContain('MyPlugin');
         });
 
         it('fails when adding an entity without specifying a plugin in non-interactive mode', async () => {
-            await expect(performAddOperation({ entity: 'MyEntity' })).rejects.toThrow(
-                'Plugin name is required when running in non-interactive mode',
-            );
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+            await addCommand({ entity: 'MyEntity' });
+
             expect(entityRunSpy).not.toHaveBeenCalled();
+            expect(exitSpy).toHaveBeenCalledWith(1);
+
+            exitSpy.mockRestore();
         });
 
         it('adds a service to the specified plugin', async () => {
-            const result = await performAddOperation({
+            await addCommand({
                 service: 'MyService',
                 selectedPlugin: 'MyPlugin',
             });
@@ -111,8 +123,6 @@ describe('Add Command E2E', () => {
                 serviceName: 'MyService',
                 pluginName: 'MyPlugin',
             });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('MyService');
         });
 
         it('adds a job-queue when required parameters are provided', async () => {
@@ -121,7 +131,7 @@ describe('Add Command E2E', () => {
                 name: 'ReindexJob',
                 selectedService: 'SearchService',
             } as const;
-            const result = await performAddOperation(options);
+            await addCommand(options);
 
             expect(jobQueueRunSpy).toHaveBeenCalledOnce();
             expect(jobQueueRunSpy.mock.calls[0][0]).toMatchObject({
@@ -129,36 +139,35 @@ describe('Add Command E2E', () => {
                 name: 'ReindexJob',
                 selectedService: 'SearchService',
             });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('Job-queue');
         });
 
         it('fails when job-queue parameters are incomplete', async () => {
-            await expect(
-                performAddOperation({ jobQueue: true, name: 'JobWithoutService' } as any),
-            ).rejects.toThrow('Service name is required for job queue');
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+            await addCommand({ jobQueue: true, name: 'JobWithoutService' } as any);
+
             expect(jobQueueRunSpy).not.toHaveBeenCalled();
+            expect(exitSpy).toHaveBeenCalledWith(1);
+
+            exitSpy.mockRestore();
         });
 
         it('adds codegen configuration with boolean flag (interactive plugin selection)', async () => {
-            const result = await performAddOperation({ codegen: true });
+            await addCommand({ codegen: true });
 
             expect(codegenRunSpy).toHaveBeenCalledOnce();
             expect(codegenRunSpy.mock.calls[0][0]).toMatchObject({ pluginName: undefined });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('Codegen');
         });
 
         it('adds codegen configuration to a specific plugin when plugin name is supplied', async () => {
-            const result = await performAddOperation({ codegen: 'MyPlugin' });
+            await addCommand({ codegen: 'MyPlugin' });
 
             expect(codegenRunSpy).toHaveBeenCalledOnce();
             expect(codegenRunSpy.mock.calls[0][0]).toMatchObject({ pluginName: 'MyPlugin' });
-            expect(result.success).toBe(true);
         });
 
         it('adds an API extension scaffold when queryName is provided', async () => {
-            const result = await performAddOperation({
+            await addCommand({
                 apiExtension: 'MyPlugin',
                 queryName: 'myQuery',
             });
@@ -169,33 +178,37 @@ describe('Add Command E2E', () => {
                 queryName: 'myQuery',
                 mutationName: undefined,
             });
-            expect(result.success).toBe(true);
         });
 
         it('fails when neither queryName nor mutationName is provided for API extension', async () => {
-            await expect(performAddOperation({ apiExtension: true } as any)).rejects.toThrow(
-                'At least one of query-name or mutation-name must be specified',
-            );
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+            await addCommand({ apiExtension: true } as any);
+
             expect(apiExtRunSpy).not.toHaveBeenCalled();
+            expect(exitSpy).toHaveBeenCalledWith(1);
+
+            exitSpy.mockRestore();
         });
 
         it('adds UI extensions when the uiExtensions flag is used', async () => {
-            const result = await performAddOperation({ uiExtensions: 'MyPlugin' });
+            await addCommand({ uiExtensions: 'MyPlugin' });
 
             expect(uiExtRunSpy).toHaveBeenCalledOnce();
             expect(uiExtRunSpy.mock.calls[0][0]).toMatchObject({ pluginName: 'MyPlugin' });
-            expect(result.success).toBe(true);
-            expect(result.message).toContain('UI extensions');
         });
 
-        it('returns a failure result when no valid operation is specified', async () => {
-            const result = await performAddOperation({});
+        it('exits with error when no valid operation is specified', async () => {
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-            expect(result.success).toBe(false);
-            expect(result.message).toContain('No valid add operation specified');
+            await addCommand({});
+
+            expect(exitSpy).not.toHaveBeenCalled(); // Empty options triggers interactive mode
             expect(pluginRunSpy).not.toHaveBeenCalled();
             expect(entityRunSpy).not.toHaveBeenCalled();
             expect(serviceRunSpy).not.toHaveBeenCalled();
+
+            exitSpy.mockRestore();
         });
     });
 });

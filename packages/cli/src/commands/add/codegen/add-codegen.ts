@@ -26,7 +26,7 @@ export const addCodegenCommand = new CliCommand({
     run: addCodegen,
 });
 
-async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
+export async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({
         providedVendurePlugin,

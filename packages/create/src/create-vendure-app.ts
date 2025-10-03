@@ -234,6 +234,15 @@ export async function createVendureApp(
             .then(() => fs.ensureDir(path.join(root, 'src/plugins')))
             .then(() => fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')))
             .then(() => fs.copyFile(assetPath('tsconfig.template.json'), path.join(root, 'tsconfig.json')))
+            .then(() =>
+                fs.copyFile(
+                    assetPath('tsconfig.dashboard.template.json'),
+                    path.join(root, 'tsconfig.dashboard.json'),
+                ),
+            )
+            .then(() =>
+                fs.copyFile(assetPath('vite.config.template.mts'), path.join(root, 'vite.config.mts')),
+            )
             .then(() => createDirectoryStructure(root))
             .then(() => copyEmailTemplates(root));
     } catch (e: any) {
@@ -305,7 +314,7 @@ export async function createVendureApp(
         const { populate } = await import(
             path.join(resolvePackageRootDir('@vendure/core'), 'cli', 'populate')
         );
-        const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
+        const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
             path.join(resolvePackageRootDir('@vendure/core'), 'dist', 'index')
         );
         const { config } = await import(configFile);

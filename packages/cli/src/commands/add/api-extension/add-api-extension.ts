@@ -46,7 +46,7 @@ export const addApiExtensionCommand = new CliCommand({
     run: options => addApiExtension(options),
 });
 
-async function addApiExtension(
+export async function addApiExtension(
     options?: AddApiExtensionOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
