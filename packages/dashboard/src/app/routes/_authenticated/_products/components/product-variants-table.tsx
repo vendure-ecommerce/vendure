@@ -9,6 +9,12 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
+import {
+    AssignFacetValuesToProductVariantsBulkAction,
+    AssignProductVariantsToChannelBulkAction,
+    DeleteProductVariantsBulkAction,
+    RemoveProductVariantsFromChannelBulkAction,
+} from '../../_product-variants/components/product-variant-bulk-actions.js';
 import { productVariantListDocument } from '../products.graphql.js';
 
 export const deleteProductVariantDocument = graphql(`
@@ -47,9 +53,31 @@ export function ProductVariantsTable({
                 productId,
             })}
             defaultVisibility={{
-                id: false,
-                currencyCode: false,
+                featuredAsset: true,
+                name: true,
+                enabled: true,
+                price: true,
+                priceWithTax: true,
+                stockLevels: true,
             }}
+            bulkActions={[
+                {
+                    component: AssignProductVariantsToChannelBulkAction,
+                    order: 100,
+                },
+                {
+                    component: RemoveProductVariantsFromChannelBulkAction,
+                    order: 200,
+                },
+                {
+                    component: AssignFacetValuesToProductVariantsBulkAction,
+                    order: 300,
+                },
+                {
+                    component: DeleteProductVariantsBulkAction,
+                    order: 400,
+                },
+            ]}
             customizeColumns={{
                 name: {
                     header: 'Variant name',

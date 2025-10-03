@@ -38,6 +38,13 @@ export interface ListPageProps<
     route: AnyRoute | (() => AnyRoute);
     title: string | React.ReactElement;
     listQuery: T;
+    /**
+     * @description
+     * Providing the `deleteMutation` will automatically add a "delete" menu item to the
+     * actions column dropdown. Note that if this table already has a "delete" bulk action,
+     * you don't need to additionally provide a delete mutation, because the bulk action
+     * will be added to the action column dropdown already.
+     */
     deleteMutation?: TypedDocumentNode<any, { id: string }>;
     transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];

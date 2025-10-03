@@ -27,6 +27,7 @@ export const collectionListDocument = graphql(
                     }
                     children {
                         id
+                        name
                     }
                     position
                     isPrivate

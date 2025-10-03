@@ -12,7 +12,7 @@ import {
     DeletePaymentMethodsBulkAction,
     RemovePaymentMethodsFromChannelBulkAction,
 } from './components/payment-method-bulk-actions.js';
-import { deletePaymentMethodDocument, paymentMethodListQuery } from './payment-methods.graphql.js';
+import { paymentMethodListQuery } from './payment-methods.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_payment-methods/payment-methods')({
     component: PaymentMethodListPage,
@@ -24,7 +24,6 @@ function PaymentMethodListPage() {
         <ListPage
             pageId="payment-method-list"
             listQuery={paymentMethodListQuery}
-            deleteMutation={deletePaymentMethodDocument}
             route={Route}
             title="Payment Methods"
             defaultVisibility={{

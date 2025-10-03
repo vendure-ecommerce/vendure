@@ -12,7 +12,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
 import { DeleteRolesBulkAction } from './components/role-bulk-actions.js';
-import { deleteRoleDocument, roleListQuery } from './roles.graphql.js';
+import { roleListQuery } from './roles.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
     component: RoleListPage,
@@ -27,7 +27,6 @@ function RoleListPage() {
             pageId="role-list"
             title="Roles"
             listQuery={roleListQuery}
-            deleteMutation={deleteRoleDocument}
             route={Route}
             defaultVisibility={{
                 description: true,

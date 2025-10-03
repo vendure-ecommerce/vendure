@@ -63,7 +63,6 @@ function FacetListPage() {
             pageId="facet-list"
             title="Facets"
             listQuery={facetListDocument}
-            deleteMutation={deleteFacetDocument}
             defaultVisibility={{
                 name: true,
                 isPrivate: true,

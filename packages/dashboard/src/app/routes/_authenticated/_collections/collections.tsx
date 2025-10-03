@@ -10,10 +10,11 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
-import { Folder, FolderOpen, FolderTreeIcon, PlusIcon } from 'lucide-react';
+import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { collectionListDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
@@ -22,7 +23,6 @@ import {
     RemoveCollectionsFromChannelBulkAction,
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
-import { useMoveSingleCollection } from './components/move-single-collection.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
     component: CollectionListPage,
@@ -33,7 +33,6 @@ type Collection = ResultOf<typeof collectionListDocument>['collections']['items'
 
 function CollectionListPage() {
     const [expanded, setExpanded] = useState<ExpandedState>({});
-    const { handleMoveClick, MoveDialog } = useMoveSingleCollection();
     const childrenQueries = useQueries({
         queries: Object.entries(expanded).map(([collectionId, isExpanded]) => {
             return {
@@ -95,7 +94,6 @@ function CollectionListPage() {
                         },
                     };
                 }}
-                deleteMutation={deleteCollectionDocument}
                 customizeColumns={{
                     name: {
                         header: 'Collection Name',
@@ -150,6 +148,26 @@ function CollectionListPage() {
                             );
                         },
                     },
+                    children: {
+                        cell: ({ row }) => {
+                            const children = row.original.children ?? [];
+                            const count = children.length;
+                            const maxDisplay = 5;
+                            const leftOver = Math.max(count - maxDisplay, 0);
+                            return (
+                                <div className="flex flex-wrap gap-2">
+                                    {children.slice(0, maxDisplay).map(child => (
+                                        <Badge variant="outline">{child.name}</Badge>
+                                    ))}
+                                    {leftOver > 0 ? (
+                                        <Badge variant="outline">
+                                            <Trans>+ {leftOver} more</Trans>
+                                        </Badge>
+                                    ) : null}
+                                </div>
+                            );
+                        },
+                    },
                 }}
                 defaultColumnOrder={[
                     'featuredAsset',
@@ -189,16 +207,6 @@ function CollectionListPage() {
                     };
                 }}
                 route={Route}
-                rowActions={[
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <FolderTreeIcon className="w-4 h-4" /> <Trans>Move</Trans>
-                            </div>
-                        ),
-                        onClick: row => handleMoveClick(row.original),
-                    },
-                ]}
                 bulkActions={[
                     {
                         component: AssignCollectionsToChannelBulkAction,
@@ -233,7 +241,6 @@ function CollectionListPage() {
                     </PermissionGuard>
                 </PageActionBarRight>
             </ListPage>
-            <MoveDialog />
         </>
     );
 }

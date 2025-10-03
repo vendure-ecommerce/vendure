@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSchedulerStrategy
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler-strategy.ts" sourceLine="27" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler-strategy.ts" sourceLine="28" packageName="@vendure/core" since="3.3.0" />
 
 The default <a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#schedulerstrategy'>SchedulerStrategy</a> implementation that uses the database to
 execute scheduled tasks. This strategy is configured when you use the

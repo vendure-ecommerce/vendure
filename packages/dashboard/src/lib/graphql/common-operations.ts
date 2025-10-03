@@ -1,3 +1,5 @@
+import { configArgDefinitionFragment } from '@/vdb/graphql/fragments.js';
+
 import { graphql } from './graphql.js';
 
 export const duplicateEntityDocument = graphql(`
@@ -16,3 +18,20 @@ export const duplicateEntityDocument = graphql(`
         }
     }
 `);
+
+export const getEntityDuplicatorsDocument = graphql(
+    `
+        query GetEntityDuplicators {
+            entityDuplicators {
+                code
+                description
+                requiresPermission
+                forEntities
+                args {
+                    ...ConfigArgDefinition
+                }
+            }
+        }
+    `,
+    [configArgDefinitionFragment],
+);

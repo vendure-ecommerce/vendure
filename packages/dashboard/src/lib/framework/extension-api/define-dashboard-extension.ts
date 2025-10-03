@@ -6,6 +6,7 @@ import {
     registerDataTableExtensions,
     registerDetailFormExtensions,
     registerFormComponentExtensions,
+    registerHistoryEntryComponents,
     registerLayoutExtensions,
     registerLoginExtensions,
     registerNavigationExtensions,
@@ -40,6 +41,7 @@ export function executeDashboardExtensionCallbacks() {
  * - Data tables
  * - Detail forms
  * - Login
+ * - Custom history entries
  *
  * @example
  * ```tsx
@@ -82,6 +84,9 @@ export function defineDashboardExtension(extension: DashboardExtension) {
 
         // Register login extensions
         registerLoginExtensions(extension.login);
+
+        // Register custom history entry components
+        registerHistoryEntryComponents(extension.historyEntries);
 
         // Execute extension source change callbacks
         const callbacks = globalRegistry.get('extensionSourceChangeCallbacks');

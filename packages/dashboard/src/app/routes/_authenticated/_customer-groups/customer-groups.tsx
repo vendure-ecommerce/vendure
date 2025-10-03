@@ -8,7 +8,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCustomerGroupsBulkAction } from './components/customer-group-bulk-actions.js';
 import { CustomerGroupMembersSheet } from './components/customer-group-members-sheet.js';
-import { customerGroupListDocument, deleteCustomerGroupDocument } from './customer-groups.graphql.js';
+import { customerGroupListDocument } from './customer-groups.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_customer-groups/customer-groups')({
     component: CustomerGroupListPage,
@@ -21,7 +21,6 @@ function CustomerGroupListPage() {
             pageId="customer-group-list"
             title="Customer Groups"
             listQuery={customerGroupListDocument}
-            deleteMutation={deleteCustomerGroupDocument}
             route={Route}
             customizeColumns={{
                 name: {
