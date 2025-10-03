@@ -41,14 +41,11 @@ const config: StorybookConfig = {
                     vendureConfigPath,
                     api: {
                         host: 'https://demo.vendure.io',
+                        port: 443,
                     },
                     gqlOutputPath: resolve(__dirname, '../src/lib/graphql/'),
                     tempCompilationDir: resolve(__dirname, '../.temp'),
                     disableTansStackRouterPlugin: true,
-                    disablePlugins: {
-                        react: true,
-                        lingui: true,
-                    },
                 }),
             ],
         };
