@@ -3,6 +3,7 @@ import pc from 'picocolors';
 
 import { Messages } from '../../constants';
 import { pauseForPromptDisplay, withInteractiveTimeout } from '../../utilities/utils';
+import { cliCommands } from '../command-declarations';
 
 import { addApiExtension } from './api-extension/add-api-extension';
 import { addCodegen } from './codegen/add-codegen';
@@ -248,43 +249,16 @@ async function handleInteractiveMode() {
     console.log(`\n`);
     intro(pc.blue("✨ Let's add a new feature to your Vendure project!"));
 
-    const addOptions = [
-        {
-            value: 'create-new-plugin',
-            label: `${pc.blue('Plugin')} Create a new Vendure plugin`,
-            fn: createNewPlugin,
-        },
-        {
-            value: 'add-entity',
-            label: `${pc.blue('Plugin: Entity')} Add a new entity to a plugin`,
-            fn: addEntity,
-        },
-        {
-            value: 'add-service',
-            label: `${pc.blue('Plugin: Service')} Add a new service to a plugin`,
-            fn: addService,
-        },
-        {
-            value: 'add-api-extension',
-            label: `${pc.blue('Plugin: API')} Add an API extension to a plugin`,
-            fn: addApiExtension,
-        },
-        {
-            value: 'add-job-queue',
-            label: `${pc.blue('Plugin: Job Queue')} Add job queue support to a plugin`,
-            fn: addJobQueue,
-        },
-        {
-            value: 'add-ui-extensions',
-            label: `${pc.blue('Plugin: UI')} Add UI extensions to a plugin`,
-            fn: addUiExtensions,
-        },
-        {
-            value: 'add-codegen',
-            label: `${pc.blue('Project: Codegen')} Set up GraphQL code generation`,
-            fn: addCodegen,
-        },
-    ];
+    // Derive interactive options from command declarations (single source of truth)
+    const addCommandDef = cliCommands.find(cmd => cmd.name === 'add');
+    const addOptions =
+        addCommandDef?.options
+            ?.filter(opt => opt.interactiveId && opt.interactiveFn)
+            .map(opt => ({
+                value: opt.interactiveId as string,
+                label: `${pc.blue(opt.interactiveCategory as string)} ${opt.description}`,
+                fn: opt.interactiveFn as () => Promise<any>,
+            })) ?? [];
 
     const featureType = await withInteractiveTimeout(async () => {
         return await select({
