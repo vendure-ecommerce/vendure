@@ -1,4 +1,6 @@
 import { cancel, isCancel, multiselect, select, spinner } from '@clack/prompts';
+import path from 'path';
+import pc from 'picocolors';
 import { ClassDeclaration, Project } from 'ts-morph';
 
 import { addServiceCommand } from '../commands/add/service/add-service';
@@ -9,6 +11,43 @@ import { pauseForPromptDisplay, withInteractiveTimeout } from '../utilities/util
 import { EntityRef } from './entity-ref';
 import { ServiceRef } from './service-ref';
 import { VendurePluginRef } from './vendure-plugin-ref';
+
+/**
+ * Creates plugin selection options with duplicate name handling.
+ * When multiple plugins share the same name, displays relative paths in dimmed text to distinguish them.
+ */
+function createPluginOptions(
+    pluginClasses: ClassDeclaration[],
+    project: Project,
+): Array<{ value: ClassDeclaration; label: string }> {
+    // Detect duplicate plugin names
+    const pluginNames = pluginClasses.map(c => c.getName() as string);
+    const nameCounts = pluginNames.reduce(
+        (acc, name) => {
+            acc[name] = (acc[name] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    const projectRoot =
+        project.getDirectory('.')?.getPath() || project.getRootDirectories()[0]?.getPath() || '';
+
+    return pluginClasses.map(c => {
+        const name = c.getName() as string;
+        const hasDuplicates = nameCounts[name] > 1;
+        let label = pc.bold(name);
+        if (hasDuplicates) {
+            const fullPath = c.getSourceFile().getFilePath();
+            const relativePath = path.relative(projectRoot, fullPath);
+            label = `${pc.bold(name)} ${pc.dim(pc.italic(`(${relativePath})`))}`;
+        }
+        return {
+            value: c,
+            label,
+        };
+    });
+}
 
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;
@@ -21,7 +60,7 @@ export async function analyzeProject(options: {
 
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
-        const tsConfigFile = await selectTsConfigFile();
+        const tsConfigFile = selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
         const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject(
@@ -51,10 +90,7 @@ export async function selectPlugin(project: Project, cancelledMessage: string): 
     const targetPlugin = await withInteractiveTimeout(async () => {
         return await select({
             message: 'To which plugin would you like to add the feature?',
-            options: pluginClasses.map(c => ({
-                value: c,
-                label: c.getName() as string,
-            })),
+            options: createPluginOptions(pluginClasses, project),
             maxItems: 10,
         });
     });
@@ -123,16 +159,13 @@ export async function selectMultiplePluginClasses(
         process.exit(0);
     }
     if (selectAll === 'all') {
-        return pluginClasses.map(pc => new VendurePluginRef(pc));
+        return pluginClasses.map(pluginClass => new VendurePluginRef(pluginClass));
     }
 
     const targetPlugins = await withInteractiveTimeout(async () => {
         return await multiselect({
             message: 'Select one or more plugins (use ↑, ↓, space to select)',
-            options: pluginClasses.map(c => ({
-                value: c,
-                label: c.getName() as string,
-            })),
+            options: createPluginOptions(pluginClasses, project),
         });
     });
 
@@ -140,7 +173,7 @@ export async function selectMultiplePluginClasses(
         cancel(cancelledMessage);
         process.exit(0);
     }
-    return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginRef(pc));
+    return (targetPlugins as ClassDeclaration[]).map(pluginClass => new VendurePluginRef(pluginClass));
 }
 
 export async function selectServiceRef(
