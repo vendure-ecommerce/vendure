@@ -108,3 +108,30 @@ export const removeShippingMethodsFromChannelDocument = graphql(`
         }
     }
 `);
+
+export const testEligibleShippingMethodsDocument = graphql(`
+    query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
+        testEligibleShippingMethods(input: $input) {
+            id
+            name
+            code
+            description
+            price
+            priceWithTax
+            metadata
+        }
+    }
+`);
+
+export const testShippingMethodDocument = graphql(`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            quote {
+                price
+                priceWithTax
+                metadata
+            }
+        }
+    }
+`);

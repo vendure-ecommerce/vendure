@@ -1,6 +1,5 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     Page,
     PageActionBar,
@@ -13,8 +12,8 @@ import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-d
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
-import { ResultOf, VariablesOf } from 'gql.tada';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { VariablesOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -29,6 +28,7 @@ import {
     modifyOrderDocument,
     orderDetailDocument,
 } from './orders.graphql.js';
+import { loadModifyingOrder } from './utils/order-detail-loaders.js';
 import { AddressFragment, Order } from './utils/order-types.js';
 
 const pageId = 'order-modify';
@@ -36,35 +36,7 @@ type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id_/modify')({
     component: ModifyOrderPage,
-    loader: async ({ context, params }) => {
-        if (!params.id) {
-            throw new Error('ID param is required');
-        }
-
-        const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-            { id: params.id },
-        );
-
-        if (!result.order) {
-            throw new Error(`Order with the ID ${params.id} was not found`);
-        }
-
-        if (result.order.state === 'Draft') {
-            throw redirect({
-                to: `/orders/draft/${params.id}`,
-            });
-        }
-        if (result.order.state !== 'Modifying') {
-            throw redirect({
-                to: `/orders/${params.id}`,
-            });
-        }
-
-        return {
-            breadcrumb: [{ path: '/orders', label: 'Orders' }, result.order.code, { label: 'Modify' }],
-        };
-    },
+    loader: async ({ context, params }) => loadModifyingOrder(context, params),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -381,10 +353,10 @@ function ModifyOrderPage() {
     }
 
     // On successful state transition, invalidate the order detail query and navigate to the order detail page
-    const onSuccess = () => {
+    const onSuccess = async () => {
         const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-        queryClient.invalidateQueries({ queryKey });
-        navigate({ to: `/orders/$id`, params: { id: entity?.id } });
+        await queryClient.invalidateQueries({ queryKey });
+        await navigate({ to: `/orders/$id`, params: { id: entity?.id } });
     };
 
     const handleCancelModificationClick = async () => {

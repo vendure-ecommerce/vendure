@@ -1,3 +1,5 @@
-export * from './customer-history.js';
 export * from './customer-history-container.js';
-export * from './use-customer-history.js';
+export * from './customer-history-utils.js';
+export * from './customer-history.js';
+export * from './default-customer-history-components.js';
+export * from './default-customer-history-registry.js';

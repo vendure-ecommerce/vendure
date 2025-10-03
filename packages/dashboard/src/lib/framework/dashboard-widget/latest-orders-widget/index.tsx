@@ -1,4 +1,9 @@
 import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import {
+    CustomerCell,
+    OrderMoneyCell,
+    OrderStateCell,
+} from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Link } from '@tanstack/react-router';
@@ -25,7 +30,6 @@ export function LatestOrdersWidget() {
     return (
         <DashboardBaseWidget id={WIDGET_ID} title="Latest Orders" description="Your latest orders">
             <PaginatedListDataTable
-                disableViewOptions
                 page={page}
                 transformVariables={variables => ({
                     ...variables,
@@ -38,6 +42,7 @@ export function LatestOrdersWidget() {
                             state: {
                                 notIn: ['Cancelled', 'Draft'],
                             },
+                            ...(variables.options?.filter ?? {}),
                         },
                     },
                 })}
@@ -56,7 +61,7 @@ export function LatestOrdersWidget() {
                         header: 'Placed At',
                         cell: ({ row }) => {
                             return (
-                                <span>
+                                <span className="capitalize">
                                     {formatRelative(row.original.orderPlacedAt ?? new Date(), new Date())}
                                 </span>
                             );
@@ -64,12 +69,11 @@ export function LatestOrdersWidget() {
                     },
                     total: {
                         header: 'Total',
-                        cell: ({ row }) => {
-                            return (
-                                <span>{formatCurrency(row.original.total, row.original.currencyCode)}</span>
-                            );
-                        },
+                        cell: OrderMoneyCell,
                     },
+                    totalWithTax: { cell: OrderMoneyCell },
+                    state: { cell: OrderStateCell },
+                    customer: { cell: CustomerCell },
                 }}
                 itemsPerPage={pageSize}
                 sorting={sorting}

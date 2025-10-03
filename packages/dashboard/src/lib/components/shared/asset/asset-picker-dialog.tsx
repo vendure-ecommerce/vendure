@@ -9,15 +9,54 @@ import {
 import { useState } from 'react';
 import { Asset, AssetGallery } from './asset-gallery.js';
 
+/**
+ * @description
+ * Props for the {@link AssetPickerDialog} component.
+ * 
+ * @docsCategory components
+ * @docsPage AssetPickerDialog
+ */
 interface AssetPickerDialogProps {
+    /**
+     * @description
+     * Whether the dialog is open.
+     */
     open: boolean;
+    /**
+     * @description
+     * The function to call when the dialog is closed.
+     */
     onClose: () => void;
+    /**
+     * @description
+     * The function to call when assets are selected.
+     */
     onSelect: (assets: Asset[]) => void;
+    /**
+     * @description
+     * Whether multiple assets can be selected.
+     */
     multiSelect?: boolean;
+    /**
+     * @description
+     * The initial assets that should be selected.
+     */
     initialSelectedAssets?: Asset[];
+    /**
+     * @description
+     * The title of the dialog.
+     */
     title?: string;
 }
 
+/**
+ * @description
+ * A dialog which allows the creation and selection of assets.
+ * 
+ * @docsCategory components
+ * @docsPage AssetPickerDialog
+ * @docsWeight 0
+ */
 export function AssetPickerDialog({
     open,
     onClose,
@@ -39,22 +78,22 @@ export function AssetPickerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[800px] lg:max-w-[1000px] max-h-[80vh] flex flex-col">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-[800px] lg:max-w-[1000px] h-[85vh] p-0 flex flex-col">
+                <DialogHeader className="px-6 pt-6">
                     <DialogTitle>{multiSelect ? title : title.replace('Assets', 'Asset')}</DialogTitle>
                 </DialogHeader>
 
-                <div className="flex-grow py-4">
+                <div className="flex-1 overflow-y-auto px-6 pt-1">
                     <AssetGallery
                         onSelect={handleAssetSelect}
                         multiSelect="manual"
                         initialSelectedAssets={initialSelectedAssets}
-                        fixedHeight={true}
+                        fixedHeight={false}
                         displayBulkActions={false}
                     />
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="px-6 pb-6 pt-4 border-t">
                     <Button variant="outline" onClick={onClose}>
                         Cancel
                     </Button>

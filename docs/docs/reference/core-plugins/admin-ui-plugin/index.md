@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiPlugin
 
-<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="131" packageName="@vendure/admin-ui-plugin" />
+<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="139" packageName="@vendure/admin-ui-plugin" />
 
 This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
 

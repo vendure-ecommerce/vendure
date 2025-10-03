@@ -23,6 +23,8 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { tagListDocument } from '../../../../app/routes/_authenticated/_assets/assets.graphql.js';
+import { AssetTagFilter } from '../../../../app/routes/_authenticated/_assets/components/asset-tag-filter.js';
 import { DetailPageButton } from '../detail-page-button.js';
 import { AssetBulkAction, AssetBulkActions } from './asset-bulk-actions.js';
 
@@ -71,6 +73,13 @@ const AssetType = {
 
 export type Asset = AssetFragment;
 
+/**
+ * @description
+ * Props for the {@link AssetGallery} component.
+ *
+ * @docsCategory components
+ * @docsPage AssetGallery
+ */
 export interface AssetGalleryProps {
     onSelect?: (assets: Asset[]) => void;
     selectable?: boolean;
@@ -82,16 +91,67 @@ export interface AssetGalleryProps {
      * If set to 'manual', multiple selection will occur only if the user holds down the control/cmd key.
      */
     multiSelect?: 'auto' | 'manual';
+    /**
+     * @description
+     * The initial assets that should be selected.
+     */
     initialSelectedAssets?: Asset[];
+    /**
+     * @description
+     * The number of assets to display per page.
+     */
     pageSize?: number;
+    /**
+     * @description
+     * Whether the gallery should have a fixed height.
+     */
     fixedHeight?: boolean;
+    /**
+     * @description
+     * Whether the gallery should show a header.
+     */
     showHeader?: boolean;
+    /**
+     * @description
+     * The class name to apply to the gallery.
+     */
     className?: string;
+    /**
+     * @description
+     * The function to call when files are dropped.
+     */
     onFilesDropped?: (files: File[]) => void;
+    /**
+     * @description
+     * The bulk actions to display in the gallery.
+     */
     bulkActions?: AssetBulkAction[];
+    /**
+     * @description
+     * Whether the gallery should display bulk actions.
+     */
     displayBulkActions?: boolean;
 }
 
+/**
+ * @description
+ * A component for displaying a gallery of assets.
+ *
+ * @example
+ * ```tsx
+ *  <AssetGallery
+ onSelect={handleAssetSelect}
+ multiSelect="manual"
+ initialSelectedAssets={initialSelectedAssets}
+ fixedHeight={false}
+ displayBulkActions={false}
+ />
+ * ```
+ *
+ * @docsCategory components
+ * @docsPage AssetGallery
+ * @docsWeight 0
+ */
 export function AssetGallery({
     onSelect,
     selectable = true,
@@ -111,9 +171,19 @@ export function AssetGallery({
     const debouncedSearch = useDebounce(search, 500);
     const [assetType, setAssetType] = useState<string>(AssetType.ALL);
     const [selected, setSelected] = useState<Asset[]>(initialSelectedAssets || []);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const queryClient = useQueryClient();
 
-    const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType];
+    const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType, selectedTags];
+
+    // Query for available tags to check if we should show the filter
+    const { data: tagsData } = useQuery({
+        queryKey: ['tags-check'],
+        queryFn: () => api.query(tagListDocument, { options: { take: 1 } }),
+        staleTime: 1000 * 60 * 5,
+    });
+
+    const hasTags = (tagsData?.tags.items?.length || 0) > 0;
 
     // Query for assets
     const { data, isLoading, refetch } = useQuery({
@@ -129,14 +199,20 @@ export function AssetGallery({
                 filter.type = { eq: assetType };
             }
 
-            return api.query(getAssetListDocument, {
-                options: {
-                    skip: (page - 1) * pageSize,
-                    take: pageSize,
-                    filter: Object.keys(filter).length > 0 ? filter : undefined,
-                    sort: { createdAt: 'DESC' },
-                },
-            });
+            const options: any = {
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+                filter: Object.keys(filter).length > 0 ? filter : undefined,
+                sort: { createdAt: 'DESC' },
+            };
+
+            // Add tag filtering if tags are provided
+            if (selectedTags && selectedTags.length > 0) {
+                options.tags = selectedTags;
+                options.tagsOperator = 'AND';
+            }
+
+            return api.query(getAssetListDocument, { options });
         },
     });
 
@@ -204,10 +280,17 @@ export function AssetGallery({
     // Check if an asset is selected
     const isSelected = (asset: Asset) => selected.some(a => a.id === asset.id);
 
+    // Handle tag changes
+    const handleTagsChange = (tags: string[]) => {
+        setSelectedTags(tags);
+        setPage(1); // Reset to page 1 when tags change
+    };
+
     // Clear filters
     const clearFilters = () => {
         setSearch('');
         setAssetType(AssetType.ALL);
+        setSelectedTags([]);
         setPage(1);
     };
 
@@ -234,42 +317,50 @@ export function AssetGallery({
     };
 
     return (
-        <div className={`relative flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
+        <div className={`relative flex flex-col w-full ${fixedHeight ? 'h-[600px]' : 'h-full'} ${className}`}>
             {showHeader && (
-                <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
-                    <div className="relative flex-grow flex items-center gap-2">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search assets..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="pl-8"
-                        />
-                        {(search || assetType !== AssetType.ALL) && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={clearFilters}
-                                className="absolute right-0"
-                            >
-                                <X className="h-4 w-4 mr-1" /> Clear filters
-                            </Button>
-                        )}
+                <div className="space-y-4 mb-4 flex-shrink-0">
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <div className="relative flex-grow flex items-center gap-2">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search assets..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="pl-8"
+                            />
+                            {(search || assetType !== AssetType.ALL || selectedTags.length > 0) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={clearFilters}
+                                    className="absolute right-0"
+                                >
+                                    <X className="h-4 w-4 mr-1" /> Clear filters
+                                </Button>
+                            )}
+                        </div>
+                        <Select value={assetType} onValueChange={setAssetType}>
+                            <SelectTrigger className="w-full md:w-[180px]">
+                                <SelectValue placeholder="Asset type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={AssetType.ALL}>All types</SelectItem>
+                                <SelectItem value={AssetType.IMAGE}>Images</SelectItem>
+                                <SelectItem value={AssetType.VIDEO}>Video</SelectItem>
+                                <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button onClick={openFileDialog} className="whitespace-nowrap">
+                            <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
+                        </Button>
                     </div>
-                    <Select value={assetType} onValueChange={setAssetType}>
-                        <SelectTrigger className="w-full md:w-[180px]">
-                            <SelectValue placeholder="Asset type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={AssetType.ALL}>All types</SelectItem>
-                            <SelectItem value={AssetType.IMAGE}>Images</SelectItem>
-                            <SelectItem value={AssetType.VIDEO}>Video</SelectItem>
-                            <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Button onClick={openFileDialog} className="whitespace-nowrap">
-                        <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
-                    </Button>
+
+                    {hasTags && (
+                        <div className="flex items-center -mt-2">
+                            <AssetTagFilter selectedTags={selectedTags} onTagsChange={handleTagsChange} />
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -328,7 +419,25 @@ export function AssetGallery({
                                     />
                                     {selectable && (
                                         <div className="absolute top-2 left-2">
-                                            <Checkbox checked={isSelected(asset as Asset)} />
+                                            <Checkbox
+                                                checked={isSelected(asset as Asset)}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    const isCurrentlySelected = selected.some(
+                                                        a => a.id === asset.id,
+                                                    );
+                                                    let newSelected: Asset[];
+
+                                                    if (isCurrentlySelected) {
+                                                        newSelected = selected.filter(a => a.id !== asset.id);
+                                                    } else {
+                                                        newSelected = [...selected, asset as Asset];
+                                                    }
+
+                                                    setSelected(newSelected);
+                                                    onSelect?.(newSelected);
+                                                }}
+                                            />
                                         </div>
                                     )}
                                 </div>
@@ -342,7 +451,10 @@ export function AssetGallery({
                                                 {formatFileSize(asset.fileSize)}
                                             </p>
                                         )}
-                                        <DetailPageButton id={asset.id} label={<Trans>Edit</Trans>} />
+                                        <DetailPageButton
+                                            href={`/assets/${asset.id}`}
+                                            label={<Trans>Edit</Trans>}
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>

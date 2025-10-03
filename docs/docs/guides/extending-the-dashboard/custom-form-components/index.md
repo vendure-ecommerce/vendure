@@ -2,94 +2,40 @@
 title: 'Custom Form Elements'
 ---
 
-The dashboard allows you to create custom form elements that provide complete control over how data is rendered and how users interact with forms. This includes:
+The dashboard allows you to create custom form elements that provide complete control over how data is rendered and how users
+interact with forms. This includes:
 
-- **Custom Field Components** - For custom fields with specialized input requirements
-- **Input Components** - For targeted input controls in detail forms and other pages
-- **Display Components** - For custom data visualization and readonly displays
+- **Custom Field Components** - Globally-registered components that can be used to render **custom fields** and **configurable operation arguments**
+- **Detail Form Components** - Form input components that target specific fields of detail pages.
 
-:::important React Hook Form Integration
-Custom form components are heavily bound to the workflow of React Hook Form. The component props interface essentially passes React Hook Form render props (`field`, `fieldState`, `formState`) directly to your component, providing seamless integration with the form state management system.
-:::
+## Anatomy of a Form Component
 
-## Registration Approach
+All form components must implement the [DashboardFormComponent type](/reference/dashboard/extensions-api/form-components#dashboardformcomponent).
 
-Input and display components are registered by co-locating them with detail form definitions. This keeps everything better organized and avoids repeating the `pageId`:
+This type is based on the props that are made available from `react-hook-form`, which is the
+underlying form library used by the Dashboard.
 
-```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
-import { defineDashboardExtension } from '@vendure/dashboard';
-import { MyDescriptionInput, MyPriceInput, StatusBadgeDisplay } from './components';
-
-export default defineDashboardExtension({
-    detailForms: [
-        {
-            pageId: 'product-variant-detail',
-            inputs: [
-                {
-                    blockId: 'main-form',
-                    field: 'description',
-                    component: MyDescriptionInput,
-                },
-                {
-                    blockId: 'main-form',
-                    field: 'price',
-                    component: MyPriceInput,
-                },
-            ],
-            displays: [
-                {
-                    blockId: 'main-form',
-                    field: 'status',
-                    component: StatusBadgeDisplay,
-                },
-            ],
-        },
-    ],
-});
-```
-
-Custom field components continue to use the centralized registration approach:
-
-```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
-import { defineDashboardExtension } from '@vendure/dashboard';
-import { ColorPickerComponent } from './components/color-picker';
-import { RichTextEditorComponent } from './components/rich-text-editor';
-import { TagsInputComponent } from './components/tags-input';
-
-export default defineDashboardExtension({
-    customFormComponents: {
-        // Custom field components for custom fields
-        customFields: [
-            {
-                id: 'color-picker',
-                component: ColorPickerComponent,
-            },
-            {
-                id: 'rich-text-editor',
-                component: RichTextEditorComponent,
-            },
-            {
-                id: 'tags-input',
-                component: TagsInputComponent,
-            },
-        ],
-    },
-    // ... other extension properties
-});
-```
-
-## Custom Field Components
-
-Custom field components are React components used specifically for custom fields. They receive React Hook Form render props and use the dashboard's Shadcn UI design system.
-
-### Basic Custom Field Component
+Here's an example custom form component that has been annotated to explain the typical parts you will be working with:
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/color-picker.tsx"
-import { CustomFormComponentInputProps, Input, Button, Card, CardContent } from '@vendure/dashboard';
+import { Button, Card, CardContent, cn, DashboardFormComponent, Input } from '@vendure/dashboard';
 import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
-export function ColorPickerComponent({ field, fieldState }: CustomFormComponentInputProps) {
+// By typing your component as DashboardFormComponent, the props will be correctly typed
+export const ColorPickerComponent: DashboardFormComponent = ({ value, onChange, name }) => {
+    // You can use any of the built-in React hooks as usual
     const [isOpen, setIsOpen] = useState(false);
+
+    // To access the react-hook-form context, use this hook.
+    // This is useful for getting information about the current
+    // field, or even other fields in the form, which allows you
+    // to create advanced components that depend on the state of
+    // other fields in the form.
+    const { getFieldState } = useFormContext();
+    // The current field name is always passed in as a prop, allowing
+    // you to look up the field state
+    const error = getFieldState(name).error;
 
     const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD'];
 
@@ -100,15 +46,11 @@ export function ColorPickerComponent({ field, fieldState }: CustomFormComponentI
                     type="button"
                     variant="outline"
                     size="icon"
-                    className="w-8 h-8 border-2 border-gray-300 p-0"
-                    style={{ backgroundColor: field.value || '#ffffff' }}
+                    className={cn('w-8 h-8 border-2 border-gray-300 p-0', error && 'border-red-500')}
+                    style={{ backgroundColor: error ? 'transparent' : value || '#ffffff' }}
                     onClick={() => setIsOpen(!isOpen)}
                 />
-                <Input
-                    value={field.value || ''}
-                    onChange={e => field.onChange(e.target.value)}
-                    placeholder="#ffffff"
-                />
+                <Input value={value || ''} onChange={e => onChange(e.target.value)} placeholder="#ffffff" />
             </div>
 
             {isOpen && (
@@ -123,7 +65,7 @@ export function ColorPickerComponent({ field, fieldState }: CustomFormComponentI
                                 className="w-8 h-8 border-2 border-gray-300 hover:border-gray-500 p-0"
                                 style={{ backgroundColor: color }}
                                 onClick={() => {
-                                    field.onChange(color);
+                                    onChange(color);
                                     setIsOpen(false);
                                 }}
                             />
@@ -131,77 +73,144 @@ export function ColorPickerComponent({ field, fieldState }: CustomFormComponentI
                     </CardContent>
                 </Card>
             )}
-
-            {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
         </div>
     );
-}
+};
 ```
 
-## Input Components
+Here's how this component will look when rendered in your form:
 
-Input components allow you to replace specific input fields in existing dashboard forms with custom implementations. They are targeted to specific pages, blocks, and fields.
+![Color picker component](./color-picker.webp)
 
-### Basic Input Component
+## Custom Field Components
 
-```tsx title="src/plugins/my-plugin/dashboard/components/price-input.tsx"
-import { Input, Button } from '@vendure/dashboard';
-import { useState } from 'react';
-import { DollarSign, Euro, Pound } from 'lucide-react';
+Let's configure a [custom field](/guides/developer-guide/custom-fields/) which uses the `ColorPickerComponent` as its form component.
 
-interface PriceInputProps {
-    value: number;
-    onChange: (value: number) => void;
-    disabled?: boolean;
-}
+First we need to register the component with the `defineDashboardExtension` function:
 
-export function PriceInputComponent({ value, onChange, disabled }: PriceInputProps) {
-    const [currency, setCurrency] = useState('USD');
+```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
+import { defineDashboardExtension } from '@vendure/dashboard';
+import { ColorPickerComponent } from './components/color-picker';
 
-    const currencies = [
-        { code: 'USD', symbol: '$', icon: DollarSign },
-        { code: 'EUR', symbol: '€', icon: Euro },
-        { code: 'GBP', symbol: '£', icon: Pound },
-    ];
+export default defineDashboardExtension({
+    customFormComponents: {
+        // Custom field components for custom fields
+        customFields: [
+            {
+                // highlight-start
+                // The "id" is a global identifier for this custom component. We will
+                // reference it in the next step.
+                id: 'color-picker',
+                component: ColorPickerComponent,
+                // highlight-end
+            },
+        ],
+    },
+    // ... other extension properties
+});
+```
 
-    const selectedCurrency = currencies.find(c => c.code === currency) || currencies[0];
-    const Icon = selectedCurrency.icon;
+Now that we've registered it as a custom field component, we can use it in our custom field definition.
 
+```tsx title="src/plugins/my-plugin/my.plugin.ts"
+@VendurePlugin({
+    // ...
+    configuration: config => {
+        config.customFields.Product.push({
+            name: 'color',
+            type: 'string',
+            pattern: '^#[A-Fa-f0-9]{6}$',
+            label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+            description: [{ languageCode: LanguageCode.en, value: 'Main color for this product' }],
+            ui: {
+                // highlight-start
+                // This is the ID of the custom field
+                // component we registered above.
+                component: 'color-picker',
+                // highlight-end
+            },
+        });
+        return config;
+    },
+})
+export class MyPlugin {}
+```
+
+## Configurable Operation Components
+
+The `ColorPickerComponent` can also be used as a [configurable operation argument](/guides/developer-guide/strategies-configurable-operations/#configurable-operations) component. For example, we can add a color code
+to a shipping calculator:
+
+```tsx title="src/plugins/my-plugin/config/custom-shipping-calculator.ts"
+const customShippingCalculator = new ShippingCalculator({
+    code: 'custom-shipping-calculator',
+    description: [{ languageCode: LanguageCode.en, value: 'Custom Shipping Calculator' }],
+    args: {
+        color: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Color' }],
+            description: [
+                { languageCode: LanguageCode.en, value: 'Color code for this shipping calculator' },
+            ],
+            // highlight-start
+            ui: { component: 'color-picker' },
+            // highlight-end
+        },
+    },
+    calculate: (ctx, order, args) => {
+        // ...
+    },
+});
+```
+
+## Detail Form Components
+
+Detail form components allow you to replace specific input fields in existing dashboard forms with custom implementations. They are targeted to specific pages, blocks, and fields.
+
+Let's say we want to use a plain text editor for the product description field rather than the default
+html-based editor.
+
+```tsx title="src/plugins/my-plugin/dashboard/components/markdown-editor.tsx"
+import { DashboardFormComponent, Textarea } from '@vendure/dashboard';
+
+// This is a simplified example - a real markdown editor should use
+// a library that handles markdown rendering and editing.
+export const MarkdownEditorComponent: DashboardFormComponent = props => {
     return (
-        <div className="flex items-center space-x-2">
-            <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={disabled}
-                onClick={() => {
-                    const currentIndex = currencies.findIndex(c => c.code === currency);
-                    const nextIndex = (currentIndex + 1) % currencies.length;
-                    setCurrency(currencies[nextIndex].code);
-                }}
-                className="flex items-center gap-1"
-            >
-                <Icon className="h-4 w-4" />
-                {selectedCurrency.code}
-            </Button>
-
-            <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                    {selectedCurrency.symbol}
-                </span>
-                <Input
-                    type="number"
-                    value={value || ''}
-                    onChange={e => onChange(parseFloat(e.target.value) || 0)}
-                    disabled={disabled}
-                    className="pl-8"
-                    placeholder="0.00"
-                    step="0.01"
-                />
-            </div>
-        </div>
+        <Textarea
+            className="font-mono"
+            ref={props.ref}
+            onBlur={props.onBlur}
+            value={props.value}
+            onChange={e => props.onChange(e.target.value)}
+            disabled={props.disabled}
+        />
     );
-}
+};
+```
+
+You can then use this component in your detail form definition:
+
+```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
+import { defineDashboardExtension } from '@vendure/dashboard';
+import { MarkdownEditorComponent } from './components/markdown-editor';
+
+export default defineDashboardExtension({
+    detailForms: [
+        {
+            // highlight-start
+            pageId: 'product-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'description',
+                    component: MarkdownEditorComponent,
+                },
+            ],
+            // highlight-end
+        },
+    ],
+});
 ```
 
 ### Targeting Input Components
@@ -215,315 +224,62 @@ Input components are targeted using three properties:
 ```tsx
 inputs: [
     {
-        pageId: 'product-detail',
-        blockId: 'product-form',
+        pageId: 'product-variant-detail',
+        blockId: 'main-form',
         field: 'price',
         component: PriceInputComponent,
     },
     {
         pageId: 'customer-detail',
-        blockId: 'customer-info',
-        field: 'email',
+        blockId: 'main-form',
+        field: 'emailAddress',
         component: EmailInputComponent,
     },
 ];
 ```
 
-## Display Components
+You can discover the required IDs by turning on dev mode:
 
-Display components are used for readonly data visualization, replacing how specific data is displayed in forms, tables, and detail views.
+![Dev mode](./dev-mode.webp)
 
-### Basic Display Component
+and then hovering over any of the form elements will allow you to view the IDs:
 
-```tsx title="src/plugins/my-plugin/dashboard/components/status-badge.tsx"
-import { Badge } from '@vendure/dashboard';
-import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+![Form element IDs](./locator.webp)
 
-interface StatusBadgeProps {
-    value: string;
-}
+## Form Validation
 
-export function StatusBadgeComponent({ value }: StatusBadgeProps) {
-    const getStatusConfig = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'active':
-            case 'approved':
-            case 'completed':
-                return {
-                    variant: 'default' as const,
-                    icon: CheckCircle,
-                    className: 'bg-green-100 text-green-800 border-green-200',
-                };
-            case 'pending':
-            case 'processing':
-                return {
-                    variant: 'secondary' as const,
-                    icon: Clock,
-                    className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                };
-            case 'cancelled':
-            case 'rejected':
-                return {
-                    variant: 'destructive' as const,
-                    icon: XCircle,
-                    className: 'bg-red-100 text-red-800 border-red-200',
-                };
-            default:
-                return {
-                    variant: 'outline' as const,
-                    icon: AlertCircle,
-                    className: 'bg-gray-100 text-gray-800 border-gray-200',
-                };
-        }
-    };
+Form validation is handled by the `react-hook-form` library, which is used by the Dashboard. Internally,
+the Dashboard uses the `zod` library to validate the form data, based on the configuration of the custom field or
+operation argument.
 
-    const config = getStatusConfig(value);
-    const Icon = config.icon;
+You can access validation data for the current field or the whole form by using the `useFormContext` hook.
 
-    return (
-        <Badge variant={config.variant} className={`flex items-center gap-1 ${config.className}`}>
-            <Icon className="h-3 w-3" />
-            {value || 'Unknown'}
-        </Badge>
-    );
-}
-```
+:::note Error Messages
+Your component does not need to handle standard error messages - the Dashboard will handle them for you.
 
-### Targeting Display Components
-
-Display components use the same targeting system as input components:
-
-```tsx
-displays: [
-    {
-        pageId: 'order-detail',
-        blockId: 'order-summary',
-        field: 'status',
-        component: StatusBadgeComponent,
-    },
-    {
-        pageId: 'product-list',
-        blockId: 'product-table',
-        field: 'availability',
-        component: AvailabilityIndicatorComponent,
-    },
-];
-```
-
-## Component Props Interfaces
-
-### Custom Field Component Props
-
-Custom field components receive React Hook Form render props:
-
-```tsx
-interface CustomFormComponentInputProps {
-    // React Hook Form field controller (render prop)
-    field: {
-        name: string; // Field name
-        value: any; // Current field value
-        onChange: (value: any) => void; // Update field value
-        onBlur: () => void; // Handle field blur
-        ref: React.Ref; // Field reference
-    };
-
-    // React Hook Form field validation state (render prop)
-    fieldState: {
-        invalid: boolean; // Whether field has validation errors
-        isTouched: boolean; // Whether field has been interacted with
-        isDirty: boolean; // Whether field value has changed
-        error?: {
-            // Validation error details
-            type: string;
-            message: string;
-        };
-    };
-
-    // React Hook Form overall form state (render prop)
-    formState: {
-        isDirty: boolean; // Whether any form field has changed
-        isValid: boolean; // Whether form passes validation
-        isSubmitting: boolean; // Whether form is being submitted
-        // ... other React Hook Form state properties
-    };
-}
-```
-
-### Input Component Props
-
-Input components receive standard input props through the `DataInputComponentProps` interface:
-
-```tsx
-import { DataInputComponentProps } from '@vendure/dashboard';
-
-// The DataInputComponentProps interface provides:
-interface DataInputComponentProps {
-    value: any;
-    onChange: (value: any) => void;
-    [key: string]: any; // Additional props that may be passed
-}
-```
-
-### Display Component Props
-
-Display components receive the value and any additional context through the `DataDisplayComponentProps` interface:
-
-```tsx
-import { DataDisplayComponentProps } from '@vendure/dashboard';
-
-// The DataDisplayComponentProps interface provides:
-interface DataDisplayComponentProps {
-    value: any;
-    [key: string]: any; // Additional props that may be passed
-}
-```
-
-## Advanced Examples
-
-### Rich Text Editor Component
-
-```tsx title="src/plugins/my-plugin/dashboard/components/rich-text-editor.tsx"
-import { CustomFormComponentInputProps, Button, Card, CardContent } from '@vendure/dashboard';
-import { useState, useEffect } from 'react';
-import { Bold, Italic, Underline } from 'lucide-react';
-
-export function RichTextEditorComponent({ field, fieldState }: CustomFormComponentInputProps) {
-    const [editorContent, setEditorContent] = useState(field.value || '');
-
-    useEffect(() => {
-        setEditorContent(field.value || '');
-    }, [field.value]);
-
-    const handleContentChange = (content: string) => {
-        setEditorContent(content);
-        field.onChange(content);
-    };
-
-    const formatText = (command: string) => {
-        document.execCommand(command, false);
-    };
-
-    return (
-        <div className="space-y-2">
-            <Card>
-                {/* Toolbar */}
-                <div className="border-b bg-muted/50 p-2 flex space-x-1">
-                    <Button type="button" variant="ghost" size="sm" onClick={() => formatText('bold')}>
-                        <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => formatText('italic')}>
-                        <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => formatText('underline')}>
-                        <Underline className="h-4 w-4" />
-                    </Button>
-                </div>
-
-                {/* Editor */}
-                <CardContent>
-                    <div
-                        contentEditable
-                        className="min-h-[120px] p-3 focus:outline-none"
-                        dangerouslySetInnerHTML={{ __html: editorContent }}
-                        onBlur={e => {
-                            const content = e.currentTarget.innerHTML;
-                            handleContentChange(content);
-                            field.onBlur();
-                        }}
-                        onInput={e => {
-                            const content = e.currentTarget.innerHTML;
-                            handleContentChange(content);
-                        }}
-                    />
-                </CardContent>
-            </Card>
-
-            {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
-        </div>
-    );
-}
-```
-
-### Tags Input Component
-
-```tsx title="src/plugins/my-plugin/dashboard/components/tags-input.tsx"
-import { CustomFormComponentInputProps, Input, Badge, Button } from '@vendure/dashboard';
-import { useState, KeyboardEvent } from 'react';
-import { X } from 'lucide-react';
-
-export function TagsInputComponent({ field, fieldState }: CustomFormComponentInputProps) {
-    const [inputValue, setInputValue] = useState('');
-
-    // Parse tags from string value (comma-separated)
-    const tags = field.value ? field.value.split(',').filter(Boolean) : [];
-
-    const addTag = (tag: string) => {
-        const trimmedTag = tag.trim();
-        if (trimmedTag && !tags.includes(trimmedTag)) {
-            const newTags = [...tags, trimmedTag];
-            field.onChange(newTags.join(','));
-        }
-        setInputValue('');
-    };
-
-    const removeTag = (tagToRemove: string) => {
-        const newTags = tags.filter(tag => tag !== tagToRemove);
-        field.onChange(newTags.join(','));
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' || e.key === ',') {
-            e.preventDefault();
-            addTag(inputValue);
-        } else if (e.key === 'Backspace' && inputValue === '' && tags.length > 0) {
-            removeTag(tags[tags.length - 1]);
-        }
-    };
-
-    return (
-        <div className="space-y-2">
-            {/* Tags Display */}
-            <div className="flex flex-wrap gap-1">
-                {tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="gap-1">
-                        {tag}
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 p-0 hover:bg-transparent"
-                            onClick={() => removeTag(tag)}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </Badge>
-                ))}
-            </div>
-
-            {/* Input */}
-            <Input
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={field.onBlur}
-                placeholder="Type a tag and press Enter or comma"
-            />
-
-            {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
-        </div>
-    );
-}
-```
-
-## Form Validation Integration
-
-Your custom components integrate seamlessly with React Hook Form's validation system:
+For example, if your custom field specifies a `pattern` property, the Dashboard will automatically display an error message
+if the input does not match the pattern.
+:::
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/validated-input.tsx"
-import { CustomFormComponentInputProps, Input, Alert, AlertDescription } from '@vendure/dashboard';
+import { DashboardFormComponent, Input, Alert, AlertDescription } from '@vendure/dashboard';
+import { useFormContext } from 'react-hook-form';
 import { CheckCircle2 } from 'lucide-react';
 
-export function ValidatedInputComponent({ field, fieldState }: CustomFormComponentInputProps) {
+export const ValidatedInputComponent: DashboardFormComponent = ({ value, onChange, name }) => {
+    const { getFieldState } = useFormContext();
+    const fieldState = getFieldState(name);
+
+    console.log(fieldState);
+    // will log something like this:
+    // {
+    //     "invalid": false,
+    //     "isDirty": false,
+    //     "isValidating": false,
+    //     "isTouched": false
+    // }
+    // You can use this data to display validation errors, etc.
+
     return (
         <div className="space-y-2">
             <Input
@@ -550,70 +306,17 @@ export function ValidatedInputComponent({ field, fieldState }: CustomFormCompone
 }
 ```
 
-## Integration with Dashboard Design System
-
-Leverage the dashboard's existing Shadcn UI components for consistent design:
-
-```tsx title="src/plugins/my-plugin/dashboard/components/enhanced-select.tsx"
-import {
-    CustomFormComponentInputProps,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@vendure/dashboard';
-
-interface Option {
-    value: string;
-    label: string;
-}
-
-export function EnhancedSelectComponent({ field, fieldState }: CustomFormComponentInputProps) {
-    // This could come from props, API call, or static data
-    const options: Option[] = [
-        { value: 'small', label: 'Small' },
-        { value: 'medium', label: 'Medium' },
-        { value: 'large', label: 'Large' },
-        { value: 'xl', label: 'Extra Large' },
-    ];
-
-    return (
-        <div className="space-y-2">
-            <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className={fieldState.error ? 'border-destructive' : ''}>
-                    <SelectValue placeholder="Select a size..." />
-                </SelectTrigger>
-                <SelectContent>
-                    {options.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-
-            {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
-        </div>
-    );
-}
-```
-
 :::tip Best Practices
 
 1. **Always use Shadcn UI components** from the `@vendure/dashboard` package for consistent styling
-2. **Handle React Hook Form events properly** - call `field.onChange` and `field.onBlur` appropriately for custom field components
-3. **Use standard input patterns** for input and display components - follow the `value`/`onChange` pattern
-4. **Display validation errors** from `fieldState.error` when they exist (custom field components)
-5. **Use dashboard design tokens** - leverage `text-destructive`, `text-muted-foreground`, etc.
-6. **Provide clear visual feedback** for user interactions
-7. **Handle disabled states** by checking the appropriate props
-8. **Target components precisely** using pageId, blockId, and field for input/display components
-   :::
-
-:::note Component Registration
-All custom form elements must be registered in the `customFormComponents` object before they can be used. For custom field components, the `id` you use when registering is what you reference in the custom field's `ui.component` property. For input and display components, they are automatically applied based on the targeting criteria.
+2. **Handle React Hook Form events properly** - call `onChange` and `onBlur` appropriately for custom field components
+3. **Display validation errors** from `fieldState.error` when they exist (custom field components)
+4. **Use dashboard design tokens** - leverage `text-destructive`, `text-muted-foreground`, etc.
+5. **Provide clear visual feedback** for user interactions
+6. **Handle disabled states** by using the `disabled` prop
+7. **Target components precisely** using pageId, blockId, and field for input components
 :::
+
 
 :::important Design System Consistency
 Always import UI components from the `@vendure/dashboard` package rather than creating custom inputs or buttons. This ensures your components follow the dashboard's design system and remain consistent with future updates.
@@ -670,6 +373,5 @@ Features include:
 
 For detailed information about specific types of custom form elements, see these dedicated guides:
 
-- **[Input Components](./input-components)** - Learn how to create custom input controls for forms with advanced examples like multi-currency inputs, auto-generating slugs, and rich text editors
-- **[Display Components](./display-components)** - Discover how to customize data visualization with enhanced displays for prices, dates, avatars, and progress indicators
-- **[Relation Selectors](./relation-selectors)** - Build powerful entity selection components with search, pagination, and multi-select capabilities for custom fields and form inputs
+- **[Form component examples](./form-component-examples)** - Detailed examples of how to use the APIs available for custom form components.
+- **[Relation selectors](./relation-selectors)** - Build powerful entity selection components with search, pagination, and multi-select capabilities for custom fields and form inputs

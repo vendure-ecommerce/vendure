@@ -124,6 +124,7 @@ export const structCustomFieldFragment = graphql(
             ...CustomFieldConfig
             fields {
                 ... on StructField {
+                    __typename
                     name
                     type
                     list
@@ -249,6 +250,7 @@ export const getServerConfigDocument = graphql(
 );
 
 type QueryResult = ResultOf<typeof getServerConfigDocument>['globalSettings']['serverConfig'];
+export type CustomFieldConfig = QueryResult['entityCustomFields'][number]['customFields'][number];
 
 export interface ServerConfig {
     availableLanguages: string[];

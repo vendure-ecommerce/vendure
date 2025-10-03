@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_tax-categories/tax-catego
         queryDocument: taxCategoryDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-categories', label: 'Tax categories' },
+                { path: '/tax-categories', label: <Trans>Tax Categories</Trans> },
                 isNew ? <Trans>New tax category</Trans> : entity?.name,
             ];
         },
@@ -63,14 +63,14 @@ function TaxCategoryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated tax category'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created tax category' : 'Successfully updated tax category'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update tax category'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create tax category' : 'Failed to update tax category'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -88,7 +88,7 @@ function TaxCategoryDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

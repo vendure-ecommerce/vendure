@@ -22,9 +22,9 @@ import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Props to configure the {@link ListPage} component.
  *
- * @docsCategory components
+ * @docsCategory list-views
  * @docsPage ListPage
  * @since 3.3.0
  */
@@ -38,6 +38,13 @@ export interface ListPageProps<
     route: AnyRoute | (() => AnyRoute);
     title: string | React.ReactElement;
     listQuery: T;
+    /**
+     * @description
+     * Providing the `deleteMutation` will automatically add a "delete" menu item to the
+     * actions column dropdown. Note that if this table already has a "delete" bulk action,
+     * you don't need to additionally provide a delete mutation, because the bulk action
+     * will be added to the action column dropdown already.
+     */
     deleteMutation?: TypedDocumentNode<any, { id: string }>;
     transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
@@ -55,6 +62,7 @@ export interface ListPageProps<
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     bulkActions?: BulkAction[];
     /**
+     * @description
      * Register a function that allows you to assign a refresh function for
      * this list. The function can be assigned to a ref and then called when
      * the list needs to be refreshed.
@@ -64,11 +72,92 @@ export interface ListPageProps<
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Auto-generates a list page with columns generated based on the provided query document fields.
  *
- * @docsCategory components
+ * @example
+ * ```tsx
+ * import {
+ *     Button,
+ *     DashboardRouteDefinition,
+ *     ListPage,
+ *     PageActionBarRight,
+ *     DetailPageButton,
+ * } from '@vendure/dashboard';
+ * import { Link } from '@tanstack/react-router';
+ * import { PlusIcon } from 'lucide-react';
+ *
+ * // This function is generated for you by the `vendureDashboardPlugin` in your Vite config.
+ * // It uses gql-tada to generate TypeScript types which give you type safety as you write
+ * // your queries and mutations.
+ * import { graphql } from '@/gql';
+ *
+ * // The fields you select here will be automatically used to generate the appropriate columns in the
+ * // data table below.
+ * const getArticleList = graphql(`
+ *     query GetArticles($options: ArticleListOptions) {
+ *         articles(options: $options) {
+ *             items {
+ *                 id
+ *                 createdAt
+ *                 updatedAt
+ *                 isPublished
+ *                 title
+ *                 slug
+ *                 body
+ *                 customFields
+ *             }
+ *         }
+ *     }
+ * `);
+ *
+ * const deleteArticleDocument = graphql(`
+ *     mutation DeleteArticle($id: ID!) {
+ *         deleteArticle(id: $id) {
+ *             result
+ *         }
+ *     }
+ * `);
+ *
+ * export const articleList: DashboardRouteDefinition = {
+ *     navMenuItem: {
+ *         sectionId: 'catalog',
+ *         id: 'articles',
+ *         url: '/articles',
+ *         title: 'CMS Articles',
+ *     },
+ *     path: '/articles',
+ *     loader: () => ({
+ *         breadcrumb: 'Articles',
+ *     }),
+ *     component: route => (
+ *         <ListPage
+ *             pageId="article-list"
+ *             title="Articles"
+ *             listQuery={getArticleList}
+ *             deleteMutation={deleteArticleDocument}
+ *             route={route}
+ *             customizeColumns={{
+ *                 title: {
+ *                     cell: ({ row }) => {
+ *                         const post = row.original;
+ *                         return <DetailPageButton id={post.id} label={post.title} />;
+ *                     },
+ *                 },
+ *             }}
+ *         >
+ *             <PageActionBarRight>
+ *                 <Button asChild>
+ *                     <Link to="./new">
+ *                         <PlusIcon className="mr-2 h-4 w-4" />
+ *                         New article
+ *                     </Link>
+ *                 </Button>
+ *             </PageActionBarRight>
+ *         </ListPage>
+ *     ),
+ * };
+ * ```
+ * @docsCategory list-views
  * @docsPage ListPage
  * @docsWeight 0
  * @since 3.3.0

@@ -10,29 +10,21 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { structCustomFieldFragment } from '@/vdb/providers/server-config.js';
-import { ResultOf } from 'gql.tada';
 import { CheckIcon, PencilIcon, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { Control, ControllerRenderProps, useWatch } from 'react-hook-form';
+import { ControllerRenderProps, useFormContext, useWatch } from 'react-hook-form';
 
 // Import the form input component we already have
+import {
+    DashboardFormComponentProps,
+    StructCustomFieldConfig,
+    StructField,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { CustomFieldListInput } from './custom-field-list-input.js';
 import { DateTimeInput } from './datetime-input.js';
 import { SelectWithOptions } from './select-with-options.js';
-
-// Use the generated types from GraphQL fragments
-type StructCustomFieldConfig = ResultOf<typeof structCustomFieldFragment>;
-type StructField = StructCustomFieldConfig['fields'][number];
-
-interface StructFormInputProps {
-    field: ControllerRenderProps<any, any>;
-    fieldDef: StructCustomFieldConfig;
-    control: Control<any, any>;
-    getTranslation: (
-        input: Array<{ languageCode: string; value: string }> | null | undefined,
-    ) => string | undefined;
-}
 
 interface DisplayModeProps {
     fieldDef: StructCustomFieldConfig;
@@ -84,41 +76,29 @@ function DisplayMode({
     );
 }
 
-export function StructFormInput({ field, fieldDef, control, getTranslation }: StructFormInputProps) {
+export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormComponentProps>) {
     const { formatDate } = useLocalFormat();
-    const isReadonly = fieldDef.readonly ?? false;
     const [isEditing, setIsEditing] = useState(false);
+    const { control } = useFormContext();
+    const { value, name } = field;
 
     // Watch the struct field for changes to update display mode
     const watchedStructValue =
         useWatch({
             control,
-            name: field.name,
-            defaultValue: field.value || {},
+            name,
+            defaultValue: value || {},
         }) || {};
 
-    // Helper function to format field value for display
-    const formatFieldValue = (value: any, structField: StructField) => {
-        if (value == null) return '-';
-        if (structField.list) {
-            if (Array.isArray(value)) {
-                return value.length ? value.join(', ') : '-';
-            }
-            return '-';
-        }
-        switch (structField.type) {
-            case 'boolean':
-                return (
-                    <span className={`inline-flex items-center ${value ? 'text-green-600' : 'text-red-500'}`}>
-                        {value ? <CheckIcon className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                    </span>
-                );
-            case 'datetime':
-                return value ? formatDate(value, { dateStyle: 'short', timeStyle: 'short' }) : '-';
-            default:
-                return value.toString();
-        }
+    const {
+        settings: { displayLanguage },
+    } = useUserSettings();
+
+    const getTranslation = (input: Array<{ languageCode: string; value: string }> | null | undefined) => {
+        return input?.find(t => t.languageCode === displayLanguage)?.value;
     };
+
+    const isReadonly = fieldDef?.readonly === true;
 
     // Helper function to render individual struct field inputs
     const renderStructFieldInput = (
@@ -135,12 +115,7 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
                     const stringField = structField as any; // GraphQL union types need casting
                     if (stringField.options && stringField.options.length > 0) {
                         return (
-                            <SelectWithOptions
-                                field={singleField}
-                                options={stringField.options}
-                                disabled={isReadonly}
-                                isListField={false}
-                            />
+                            <SelectWithOptions {...singleField} fieldDef={stringField} isListField={false} />
                         );
                     }
                     return (
@@ -187,13 +162,7 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
                         />
                     );
                 case 'datetime':
-                    return (
-                        <DateTimeInput
-                            value={singleField.value}
-                            onChange={singleField.onChange}
-                            disabled={isReadonly}
-                        />
-                    );
+                    return <DateTimeInput {...singleField} />;
                 default:
                     return (
                         <Input
@@ -213,8 +182,8 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
             if (stringField.options && stringField.options.length > 0) {
                 return (
                     <SelectWithOptions
-                        field={inputField}
-                        options={stringField.options}
+                        {...inputField}
+                        fieldDef={stringField}
                         disabled={isReadonly}
                         isListField={isList}
                     />
@@ -245,11 +214,10 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
 
             return (
                 <CustomFieldListInput
-                    field={inputField}
+                    {...inputField}
                     disabled={isReadonly}
                     renderInput={(index, listItemField) => renderSingleStructInput(listItemField)}
                     defaultValue={getDefaultValue()}
-                    isFullWidth={needsFullWidth}
                 />
             );
         }
@@ -275,7 +243,7 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
                         </Button>
                     </div>
                 )}
-                {fieldDef.fields.map(structField => (
+                {fieldDef?.fields?.map(structField => (
                     <FormField
                         key={structField.name}
                         control={control}
@@ -308,6 +276,33 @@ export function StructFormInput({ field, fieldDef, control, getTranslation }: St
         ),
         [fieldDef, control, field.name, getTranslation, renderStructFieldInput, isReadonly],
     );
+
+    if (!fieldDef || !isStructFieldConfig(fieldDef)) {
+        return null;
+    }
+
+    // Helper function to format field value for display
+    const formatFieldValue = (value: any, structField: StructField) => {
+        if (value == null) return '-';
+        if (structField.list) {
+            if (Array.isArray(value)) {
+                return value.length ? value.join(', ') : '-';
+            }
+            return '-';
+        }
+        switch (structField.type) {
+            case 'boolean':
+                return (
+                    <span className={`inline-flex items-center ${value ? 'text-green-600' : 'text-red-500'}`}>
+                        {value ? <CheckIcon className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                    </span>
+                );
+            case 'datetime':
+                return value ? formatDate(value, { dateStyle: 'short', timeStyle: 'short' }) : '-';
+            default:
+                return value.toString();
+        }
+    };
 
     return isEditing ? (
         EditMode

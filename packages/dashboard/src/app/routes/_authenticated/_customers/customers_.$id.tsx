@@ -55,7 +55,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers_/$id'
         pageId,
         queryDocument: customerDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/customers', label: 'Customers' },
+            { path: '/customers', label: <Trans>Customers</Trans> },
             isNew ? <Trans>New customer</Trans> : `${entity?.firstName} ${entity?.lastName}`,
         ],
     }),
@@ -89,19 +89,19 @@ function CustomerDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
-                toast.success(i18n.t('Successfully updated customer'));
+                toast.success(i18n.t(creatingNewEntity ? 'Successfully created customer' : 'Successfully updated customer'));
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t('Failed to update customer'), {
+                toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update customer'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -150,7 +150,7 @@ function CustomerDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

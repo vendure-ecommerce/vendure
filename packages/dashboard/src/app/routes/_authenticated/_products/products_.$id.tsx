@@ -23,10 +23,10 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
-import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id')(
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/products', label: 'Products' },
+                { path: '/products', label: <Trans>Products</Trans> },
                 isNew ? <Trans>New product</Trans> : entity?.name,
             ];
         },
@@ -81,14 +81,14 @@ function ProductDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated product'));
+            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product' : 'Successfully updated product'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update product'), {
+            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product' : 'Failed to update product'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -104,7 +104,7 @@ function ProductDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -154,13 +154,13 @@ function ProductDetailPage() {
                             }}
                             fromProductDetailPage={true}
                         />
-                        <div className="mt-4">
-                            <AddProductVariantDialog
-                                productId={params.id}
-                                onSuccess={() => {
-                                    refreshRef.current?.();
-                                }}
-                            />
+                        <div className="mt-4 flex gap-2">
+                            <Button asChild variant="outline">
+                                <Link to="./variants">
+                                    <PlusIcon className="mr-2 h-4 w-4" />
+                                    <Trans>Manage variants</Trans>
+                                </Link>
+                            </Button>
                         </div>
                     </PageBlock>
                 )}

@@ -1,22 +1,15 @@
-import { DataTable, FacetedFilter } from '@/vdb/components/data-table/data-table.js';
-import {
-    getObjectPathToPaginatedList
-} from '@/vdb/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
-import { api } from '@/vdb/graphql/api.js';
+import { DataTable, FacetedFilter } from '\@/vdb/components/data-table/data-table.js';
+import { getObjectPathToPaginatedList } from '\@/vdb/framework/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '\@/vdb/framework/document-introspection/hooks.js';
+import { api } from '\@/vdb/graphql/api.js';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
-import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
+import { BulkAction } from '\@/vdb/framework/extension-api/types/index.js';
+import { ResultOf } from '\@/vdb/graphql/graphql.js';
+import { useExtendedListQuery } from '\@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import {
-    ColumnFiltersState,
-    ColumnSort,
-    SortingState,
-    Table
-} from '@tanstack/react-table';
+import { ColumnFiltersState, ColumnSort, SortingState, Table } from '@tanstack/react-table';
 import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
 import React from 'react';
 import { getColumnVisibility } from '../data-table/data-table-utils.js';
@@ -163,6 +156,8 @@ export const PaginatedListContext = React.createContext<PaginatedListContext | u
  *     },
  * });
  * ```
+ * @docsCategory hooks
+ * @since 3.4.0
  */
 export function usePaginatedList() {
     const context = React.useContext(PaginatedListContext);
@@ -179,6 +174,14 @@ export interface RowAction<T> {
 
 export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
 
+/**
+ * @description
+ * Props to configure the {@link PaginatedListDataTable} component.
+ *
+ * @docsCategory list-views
+ * @docsPage PaginatedListDataTable
+ * @since 3.4.0
+ */
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
@@ -218,6 +221,116 @@ export interface PaginatedListDataTableProps<
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
 
+/**
+ * @description
+ * A wrapper around the {@link DataTable} component, which automatically configures functionality common to
+ * list queries that implement the `PaginatedList` interface, which is the common way of representing lists
+ * of data in Vendure.
+ *
+ * Given a GraphQL query document node, the component will automatically configure the required columns
+ * with sorting & filtering functionality.
+ *
+ * The automatic features can be further customized and enhanced using the many options available in the props.
+ *
+ * @example
+ * ```tsx
+ * import { Money } from '\@/vdb/components/data-display/money.js';
+ * import { PaginatedListDataTable } from '\@/vdb/components/shared/paginated-list-data-table.js';
+ * import { Badge } from '\@/vdb/components/ui/badge.js';
+ * import { Button } from '\@/vdb/components/ui/button.js';
+ * import { Link } from '\@tanstack/react-router';
+ * import { ColumnFiltersState, SortingState } from '\@tanstack/react-table';
+ * import { useState } from 'react';
+ * import { customerOrderListDocument } from '../customers.graphql.js';
+ *
+ * interface CustomerOrderTableProps {
+ *     customerId: string;
+ * }
+ *
+ * export function CustomerOrderTable({ customerId }: Readonly<CustomerOrderTableProps>) {
+ *     const [page, setPage] = useState(1);
+ *     const [pageSize, setPageSize] = useState(10);
+ *     const [sorting, setSorting] = useState<SortingState>([{ id: 'orderPlacedAt', desc: true }]);
+ *     const [filters, setFilters] = useState<ColumnFiltersState>([]);
+ *
+ *     return (
+ *         <PaginatedListDataTable
+ *             listQuery={customerOrderListDocument}
+ *             transformVariables={variables => {
+ *                 return {
+ *                     ...variables,
+ *                     customerId,
+ *                 };
+ *             }}
+ *             defaultVisibility={{
+ *                 id: false,
+ *                 createdAt: false,
+ *                 updatedAt: false,
+ *                 type: false,
+ *                 currencyCode: false,
+ *                 total: false,
+ *             }}
+ *             customizeColumns={{
+ *                 total: {
+ *                     header: 'Total',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue();
+ *                         const currencyCode = row.original.currencyCode;
+ *                         return <Money value={value} currency={currencyCode} />;
+ *                     },
+ *                 },
+ *                 totalWithTax: {
+ *                     header: 'Total with Tax',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue();
+ *                         const currencyCode = row.original.currencyCode;
+ *                         return <Money value={value} currency={currencyCode} />;
+ *                     },
+ *                 },
+ *                 state: {
+ *                     header: 'State',
+ *                     cell: ({ cell }) => {
+ *                         const value = cell.getValue() as string;
+ *                         return <Badge variant="outline">{value}</Badge>;
+ *                     },
+ *                 },
+ *                 code: {
+ *                     header: 'Code',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue() as string;
+ *                         const id = row.original.id;
+ *                         return (
+ *                             <Button asChild variant="ghost">
+ *                                 <Link to={`/orders/${id}`}>{value}</Link>
+ *                             </Button>
+ *                         );
+ *                     },
+ *                 },
+ *             }}
+ *             page={page}
+ *             itemsPerPage={pageSize}
+ *             sorting={sorting}
+ *             columnFilters={filters}
+ *             onPageChange={(_, page, perPage) => {
+ *                 setPage(page);
+ *                 setPageSize(perPage);
+ *             }}
+ *             onSortChange={(_, sorting) => {
+ *                 setSorting(sorting);
+ *             }}
+ *             onFilterChange={(_, filters) => {
+ *                 setFilters(filters);
+ *             }}
+ *         />
+ *     );
+ * }
+ * ```
+ *
+ * @docsCategory list-views
+ * @docsPage PaginatedListDataTable
+ * @since 3.4.0
+ * @docsWeight 0
+ */
 export function PaginatedListDataTable<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
@@ -324,6 +437,7 @@ export function PaginatedListDataTable<
         fields,
         customizeColumns,
         rowActions,
+        bulkActions,
         deleteMutation,
         additionalColumns,
         defaultColumnOrder,
@@ -358,4 +472,3 @@ export function PaginatedListDataTable<
         </PaginatedListContext.Provider>
     );
 }
-

@@ -1,6 +1,6 @@
 {
     "name": "@vendure/sentry-plugin",
-    "version": "3.4.0",
+    "version": "3.4.3",
     "license": "GPL-3.0-or-later",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
     },
     "devDependencies": {
         "@sentry/node": "^7.106.1",
-        "@vendure/common": "3.4.0",
-        "@vendure/core": "3.4.0"
+        "@vendure/common": "3.4.3",
+        "@vendure/core": "3.4.3"
     }
 }

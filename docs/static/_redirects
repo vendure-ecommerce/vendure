@@ -20,3 +20,4 @@
 /plugins/plugin-examples                    /guides/developer-guide/plugins
 /plugins/writing-a-vendure-plugin           /guides/developer-guide/plugins
 /deployment/using-docker                    /guides/deployment/using-docker
+/guides/developer-guide/translateable      /guides/developer-guide/translatable

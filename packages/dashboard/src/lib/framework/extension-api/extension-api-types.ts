@@ -5,6 +5,7 @@ import {
     DashboardCustomFormComponents,
     DashboardDataTableExtensionDefinition,
     DashboardDetailFormExtensionDefinition,
+    DashboardHistoryEntryComponent,
     DashboardLoginExtensions,
     DashboardNavSectionDefinition,
     DashboardPageBlockDefinition,
@@ -14,11 +15,20 @@ import {
 
 /**
  * @description
- * **Status: Developer Preview**
+ * This is the main interface for defining _all_ extensions to the dashboard.
  *
- * This is used to define the routes, widgets, etc. that will be displayed in the dashboard.
+ * Every type of customisation of the dashboard can be defined here, including:
  *
- * @docsCategory extensions
+ * - Navigation (nav sections and routes)
+ * - Layout (action bar items and page blocks)
+ * - Widgets for the Insights page
+ * - Form components
+ * - Data tables
+ * - Detail forms
+ * - Login page customisation
+ *
+ * @docsCategory extensions-api
+ * @docsPage defineDashboardExtension
  * @since 3.3.0
  */
 export interface DashboardExtension {
@@ -73,4 +83,10 @@ export interface DashboardExtension {
      * Allows you to customize the login page with custom components.
      */
     login?: DashboardLoginExtensions;
+    /**
+     * @description
+     * Allows a custom component to be used to render a history entry item
+     * in the Order or Customer history lists.
+     */
+    historyEntries?: DashboardHistoryEntryComponent[];
 }

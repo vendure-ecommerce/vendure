@@ -10,6 +10,11 @@ export class SettingsStoreInput {
     value: any;
 }
 
+const ErrorMessage = {
+    permissions: 'Insufficient permissions to set settings store value',
+    readonly: 'Cannot modify readonly settings store field via API',
+};
+
 /**
  * @description
  * Resolvers for settings store operations in the Admin API.
@@ -20,7 +25,10 @@ export class SettingsStoreAdminResolver {
 
     @Query()
     async getSettingsStoreValue(@Ctx() ctx: RequestContext, @Args('key') key: string): Promise<any> {
-        return this.settingsStoreService.get(key, ctx);
+        if (!this.settingsStoreService.hasPermission(ctx, key)) {
+            return undefined;
+        }
+        return this.settingsStoreService.get(ctx, key);
     }
 
     @Query()
@@ -28,7 +36,13 @@ export class SettingsStoreAdminResolver {
         @Ctx() ctx: RequestContext,
         @Args('keys') keys: string[],
     ): Promise<Record<string, any>> {
-        return this.settingsStoreService.getMany(keys, ctx);
+        const permittedKeys = [];
+        for (const key of keys) {
+            if (this.settingsStoreService.hasPermission(ctx, key)) {
+                permittedKeys.push(key);
+            }
+        }
+        return this.settingsStoreService.getMany(ctx, permittedKeys);
     }
 
     @Mutation()
@@ -36,7 +50,21 @@ export class SettingsStoreAdminResolver {
         @Ctx() ctx: RequestContext,
         @Args('input') input: SettingsStoreInput,
     ): Promise<SetSettingsStoreValueResult> {
-        return this.settingsStoreService.set(input.key, input.value, ctx);
+        if (!this.settingsStoreService.hasPermission(ctx, input.key)) {
+            return {
+                key: input.key,
+                result: false,
+                error: ErrorMessage.permissions,
+            };
+        }
+        if (this.settingsStoreService.isReadonly(input.key)) {
+            return {
+                key: input.key,
+                result: false,
+                error: ErrorMessage.readonly,
+            };
+        }
+        return this.settingsStoreService.set(ctx, input.key, input.value);
     }
 
     @Mutation()
@@ -44,14 +72,27 @@ export class SettingsStoreAdminResolver {
         @Ctx() ctx: RequestContext,
         @Args('inputs') inputs: SettingsStoreInput[],
     ): Promise<SetSettingsStoreValueResult[]> {
-        const values = inputs.reduce(
-            (acc, input) => {
-                acc[input.key] = input.value;
-                return acc;
-            },
-            {} as Record<string, any>,
-        );
-
-        return this.settingsStoreService.setMany(values, ctx);
+        const results: SetSettingsStoreValueResult[] = [];
+        for (const input of inputs) {
+            const hasPermission = this.settingsStoreService.hasPermission(ctx, input.key);
+            const isWritable = !this.settingsStoreService.isReadonly(input.key);
+            if (!hasPermission) {
+                results.push({
+                    key: input.key,
+                    result: false,
+                    error: ErrorMessage.permissions,
+                });
+            } else if (!isWritable) {
+                results.push({
+                    key: input.key,
+                    result: false,
+                    error: ErrorMessage.readonly,
+                });
+            } else {
+                const result = await this.settingsStoreService.set(ctx, input.key, input.value);
+                results.push(result);
+            }
+        }
+        return results;
     }
 }

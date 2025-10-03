@@ -40,7 +40,7 @@ export class AverageOrderValueMetric implements MetricCalculation {
                 value: 0,
             };
         }
-        const total = data.orders.map(o => o.totalWithTax).reduce((_total, current) => _total + current);
+        const total = data.orders.map(o => o.totalWithTax).reduce((_total, current) => _total + current, 0);
         const average = Math.round(total / data.orders.length);
         return {
             label,

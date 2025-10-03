@@ -61,6 +61,7 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
                     ...(config.optimizeDeps?.include || []),
                     '@/components > recharts',
                     '@/components > react-dropzone',
+                    '@/components > @tiptap/react', // https://github.com/fawmi/vue-google-maps/issues/148#issuecomment-1235143844
                     '@vendure/common/lib/generated-types',
                 ],
             };

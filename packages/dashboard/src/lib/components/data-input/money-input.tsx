@@ -1,11 +1,29 @@
-import { DataInputComponentProps } from '@/vdb/framework/component-registry/component-registry.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AffixedInput } from './affixed-input.js';
 
-// Original component
-function MoneyInputInternal({ value, currency, onChange }: DataInputComponentProps) {
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+
+export interface MoneyInputProps extends DashboardFormComponentProps {
+    currency?: string;
+}
+
+/**
+ * @description
+ * A component for displaying a money value. The `currency` can be specified, but otherwise
+ * will be taken from the active channel's default currency.
+ *
+ * @docsCategory form-components
+ * @docsPage MoneyInput
+ */
+export function MoneyInput(props: Readonly<MoneyInputProps>) {
+    const { value, onChange, currency, ...rest } = props;
+    const { activeChannel } = useChannel();
+    const activeCurrency = currency ?? activeChannel?.defaultCurrencyCode;
+    const readOnly = isReadonlyField(props.fieldDef);
     const {
         settings: { displayLanguage, displayLocale },
     } = useUserSettings();
@@ -19,39 +37,43 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
 
     // Determine if the currency symbol should be a prefix based on locale
     const shouldPrefix = useMemo(() => {
-        if (!currency) return false;
+        if (!activeCurrency) {
+            return false;
+        }
         const locale = displayLocale || displayLanguage.replace(/_/g, '-');
         const parts = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
         const NaNString = parts.find(p => p.type === 'nan')?.value ?? 'NaN';
         const localised = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).format(undefined as any);
         return localised.indexOf(NaNString) > 0;
-    }, [currency, displayLocale, displayLanguage]);
+    }, [activeCurrency, displayLocale, displayLanguage]);
 
     // Get the currency symbol
     const currencySymbol = useMemo(() => {
-        if (!currency) return '';
+        if (!activeCurrency) return '';
         const locale = displayLocale || displayLanguage.replace(/_/g, '-');
         const parts = new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency,
+            currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
-        return parts.find(p => p.type === 'currency')?.value ?? currency;
-    }, [currency, displayLocale, displayLanguage]);
+        return parts.find(p => p.type === 'currency')?.value ?? activeCurrency;
+    }, [activeCurrency, displayLocale, displayLanguage]);
 
     return (
         <AffixedInput
             type="text"
             className="bg-background"
             value={displayValue}
+            disabled={readOnly}
+            {...rest}
             onChange={e => {
                 const inputValue = e.target.value;
                 // Allow empty input
@@ -77,8 +99,8 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
                     }
                 }
             }}
-            onBlur={e => {
-                const inputValue = e.target.value;
+            onBlur={() => {
+                const inputValue = displayValue;
                 if (inputValue === '') {
                     onChange(0);
                     setDisplayValue('0');
@@ -96,11 +118,4 @@ function MoneyInputInternal({ value, currency, onChange }: DataInputComponentPro
             suffix={!shouldPrefix ? currencySymbol : undefined}
         />
     );
-}
-
-// Wrapper that makes it compatible with DataInputComponent
-export function MoneyInput(props: { value: any; onChange: (value: any) => void; [key: string]: any }) {
-    const { value, onChange, ...rest } = props;
-    const currency = rest.currency || 'USD'; // Default currency if none provided
-    return <MoneyInputInternal value={value} currency={currency} onChange={onChange} />;
 }

@@ -148,8 +148,6 @@ defineDashboardExtension({
                     field: 'state',
                     component: ReviewStateSelect,
                 },
-            ],
-            displays: [
                 {
                     blockId: 'main-form',
                     field: 'response',

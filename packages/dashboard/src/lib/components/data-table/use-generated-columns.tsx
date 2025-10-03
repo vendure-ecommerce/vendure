@@ -1,5 +1,11 @@
-import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
-import { FieldInfo, getTypeFieldInfo, getOperationVariablesFields } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useAllBulkActions } from '@/vdb/components/data-table/use-all-bulk-actions.js';
+import { DisplayComponent } from '@/vdb/framework/component-registry/display-component.js';
+import {
+    FieldInfo,
+    getOperationVariablesFields,
+    getTypeFieldInfo,
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -47,6 +53,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     fields,
     customizeColumns,
     rowActions,
+    bulkActions,
     deleteMutation,
     additionalColumns,
     defaultColumnOrder,
@@ -58,6 +65,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     fields: FieldInfo[];
     customizeColumns?: CustomizeColumnConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    bulkActions?: BulkAction[];
     deleteMutation?: TypedDocumentNode<any, any>;
     additionalColumns?: AdditionalColumns<T>;
     defaultColumnOrder?: Array<string | number | symbol>;
@@ -67,6 +75,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     enableSorting?: boolean;
 }>) {
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
+    const allBulkActions = useAllBulkActions(bulkActions ?? []);
 
     const { columns, customFieldColumnNames } = useMemo(() => {
         const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
@@ -165,8 +174,8 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             finalColumns = [...orderedColumns, ...remainingColumns];
         }
 
-        if (includeActionsColumn && (rowActions || deleteMutation)) {
-            const rowActionColumn = getRowActions(rowActions, deleteMutation);
+        if (includeActionsColumn && (rowActions || deleteMutation || bulkActions)) {
+            const rowActionColumn = getRowActions(rowActions, deleteMutation, allBulkActions);
             if (rowActionColumn) {
                 finalColumns.push(rowActionColumn);
             }
@@ -208,13 +217,14 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 function getRowActions(
     rowActions?: RowAction<any>[],
     deleteMutation?: TypedDocumentNode<any, any>,
+    bulkActions?: BulkAction[],
 ): AccessorKeyColumnDef<any> | undefined {
     return {
         id: 'actions',
         accessorKey: 'actions',
         header: () => <Trans>Actions</Trans>,
         enableColumnFilter: false,
-        cell: ({ row }) => {
+        cell: ({ row, table }) => {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -230,6 +240,9 @@ function getRowActions(
                             >
                                 {action.label}
                             </DropdownMenuItem>
+                        ))}
+                        {bulkActions?.map((action, index) => (
+                            <action.component key={`bulk-action-${index}`} selection={[row]} table={table} />
                         ))}
                         {deleteMutation && (
                             <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
@@ -250,14 +263,21 @@ function DeleteMutationRowAction({
 }>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { i18n } = useLingui();
-    
+
     // Inspect the mutation variables to determine if it expects 'id' or 'ids'
     const mutationVariables = getOperationVariablesFields(deleteMutation);
     const hasIdsParameter = mutationVariables.some(field => field.name === 'ids');
-    
+
     const { mutate: deleteMutationFn } = useMutation({
         mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } | { result: 'DELETED' | 'NOT_DELETED'; message: string }[] }) => {
+        onSuccess: (result: {
+            [key: string]:
+                | { result: 'DELETED' | 'NOT_DELETED'; message: string }
+                | {
+                      result: 'DELETED' | 'NOT_DELETED';
+                      message: string;
+                  }[];
+        }) => {
             const unwrappedResult = Object.values(result)[0];
             // Handle both single result and array of results
             const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;

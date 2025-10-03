@@ -4,9 +4,11 @@ import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
 const API_URL =
-    uiConfig.api.host +
-    (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '') +
+    (uiConfig.api.host !== "auto" ? uiConfig.api.host : `${window.location.protocol}//${window.location.hostname}`) +
+    `:${(uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port)}` +
     `/${uiConfig.api.adminApiPath}`;
+
+export const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
 
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;
@@ -15,7 +17,7 @@ const awesomeClient = new AwesomeGraphQLClient({
     endpoint: API_URL,
     fetch: async (url: string, options: RequestInit = {}) => {
         // Get the active channel token from localStorage
-        const channelToken = localStorage.getItem('vendure-selected-channel-token');
+        const channelToken = localStorage.getItem(SELECTED_CHANNEL_TOKEN_KEY);
         const headers = new Headers(options.headers);
 
         if (channelToken) {

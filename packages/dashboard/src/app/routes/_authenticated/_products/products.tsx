@@ -13,7 +13,7 @@ import {
     DuplicateProductsBulkAction,
     RemoveProductsFromChannelBulkAction,
 } from './components/product-bulk-actions.js';
-import { deleteProductDocument, productListDocument } from './products.graphql.js';
+import { productListDocument } from './products.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -25,7 +25,6 @@ function ProductListPage() {
         <ListPage
             pageId="product-list"
             listQuery={productListDocument}
-            deleteMutation={deleteProductDocument}
             title="Products"
             customizeColumns={{
                 name: {

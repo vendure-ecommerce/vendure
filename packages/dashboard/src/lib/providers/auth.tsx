@@ -6,21 +6,54 @@ import * as React from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Provides information about the current user & their authentication & authorization
+ * status.
  *
  * @docsCategory hooks
  * @docsPage useAuth
- * @docsWeight 0
  * @since 3.3.0
  */
 export interface AuthContext {
+    /**
+     * @description
+     * The status of the authentication.
+     */
     status: 'initial' | 'authenticated' | 'verifying' | 'unauthenticated';
+    /**
+     * @description
+     * The error message if the authentication fails.
+     */
     authenticationError?: string;
+    /**
+     * @description
+     * Whether the user is authenticated.
+     */
     isAuthenticated: boolean;
+    /**
+     * @description
+     * The function to login the user.
+     */
     login: (username: string, password: string, onSuccess?: () => void) => void;
+    /**
+     * @description
+     * The function to logout the user.
+     */
     logout: (onSuccess?: () => void) => Promise<void>;
+    /**
+     * @description
+     * The user object.
+     */
     user: ResultOf<typeof CurrentUserQuery>['activeAdministrator'] | undefined;
+    /**
+     * @description
+     * The channels object.
+     */
     channels: NonNullable<ResultOf<typeof CurrentUserQuery>['me']>['channels'] | undefined;
+    /**
+     * @description
+     * The function to refresh the current user.
+     */
+    refreshCurrentUser: () => void;
 }
 
 const LoginMutation = graphql(`
@@ -174,6 +207,12 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         }
     }, [isLoading, currentUserData, currentUserError, status, isLoginLogoutInProgress]);
 
+    const refreshCurrentUser = () => {
+        queryClient.invalidateQueries({
+            queryKey: ['currentUser'],
+        });
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -184,6 +223,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                 channels: currentUserData?.me?.channels,
                 login,
                 logout,
+                refreshCurrentUser,
             }}
         >
             {children}
