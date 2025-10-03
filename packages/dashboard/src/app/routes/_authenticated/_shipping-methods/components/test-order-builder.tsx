@@ -7,6 +7,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/vdb/compone
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { LS_KEY_SHIPPING_TEST_ORDER } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans } from '@lingui/react/macro';
@@ -38,7 +39,7 @@ export function TestOrderBuilder({ onOrderLinesChange }: Readonly<TestOrderBuild
     const { activeChannel } = useChannel();
     const [lines, setLines] = useState<TestOrderLine[]>(() => {
         try {
-            const stored = localStorage.getItem('shippingTestOrder');
+            const stored = localStorage.getItem(LS_KEY_SHIPPING_TEST_ORDER);
             return stored ? JSON.parse(stored) : [];
         } catch {
             return [];
@@ -51,7 +52,7 @@ export function TestOrderBuilder({ onOrderLinesChange }: Readonly<TestOrderBuild
 
     useEffect(() => {
         try {
-            localStorage.setItem('shippingTestOrder', JSON.stringify(lines));
+            localStorage.setItem(LS_KEY_SHIPPING_TEST_ORDER, JSON.stringify(lines));
         } catch {
             // Ignore localStorage errors
         }

@@ -1,4 +1,5 @@
-import { api, SELECTED_CHANNEL_TOKEN_KEY } from '@/vdb/graphql/api.js';
+import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
+import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -170,7 +171,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     // Clear all cached queries to prevent stale data
                     queryClient.clear();
                     // Clear selected channel from localStorage
-                    localStorage.removeItem(SELECTED_CHANNEL_TOKEN_KEY);
+                    localStorage.removeItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
                     setStatus('unauthenticated');
                     setIsLoginLogoutInProgress(false);
                     onLogoutSuccess?.();

@@ -3,6 +3,15 @@ export const AUTHENTICATED_ROUTE_PREFIX = '/_authenticated';
 export const DEFAULT_CHANNEL_CODE = '__default_channel__';
 export const SUPER_ADMIN_ROLE_CODE = '__super_admin_role__';
 export const CUSTOMER_ROLE_CODE = '__customer_role__';
+
+/**
+ * Local storage keys
+ */
+export const LS_KEY_USER_SETTINGS = 'vendure-user-settings';
+export const LS_KEY_SELECTED_CHANNEL_TOKEN = 'vendure-selected-channel-token';
+export const LS_KEY_SHIPPING_TEST_ORDER = 'vendure-shipping-test-order';
+export const LS_KEY_SHIPPING_TEST_ADDRESS = 'vendure-shipping-test-address';
+
 /**
  * This is copied from the generated types from @vendure/common/lib/generated-types.d.ts
  * It is used to provide a list of available currency codes for the user to select from.

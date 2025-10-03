@@ -1,3 +1,4 @@
+import { LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import React, { createContext, useEffect, useRef, useState } from 'react';
@@ -69,7 +70,6 @@ export interface UserSettingsContextType {
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'vendure-user-settings';
 const SETTINGS_STORE_KEY = 'vendure.dashboard.userSettings';
 
 interface UserSettingsProviderProps {
@@ -81,7 +81,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     // Load settings from localStorage or use defaults
     const loadSettings = (): UserSettings => {
         try {
-            const storedSettings = localStorage.getItem(STORAGE_KEY);
+            const storedSettings = localStorage.getItem(LS_KEY_USER_SETTINGS);
             if (storedSettings) {
                 return { ...defaultSettings, ...JSON.parse(storedSettings) };
             }
@@ -105,10 +105,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         error,
     } = useQuery({
         queryKey: ['user-settings', SETTINGS_STORE_KEY],
-        queryFn: () => {
-            console.log('runnign query, settingsStoreAvailable:', settingsStoreIsAvailable);
-            return api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY });
-        },
+        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY }),
         retry: false,
         staleTime: 0,
         enabled: settingsStoreIsAvailable,
@@ -169,7 +166,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     // Save settings to localStorage whenever they change
     useEffect(() => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            localStorage.setItem(LS_KEY_USER_SETTINGS, JSON.stringify(settings));
         } catch (e) {
             console.error('Failed to save user settings to localStorage', e);
         }

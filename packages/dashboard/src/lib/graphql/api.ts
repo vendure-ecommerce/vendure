@@ -1,3 +1,4 @@
+import { LS_KEY_SELECTED_CHANNEL_TOKEN, LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
@@ -12,8 +13,6 @@ const API_URL =
     `:${uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port}` +
     `/${uiConfig.api.adminApiPath}`;
 
-export const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
-
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;
 
@@ -21,7 +20,7 @@ const awesomeClient = new AwesomeGraphQLClient({
     endpoint: API_URL,
     fetch: async (url: string, options: RequestInit = {}) => {
         // Get the active channel token from localStorage
-        const channelToken = localStorage.getItem(SELECTED_CHANNEL_TOKEN_KEY);
+        const channelToken = localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
         const headers = new Headers(options.headers);
 
         if (channelToken) {
@@ -31,7 +30,7 @@ const awesomeClient = new AwesomeGraphQLClient({
         // Get the content language from user settings and add as query parameter
         let finalUrl = url;
         try {
-            const userSettings = localStorage.getItem('vendure-user-settings');
+            const userSettings = localStorage.getItem(LS_KEY_USER_SETTINGS);
             if (userSettings) {
                 const settings = JSON.parse(userSettings);
                 const contentLanguage = settings.contentLanguage;
