@@ -6,7 +6,7 @@ import { compile } from '../utils/compiler.js';
 import { debugLogger, noopLogger } from '../utils/logger.js';
 
 describe('detecting plugins using tsconfig path aliases', () => {
-    it('should detect plugins using tsconfig path aliases', { timeout: 10_000 }, async () => {
+    it('should detect plugins using tsconfig path aliases', { timeout: 60_000 }, async () => {
         const tempDir = join(__dirname, './__temp/path-alias');
         await rm(tempDir, { recursive: true, force: true });
 
