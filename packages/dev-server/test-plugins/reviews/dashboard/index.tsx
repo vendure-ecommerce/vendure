@@ -1,10 +1,4 @@
-import {
-    Button,
-    DataTableBulkActionItem,
-    defineDashboardExtension,
-    LogoMark,
-    usePage,
-} from '@vendure/dashboard';
+import { Button, DataTableBulkActionItem, defineDashboardExtension, usePage } from '@vendure/dashboard';
 import { InfoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,26 +18,12 @@ import { routeWithoutAuth } from './route-without-auth';
 
 defineDashboardExtension({
     login: {
-        logo: {
-            component: () => (
-                <div className="text-red-500 italic">
-                    <LogoMark className="text-red-500 h-6 w-auto" />
-                </div>
-            ),
-        },
         afterForm: {
             component: () => (
                 <div>
                     <Button variant="secondary" className="w-full">
                         Login with Vendure ID
                     </Button>
-                </div>
-            ),
-        },
-        loginImage: {
-            component: () => (
-                <div className="h-full w-full bg-red-500 flex items-center justify-center text-white text-2xl font-bold">
-                    Custom Login Image
                 </div>
             ),
         },
