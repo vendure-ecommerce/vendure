@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useLocalFormat
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/hooks/use-local-format.ts" sourceLine="26" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/hooks/use-local-format.ts" sourceLine="27" packageName="@vendure/dashboard" />
 
 This hook is used to format numbers and currencies using the configured language and
 locale of the dashboard app.
