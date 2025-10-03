@@ -33,11 +33,7 @@ export function useSavedViews() {
     const globalViewsKey = 'vendure.dashboard.globalSavedViews';
 
     // Query for user views
-    const {
-        data: userViewsData,
-        isLoading: userViewsLoading,
-        error: userViewsError,
-    } = useQuery({
+    const { data: userViewsData, isLoading: userViewsLoading } = useQuery({
         queryKey: ['saved-views-user', pageId, blockId],
         queryFn: async () => {
             const result = await api.query(getSettingsStoreValueDocument, { key: userViewsKey });
@@ -49,11 +45,7 @@ export function useSavedViews() {
     });
 
     // Query for global views
-    const {
-        data: globalViewsData,
-        isLoading: globalViewsLoading,
-        error: globalViewsError,
-    } = useQuery({
+    const { data: globalViewsData, isLoading: globalViewsLoading } = useQuery({
         queryKey: ['saved-views-global', pageId, blockId],
         queryFn: async () => {
             const result = await api.query(getSettingsStoreValueDocument, { key: globalViewsKey });

@@ -155,11 +155,11 @@
                     if (data.mode === 'vite') {
                         statusElement.textContent = 'Vite dev server detected! Refreshing...';
                         statusElement.style.color = '#4ade80';
-                        setTimeout(() => window.location.reload(), 500);
+                        setTimeout(() => globalThis.location.reload(), 500);
                     } else if (data.mode === 'built') {
                         statusElement.textContent = 'Built dashboard detected! Refreshing...';
                         statusElement.style.color = '#4ade80';
-                        setTimeout(() => window.location.reload(), 500);
+                        setTimeout(() => globalThis.location.reload(), 500);
                     } else {
                         statusElement.textContent = 'Waiting for dashboard to build or dev server to start...';
                         statusElement.style.color = '#666';
@@ -178,7 +178,7 @@
         pollStatus();
 
         // Clean up interval when page unloads
-        window.addEventListener('beforeunload', () => {
+        globalThis.addEventListener('beforeunload', () => {
             if (pollInterval) {
                 clearInterval(pollInterval);
             }

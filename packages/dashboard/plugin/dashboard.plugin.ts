@@ -11,9 +11,9 @@ import {
 } from '@vendure/core';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import * as fs from 'fs';
-import * as http from 'http';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as http from 'node:http';
+import * as path from 'node:path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
@@ -255,7 +255,9 @@ export class DashboardPlugin implements NestModule {
                 res.setHeader('Content-Type', 'text/html');
                 res.send(defaultHtml);
             } catch (error) {
-                res.status(500).send('Unable to load default page');
+                res.status(500).send(
+                    `Unable to load default page: ${error instanceof Error ? error.message : String(error)}`,
+                );
             }
         });
 
@@ -308,14 +310,16 @@ export class DashboardPlugin implements NestModule {
                 try {
                     const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
                     const hasBuiltFiles = this.checkBuiltFiles(appDir);
-
+                    const mode = isViteRunning ? 'vite' : hasBuiltFiles ? 'built' : 'default';
                     res.json({
                         viteRunning: isViteRunning,
                         hasBuiltFiles,
-                        mode: isViteRunning ? 'vite' : hasBuiltFiles ? 'built' : 'default',
+                        mode,
                     });
                 } catch (error) {
-                    res.status(500).json({ error: 'Status check failed' });
+                    res.status(500).json({
+                        error: `Status check failed: ${error instanceof Error ? error.message : String(error)}`,
+                    });
                 }
             },
         );
@@ -327,11 +331,8 @@ export class DashboardPlugin implements NestModule {
                 const hasBuiltFiles = this.checkBuiltFiles(appDir);
 
                 // Determine new mode
-                const newMode: 'vite' | 'built' | 'default' = isViteRunning
-                    ? 'vite'
-                    : hasBuiltFiles
-                      ? 'built'
-                      : 'default';
+                const staticMode = hasBuiltFiles ? 'built' : 'default';
+                const newMode: 'vite' | 'built' | 'default' = isViteRunning ? 'vite' : staticMode;
 
                 // Log mode change
                 if (currentMode !== newMode) {

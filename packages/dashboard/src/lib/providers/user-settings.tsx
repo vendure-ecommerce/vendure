@@ -114,13 +114,15 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         enabled: settingsStoreIsAvailable,
     });
 
-    if (
-        settingsStoreIsAvailable &&
-        error?.message.includes('Settings store field not registered: vendure.dashboard.userSettings')
-    ) {
-        logSettingsStoreWarning();
-        setSettingsStoreIsAvailable(false);
-    }
+    useEffect(() => {
+        if (
+            settingsStoreIsAvailable &&
+            error?.message.includes('Settings store field not registered: vendure.dashboard.userSettings')
+        ) {
+            logSettingsStoreWarning();
+            setSettingsStoreIsAvailable(false);
+        }
+    }, [settingsStoreIsAvailable, error]);
 
     // Mutation to save settings to server
     const saveToServerMutation = useMutation({
