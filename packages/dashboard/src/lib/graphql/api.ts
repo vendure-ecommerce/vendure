@@ -1,4 +1,8 @@
-import { LS_KEY_SELECTED_CHANNEL_TOKEN, LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import {
+    LS_KEY_SELECTED_CHANNEL_TOKEN,
+    LS_KEY_SESSION_TOKEN,
+    LS_KEY_USER_SETTINGS,
+} from '@/vdb/constants.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
@@ -21,8 +25,12 @@ const awesomeClient = new AwesomeGraphQLClient({
     fetch: async (url: string, options: RequestInit = {}) => {
         // Get the active channel token from localStorage
         const channelToken = localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+        const sessionToken = localStorage.getItem(LS_KEY_SESSION_TOKEN);
         const headers = new Headers(options.headers);
 
+        if (sessionToken) {
+            headers.set('Authorization', `Bearer ${sessionToken}`);
+        }
         if (channelToken) {
             headers.set(uiConfig.api.channelTokenKey, channelToken);
         }
@@ -51,6 +59,12 @@ const awesomeClient = new AwesomeGraphQLClient({
             headers,
             credentials: 'include',
             mode: 'cors',
+        }).then(res => {
+            const authToken = res.headers.get('vendure-auth-token');
+            if (authToken) {
+                localStorage.setItem(LS_KEY_SESSION_TOKEN, authToken);
+            }
+            return res;
         });
     },
 });

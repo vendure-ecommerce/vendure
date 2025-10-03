@@ -7,6 +7,7 @@ export const CUSTOMER_ROLE_CODE = '__customer_role__';
 /**
  * Local storage keys
  */
+export const LS_KEY_SESSION_TOKEN = 'vendure-session-token';
 export const LS_KEY_USER_SETTINGS = 'vendure-user-settings';
 export const LS_KEY_SELECTED_CHANNEL_TOKEN = 'vendure-selected-channel-token';
 export const LS_KEY_SHIPPING_TEST_ORDER = 'vendure-shipping-test-order';
