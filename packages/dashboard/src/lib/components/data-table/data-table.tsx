@@ -243,11 +243,11 @@ export function DataTable<TData>({
 
                 {(pageId && onFilterChange && globalViews.length > 0) ||
                 columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
-                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
+                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2 @container">
                         <div className="flex items-center">
                             {pageId && onFilterChange && <GlobalViewsBar />}
                         </div>
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-1 flex-wrap items-center">
                             {columnFilters
                                 .filter(f => !facetedFilters?.[f.id])
                                 .map(f => {

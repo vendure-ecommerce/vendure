@@ -19,18 +19,21 @@ export function DataTableFilterBadge({
     return (
         <Badge
             key={filter.id}
-            className="flex gap-1 items-center font-mono cursor-pointer "
+            className="flex gap-1 flex-wrap items-center font-mono cursor-pointer"
             variant="outline"
             onClick={() => onRemove(filter)}
         >
-            <Filter size="12" className="opacity-50" />
-            <div>{filter.id}</div>
-            <div className="text-muted-foreground">
+            <Filter size="12" className="opacity-50 flex-shrink-0" />
+            <div className="@xs:overflow-hidden @xs:text-ellipsis @xs:whitespace-nowrap" title={filter.id}>
+                {filter.id}
+            </div>
+            <div className="text-muted-foreground flex-shrink-0">
                 <HumanReadableOperator operator={operator as Operator} mode="short" />
             </div>
-            <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
-
-            <XIcon className="h-4" />
+            <div className="@xs:overflow-hidden @xs:text-ellipsis @xs:whitespace-nowrap flex flex-col @xl:flex-row @2xl:gap-1">
+                <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
+            </div>
+            <XIcon className="h-4 flex-shrink-0" />
         </Badge>
     );
 }
@@ -65,7 +68,11 @@ function FilterValue({
         );
     }
     if (typeof value === 'string' && isDateIsoString(value)) {
-        return <div>{formatDate(value, { dateStyle: 'short', timeStyle: 'short' })}</div>;
+        return (
+            <div title={formatDate(value, { dateStyle: 'short', timeStyle: 'long' })}>
+                {formatDate(value, { dateStyle: 'short' })}
+            </div>
+        );
     }
     if (typeof value === 'boolean') {
         return <div>{value ? 'true' : 'false'}</div>;
