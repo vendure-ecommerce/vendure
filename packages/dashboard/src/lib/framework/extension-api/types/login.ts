@@ -70,7 +70,7 @@ export interface LoginImageExtension {
  *
  * @docsCategory extensions
  * @docsPage Login
- * @since 3.4.3
+ * @since 3.4.4
  */
 export interface LoginFormOverrideExtension {
     /**
