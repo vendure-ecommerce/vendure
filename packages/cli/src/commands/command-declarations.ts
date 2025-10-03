@@ -1,5 +1,13 @@
 import { CliCommandDefinition } from '../shared/cli-command-definition';
 
+import { addApiExtension } from './add/api-extension/add-api-extension';
+import { addCodegen } from './add/codegen/add-codegen';
+import { addEntity } from './add/entity/add-entity';
+import { addJobQueue } from './add/job-queue/add-job-queue';
+import { createNewPlugin } from './add/plugin/create-new-plugin';
+import { addService } from './add/service/add-service';
+import { addUiExtensions } from './add/ui-extensions/add-ui-extensions';
+
 export const cliCommands: CliCommandDefinition[] = [
     {
         name: 'add',
@@ -15,12 +23,18 @@ export const cliCommands: CliCommandDefinition[] = [
                 long: '--plugin <name>',
                 description: 'Create a new plugin with the specified name',
                 required: false,
+                interactiveId: 'create-new-plugin',
+                interactiveCategory: 'Plugin',
+                interactiveFn: createNewPlugin,
             },
             {
                 short: '-e',
                 long: '--entity <name>',
-                description: 'Add a new entity with the specified class name',
+                description: 'Add a new entity to a plugin',
                 required: false,
+                interactiveId: 'add-entity',
+                interactiveCategory: 'Plugin: Entity',
+                interactiveFn: addEntity,
                 subOptions: [
                     {
                         long: '--selected-plugin <name>',
@@ -42,8 +56,11 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-s',
                 long: '--service <name>',
-                description: 'Add a new service with the specified class name',
+                description: 'Add a new service to a plugin',
                 required: false,
+                interactiveId: 'add-service',
+                interactiveCategory: 'Plugin: Service',
+                interactiveFn: addService,
                 subOptions: [
                     {
                         long: '--selected-plugin <name>',
@@ -66,8 +83,11 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-j',
                 long: '--job-queue [plugin]',
-                description: 'Add job-queue support to the specified plugin',
+                description: 'Add job queue support to a plugin',
                 required: false,
+                interactiveId: 'add-job-queue',
+                interactiveCategory: 'Plugin: Job Queue',
+                interactiveFn: addJobQueue,
                 subOptions: [
                     {
                         long: '--name <name>',
@@ -84,14 +104,20 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-c',
                 long: '--codegen [plugin]',
-                description: 'Add GraphQL codegen configuration to the specified plugin',
+                description: 'Set up GraphQL code generation',
                 required: false,
+                interactiveId: 'add-codegen',
+                interactiveCategory: 'Project: Codegen',
+                interactiveFn: addCodegen,
             },
             {
                 short: '-a',
                 long: '--api-extension [plugin]',
-                description: 'Add an API extension scaffold to the specified plugin',
+                description: 'Add an API extension to a plugin',
                 required: false,
+                interactiveId: 'add-api-extension',
+                interactiveCategory: 'Plugin: API',
+                interactiveFn: addApiExtension,
                 subOptions: [
                     {
                         long: '--query-name <name>',
@@ -113,8 +139,11 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-u',
                 long: '--ui-extensions [plugin]',
-                description: 'Add Admin UI extensions setup to the specified plugin',
+                description: 'Add UI extensions to a plugin',
                 required: false,
+                interactiveId: 'add-ui-extensions',
+                interactiveCategory: 'Plugin: UI',
+                interactiveFn: addUiExtensions,
             },
         ],
         action: async options => {
