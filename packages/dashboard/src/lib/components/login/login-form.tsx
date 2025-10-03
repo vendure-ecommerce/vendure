@@ -102,12 +102,12 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                             Please wait
                                         </>
                                     )}
-                                    {!isVerifying && <Trans>Continue with Email</Trans>}
+                                    {!isVerifying && <Trans>Sign in</Trans>}
                                 </Button>
                                 <div className="text-center text-sm">
-                                    <span className="text-muted-foreground">Forgot password? - </span>
+                                    <span className="text-muted-foreground mr-0.5">Forgot password?</span>
                                     <a tabIndex={-1} href="#" className="text-primary hover:underline">
-                                        Reset
+                                        Request reset
                                     </a>
                                 </div>
                             </div>
