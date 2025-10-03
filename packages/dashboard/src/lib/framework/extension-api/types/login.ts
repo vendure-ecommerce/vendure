@@ -66,6 +66,22 @@ export interface LoginImageExtension {
 
 /**
  * @description
+ * Defines a custom login form component that completely overrides the default form.
+ *
+ * @docsCategory extensions
+ * @docsPage Login
+ * @since 3.4.4
+ */
+export interface LoginFormOverrideExtension {
+    /**
+     * @description
+     * A React component that will completely replace the default login form.
+     */
+    component: React.ComponentType;
+}
+
+/**
+ * @description
  * Defines all available login page extensions.
  *
  * @docsCategory extensions-api
@@ -94,4 +110,9 @@ export interface DashboardLoginExtensions {
      * Custom login image component to replace the default image panel.
      */
     loginImage?: LoginImageExtension;
+    /**
+     * @description
+     * Custom login form component that completely overrides the default form.
+     */
+    overrideForm?: LoginFormOverrideExtension;
 }

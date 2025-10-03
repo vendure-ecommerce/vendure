@@ -1,5 +1,6 @@
 import { LoginForm } from '@/vdb/components/login/login-form.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
+import { useLoginExtensions } from '@/vdb/framework/extension-api/use-login-extensions.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import { z } from 'zod';
 
@@ -22,6 +23,7 @@ function LoginPage() {
     const isLoading = useRouterState({ select: s => s.isLoading });
     const navigate = Route.useNavigate();
     const search = Route.useSearch();
+    const loginExtensions = useLoginExtensions();
 
     const onFormSubmit = (username: string, password: string) => {
         auth.login(username, password, () => {
@@ -34,6 +36,11 @@ function LoginPage() {
     }
 
     const isVerifying = isLoading || auth.status === 'verifying';
+
+    // If overrideForm is provided, use it instead of the default LoginForm
+    if (loginExtensions.overrideForm) {
+        return (<loginExtensions.overrideForm.component />);
+    }
 
     return (
         <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
