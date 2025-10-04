@@ -1,4 +1,5 @@
 import { DeletionResult, LanguageCode } from '@vendure/common/lib/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -17,7 +18,12 @@ import {
 } from './graphql/generated-e2e-admin-types';
 
 describe('ApiKey resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig());
+    const config = testConfig();
+    config.authOptions.tokenMethod = ['cookie', 'bearer', 'api-key'];
+
+    const { server, adminClient } = createTestEnvironment(config);
+    const adminApiUrl = `http://localhost:${config.apiOptions.port}/${String(config.apiOptions.adminApiPath)}`;
+
     let createdApiKeyId: string;
 
     beforeAll(async () => {
@@ -95,6 +101,60 @@ describe('ApiKey resolver', () => {
         });
         expect(result.rotateApiKey.apiKey).toBeDefined();
         expect(apiKey.createApiKey.apiKey).not.toBe(result.rotateApiKey.apiKey);
+    });
+
+    it('API-Key usage life cycle: Read, Rotate, Delete', async ({ expect }) => {
+        const { apiKey, entityId } = (
+            await adminClient.query(CreateApiKeyDocument, {
+                input: {
+                    roleIds: ['1'],
+                    translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
+                },
+            })
+        ).createApiKey;
+
+        type _fetchResponse =
+            | {
+                  data?: { administrator?: { user?: { identifier?: string } } };
+                  errors?: any[];
+              }
+            | undefined;
+
+        const fetchConfig = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [String(config.authOptions.apiKeyHeaderKey)]: apiKey,
+            },
+            body: '{ "query": "query { administrator(id: 1) { user { identifier } } }" }',
+        };
+
+        // (1/4): Successfully read
+
+        const readOk01 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
+        expect(readOk01?.data?.administrator?.user?.identifier).toBe(SUPER_ADMIN_USER_IDENTIFIER);
+
+        // (2/4): Fail to read due to rotation of key
+
+        const rotate = await adminClient.query(RotateApiKeyDocument, { input: { id: entityId } });
+        const readErr01 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
+        expect(readErr01?.errors).toBeDefined();
+        expect(readErr01?.data?.administrator?.user?.identifier).toBeUndefined();
+
+        // (3/4): Successfully read via rotated key
+
+        fetchConfig.headers[String(config.authOptions.apiKeyHeaderKey)] = rotate.rotateApiKey.apiKey;
+        const readOk02 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
+        expect(readOk02?.data?.administrator?.user?.identifier).toBe(SUPER_ADMIN_USER_IDENTIFIER);
+
+        // (4/4): Fail to read due to deletion
+
+        const deletion = await adminClient.query(DeleteApiKeyDocument, { input: { id: entityId } });
+        expect(deletion.deleteApiKey.result).toBe(DeletionResult.DELETED);
+
+        const readErr02 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
+        expect(readErr02?.errors).toBeDefined();
+        expect(readErr02?.data?.administrator?.user?.identifier).toBeUndefined();
     });
 });
 
