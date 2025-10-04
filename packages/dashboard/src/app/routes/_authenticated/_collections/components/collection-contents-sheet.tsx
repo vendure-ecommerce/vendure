@@ -7,7 +7,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/vdb/components/ui/sheet.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { CollectionContentsTable } from './collection-contents-table.js';
 

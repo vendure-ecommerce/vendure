@@ -22,7 +22,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -53,7 +53,7 @@ function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -91,9 +91,7 @@ function CollectionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity ? 'Successfully created collection' : 'Successfully updated collection',
-                ),
+                creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -101,7 +99,7 @@ function CollectionDetailPage() {
             }
         },
         onError: err => {
-            toast(i18n.t(creatingNewEntity ? 'Failed to create collection' : 'Failed to update collection'), {
+            toast(creatingNewEntity ? t`Failed to create collection` : t`Failed to update collection`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

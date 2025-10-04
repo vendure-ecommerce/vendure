@@ -5,7 +5,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
@@ -19,12 +19,13 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
 });
 
 function TaxRateListPage() {
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="tax-rate-list"
             listQuery={taxRateListQuery}
             route={Route}
-            title="Tax Rates"
+            title={<Trans>Tax Rates</Trans>}
             defaultVisibility={{
                 name: true,
                 enabled: true,
@@ -43,14 +44,14 @@ function TaxRateListPage() {
             }}
             facetedFilters={{
                 enabled: {
-                    title: 'Enabled',
+                    title: t`Enabled`,
                     options: [
-                        { label: 'Enabled', value: true },
-                        { label: 'Disabled', value: false },
+                        { label: t`Enabled`, value: true },
+                        { label: t`Disabled`, value: false },
                     ],
                 },
                 category: {
-                    title: 'Category',
+                    title: t`Category`,
                     optionsFn: async () => {
                         const { taxCategories } = await api.query(taxCategoryListQuery);
                         return taxCategories.items.map(category => ({
@@ -60,7 +61,7 @@ function TaxRateListPage() {
                     },
                 },
                 zone: {
-                    title: 'Zone',
+                    title: t`Zone`,
                     optionsFn: async () => {
                         const { zones } = await api.query(zoneListQuery);
                         return zones.items.map(zone => ({
@@ -72,23 +73,18 @@ function TaxRateListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: 'Enabled',
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
                 category: {
-                    header: 'Category',
                     cell: ({ row }) => row.original.category?.name,
                 },
                 zone: {
-                    header: 'Zone',
                     cell: ({ row }) => row.original.zone?.name,
                 },
                 value: {
-                    header: 'Value',
                     cell: ({ row }) => `${row.original.value}%`,
                 },
             }}

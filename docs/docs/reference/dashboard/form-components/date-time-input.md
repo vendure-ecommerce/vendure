@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DateTimeInput
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/datetime-input.tsx" sourceLine="22" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/datetime-input.tsx" sourceLine="41" packageName="@vendure/dashboard" />
 
 A component for selecting a date and time.
 

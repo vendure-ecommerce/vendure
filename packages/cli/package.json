@@ -1,6 +1,6 @@
 {
     "name": "@vendure/cli",
-    "version": "3.4.2",
+    "version": "3.4.3",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -37,20 +37,20 @@
     ],
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "3.4.2",
+        "@vendure/common": "3.4.3",
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
         "dotenv": "^16.4.5",
         "fs-extra": "^11.2.0",
         "picocolors": "^1.0.0",
-        "strip-json-comments": "^5.0.2",
+        "strip-json-comments": "^5.0.3",
         "ts-morph": "^21.0.1",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
-        "@vendure/core": "3.4.2",
-        "@vendure/testing": "3.4.2",
+        "@vendure/core": "3.4.3",
+        "@vendure/testing": "3.4.3",
         "cross-env": "^7.0.3",
         "typescript": "5.8.2"
     }

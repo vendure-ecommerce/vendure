@@ -25,7 +25,7 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
@@ -61,7 +61,7 @@ function ProductVariantDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { activeChannel } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
@@ -97,16 +97,23 @@ function ProductVariantDetailPage() {
         },
         params: { id: params.id },
         onSuccess: data => {
-            toast.success(i18n.t(creatingNewEntity ? 'Successfully created product variant' : 'Successfully updated product variant'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created product variant`
+                    : t`Successfully updated product variant`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create product variant' : 'Failed to update product variant'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create product variant` : t`Failed to update product variant`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 

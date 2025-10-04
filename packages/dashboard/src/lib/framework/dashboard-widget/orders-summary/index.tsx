@@ -1,5 +1,7 @@
 import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
 import { api } from '@/vdb/graphql/api.js';
+import { Trans } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { differenceInDays, subDays } from 'date-fns';
 import { useMemo } from 'react';
@@ -27,6 +29,7 @@ function PercentageChange({ value }: PercentageChangeProps) {
 }
 
 export function OrdersSummaryWidget() {
+    const { t } = useLingui();
     const { dateRange } = useWidgetFilters();
 
     const variables = useMemo(() => {
@@ -78,13 +81,13 @@ export function OrdersSummaryWidget() {
     return (
         <DashboardBaseWidget
             id={WIDGET_ID}
-            title="Orders Summary"
-            description="Your orders summary"
+            title={t`Orders Summary`}
+            description={t`Your orders summary`}
         >
             <div className="@container h-full">
                 <div className="flex flex-col h-full @md:flex-row gap-8 items-center justify-center @md:justify-evenly text-center tabular-nums">
                     <div className="flex flex-col lg:gap-2">
-                        <p className="lg:text-lg text-muted-foreground">Total Orders</p>
+                        <p className="lg:text-lg text-muted-foreground"><Trans>Total Orders</Trans></p>
                         <p className="text-xl @md:text-3xl font-semibold">
                             <AnimatedNumber
                                 animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}
@@ -94,7 +97,7 @@ export function OrdersSummaryWidget() {
                         <PercentageChange value={orderChange} />
                     </div>
                     <div className="flex flex-col lg:gap-2">
-                        <p className="lg:text-lg text-muted-foreground">Total Revenue</p>
+                        <p className="lg:text-lg text-muted-foreground"><Trans>Total Revenue</Trans></p>
                         <p className="text-xl @md:text-3xl font-semibold">
                             <AnimatedCurrency
                                 animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}

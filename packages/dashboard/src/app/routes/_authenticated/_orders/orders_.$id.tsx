@@ -1,6 +1,6 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PageBlock } from '@/vdb/framework/layout-engine/page-layout.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { OrderDetailShared } from './components/order-detail-shared.js';
 import { SellerOrdersCard } from './components/seller-orders-card.js';

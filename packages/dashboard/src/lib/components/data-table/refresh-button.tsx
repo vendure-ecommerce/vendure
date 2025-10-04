@@ -1,6 +1,6 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

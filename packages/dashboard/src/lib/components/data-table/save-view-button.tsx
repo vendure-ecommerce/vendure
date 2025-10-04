@@ -1,10 +1,11 @@
+import { Trans } from '@lingui/react/macro';
 import { BookmarkPlus } from 'lucide-react';
 import React, { useState } from 'react';
-import { Button } from '../ui/button.js';
-import { SaveViewDialog } from './save-view-dialog.js';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { isMatchingSavedView } from '../../utils/saved-views-utils.js';
+import { Button } from '../ui/button.js';
 import { useDataTableContext } from './data-table-context.js';
+import { SaveViewDialog } from './save-view-dialog.js';
 
 interface SaveViewButtonProps {
     disabled?: boolean;
@@ -12,7 +13,7 @@ interface SaveViewButtonProps {
 
 export const SaveViewButton: React.FC<SaveViewButtonProps> = ({ disabled }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { userViews, globalViews } = useSavedViews();
+    const { userViews, globalViews, savedViewsAreAvailable } = useSavedViews();
     const { columnFilters, searchTerm } = useDataTableContext();
 
     const hasFilters = columnFilters.length > 0 || (searchTerm && searchTerm.length > 0);
@@ -23,16 +24,15 @@ export const SaveViewButton: React.FC<SaveViewButtonProps> = ({ disabled }) => {
         return null;
     }
 
+    if (!savedViewsAreAvailable) {
+        return null;
+    }
+
     return (
         <>
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setDialogOpen(true)}
-                disabled={disabled}
-            >
+            <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)} disabled={disabled}>
                 <BookmarkPlus className="h-4 w-4 mr-1" />
-                Save View
+                <Trans>Save View</Trans>
             </Button>
             <SaveViewDialog
                 open={dialogOpen}

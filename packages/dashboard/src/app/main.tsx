@@ -11,7 +11,13 @@ import { AnyRoute, createRouter, RouterOptions, RouterProvider } from '@tanstack
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
+import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { DirectionProvider } from '@radix-ui/react-direction';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AppProviders, queryClient } from './app-providers.js';
+import { setDocumentDirection } from './common/set-document-direction.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
 
@@ -53,7 +59,14 @@ function InnerApp() {
     const auth = useAuth();
     const router = useExtendedRouter(routeTree, routerOptions);
     const serverConfig = useServerConfig();
+    const { isRTL } = useDisplayLocale();
     const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
+    const { settings } = useUserSettings();
+    const { loadAndActivateLocale } = useUiLanguageLoader();
+
+    useEffect(() => {
+        void loadAndActivateLocale(settings.displayLanguage);
+    }, [settings.displayLanguage]);
 
     useEffect(() => {
         if (!serverConfig) {
@@ -63,11 +76,18 @@ function InnerApp() {
         setHasSetCustomFieldsMap(true);
     }, [serverConfig?.entityCustomFields.length]);
 
+    useEffect(() => {
+        setDocumentDirection(isRTL ? 'rtl' : 'ltr');
+    }, [isRTL]);
+
     return (
         <>
-            {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
-                <RouterProvider router={router} context={{ auth, queryClient }} />
-            )}
+            <DirectionProvider dir={isRTL ? 'rtl' : 'ltr'}>
+                {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
+                    <RouterProvider router={router} context={{ auth, queryClient }} />
+                )}
+                {settings.devMode ? <ReactQueryDevtools /> : null}
+            </DirectionProvider>
         </>
     );
 }

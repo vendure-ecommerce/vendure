@@ -3,6 +3,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -18,6 +20,7 @@ enum DATA_TYPES {
 }
 
 export function MetricsWidget() {
+    const { t } = useLingui();
     const { formatDate, formatCurrency } = useLocalFormat();
     const { activeChannel } = useChannel();
     const { dateRange } = useWidgetFilters();
@@ -57,16 +60,16 @@ export function MetricsWidget() {
     return (
         <DashboardBaseWidget
             id="metrics-widget"
-            title="Metrics"
-            description="Order metrics"
+            title={t`Metrics`}
+            description={t`Order metrics`}
             actions={
                 <div className="flex gap-1">
                     <Tabs defaultValue={dataType} onValueChange={value => setDataType(value as DATA_TYPES)}>
                         <TabsList>
-                            <TabsTrigger value={DATA_TYPES.OrderCount}>Order Count</TabsTrigger>
-                            <TabsTrigger value={DATA_TYPES.OrderTotal}>Order Total</TabsTrigger>
+                            <TabsTrigger value={DATA_TYPES.OrderCount}><Trans>Order Count</Trans></TabsTrigger>
+                            <TabsTrigger value={DATA_TYPES.OrderTotal}><Trans>Order Total</Trans></TabsTrigger>
                             <TabsTrigger value={DATA_TYPES.AverageOrderValue}>
-                                Average Order Value
+                                <Trans>Average Order Value</Trans>
                             </TabsTrigger>
                         </TabsList>
                     </Tabs>

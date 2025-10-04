@@ -14,7 +14,7 @@ import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import {
     ColumnDef,
     ColumnFilter,
@@ -119,7 +119,7 @@ export function DataTable<TData>({
     const { pageId } = usePage();
     const savedViewsResult = useSavedViews();
     const globalViews = pageId && onFilterChange ? savedViewsResult.globalViews : [];
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -214,7 +214,7 @@ export function DataTable<TData>({
                     <div className="flex items-center gap-2">
                         {onSearchTermChange && (
                             <Input
-                                placeholder={i18n.t('Filter...')}
+                                placeholder={t`Filter...`}
                                 value={searchTerm}
                                 onChange={event => handleSearchChange(event.target.value)}
                                 className="w-64"
@@ -243,11 +243,11 @@ export function DataTable<TData>({
 
                 {(pageId && onFilterChange && globalViews.length > 0) ||
                 columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
-                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
+                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2 @container">
                         <div className="flex items-center">
                             {pageId && onFilterChange && <GlobalViewsBar />}
                         </div>
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-1 flex-wrap items-center">
                             {columnFilters
                                 .filter(f => !facetedFilters?.[f.id])
                                 .map(f => {

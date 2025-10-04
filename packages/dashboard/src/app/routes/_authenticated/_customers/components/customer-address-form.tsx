@@ -13,8 +13,8 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -59,7 +59,7 @@ interface CustomerAddressFormProps {
 }
 
 export function CustomerAddressForm({ address, onSubmit, onCancel }: Readonly<CustomerAddressFormProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     // Fetch available countries
     const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
@@ -246,7 +246,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: Readonly<Cu
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={i18n.t('Select a country')} />
+                                            <SelectValue placeholder={t`Select a country`} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>

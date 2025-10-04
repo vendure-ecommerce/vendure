@@ -1,5 +1,5 @@
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 export type CombinationModeInputProps = DashboardFormComponentProps & {
     position?: number;

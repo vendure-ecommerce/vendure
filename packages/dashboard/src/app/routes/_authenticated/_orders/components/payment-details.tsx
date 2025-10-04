@@ -3,8 +3,9 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { JsonEditor } from 'json-edit-react';
 import { ChevronDown } from 'lucide-react';
@@ -32,7 +33,8 @@ type PaymentDetailsProps = {
 
 export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<PaymentDetailsProps>) {
     const { formatCurrency, formatDate } = useLocalFormat();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
+    const { getTranslatedPaymentState, getTranslatedRefundState } = useDynamicTranslations();
     const [settleRefundDialogOpen, setSettleRefundDialogOpen] = useState(false);
     const [selectedRefundId, setSelectedRefundId] = useState<string | null>(null);
 
@@ -40,14 +42,14 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
         mutationFn: api.mutate(settlePaymentDocument),
         onSuccess: (result: ResultOf<typeof settlePaymentDocument>) => {
             if (result.settlePayment.__typename === 'Payment') {
-                toast.success(i18n.t('Payment settled successfully'));
+                toast.success(t`Payment settled successfully`);
                 onSuccess?.();
             } else {
-                toast.error(result.settlePayment.message ?? i18n.t('Failed to settle payment'));
+                toast.error(result.settlePayment.message ?? t`Failed to settle payment`);
             }
         },
         onError: () => {
-            toast.error(i18n.t('Failed to settle payment'));
+            toast.error(t`Failed to settle payment`);
         },
     });
 
@@ -55,16 +57,14 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
         mutationFn: api.mutate(transitionPaymentToStateDocument),
         onSuccess: (result: ResultOf<typeof transitionPaymentToStateDocument>) => {
             if (result.transitionPaymentToState.__typename === 'Payment') {
-                toast.success(i18n.t('Payment state updated successfully'));
+                toast.success(t`Payment state updated successfully`);
                 onSuccess?.();
             } else {
-                toast.error(
-                    result.transitionPaymentToState.message ?? i18n.t('Failed to update payment state'),
-                );
+                toast.error(result.transitionPaymentToState.message ?? t`Failed to update payment state`);
             }
         },
         onError: () => {
-            toast.error(i18n.t('Failed to update payment state'));
+            toast.error(t`Failed to update payment state`);
         },
     });
 
@@ -72,14 +72,14 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
         mutationFn: api.mutate(cancelPaymentDocument),
         onSuccess: (result: ResultOf<typeof cancelPaymentDocument>) => {
             if (result.cancelPayment.__typename === 'Payment') {
-                toast.success(i18n.t('Payment cancelled successfully'));
+                toast.success(t`Payment cancelled successfully`);
                 onSuccess?.();
             } else {
-                toast.error(result.cancelPayment.message ?? i18n.t('Failed to cancel payment'));
+                toast.error(result.cancelPayment.message ?? t`Failed to cancel payment`);
             }
         },
         onError: () => {
-            toast.error(i18n.t('Failed to cancel payment'));
+            toast.error(t`Failed to cancel payment`);
         },
     });
 
@@ -87,15 +87,15 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
         mutationFn: api.mutate(settleRefundDocument),
         onSuccess: (result: ResultOf<typeof settleRefundDocument>) => {
             if (result.settleRefund.__typename === 'Refund') {
-                toast.success(i18n.t('Refund settled successfully'));
+                toast.success(t`Refund settled successfully`);
                 onSuccess?.();
                 setSettleRefundDialogOpen(false);
             } else {
-                toast.error(result.settleRefund.message ?? i18n.t('Failed to settle refund'));
+                toast.error(result.settleRefund.message ?? t`Failed to settle refund`);
             }
         },
         onError: () => {
-            toast.error(i18n.t('Failed to settle refund'));
+            toast.error(t`Failed to settle refund`);
         },
     });
 
@@ -139,7 +139,7 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
 
         if (payment.nextStates?.includes('Settled')) {
             actions.push({
-                label: 'Settle payment',
+                label: t`Settle payment`,
                 onClick: handleSettlePayment,
                 type: 'success',
                 disabled: settlePaymentMutation.isPending,
@@ -148,7 +148,10 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
 
         nextOtherStates().forEach(state => {
             actions.push({
-                label: state === 'Cancelled' ? 'Cancel payment' : `Transition to ${state}`,
+                label:
+                    state === 'Cancelled'
+                        ? t`Cancel payment`
+                        : t`Transition to ${getTranslatedPaymentState(state)}`,
                 type: getTypeForState(state),
                 onClick: () => handlePaymentStateTransition(state),
                 disabled: transitionPaymentMutation.isPending || cancelPaymentMutation.isPending,
@@ -210,7 +213,10 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                                 <div key={refund.id} className="p-3 border rounded-md bg-muted/50">
                                     <div className="space-y-1">
                                         <LabeledData label={<Trans>Refund ID</Trans>} value={refund.id} />
-                                        <LabeledData label={<Trans>State</Trans>} value={refund.state} />
+                                        <LabeledData
+                                            label={<Trans>State</Trans>}
+                                            value={getTranslatedRefundState(refund.state)}
+                                        />
                                         <LabeledData
                                             label={<Trans>Created at</Trans>}
                                             value={formatDate(refund.createdAt, {
@@ -266,7 +272,7 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                 )}
                 <div className="mt-3 pt-3 border-t">
                     <StateTransitionControl
-                        currentState={payment.state}
+                        currentState={getTranslatedPaymentState(payment.state)}
                         actions={getPaymentActions()}
                         isLoading={
                             settlePaymentMutation.isPending ||

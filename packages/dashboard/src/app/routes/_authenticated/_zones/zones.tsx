@@ -3,7 +3,7 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteZonesBulkAction } from './components/zone-bulk-actions.js';
@@ -16,24 +16,24 @@ export const Route = createFileRoute('/_authenticated/_zones/zones')({
 });
 
 function ZoneListPage() {
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="zone-list"
             listQuery={zoneListQuery}
             route={Route}
-            title="Zones"
+            title={<Trans>Zones</Trans>}
             defaultVisibility={{
                 name: true,
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
             additionalColumns={{
                 regions: {
-                    header: 'Regions',
+                    header: t`Regions`,
                     cell: ({ row }) => (
                         <ZoneCountriesSheet zoneId={row.original.id} zoneName={row.original.name}>
                             <Trans>Edit members</Trans>

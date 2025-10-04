@@ -7,10 +7,10 @@ import {
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
+import { AccessorFnColumnDef, AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -73,7 +73,10 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     includeSelectionColumn?: boolean;
     includeActionsColumn?: boolean;
     enableSorting?: boolean;
-}>) {
+}>): {
+    columns: Array<AccessorKeyColumnDef<any> | AccessorFnColumnDef<any>>;
+    customFieldColumnNames: string[];
+} {
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
     const allBulkActions = useAllBulkActions(bulkActions ?? []);
 
@@ -264,7 +267,7 @@ function DeleteMutationRowAction({
     row: Row<{ id: string }>;
 }>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     // Inspect the mutation variables to determine if it expects 'id' or 'ids'
     const mutationVariables = getOperationVariablesFields(deleteMutation);
@@ -285,15 +288,15 @@ function DeleteMutationRowAction({
             const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;
             if (resultToCheck.result === 'DELETED') {
                 refetchPaginatedList();
-                toast.success(i18n.t('Deleted successfully'));
+                toast.success(t`Deleted successfully`);
             } else {
-                toast.error(i18n.t('Failed to delete'), {
+                toast.error(t`Failed to delete`, {
                     description: resultToCheck.message,
                 });
             }
         },
         onError: (err: Error) => {
-            toast.error(i18n.t('Failed to delete'), {
+            toast.error(t`Failed to delete`, {
                 description: err.message,
             });
         },

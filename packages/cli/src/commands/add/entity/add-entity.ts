@@ -38,7 +38,7 @@ export const addEntityCommand = new CliCommand({
     run: options => addEntity(options),
 });
 
-async function addEntity(
+export async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;

@@ -1,6 +1,6 @@
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { ChannelCodeLabel } from './channel-code-label.js';
 import { MultiSelect } from './multi-select.js';
@@ -24,7 +24,7 @@ export interface ChannelSelectorProps<T extends boolean> {
 
 export function ChannelSelector<T extends boolean>(props: ChannelSelectorProps<T>) {
     const { value, onChange, multiple } = props;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { data: channelsData } = useQuery({
         queryKey: ['channels'],
@@ -44,8 +44,8 @@ export function ChannelSelector<T extends boolean>(props: ChannelSelectorProps<T
             onChange={onChange}
             multiple={multiple}
             items={items}
-            placeholder={i18n.t('Select a channel')}
-            searchPlaceholder={i18n.t('Search channels...')}
+            placeholder={t`Select a channel`}
+            searchPlaceholder={t`Search channels...`}
         />
     );
 }

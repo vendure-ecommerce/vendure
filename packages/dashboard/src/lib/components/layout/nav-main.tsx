@@ -15,6 +15,7 @@ import {
     NavMenuSectionPlacement,
 } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { useLingui } from '@lingui/react';
 import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
@@ -41,6 +42,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const router = useRouter();
     const routerState = useRouterState();
     const { hasPermissions } = usePermissions();
+    const { i18n } = useLingui();
     const currentPath = routerState.location.pathname;
     const basePath = router.basepath || '';
 
@@ -183,12 +185,16 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+                <NavItemWrapper key={item.id} locationId={item.id} order={item.order} offset={true}>
                     <SidebarMenuItem>
-                        <SidebarMenuButton tooltip={item.title} asChild isActive={isPathActive(item.url)}>
+                        <SidebarMenuButton
+                            tooltip={i18n.t(item.title)}
+                            asChild
+                            isActive={isPathActive(item.url)}
+                        >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -197,7 +203,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
         }
 
         return (
-            <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+            <NavItemWrapper key={item.id} locationId={item.id} order={item.order} offset={true}>
                 <Collapsible
                     asChild
                     open={openTopSectionIds.has(item.id)}
@@ -208,7 +214,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                         <CollapsibleTrigger asChild>
                             <SidebarMenuButton tooltip={item.title}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -216,7 +222,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuSub>
                                 {item.items?.map(subItem => (
                                     <NavItemWrapper
-                                        key={subItem.title}
+                                        key={subItem.id}
                                         locationId={subItem.id}
                                         order={subItem.order}
                                         parentLocationId={item.id}
@@ -227,7 +233,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                                 isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
-                                                    <span>{subItem.title}</span>
+                                                    <span>{i18n.t(subItem.title)}</span>
                                                 </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
@@ -247,10 +253,14 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
             return (
                 <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
                     <SidebarMenuItem>
-                        <SidebarMenuButton tooltip={item.title} asChild isActive={isPathActive(item.url)}>
+                        <SidebarMenuButton
+                            tooltip={i18n.t(item.title)}
+                            asChild
+                            isActive={isPathActive(item.url)}
+                        >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -267,9 +277,9 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                 >
                     <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                            <SidebarMenuButton tooltip={item.title}>
+                            <SidebarMenuButton tooltip={i18n.t(item.title)}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -277,7 +287,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuSub>
                                 {item.items?.map(subItem => (
                                     <NavItemWrapper
-                                        key={subItem.title}
+                                        key={i18n.t(subItem.title)}
                                         locationId={subItem.id}
                                         order={subItem.order}
                                         parentLocationId={item.id}
@@ -288,7 +298,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                                 isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
-                                                    <span>{subItem.title}</span>
+                                                    <span>{i18n.t(subItem.title)}</span>
                                                 </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>

@@ -10,7 +10,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ResultOf } from 'gql.tada';
 import { useState } from 'react';
@@ -22,7 +22,8 @@ import { orderHistoryDocument, transitionOrderToStateDocument } from '../orders.
  */
 export function useTransitionOrderToState(orderId: string | undefined) {
     const [selectStateOpen, setSelectStateOpen] = useState(false);
-    const [onSuccessFn, setOnSuccessFn] = useState<() => void>(() => {});
+    const [onSuccessFn, setOnSuccessFn] = useState<() => void>(() => {
+    });
     const { data, isLoading, error } = useQuery({
         queryKey: ['orderPreModifyingState', orderId],
         queryFn: async () => {

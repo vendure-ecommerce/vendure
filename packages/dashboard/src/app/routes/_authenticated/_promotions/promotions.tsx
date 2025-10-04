@@ -4,7 +4,7 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import {
@@ -26,7 +26,7 @@ function PromotionListPage() {
             pageId="promotion-list"
             listQuery={promotionListDocument}
             route={Route}
-            title="Promotions"
+            title={<Trans>Promotions</Trans>}
             defaultVisibility={{
                 name: true,
                 couponCode: true,
@@ -42,11 +42,9 @@ function PromotionListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: 'Enabled',
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
             }}

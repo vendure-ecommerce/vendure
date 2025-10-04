@@ -10,7 +10,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { VariablesOf } from 'gql.tada';
@@ -71,7 +71,7 @@ type ProductVariantInfo = {
 function ModifyOrderPage() {
     const params = Route.useParams();
     const navigate = useNavigate({ from: '/orders/$id/modify' });
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
     const { form, submitHandler, entity } = useDetailPage({
         pageId,
@@ -84,11 +84,11 @@ function ModifyOrderPage() {
         },
         params: { id: params.id },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated order'));
+            toast(t`Successfully updated order`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update order'), {
+            toast(t`Failed to update order`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

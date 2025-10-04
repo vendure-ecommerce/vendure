@@ -1,0 +1,4777 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-02-20 14:18+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: fa\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "خطای گسترش پرس‌وجو"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "صفحه با پرس‌وجوی پیش‌فرض ادامه می‌یابد."
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "گسترش سند پرس‌وجو ناموفق بود"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "گسترش پرس‌وجو نامعتبر است: باید حداقل یک فیلد سطح بالا داشته باشد"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "عدم تطابق گسترش پرس‌وجو:"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "گسترش پرس‌وجو حاوی نحو نامعتبر GraphQL است"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "خطای گسترش پرس‌وجو:"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:22
+msgid "Insights"
+msgstr "بینش‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:30
+msgid "Catalog"
+msgstr "کاتالوگ"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:37
+msgid "Products"
+msgstr "محصولات"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:44
+msgid "Product Variants"
+msgstr "انواع محصول"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:51
+msgid "Facets"
+msgstr "ویژگی‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:58
+msgid "Collections"
+msgstr "مجموعه‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:65
+msgid "Assets"
+msgstr "فایل‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:74
+msgid "Sales"
+msgstr "فروش"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:81
+msgid "Orders"
+msgstr "سفارش‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:90
+#: src/lib/framework/defaults.ts:97
+msgid "Customers"
+msgstr "مشتریان"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:104
+msgid "Customer Groups"
+msgstr "گروه‌های مشتری"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:113
+msgid "Marketing"
+msgstr "بازاریابی"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:120
+msgid "Promotions"
+msgstr "تبلیغات"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:129
+msgid "System"
+msgstr "سیستم"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:136
+msgid "Job Queue"
+msgstr "صف کارها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:143
+msgid "Healthchecks"
+msgstr "بررسی سلامت"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:150
+msgid "Scheduled Tasks"
+msgstr "وظایف زمان‌بندی شده"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:159
+msgid "Settings"
+msgstr "تنظیمات"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:166
+msgid "Sellers"
+msgstr "فروشندگان"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:173
+msgid "Channels"
+msgstr "کانال‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:180
+msgid "Stock Locations"
+msgstr "محل‌های انبار"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:187
+msgid "Administrators"
+msgstr "مدیران"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:194
+msgid "Roles"
+msgstr "نقش‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:201
+msgid "Shipping Methods"
+msgstr "روش‌های ارسال"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:208
+msgid "Payment Methods"
+msgstr "روش‌های پرداخت"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:215
+msgid "Tax Categories"
+msgstr "دسته‌بندی‌های مالیاتی"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:222
+msgid "Tax Rates"
+msgstr "نرخ‌های مالیات"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:229
+msgid "Countries"
+msgstr "کشورها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:236
+msgid "Zones"
+msgstr "مناطق"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:243
+msgid "Global Settings"
+msgstr "تنظیمات عمومی"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:255
+msgid "Metrics Widget"
+msgstr "ابزارک معیارها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:263
+msgid "Latest Orders Widget"
+msgstr "ابزارک آخرین سفارش‌ها"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:270
+msgid "Orders Summary Widget"
+msgstr "ابزارک خلاصه سفارش‌ها"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:7
+msgid "fulfillmentState.Created"
+msgstr "ایجاد شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:8
+msgid "fulfillmentState.Pending"
+msgstr "در انتظار"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:9
+#: src/i18n/common-strings.ts:12
+msgid "fulfillmentState.Cancelled"
+msgstr "لغو شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:10
+msgid "fulfillmentState.Shipped"
+msgstr "ارسال شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:11
+msgid "fulfillmentState.Delivered"
+msgstr "تحویل داده شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:15
+msgid "paymentState.Created"
+msgstr "ایجاد شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:16
+msgid "paymentState.Authorized"
+msgstr "مجاز"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:17
+#: src/i18n/common-strings.ts:24
+msgid "paymentState.Settled"
+msgstr "تسویه شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:18
+msgid "paymentState.Declined"
+msgstr "رد شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:19
+msgid "paymentState.Error"
+msgstr "خطا"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:20
+msgid "paymentState.Cancelled"
+msgstr "لغو شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:23
+msgid "paymentState.Pending"
+msgstr "در انتظار"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:25
+msgid "paymentState.Failed"
+msgstr "ناموفق"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:28
+msgid "orderState.Created"
+msgstr "ایجاد شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:29
+msgid "orderState.Draft"
+msgstr "پیش‌نویس"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:30
+msgid "orderState.AddingItems"
+msgstr "افزودن اقلام"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:31
+msgid "orderState.Cancelled"
+msgstr "لغو شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:32
+msgid "orderState.ArrangingPayment"
+msgstr "ترتیب پرداخت"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:33
+msgid "orderState.PaymentAuthorized"
+msgstr "پرداخت تایید شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:34
+msgid "orderState.PaymentSettled"
+msgstr "پرداخت تسویه شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:35
+msgid "orderState.PartiallyShipped"
+msgstr "تا حدی ارسال شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:36
+msgid "orderState.Shipped"
+msgstr "ارسال شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:37
+msgid "orderState.PartiallyDelivered"
+msgstr "تا حدی تحویل داده شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:38
+msgid "orderState.Delivered"
+msgstr "تحویل داده شده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:39
+msgid "orderState.Modifying"
+msgstr "در حال تغییر"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:40
+msgid "orderState.ArrangingAdditionalPayment"
+msgstr "ترتیب پرداخت اضافی"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:43
+msgid "fieldName.attempts"
+msgstr "تلاش‌ها"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:44
+msgid "fieldName.availableCurrencyCodes"
+msgstr "کدهای ارز موجود"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:45
+msgid "fieldName.availableLanguageCodes"
+msgstr "کدهای زبان‌های موجود"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:46
+msgid "fieldName.breadcrumbs"
+msgstr "مسیر پیمایش"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:47
+msgid "fieldName.category"
+msgstr "دسته‌بندی"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:48
+msgid "fieldName.channels"
+msgstr "کانال‌ها"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:49
+msgid "fieldName.children"
+msgstr "فرزندان"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:50
+msgid "fieldName.code"
+msgstr "کد"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:51
+msgid "fieldName.couponCode"
+msgstr "کد کوپن"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:52
+msgid "fieldName.createdAt"
+msgstr "ایجاد شده در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:53
+msgid "fieldName.currencyCode"
+msgstr "کد ارز"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:54
+msgid "fieldName.customer"
+msgstr "مشتری"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:55
+msgid "fieldName.customerGroup"
+msgstr "گروه مشتری"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:56
+msgid "fieldName.customers"
+msgstr "مشتریان"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:57
+msgid "fieldName.customFields"
+msgstr "فیلدهای سفارشی"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:58
+msgid "fieldName.data"
+msgstr "داده‌ها"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:59
+msgid "fieldName.defaultCurrencyCode"
+msgstr "کد ارز پیش‌فرض"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:60
+msgid "fieldName.defaultLanguageCode"
+msgstr "کد زبان پیش‌فرض"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:61
+msgid "fieldName.defaultShippingZone"
+msgstr "منطقه ارسال پیش‌فرض"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:62
+msgid "fieldName.defaultTaxZone"
+msgstr "منطقه مالیاتی پیش‌فرض"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:63
+msgid "fieldName.description"
+msgstr "توضیحات"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:64
+msgid "fieldName.duration"
+msgstr "مدت زمان"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:65
+msgid "fieldName.emailAddress"
+msgstr "آدرس ایمیل"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:66
+msgid "fieldName.enabled"
+msgstr "فعال"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:67
+msgid "fieldName.endsAt"
+msgstr "پایان در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:68
+msgid "fieldName.error"
+msgstr "خطا"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:69
+msgid "fieldName.featuredAsset"
+msgstr "فایل برجسته"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:70
+msgid "fieldName.firstName"
+msgstr "نام"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:71
+msgid "fieldName.fulfillmentHandlerCode"
+msgstr "کد مدیریت تحویل"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:72
+msgid "fieldName.id"
+msgstr "شناسه"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:73
+msgid "fieldName.isDefault"
+msgstr "پیش‌فرض است"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:74
+msgid "fieldName.isPrivate"
+msgstr "خصوصی است"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:75
+msgid "fieldName.isSettled"
+msgstr "تسویه شده است"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:76
+msgid "fieldName.lastName"
+msgstr "نام خانوادگی"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:77
+msgid "fieldName.name"
+msgstr "نام"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:78
+msgid "fieldName.orderPlacedAt"
+msgstr "زمان ثبت سفارش"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:79
+msgid "fieldName.parentId"
+msgstr "شناسه والد"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:80
+msgid "fieldName.perCustomerUsageLimit"
+msgstr "محدودیت استفاده به ازای هر مشتری"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:81
+msgid "fieldName.permissions"
+msgstr "مجوزها"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:82
+msgid "fieldName.position"
+msgstr "موقعیت"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:83
+msgid "fieldName.price"
+msgstr "قیمت"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:84
+msgid "fieldName.priceWithTax"
+msgstr "قیمت با مالیات"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:85
+msgid "fieldName.pricesIncludeTax"
+msgstr "قیمت‌ها شامل مالیات"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:86
+msgid "fieldName.productVariants"
+msgstr "انواع محصول"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:87
+msgid "fieldName.progress"
+msgstr "پیشرفت"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:88
+msgid "fieldName.queueName"
+msgstr "نام صف"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:89
+msgid "fieldName.result"
+msgstr "نتیجه"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:90
+msgid "fieldName.retries"
+msgstr "تلاش‌های مجدد"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:91
+msgid "fieldName.seller"
+msgstr "فروشنده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:92
+msgid "fieldName.settledAt"
+msgstr "تسویه شده در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:93
+msgid "fieldName.shippingLines"
+msgstr "خطوط ارسال"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:94
+msgid "fieldName.sku"
+msgstr "SKU"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:95
+msgid "fieldName.slug"
+msgstr "نامک"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:96
+msgid "fieldName.startedAt"
+msgstr "شروع شده در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:97
+msgid "fieldName.startsAt"
+msgstr "شروع در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:98
+msgid "fieldName.state"
+msgstr "وضعیت"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:99
+msgid "fieldName.stockLevels"
+msgstr "سطوح موجودی"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:100
+msgid "fieldName.token"
+msgstr "توکن"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:101
+msgid "fieldName.total"
+msgstr "مجموع"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:102
+msgid "fieldName.totalWithTax"
+msgstr "مجموع با مالیات"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:103
+msgid "fieldName.type"
+msgstr "نوع"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:104
+msgid "fieldName.updatedAt"
+msgstr "به‌روزرسانی شده در"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:105
+msgid "fieldName.usageLimit"
+msgstr "محدودیت استفاده"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:106
+msgid "fieldName.user"
+msgstr "کاربر"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:107
+msgid "fieldName.value"
+msgstr "مقدار"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:108
+msgid "fieldName.valueList"
+msgstr "لیست مقادیر"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:109
+msgid "fieldName.zone"
+msgstr "منطقه"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:99
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:104
+msgid "Note added successfully"
+msgstr "یادداشت با موفقیت اضافه شد"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:103
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:108
+msgid "Failed to add note"
+msgstr "افزودن یادداشت ناموفق بود"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:120
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:125
+msgid "Note updated successfully"
+msgstr "یادداشت با موفقیت به‌روزرسانی شد"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:124
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:129
+msgid "Failed to update note"
+msgstr "به‌روزرسانی یادداشت ناموفق بود"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:140
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:146
+msgid "Note deleted successfully"
+msgstr "یادداشت با موفقیت حذف شد"
+
+#. js-lingui-explicit-id
+#: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:144
+#: src/app/routes/_authenticated/_orders/components/order-history/use-order-history.ts:150
+msgid "Failed to delete note"
+msgstr "حذف یادداشت ناموفق بود"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:26
+msgid "!="
+msgstr "!="
+
+#. placeholder {0}: action.label
+#. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
+#. placeholder {0}: entry.type.replace(/_/g, ' ').toLowerCase()
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:67
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:102
+#: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:37
+#: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:44
+#: src/app/routes/_authenticated/_orders/components/state-transition-control.tsx:93
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:189
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
+#: src/lib/components/data-input/product-multi-selector-input.tsx:278
+#: src/lib/components/data-input/relation-selector.tsx:403
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
+msgid "{0}"
+msgstr "{0}"
+
+#. placeholder {0}: value.totalItems
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
+msgid "{0} customers"
+msgstr "{0} مشتری"
+
+#. placeholder {0}: selectedIds.length
+#: src/lib/components/data-input/product-multi-selector-input.tsx:401
+msgid "{0} items selected"
+msgstr "{0} مورد انتخاب شده"
+
+#. placeholder {0}: quantity.max
+#. placeholder {1}: line.quantity
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:258
+msgid "{0} of {1} available to fulfill"
+msgstr "{0} از {1} موجود برای انجام"
+
+#. placeholder {0}: selection.length
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:72
+#: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
+msgid "{0} selected"
+msgstr "{0} انتخاب شده"
+
+#. placeholder {0}: row.original.productVariants?.totalItems
+#: src/app/routes/_authenticated/_collections/collections.tsx:150
+msgid "{0} variants"
+msgstr "{0} نوع"
+
+#: src/lib/components/data-input/product-multi-selector-input.tsx:396
+#: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
+#: src/lib/components/shared/configurable-operation-selector.tsx:135
+msgid "{buttonText}"
+msgstr "{buttonText}"
+
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
+msgid "{label}"
+msgstr "{label}"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:63
+msgid "{operator}"
+msgstr "{operator}"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:80
+msgid "{title}"
+msgstr "{title}"
+
+#. placeholder {0}: list.totalItems - 3
+#: src/app/routes/_authenticated/_facets/facets.tsx:50
+msgid "+ {0} more"
+msgstr "+ {0} بیشتر"
+
+#: src/app/routes/_authenticated/_collections/collections.tsx:168
+msgid "+ {leftOver} more"
+msgstr "+ {leftOver} بیشتر"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:24
+msgid "="
+msgstr "="
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
+msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
+msgstr "استرداد به مبلغ {formattedDiff} مورد نیاز است. مبالغ پرداخت را انتخاب کرده و یادداشتی برای ادامه وارد کنید."
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:238
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
+#: src/lib/components/data-table/use-generated-columns.tsx:229
+msgid "Actions"
+msgstr "اقدامات"
+
+#: src/lib/components/layout/channel-switcher.tsx:167
+msgctxt "active language"
+msgid "Active"
+msgstr "فعال"
+
+#: src/app/routes/_authenticated/_products/components/product-option-select.tsx:81
+msgid "Add \"{newOptionInput}\""
+msgstr "افزودن \"{newOptionInput}\""
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:130
+msgid "Add a manual payment of {0}"
+msgstr "افزودن پرداخت دستی {0}"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
+msgid "Add a new address to the customer."
+msgstr "یک آدرس جدید به مشتری اضافه کنید."
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:318
+msgid "Add another option group"
+msgstr "افزودن گروه گزینه دیگر"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:132
+msgid "Add asset"
+msgstr "افزودن فایل"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
+msgid "Add column after"
+msgstr "افزودن ستون بعد از"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:145
+msgid "Add column before"
+msgstr "افزودن ستون قبل از"
+
+#: src/app/routes/_authenticated/_countries/countries.tsx:65
+msgid "Add Country"
+msgstr "افزودن کشور"
+
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:247
+msgid "Add coupon code"
+msgstr "افزودن کد کوپن"
+
+#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:129
+msgid "Add customer"
+msgstr "افزودن مشتری"
+
+#: src/lib/components/shared/customer-group-selector.tsx:46
+msgid "Add customer groups"
+msgstr "افزودن گروه‌های مشتری"
+
+#: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:102
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:169
+msgid "Add facet value"
+msgstr "افزودن مقدار ویژگی"
+
+#: src/lib/components/shared/facet-value-selector.tsx:256
+msgid "Add facet values"
+msgstr "افزودن مقادیر ویژگی"
+
+#: src/lib/components/data-table/add-filter-menu.tsx:39
+msgid "Add filter"
+msgstr "افزودن فیلتر"
+
+#: src/lib/components/data-input/custom-field-list-input.tsx:289
+msgid "Add item"
+msgstr "افزودن مورد"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:221
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:227
+msgid "Add new address"
+msgstr "افزودن آدرس جدید"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:311
+msgid "Add option"
+msgstr "افزودن گزینه"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:175
+msgid "Add Option"
+msgstr "افزودن گزینه"
+
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:97
+msgid "Add option group"
+msgstr "افزودن گروه گزینه"
+
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:103
+msgid "Add option group to product"
+msgstr "افزودن گروه گزینه به محصول"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:149
+msgid "Add option value"
+msgstr "افزودن مقدار گزینه"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:134
+msgid "Add option value to {groupName}"
+msgstr "افزودن مقدار گزینه به {groupName}"
+
+#. placeholder {0}: entityIds.length
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:159
+msgid "Add or remove facet values for {0} {entityType}"
+msgstr "افزودن یا حذف مقادیر ویژگی برای {0} {entityType}"
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:177
+msgid "Add payment ({0})"
+msgstr "افزودن پرداخت ({0})"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:127
+msgid "Add payment to order"
+msgstr "افزودن پرداخت به سفارش"
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:121
+msgid "Add payment to order ({0})"
+msgstr "افزودن پرداخت به سفارش ({0})"
+
+#: src/app/routes/_authenticated/_products/components/product-options-table.tsx:108
+msgid "Add product option"
+msgstr "افزودن گزینه محصول"
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:249
+msgid "Add product options first"
+msgstr "ابتدا گزینه‌های محصول را اضافه کنید"
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
+msgid "Add product variant"
+msgstr "افزودن نوع محصول"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:231
+msgid "Add products to create a test order"
+msgstr "برای ایجاد سفارش آزمایشی محصولات اضافه کنید"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:203
+msgid "Add row after"
+msgstr "افزودن سطر بعد از"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:197
+msgid "Add row before"
+msgstr "افزودن سطر قبل از"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
+msgid "Add Stock to Location"
+msgstr "افزودن موجودی به محل"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:141
+msgid "Add tags..."
+msgstr "افزودن برچسب‌ها..."
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:243
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:270
+msgid "Add variant"
+msgstr "افزودن نوع"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:187
+msgid "Added coupon codes"
+msgstr "کدهای کوپن اضافه شده"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:47
+msgid "Added to group"
+msgstr "به گروه اضافه شد"
+
+#. placeholder {0}: addedLines.length
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:161
+msgid "Adding {0} item(s)"
+msgstr "افزودن {0} مورد"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:175
+msgid "Adding..."
+msgstr "در حال افزودن..."
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:321
+msgid "Additional payment required"
+msgstr "پرداخت اضافی مورد نیاز است"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:51
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:62
+msgid "Address created"
+msgstr "آدرس ایجاد شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:55
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:104
+msgid "Address deleted"
+msgstr "آدرس حذف شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:44
+msgid "Address deleted successfully"
+msgstr "آدرس با موفقیت حذف شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:53
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:78
+msgid "Address updated"
+msgstr "آدرس به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:56
+msgid "Address updated successfully"
+msgstr "آدرس با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:200
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:464
+msgid "Addresses"
+msgstr "آدرس‌ها"
+
+#. placeholder {0}: adjustedLines.length
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:130
+msgid "Adjusting {0} lines"
+msgstr "تنظیم {0} خط"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:39
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:16
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:23
+msgid "Administrators"
+msgstr "مدیران"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:30
+msgid "after"
+msgstr "بعد از"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:67
+msgid "All resources are up and running"
+msgstr "تمام منابع در حال اجرا هستند"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:222
+msgid "Allocated"
+msgstr "تخصیص داده شده"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:170
+msgid "Amount"
+msgstr "مقدار"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:324
+msgid "An additional payment of {formattedDiff} will be required."
+msgstr "یک پرداخت اضافی به مبلغ {formattedDiff} مورد نیاز خواهد بود."
+
+#: src/lib/components/data-input/combination-mode-input.tsx:44
+msgid "AND"
+msgstr "و"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
+#: src/lib/components/shared/customer-address-form.tsx:154
+msgid "Apartment, suite, etc."
+msgstr "آپارتمان، سوئیت و غیره"
+
+#: src/lib/components/data-table/views-sheet.tsx:49
+msgid "Applied global view \"{viewName}\""
+msgstr "نمای عمومی \"{viewName}\" اعمال شد"
+
+#: src/lib/components/data-table/views-sheet.tsx:49
+msgid "Applied view \"{viewName}\""
+msgstr "نمای \"{viewName}\" اعمال شد"
+
+#: src/lib/components/data-table/views-sheet.tsx:227
+msgid "Apply"
+msgstr "اعمال"
+
+#: src/lib/components/data-table/data-table-filter-dialog.tsx:66
+msgid "Apply filter"
+msgstr "اعمال فیلتر"
+
+#: src/lib/components/data-table/views-sheet.tsx:155
+msgid "Apply filters to the table and click \"Save View\" to get started."
+msgstr "فیلترها را روی جدول اعمال کنید و برای شروع روی \"ذخیره نما\" کلیک کنید."
+
+#. placeholder {0}: selection.length
+#: src/app/common/delete-bulk-action.tsx:141
+msgid "Are you sure you want to delete {0} {entityName}?"
+msgstr "آیا مطمئن هستید که می‌خواهید {0} {entityName} را حذف کنید؟"
+
+#: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:42
+msgid "Are you sure you want to delete {selectionLength} assets?"
+msgstr "آیا مطمئن هستید که می‌خواهید {selectionLength} فایل را حذف کنید؟"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:142
+msgid "Are you sure you want to delete this address?"
+msgstr "آیا مطمئن هستید که می‌خواهید این آدرس را حذف کنید؟"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:287
+msgid "Are you sure you want to delete this draft order?"
+msgstr "آیا مطمئن هستید که می‌خواهید این سفارش پیش‌نویس را حذف کنید؟"
+
+#: src/lib/components/data-table/views-sheet.tsx:168
+msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
+msgstr "آیا مطمئن هستید که می‌خواهید این نمای عمومی را حذف کنید؟ این عملیات قابل بازگشت نیست و بر همه کاربران تأثیر می‌گذارد."
+
+#: src/lib/components/data-table/use-generated-columns.tsx:320
+msgid "Are you sure you want to delete this item? This action cannot be undone."
+msgstr "آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟ این عملیات قابل بازگشت نیست."
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:236
+msgid "Are you sure you want to delete this variant?"
+msgstr "آیا مطمئن هستید که می‌خواهید این نوع را حذف کنید؟"
+
+#: src/lib/components/data-table/views-sheet.tsx:173
+msgid "Are you sure you want to delete this view? This action cannot be undone."
+msgstr "آیا مطمئن هستید که می‌خواهید این نما را حذف کنید؟ این عملیات قابل بازگشت نیست."
+
+#: src/lib/components/shared/navigation-confirmation.tsx:47
+msgid "Are you sure you want to navigate away from this page? Any unsaved changes will be lost."
+msgstr "آیا مطمئن هستید که می‌خواهید از این صفحه خارج شوید؟ تمام تغییرات ذخیره نشده از بین می‌روند."
+
+#. placeholder {0}: selection.length
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:83
+msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
+msgstr "آیا مطمئن هستید که می‌خواهید {0} {entityType} را از کانال فعلی حذف کنید؟"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
+#: src/app/routes/_authenticated/_assets/assets.tsx:9
+#: src/app/routes/_authenticated/_assets/assets.tsx:16
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:310
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:208
+msgid "Assets"
+msgstr "فایل‌ها"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:125
+msgid "Assign"
+msgstr "اختصاص دادن"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:92
+msgid "Assign {entityType} to channel"
+msgstr "اختصاص {entityType} به کانال"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:325
+msgid "Assign options to existing variant"
+msgstr "اختصاص گزینه‌ها به نوع موجود"
+
+#: src/lib/components/shared/assign-to-channel-bulk-action.tsx:55
+msgid "Assign to channel"
+msgstr "اختصاص به کانال"
+
+#. placeholder {0}: currentInterval?.label
+#: src/app/routes/_authenticated/_system/job-queue.tsx:236
+msgid "Auto refresh: {0}"
+msgstr "تازه‌سازی خودکار: {0}"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:176
+msgid "Available currencies"
+msgstr "ارزهای موجود"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:164
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:111
+msgid "Available languages"
+msgstr "زبان‌های موجود"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:340
+msgid "Available Languages"
+msgstr "زبان‌های موجود"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:235
+msgid "Available:"
+msgstr "موجود:"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:72
+msgid "Average Order Value"
+msgstr "میانگین ارزش سفارش"
+
+#: src/lib/components/shared/facet-value-selector.tsx:288
+msgid "Back to search"
+msgstr "بازگشت به جستجو"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:28
+msgid "before"
+msgstr "قبل از"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:32
+msgid "between"
+msgstr "بین"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:493
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:433
+msgid "Billing address"
+msgstr "آدرس صورتحساب"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:116
+msgid "Billing address changed"
+msgstr "آدرس صورتحساب تغییر کرد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:174
+msgid "Billing address set for order"
+msgstr "آدرس صورتحساب برای سفارش تنظیم شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
+msgid "Billing address unset for order"
+msgstr "آدرس صورتحساب از سفارش حذف شد"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
+msgid "Calculator"
+msgstr "ماشین‌حساب"
+
+#: src/app/common/duplicate-entity-dialog.tsx:108
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:414
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:350
+#: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
+#: src/lib/components/data-input/product-multi-selector-input.tsx:364
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:119
+#: src/lib/components/data-table/use-generated-columns.tsx:327
+#: src/lib/components/data-table/views-sheet.tsx:217
+#: src/lib/components/data-table/views-sheet.tsx:295
+#: src/lib/components/layout/manage-languages-dialog.tsx:396
+#: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:122
+#: src/lib/components/shared/confirmation-dialog.tsx:43
+#: src/lib/components/shared/customer-address-form.tsx:325
+#: src/lib/components/shared/navigation-confirmation.tsx:55
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
+msgid "Cancel"
+msgstr "لغو"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:184
+msgid "Cancel Job"
+msgstr "لغو کار"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:397
+msgid "Cancel modification"
+msgstr "لغو تغییر"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:153
+msgid "Cancel payment"
+msgstr "لغو پرداخت"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
+msgid "Category"
+msgstr "دسته‌بندی"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:103
+msgid "Channel"
+msgstr "کانال"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:187
+msgid "Channel defaults"
+msgstr "پیش‌فرض‌های کانال"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:323
+msgid "Channel Languages"
+msgstr "زبان‌های کانال"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:40
+#: src/app/routes/_authenticated/_channels/channels.tsx:16
+#: src/app/routes/_authenticated/_channels/channels.tsx:24
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
+#: src/lib/components/layout/channel-switcher.tsx:117
+msgid "Channels"
+msgstr "کانال‌ها"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:195
+#: src/lib/components/shared/customer-address-form.tsx:175
+msgid "City"
+msgstr "شهر"
+
+#: src/lib/components/data-input/product-multi-selector-input.tsx:323
+msgid "Clear"
+msgstr "پاک کردن"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
+#: src/lib/components/data-table/data-table.tsx:277
+msgid "Clear all"
+msgstr "پاک کردن همه"
+
+#: src/lib/components/data-table/data-table-filter-dialog.tsx:54
+msgid "Clear filter"
+msgstr "پاک کردن فیلتر"
+
+#: src/lib/components/data-table/data-table-faceted-filter.tsx:163
+msgid "Clear filters"
+msgstr "پاک کردن فیلترها"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:43
+msgid "Click \"Run Test\" to test this shipping method."
+msgstr "برای آزمایش این روش ارسال روی \"اجرای آزمون\" کلیک کنید."
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
+#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:113
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:140
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:191
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:80
+msgid "Code"
+msgstr "کد"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:36
+msgid "Collection contents for {collectionName}"
+msgstr "محتویات مجموعه {collectionName}"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
+#: src/app/routes/_authenticated/_collections/collections.tsx:29
+#: src/app/routes/_authenticated/_collections/collections.tsx:85
+msgid "Collections"
+msgstr "مجموعه‌ها"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
+msgid "Collections moved successfully"
+msgstr "مجموعه‌ها با موفقیت منتقل شدند"
+
+#: src/lib/components/data-table/data-table-view-options.tsx:93
+msgid "Column settings"
+msgstr "تنظیمات ستون"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:164
+#: src/lib/components/shared/customer-address-form.tsx:116
+msgid "Company"
+msgstr "شرکت"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:308
+msgid "Complete draft"
+msgstr "تکمیل پیش‌نویس"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:226
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
+msgid "Conditions"
+msgstr "شرایط"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:261
+msgid "Configure available languages for your store and channels"
+msgstr "پیکربندی زبان‌های موجود برای فروشگاه و کانال‌های شما"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:359
+#: src/lib/components/shared/navigation-confirmation.tsx:58
+msgid "Confirm"
+msgstr "تایید"
+
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:113
+msgid "Confirm Action"
+msgstr "تایید عملیات"
+
+#: src/lib/components/data-table/use-generated-columns.tsx:317
+msgid "Confirm deletion"
+msgstr "تایید حذف"
+
+#: src/lib/components/shared/navigation-confirmation.tsx:44
+msgid "Confirm navigation"
+msgstr "تایید پیمایش"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:56
+msgid "contains"
+msgstr "شامل"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
+#: src/app/routes/_authenticated/_collections/collections.tsx:143
+msgid "Contents"
+msgstr "محتویات"
+
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
+#: src/lib/components/shared/confirmation-dialog.tsx:52
+msgid "Continue"
+msgstr "ادامه"
+
+#: src/lib/components/data-table/views-sheet.tsx:253
+msgid "Copy to Personal"
+msgstr "کپی به شخصی"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:34
+#: src/app/routes/_authenticated/_countries/countries.tsx:14
+#: src/app/routes/_authenticated/_countries/countries.tsx:23
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:103
+msgid "Countries"
+msgstr "کشورها"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:216
+#: src/lib/components/shared/customer-address-form.tsx:230
+msgid "Country"
+msgstr "کشور"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:196
+msgid "Coupon code"
+msgstr "کد کوپن"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
+msgid "Coupon code removed from order"
+msgstr "کد کوپن از سفارش حذف شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:217
+msgid "Coupon code set for order"
+msgstr "کد کوپن برای سفارش تنظیم شد"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:134
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:163
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:135
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+msgid "Create"
+msgstr "ایجاد"
+
+#. placeholder {0}: searchValue.trim()
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:161
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:178
+msgid "Create \"{0}\""
+msgstr "ایجاد \"{0}\""
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
+msgid "Create {createCount} variants"
+msgstr "ایجاد {createCount} نوع"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:249
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:408
+msgid "Create options"
+msgstr "ایجاد گزینه‌ها"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:255
+msgid "Create product options"
+msgstr "ایجاد گزینه‌های محصول"
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:364
+msgid "Create variant"
+msgstr "ایجاد نوع"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
+msgid "Create Variants"
+msgstr "ایجاد انواع"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
+msgid "Create variants for your product"
+msgstr "انواع را برای محصول خود ایجاد کنید"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
+#: src/lib/framework/layout-engine/page-layout.tsx:394
+msgid "Created"
+msgstr "ایجاد شد"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:174
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:221
+msgid "Created at"
+msgstr "ایجاد شده در"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
+msgid "Creating..."
+msgstr "در حال ایجاد..."
+
+#: src/lib/components/layout/channel-switcher.tsx:138
+msgctxt "current channel"
+msgid "Current"
+msgstr "فعلی"
+
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:199
+msgid "Current facet values"
+msgstr "مقادیر فعلی ویژگی"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:55
+msgid "Current status"
+msgstr "وضعیت فعلی"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:362
+msgid "Custom fields"
+msgstr "فیلدهای سفارشی"
+
+#: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:42
+msgid "Custom Fields"
+msgstr "فیلدهای سفارشی"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:150
+msgid "Custom fields changed"
+msgstr "فیلدهای سفارشی تغییر کرد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:450
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:388
+#: src/lib/components/shared/role-code-label.tsx:8
+msgid "Customer"
+msgstr "مشتری"
+
+#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:55
+msgid "Customer added to group"
+msgstr "مشتری به گروه اضافه شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:45
+msgid "Customer details updated"
+msgstr "جزئیات مشتری به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-sheet.tsx:36
+msgid "Customer group members for {customerGroupName}"
+msgstr "اعضای گروه مشتری {customerGroupName}"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:255
+msgid "Customer groups"
+msgstr "گروه‌های مشتری"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:37
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:15
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:22
+msgid "Customer Groups"
+msgstr "گروه‌های مشتری"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:30
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:249
+msgid "Customer history"
+msgstr "تاریخچه مشتری"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:84
+msgid "Customer information updated"
+msgstr "اطلاعات مشتری به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:56
+msgid "Customer not found"
+msgstr "مشتری یافت نشد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:39
+msgid "Customer registered"
+msgstr "مشتری ثبت‌نام شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:153
+msgid "Customer set for order"
+msgstr "مشتری برای سفارش تنظیم شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:98
+msgid "Customer updated"
+msgstr "مشتری به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:41
+msgid "Customer verified"
+msgstr "مشتری تایید شد"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:114
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:58
+#: src/app/routes/_authenticated/_customers/customers.tsx:16
+#: src/app/routes/_authenticated/_customers/customers.tsx:22
+msgid "Customers"
+msgstr "مشتریان"
+
+#: src/lib/components/layout/nav-user.tsx:131
+msgctxt "theme"
+msgid "Dark"
+msgstr "تیره"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
+#: src/lib/components/shared/customer-address-form.tsx:310
+msgid "Default Billing Address"
+msgstr "آدرس صورتحساب پیش‌فرض"
+
+#: src/lib/components/shared/channel-code-label.tsx:5
+msgid "Default channel"
+msgstr "کانال پیش‌فرض"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:205
+msgid "Default currency"
+msgstr "ارز پیش‌فرض"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:192
+msgid "Default language"
+msgstr "زبان پیش‌فرض"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:368
+msgid "Default Language"
+msgstr "زبان پیش‌فرض"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
+#: src/lib/components/shared/customer-address-form.tsx:290
+msgid "Default Shipping Address"
+msgstr "آدرس ارسال پیش‌فرض"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:226
+msgid "Default shipping zone"
+msgstr "منطقه ارسال پیش‌فرض"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:218
+msgid "Default tax zone"
+msgstr "منطقه مالیاتی پیش‌فرض"
+
+#: src/app/common/delete-bulk-action.tsx:139
+#: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
+#: src/lib/components/data-table/use-generated-columns.tsx:310
+#: src/lib/components/data-table/use-generated-columns.tsx:341
+#: src/lib/components/data-table/views-sheet.tsx:272
+#: src/lib/components/data-table/views-sheet.tsx:298
+msgid "Delete"
+msgstr "حذف"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:141
+msgid "Delete Address"
+msgstr "حذف آدرس"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:166
+msgid "Delete column"
+msgstr "حذف ستون"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:293
+msgid "Delete draft"
+msgstr "حذف پیش‌نویس"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:286
+msgid "Delete draft order"
+msgstr "حذف سفارش پیش‌نویس"
+
+#: src/lib/components/data-table/views-sheet.tsx:163
+msgid "Delete Global View"
+msgstr "حذف نمای عمومی"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:218
+msgid "Delete row"
+msgstr "حذف سطر"
+
+#: src/lib/components/data-table/views-sheet.tsx:163
+msgid "Delete View"
+msgstr "حذف نما"
+
+#: src/app/common/delete-bulk-action.tsx:108
+msgid "Deleted {deleted} {entityName}"
+msgstr "{deleted} {entityName} حذف شد"
+
+#: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:25
+msgid "Deleted {selectionLength} assets"
+msgstr "{selectionLength} فایل حذف شد"
+
+#: src/lib/components/data-table/use-generated-columns.tsx:291
+msgid "Deleted successfully"
+msgstr "با موفقیت حذف شد"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:167
+#: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:14
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:164
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:155
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:166
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:98
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:157
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
+msgid "Description"
+msgstr "توضیحات"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:166
+msgid "Description (alt)"
+msgstr "توضیحات (متن جایگزین)"
+
+#: src/lib/components/layout/dev-mode-indicator.tsx:12
+#: src/lib/components/layout/nav-user.tsx:144
+msgid "Dev Mode"
+msgstr "حالت توسعه"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:220
+msgid "Disable"
+msgstr "غیرفعال کردن"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:50
+#: src/lib/components/layout/nav-user.tsx:155
+msgid "Disabled"
+msgstr "غیرفعال"
+
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
+msgid "Discount"
+msgstr "تخفیف"
+
+#: src/lib/components/layout/language-dialog.tsx:42
+msgid "Display language"
+msgstr "زبان نمایش"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
+msgid "Do not track"
+msgstr "دنبال نکردن"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:58
+msgid "does not contain"
+msgstr "شامل نیست"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:280
+#: src/app/routes/_authenticated/_orders/orders.tsx:113
+msgid "Draft order"
+msgstr "سفارش پیش‌نویس"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:241
+msgid "Draft order completed"
+msgstr "سفارش پیش‌نویس تکمیل شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:258
+msgid "Draft order deleted"
+msgstr "سفارش پیش‌نویس حذف شد"
+
+#: src/lib/components/data-input/custom-field-list-input.tsx:72
+msgid "Drag to reorder"
+msgstr "برای مرتب‌سازی بکشید"
+
+#: src/app/common/duplicate-bulk-action.tsx:131
+#: src/app/common/duplicate-entity-dialog.tsx:111
+#: src/lib/components/data-table/views-sheet.tsx:246
+msgid "Duplicate"
+msgstr "تکثیر"
+
+#. placeholder {0}: entityName.toLowerCase()
+#: src/app/common/duplicate-entity-dialog.tsx:83
+msgid "Duplicate {0}s"
+msgstr "تکثیر {0}"
+
+#. placeholder {0}: progress.completed
+#. placeholder {1}: progress.total
+#: src/app/common/duplicate-bulk-action.tsx:127
+msgid "Duplicating... ({0}/{1})"
+msgstr "در حال تکثیر... ({0}/{1})"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:269
+msgid "e.g. Size"
+msgstr "مثلا اندازه"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:290
+msgid "e.g. Small"
+msgstr "مثلا کوچک"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:144
+msgid "e.g., Red, Large, Cotton"
+msgstr "مثلا قرمز، بزرگ، پنبه"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:474
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:500
+#: src/lib/components/shared/asset/asset-gallery.tsx:457
+#: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
+msgid "Edit"
+msgstr "ویرایش"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:129
+msgid "Edit Address"
+msgstr "ویرایش آدرس"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:95
+msgid "Edit asset"
+msgstr "ویرایش فایل"
+
+#: src/app/routes/_authenticated/_product-variants/components/product-variant-bulk-actions.tsx:95
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:156
+#: src/app/routes/_authenticated/_products/components/product-bulk-actions.tsx:89
+msgid "Edit facet values"
+msgstr "ویرایش مقادیر ویژگی"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
+msgid "Edit image"
+msgstr "ویرایش تصویر"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Edit Layout"
+msgstr "ویرایش چیدمان"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
+msgid "Edit link"
+msgstr "ویرایش پیوند"
+
+#: src/app/routes/_authenticated/_zones/zones.tsx:39
+msgid "Edit members"
+msgstr "ویرایش اعضا"
+
+#: src/lib/components/shared/history-timeline/history-note-editor.tsx:44
+msgid "Edit Note"
+msgstr "ویرایش یادداشت"
+
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:195
+msgid "Edit or delete existing tags"
+msgstr "ویرایش یا حذف برچسب‌های موجود"
+
+#: src/lib/components/data-input/slug-input.tsx:279
+#: src/lib/components/data-input/slug-input.tsx:281
+msgid "Edit slug manually"
+msgstr "ویرایش دستی نامک"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:132
+msgid "Edit the address details below."
+msgstr "جزئیات آدرس زیر را ویرایش کنید."
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:185
+msgid "Email address"
+msgstr "آدرس ایمیل"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:138
+#: src/app/routes/_authenticated/_profile/profile.tsx:104
+msgid "Email Address or identifier"
+msgstr "آدرس ایمیل یا شناسه"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:63
+msgid "Email update requested"
+msgstr "درخواست به‌روزرسانی ایمیل"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:65
+msgid "Email update verified"
+msgstr "به‌روزرسانی ایمیل تایید شد"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:220
+msgid "Enable"
+msgstr "فعال کردن"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:144
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:121
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:145
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:117
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:47
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:49
+#: src/lib/components/layout/nav-user.tsx:152
+msgid "Enabled"
+msgstr "فعال"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:185
+msgid "Ends at"
+msgstr "پایان در"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:306
+msgid "Enter refund note"
+msgstr "یادداشت بازپرداخت را وارد کنید"
+
+#: src/lib/components/data-input/slug-input.tsx:239
+msgid "Enter slug manually"
+msgstr "نامک را به صورت دستی وارد کنید"
+
+#: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:52
+msgid "Enter the transaction ID for this refund settlement"
+msgstr "شناسه تراکنش را برای این تسویه بازپرداخت وارد کنید"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:163
+msgid "Enter transaction ID"
+msgstr "شناسه تراکنش را وارد کنید"
+
+#: src/lib/framework/layout-engine/page-layout.tsx:367
+msgid "Entity Information"
+msgstr "اطلاعات موجودیت"
+
+#: src/lib/components/shared/error-page.tsx:18
+msgid "Error"
+msgstr "خطا"
+
+#. placeholder {0}: error.message
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:46
+msgid "Error loading customer history: {0}"
+msgstr "خطا در بارگذاری تاریخچه مشتری: {0}"
+
+#. placeholder {0}: error.message
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:46
+msgid "Error loading order history: {0}"
+msgstr "خطا در بارگذاری تاریخچه سفارش: {0}"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:183
+msgid "Error message"
+msgstr "پیام خطا"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
+msgid "Error transitioning to state"
+msgstr "خطا در انتقال به وضعیت"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:72
+msgid "Every 10 seconds"
+msgstr "هر ۱۰ ثانیه"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:73
+msgid "Every 30 seconds"
+msgstr "هر ۳۰ ثانیه"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:71
+msgid "Every 5 seconds"
+msgstr "هر ۵ ثانیه"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:74
+msgid "Every 60 seconds"
+msgstr "هر ۶۰ ثانیه"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/price-display.tsx:17
+msgid "ex. tax:"
+msgstr "بدون مالیات:"
+
+#: src/lib/components/layout/nav-user.tsx:98
+msgid "Explore Enterprise Edition"
+msgstr "کاوش نسخه سازمانی"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:122
+msgid "Facet"
+msgstr "ویژگی"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:301
+msgid "Facet values"
+msgstr "مقادیر ویژگی"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:199
+msgid "Facet Values"
+msgstr "مقادیر ویژگی"
+
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:32
+msgid "Facet values for {facetName}"
+msgstr "مقادیر ویژگی برای {facetName}"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:39
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
+#: src/app/routes/_authenticated/_facets/facets.tsx:24
+#: src/app/routes/_authenticated/_facets/facets.tsx:64
+#: src/lib/components/shared/facet-value-selector.tsx:321
+msgid "Facets"
+msgstr "ویژگی‌ها"
+
+#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:61
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:129
+msgid "Failed to add customer to group"
+msgstr "افزودن مشتری به گروه ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:103
+msgid "Failed to add option value"
+msgstr "افزودن مقدار گزینه ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:52
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:58
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:86
+msgid "Failed to add payment"
+msgstr "افزودن پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:78
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:82
+msgid "Failed to cancel payment"
+msgstr "لغو پرداخت ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:110
+msgid "Failed to convert global view to personal view"
+msgstr "تبدیل نمای عمومی به نمای شخصی ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:120
+msgid "Failed to convert view to global"
+msgstr "تبدیل نما به عمومی ناموفق بود"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:119
+msgid "Failed to create address"
+msgstr "ایجاد آدرس ناموفق بود"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+msgid "Failed to create channel"
+msgstr "ایجاد کانال ناموفق بود"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+msgid "Failed to create collection"
+msgstr "ایجاد مجموعه ناموفق بود"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+msgid "Failed to create country"
+msgstr "ایجاد کشور ناموفق بود"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+msgid "Failed to create customer"
+msgstr "ایجاد مشتری ناموفق بود"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+msgid "Failed to create customer group"
+msgstr "ایجاد گروه مشتری ناموفق بود"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+msgid "Failed to create facet"
+msgstr "ایجاد ویژگی ناموفق بود"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+msgid "Failed to create facet value"
+msgstr "ایجاد مقدار ویژگی ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:86
+msgid "Failed to create option group"
+msgstr "ایجاد گروه گزینه ناموفق بود"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+msgid "Failed to create payment method"
+msgstr "ایجاد روش پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+msgid "Failed to create product"
+msgstr "ایجاد محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:117
+msgid "Failed to create product option group"
+msgstr "ایجاد گروه گزینه‌های محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:124
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:209
+msgid "Failed to create product options"
+msgstr "ایجاد گزینه‌های محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:112
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
+msgid "Failed to create product variant"
+msgstr "ایجاد نوع محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:111
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:119
+msgid "Failed to create promotion"
+msgstr "ایجاد تبلیغات ناموفق بود"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+msgid "Failed to create role"
+msgstr "ایجاد نقش ناموفق بود"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+msgid "Failed to create seller"
+msgstr "ایجاد فروشنده ناموفق بود"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+msgid "Failed to create stock location"
+msgstr "ایجاد محل انبار ناموفق بود"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+msgid "Failed to create tax category"
+msgstr "ایجاد دسته‌بندی مالیاتی ناموفق بود"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+msgid "Failed to create tax rate"
+msgstr "ایجاد نرخ مالیات ناموفق بود"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+msgid "Failed to create zone"
+msgstr "ایجاد منطقه ناموفق بود"
+
+#: src/lib/components/data-table/use-generated-columns.tsx:293
+#: src/lib/components/data-table/use-generated-columns.tsx:299
+msgid "Failed to delete"
+msgstr "حذف ناموفق بود"
+
+#: src/app/common/delete-bulk-action.tsx:115
+msgid "Failed to delete {failed} {entityName}"
+msgstr "حذف {failed} {entityName} ناموفق بود"
+
+#: src/app/common/delete-bulk-action.tsx:114
+msgid "Failed to delete {failed} {entityName}: {allErrors}"
+msgstr "حذف {failed} {entityName} ناموفق بود: {allErrors}"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:48
+msgid "Failed to delete address"
+msgstr "حذف آدرس ناموفق بود"
+
+#: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:28
+msgid "Failed to delete assets: {message}"
+msgstr "حذف فایل‌ها ناموفق بود: {message}"
+
+#: src/lib/components/data-table/views-sheet.tsx:87
+msgid "Failed to delete global view"
+msgstr "حذف نمای عمومی ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:87
+msgid "Failed to delete view"
+msgstr "حذف نما ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:100
+msgid "Failed to duplicate global view"
+msgstr "تکثیر نمای عمومی ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:100
+msgid "Failed to duplicate view"
+msgstr "تکثیر نما ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:79
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:85
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:187
+msgid "Failed to fulfill order"
+msgstr "تحویل سفارش ناموفق بود"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:290
+msgid "Failed to load global settings"
+msgstr "بارگذاری تنظیمات عمومی ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
+msgid "Failed to modify order"
+msgstr "تغییر سفارش ناموفق بود"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:290
+msgid "Failed to move collections"
+msgstr "جابجایی مجموعه‌ها ناموفق بود"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
+msgid "Failed to remove customer from group"
+msgstr "حذف مشتری از گروه ناموفق بود"
+
+#: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:73
+msgid "Failed to remove facet from channel: {message}"
+msgstr "حذف ویژگی از کانال ناموفق بود: {message}"
+
+#: src/lib/components/data-table/views-sheet.tsx:68
+msgid "Failed to rename global view"
+msgstr "تغییر نام نمای عمومی ناموفق بود"
+
+#: src/lib/components/data-table/views-sheet.tsx:68
+msgid "Failed to rename view"
+msgstr "تغییر نام نما ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:48
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:52
+msgid "Failed to settle payment"
+msgstr "تسویه پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:94
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:98
+msgid "Failed to settle refund"
+msgstr "تسویه بازپرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
+msgid "Failed to transition order to state"
+msgstr "انتقال سفارش به وضعیت ناموفق بود"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx:60
+msgid "Failed to update address"
+msgstr "به‌روزرسانی آدرس ناموفق بود"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:74
+msgid "Failed to update asset"
+msgstr "به‌روزرسانی فایل ناموفق بود"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+msgid "Failed to update channel"
+msgstr "به‌روزرسانی کانال ناموفق بود"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+msgid "Failed to update collection"
+msgstr "به‌روزرسانی مجموعه ناموفق بود"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+msgid "Failed to update country"
+msgstr "به‌روزرسانی کشور ناموفق بود"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+msgid "Failed to update customer"
+msgstr "به‌روزرسانی مشتری ناموفق بود"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+msgid "Failed to update customer group"
+msgstr "به‌روزرسانی گروه مشتری ناموفق بود"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+msgid "Failed to update facet"
+msgstr "به‌روزرسانی ویژگی ناموفق بود"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+msgid "Failed to update facet value"
+msgstr "به‌روزرسانی مقدار ویژگی ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:42
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:46
+msgid "Failed to update fulfillment state"
+msgstr "به‌روزرسانی وضعیت تحویل ناموفق بود"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:76
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:82
+msgid "Failed to update global settings"
+msgstr "به‌روزرسانی تنظیمات عمومی ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:91
+msgid "Failed to update order"
+msgstr "به‌روزرسانی سفارش ناموفق بود"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+msgid "Failed to update payment method"
+msgstr "به‌روزرسانی روش پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:63
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:67
+msgid "Failed to update payment state"
+msgstr "به‌روزرسانی وضعیت پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+msgid "Failed to update product"
+msgstr "به‌روزرسانی محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:118
+msgid "Failed to update product option group"
+msgstr "به‌روزرسانی گروه گزینه‌های محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:112
+msgid "Failed to update product variant"
+msgstr "به‌روزرسانی نوع محصول ناموفق بود"
+
+#: src/app/routes/_authenticated/_profile/profile.tsx:65
+msgid "Failed to update profile"
+msgstr "به‌روزرسانی پروفایل ناموفق بود"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:111
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:119
+msgid "Failed to update promotion"
+msgstr "به‌روزرسانی تبلیغات ناموفق بود"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+msgid "Failed to update role"
+msgstr "به‌روزرسانی نقش ناموفق بود"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+msgid "Failed to update seller"
+msgstr "به‌روزرسانی فروشنده ناموفق بود"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+msgid "Failed to update stock location"
+msgstr "به‌روزرسانی محل انبار ناموفق بود"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+msgid "Failed to update tax category"
+msgstr "به‌روزرسانی دسته‌بندی مالیاتی ناموفق بود"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+msgid "Failed to update tax rate"
+msgstr "به‌روزرسانی نرخ مالیات ناموفق بود"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+msgid "Failed to update zone"
+msgstr "به‌روزرسانی منطقه ناموفق بود"
+
+#: src/lib/components/data-table/filters/data-table-boolean-filter.tsx:53
+msgid "False"
+msgstr "نادرست"
+
+#: src/lib/components/data-table/data-table-filter-dialog.tsx:34
+msgid "Filter by {columnId}"
+msgstr "فیلتر بر اساس {columnId}"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:366
+msgid "Filter by collection name"
+msgstr "فیلتر بر اساس نام مجموعه"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:104
+msgid "Filter by tags"
+msgstr "فیلتر بر اساس برچسب‌ها"
+
+#: src/lib/components/data-table/data-table.tsx:217
+msgid "Filter..."
+msgstr "فیلتر..."
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
+msgid "Filters"
+msgstr "فیلترها"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:126
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:173
+#: src/app/routes/_authenticated/_profile/profile.tsx:92
+msgid "First name"
+msgstr "نام"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:152
+msgid "Focal Point"
+msgstr "نقطه کانونی"
+
+#. placeholder {0}: testResult.length
+#. placeholder {1}: testResult.length !== 1 ? 's' : ''
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:62
+msgid "Found {0} eligible shipping method{1}"
+msgstr "{0} روش ارسال واجد شرایط یافت شد"
+
+#. placeholder {0}: entry.data.from
+#. placeholder {1}: entry.data.to
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:11
+msgid "From {0} to {1}"
+msgstr "از {0} به {1}"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:219
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:225
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
+msgid "Fulfill order"
+msgstr "تحویل سفارش"
+
+#. placeholder {0}: fulfillment.lines.reduce((acc, line) => acc + line.quantity, 0)
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:121
+msgid "Fulfilled items ({0})"
+msgstr "اقلام تحویل شده ({0})"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:308
+msgid "Fulfilling..."
+msgstr "در حال تحویل..."
+
+#. placeholder {0}: entry.data.fulfillmentId
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:63
+msgid "Fulfillment #{0} created"
+msgstr "تحویل شماره {0} ایجاد شد"
+
+#. placeholder {0}: entry.data.fulfillmentId
+#. placeholder {1}: entry.data.from
+#. placeholder {2}: entry.data.to
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:50
+msgid "Fulfillment #{0} from {1} to {2}"
+msgstr "تحویل شماره {0} از {1} به {2}"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:94
+msgid "Fulfillment created"
+msgstr "تحویل ایجاد شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
+msgid "Fulfillment details"
+msgstr "جزئیات تحویل"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
+msgid "Fulfillment handler"
+msgstr "مدیریت تحویل"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:105
+msgid "Fulfillment ID"
+msgstr "شناسه تحویل"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:39
+msgid "Fulfillment state updated successfully"
+msgstr "وضعیت تحویل با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:92
+msgid "Fulfillment transitioned"
+msgstr "تحویل منتقل شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:158
+#: src/lib/components/shared/customer-address-form.tsx:99
+msgid "Full Name"
+msgstr "نام کامل"
+
+#: src/lib/components/shared/custom-fields-form.tsx:100
+msgid "General"
+msgstr "عمومی"
+
+#: src/lib/components/data-input/slug-input.tsx:279
+#: src/lib/components/data-input/slug-input.tsx:281
+msgid "Generate slug automatically"
+msgstr "ایجاد خودکار نامک"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:270
+msgid "Global Languages"
+msgstr "زبان‌های عمومی"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:129
+msgid "Global out of stock threshold"
+msgstr "آستانه عمومی اتمام موجودی"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:41
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:91
+msgid "Global Settings"
+msgstr "تنظیمات عمومی"
+
+#: src/lib/components/data-table/views-sheet.tsx:108
+msgid "Global view converted to personal view successfully"
+msgstr "نمای عمومی با موفقیت به نمای شخصی تبدیل شد"
+
+#: src/lib/components/data-table/views-sheet.tsx:83
+msgid "Global view deleted successfully"
+msgstr "نمای عمومی با موفقیت حذف شد"
+
+#: src/lib/components/data-table/views-sheet.tsx:96
+msgid "Global view duplicated successfully"
+msgstr "نمای عمومی با موفقیت تکثیر شد"
+
+#: src/lib/components/data-table/views-sheet.tsx:63
+msgid "Global view renamed successfully"
+msgstr "نام نمای عمومی با موفقیت تغییر کرد"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:40
+msgid "greater than"
+msgstr "بزرگتر از"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:43
+msgid "greater than or equal"
+msgstr "بزرگتر یا مساوی"
+
+#: src/app/routes/_authenticated/_product-variants/components/variant-price-detail.tsx:82
+msgid "Gross price: <0/>"
+msgstr "قیمت ناخالص: <0/>"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:76
+msgid "Heading 1"
+msgstr "سرفصل ۱"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:77
+msgid "Heading 2"
+msgstr "سرفصل ۲"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:78
+msgid "Heading 3"
+msgstr "سرفصل ۳"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:79
+msgid "Heading 4"
+msgstr "سرفصل ۴"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:80
+msgid "Heading 5"
+msgstr "سرفصل ۵"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:81
+msgid "Heading 6"
+msgstr "سرفصل ۶"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:43
+msgid "Health checks"
+msgstr "بررسی‌های سلامت"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:13
+msgid "Healthchecks"
+msgstr "بررسی سلامت"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:191
+msgid "Height"
+msgstr "ارتفاع"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:107
+msgid "ID"
+msgstr "شناسه"
+
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:64
+msgid "Identifier"
+msgstr "شناسه"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:178
+msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
+msgstr "اگر فعال باشد، فیلترها از مجموعه والد به ارث برده می‌شوند و با فیلترهای تنظیم شده در این مجموعه ترکیب می‌شوند."
+
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:33
+msgid "Image"
+msgstr "تصویر"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:36
+msgid "in"
+msgstr "در"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:176
+msgid "Inherit filters"
+msgstr "وراثت فیلترها"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:250
+msgid "Inherit from global settings"
+msgstr "وراثت از تنظیمات عمومی"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:106
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:208
+msgid "Insert image"
+msgstr "درج تصویر"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:84
+msgid "Insert link"
+msgstr "درج پیوند"
+
+#: src/app/routes/_authenticated/index.tsx:181
+msgid "Insights"
+msgstr "بینش‌ها"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:30
+msgid "is after"
+msgstr "بعد از است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:28
+msgid "is before"
+msgstr "قبل از است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:32
+msgid "is between"
+msgstr "بین است"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:115
+msgid "Is default tax category"
+msgstr "دسته‌بندی مالیاتی پیش‌فرض است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:24
+msgid "is equal to"
+msgstr "مساوی است با"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:40
+msgid "is greater than"
+msgstr "بزرگتر از است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:45
+msgid "is greater than or equal to"
+msgstr "بزرگتر یا مساوی است با"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:36
+msgid "is in"
+msgstr "در است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:48
+msgid "is less than"
+msgstr "کوچکتر از است"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:53
+msgid "is less than or equal to"
+msgstr "کوچکتر یا مساوی است با"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:26
+msgid "is not equal to"
+msgstr "مساوی نیست با"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:38
+msgid "is not in"
+msgstr "در نیست"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:34
+msgid "is null"
+msgstr "خالی است"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:105
+msgid "Item added to order"
+msgstr "مورد به سفارش اضافه شد"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:33
+#: src/app/routes/_authenticated/_system/job-queue.tsx:97
+msgid "Job Queue"
+msgstr "صف کارها"
+
+#: src/lib/components/layout/nav-user.tsx:112
+msgid "Language"
+msgstr "زبان"
+
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/layout/channel-switcher.tsx:103
+msgid "Language: {0}"
+msgstr "زبان: {0}"
+
+#: src/lib/components/date-range-picker.tsx:57
+msgctxt "date-range"
+msgid "Last 30 days"
+msgstr "30 روز گذشته"
+
+#: src/lib/components/date-range-picker.tsx:41
+msgctxt "date-range"
+msgid "Last 7 days"
+msgstr "7 روز گذشته"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:133
+msgid "Last Executed"
+msgstr "آخرین اجرا"
+
+#: src/lib/components/date-range-picker.tsx:81
+msgctxt "date-range"
+msgid "Last month"
+msgstr "ماه گذشته"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:132
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
+#: src/app/routes/_authenticated/_profile/profile.tsx:98
+msgid "Last name"
+msgstr "نام خانوادگی"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:169
+msgid "Last Result"
+msgstr "آخرین نتیجه"
+
+#. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:58
+msgid "Last updated {0}"
+msgstr "آخرین به‌روزرسانی {0}"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Latest Orders"
+msgstr "آخرین سفارش‌ها"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:48
+msgid "less than"
+msgstr "کوچکتر از"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:51
+msgid "less than or equal"
+msgstr "کوچکتر یا مساوی"
+
+#: src/lib/components/layout/nav-user.tsx:127
+msgctxt "theme"
+msgid "Light"
+msgstr "روشن"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:90
+msgid "Link href"
+msgstr "آدرس پیوند"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:115
+msgid "Link target"
+msgstr "هدف پیوند"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:103
+msgid "Link title"
+msgstr "عنوان پیوند"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:75
+msgid "Load more"
+msgstr "بارگذاری بیشتر"
+
+#: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:63
+msgid "Loading addresses..."
+msgstr "در حال بارگذاری آدرس‌ها..."
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:376
+msgid "Loading collections..."
+msgstr "در حال بارگذاری مجموعه‌ها..."
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
+msgid "Loading global settings..."
+msgstr "در حال بارگذاری تنظیمات عمومی..."
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:158
+msgid "Loading preview…"
+msgstr "در حال بارگذاری پیش‌نمایش..."
+
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:91
+msgid "Loading tags..."
+msgstr "در حال بارگذاری برچسب‌ها..."
+
+#: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:124
+#: src/lib/components/data-input/product-multi-selector-input.tsx:82
+#: src/lib/components/data-input/relation-selector.tsx:427
+#: src/lib/components/shared/country-selector.tsx:88
+#: src/lib/components/shared/customer-selector.tsx:90
+#: src/lib/components/shared/facet-value-selector.tsx:275
+#: src/lib/components/shared/seller-selector.tsx:92
+msgid "Loading..."
+msgstr "در حال بارگذاری..."
+
+#: src/lib/components/layout/language-dialog.tsx:60
+msgid "Locale"
+msgstr "محلی‌سازی"
+
+#: src/lib/components/layout/nav-user.tsx:165
+msgid "Log out"
+msgstr "خروج"
+
+#: src/lib/components/data-table/views-sheet.tsx:263
+msgid "Make Global"
+msgstr "تبدیل به عمومی"
+
+#: src/lib/components/data-table/views-sheet.tsx:130
+msgid "Manage global saved views that are visible to all users"
+msgstr "مدیریت نماهای ذخیره شده عمومی که برای همه کاربران قابل مشاهده است"
+
+#: src/lib/components/data-table/manage-global-views-button.tsx:20
+msgid "Manage global views"
+msgstr "مدیریت نماهای عمومی"
+
+#: src/lib/components/data-table/views-sheet.tsx:125
+msgid "Manage Global Views"
+msgstr "مدیریت نماهای عمومی"
+
+#: src/lib/components/layout/channel-switcher.tsx:181
+#: src/lib/components/layout/manage-languages-dialog.tsx:258
+msgid "Manage Languages"
+msgstr "مدیریت زبان‌ها"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:215
+msgid "Manage tags"
+msgstr "مدیریت برچسب‌ها"
+
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:192
+msgid "Manage Tags"
+msgstr "مدیریت برچسب‌ها"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:252
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:173
+msgid "Manage variants"
+msgstr "مدیریت انواع"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:56
+msgid "Manage Variants"
+msgstr "مدیریت انواع"
+
+#: src/lib/components/data-table/views-sheet.tsx:132
+msgid "Manage your personal saved views for this table"
+msgstr "مدیریت نماهای ذخیره شده شخصی خود برای این جدول"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:60
+msgid "matches regex"
+msgstr "با عبارت باقاعده مطابقت دارد"
+
+#: src/lib/components/layout/language-dialog.tsx:96
+msgid "Medium date"
+msgstr "تاریخ متوسط"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:245
+msgid "Metadata"
+msgstr "فراداده"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:106
+msgid "Method"
+msgstr "روش"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:63
+msgid "Metrics"
+msgstr "معیارها"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
+#: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
+msgid "Modify"
+msgstr "تغییر"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:392
+msgid "Modify order"
+msgstr "تغییر سفارش"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:83
+msgid "Monitored Resources"
+msgstr "منابع نظارت شده"
+
+#: src/lib/components/date-range-picker.tsx:65
+msgctxt "date-range"
+msgid "Month to date"
+msgstr "از ابتدای ماه تاکنون"
+
+#: src/lib/components/data-table/global-views-bar.tsx:76
+msgid "More views"
+msgstr "نماهای بیشتر"
+
+#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:112
+msgid "Move"
+msgstr "جابجایی"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:336
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
+msgid "Move Collections"
+msgstr "جابجایی مجموعه‌ها"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
+msgid "Move to the top level"
+msgstr "جابجایی به سطح بالا"
+
+#. placeholder {0}: collectionsToMove.length
+#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
+#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
+msgid "Moving {0} collection{1} into {2}"
+msgstr "جابجایی {0} مجموعه به {2}"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:421
+msgid "Moving..."
+msgstr "در حال جابجایی..."
+
+#: src/lib/components/data-table/my-views-button.tsx:35
+msgid "My saved views"
+msgstr "نماهای ذخیره شده من"
+
+#: src/lib/components/data-table/views-sheet.tsx:125
+msgid "My Saved Views"
+msgstr "نماهای ذخیره شده من"
+
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:36
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:146
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:108
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
+#: src/app/routes/_authenticated/_customers/customers.tsx:68
+#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:134
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:303
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:149
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:185
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:157
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:109
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:109
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
+msgid "Name"
+msgstr "نام"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:140
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:150
+msgid "Never"
+msgstr "هرگز"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:40
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:106
+msgid "New administrator"
+msgstr "مدیر جدید"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:39
+msgid "New asset"
+msgstr "فایل جدید"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:41
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:113
+msgid "New channel"
+msgstr "کانال جدید"
+
+#: src/app/routes/_authenticated/_channels/channels.tsx:74
+msgid "New Channel"
+msgstr "کانال جدید"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:46
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:116
+msgid "New collection"
+msgstr "مجموعه جدید"
+
+#: src/app/routes/_authenticated/_collections/collections.tsx:242
+msgid "New Collection"
+msgstr "مجموعه جدید"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:35
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:79
+msgid "New country"
+msgstr "کشور جدید"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:59
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:147
+msgid "New customer"
+msgstr "مشتری جدید"
+
+#: src/app/routes/_authenticated/_customers/customers.tsx:93
+msgid "New Customer"
+msgstr "مشتری جدید"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:38
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:87
+msgid "New customer group"
+msgstr "گروه مشتری جدید"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:65
+msgid "New Customer Group"
+msgstr "گروه مشتری جدید"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:166
+msgid "New email:"
+msgstr "ایمیل جدید:"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:38
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:94
+msgid "New facet"
+msgstr "ویژگی جدید"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:130
+msgid "New Facet"
+msgstr "ویژگی جدید"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:41
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:103
+msgid "New facet value"
+msgstr "مقدار ویژگی جدید"
+
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:253
+msgid "New facet values to add:"
+msgstr "مقادیر ویژگی جدید برای افزودن:"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:86
+msgid "New option"
+msgstr "گزینه جدید"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:43
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:121
+msgid "New payment method"
+msgstr "روش پرداخت جدید"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
+msgid "New Payment Method"
+msgstr "روش پرداخت جدید"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:46
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:103
+msgid "New product"
+msgstr "محصول جدید"
+
+#: src/app/routes/_authenticated/_products/products.tsx:98
+msgid "New Product"
+msgstr "محصول جدید"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:154
+msgid "New product option"
+msgstr "گزینه محصول جدید"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:129
+msgid "New product option group"
+msgstr "گروه گزینه محصول جدید"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:125
+msgid "New product variant"
+msgstr "نوع محصول جدید"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:127
+msgid "New promotion"
+msgstr "تبلیغات جدید"
+
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:75
+msgid "New Promotion"
+msgstr "تبلیغات جدید"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:35
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:79
+msgid "New role"
+msgstr "نقش جدید"
+
+#: src/app/routes/_authenticated/_roles/roles.tsx:92
+msgid "New Role"
+msgstr "نقش جدید"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:32
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:73
+msgid "New seller"
+msgstr "فروشنده جدید"
+
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:49
+msgid "New Seller"
+msgstr "فروشنده جدید"
+
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:44
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:120
+msgid "New shipping method"
+msgstr "روش ارسال جدید"
+
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
+msgid "New Shipping Method"
+msgstr "روش ارسال جدید"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:39
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:90
+msgid "New stock location"
+msgstr "محل انبار جدید"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:58
+msgid "New Stock Location"
+msgstr "محل انبار جدید"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:89
+msgid "New tax category"
+msgstr "دسته‌بندی مالیاتی جدید"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:62
+msgid "New Tax Category"
+msgstr "دسته‌بندی مالیاتی جدید"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:38
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:87
+msgid "New tax rate"
+msgstr "نرخ مالیات جدید"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:103
+msgid "New Tax Rate"
+msgstr "نرخ مالیات جدید"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:129
+msgid "New window"
+msgstr "پنجره جدید"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:35
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:77
+msgid "New zone"
+msgstr "منطقه جدید"
+
+#: src/app/routes/_authenticated/_zones/zones.tsx:56
+msgid "New Zone"
+msgstr "منطقه جدید"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:145
+msgid "Next Execution"
+msgstr "اجرای بعدی"
+
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:92
+#: src/lib/components/shared/asset/asset-bulk-actions.tsx:102
+msgid "No actions available"
+msgstr "عملیاتی موجود نیست"
+
+#: src/app/routes/_authenticated/_orders/components/order-address.tsx:30
+msgid "No address"
+msgstr "آدرسی وجود ندارد"
+
+#: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:67
+msgid "No addresses found"
+msgstr "هیچ آدرسی یافت نشد"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:513
+msgid "No billing address"
+msgstr "آدرس صورتحساب وجود ندارد"
+
+#: src/lib/components/shared/country-selector.tsx:88
+msgid "No countries found"
+msgstr "هیچ کشوری یافت نشد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:460
+msgid "No customer"
+msgstr "مشتری وجود ندارد"
+
+#: src/lib/components/shared/customer-selector.tsx:90
+msgid "No customers found"
+msgstr "هیچ مشتری یافت نشد"
+
+#: src/app/common/duplicate-entity-dialog.tsx:99
+msgid "No duplicator found with code \"{duplicatorCode}\" for {entityName}s"
+msgstr "هیچ تکثیرکننده‌ای با کد \"{duplicatorCode}\" برای {entityName} یافت نشد"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:52
+msgid "No eligible shipping methods found for this order."
+msgstr "هیچ روش ارسال واجد شرایطی برای این سفارش یافت نشد."
+
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:235
+msgid "No facet values"
+msgstr "هیچ مقدار ویژگی وجود ندارد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
+msgid "No fulfillments"
+msgstr "هیچ تحویلی وجود ندارد"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:354
+msgid "No global languages configured"
+msgstr "هیچ زبان عمومی پیکربندی نشده است"
+
+#: src/lib/components/data-table/views-sheet.tsx:141
+msgid "No global views have been created yet."
+msgstr "هنوز هیچ نمای عمومی ایجاد نشده است."
+
+#: src/lib/components/data-input/product-multi-selector-input.tsx:90
+msgid "No items found"
+msgstr "هیچ موردی یافت نشد"
+
+#: src/lib/components/data-input/product-multi-selector-input.tsx:331
+msgid "No items selected"
+msgstr "هیچ موردی انتخاب نشده است"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:217
+msgid "No modifications made"
+msgstr "هیچ تغییری انجام نشد"
+
+#: src/lib/components/data-input/relation-selector.tsx:458
+#: src/lib/components/shared/facet-value-selector.tsx:314
+msgid "No more items"
+msgstr "موردی دیگر وجود ندارد"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:259
+msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
+msgstr "هنوز هیچ گروه گزینه‌ای تعریف نشده است. برای ایجاد انواع مختلف محصول خود گروه‌های گزینه اضافه کنید (مثلا اندازه، رنگ، جنس)"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:336
+msgid "No payment or refund is required for these changes."
+msgstr "برای این تغییرات هیچ پرداخت یا بازپرداختی لازم نیست."
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:333
+msgid "No payment or refund required"
+msgstr "پرداخت یا بازپرداخت لازم نیست"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:141
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:184
+msgid "No result yet"
+msgstr "هنوز نتیجه‌ای وجود ندارد"
+
+#: src/lib/components/data-table/data-table.tsx:338
+msgid "No results"
+msgstr "نتیجه‌ای وجود ندارد"
+
+#: src/lib/components/data-input/relation-selector.tsx:430
+#: src/lib/components/shared/facet-value-selector.tsx:277
+msgid "No results found"
+msgstr "هیچ نتیجه‌ای یافت نشد"
+
+#: src/lib/components/shared/seller-selector.tsx:92
+msgid "No sellers found"
+msgstr "هیچ فروشنده‌ای یافت نشد"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:487
+msgid "No shipping address"
+msgstr "آدرس ارسال وجود ندارد"
+
+#: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:59
+msgid "No shipping methods available"
+msgstr "روش ارسالی موجود نیست"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
+msgid "No stock locations available on current channel"
+msgstr "محل انباری در کانال فعلی موجود نیست"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:128
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:166
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:99
+msgid "No tags found"
+msgstr "هیچ برچسبی یافت نشد"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:111
+msgid "No tags selected"
+msgstr "هیچ برچسبی انتخاب نشده است"
+
+#. placeholder {0}: formatLanguageName(contentLanguage)
+#: src/lib/components/shared/translatable-form-field.tsx:62
+msgid "No translation found for {0}"
+msgstr "هیچ ترجمه‌ای برای {0} یافت نشد"
+
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:75
+msgid "Normal"
+msgstr "عادی"
+
+#: src/lib/components/data-table/human-readable-operator.tsx:38
+msgid "not in"
+msgstr "در نیست"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:163
+msgid "Not Running"
+msgstr "در حال اجرا نیست"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:158
+msgid "Not set"
+msgstr "تنظیم نشده"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:43
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:69
+msgid "Note added"
+msgstr "یادداشت اضافه شد"
+
+#: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:21
+msgid "Note is private"
+msgstr "یادداشت خصوصی است"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:70
+msgid "Off"
+msgstr "خاموش"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:158
+msgid "Old email:"
+msgstr "ایمیل قدیمی:"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:269
+msgid "Option"
+msgstr "گزینه"
+
+#. placeholder {0}: groupIndex + 1
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:368
+msgid "Option group {0}"
+msgstr "گروه گزینه {0}"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:267
+msgid "Option group name"
+msgstr "نام گروه گزینه"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:81
+msgid "Option Group Name"
+msgstr "نام گروه گزینه"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:190
+msgid "Option group removed"
+msgstr "گروه گزینه حذف شد"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:255
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
+msgid "Option Groups"
+msgstr "گروه‌های گزینه"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:288
+msgid "Option name"
+msgstr "نام گزینه"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:142
+msgid "Option value name"
+msgstr "نام مقدار گزینه"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:275
+msgid "Option values"
+msgstr "مقادیر گزینه"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:90
+msgid "Option Values"
+msgstr "مقادیر گزینه"
+
+#: src/lib/components/data-input/combination-mode-input.tsx:56
+msgid "OR"
+msgstr "یا"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:94
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:78
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:100
+msgid "Order cancelled"
+msgstr "سفارش لغو شد"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:69
+msgid "Order Count"
+msgstr "تعداد سفارش"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
+msgid "Order delivered"
+msgstr "سفارش تحویل داده شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:75
+msgid "Order fulfilled"
+msgstr "سفارش تحویل شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
+msgid "Order history"
+msgstr "تاریخچه سفارش"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:137
+msgid "Order line removed"
+msgstr "خط سفارش حذف شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:121
+msgid "Order line updated"
+msgstr "خط سفارش به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:241
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:402
+msgid "Order lines"
+msgstr "خطوط سفارش"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:64
+msgid "Order metrics"
+msgstr "معیارهای سفارش"
+
+#. placeholder {0}: entry.data.modificationId
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:74
+msgid "Order modification #{0}"
+msgstr "تغییر سفارش شماره {0}"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:96
+msgid "Order modified"
+msgstr "سفارش تغییر کرد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:56
+msgid "Order not found"
+msgstr "سفارش یافت نشد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:72
+msgid "Order placed"
+msgstr "سفارش ثبت شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:81
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:87
+msgid "Order shipped"
+msgstr "سفارش ارسال شد"
+
+#: src/lib/framework/dashboard-widget/metrics-widget/index.tsx:70
+msgid "Order Total"
+msgstr "مجموع سفارش"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:83
+msgid "Order transitioned"
+msgstr "سفارش منتقل شد"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:246
+#: src/app/routes/_authenticated/_orders/orders.tsx:21
+#: src/app/routes/_authenticated/_orders/orders.tsx:37
+#: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:45
+#: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:59
+#: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:73
+#: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:122
+msgid "Orders"
+msgstr "سفارش‌ها"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:84
+msgid "Orders Summary"
+msgstr "خلاصه سفارش‌ها"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:265
+msgid "Out-of-stock threshold"
+msgstr "آستانه اتمام موجودی"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:144
+#: src/app/routes/_authenticated/_profile/profile.tsx:110
+#: src/lib/components/login/login-form.tsx:128
+msgid "Password"
+msgstr "رمز عبور"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:59
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:128
+msgid "Password reset requested"
+msgstr "درخواست بازنشانی رمز عبور"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:61
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:138
+msgid "Password reset verified"
+msgstr "بازنشانی رمز عبور تایید شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:57
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:118
+msgid "Password updated"
+msgstr "رمز عبور به‌روزرسانی شد"
+
+#. placeholder {0}: entry.data.paymentId
+#. placeholder {1}: entry.data.to
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:24
+msgid "Payment #{0} transitioned to {1}"
+msgstr "پرداخت شماره {0} به {1} منتقل شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:57
+msgid "Payment authorized"
+msgstr "پرداخت تایید شد"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:75
+msgid "Payment cancelled successfully"
+msgstr "پرداخت با موفقیت لغو شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
+msgid "Payment details"
+msgstr "جزئیات پرداخت"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:172
+msgid "Payment eligibility checker"
+msgstr "بررسی صلاحیت پرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:60
+msgid "Payment failed"
+msgstr "پرداخت ناموفق بود"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:191
+msgid "Payment metadata"
+msgstr "فراداده پرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:146
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:168
+msgid "Payment method"
+msgstr "روش پرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:147
+msgid "Payment method is required"
+msgstr "روش پرداخت الزامی است"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
+msgid "Payment Methods"
+msgstr "روش‌های پرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:54
+msgid "Payment settled"
+msgstr "پرداخت تسویه شد"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:45
+msgid "Payment settled successfully"
+msgstr "پرداخت با موفقیت تسویه شد"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:60
+msgid "Payment state updated successfully"
+msgstr "وضعیت پرداخت با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:62
+msgid "Payment transitioned"
+msgstr "پرداخت منتقل شد"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:202
+msgid "Per customer usage limit"
+msgstr "محدودیت استفاده به ازای هر مشتری"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:133
+msgid "Permissions"
+msgstr "مجوزها"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:191
+msgid "Phone number"
+msgstr "شماره تلفن"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:240
+#: src/lib/components/shared/customer-address-form.tsx:263
+msgid "Phone Number"
+msgstr "شماره تلفن"
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:90
+msgid "Placed At"
+msgstr "ثبت شده در"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:58
+msgid "Please add products and complete the shipping address to run the test."
+msgstr "لطفا برای اجرای آزمون محصولات اضافه کنید و آدرس ارسال را تکمیل کنید."
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:308
+msgid "Please select a target collection"
+msgstr "لطفا یک مجموعه هدف انتخاب کنید"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:207
+#: src/lib/components/shared/customer-address-form.tsx:213
+msgid "Postal Code"
+msgstr "کد پستی"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:439
+msgid "Preview changes"
+msgstr "پیش‌نمایش تغییرات"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:149
+msgid "Preview order modifications"
+msgstr "پیش‌نمایش تغییرات سفارش"
+
+#: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:185
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
+#: src/lib/components/layout/language-dialog.tsx:108
+msgid "Price"
+msgstr "قیمت"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:170
+msgid "Price and tax"
+msgstr "قیمت و مالیات"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:142
+msgid "Price conversion factor"
+msgstr "ضریب تبدیل قیمت"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:234
+msgid "Prices include tax for default tax zone"
+msgstr "قیمت‌ها شامل مالیات برای منطقه مالیاتی پیش‌فرض است"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:82
+msgid "private"
+msgstr "خصوصی"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:134
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:112
+msgid "Private"
+msgstr "خصوصی"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:135
+msgid "Private collections are not visible in the shop"
+msgstr "مجموعه‌های خصوصی در فروشگاه قابل مشاهده نیستند"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:113
+msgid "Private facets are not visible in the shop"
+msgstr "ویژگی‌های خصوصی در فروشگاه قابل مشاهده نیستند"
+
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
+msgid "Product"
+msgstr "محصول"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:156
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:133
+msgid "Product name"
+msgstr "نام محصول"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:173
+msgid "Product Option Group"
+msgstr "گروه گزینه محصول"
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:291
+msgid "Product options"
+msgstr "گزینه‌های محصول"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:191
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:170
+msgid "Product Options"
+msgstr "گزینه‌های محصول"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:54
+#: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
+#: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
+msgid "Product Variants"
+msgstr "انواع محصول"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:49
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:45
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
+#: src/app/routes/_authenticated/_products/products.tsx:23
+#: src/app/routes/_authenticated/_products/products.tsx:46
+msgid "Products"
+msgstr "محصولات"
+
+#: src/app/routes/_authenticated/_profile/profile.tsx:30
+#: src/app/routes/_authenticated/_profile/profile.tsx:74
+#: src/lib/components/layout/nav-user.tsx:106
+msgid "Profile"
+msgstr "نمایه"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
+msgid "Promotions"
+msgstr "تبلیغات"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:82
+msgid "public"
+msgstr "عمومی"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
+msgid "Quantity"
+msgstr "تعداد"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:211
+msgid "Queue"
+msgstr "صف"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:122
+msgid "Rate"
+msgstr "نرخ"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:233
+msgid "Reason"
+msgstr "دلیل"
+
+#: src/app/routes/_authenticated/_products/products.tsx:91
+msgid "Rebuild search index"
+msgstr "بازسازی فهرست جستجو"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:47
+msgid "Refresh"
+msgstr "تازه‌سازی"
+
+#: src/lib/components/data-table/refresh-button.tsx:45
+msgid "Refresh data"
+msgstr "تازه‌سازی داده‌ها"
+
+#. placeholder {0}: entry.data.refundId
+#. placeholder {1}: entry.data.to
+#: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:37
+msgid "Refund #{0} transitioned to {1}"
+msgstr "بازپرداخت شماره {0} به {1} منتقل شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:229
+msgid "Refund from this method"
+msgstr "بازپرداخت از این روش"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:215
+msgid "Refund ID"
+msgstr "شناسه بازپرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:170
+msgid "Refund required"
+msgstr "بازپرداخت مورد نیاز است"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:65
+msgid "Refund settled"
+msgstr "بازپرداخت تسویه شد"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:90
+msgid "Refund settled successfully"
+msgstr "بازپرداخت با موفقیت تسویه شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:67
+msgid "Refund transitioned"
+msgstr "بازپرداخت منتقل شد"
+
+#. placeholder {0}: payment.refunds.length
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:208
+msgid "Refunds ({0})"
+msgstr "بازپرداخت‌ها ({0})"
+
+#: src/lib/components/data-input/slug-input.tsx:265
+#: src/lib/components/data-input/slug-input.tsx:266
+msgid "Regenerate slug from source field"
+msgstr "بازسازی نامک از فیلد منبع"
+
+#: src/app/routes/_authenticated/_zones/zones.tsx:36
+msgid "Regions"
+msgstr "مناطق"
+
+#: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:23
+msgid "Registered"
+msgstr "ثبت‌نام شده"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:289
+msgid "Remaining:"
+msgstr "باقیمانده:"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:472
+msgid "Remove"
+msgstr "حذف"
+
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:81
+msgid "Remove from current channel"
+msgstr "حذف از کانال فعلی"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
+msgid "Remove group"
+msgstr "حذف گروه"
+
+#: src/lib/components/data-input/custom-field-list-input.tsx:85
+msgid "Remove item"
+msgstr "حذف مورد"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
+msgid "Remove link"
+msgstr "حذف پیوند"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:199
+msgid "Removed coupon codes"
+msgstr "کدهای کوپن حذف شده"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:49
+msgid "Removed from group"
+msgstr "از گروه حذف شد"
+
+#. placeholder {0}: removedLines.length
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:175
+msgid "Removing {0} item(s)"
+msgstr "حذف {0} مورد"
+
+#: src/lib/components/data-table/views-sheet.tsx:240
+msgid "Rename"
+msgstr "تغییر نام"
+
+#: src/lib/components/data-table/data-table-view-options.tsx:123
+msgid "Reset"
+msgstr "بازنشانی"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
+msgid "Review the changes before applying them to the order."
+msgstr "قبل از اعمال تغییرات به سفارش، آنها را بررسی کنید."
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:150
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:46
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:34
+#: src/app/routes/_authenticated/_roles/roles.tsx:19
+#: src/app/routes/_authenticated/_roles/roles.tsx:28
+msgid "Roles"
+msgstr "نقش‌ها"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:210
+msgid "Run"
+msgstr "اجرا"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:30
+msgid "Run Test"
+msgstr "اجرای آزمون"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:155
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:159
+msgid "Running"
+msgstr "در حال اجرا"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:126
+msgid "Same window"
+msgstr "همان پنجره"
+
+#: src/lib/components/layout/language-dialog.tsx:79
+msgid "Sample Formatting"
+msgstr "نمونه قالب‌بندی"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
+#: src/lib/components/data-table/views-sheet.tsx:210
+#: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
+msgid "Save"
+msgstr "ذخیره"
+
+#: src/lib/components/data-table/views-sheet.tsx:144
+msgid "Save a view as \"Global\" to make it available to all users."
+msgstr "نما را به عنوان \"عمومی\" ذخیره کنید تا برای همه کاربران در دسترس باشد."
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
+#: src/lib/components/shared/customer-address-form.tsx:329
+msgid "Save Address"
+msgstr "ذخیره آدرس"
+
+#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:122
+msgid "Save changes"
+msgstr "ذخیره تغییرات"
+
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
+#: src/lib/components/layout/manage-languages-dialog.tsx:399
+msgid "Save Changes"
+msgstr "ذخیره تغییرات"
+
+#: src/app/routes/_authenticated/index.tsx:194
+msgid "Save Layout"
+msgstr "ذخیره چیدمان"
+
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:121
+msgid "Save option group"
+msgstr "ذخیره گروه گزینه"
+
+#: src/lib/components/data-table/save-view-button.tsx:31
+msgid "Save View"
+msgstr "ذخیره نما"
+
+#: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
+#: src/lib/components/layout/manage-languages-dialog.tsx:399
+msgid "Saving..."
+msgstr "در حال ذخیره..."
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:130
+msgid "Schedule"
+msgstr "برنامه"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:127
+msgid "Schedule Pattern"
+msgstr "الگوی برنامه"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:90
+msgid "Scheduled task could not be executed"
+msgstr "وظیفه زمان‌بندی شده نتوانست اجرا شود"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:87
+msgid "Scheduled task will be executed"
+msgstr "وظیفه زمان‌بندی شده اجرا خواهد شد"
+
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:29
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:232
+msgid "Scheduled Tasks"
+msgstr "وظایف زمان‌بندی شده"
+
+#: src/app/routes/_authenticated/_products/components/product-option-select.tsx:66
+msgid "Search {name}..."
+msgstr "جستجوی {name}..."
+
+#: src/lib/components/shared/channel-selector.tsx:48
+msgid "Search channels..."
+msgstr "جستجوی کانال‌ها..."
+
+#: src/lib/components/shared/currency-selector.tsx:30
+msgid "Search currencies..."
+msgstr "جستجوی ارزها..."
+
+#: src/app/routes/_authenticated/_products/products.tsx:34
+msgid "Search index rebuild could not be started"
+msgstr "بازسازی فهرست جستجو نتوانست شروع شود"
+
+#: src/app/routes/_authenticated/_products/products.tsx:31
+msgid "Search index rebuild started"
+msgstr "بازسازی فهرست جستجو شروع شد"
+
+#: src/lib/components/shared/language-selector.tsx:45
+msgid "Search languages..."
+msgstr "جستجوی زبان‌ها..."
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:107
+msgid "Search payment methods..."
+msgstr "جستجوی روش‌های پرداخت..."
+
+#: src/lib/components/shared/role-selector.tsx:53
+msgid "Search roles..."
+msgstr "جستجوی نقش‌ها..."
+
+#. placeholder {0}: entityName.toLowerCase()
+#. placeholder {0}: group.name
+#: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
+#: src/lib/components/data-input/default-relation-input.tsx:616
+msgid "Select {0}"
+msgstr "انتخاب {0}"
+
+#. placeholder {0}: selectedItems.length
+#: src/lib/components/data-input/product-multi-selector-input.tsx:367
+msgid "Select {0} Items"
+msgstr "انتخاب {0} مورد"
+
+#. placeholder {0}: entityName.toLowerCase()
+#: src/lib/components/data-input/default-relation-input.tsx:603
+msgid "Select {0}s"
+msgstr "انتخاب {0}"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:107
+#: src/lib/components/shared/channel-selector.tsx:47
+msgid "Select a channel"
+msgstr "یک کانال انتخاب کنید"
+
+#. placeholder {0}: entityIds.length
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:95
+msgid "Select a channel to assign {0} {entityType} to"
+msgstr "یک کانال برای اختصاص {0} {entityType} انتخاب کنید"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
+#: src/lib/components/shared/customer-address-form.tsx:240
+msgid "Select a country"
+msgstr "یک کشور انتخاب کنید"
+
+#: src/lib/components/shared/currency-selector.tsx:29
+msgid "Select a currency"
+msgstr "یک ارز انتخاب کنید"
+
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
+msgid "Select a destination collection"
+msgstr "یک مجموعه مقصد انتخاب کنید"
+
+#: src/lib/components/shared/language-selector.tsx:44
+msgid "Select a language"
+msgstr "یک زبان انتخاب کنید"
+
+#: src/lib/components/shared/role-selector.tsx:52
+msgid "Select a role"
+msgstr "یک نقش انتخاب کنید"
+
+#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
+msgid "Select a target collection to move {0} to."
+msgstr "یک مجموعه هدف برای جابجایی {0} انتخاب کنید."
+
+#: src/lib/components/shared/tax-category-selector.tsx:50
+msgid "Select a tax category"
+msgstr "یک دسته‌بندی مالیاتی انتخاب کنید"
+
+#: src/lib/components/shared/zone-selector.tsx:50
+msgid "Select a zone"
+msgstr "یک منطقه انتخاب کنید"
+
+#: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:51
+msgid "Select address"
+msgstr "انتخاب آدرس"
+
+#: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx:58
+msgid "Select an address"
+msgstr "یک آدرس انتخاب کنید"
+
+#: src/lib/components/data-input/select-with-options.tsx:81
+msgid "Select an option"
+msgstr "یک گزینه انتخاب کنید"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:296
+msgid "Select Available Languages"
+msgstr "انتخاب زبان‌های موجود"
+
+#: src/lib/components/shared/country-selector.tsx:73
+msgid "Select country"
+msgstr "انتخاب کشور"
+
+#: src/lib/components/shared/customer-selector.tsx:78
+msgid "Select customer"
+msgstr "انتخاب مشتری"
+
+#: src/lib/components/date-range-picker.tsx:128
+msgid "Select date range"
+msgstr "انتخاب بازه تاریخ"
+
+#: src/lib/components/layout/language-dialog.tsx:36
+msgid "Select display language"
+msgstr "زبان نمایش را انتخاب کنید"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:358
+msgid "Select from globally available languages for this channel"
+msgstr "از زبان‌های موجود سراسری برای این کانال انتخاب کنید"
+
+#: src/lib/components/data-input/relation-selector.tsx:410
+msgid "Select item"
+msgstr "انتخاب مورد"
+
+#: src/lib/components/data-input/relation-selector.tsx:407
+msgid "Select items"
+msgstr "انتخاب موارد"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
+msgid "Select next state"
+msgstr "وضعیت بعدی را انتخاب کنید"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
+msgid "Select quantities to fulfill and configure the fulfillment handler"
+msgstr "تعداد را برای تحویل انتخاب کنید و مدیریت تحویل را پیکربندی کنید"
+
+#: src/lib/components/shared/seller-selector.tsx:76
+msgid "Select seller"
+msgstr "انتخاب فروشنده"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
+msgid "Select the next state for the order"
+msgstr "وضعیت بعدی را برای سفارش انتخاب کنید"
+
+#. placeholder {0}: productData.product.variants[0].name
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:328
+msgid "Select which options should apply to the existing variant \"{0}\""
+msgstr "انتخاب کنید که کدام گزینه‌ها باید برای نوع موجود \"{0}\" اعمال شود"
+
+#: src/lib/components/data-input/product-multi-selector-input.tsx:316
+msgid "Selected Items"
+msgstr "موارد انتخاب شده"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:156
+msgid "Seller"
+msgstr "فروشنده"
+
+#: src/app/routes/_authenticated/_orders/orders_.$aggregateOrderId_.seller-orders.$sellerOrderId.tsx:36
+msgid "Seller order"
+msgstr "سفارش فروشنده"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id.tsx:23
+msgid "Seller orders"
+msgstr "سفارش‌های فروشنده"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:31
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:14
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:23
+msgid "Sellers"
+msgstr "فروشندگان"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:383
+msgid "Set custom fields"
+msgstr "تنظیم فیلدهای سفارشی"
+
+#: src/lib/components/shared/asset/asset-focal-point-editor.tsx:97
+msgid "Set Focal Point"
+msgstr "تنظیم نقطه کانونی"
+
+#: src/lib/components/shared/rich-text-editor/link-dialog.tsx:145
+msgid "Set link"
+msgstr "تنظیم پیوند"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:113
+msgid "Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
+msgstr "زبان‌هایی را که برای همه کانال‌ها موجود است تنظیم می‌کند. کانال‌های منفرد سپس می‌توانند زیرمجموعه‌ای از این زبان‌ها را پشتیبانی کنند."
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:131
+msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
+msgstr "سطح موجودی را تنظیم می‌کند که در آن این نوع اتمام موجودی در نظر گرفته می‌شود. استفاده از مقدار منفی پشتیبانی از پیش‌سفارش را فعال می‌کند. می‌تواند توسط انواع محصول لغو شود."
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:267
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:285
+msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
+msgstr "سطح موجودی را تنظیم می‌کند که در آن این نوع اتمام موجودی در نظر گرفته می‌شود. استفاده از مقدار منفی پشتیبانی از پیش‌سفارش را فعال می‌کند."
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:142
+msgid "Settle payment"
+msgstr "تسویه پرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:264
+#: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:49
+#: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:74
+msgid "Settle refund"
+msgstr "تسویه بازپرداخت"
+
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
+#: src/app/routes/_authenticated/_orders/orders.tsx:83
+msgid "Shipping"
+msgstr "ارسال"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:467
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
+msgid "Shipping address"
+msgstr "آدرس ارسال"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:142
+msgid "Shipping Address"
+msgstr "آدرس ارسال"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:109
+msgid "Shipping address changed"
+msgstr "آدرس ارسال تغییر کرد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:166
+msgid "Shipping address set for order"
+msgstr "آدرس حمل و نقل برای سفارش تنظیم شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:182
+msgid "Shipping address unset for order"
+msgstr "آدرس حمل و نقل برای سفارش لغو شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:123
+msgid "Shipping method changed"
+msgstr "روش ارسال تغییر کرد"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:58
+msgid "Shipping method is eligible for this order"
+msgstr "روش ارسال برای این سفارش واجد شرایط است"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:76
+msgid "Shipping method is not eligible for this order"
+msgstr "روش ارسال برای این سفارش واجد شرایط نیست"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:201
+msgid "Shipping method set for order"
+msgstr "روش حمل و نقل برای سفارش تنظیم شد"
+
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
+msgid "Shipping Methods"
+msgstr "روش‌های ارسال"
+
+#: src/lib/components/layout/language-dialog.tsx:102
+msgid "Short date"
+msgstr "تاریخ کوتاه"
+
+#. placeholder {0}: filteredTags.length
+#: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:167
+msgid "Showing all {0} results"
+msgstr "نمایش همه {0} نتیجه"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:163
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:306
+msgid "SKU"
+msgstr "SKU"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:152
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:139
+msgid "Slug"
+msgstr "نامک"
+
+#: src/lib/components/data-input/slug-input.tsx:237
+msgid "Slug is set"
+msgstr "نامک تنظیم شده است"
+
+#: src/lib/components/data-input/slug-input.tsx:238
+msgid "Slug will be generated automatically..."
+msgstr "نامک به طور خودکار ایجاد خواهد شد..."
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:74
+msgid "Some resources are down"
+msgstr "برخی منابع خاموش هستند"
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:138
+msgid "Source"
+msgstr "منبع"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:174
+msgid "Starts at"
+msgstr "شروع در"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
+#: src/app/routes/_authenticated/_orders/orders.tsx:99
+#: src/app/routes/_authenticated/_system/job-queue.tsx:222
+msgid "State"
+msgstr "وضعیت"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:201
+msgid "State / Province"
+msgstr "ایالت / استان"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
+#: src/lib/components/shared/customer-address-form.tsx:192
+msgid "State/Province"
+msgstr "ایالت/استان"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:252
+#: src/app/routes/_authenticated/_customers/customers.tsx:46
+msgid "Status"
+msgstr "وضعیت"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:201
+msgid "Stock"
+msgstr "موجودی"
+
+#: src/lib/components/shared/stock-level-label.tsx:18
+msgid "Stock allocated"
+msgstr "موجودی تخصیص داده شده"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:208
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
+msgid "Stock level"
+msgstr "سطح موجودی"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:233
+msgid "Stock levels"
+msgstr "سطوح موجودی"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:38
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:18
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:25
+msgid "Stock Locations"
+msgstr "محل‌های انبار"
+
+#: src/lib/components/shared/stock-level-label.tsx:18
+msgid "Stock on hand"
+msgstr "موجودی در دست"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+msgid "Stock on Hand"
+msgstr "موجودی در دست"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:174
+#: src/lib/components/shared/customer-address-form.tsx:137
+msgid "Street Address"
+msgstr "آدرس خیابان"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:181
+msgid "Street Address 2"
+msgstr "آدرس خیابان ۲"
+
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
+msgid "Sub total"
+msgstr "جمع جزء"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:219
+msgid "Subtotal"
+msgstr "جمع جزء"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:97
+msgid "Successfully added option value"
+msgstr "مقدار گزینه با موفقیت اضافه شد"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:49
+msgid "Successfully added payment to order"
+msgstr "پرداخت با موفقیت به سفارش اضافه شد"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:68
+msgid "Successfully assigned {entityIdsLength} {entityType} to channel"
+msgstr "{entityIdsLength} {entityType} با موفقیت به کانال اختصاص داده شد"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+msgid "Successfully created channel"
+msgstr "کانال با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+msgid "Successfully created collection"
+msgstr "مجموعه با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+msgid "Successfully created country"
+msgstr "کشور با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+msgid "Successfully created customer"
+msgstr "مشتری با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:66
+msgid "Successfully created customer group"
+msgstr "گروه مشتری با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+msgid "Successfully created facet"
+msgstr "ویژگی با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+msgid "Successfully created facet value"
+msgstr "مقدار ویژگی با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:82
+msgid "Successfully created option group"
+msgstr "گروه گزینه با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:100
+msgid "Successfully created payment method"
+msgstr "روش پرداخت با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+msgid "Successfully created product"
+msgstr "محصول با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:106
+msgid "Successfully created product option group"
+msgstr "گروه گزینه‌های محصول با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:119
+msgid "Successfully created product options"
+msgstr "گزینه‌های محصول با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:102
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
+msgid "Successfully created product variant"
+msgstr "نوع محصول با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:103
+msgid "Successfully created promotion"
+msgstr "تبلیغات با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+msgid "Successfully created role"
+msgstr "نقش با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+msgid "Successfully created seller"
+msgstr "فروشنده با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:69
+msgid "Successfully created stock location"
+msgstr "محل انبار با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
+msgid "Successfully created tax category"
+msgstr "دسته‌بندی مالیاتی با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+msgid "Successfully created tax rate"
+msgstr "نرخ مالیات با موفقیت ایجاد شد"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+msgid "Successfully created zone"
+msgstr "منطقه با موفقیت ایجاد شد"
+
+#: src/app/common/duplicate-bulk-action.tsx:97
+msgid "Successfully duplicated {count} {entityName}"
+msgstr "{count} {entityName} با موفقیت تکثیر شد"
+
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:76
+msgid "Successfully fulfilled order"
+msgstr "سفارش با موفقیت تحویل داده شد"
+
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:52
+msgid "Successfully removed {selectionLength} {entityType} from channel"
+msgstr "{selectionLength} {entityType} با موفقیت از کانال حذف شد"
+
+#: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:80
+msgid "Successfully removed {successCount} facets from channel"
+msgstr "{successCount} ویژگی با موفقیت از کانال حذف شد"
+
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:70
+msgid "Successfully updated asset"
+msgstr "فایل با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+msgid "Successfully updated channel"
+msgstr "کانال با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+msgid "Successfully updated collection"
+msgstr "مجموعه با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+msgid "Successfully updated country"
+msgstr "کشور با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+msgid "Successfully updated customer"
+msgstr "مشتری با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:67
+msgid "Successfully updated customer group"
+msgstr "گروه مشتری با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+msgid "Successfully updated facet"
+msgstr "ویژگی با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+msgid "Successfully updated facet value"
+msgstr "مقدار ویژگی با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:75
+msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
+msgstr "مقادیر ویژگی برای {entityIdsLength} {entityType} با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:70
+msgid "Successfully updated global settings"
+msgstr "تنظیمات عمومی با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:87
+msgid "Successfully updated order"
+msgstr "سفارش با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:101
+msgid "Successfully updated payment method"
+msgstr "روش پرداخت با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+msgid "Successfully updated product"
+msgstr "محصول با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:107
+msgid "Successfully updated product option group"
+msgstr "گروه گزینه‌های محصول با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:103
+msgid "Successfully updated product variant"
+msgstr "نوع محصول با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_profile/profile.tsx:61
+msgid "Successfully updated profile"
+msgstr "پروفایل با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:103
+msgid "Successfully updated promotion"
+msgstr "تبلیغات با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+msgid "Successfully updated role"
+msgstr "نقش با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+msgid "Successfully updated seller"
+msgstr "فروشنده با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:70
+msgid "Successfully updated stock location"
+msgstr "محل انبار با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
+msgid "Successfully updated tax category"
+msgstr "دسته‌بندی مالیاتی با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+msgid "Successfully updated tax rate"
+msgstr "نرخ مالیات با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+msgid "Successfully updated zone"
+msgstr "منطقه با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:420
+msgid "Summary of modifications"
+msgstr "خلاصه تغییرات"
+
+#: src/lib/components/shared/role-code-label.tsx:6
+msgid "Super Admin"
+msgstr "مدیر ارشد"
+
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
+msgid "Surcharge"
+msgstr "هزینه اضافی"
+
+#: src/lib/components/layout/nav-user.tsx:135
+msgctxt "theme"
+msgid "System"
+msgstr "سیستم"
+
+#: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:104
+msgid "Tags"
+msgstr "برچسب‌ها"
+
+#: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:20
+msgid "Tax base"
+msgstr "پایه مالیاتی"
+
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:38
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:15
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:24
+msgid "Tax Categories"
+msgstr "دسته‌بندی‌های مالیاتی"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:175
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:136
+msgid "Tax category"
+msgstr "دسته‌بندی مالیاتی"
+
+#: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:17
+msgid "Tax rate"
+msgstr "نرخ مالیات"
+
+#: src/app/routes/_authenticated/_product-variants/components/variant-price-detail.tsx:79
+msgid "Tax rate: {taxRate}%"
+msgstr "نرخ مالیات: {taxRate}%"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
+msgid "Tax Rates"
+msgstr "نرخ‌های مالیات"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
+msgid "Tax summary"
+msgstr "خلاصه مالیات"
+
+#: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:23
+msgid "Tax total"
+msgstr "مجموع مالیات"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:23
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:33
+msgid "Test"
+msgstr "آزمون"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:68
+msgid "Test data has been updated. Click \"Run Test\" to see updated results."
+msgstr "داده‌های آزمون به‌روزرسانی شده است. برای مشاهده نتایج به‌روز روی \"اجرای آزمون\" کلیک کنید."
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:163
+msgid "Test Order"
+msgstr "سفارش آزمایشی"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:39
+msgid "Test Results"
+msgstr "نتایج آزمون"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:39
+msgid "Test Shipping Method"
+msgstr "آزمون روش ارسال"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:29
+msgid "Test shipping methods"
+msgstr "آزمون روش‌های ارسال"
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx:42
+msgid "Test this shipping method by simulating an order to see if it's eligible and what the shipping cost would be."
+msgstr "این روش ارسال را با شبیه‌سازی یک سفارش آزمایش کنید تا ببینید آیا واجد شرایط است و هزینه ارسال چقدر خواهد بود."
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx:32
+msgid "Test your shipping methods by simulating a new order."
+msgstr "روش‌های ارسال خود را با شبیه‌سازی یک سفارش جدید آزمایش کنید."
+
+#: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx:31
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:46
+msgid "Testing shipping method..."
+msgstr "در حال آزمایش روش ارسال..."
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx:56
+msgid "Testing shipping methods..."
+msgstr "در حال آزمایش روش‌های ارسال..."
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:114
+msgid "The data that has been passed to the job"
+msgstr "داده‌ای که به کار ارسال شده است"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:132
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:175
+msgid "The result of the job"
+msgstr "نتیجه کار"
+
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:117
+msgid "The selected permissions will be applied to the these channels."
+msgstr "مجوزهای انتخاب شده به این کانال‌ها اعمال خواهد شد."
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:147
+msgid "The token is used to specify the channel when making API requests."
+msgstr "توکن برای مشخص کردن کانال هنگام انجام درخواست‌های API استفاده می‌شود."
+
+#: src/lib/components/layout/nav-user.tsx:118
+msgid "Theme"
+msgstr "تم"
+
+#: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-sheet.tsx:39
+msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
+msgstr "اینها مشتریان در گروه مشتری <0>{customerGroupName}</0> هستند."
+
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:35
+msgid "These are the facet values for the <0>{facetName}</0> facet."
+msgstr "اینها مقادیر ویژگی برای ویژگی <0>{facetName}</0> هستند."
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:311
+msgid "These languages will be available for all channels to use"
+msgstr "این زبان‌ها برای استفاده همه کانال‌ها در دسترس خواهد بود"
+
+#: src/app/routes/_authenticated/_roles/roles.tsx:54
+msgid "This is a default Role and cannot be modified"
+msgstr "این یک نقش پیش‌فرض است و نمی‌تواند تغییر کند"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:39
+msgid "This is the contents of the <0>{collectionName}</0> collection."
+msgstr "این محتویات مجموعه <0>{collectionName}</0> است."
+
+#: src/lib/components/date-range-picker.tsx:73
+msgctxt "date-range"
+msgid "This month"
+msgstr "این ماه"
+
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:254
+msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
+msgstr "این محصول دارای انواع موجود است اما هیچ گروه گزینه‌ای تعریف نشده است. قبل از ایجاد انواع جدید باید گروه‌های گزینه اضافه کنید."
+
+#: src/app/routes/_authenticated/_shipping-methods/components/test-single-method-result.tsx:79
+msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
+msgstr "شرایط بررسی صلاحیت این روش ارسال برای سفارش فعلی و آدرس ارسال برآورده نشده است."
+
+#: src/lib/components/date-range-picker.tsx:49
+msgctxt "date-range"
+msgid "This week"
+msgstr "این هفته"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
+msgid "Title"
+msgstr "عنوان"
+
+#: src/lib/components/date-range-picker.tsx:25
+msgctxt "date-range"
+msgid "Today"
+msgstr "امروز"
+
+#: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:95
+#: src/app/routes/_authenticated/_roles/components/permissions-table-grid.tsx:180
+msgid "Toggle all"
+msgstr "تغییر وضعیت همه"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:158
+msgid "Toggle header column"
+msgstr "تغییر وضعیت ستون سرفصل"
+
+#: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:210
+msgid "Toggle header row"
+msgstr "تغییر وضعیت سطر سرفصل"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:145
+msgid "Token"
+msgstr "توکن"
+
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:100
+msgid "Total"
+msgstr "مجموع"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:90
+msgid "Total Orders"
+msgstr "کل سفارش‌ها"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:275
+msgid "Total refund:"
+msgstr "مجموع بازپرداخت:"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:100
+msgid "Total Revenue"
+msgstr "کل درآمد"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:253
+msgid "Track"
+msgstr "دنبال کردن"
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:148
+msgid "Track inventory by default"
+msgstr "دنبال کردن موجودی به طور پیش‌فرض"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:112
+msgid "Tracking code"
+msgstr "کد پیگیری"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:160
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:178
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:239
+#: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:58
+msgid "Transaction ID"
+msgstr "شناسه تراکنش"
+
+#: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:161
+msgid "Transaction ID is required"
+msgstr "شناسه تراکنش الزامی است"
+
+#. placeholder {0}: getTranslatedFulfillmentState(state)
+#. placeholder {0}: getTranslatedOrderState(state)
+#. placeholder {0}: getTranslatedPaymentState(state)
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:92
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
+msgid "Transition to {0}"
+msgstr "انتقال به {0}"
+
+#: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:84
+msgid "Transition to {suggestedState}"
+msgstr "انتقال به {suggestedState}"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
+msgid "Transition to selected state"
+msgstr "انتقال به وضعیت انتخاب شده"
+
+#: src/lib/components/data-table/filters/data-table-boolean-filter.tsx:50
+msgid "True"
+msgstr "درست"
+
+#: src/lib/components/shared/facet-value-selector.tsx:273
+msgid "Type at least 2 characters to search..."
+msgstr "حداقل ۲ حرف برای جستجو تایپ کنید..."
+
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
+msgid "Unit price"
+msgstr "قیمت واحد"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:102
+#: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:87
+#: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
+#: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:104
+msgid "Unknown error"
+msgstr "خطای ناشناخته"
+
+#: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:28
+msgid "Unverified"
+msgstr "تایید نشده"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:101
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:100
+#: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:134
+#: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:163
+#: src/app/routes/_authenticated/_profile/profile.tsx:82
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:135
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+#: src/lib/framework/page/detail-page.tsx:205
+msgid "Update"
+msgstr "به‌روزرسانی"
+
+#: src/lib/components/shared/history-timeline/history-note-editor.tsx:47
+msgid "Update the note content or visibility"
+msgstr "محتوا یا قابلیت مشاهده یادداشت را به‌روزرسانی کنید"
+
+#: src/lib/framework/layout-engine/page-layout.tsx:407
+msgid "Updated"
+msgstr "به‌روزرسانی شد"
+
+#: src/lib/components/shared/asset/asset-gallery.tsx:355
+msgid "Upload"
+msgstr "آپلود"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:214
+msgid "Usage limit"
+msgstr "محدودیت استفاده"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
+#: src/lib/components/shared/customer-address-form.tsx:313
+msgid "Use as the default billing address"
+msgstr "استفاده به عنوان آدرس صورتحساب پیش‌فرض"
+
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
+#: src/lib/components/shared/customer-address-form.tsx:293
+msgid "Use as the default shipping address"
+msgstr "استفاده به عنوان آدرس ارسال پیش‌فرض"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
+msgid "Use global out-of-stock threshold"
+msgstr "استفاده از آستانه عمومی اتمام موجودی"
+
+#: src/lib/components/login/login-form.tsx:112
+msgid "Username"
+msgstr "نام کاربری"
+
+#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensions باید در داخل DashboardBaseWidget استفاده شود"
+
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFilters باید در داخل WidgetFiltersProvider استفاده شود"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:17
+msgid "Using external authentication strategy: {strategy}"
+msgstr "استفاده از استراتژی احراز هویت خارجی: {strategy}"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:13
+msgid "Using native authentication strategy"
+msgstr "استفاده از استراتژی احراز هویت بومی"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:88
+msgid "Values"
+msgstr "مقادیر"
+
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
+msgid "Variant"
+msgstr "نوع"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
+msgid "Variant deleted successfully"
+msgstr "نوع با موفقیت حذف شد"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
+msgid "Variant updated successfully"
+msgstr "نوع با موفقیت به‌روزرسانی شد"
+
+#: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:297
+msgid "Variants"
+msgstr "انواع"
+
+#: src/app/routes/_authenticated/_customers/components/customer-status-badge.tsx:18
+msgid "Verified"
+msgstr "تایید شده"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:33
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:86
+msgid "View changes"
+msgstr "مشاهده تغییرات"
+
+#: src/lib/components/data-table/views-sheet.tsx:118
+msgid "View converted to global successfully"
+msgstr "نما با موفقیت به عمومی تبدیل شد"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:117
+msgid "View data"
+msgstr "مشاهده داده‌ها"
+
+#: src/lib/components/data-table/views-sheet.tsx:83
+msgid "View deleted successfully"
+msgstr "نما با موفقیت حذف شد"
+
+#: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx:152
+msgid "View details"
+msgstr "مشاهده جزئیات"
+
+#: src/lib/components/data-table/views-sheet.tsx:97
+msgid "View duplicated successfully"
+msgstr "نما با موفقیت تکثیر شد"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:113
+msgid "View job data"
+msgstr "مشاهده داده‌های کار"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:131
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:174
+msgid "View job result"
+msgstr "مشاهده نتیجه کار"
+
+#: src/lib/components/data-table/views-sheet.tsx:63
+msgid "View renamed successfully"
+msgstr "نام نما با موفقیت تغییر کرد"
+
+#: src/app/routes/_authenticated/_system/job-queue.tsx:135
+#: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:178
+msgid "View result"
+msgstr "مشاهده نتیجه"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:53
+msgid "View values"
+msgstr "مشاهده مقادیر"
+
+#: src/app/routes/_authenticated/_facets/facets.tsx:77
+msgid "Visibility"
+msgstr "قابلیت مشاهده"
+
+#: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
+msgid "Visible to admins only"
+msgstr "فقط برای مدیران قابل مشاهده"
+
+#: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
+msgid "Visible to customer"
+msgstr "برای مشتری قابل مشاهده"
+
+#: src/lib/components/login/login-form.tsx:89
+msgid "Welcome back!"
+msgstr "خوش آمدید!"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:145
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:122
+msgid "When enabled, a product is available in the shop"
+msgstr "وقتی فعال باشد، محصول در فروشگاه موجود است"
+
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
+msgid "When enabled, a promotion is available in the shop"
+msgstr "وقتی فعال باشد، تبلیغات در فروشگاه موجود است"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
+msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
+msgstr "وقتی این فعال باشد، قیمت‌های وارد شده در کاتالوگ محصول شامل مالیات برای منطقه مالیاتی پیش‌فرض خواهد بود."
+
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:150
+msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
+msgstr "وقتی دنبال می‌شود، سطوح موجودی نوع محصول هنگام فروش به طور خودکار تنظیم می‌شود. این تنظیم می‌تواند توسط انواع محصول منفرد لغو شود."
+
+#: src/lib/components/shared/rich-text-editor/image-dialog.tsx:179
+msgid "Width"
+msgstr "عرض"
+
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:77
+#: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
+msgid "With selected..."
+msgstr "با موارد انتخاب شده..."
+
+#: src/lib/components/date-range-picker.tsx:33
+msgctxt "date-range"
+msgid "Yesterday"
+msgstr "دیروز"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:333
+msgid "You don't have permission to view channel settings"
+msgstr "شما مجوز مشاهده تنظیمات کانال را ندارید"
+
+#: src/lib/components/layout/manage-languages-dialog.tsx:279
+msgid "You don't have permission to view global language settings"
+msgstr "شما مجوز مشاهده تنظیمات زبان عمومی را ندارید"
+
+#: src/lib/components/data-table/views-sheet.tsx:152
+msgid "You haven't saved any views yet."
+msgstr "هنوز هیچ نمایی ذخیره نکرده‌اید."
+
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:60
+msgid "Your latest orders"
+msgstr "آخرین سفارش‌های شما"
+
+#: src/lib/framework/dashboard-widget/orders-summary/index.tsx:85
+msgid "Your orders summary"
+msgstr "خلاصه سفارش‌های شما"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
+msgid "Zone"
+msgstr "منطقه"
+
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
+#: src/app/routes/_authenticated/_zones/zones.tsx:15
+#: src/app/routes/_authenticated/_zones/zones.tsx:25
+msgid "Zones"
+msgstr "مناطق"

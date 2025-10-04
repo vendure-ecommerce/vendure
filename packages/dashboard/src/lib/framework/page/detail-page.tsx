@@ -5,7 +5,7 @@ import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
@@ -152,15 +152,15 @@ export function DetailPage<
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
 >({
-    pageId,
-    route,
-    entityName: passedEntityName,
-    queryDocument,
-    createDocument,
-    updateDocument,
-    setValuesForUpdate,
-    title,
-}: DetailPageProps<T, C, U>) {
+      pageId,
+      route,
+      entityName: passedEntityName,
+      queryDocument,
+      createDocument,
+      updateDocument,
+      setValuesForUpdate,
+      title,
+  }: DetailPageProps<T, C, U>) {
     const params = route.useParams();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const navigate = useNavigate();
