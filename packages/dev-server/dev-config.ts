@@ -10,7 +10,7 @@ import {
     dummyPaymentHandler,
     LogLevel,
     SettingsStoreScopes,
-    VendureConfig,
+    VendureConfig
 } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -47,7 +47,7 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
-        tokenMethod: ['bearer', 'cookie'] as const,
+        tokenMethod: ['bearer', 'cookie', 'api-key'] as const,
         requireVerification: true,
         customPermissions: [],
         cookieOptions: {

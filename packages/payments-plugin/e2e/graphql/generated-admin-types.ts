@@ -180,6 +180,59 @@ export type AlreadyRefundedError = ErrorResult & {
     refundId: Scalars['ID']['output'];
 };
 
+export type ApiKey = Node & {
+    createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    id: Scalars['ID']['output'];
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['output'];
+    translations: Array<ApiKeyTranslation>;
+    updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ApiKeyFilterParameter = {
+    _and?: InputMaybe<Array<ApiKeyFilterParameter>>;
+    _or?: InputMaybe<Array<ApiKeyFilterParameter>>;
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ApiKeyList = PaginatedList & {
+    items: Array<ApiKey>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ApiKeyListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ApiKeyFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ApiKeySortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ApiKeySortParameter = {
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ApiKeyTranslation = Node & {
+    createdAt: Scalars['DateTime']['output'];
+    id: Scalars['ID']['output'];
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['output'];
+    updatedAt: Scalars['DateTime']['output'];
+};
+
 export type ApplyCouponCodeResult =
     | CouponCodeExpiredError
     | CouponCodeInvalidError
@@ -744,6 +797,34 @@ export type CreateAdministratorInput = {
     lastName: Scalars['String']['input'];
     password: Scalars['String']['input'];
     roleIds: Array<Scalars['ID']['input']>;
+};
+
+/**
+ * There is no User ID because you can only create API-Keys for yourself,
+ * which gets determined by the User who does the request.
+ */
+export type CreateApiKeyInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    /**
+     * Which roles to attach to this ApiKey.
+     * You may only grant roles which you, yourself have.
+     */
+    roleIds: Array<Scalars['ID']['input']>;
+    translations: Array<CreateApiKeyTranslationInput>;
+};
+
+export type CreateApiKeyResult = {
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+    apiKey: Scalars['String']['output'];
+    /** ID of the created ApiKey-Entity */
+    entityId: Scalars['ID']['output'];
+};
+
+export type CreateApiKeyTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name: Scalars['String']['input'];
 };
 
 export type CreateAssetInput = {
@@ -1358,6 +1439,7 @@ export type CustomFieldConfig =
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
     Administrator: Array<CustomFieldConfig>;
+    ApiKey: Array<CustomFieldConfig>;
     Asset: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
@@ -1563,6 +1645,11 @@ export type DateTimeStructFieldConfig = StructField & {
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type DeleteApiKeyInput = {
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
 };
 
 export type DeleteAssetInput = {
@@ -2824,6 +2911,12 @@ export type Mutation = {
     cancelPayment: CancelPaymentResult;
     /** Create a new Administrator */
     createAdministrator: Administrator;
+    /**
+     * Generates a new API-Key and attaches it to an Administrator.
+     * Returns the generated API-Key.
+     * API-Keys cannot be viewed again after creation.
+     */
+    createApiKey: CreateApiKeyResult;
     /** Create a new Asset */
     createAssets: Array<CreateAssetResult>;
     /** Create a new Channel */
@@ -2879,6 +2972,8 @@ export type Mutation = {
     deleteAdministrator: DeletionResponse;
     /** Delete multiple Administrators */
     deleteAdministrators: Array<DeletionResponse>;
+    /** Deletes an API-Key */
+    deleteApiKey: DeletionResponse;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
@@ -3018,6 +3113,12 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
+    /**
+     * Replaces the old with a new API-Key.
+     * This is a convenience method to invalidate an API-Key without
+     * deleting the underlying roles and permissions.
+     */
+    rotateApiKey: RotateApiKeyResult;
     runPendingSearchIndexUpdates: Success;
     runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
@@ -3049,6 +3150,8 @@ export type Mutation = {
     updateActiveAdministrator: Administrator;
     /** Update an existing Administrator */
     updateAdministrator: Administrator;
+    /** Updates an API-Key */
+    updateApiKey: ApiKey;
     /** Update an existing Asset */
     updateAsset: Asset;
     /** Update an existing Channel */
@@ -3215,6 +3318,10 @@ export type MutationCreateAdministratorArgs = {
     input: CreateAdministratorInput;
 };
 
+export type MutationCreateApiKeyArgs = {
+    input: CreateApiKeyInput;
+};
+
 export type MutationCreateAssetsArgs = {
     input: Array<CreateAssetInput>;
 };
@@ -3327,6 +3434,10 @@ export type MutationDeleteAdministratorArgs = {
 
 export type MutationDeleteAdministratorsArgs = {
     ids: Array<Scalars['ID']['input']>;
+};
+
+export type MutationDeleteApiKeyArgs = {
+    input: DeleteApiKeyInput;
 };
 
 export type MutationDeleteAssetArgs = {
@@ -3603,6 +3714,10 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
 };
 
+export type MutationRotateApiKeyArgs = {
+    input: RotateApiKeyInput;
+};
+
 export type MutationRunScheduledTaskArgs = {
     id: Scalars['String']['input'];
 };
@@ -3686,6 +3801,10 @@ export type MutationUpdateActiveAdministratorArgs = {
 
 export type MutationUpdateAdministratorArgs = {
     input: UpdateAdministratorInput;
+};
+
+export type MutationUpdateApiKeyArgs = {
+    input: UpdateApiKeyInput;
 };
 
 export type MutationUpdateAssetArgs = {
@@ -4330,6 +4449,8 @@ export enum Permission {
     Authenticated = 'Authenticated',
     /** Grants permission to create Administrator */
     CreateAdministrator = 'CreateAdministrator',
+    /** Grants permission to create ApiKey */
+    CreateApiKey = 'CreateApiKey',
     /** Grants permission to create Asset */
     CreateAsset = 'CreateAsset',
     /** Grants permission to create Products, Facets, Assets, Collections */
@@ -4374,6 +4495,8 @@ export enum Permission {
     CreateZone = 'CreateZone',
     /** Grants permission to delete Administrator */
     DeleteAdministrator = 'DeleteAdministrator',
+    /** Grants permission to delete ApiKey */
+    DeleteApiKey = 'DeleteApiKey',
     /** Grants permission to delete Asset */
     DeleteAsset = 'DeleteAsset',
     /** Grants permission to delete Products, Facets, Assets, Collections */
@@ -4422,6 +4545,8 @@ export enum Permission {
     Public = 'Public',
     /** Grants permission to read Administrator */
     ReadAdministrator = 'ReadAdministrator',
+    /** Grants permission to read ApiKey */
+    ReadApiKey = 'ReadApiKey',
     /** Grants permission to read Asset */
     ReadAsset = 'ReadAsset',
     /** Grants permission to read Products, Facets, Assets, Collections */
@@ -4468,6 +4593,8 @@ export enum Permission {
     SuperAdmin = 'SuperAdmin',
     /** Grants permission to update Administrator */
     UpdateAdministrator = 'UpdateAdministrator',
+    /** Grants permission to update ApiKey */
+    UpdateApiKey = 'UpdateApiKey',
     /** Grants permission to update Asset */
     UpdateAsset = 'UpdateAsset',
     /** Grants permission to update Products, Facets, Assets, Collections */
@@ -4995,6 +5122,8 @@ export type Query = {
     activeChannel: Channel;
     administrator?: Maybe<Administrator>;
     administrators: AdministratorList;
+    apiKey?: Maybe<ApiKey>;
+    apiKeys: ApiKeyList;
     /** Get a single Asset by id */
     asset?: Maybe<Asset>;
     /** Get a list of Assets */
@@ -5093,6 +5222,14 @@ export type QueryAdministratorArgs = {
 
 export type QueryAdministratorsArgs = {
     options?: InputMaybe<AdministratorListOptions>;
+};
+
+export type QueryApiKeyArgs = {
+    id: Scalars['ID']['input'];
+};
+
+export type QueryApiKeysArgs = {
+    options?: InputMaybe<ApiKeyListOptions>;
 };
 
 export type QueryAssetArgs = {
@@ -5586,6 +5723,16 @@ export type RoleSortParameter = {
     description?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type RotateApiKeyInput = {
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
+};
+
+export type RotateApiKeyResult = {
+    /** The generated API-Key. API-Keys cannot be viewed again after creation! */
+    apiKey: Scalars['String']['output'];
 };
 
 export type Sale = Node &
@@ -6339,6 +6486,21 @@ export type UpdateAdministratorInput = {
     lastName?: InputMaybe<Scalars['String']['input']>;
     password?: InputMaybe<Scalars['String']['input']>;
     roleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+export type UpdateApiKeyInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    /** ID of the ApiKey */
+    id: Scalars['ID']['input'];
+    translations?: InputMaybe<Array<UpdateApiKeyTranslationInput>>;
+};
+
+export type UpdateApiKeyTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    id?: InputMaybe<Scalars['ID']['input']>;
+    languageCode: LanguageCode;
+    /** A descriptive name so you can remind yourself where the API-Key gets used */
+    name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateAssetInput = {
