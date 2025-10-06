@@ -23,6 +23,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { globalSettingsDocument, updateGlobalSettingsDocument } from './global-settings.graphql.js';
+import { globalLanguageCodes } from './utils/global-languages.js';
 
 const pageId = 'global-settings';
 
@@ -119,6 +120,7 @@ function GlobalSettingsPage() {
                                 <LanguageSelector
                                     value={field.value ?? []}
                                     onChange={field.onChange}
+                                    availableLanguageCodes={globalLanguageCodes}
                                     multiple={true}
                                 />
                             )}
