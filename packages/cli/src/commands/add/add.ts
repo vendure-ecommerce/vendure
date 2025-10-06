@@ -7,6 +7,7 @@ import { cliCommands } from '../command-declarations';
 
 import { addApiExtension } from './api-extension/add-api-extension';
 import { addCodegen } from './codegen/add-codegen';
+import { addDashboard } from './dashboard/add-dashboard';
 import { addEntity } from './entity/add-entity';
 import { addJobQueue } from './job-queue/add-job-queue';
 import { createNewPlugin } from './plugin/create-new-plugin';
@@ -28,8 +29,10 @@ export interface AddOptions {
     codegen?: string | boolean;
     /** Add an API extension scaffold to the specified plugin */
     apiExtension?: string | boolean;
-    /** Add Admin-UI or Storefront UI extensions to the specified plugin */
+    /** Add Admin-UI extensions to the specified plugin */
     uiExtensions?: string | boolean;
+    /** Add Dashboard UI extensions to the specified plugin */
+    dashboard?: string | boolean;
     /** Specify the path to a custom Vendure config file */
     config?: string;
     /** Name for the job queue (used with jobQueue) */
@@ -218,6 +221,21 @@ async function handleNonInteractiveMode(options: AddOptions) {
                 pluginName,
             });
             log.success('UI extensions added successfully');
+        } else if (options.dashboard) {
+            const pluginName = typeof options.dashboard === 'string' ? options.dashboard : undefined;
+            // For UI extensions, if a boolean true is passed, plugin selection will be handled interactively
+            // If a string is passed, it should be a valid plugin name
+            if (typeof options.uiExtensions === 'string' && !options.uiExtensions.trim()) {
+                throw new Error(
+                    'Plugin name cannot be empty when specified. Usage: vendure add --dashboard [plugin-name]',
+                );
+            }
+            await addDashboard({
+                isNonInteractive: true,
+                config: options.config,
+                pluginName,
+            });
+            log.success('Dashboard extensions added successfully');
         } else {
             log.error('No valid add operation specified');
             process.exit(1);
