@@ -193,3 +193,15 @@ export const updateProductVariantsDocument = graphql(`
         }
     }
 `);
+
+export const stockLocationsQueryDocument = graphql(`
+    query StockLocations {
+        stockLocations(options: { take: 100 }) {
+            items {
+                id
+                name
+                description
+            }
+        }
+    }
+`);
