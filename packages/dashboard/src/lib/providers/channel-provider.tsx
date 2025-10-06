@@ -16,6 +16,7 @@ const channelFragment = graphql(`
         defaultCurrencyCode
         pricesIncludeTax
         availableLanguageCodes
+        availableCurrencyCodes
     }
 `);
 
