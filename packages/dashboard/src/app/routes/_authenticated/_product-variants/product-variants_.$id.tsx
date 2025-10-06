@@ -24,19 +24,21 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { VariablesOf } from 'gql.tada';
 import { Trash } from 'lucide-react';
-import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';
 import { AddCurrencyDropdown } from './components/add-currency-dropdown.js';
+import { AddStockLocationDropdown } from './components/add-stock-location-dropdown.js';
 import { VariantPriceDetail } from './components/variant-price-detail.js';
 import {
     createProductVariantDocument,
     productVariantDetailDocument,
+    stockLocationsQueryDocument,
     updateProductVariantDocument,
 } from './product-variants.graphql.js';
 
@@ -69,7 +71,11 @@ function ProductVariantDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
     const { activeChannel } = useChannel();
-    const { formatCurrencyName } = useLocalFormat();
+
+    const { data: stockLocationsData } = useQuery({
+        queryKey: ['stockLocations'],
+        queryFn: () => api.query(stockLocationsQueryDocument, {}),
+    });
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -125,7 +131,7 @@ function ProductVariantDetailPage() {
     });
 
     const availableCurrencies = activeChannel?.availableCurrencyCodes ?? [];
-    const [prices, taxCategoryId] = form.watch(['prices', 'taxCategoryId']);
+    const [prices, taxCategoryId, stockLevels] = form.watch(['prices', 'taxCategoryId', 'stockLevels']);
 
     // Filter out deleted prices for display
     const activePrices = prices?.filter(p => !p.delete) ?? [];
@@ -133,6 +139,9 @@ function ProductVariantDetailPage() {
     // Get currencies that are currently active (not deleted)
     const usedCurrencies = activePrices.map(p => p.currencyCode);
     const unusedCurrencies = availableCurrencies.filter(c => !usedCurrencies.includes(c));
+
+    // Get used stock location IDs
+    const usedStockLocationIds = stockLevels?.map(sl => sl.stockLocationId) ?? [];
 
     const handleAddCurrency = (currencyCode: string) => {
         const currentPrices = form.getValues('prices') || [];
@@ -173,6 +182,18 @@ function ProductVariantDetailPage() {
             delete: true,
         };
         form.setValue('prices', updatedPrices, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
+
+    const handleAddStockLocation = (stockLocationId: string, stockLocationName: string) => {
+        const currentStockLevels = form.getValues('stockLevels') || [];
+        const newStockLevel = {
+            stockLocationId,
+            stockOnHand: 0,
+        };
+        form.setValue('stockLevels', [...currentStockLevels, newStockLevel], {
             shouldDirty: true,
             shouldValidate: true,
         });
@@ -292,33 +313,6 @@ function ProductVariantDetailPage() {
                 </PageBlock>
                 <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
                     <DetailFormGrid>
-                        {entity?.stockLevels.map((stockLevel, index) => (
-                            <Fragment key={stockLevel.id}>
-                                <FormFieldWrapper
-                                    control={form.control}
-                                    name={`stockLevels.${index}.stockOnHand`}
-                                    label={<Trans>Stock level</Trans>}
-                                    render={({ field }) => (
-                                        <Input
-                                            type="number"
-                                            value={field.value}
-                                            onChange={e => {
-                                                field.onChange(e.target.valueAsNumber);
-                                            }}
-                                        />
-                                    )}
-                                />
-                                <div>
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Allocated</Trans>
-                                        </FormLabel>
-                                        <div className="text-sm pt-1.5">{stockLevel.stockAllocated}</div>
-                                    </FormItem>
-                                </div>
-                            </Fragment>
-                        ))}
-
                         <FormFieldWrapper
                             control={form.control}
                             name="trackInventory"
@@ -384,6 +378,55 @@ function ProductVariantDetailPage() {
                             )}
                         />
                     </DetailFormGrid>
+                    {stockLevels?.map((stockLevel, index) => {
+                        const stockAllocated =
+                            entity?.stockLevels.find(sl => sl.stockLocation.id === stockLevel.stockLocationId)
+                                ?.stockAllocated ?? 0;
+                        const stockLocationName = stockLocationsData?.stockLocations.items?.find(
+                            sl => sl.id === stockLevel.stockLocationId,
+                        )?.name;
+                        const stockLocationNameLabel =
+                            stockLevels.length > 1 ? (
+                                <div className="text-muted-foreground">{stockLocationName}</div>
+                            ) : null;
+                        const stockLabel = (
+                            <>
+                                <Trans>Stock level</Trans>
+                                {stockLocationNameLabel}
+                            </>
+                        );
+                        return (
+                            <DetailFormGrid key={stockLevel.stockLocationId}>
+                                <FormFieldWrapper
+                                    control={form.control}
+                                    name={`stockLevels.${index}.stockOnHand`}
+                                    label={stockLabel}
+                                    render={({ field }) => (
+                                        <Input
+                                            type="number"
+                                            value={field.value}
+                                            onChange={e => {
+                                                field.onChange(e.target.valueAsNumber);
+                                            }}
+                                        />
+                                    )}
+                                />
+                                <div>
+                                    <FormItem>
+                                        <FormLabel>
+                                            <Trans>Allocated</Trans>
+                                        </FormLabel>
+                                        <div className="text-sm pt-1.5">{stockAllocated}</div>
+                                    </FormItem>
+                                </div>
+                            </DetailFormGrid>
+                        );
+                    })}
+                    <AddStockLocationDropdown
+                        availableStockLocations={stockLocationsData?.stockLocations.items ?? []}
+                        usedStockLocationIds={usedStockLocationIds}
+                        onStockLocationSelect={handleAddStockLocation}
+                    />
                 </PageBlock>
 
                 <PageBlock column="side" blockId="facet-values">
