@@ -180,6 +180,13 @@ export type ApiKey = Node & {
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
+    /** Helps you identify unused keys */
+    lastUsedAt?: Maybe<Scalars['DateTime']['output']>;
+    /**
+     * ID by which we can look up the API-Key.
+     * Also helps you identify keys without leaking the underlying secret API-Key.
+     */
+    lookupId: Scalars['String']['output'];
     /** A descriptive name so you can remind yourself where the API-Key gets used */
     name: Scalars['String']['output'];
     translations: Array<ApiKeyTranslation>;
@@ -191,6 +198,8 @@ export type ApiKeyFilterParameter = {
     _or?: InputMaybe<Array<ApiKeyFilterParameter>>;
     createdAt?: InputMaybe<DateOperators>;
     id?: InputMaybe<IdOperators>;
+    lastUsedAt?: InputMaybe<DateOperators>;
+    lookupId?: InputMaybe<StringOperators>;
     name?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
 };
@@ -216,6 +225,8 @@ export type ApiKeyListOptions = {
 export type ApiKeySortParameter = {
     createdAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
+    lastUsedAt?: InputMaybe<SortOrder>;
+    lookupId?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
@@ -814,6 +825,11 @@ export type CreateApiKeyResult = {
     apiKey: Scalars['String']['output'];
     /** ID of the created ApiKey-Entity */
     entityId: Scalars['ID']['output'];
+    /**
+     * ID by which you can look up the API-Key.
+     * Also helps you identify keys without leaking the underlying secret API-Key.
+     */
+    lookupId: Scalars['String']['output'];
 };
 
 export type CreateApiKeyTranslationInput = {
