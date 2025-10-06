@@ -104,7 +104,7 @@ describe('ApiKey resolver', () => {
     });
 
     it('API-Key usage life cycle: Read, Rotate, Delete', async ({ expect }) => {
-        const { apiKey, entityId } = (
+        const { apiKey, lookupId, entityId } = (
             await adminClient.query(CreateApiKeyDocument, {
                 input: {
                     roleIds: ['1'],
@@ -124,6 +124,7 @@ describe('ApiKey resolver', () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                [String(config.authOptions.apiKeyLookupHeaderKey)]: lookupId,
                 [String(config.authOptions.apiKeyHeaderKey)]: apiKey,
             },
             body: '{ "query": "query { administrator(id: 1) { user { identifier } } }" }',
@@ -161,6 +162,7 @@ describe('ApiKey resolver', () => {
 export const CREATE_API_KEY = gql`
     mutation CreateApiKey($input: CreateApiKeyInput!) {
         createApiKey(input: $input) {
+            lookupId
             apiKey
             entityId
         }
