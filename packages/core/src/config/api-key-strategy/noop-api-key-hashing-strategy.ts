@@ -16,4 +16,8 @@ export class NoopApiKeyHashingStrategy implements ApiKeyHashingStrategy {
     hash(apiKey: string): Promise<string> {
         return Promise.resolve(apiKey);
     }
+
+    check(plaintext: string, hash: string): Promise<boolean> {
+        return Promise.resolve(plaintext === hash);
+    }
 }

@@ -149,6 +149,8 @@ export class AuthGuard implements CanActivate {
                 req,
                 this.configService.authOptions.tokenMethod,
                 this.configService.authOptions.apiKeyHeaderKey,
+                this.configService.authOptions.apiKeyLookupHeaderKey,
+                this.apiKeyService,
                 apiKeyHashingStrategy,
             )
         )?.token;

@@ -30,11 +30,22 @@ export class ApiKey extends VendureEntity implements HasCustomFields, ChannelAwa
         super(input);
     }
 
+    /**
+     * ID by which we can look up the API-Key.
+     * Also helps you identify keys without leaking the underlying secret API-Key.
+     */
+    @Column({ unique: true })
+    lookupId: string;
+
     @Column({ unique: true })
     apiKeyHash: string;
 
+    @Column({ type: Date, nullable: true })
+    lastUsedAt: Date | null;
+
     /**
-     * This is the only User that is allowed to update this API-Key
+     * Usually the user who created the ApiKey but could also be used as the basis for
+     * restricting resolvers to `Permission.Owner` queries for customers for example.
      */
     @ManyToOne(type => User)
     owner: User;

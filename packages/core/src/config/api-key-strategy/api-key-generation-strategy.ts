@@ -28,5 +28,5 @@ export interface ApiKeyGenerationStrategy extends InjectableStrategy {
      *
      * @since // TODO
      */
-    generateApiKey(ctx: RequestContext): Promise<string> | string;
+    generateApiKey(ctx: RequestContext): Promise<string>;
 }

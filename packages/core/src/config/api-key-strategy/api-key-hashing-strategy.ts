@@ -1,4 +1,4 @@
-import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { PasswordHashingStrategy } from '../auth/password-hashing-strategy';
 
 /**
  * @description
@@ -10,18 +10,16 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * similar to how passwords are handled. This means that when a request comes in with an API-Key,
  * Vendure needs to hash the provided key and compare it with the stored hash. This means your hashing
  * strategy must preferably be as fast as possible to avoid performance issues since hashing happens
- * on every request that uses API-Key authentication and it needs to be deterministic (i.e. hashing the same
- * input must always produce the same output). The latter is because otherwise it would be impossible to
- * quickly compare the incoming key with a stored hash.
+ * on every request that uses API-Key authentication.
  *
  * :::
  *
  * :::info Config
  *
- * This is configured via the `ApiKeyAuthenticationStrategy` in either:
+ * This is configured via the `ApiKeyAuthorizationOptions` in either:
  *
- * - `authOptions.adminAuthenticationStrategy`
- * - `authOptions.shopAuthenticationStrategy`
+ * - `authOptions.adminApiKeyAuthorizationOptions`
+ * - `authOptions.shopApiKeyAuthorizationOptions`
  *
  * of your VendureConfig.
  *
@@ -30,12 +28,4 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * @docsCategory auth
  * @since // TODO
  */
-export interface ApiKeyHashingStrategy extends InjectableStrategy {
-    /**
-     * @description
-     * Hashes the given API-Key.
-     *
-     * @since // TODO
-     */
-    hash(plaintext: string): Promise<string> | string;
-}
+export interface ApiKeyHashingStrategy extends PasswordHashingStrategy {}

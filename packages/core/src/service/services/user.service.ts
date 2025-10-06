@@ -186,13 +186,8 @@ export class UserService {
      *
      * IMPORTANT: The caller is responsible for avoiding privilege escalations!
      */
-    async createApiKeyUser(ctx: RequestContext, roles: Role[]): Promise<User> {
-        const newUser = await this.connection.getRepository(ctx, User).save(
-            new User({
-                identifier: `api-key-user-${Date.now()}`, // TODO think of something better here
-                roles,
-            }),
-        );
+    async createApiKeyUser(ctx: RequestContext, roles: Role[], identifier: string): Promise<User> {
+        const newUser = await this.connection.getRepository(ctx, User).save(new User({ identifier, roles }));
 
         const userWithRelations = await assertFound(
             this.connection.getRepository(ctx, User).findOne({

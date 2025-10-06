@@ -407,7 +407,14 @@ export interface AuthOptions {
     authTokenHeaderKey?: string;
     /**
      * @description
-     * Defines which header will be used to read the API-Key when using the 'api-key' method.
+     * Defines which header will be used to read the API-Key identifier when using the 'api-key' token method.
+     *
+     * @default 'vendure-api-key-lookup'
+     */
+    apiKeyLookupHeaderKey?: string;
+    /**
+     * @description
+     * Defines which header will be used to read the API-Key when using the 'api-key' token method.
      *
      * @default 'vendure-api-key'
      */
@@ -497,11 +504,16 @@ export interface AuthOptions {
      * @since 1.3.0
      */
     passwordHashingStrategy?: PasswordHashingStrategy;
-
-    // TODO docs
+    /**
+     * Defines how authorization via API-Keys is managed for the Admin API.
+     * @since // TODO
+     */
     adminApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
+    /**
+     * Defines how authorization via API-Keys is managed for the Shop API.
+     * @since // TODO
+     */
     shopApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
-
     /**
      * @description
      * Allows you to set a custom policy for passwords when using the {@link NativeAuthenticationStrategy}.

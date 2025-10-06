@@ -10,7 +10,7 @@ import {
     UpdateApiKeyInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { In } from 'typeorm';
+import { In, UpdateResult } from 'typeorm';
 
 import { ApiType, RelationPaths, RequestContext } from '../../api';
 import {
@@ -29,6 +29,7 @@ import {
     ConfigService,
     Logger,
 } from '../../config';
+import { ApiKeyLookupIdGenerationStrategy } from '../../config/api-key-strategy/api-key-lookup-id-generation-strategy';
 import { TransactionalConnection } from '../../connection';
 import { AuthenticationMethod, Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
@@ -94,6 +95,21 @@ export class ApiKeyService {
     }
 
     /**
+     * @throws {InternalServerError} When {@link ApiKeyLookupIdGenerationStrategy} has not been configured.
+     */
+    getLookupIdStrategyByApiType(apiType: ApiType): ApiKeyLookupIdGenerationStrategy {
+        const options =
+            apiType === 'admin'
+                ? this.configService.authOptions.adminApiKeyAuthorizationOptions
+                : this.configService.authOptions.shopApiKeyAuthorizationOptions;
+
+        if (!options.lookupIdStrategy)
+            throw new InternalServerError('FAILED TO CONFIGURE APIKEYLOOKUPIDSTRATEGY'); // TODO i18n key
+
+        return options.lookupIdStrategy;
+    }
+
+    /**
      * Checks that the active user is allowed to grant the specified Roles for an API-Key
      *
      * // TODO this is taken & slightly modified from adminservice, could merge to not repeat logic
@@ -119,6 +135,11 @@ export class ApiKeyService {
         }
 
         return roles;
+    }
+
+    private generateApiKeyUserIdentifier(lookupId: string): string {
+        // Too long identifiers could be an issue depending on the underlying DB
+        return `apikey-user-${lookupId}`;
     }
 
     /**
@@ -148,12 +169,17 @@ export class ApiKeyService {
         const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
 
         const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
+        const lookupId = await this.getLookupIdStrategyByApiType(ctx.apiType).generateLookupId(ctx);
         const apiKeyUser = userIdApiKeyUser
             ? await this.connection.getEntityOrThrow(ctx, User, userIdApiKeyUser, {
                   // ApiKeyUsers generally require roles and their channels, its important for sessions!
                   relations: { roles: { channels: true } },
               })
-            : await this.userService.createApiKeyUser(ctx, roles);
+            : await this.userService.createApiKeyUser(
+                  ctx,
+                  roles,
+                  this.generateApiKeyUserIdentifier(lookupId),
+              );
 
         const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
         const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
@@ -167,6 +193,7 @@ export class ApiKeyService {
                 e.ownerId = ownerUser.id;
                 e.apiKeyUserId = apiKeyUser.id;
                 e.apiKeyHash = hash;
+                e.lookupId = lookupId;
                 await this.channelService.assignToCurrentChannel(e, ctx);
             },
         });
@@ -187,7 +214,7 @@ export class ApiKeyService {
         );
         await this.eventBus.publish(new ApiKeyEvent(ctx, newEntity, 'created', input));
 
-        return { apiKey, entityId: newEntity.id };
+        return { apiKey, lookupId, entityId: newEntity.id };
     }
 
     /**
@@ -318,5 +345,22 @@ export class ApiKeyService {
                 const items = notifications.map(n => this.translator.translate(n, ctx));
                 return { items, totalItems };
             });
+    }
+
+    /**
+     * Helper, intended for the AuthGuard to quickly find the ApiKeyHash
+     */
+    async getHashByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<string | null> {
+        const entity = await this.connection.rawConnection.getRepository(ApiKey).findOneBy({ lookupId });
+        return entity?.apiKeyHash ?? null;
+    }
+
+    /**
+     * Helper, intended for the AuthGuard to quickly update the lastUsedAt timestamp
+     */
+    async updateLastUsedAtByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<UpdateResult> {
+        return this.connection.rawConnection
+            .getRepository(ApiKey)
+            .update({ lookupId }, { lastUsedAt: new Date() });
     }
 }

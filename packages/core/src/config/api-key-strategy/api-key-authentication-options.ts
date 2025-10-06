@@ -4,6 +4,7 @@ import { SessionService } from '../../service/services/session.service';
 
 import { ApiKeyGenerationStrategy } from './api-key-generation-strategy';
 import { ApiKeyHashingStrategy } from './api-key-hashing-strategy';
+import { ApiKeyLookupIdGenerationStrategy } from './api-key-lookup-id-generation-strategy';
 import { RandomBytesApiKeyGenerationStrategy } from './random-bytes-api-key-generation-strategy';
 
 /**
@@ -22,9 +23,24 @@ export const API_KEY_AUTH_STRATEGY_NAME = 'apikey';
 export const API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS = ms('100y');
 
 /**
- * // TODO docs
+ * @description
+ * The ApiKeyAuthorizationOptions define how authorization via API-Keys is managed.
+ *
+ * @docsCategory auth
  */
 export interface ApiKeyAuthorizationOptions {
+    /**
+     * @description
+     * Defines a custom strategy for how API-Key lookup identifiers get generated.
+     *
+     * A separate lookup ID enables us to use stronger salted hashing methods for the actual API-Key.
+     * This is because when we extract the incoming API-Key from the request, hashing methods that
+     * automatically handle salting (e.g. bcrypt) will produce different hashes for the same input,
+     * making it impossible to compare the incoming API-Key with the stored hash.
+     *
+     * By using a separate lookup ID, we can identify the correct stored hash to compare against.
+     */
+    lookupIdStrategy?: ApiKeyLookupIdGenerationStrategy;
     /**
      * @description
      * Defines how API-Keys get generated.
@@ -43,18 +59,15 @@ export interface ApiKeyAuthorizationOptions {
      * @see {@link RandomBytesApiKeyGenerationStrategy}
      */
     generationStrategy?: ApiKeyGenerationStrategy;
-
     /**
      * @description
      * Defines how API-Keys get hashed for storage and how incoming API-Keys get hashed for comparison.
      *
-     * It is important that this strategy is as fast as possible to avoid performance issues since
-     * hashing happens on every request that uses API-Key authentication!
+     * Please keep in mind that introducing a compute heavy hashing method may introduce performance
+     * issues since hashing happens on every request that uses API-Key authentication!
      *
-     * // TODO default
-     * // TODO see
+     * @default BcryptPasswordHashingStrategy
+     * @see {@link BcryptPasswordHashingStrategy}
      */
     hashingStrategy?: ApiKeyHashingStrategy;
-
-    // TODO could have a key expiry strategy too that deletes keys that havent been used in X time
 }

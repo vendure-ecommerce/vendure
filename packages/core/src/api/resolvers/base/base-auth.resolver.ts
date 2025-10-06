@@ -69,6 +69,8 @@ export class BaseAuthResolver {
             req,
             this.configService.authOptions.tokenMethod,
             this.configService.authOptions.apiKeyHeaderKey,
+            this.configService.authOptions.apiKeyLookupHeaderKey,
+            this.apiKeyService,
             apiKeyHashingStrategy,
         );
 
