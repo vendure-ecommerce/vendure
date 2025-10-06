@@ -22,7 +22,12 @@ export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<Dash
     const shouldUseAffixedInput = prefix || suffix;
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (readOnly) return;
-        onChange(e.target.valueAsNumber);
+        const numValue = e.target.valueAsNumber;
+        if (Number.isNaN(numValue)) {
+            onChange(e.target.value);
+        } else {
+            onChange(e.target.valueAsNumber);
+        }
     };
     if (shouldUseAffixedInput) {
         return (
