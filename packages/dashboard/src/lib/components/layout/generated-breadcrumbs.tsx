@@ -7,9 +7,8 @@ import {
 } from '@/vdb/components/ui/breadcrumb.js';
 import type { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { getNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
-import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { useLingui } from '@lingui/react';
-import { Link, useRouter, useRouterState } from '@tanstack/react-router';
+import { Link, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { Fragment } from 'react';
 
@@ -25,11 +24,8 @@ export type PageBreadcrumb = BreadcrumbPair | BreadcrumbShorthand;
 export function GeneratedBreadcrumbs() {
     const matches = useRouterState({ select: s => s.matches });
     const currentPath = useRouterState({ select: s => s.location.pathname });
-    const router = useRouter();
     const { i18n } = useLingui();
     const navMenuConfig = getNavMenuConfig();
-    const { bcp47Tag } = useDisplayLocale();
-    const basePath = router.basepath || '';
 
     const normalizeBreadcrumb = (breadcrumb: any, pathname: string): BreadcrumbPair[] => {
         if (typeof breadcrumb === 'string') {
@@ -58,12 +54,11 @@ export function GeneratedBreadcrumbs() {
             .flatMap(({ pathname, loaderData }) => normalizeBreadcrumb(loaderData.breadcrumb, pathname));
     }, [matches]);
 
-    const isBaseRoute = (p: string) => p === basePath || p === `${basePath}/`;
+    const isBaseRoute = (p: string) => p === '' || p === `/`;
     const pageCrumbs: BreadcrumbPair[] = rawCrumbs.filter(c => !isBaseRoute(c.path));
 
     const normalizePath = (path: string): string => {
-        const normalizedPath = basePath && path.startsWith(basePath) ? path.slice(basePath.length) : path;
-        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+        return path.startsWith('/') ? path : `/${path}`;
     };
 
     const pathMatches = (cleanPath: string, rawUrl?: string): boolean => {
@@ -115,10 +110,7 @@ export function GeneratedBreadcrumbs() {
         return undefined;
     };
 
-    const sectionCrumb = React.useMemo(
-        () => findSectionCrumb(currentPath),
-        [currentPath, basePath, navMenuConfig],
-    );
+    const sectionCrumb = React.useMemo(() => findSectionCrumb(currentPath), [currentPath, navMenuConfig]);
     const breadcrumbs: BreadcrumbPair[] = React.useMemo(() => {
         const arr = sectionCrumb ? [sectionCrumb, ...pageCrumbs] : pageCrumbs;
         return arr.filter(
