@@ -73,6 +73,8 @@ export class ApiKeyService {
      * @returns Role-Entities with relations to Channels
      */
     private async assertActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
+        if (roleIds.length === 0) return [];
+
         const roles = await this.connection.getRepository(ctx, Role).find({
             where: { id: In(roleIds) },
             relations: { channels: true },
@@ -181,13 +183,26 @@ export class ApiKeyService {
         input: UpdateApiKeyInput,
         relations?: RelationPaths<ApiKey>,
     ): Promise<Translated<ApiKey>> {
-        await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, { channelId: ctx.channelId });
-        // TODO roles assert
+        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
+            channelId: ctx.channelId,
+            relations: ['user'],
+        });
+
+        if (input.roleIds) {
+            entity.user.roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
+        }
+
         const apiKey = await this.translatableSaver.update({
             ctx,
             input,
             entityType: ApiKey,
             translationType: ApiKeyTranslation,
+            beforeSave: async () => {
+                // Keep in mind that if the user of the ApiKey is being impersonated,
+                // this would change the roles of the impersonated user!
+                if (input.roleIds)
+                    await this.connection.getRepository(ctx, User).save(entity.user, { reload: false });
+            },
         });
         await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, apiKey);
 
