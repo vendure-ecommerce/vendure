@@ -63,7 +63,9 @@ export class AuthGuard implements CanActivate {
         if (targetIsFieldResolver) {
             requestContext = internal_getRequestContext(req);
         } else {
-            const apiKeyHashingStrategy = this.apiKeyService.getHashingStrategyByApiType(getApiType(info));
+            const apiKeyHashingStrategy = this.apiKeyService.getApiKeyAuthOptionsByApiType(
+                getApiType(info),
+            ).hashingStrategy;
             const session = await this.getSession(req, res, hasOwnerPermission, apiKeyHashingStrategy);
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
 

@@ -2,7 +2,7 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Channel } from '..';
-import { ChannelAware, LocaleString, Translatable, Translation } from '../../common';
+import { ChannelAware, LocaleString, SoftDeletable, Translatable, Translation } from '../../common';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomApiKeyFields } from '../custom-entity-fields';
@@ -25,7 +25,10 @@ import { ApiKeyTranslation } from './api-key-translation.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ApiKey extends VendureEntity implements HasCustomFields, ChannelAware, Translatable {
+export class ApiKey
+    extends VendureEntity
+    implements HasCustomFields, ChannelAware, Translatable, SoftDeletable
+{
     constructor(input?: DeepPartial<ApiKey>) {
         super(input);
     }
@@ -42,6 +45,9 @@ export class ApiKey extends VendureEntity implements HasCustomFields, ChannelAwa
 
     @Column({ type: Date, nullable: true })
     lastUsedAt: Date | null;
+
+    @Column({ type: Date, nullable: true })
+    deletedAt: Date | null;
 
     /**
      * Usually the user who created the ApiKey but could also be used as the basis for

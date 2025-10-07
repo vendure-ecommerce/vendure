@@ -1350,7 +1350,14 @@ export interface VendureConfig {
 export interface RuntimeVendureConfig extends Required<VendureConfig> {
     apiOptions: Required<ApiOptions>;
     assetOptions: Required<AssetOptions>;
-    authOptions: Required<AuthOptions>;
+    // TODO think about introducing a DeepRequired<T> utility type?
+    // `Required` only works one level deep, so we have to be explicit about the nested properties here
+    authOptions: Required<
+        Omit<AuthOptions, 'adminApiKeyAuthorizationOptions' | 'shopApiKeyAuthorizationOptions'>
+    > & {
+        adminApiKeyAuthorizationOptions: Required<ApiKeyAuthorizationOptions>;
+        shopApiKeyAuthorizationOptions: Required<ApiKeyAuthorizationOptions>;
+    };
     catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;

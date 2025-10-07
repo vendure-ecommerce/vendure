@@ -116,10 +116,10 @@ export const devConfig: VendureConfig = {
         ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
         ...(process.env.ENABLE_SENTRY === 'true' && process.env.SENTRY_DSN
             ? [
-                  SentryPlugin.init({
-                      includeErrorTestMutation: true,
-                  }),
-              ]
+                SentryPlugin.init({
+                    includeErrorTestMutation: true,
+                }),
+            ]
             : []),
         // AdminUiPlugin.init({
         //     route: 'admin',

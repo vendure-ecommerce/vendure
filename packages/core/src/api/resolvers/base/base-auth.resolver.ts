@@ -63,7 +63,9 @@ export class BaseAuthResolver {
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
-        const apiKeyHashingStrategy = this.apiKeyService.getHashingStrategyByApiType(ctx.apiType);
+        const apiKeyHashingStrategy = this.apiKeyService.getApiKeyAuthOptionsByApiType(
+            ctx.apiType,
+        ).hashingStrategy;
 
         const extraction = await extractSessionToken(
             req,

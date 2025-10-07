@@ -10,7 +10,7 @@ import {
     UpdateApiKeyInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { In, UpdateResult } from 'typeorm';
+import { In, IsNull, UpdateResult } from 'typeorm';
 
 import { ApiType, RelationPaths, RequestContext } from '../../api';
 import {
@@ -29,7 +29,6 @@ import {
     ConfigService,
     Logger,
 } from '../../config';
-import { ApiKeyLookupIdGenerationStrategy } from '../../config/api-key-strategy/api-key-lookup-id-generation-strategy';
 import { TransactionalConnection } from '../../connection';
 import { AuthenticationMethod, Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
@@ -65,48 +64,13 @@ export class ApiKeyService {
     ) {}
 
     /**
-     * @throws {InternalServerError} When {@link ApiKeyHashingStrategy} has not been configured.
+     * Returns the appropriate {@link ApiKeyAuthorizationOptions} based on the {@link ApiType}.
+     * This is needed because the admin and shop ApiKey options may be configured differently.
      */
-    getHashingStrategyByApiType(apiType: ApiType): ApiKeyHashingStrategy {
-        const options =
-            apiType === 'admin'
-                ? this.configService.authOptions.adminApiKeyAuthorizationOptions
-                : this.configService.authOptions.shopApiKeyAuthorizationOptions;
-
-        if (!options.hashingStrategy)
-            throw new InternalServerError('FAILED TO CONFIGURE APIKEYHASHINGSTRATEGY'); // TODO i18n key
-
-        return options.hashingStrategy;
-    }
-
-    /**
-     * @throws {InternalServerError} When {@link ApiKeyGenerationStrategy} has not been configured.
-     */
-    getGenerationStrategyByApiType(apiType: ApiType): ApiKeyGenerationStrategy {
-        const options =
-            apiType === 'admin'
-                ? this.configService.authOptions.adminApiKeyAuthorizationOptions
-                : this.configService.authOptions.shopApiKeyAuthorizationOptions;
-
-        if (!options.generationStrategy)
-            throw new InternalServerError('FAILED TO CONFIGURE APIKEYGENERATIONSTRATEGY'); // TODO i18n key
-
-        return options.generationStrategy;
-    }
-
-    /**
-     * @throws {InternalServerError} When {@link ApiKeyLookupIdGenerationStrategy} has not been configured.
-     */
-    getLookupIdStrategyByApiType(apiType: ApiType): ApiKeyLookupIdGenerationStrategy {
-        const options =
-            apiType === 'admin'
-                ? this.configService.authOptions.adminApiKeyAuthorizationOptions
-                : this.configService.authOptions.shopApiKeyAuthorizationOptions;
-
-        if (!options.lookupIdStrategy)
-            throw new InternalServerError('FAILED TO CONFIGURE APIKEYLOOKUPIDSTRATEGY'); // TODO i18n key
-
-        return options.lookupIdStrategy;
+    getApiKeyAuthOptionsByApiType(apiType: ApiType) {
+        return apiType === 'admin'
+            ? this.configService.authOptions.adminApiKeyAuthorizationOptions
+            : this.configService.authOptions.shopApiKeyAuthorizationOptions;
     }
 
     /**
@@ -169,7 +133,8 @@ export class ApiKeyService {
         const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
 
         const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
-        const lookupId = await this.getLookupIdStrategyByApiType(ctx.apiType).generateLookupId(ctx);
+        const authOptions = this.getApiKeyAuthOptionsByApiType(ctx.apiType);
+        const lookupId = await authOptions.lookupIdStrategy.generateLookupId(ctx);
         const apiKeyUser = userIdApiKeyUser
             ? await this.connection.getEntityOrThrow(ctx, User, userIdApiKeyUser, {
                   // ApiKeyUsers generally require roles and their channels, its important for sessions!
@@ -181,8 +146,8 @@ export class ApiKeyService {
                   this.generateApiKeyUserIdentifier(lookupId),
               );
 
-        const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
-        const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
+        const apiKey = await authOptions.generationStrategy.generateApiKey(ctx);
+        const hash = await authOptions.hashingStrategy.hash(apiKey);
 
         const newEntity = await this.translatableSaver.create({
             ctx,
@@ -243,11 +208,11 @@ export class ApiKeyService {
     }
 
     /**
-     * Deletes an API-Key and its session. Is Channel-Aware.
+     * Soft-Deletes an API-Key and removes its session. Is Channel-Aware.
      *
      * @throws {EntityNotFoundError} If API-Key cannot be found
      */
-    async delete(ctx: RequestContext, input: DeleteApiKeyInput): Promise<DeletionResponse> {
+    async softDelete(ctx: RequestContext, input: DeleteApiKeyInput): Promise<DeletionResponse> {
         const apiKey = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
             channelId: ctx.channelId,
         });
@@ -267,11 +232,13 @@ export class ApiKeyService {
             await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
         }
 
-        const deletedApiKey = new ApiKey(apiKey); // For retaining the ID
-        await this.connection.getRepository(ctx, ApiKey).remove(apiKey);
+        apiKey.deletedAt = new Date();
+        await this.connection
+            .getRepository(ctx, ApiKey)
+            .update({ id: apiKey.id }, { deletedAt: apiKey.deletedAt });
 
         Logger.verbose(`Deleted ApiKey (${String(input.id)}) by User (${String(ctx.activeUserId)})`);
-        await this.eventBus.publish(new ApiKeyEvent(ctx, deletedApiKey, 'deleted', input));
+        await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, 'deleted', input));
 
         return { result: DeletionResult.DELETED };
     }
@@ -289,12 +256,14 @@ export class ApiKeyService {
     async rotate(ctx: RequestContext, input: RotateApiKeyInput): Promise<RotateApiKeyResult> {
         const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
             channelId: ctx.channelId,
+            includeSoftDeleted: false,
             // Need roles and channels for session
             relations: { apiKeyUser: { roles: { channels: true } } },
         });
 
-        const apiKey = await this.getGenerationStrategyByApiType(ctx.apiType).generateApiKey(ctx);
-        const hash = await this.getHashingStrategyByApiType(ctx.apiType).hash(apiKey);
+        const authOptions = this.getApiKeyAuthOptionsByApiType(ctx.apiType);
+        const apiKey = await authOptions.generationStrategy.generateApiKey(ctx);
+        const hash = await authOptions.hashingStrategy.hash(apiKey);
 
         await this.sessionService.deleteApiKeySession(ctx, entity);
         await this.sessionService.createNewAuthenticatedSession(
@@ -314,20 +283,23 @@ export class ApiKeyService {
     }
 
     /**
-     * Is channel aware and translates the entity as well.
+     * Is channel-/ and soft-delete aware, translates the entity as well.
      */
     async findOne(
         ctx: RequestContext,
         id: ID,
         relations?: RelationPaths<ApiKey>,
     ): Promise<Translated<ApiKey> | null> {
-        const entity = await this.connection.findOneInChannel(ctx, ApiKey, id, ctx.channelId, { relations });
+        const entity = await this.connection.findOneInChannel(ctx, ApiKey, id, ctx.channelId, {
+            relations,
+            where: { deletedAt: IsNull() },
+        });
         if (!entity) return null;
         return this.translator.translate(entity, ctx);
     }
 
     /**
-     * Is channel-aware and translates the entity as well.
+     * Is channel-/ and soft-delete aware, translates the entity as well.
      */
     async findAll(
         ctx: RequestContext,
@@ -336,9 +308,10 @@ export class ApiKeyService {
     ): Promise<PaginatedList<Translated<ApiKey>>> {
         return this.listQueryBuilder
             .build(ApiKey, options, {
+                ctx,
                 relations,
                 channelId: ctx.channelId,
-                ctx,
+                where: { deletedAt: IsNull() },
             })
             .getManyAndCount()
             .then(([notifications, totalItems]) => {
@@ -351,7 +324,10 @@ export class ApiKeyService {
      * Helper, intended for the AuthGuard to quickly find the ApiKeyHash
      */
     async getHashByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<string | null> {
-        const entity = await this.connection.rawConnection.getRepository(ApiKey).findOneBy({ lookupId });
+        const entity = await this.connection.rawConnection.getRepository(ApiKey).findOneBy({
+            lookupId,
+            deletedAt: IsNull(),
+        });
         return entity?.apiKeyHash ?? null;
     }
 

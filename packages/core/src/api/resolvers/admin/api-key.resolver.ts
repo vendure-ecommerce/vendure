@@ -76,7 +76,7 @@ export class ApiKeyResolver {
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationDeleteApiKeyArgs,
     ): Promise<DeletionResponse> {
-        return this.apiKeyService.delete(ctx, input);
+        return this.apiKeyService.softDelete(ctx, input);
     }
 
     @Transaction()
