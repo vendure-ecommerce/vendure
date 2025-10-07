@@ -5,8 +5,8 @@ import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans } from '@lingui/react/macro';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { Trans } from '@lingui/react/macro';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import {
     getOperationVariablesFields,
 } from '../document-introspection/get-document-structure.js';
 
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { FormControl } from '@/vdb/components/ui/form.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
@@ -108,11 +109,7 @@ function FieldInputRenderer<
         case 'Float':
             return (
                 <FormControl>
-                    <Input
-                        type="number"
-                        value={field.value}
-                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                    />
+                    <NumberInput {...field} />
                 </FormControl>
             );
         case 'DateTime':
@@ -152,15 +149,15 @@ export function DetailPage<
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
 >({
-      pageId,
-      route,
-      entityName: passedEntityName,
-      queryDocument,
-      createDocument,
-      updateDocument,
-      setValuesForUpdate,
-      title,
-  }: DetailPageProps<T, C, U>) {
+    pageId,
+    route,
+    entityName: passedEntityName,
+    queryDocument,
+    createDocument,
+    updateDocument,
+    setValuesForUpdate,
+    title,
+}: DetailPageProps<T, C, U>) {
     const params = route.useParams();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const navigate = useNavigate();

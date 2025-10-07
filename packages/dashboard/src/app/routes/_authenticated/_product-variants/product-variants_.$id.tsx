@@ -1,4 +1,5 @@
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -401,15 +402,7 @@ function ProductVariantDetailPage() {
                                     control={form.control}
                                     name={`stockLevels.${index}.stockOnHand`}
                                     label={stockLabel}
-                                    render={({ field }) => (
-                                        <Input
-                                            type="number"
-                                            value={field.value}
-                                            onChange={e => {
-                                                field.onChange(e.target.valueAsNumber);
-                                            }}
-                                        />
-                                    )}
+                                    render={({ field }) => <NumberInput {...field} value={field.value} />}
                                 />
                                 <div>
                                     <FormItem>

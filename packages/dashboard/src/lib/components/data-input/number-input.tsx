@@ -24,7 +24,7 @@ export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<Dash
         if (readOnly) return;
         const numValue = e.target.valueAsNumber;
         if (Number.isNaN(numValue)) {
-            onChange(e.target.value);
+            onChange(null);
         } else {
             onChange(e.target.valueAsNumber);
         }
