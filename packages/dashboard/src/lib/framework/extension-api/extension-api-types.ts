@@ -5,6 +5,7 @@ import {
     DashboardCustomFormComponents,
     DashboardDataTableExtensionDefinition,
     DashboardDetailFormExtensionDefinition,
+    DashboardHistoryEntryComponent,
     DashboardLoginExtensions,
     DashboardNavSectionDefinition,
     DashboardPageBlockDefinition,
@@ -82,4 +83,10 @@ export interface DashboardExtension {
      * Allows you to customize the login page with custom components.
      */
     login?: DashboardLoginExtensions;
+    /**
+     * @description
+     * Allows a custom component to be used to render a history entry item
+     * in the Order or Customer history lists.
+     */
+    historyEntries?: DashboardHistoryEntryComponent[];
 }

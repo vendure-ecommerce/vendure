@@ -1,3 +1,5 @@
+import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
+
 import { Fulfillment, Order, Payment } from './order-types.js';
 
 /**
@@ -75,4 +77,10 @@ export function canAddFulfillment(order: Order): boolean {
         calculateOutstandingPaymentAmount(order) === 0 &&
         isFulfillableState
     );
+}
+
+export function getSeller<T>(order: { channels: Array<{ code: string; seller: T }> }) {
+    // Find the seller channel (non-default channel)
+    const sellerChannel = order.channels.find(channel => channel.code !== DEFAULT_CHANNEL_CODE);
+    return sellerChannel?.seller;
 }

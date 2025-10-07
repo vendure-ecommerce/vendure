@@ -167,6 +167,8 @@ export const customerHistoryDocument = graphql(`
             id
             createdAt
             updatedAt
+            firstName
+            lastName
             history(options: $options) {
                 totalItems
                 items {

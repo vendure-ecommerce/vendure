@@ -15,11 +15,11 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -44,33 +44,11 @@ import {
     unsetBillingAddressForDraftOrderDocument,
     unsetShippingAddressForDraftOrderDocument,
 } from './orders.graphql.js';
+import { loadDraftOrder } from './utils/order-detail-loaders.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/draft/$id')({
     component: DraftOrderPage,
-    loader: async ({ context, params }) => {
-        if (!params.id) {
-            throw new Error('ID param is required');
-        }
-
-        const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-            { id: params.id },
-        );
-
-        if (!result.order) {
-            throw new Error(`Order with the ID ${params.id} was not found`);
-        }
-
-        if (result.order.state !== 'Draft') {
-            throw redirect({
-                to: `/orders/${params.id}`,
-            });
-        }
-
-        return {
-            breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, result.order.code],
-        };
-    },
+    loader: ({ context, params }) => loadDraftOrder(context, params),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 

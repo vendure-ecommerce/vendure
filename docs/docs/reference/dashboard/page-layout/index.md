@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageLayout
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="204" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="211" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
 This component governs the layout of the contents of a <a href='/reference/dashboard/page-layout/page#page'>Page</a> component.
@@ -30,7 +30,7 @@ Parameters
 
 ## PageLayoutProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="176" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="183" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
