@@ -68,6 +68,7 @@ describe('ApiKey resolver', () => {
         const result = await adminClient.query(UpdateApiKeyDocument, {
             input: {
                 id: createdApiKeyId,
+                // TODO roles
                 translations: [
                     { languageCode: LanguageCode.en, name: 'Updated API Key' },
                     { languageCode: LanguageCode.de, name: 'Neuer Eintrag' },
@@ -82,8 +83,8 @@ describe('ApiKey resolver', () => {
     });
 
     it('deleteApiKey', async ({ expect }) => {
-        const result = await adminClient.query(DeleteApiKeyDocument, { input: { id: createdApiKeyId } });
-        expect(result.deleteApiKey.result).toBe(DeletionResult.DELETED);
+        const result = await adminClient.query(DeleteApiKeyDocument, { ids: [createdApiKeyId] });
+        expect(result.deleteApiKeys?.[0]?.result).toBe(DeletionResult.DELETED);
         // Should not be found anymore
         const { apiKey } = await adminClient.query(API_KEY, { id: createdApiKeyId });
         expect(apiKey).toBeNull();
@@ -96,9 +97,7 @@ describe('ApiKey resolver', () => {
                 translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
             },
         });
-        const result = await adminClient.query(RotateApiKeyDocument, {
-            input: { id: apiKey.createApiKey.entityId },
-        });
+        const result = await adminClient.query(RotateApiKeyDocument, { id: apiKey.createApiKey.entityId });
         expect(result.rotateApiKey.apiKey).toBeDefined();
         expect(apiKey.createApiKey.apiKey).not.toBe(result.rotateApiKey.apiKey);
     });
@@ -137,7 +136,7 @@ describe('ApiKey resolver', () => {
 
         // (2/4): Fail to read due to rotation of key
 
-        const rotate = await adminClient.query(RotateApiKeyDocument, { input: { id: entityId } });
+        const rotate = await adminClient.query(RotateApiKeyDocument, { id: entityId });
         const readErr01 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
         expect(readErr01?.errors).toBeDefined();
         expect(readErr01?.data?.administrator?.user?.identifier).toBeUndefined();
@@ -150,8 +149,8 @@ describe('ApiKey resolver', () => {
 
         // (4/4): Fail to read due to deletion
 
-        const deletion = await adminClient.query(DeleteApiKeyDocument, { input: { id: entityId } });
-        expect(deletion.deleteApiKey.result).toBe(DeletionResult.DELETED);
+        const deletion = await adminClient.query(DeleteApiKeyDocument, { ids: [entityId] });
+        expect(deletion.deleteApiKeys?.[0]?.result).toBe(DeletionResult.DELETED);
 
         const readErr02 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
         expect(readErr02?.errors).toBeDefined();
@@ -210,8 +209,8 @@ export const UPDATE_API_KEY = gql`
 `;
 
 export const DELETE_API_KEY = gql`
-    mutation DeleteApiKey($input: DeleteApiKeyInput!) {
-        deleteApiKey(input: $input) {
+    mutation DeleteApiKey($ids: [ID!]!) {
+        deleteApiKeys(ids: $ids) {
             result
             message
         }
@@ -219,8 +218,8 @@ export const DELETE_API_KEY = gql`
 `;
 
 export const ROTATE_API_KEY = gql`
-    mutation RotateApiKey($input: RotateApiKeyInput!) {
-        rotateApiKey(input: $input) {
+    mutation RotateApiKey($id: ID!) {
+        rotateApiKey(id: $id) {
             apiKey
         }
     }

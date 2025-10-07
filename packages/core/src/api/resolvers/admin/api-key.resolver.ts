@@ -3,7 +3,7 @@ import {
     CreateApiKeyResult,
     DeletionResponse,
     MutationCreateApiKeyArgs,
-    MutationDeleteApiKeyArgs,
+    MutationDeleteApiKeysArgs,
     MutationRotateApiKeyArgs,
     MutationUpdateApiKeyArgs,
     Permission,
@@ -72,11 +72,11 @@ export class ApiKeyResolver {
     @Transaction()
     @Mutation()
     @Allow(Permission.DeleteApiKey)
-    async deleteApiKey(
+    async deleteApiKeys(
         @Ctx() ctx: RequestContext,
-        @Args() { input }: MutationDeleteApiKeyArgs,
-    ): Promise<DeletionResponse> {
-        return this.apiKeyService.softDelete(ctx, input);
+        @Args() { ids }: MutationDeleteApiKeysArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(ids.map(id => this.apiKeyService.softDelete(ctx, id)));
     }
 
     @Transaction()
@@ -84,8 +84,8 @@ export class ApiKeyResolver {
     @Allow(Permission.UpdateApiKey)
     async rotateApiKey(
         @Ctx() ctx: RequestContext,
-        @Args() { input }: MutationRotateApiKeyArgs,
+        @Args() { id }: MutationRotateApiKeyArgs,
     ): Promise<RotateApiKeyResult> {
-        return this.apiKeyService.rotate(ctx, input);
+        return this.apiKeyService.rotate(ctx, id);
     }
 }

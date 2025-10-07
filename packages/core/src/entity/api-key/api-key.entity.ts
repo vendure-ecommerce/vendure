@@ -63,10 +63,10 @@ export class ApiKey
      * This is the underlying User which determines the kind of permissions for this API-Key.
      */
     @ManyToOne(type => User)
-    apiKeyUser: User;
+    user: User;
 
     @EntityId()
-    apiKeyUserId: ID;
+    userId: ID;
 
     @ManyToMany(() => Channel)
     @JoinTable()

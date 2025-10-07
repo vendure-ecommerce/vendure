@@ -331,7 +331,7 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
     async deleteApiKeySession(ctx: RequestContext, apiKey: ApiKey): Promise<void> {
         await this.connection.getRepository(ctx, AuthenticatedSession).delete({
             token: apiKey.apiKeyHash,
-            user: { id: apiKey.apiKeyUserId },
+            user: { id: apiKey.userId },
             authenticationStrategy: API_KEY_AUTH_STRATEGY_NAME,
         });
         await this.withTimeout(this.sessionCacheStrategy.delete(apiKey.apiKeyHash));

@@ -2,10 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
     CreateApiKeyInput,
     CreateApiKeyResult,
-    DeleteApiKeyInput,
     DeletionResponse,
     DeletionResult,
-    RotateApiKeyInput,
     RotateApiKeyResult,
     UpdateApiKeyInput,
 } from '@vendure/common/lib/generated-types';
@@ -17,18 +15,11 @@ import {
     assertFound,
     EntityNotFoundError,
     Instrument,
-    InternalServerError,
     ListQueryOptions,
     Translated,
     UserInputError,
 } from '../../common';
-import {
-    API_KEY_AUTH_STRATEGY_NAME,
-    ApiKeyGenerationStrategy,
-    ApiKeyHashingStrategy,
-    ConfigService,
-    Logger,
-} from '../../config';
+import { API_KEY_AUTH_STRATEGY_NAME, ConfigService, Logger } from '../../config';
 import { TransactionalConnection } from '../../connection';
 import { AuthenticationMethod, Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
@@ -116,8 +107,6 @@ export class ApiKeyService {
      *
      * @throws {EntityNotFoundError} When either Owner or ApiKeyUser cannot be found
      * @throws {UserInputError} When the User tries to grant a role which they themselves dont have
-     * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or
-     * {@link ApiKeyHashingStrategy} have not been configured.
      */
     async create(
         ctx: RequestContext,
@@ -156,7 +145,7 @@ export class ApiKeyService {
             translationType: ApiKeyTranslation,
             beforeSave: async e => {
                 e.ownerId = ownerUser.id;
-                e.apiKeyUserId = apiKeyUser.id;
+                e.userId = apiKeyUser.id;
                 e.apiKeyHash = hash;
                 e.lookupId = lookupId;
                 await this.channelService.assignToCurrentChannel(e, ctx);
@@ -193,6 +182,7 @@ export class ApiKeyService {
         relations?: RelationPaths<ApiKey>,
     ): Promise<Translated<ApiKey>> {
         await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, { channelId: ctx.channelId });
+        // TODO roles assert
         const apiKey = await this.translatableSaver.update({
             ctx,
             input,
@@ -212,13 +202,13 @@ export class ApiKeyService {
      *
      * @throws {EntityNotFoundError} If API-Key cannot be found
      */
-    async softDelete(ctx: RequestContext, input: DeleteApiKeyInput): Promise<DeletionResponse> {
-        const apiKey = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
+    async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const apiKey = await this.connection.getEntityOrThrow(ctx, ApiKey, id, {
             channelId: ctx.channelId,
         });
 
         const hasAuthMethod = await this.connection.getRepository(ctx, AuthenticationMethod).existsBy({
-            user: { id: apiKey.apiKeyUserId },
+            user: { id: apiKey.userId },
         });
 
         // If this is an impersonated user who can login, we dont want to delete them
@@ -229,7 +219,7 @@ export class ApiKeyService {
         else {
             // SoftDelete should also delete the related sessions & cache
             // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
-            await this.userService.softDelete(ctx, apiKey.apiKeyUserId);
+            await this.userService.softDelete(ctx, apiKey.userId);
         }
 
         apiKey.deletedAt = new Date();
@@ -237,8 +227,8 @@ export class ApiKeyService {
             .getRepository(ctx, ApiKey)
             .update({ id: apiKey.id }, { deletedAt: apiKey.deletedAt });
 
-        Logger.verbose(`Deleted ApiKey (${String(input.id)}) by User (${String(ctx.activeUserId)})`);
-        await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, 'deleted', input));
+        Logger.verbose(`Deleted ApiKey (${id}) by User (${String(ctx.activeUserId)})`);
+        await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, 'deleted', id));
 
         return { result: DeletionResult.DELETED };
     }
@@ -250,15 +240,13 @@ export class ApiKeyService {
      * deleting the underlying roles and permissions.
      *
      * @throws {EntityNotFoundError} If API-Key cannot be found
-     * @throws {InternalServerError} When either {@link ApiKeyGenerationStrategy} or
-     * {@link ApiKeyHashingStrategy} have not been configured.
      */
-    async rotate(ctx: RequestContext, input: RotateApiKeyInput): Promise<RotateApiKeyResult> {
-        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
+    async rotate(ctx: RequestContext, id: ID): Promise<RotateApiKeyResult> {
+        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, id, {
             channelId: ctx.channelId,
             includeSoftDeleted: false,
             // Need roles and channels for session
-            relations: { apiKeyUser: { roles: { channels: true } } },
+            relations: { user: { roles: { channels: true } } },
         });
 
         const authOptions = this.getApiKeyAuthOptionsByApiType(ctx.apiType);
@@ -268,7 +256,7 @@ export class ApiKeyService {
         await this.sessionService.deleteApiKeySession(ctx, entity);
         await this.sessionService.createNewAuthenticatedSession(
             ctx,
-            entity.apiKeyUser,
+            entity.user,
             API_KEY_AUTH_STRATEGY_NAME,
             hash,
         );
@@ -277,7 +265,7 @@ export class ApiKeyService {
         await this.connection.getRepository(ctx, ApiKey).save(entity, { reload: false });
 
         Logger.verbose(`Rotated ApiKey (${entity.id}) by User (${String(ctx.activeUserId)})`);
-        await this.eventBus.publish(new ApiKeyEvent(ctx, entity, 'updated', input));
+        await this.eventBus.publish(new ApiKeyEvent(ctx, entity, 'updated', id));
 
         return { apiKey };
     }

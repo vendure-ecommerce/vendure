@@ -12,14 +12,14 @@ type Mutation {
     createApiKey(input: CreateApiKeyInput!): CreateApiKeyResult!
     "Updates an API-Key"
     updateApiKey(input: UpdateApiKeyInput!): ApiKey!
-    "Deletes an API-Key"
-    deleteApiKey(input: DeleteApiKeyInput!): DeletionResponse!
+    "Deletes API-Keys"
+    deleteApiKeys(ids: [ID!]!): [DeletionResponse!]!
     """
     Replaces the old with a new API-Key.
     This is a convenience method to invalidate an API-Key without
     deleting the underlying roles and permissions.
     """
-    rotateApiKey(input: RotateApiKeyInput!): RotateApiKeyResult!
+    rotateApiKey(id: ID!): RotateApiKeyResult!
 }
 
 input CreateApiKeyTranslationInput {
@@ -47,7 +47,7 @@ input CreateApiKeyInput {
     You may only grant roles which you, yourself have.
     """
     roleIds: [ID!]!
-    # TODO we could allow an optional User parameter specifically for SuperAdmins
+
     translations: [CreateApiKeyTranslationInput!]!
 }
 
@@ -66,17 +66,13 @@ type CreateApiKeyResult {
 input UpdateApiKeyInput {
     "ID of the ApiKey"
     id: ID!
+    """
+    Which roles to attach to this ApiKey.
+    You may only grant roles which you, yourself have.
+    """
+    roleIds: [ID!]
+
     translations: [UpdateApiKeyTranslationInput!]
-}
-
-input DeleteApiKeyInput {
-    "ID of the ApiKey"
-    id: ID!
-}
-
-input RotateApiKeyInput {
-    "ID of the ApiKey"
-    id: ID!
 }
 
 type RotateApiKeyResult {
