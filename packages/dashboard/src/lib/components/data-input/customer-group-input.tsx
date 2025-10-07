@@ -26,7 +26,6 @@ export function CustomerGroupInput({
     disabled,
     fieldDef,
 }: Readonly<DashboardFormComponentProps>) {
-    console.log(fieldDef);
     const { data } = useQuery({
         queryKey: ['customerGroups', value],
         queryFn: () =>

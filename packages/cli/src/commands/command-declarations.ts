@@ -2,11 +2,11 @@ import { CliCommandDefinition } from '../shared/cli-command-definition';
 
 import { addApiExtension } from './add/api-extension/add-api-extension';
 import { addCodegen } from './add/codegen/add-codegen';
+import { addDashboard } from './add/dashboard/add-dashboard';
 import { addEntity } from './add/entity/add-entity';
 import { addJobQueue } from './add/job-queue/add-job-queue';
 import { createNewPlugin } from './add/plugin/create-new-plugin';
 import { addService } from './add/service/add-service';
-import { addUiExtensions } from './add/ui-extensions/add-ui-extensions';
 
 export const cliCommands: CliCommandDefinition[] = [
     {
@@ -137,13 +137,20 @@ export const cliCommands: CliCommandDefinition[] = [
                 ],
             },
             {
+                short: '-d',
+                long: '--dashboard [plugin]',
+                description: 'Add Dashboard extensions to a plugin',
+                required: false,
+                interactiveId: 'add-dashboard',
+                interactiveCategory: 'Plugin: Dashboard',
+                interactiveFn: addDashboard,
+            },
+            {
                 short: '-u',
                 long: '--ui-extensions [plugin]',
-                description: 'Add UI extensions to a plugin',
+                description:
+                    'Add UI extensions to a plugin (deprecated: considering migrating to the new Dashboard)',
                 required: false,
-                interactiveId: 'add-ui-extensions',
-                interactiveCategory: 'Plugin: UI',
-                interactiveFn: addUiExtensions,
             },
         ],
         action: async options => {

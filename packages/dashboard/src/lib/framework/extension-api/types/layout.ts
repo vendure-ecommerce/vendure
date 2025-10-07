@@ -93,9 +93,49 @@ export type PageBlockLocation = {
  * @since 3.3.0
  */
 export interface DashboardPageBlockDefinition {
+    /**
+     * @description
+     * An ID for the page block. Should be unique at least
+     * to the page in which it appears.
+     */
     id: string;
+    /**
+     * @description
+     * An optional title for the page block
+     */
     title?: React.ReactNode;
+    /**
+     * @description
+     * The location of the page block. It specifies the pageId, and then the
+     * relative location compared to another existing block.
+     */
     location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
+    /**
+     * @description
+     * The component to be rendered inside the page block.
+     */
+    component?: React.FunctionComponent<{ context: PageContextValue }>;
+    /**
+     * @description
+     * Control whether to render the page block depending on your custom
+     * logic.
+     *
+     * This can also be used to disable any built-in blocks you
+     * do not need to display.
+     *
+     * If you need to query aspects about the current context not immediately
+     * provided in the `PageContextValue`, you can also use hooks such as
+     * `useChannel` in this function.
+     *
+     * @since 3.5.0
+     */
+    shouldRender?: (context: PageContextValue) => boolean;
+    /**
+     * @description
+     * If provided, the logged-in user must have one or more of the specified
+     * permissions in order for the block to render.
+     *
+     * For more advanced control over rendering, use the `shouldRender` function.
+     */
     requiresPermission?: string | string[];
 }

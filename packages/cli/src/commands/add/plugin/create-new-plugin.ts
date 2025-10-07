@@ -12,6 +12,7 @@ import { addImportsToFile, createFile, getPluginClasses } from '../../../utiliti
 import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 import { addApiExtensionCommand } from '../api-extension/add-api-extension';
 import { addCodegenCommand } from '../codegen/add-codegen';
+import { addDashboardCommand } from '../dashboard/add-dashboard';
 import { addEntityCommand } from '../entity/add-entity';
 import { addJobQueueCommand } from '../job-queue/add-job-queue';
 import { addServiceCommand } from '../service/add-service';
@@ -113,6 +114,7 @@ export async function createNewPlugin(
         addApiExtensionCommand,
         addJobQueueCommand,
         addUiExtensionsCommand,
+        addDashboardCommand,
         addCodegenCommand,
     ];
     let allModifiedSourceFiles = [...modifiedSourceFiles];

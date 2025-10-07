@@ -1,11 +1,11 @@
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AffixedInput } from './affixed-input.js';
 
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 
 export interface MoneyInputProps extends DashboardFormComponentProps {
     currency?: string;
@@ -24,9 +24,7 @@ export function MoneyInput(props: Readonly<MoneyInputProps>) {
     const { activeChannel } = useChannel();
     const activeCurrency = currency ?? activeChannel?.defaultCurrencyCode;
     const readOnly = isReadonlyField(props.fieldDef);
-    const {
-        settings: { displayLanguage, displayLocale },
-    } = useUserSettings();
+    const { bcp47Tag } = useDisplayLocale();
     const { toMajorUnits, toMinorUnits } = useLocalFormat();
     const [displayValue, setDisplayValue] = useState(toMajorUnits(value).toFixed(2));
 
@@ -40,32 +38,30 @@ export function MoneyInput(props: Readonly<MoneyInputProps>) {
         if (!activeCurrency) {
             return false;
         }
-        const locale = displayLocale || displayLanguage.replace(/_/g, '-');
-        const parts = new Intl.NumberFormat(locale, {
+        const parts = new Intl.NumberFormat(bcp47Tag, {
             style: 'currency',
             currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
         const NaNString = parts.find(p => p.type === 'nan')?.value ?? 'NaN';
-        const localised = new Intl.NumberFormat(locale, {
+        const localised = new Intl.NumberFormat(bcp47Tag, {
             style: 'currency',
             currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).format(undefined as any);
         return localised.indexOf(NaNString) > 0;
-    }, [activeCurrency, displayLocale, displayLanguage]);
+    }, [activeCurrency, bcp47Tag]);
 
     // Get the currency symbol
     const currencySymbol = useMemo(() => {
         if (!activeCurrency) return '';
-        const locale = displayLocale || displayLanguage.replace(/_/g, '-');
-        const parts = new Intl.NumberFormat(locale, {
+        const parts = new Intl.NumberFormat(bcp47Tag, {
             style: 'currency',
             currency: activeCurrency,
             currencyDisplay: 'symbol',
         }).formatToParts();
         return parts.find(p => p.type === 'currency')?.value ?? activeCurrency;
-    }, [activeCurrency, displayLocale, displayLanguage]);
+    }, [activeCurrency, bcp47Tag]);
 
     return (
         <AffixedInput

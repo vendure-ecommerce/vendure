@@ -119,12 +119,12 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 }
 
 function PageContent({
-                         pageHeader,
-                         pageContent,
-                         form,
-                         submitHandler,
-                         ...props
-                     }: {
+    pageHeader,
+    pageContent,
+    form,
+    submitHandler,
+    ...props
+}: {
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     form?: UseFormReturn<any>;
@@ -146,11 +146,11 @@ function PageContent({
 }
 
 export function PageContentWithOptionalForm({
-                                                form,
-                                                pageHeader,
-                                                pageContent,
-                                                submitHandler,
-                                            }: {
+    form,
+    pageHeader,
+    pageContent,
+    submitHandler,
+}: {
     form?: UseFormReturn<any>;
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
@@ -235,22 +235,32 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                 childBlock.props.blockId ??
                 (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
+
             if (extensionBlock) {
-                const ExtensionBlock = (
-                    <PageBlock
-                        key={childBlock.key}
-                        column={extensionBlock.location.column}
-                        blockId={extensionBlock.id}
-                        title={extensionBlock.title}
-                    >
-                        {<extensionBlock.component context={page} />}
-                    </PageBlock>
-                );
+                let extensionBlockShouldRender = true;
+                if (typeof extensionBlock?.shouldRender === 'function') {
+                    extensionBlockShouldRender = extensionBlock.shouldRender(page);
+                }
+                const ExtensionBlock =
+                    extensionBlock.component && extensionBlockShouldRender ? (
+                        <PageBlock
+                            key={childBlock.key}
+                            column={extensionBlock.location.column}
+                            blockId={extensionBlock.id}
+                            title={extensionBlock.title}
+                        >
+                            {<extensionBlock.component context={page} />}
+                        </PageBlock>
+                    ) : undefined;
                 if (extensionBlock.location.position.order === 'before') {
-                    finalChildArray.push(ExtensionBlock, childBlock);
+                    finalChildArray.push(...[ExtensionBlock, childBlock].filter(x => !!x));
                 } else if (extensionBlock.location.position.order === 'after') {
-                    finalChildArray.push(childBlock, ExtensionBlock);
-                } else if (extensionBlock.location.position.order === 'replace') {
+                    finalChildArray.push(...[childBlock, ExtensionBlock].filter(x => !!x));
+                } else if (
+                    extensionBlock.location.position.order === 'replace' &&
+                    extensionBlockShouldRender &&
+                    ExtensionBlock
+                ) {
                     finalChildArray.push(ExtensionBlock);
                 }
             } else {
@@ -425,9 +435,9 @@ function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
  * @since 3.3.0
  */
 export function PageActionBarRight({
-                                       children,
-                                       dropdownMenuItems,
-                                   }: Readonly<{
+    children,
+    dropdownMenuItems,
+}: Readonly<{
     children: React.ReactNode;
     dropdownMenuItems?: InlineDropdownItem[];
 }>) {
@@ -458,9 +468,9 @@ export function PageActionBarRight({
 }
 
 function PageActionBarItem({
-                               item,
-                               page,
-                           }: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
+    item,
+    page,
+}: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
@@ -469,9 +479,9 @@ function PageActionBarItem({
 }
 
 function PageActionBarDropdown({
-                                   items,
-                                   page,
-                               }: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
+    items,
+    page,
+}: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -550,13 +560,13 @@ export type PageBlockProps = {
  * @since 3.3.0
  */
 export function PageBlock({
-                              children,
-                              title,
-                              description,
-                              className,
-                              blockId,
-                              column,
-                          }: Readonly<PageBlockProps>) {
+    children,
+    title,
+    description,
+    className,
+    blockId,
+    column,
+}: Readonly<PageBlockProps>) {
     const contextValue = useMemo(
         () => ({
             blockId,
@@ -595,10 +605,10 @@ export function PageBlock({
  * @since 3.3.0
  */
 export function FullWidthPageBlock({
-                                       children,
-                                       className,
-                                       blockId,
-                                   }: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
+    children,
+    className,
+    blockId,
+}: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
     const contextValue = useMemo(() => ({ blockId, column: 'main' as const }), [blockId]);
     return (
         <PageBlockContext.Provider value={contextValue}>
@@ -625,10 +635,10 @@ export function FullWidthPageBlock({
  * @since 3.3.0
  */
 export function CustomFieldsPageBlock({
-                                          column,
-                                          entityType,
-                                          control,
-                                      }: Readonly<{
+    column,
+    entityType,
+    control,
+}: Readonly<{
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;
