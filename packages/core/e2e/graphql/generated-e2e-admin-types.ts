@@ -189,8 +189,15 @@ export type ApiKey = Node & {
     lookupId: Scalars['String']['output'];
     /** A descriptive name so you can remind yourself where the API-Key gets used */
     name: Scalars['String']['output'];
+    /**
+     * Usually the user who created the ApiKey but could also be used as the basis for
+     * restricting resolvers to `Permission.Owner` queries for customers for example.
+     */
+    owner: User;
     translations: Array<ApiKeyTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+    /** This is the underlying User which determines the kind of permissions for this API-Key. */
+    user: User;
 };
 
 export type ApiKeyFilterParameter = {
@@ -1659,11 +1666,6 @@ export type DateTimeStructFieldConfig = StructField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type DeleteApiKeyInput = {
-    /** ID of the ApiKey */
-    id: Scalars['ID']['input'];
-};
-
 export type DeleteAssetInput = {
     assetId: Scalars['ID']['input'];
     deleteFromAllChannels?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2910,8 +2912,8 @@ export type Mutation = {
     deleteAdministrator: DeletionResponse;
     /** Delete multiple Administrators */
     deleteAdministrators: Array<DeletionResponse>;
-    /** Deletes an API-Key */
-    deleteApiKey: DeletionResponse;
+    /** Deletes API-Keys */
+    deleteApiKeys: Array<DeletionResponse>;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
@@ -3370,8 +3372,8 @@ export type MutationDeleteAdministratorsArgs = {
     ids: Array<Scalars['ID']['input']>;
 };
 
-export type MutationDeleteApiKeyArgs = {
-    input: DeleteApiKeyInput;
+export type MutationDeleteApiKeysArgs = {
+    ids: Array<Scalars['ID']['input']>;
 };
 
 export type MutationDeleteAssetArgs = {
@@ -3649,7 +3651,7 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 };
 
 export type MutationRotateApiKeyArgs = {
-    input: RotateApiKeyInput;
+    id: Scalars['ID']['input'];
 };
 
 export type MutationRunScheduledTaskArgs = {
@@ -5654,11 +5656,6 @@ export type RoleSortParameter = {
     updatedAt?: InputMaybe<SortOrder>;
 };
 
-export type RotateApiKeyInput = {
-    /** ID of the ApiKey */
-    id: Scalars['ID']['input'];
-};
-
 export type RotateApiKeyResult = {
     /** The generated API-Key. API-Keys cannot be viewed again after creation! */
     apiKey: Scalars['String']['output'];
@@ -6421,6 +6418,11 @@ export type UpdateApiKeyInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
     /** ID of the ApiKey */
     id: Scalars['ID']['input'];
+    /**
+     * Which roles to attach to this ApiKey.
+     * You may only grant roles which you, yourself have.
+     */
+    roleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     translations?: InputMaybe<Array<UpdateApiKeyTranslationInput>>;
 };
 
@@ -6914,13 +6916,15 @@ export type UpdateApiKeyMutation = {
 };
 
 export type DeleteApiKeyMutationVariables = Exact<{
-    input: DeleteApiKeyInput;
+    ids: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
 }>;
 
-export type DeleteApiKeyMutation = { deleteApiKey: { result: DeletionResult; message?: string | null } };
+export type DeleteApiKeyMutation = {
+    deleteApiKeys: Array<{ result: DeletionResult; message?: string | null }>;
+};
 
 export type RotateApiKeyMutationVariables = Exact<{
-    input: RotateApiKeyInput;
+    id: Scalars['ID']['input'];
 }>;
 
 export type RotateApiKeyMutation = { rotateApiKey: { apiKey: string } };
@@ -16289,10 +16293,16 @@ export const DeleteApiKeyDocument = {
             variableDefinitions: [
                 {
                     kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'ids' } },
                     type: {
                         kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'DeleteApiKeyInput' } },
+                        type: {
+                            kind: 'ListType',
+                            type: {
+                                kind: 'NonNullType',
+                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                            },
+                        },
                     },
                 },
             ],
@@ -16301,12 +16311,12 @@ export const DeleteApiKeyDocument = {
                 selections: [
                     {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'deleteApiKey' },
+                        name: { kind: 'Name', value: 'deleteApiKeys' },
                         arguments: [
                             {
                                 kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                                name: { kind: 'Name', value: 'ids' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'ids' } },
                             },
                         ],
                         selectionSet: {
@@ -16332,10 +16342,10 @@ export const RotateApiKeyDocument = {
             variableDefinitions: [
                 {
                     kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
                     type: {
                         kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'RotateApiKeyInput' } },
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
                     },
                 },
             ],
@@ -16348,8 +16358,8 @@ export const RotateApiKeyDocument = {
                         arguments: [
                             {
                                 kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
                             },
                         ],
                         selectionSet: {

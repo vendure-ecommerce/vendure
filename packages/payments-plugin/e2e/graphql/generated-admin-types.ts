@@ -193,8 +193,15 @@ export type ApiKey = Node & {
     lookupId: Scalars['String']['output'];
     /** A descriptive name so you can remind yourself where the API-Key gets used */
     name: Scalars['String']['output'];
+    /**
+     * Usually the user who created the ApiKey but could also be used as the basis for
+     * restricting resolvers to `Permission.Owner` queries for customers for example.
+     */
+    owner: User;
     translations: Array<ApiKeyTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+    /** This is the underlying User which determines the kind of permissions for this API-Key. */
+    user: User;
 };
 
 export type ApiKeyFilterParameter = {
@@ -1663,11 +1670,6 @@ export type DateTimeStructFieldConfig = StructField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type DeleteApiKeyInput = {
-    /** ID of the ApiKey */
-    id: Scalars['ID']['input'];
-};
-
 export type DeleteAssetInput = {
     assetId: Scalars['ID']['input'];
     deleteFromAllChannels?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2988,8 +2990,8 @@ export type Mutation = {
     deleteAdministrator: DeletionResponse;
     /** Delete multiple Administrators */
     deleteAdministrators: Array<DeletionResponse>;
-    /** Deletes an API-Key */
-    deleteApiKey: DeletionResponse;
+    /** Deletes API-Keys */
+    deleteApiKeys: Array<DeletionResponse>;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
@@ -3452,8 +3454,8 @@ export type MutationDeleteAdministratorsArgs = {
     ids: Array<Scalars['ID']['input']>;
 };
 
-export type MutationDeleteApiKeyArgs = {
-    input: DeleteApiKeyInput;
+export type MutationDeleteApiKeysArgs = {
+    ids: Array<Scalars['ID']['input']>;
 };
 
 export type MutationDeleteAssetArgs = {
@@ -3731,7 +3733,7 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 };
 
 export type MutationRotateApiKeyArgs = {
-    input: RotateApiKeyInput;
+    id: Scalars['ID']['input'];
 };
 
 export type MutationRunScheduledTaskArgs = {
@@ -5741,11 +5743,6 @@ export type RoleSortParameter = {
     updatedAt?: InputMaybe<SortOrder>;
 };
 
-export type RotateApiKeyInput = {
-    /** ID of the ApiKey */
-    id: Scalars['ID']['input'];
-};
-
 export type RotateApiKeyResult = {
     /** The generated API-Key. API-Keys cannot be viewed again after creation! */
     apiKey: Scalars['String']['output'];
@@ -6508,6 +6505,11 @@ export type UpdateApiKeyInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
     /** ID of the ApiKey */
     id: Scalars['ID']['input'];
+    /**
+     * Which roles to attach to this ApiKey.
+     * You may only grant roles which you, yourself have.
+     */
+    roleIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     translations?: InputMaybe<Array<UpdateApiKeyTranslationInput>>;
 };
 
