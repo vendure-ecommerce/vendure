@@ -311,7 +311,7 @@ export function DataTable<TData>({
                         </TableHeader>
                         <TableBody>
                             {isLoading && !data?.length ? (
-                                Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
                                     <TableRow
                                         key={`skeleton-${index}`}
                                         className="animate-in fade-in duration-100"

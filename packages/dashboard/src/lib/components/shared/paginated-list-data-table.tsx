@@ -456,7 +456,7 @@ export function PaginatedListDataTable<
             const mergedFilter = { ...filter, ...searchFilter };
             const variables = {
                 options: {
-                    take: itemsPerPage,
+                    take: Math.min(itemsPerPage, 100),
                     skip: (page - 1) * itemsPerPage,
                     sort,
                     filter: mergedFilter,
