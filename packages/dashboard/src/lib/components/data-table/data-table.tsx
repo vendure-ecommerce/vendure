@@ -34,7 +34,7 @@ import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
-import { DataTableFilterBadge } from './data-table-filter-badge.js';
+import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
 
 export interface FacetedFilter {
     title: string;
@@ -212,7 +212,7 @@ export function DataTable<TData>({
             pagination.pageIndex;
         }
         prevColumnFiltersRef.current = columnFilters;
-    }, [columnFilters.length]);
+    }, [columnFilters]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -281,9 +281,10 @@ export function DataTable<TData>({
                                     const column = table.getColumn(f.id);
                                     const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
                                     return (
-                                        <DataTableFilterBadge
+                                        <DataTableFilterBadgeEditable
                                             key={f.id}
                                             filter={f}
+                                            column={column}
                                             currencyCode={currency}
                                             dataType={
                                                 (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
