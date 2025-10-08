@@ -156,8 +156,8 @@ export function isStringFieldWithOptions(input: ConfigurableFieldDef): input is 
     const isCustomFieldWithOptions =
         input.type === 'string' &&
         isCustomFieldConfig(input) &&
-        input.hasOwnProperty('options') &&
-        Array.isArray((input as any).options);
+        input.ui?.hasOwnProperty('options') &&
+        Array.isArray(input.ui?.options);
     if (isCustomFieldWithOptions) {
         return true;
     }
