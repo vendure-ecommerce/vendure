@@ -13,9 +13,8 @@ import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { VariablesOf } from 'gql.tada';
 import { User } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
@@ -23,50 +22,19 @@ import { OrderAddress } from './components/order-address.js';
 import { OrderModificationPreviewDialog } from './components/order-modification-preview-dialog.js';
 import { OrderModificationSummary } from './components/order-modification-summary.js';
 import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
-import {
-    draftOrderEligibleShippingMethodsDocument,
-    modifyOrderDocument,
-    orderDetailDocument,
-} from './orders.graphql.js';
+import { draftOrderEligibleShippingMethodsDocument, orderDetailDocument } from './orders.graphql.js';
 import { loadModifyingOrder } from './utils/order-detail-loaders.js';
-import { AddressFragment, Order } from './utils/order-types.js';
+import { AddressFragment } from './utils/order-types.js';
+import { computePendingOrder } from './utils/order-utils.js';
+import { useModifyOrder } from './utils/use-modify-order.js';
 
 const pageId = 'order-modify';
-type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id_/modify')({
     component: ModifyOrderPage,
     loader: async ({ context, params }) => loadModifyingOrder(context, params),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
-
-// --- AddedLine type for added items ---
-interface AddedLine {
-    id: string;
-    featuredAsset?: any;
-    productVariant: {
-        id: string;
-        name: string;
-        sku: string;
-    };
-    unitPrice: number;
-    unitPriceWithTax: number;
-    quantity: number;
-    linePrice: number;
-    linePriceWithTax: number;
-}
-
-// --- ProductVariantInfo type ---
-type ProductVariantInfo = {
-    productVariantId: string;
-    productVariantName: string;
-    sku: string;
-    productAsset: {
-        preview: string;
-    };
-    price?: number;
-    priceWithTax?: number;
-};
 
 function ModifyOrderPage() {
     const params = Route.useParams();
@@ -103,234 +71,34 @@ function ModifyOrderPage() {
     const { transitionToPreModifyingState, ManuallySelectNextState, selectNextState, transitionToState } =
         useTransitionOrderToState(entity?.id ?? '');
 
-    // --- Modification intent state ---
-
-    const [modifyOrderInput, setModifyOrderInput] = useState<ModifyOrderInput>({
-        orderId: '',
-        addItems: [],
-        adjustOrderLines: [],
-        surcharges: [],
-        note: '',
-        couponCodes: [],
-        options: {
-            recalculateShipping: true,
-        },
-        dryRun: true,
-    } satisfies ModifyOrderInput);
-
-    useEffect(() => {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            orderId: entity?.id ?? '',
-            couponCodes: entity?.couponCodes ?? [],
-        }));
-    }, [entity?.id]);
-
-    // --- Added variants info state ---
-    const [addedVariants, setAddedVariants] = useState<Map<string, ProductVariantInfo>>(new Map());
-
-    // --- Handlers update modifyOrderInput ---
-    function handleAddItem(variant: ProductVariantInfo) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            addItems: [...(prev.addItems ?? []), { productVariantId: variant.productVariantId, quantity: 1 }],
-        }));
-        setAddedVariants(prev => {
-            const newMap = new Map(prev);
-            newMap.set(variant.productVariantId, variant);
-            return newMap;
-        });
-    }
-
-    function handleAdjustLine({
-        lineId,
-        quantity,
-        customFields,
-    }: {
-        lineId: string;
-        quantity: number;
-        customFields: Record<string, any>;
-    }) {
-        // Check if this is an added line
-        if (lineId.startsWith('added-')) {
-            const productVariantId = lineId.replace('added-', '');
-            setModifyOrderInput(prev => ({
-                ...prev,
-                addItems: (prev.addItems ?? []).map(item =>
-                    item.productVariantId === productVariantId ? { ...item, quantity } : item,
-                ),
-            }));
-        } else {
-            let normalizedCustomFields: any = customFields;
-            delete normalizedCustomFields.__entityId__;
-            if (Object.keys(normalizedCustomFields).length === 0) {
-                normalizedCustomFields = undefined;
-            }
-            setModifyOrderInput(prev => {
-                const existing = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
-                const adjustOrderLines = existing
-                    ? (prev.adjustOrderLines ?? []).map(l =>
-                          l.orderLineId === lineId
-                              ? { ...l, quantity, customFields: normalizedCustomFields }
-                              : l,
-                      )
-                    : [
-                          ...(prev.adjustOrderLines ?? []),
-                          { orderLineId: lineId, quantity, customFields: normalizedCustomFields },
-                      ];
-                return { ...prev, adjustOrderLines };
-            });
-        }
-    }
-
-    function handleRemoveLine({ lineId }: { lineId: string }) {
-        if (lineId.startsWith('added-')) {
-            const productVariantId = lineId.replace('added-', '');
-            setModifyOrderInput(prev => ({
-                ...prev,
-                addItems: (prev.addItems ?? []).filter(item => item.productVariantId !== productVariantId),
-            }));
-            setAddedVariants(prev => {
-                const newMap = new Map(prev);
-                newMap.delete(productVariantId);
-                return newMap;
-            });
-        } else {
-            setModifyOrderInput(prev => {
-                const existingAdjustment = (prev.adjustOrderLines ?? []).find(l => l.orderLineId === lineId);
-                const adjustOrderLines = existingAdjustment
-                    ? (prev.adjustOrderLines ?? []).map(l =>
-                          l.orderLineId === lineId ? { ...l, quantity: 0 } : l,
-                      )
-                    : [...(prev.adjustOrderLines ?? []), { orderLineId: lineId, quantity: 0 }];
-                return {
-                    ...prev,
-                    adjustOrderLines,
-                };
-            });
-        }
-    }
-
-    function handleSetShippingMethod({ shippingMethodId }: { shippingMethodId: string }) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            shippingMethodIds: [shippingMethodId],
-        }));
-    }
-
-    function handleApplyCouponCode({ couponCode }: { couponCode: string }) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            couponCodes: prev.couponCodes?.includes(couponCode)
-                ? prev.couponCodes
-                : [...(prev.couponCodes ?? []), couponCode],
-        }));
-    }
-
-    function handleRemoveCouponCode({ couponCode }: { couponCode: string }) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            couponCodes: (prev.couponCodes ?? []).filter(code => code !== couponCode),
-        }));
-    }
+    // Use the custom hook for order modification logic
+    const {
+        modifyOrderInput,
+        addedVariants,
+        addItem,
+        adjustLine,
+        removeLine,
+        setShippingMethod,
+        applyCouponCode,
+        removeCouponCode,
+        updateShippingAddress: updateShippingAddressInInput,
+        updateBillingAddress: updateBillingAddressInInput,
+        hasModifications,
+    } = useModifyOrder(entity);
 
     // --- Address editing state ---
     const [editingShippingAddress, setEditingShippingAddress] = useState(false);
     const [editingBillingAddress, setEditingBillingAddress] = useState(false);
 
-    function orderAddressToModifyOrderInput(
-        address: AddressFragment,
-    ): ModifyOrderInput['updateShippingAddress'] {
-        return {
-            streetLine1: address.streetLine1,
-            streetLine2: address.streetLine2,
-            city: address.city,
-            countryCode: address.country.code,
-            fullName: address.fullName,
-            postalCode: address.postalCode,
-            province: address.province,
-            company: address.company,
-            phoneNumber: address.phoneNumber,
-        };
-    }
-
     // --- Address selection handlers ---
     function handleSelectShippingAddress(address: AddressFragment) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            updateShippingAddress: orderAddressToModifyOrderInput(address),
-        }));
+        updateShippingAddressInInput(address);
         setEditingShippingAddress(false);
     }
 
     function handleSelectBillingAddress(address: AddressFragment) {
-        setModifyOrderInput(prev => ({
-            ...prev,
-            updateBillingAddress: orderAddressToModifyOrderInput(address),
-        }));
+        updateBillingAddressInInput(address);
         setEditingBillingAddress(false);
-    }
-
-    // --- Utility: compute pending order for display ---
-    function computePendingOrder(input: ModifyOrderInput): Order | null {
-        if (!entity) {
-            return null;
-        }
-        // Adjust lines
-        const lines = entity.lines.map(line => {
-            const adjust = input.adjustOrderLines?.find(l => l.orderLineId === line.id);
-            return adjust
-                ? { ...line, quantity: adjust.quantity, customFields: (adjust as any).customFields }
-                : line;
-        });
-        // Add new items (as AddedLine)
-        const addedLines = input.addItems
-            ?.map(item => {
-                const variantInfo = addedVariants.get(item.productVariantId);
-                return variantInfo
-                    ? ({
-                          id: `added-${item.productVariantId}`,
-                          featuredAsset: variantInfo.productAsset ?? null,
-                          productVariant: {
-                              id: variantInfo.productVariantId,
-                              name: variantInfo.productVariantName,
-                              sku: variantInfo.sku,
-                          },
-                          unitPrice: variantInfo.price ?? 0,
-                          unitPriceWithTax: variantInfo.priceWithTax ?? 0,
-                          quantity: item.quantity,
-                          linePrice: (variantInfo.price ?? 0) * item.quantity,
-                          linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
-                      } as unknown as Order['lines'][number])
-                    : null;
-            })
-            .filter(x => x != null);
-        return {
-            ...entity,
-            lines: [...lines, ...(addedLines ?? [])],
-            couponCodes: input.couponCodes ?? [],
-            shippingLines: input.shippingMethodIds
-                ? input.shippingMethodIds
-                      .map(shippingMethodId => {
-                          const shippingMethod =
-                              eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder.find(
-                                  method => method.id === shippingMethodId,
-                              );
-                          if (!shippingMethod) {
-                              return;
-                          }
-                          return {
-                              shippingMethod: {
-                                  ...shippingMethod,
-                                  fulfillmentHandlerCode: 'manual',
-                              },
-                              discountedPriceWithTax: shippingMethod?.priceWithTax ?? 0,
-                              id: shippingMethodId,
-                          };
-                      })
-                      .filter(x => x !== undefined)
-                : entity.shippingLines,
-        };
     }
 
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -339,18 +107,12 @@ function ModifyOrderPage() {
         return null;
     }
 
-    const pendingOrder = computePendingOrder(modifyOrderInput);
-    const hasModifications =
-        (modifyOrderInput.addItems?.length ?? 0) > 0 ||
-        (modifyOrderInput.adjustOrderLines?.length ?? 0) > 0 ||
-        (modifyOrderInput.couponCodes?.length ?? 0) > 0 ||
-        (modifyOrderInput.shippingMethodIds?.length ?? 0) > 0 ||
-        modifyOrderInput.updateShippingAddress ||
-        modifyOrderInput.updateBillingAddress;
-
-    if (!pendingOrder) {
-        return null;
-    }
+    const pendingOrder = computePendingOrder(
+        entity,
+        modifyOrderInput,
+        addedVariants,
+        eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder,
+    );
 
     // On successful state transition, invalidate the order detail query and navigate to the order detail page
     const onSuccess = async () => {
@@ -405,12 +167,12 @@ function ModifyOrderPage() {
                         eligibleShippingMethods={
                             eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder ?? []
                         }
-                        onAddItem={handleAddItem}
-                        onAdjustLine={handleAdjustLine}
-                        onRemoveLine={handleRemoveLine}
-                        onSetShippingMethod={handleSetShippingMethod}
-                        onApplyCouponCode={handleApplyCouponCode}
-                        onRemoveCouponCode={handleRemoveCouponCode}
+                        onAddItem={addItem}
+                        onAdjustLine={adjustLine}
+                        onRemoveLine={removeLine}
+                        onSetShippingMethod={setShippingMethod}
+                        onApplyCouponCode={applyCouponCode}
+                        onRemoveCouponCode={removeCouponCode}
                         displayTotals={false}
                     />
                 </PageBlock>
@@ -449,7 +211,7 @@ function ModifyOrderPage() {
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity.customer ? (
-                        <Button variant="ghost" asChild>
+                        <Button variant="outline" asChild>
                             <Link to={`/customers/${entity?.customer?.id}`}>
                                 <User className="w-4 h-4" />
                                 {entity?.customer?.firstName} {entity?.customer?.lastName}

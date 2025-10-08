@@ -5,7 +5,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import {
     ColumnDef,
     flexRender,
@@ -68,26 +68,33 @@ export function EditOrderTable({
     displayTotals = true,
 }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const { t } = useLingui();
     const currencyCode = order.currencyCode;
     const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
         {
-            header: 'Image',
+            header: '',
             accessorKey: 'featuredAsset',
             cell: ({ row }) => {
                 const asset = row.original.featuredAsset;
-                return <VendureImage asset={asset} preset="tiny" />;
+                const removing = row.original.quantity === 0;
+                return <VendureImage className={removing ? 'opacity-50' : ''} asset={asset} preset="tiny" />;
             },
         },
         {
-            header: 'Product',
+            header: t`Product`,
             accessorKey: 'productVariant.name',
+            cell: ({ row }) => {
+                const value = row.original.productVariant.name;
+                const removing = row.original.quantity === 0;
+                return <div className={removing ? 'text-muted-foreground' : ''}>{value}</div>;
+            },
         },
         {
-            header: 'SKU',
+            header: t`SKU`,
             accessorKey: 'productVariant.sku',
         },
         {
-            header: 'Unit price',
+            header: t`Unit price`,
             accessorKey: 'unitPriceWithTax',
             cell: ({ row }) => {
                 const value = row.original.unitPriceWithTax;
@@ -96,7 +103,7 @@ export function EditOrderTable({
             },
         },
         {
-            header: 'Quantity',
+            header: t`Quantity`,
             accessorKey: 'quantity',
             cell: ({ row }) => {
                 return (
@@ -104,6 +111,7 @@ export function EditOrderTable({
                         <Input
                             type="number"
                             value={row.original.quantity}
+                            min={0}
                             onChange={e =>
                                 onAdjustLine({
                                     lineId: row.original.id,
@@ -116,6 +124,7 @@ export function EditOrderTable({
                             variant="outline"
                             type="button"
                             size="icon"
+                            disabled={row.original.quantity === 0}
                             onClick={() => onRemoveLine({ lineId: row.original.id })}
                         >
                             <Trash2 />
@@ -137,7 +146,7 @@ export function EditOrderTable({
             },
         },
         {
-            header: 'Total',
+            header: t`Total`,
             accessorKey: 'linePriceWithTax',
             cell: ({ row }) => {
                 const value = row.original.linePriceWithTax;
