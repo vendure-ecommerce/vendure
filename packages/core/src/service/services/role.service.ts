@@ -14,9 +14,11 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { CacheService } from '../../cache';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { getAllPermissionsMetadata } from '../../common/constants';
 import {
@@ -53,6 +55,14 @@ import { ChannelService } from './channel.service';
 @Injectable()
 @Instrument()
 export class RoleService {
+    private rolesCacheKey = 'RoleService.allRoles';
+    private rolesCache = this.cacheService.createCache({
+        getKey: () => this.rolesCacheKey,
+        options: {
+            ttl: 1000 * 60 * 60, // 1 hour
+        },
+    });
+
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
@@ -60,7 +70,13 @@ export class RoleService {
         private configService: ConfigService,
         private eventBus: EventBus,
         private requestContextCache: RequestContextCacheService,
-    ) {}
+        private cacheService: CacheService,
+    ) {
+        // When a Role is created, updated or deleted, we need to invalidate the roles cache
+        this.eventBus.ofType(RoleEvent).subscribe(event => {
+            void this.rolesCache.delete(this.rolesCacheKey);
+        });
+    }
 
     async initRoles() {
         await this.ensureSuperAdminRoleExists();
@@ -68,27 +84,33 @@ export class RoleService {
         await this.ensureRolesHaveValidPermissions();
     }
 
-    findAll(
+    async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Role>,
         relations?: RelationPaths<Role>,
     ): Promise<PaginatedList<Role>> {
-        return this.listQueryBuilder
-            .build(Role, options, { relations: unique([...(relations ?? []), 'channels']), ctx })
-            .getManyAndCount()
-            .then(async ([items, totalItems]) => {
-                const visibleRoles: Role[] = [];
-                for (const item of items) {
-                    const canRead = await this.activeUserCanReadRole(ctx, item);
-                    if (canRead) {
-                        visibleRoles.push(item);
-                    }
-                }
-                return {
-                    items: visibleRoles,
-                    totalItems,
-                };
-            });
+        // Compute the set of Role IDs the active user can read (channel + permission check) up front to ensure sort/skip/take operate only over visible Roles.
+        const allRoles = await this.getAllRolesWithChannels(ctx);
+
+        const visibleRoleIds: ID[] = [];
+        for (const role of allRoles) {
+            if (await this.activeUserCanReadRole(ctx, role)) {
+                visibleRoleIds.push(role.id);
+            }
+        }
+
+        if (visibleRoleIds.length === 0) {
+            return { items: [], totalItems: 0 };
+        }
+
+        const [items, totalItems] = await this.listQueryBuilder
+            .build(Role, options, {
+                relations: unique([...(relations ?? []), 'channels']),
+                ctx,
+            })
+            .andWhere({ id: In(visibleRoleIds) })
+            .getManyAndCount();
+        return { items, totalItems };
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
@@ -186,6 +208,15 @@ export class RoleService {
             }
         }
         return true;
+    }
+
+    private async getAllRolesWithChannels(ctx: RequestContext): Promise<Role[]> {
+        const allRolesJson = await this.rolesCache.get(this.rolesCacheKey, async () => {
+            const roles = await this.connection.getRepository(ctx, Role).find({ relations: ['channels'] });
+            return JSON.stringify(roles);
+        });
+
+        return JSON.parse(allRolesJson);
     }
 
     /**
