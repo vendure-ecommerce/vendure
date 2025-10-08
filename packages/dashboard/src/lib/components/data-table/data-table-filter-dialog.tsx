@@ -27,6 +27,7 @@ export function DataTableFilterDialog({ column }: Readonly<DataTableFilterDialog
 
     const columnDataType = (column.columnDef.meta as any)?.fieldInfo?.type as ColumnDataType;
     const columnId = column.id;
+    const isEmpty = !filter || Object.keys(filter).length === 0;
     return (
         <DialogContent>
             <DialogHeader>
@@ -58,6 +59,7 @@ export function DataTableFilterDialog({ column }: Readonly<DataTableFilterDialog
                     <Button
                         type="button"
                         variant="secondary"
+                        disabled={isEmpty}
                         onClick={() => {
                             column.setFilterValue(filter);
                             setFilter(undefined);
