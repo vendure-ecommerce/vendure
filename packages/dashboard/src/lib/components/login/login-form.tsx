@@ -4,7 +4,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { PasswordInput } from '@/vdb/components/ui/password-input.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,11 +15,13 @@ import { LogoMark } from '../shared/logo-mark.js';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form.js';
 import { Separator } from '../ui/separator.js';
 
-export interface LoginFormProps extends React.ComponentProps<'div'> {
-    loginError?: string;
-    isVerifying?: boolean;
-    onFormSubmit?: (username: string, password: string) => void;
-}
+export type LoginFormProps = Readonly<
+    {
+        loginError?: string;
+        isVerifying?: boolean;
+        onFormSubmit?: (username: string, password: string) => void;
+    } & React.ComponentProps<'div'>
+>;
 
 const formSchema = z.object({
     username: z.string().min(1),
@@ -28,6 +30,7 @@ const formSchema = z.object({
 
 export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ...props }: LoginFormProps) {
     const loginExtensions = useLoginExtensions();
+    const { t } = useLingui();
 
     React.useEffect(() => {
         if (loginError && !isVerifying) {
@@ -77,7 +80,7 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <Input {...field} placeholder="Email" />
+                                                <Input {...field} placeholder={t`Email`} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -89,7 +92,7 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <PasswordInput {...field} placeholder="Password" />
+                                                <PasswordInput {...field} placeholder={t`Password`} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -105,10 +108,12 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     {!isVerifying && <Trans>Sign in</Trans>}
                                 </Button>
                                 <div className="text-center text-sm">
-                                    <span className="text-muted-foreground mr-0.5">Forgot password?</span>
-                                    <a tabIndex={-1} href="#" className="text-primary hover:underline">
-                                        Request reset
-                                    </a>
+                                    <Trans>
+                                        <span className="text-muted-foreground mr-0.5">Forgot password?</span>
+                                        <a tabIndex={-1} href="#" className="text-primary hover:underline">
+                                            Request reset
+                                        </a>
+                                    </Trans>
                                 </div>
                             </div>
                             {loginExtensions.afterForm && (
