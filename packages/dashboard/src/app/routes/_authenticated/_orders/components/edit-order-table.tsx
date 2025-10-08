@@ -44,7 +44,11 @@ export interface OrderTableProps {
         price?: any;
         priceWithTax?: any;
     }) => void;
-    onAdjustLine: (event: { lineId: string; quantity: number; customFields: Record<string, any> }) => void;
+    onAdjustLine: (event: {
+        lineId: string;
+        quantity: number;
+        customFields: Record<string, any> | undefined;
+    }) => void;
     onRemoveLine: (event: { lineId: string }) => void;
     onSetShippingMethod: (event: { shippingMethodId: string }) => void;
     onApplyCouponCode: (event: { couponCode: string }) => void;
@@ -53,16 +57,16 @@ export interface OrderTableProps {
 }
 
 export function EditOrderTable({
-                                   order,
-                                   eligibleShippingMethods,
-                                   onAddItem,
-                                   onAdjustLine,
-                                   onRemoveLine,
-                                   onSetShippingMethod,
-                                   onApplyCouponCode,
-                                   onRemoveCouponCode,
-                                   displayTotals = true,
-                               }: Readonly<OrderTableProps>) {
+    order,
+    eligibleShippingMethods,
+    onAddItem,
+    onAdjustLine,
+    onRemoveLine,
+    onSetShippingMethod,
+    onApplyCouponCode,
+    onRemoveCouponCode,
+    displayTotals = true,
+}: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const currencyCode = order.currencyCode;
     const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
@@ -104,7 +108,7 @@ export function EditOrderTable({
                                 onAdjustLine({
                                     lineId: row.original.id,
                                     quantity: e.target.valueAsNumber,
-                                    customFields: row.original.customFields ?? {},
+                                    customFields: row.original.customFields,
                                 })
                             }
                         />
@@ -169,9 +173,9 @@ export function EditOrderTable({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
+                                                      header.column.columnDef.header,
+                                                      header.getContext(),
+                                                  )}
                                         </TableHead>
                                     );
                                 })}
@@ -181,14 +185,14 @@ export function EditOrderTable({
                     <TableBody>
                         {table.getRowModel().rows?.length
                             ? table.getRowModel().rows.map(row => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
+                                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                                      {row.getVisibleCells().map(cell => (
+                                          <TableCell key={cell.id}>
+                                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                          </TableCell>
+                                      ))}
+                                  </TableRow>
+                              ))
                             : null}
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-12">

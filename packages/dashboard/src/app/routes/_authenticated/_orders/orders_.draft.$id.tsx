@@ -86,6 +86,7 @@ function DraftOrderPage() {
     const { mutate: setDraftOrderCustomFields } = useMutation({
         mutationFn: api.mutate(setDraftOrderCustomFieldsDocument),
         onSuccess: (result: ResultOf<typeof setDraftOrderCustomFieldsDocument>) => {
+            toast.success(t`Order custom fields updated`);
             refreshEntity();
         },
     });
@@ -108,6 +109,11 @@ function DraftOrderPage() {
                 default:
                     toast.error(order.message);
                     break;
+            }
+        },
+        onError: error => {
+            if ((error as any).extensions?.code === 'ENTITY_NOT_FOUND') {
+                toast.error(t`The variant could not be added. Ensure the parent product is enabled.`);
             }
         },
     });
@@ -377,7 +383,7 @@ function DraftOrderPage() {
                                 onClick={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    orderCustomFieldsForm.handleSubmit(onSaveCustomFields)();
+                                    onSaveCustomFields(orderCustomFieldsForm.getValues());
                                 }}
                             >
                                 <Trans>Set custom fields</Trans>
