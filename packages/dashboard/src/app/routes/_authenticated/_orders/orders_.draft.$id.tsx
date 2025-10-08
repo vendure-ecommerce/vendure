@@ -157,6 +157,15 @@ function DraftOrderPage() {
             switch (order.__typename) {
                 case 'Order':
                     toast.success(t`Customer set for order`);
+
+                    // When we change the customer, we should clear
+                    // any selected shipping/billing address
+                    if (entity?.shippingAddress) {
+                        unsetShippingAddressForDraftOrder({ orderId: entity.id });
+                    }
+                    if (entity?.billingAddress) {
+                        unsetBillingAddressForDraftOrder({ orderId: entity.id });
+                    }
                     refreshEntity();
                     break;
                 default:
@@ -393,7 +402,7 @@ function DraftOrderPage() {
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer?.id ? (
-                        <Button variant="ghost" asChild className="mb-4">
+                        <Button variant="outline" asChild className="mb-4">
                             <Link to={`/customers/${entity?.customer?.id}`}>
                                 <User className="w-4 h-4" />
                                 {entity?.customer?.firstName} {entity?.customer?.lastName}
@@ -414,25 +423,27 @@ function DraftOrderPage() {
                                 onClick={() => unsetShippingAddressForDraftOrder({ orderId: entity.id })}
                             />
                         ) : (
-                            <CustomerAddressSelector
-                                customerId={entity.customer?.id}
-                                onSelect={address => {
-                                    setShippingAddressForDraftOrder({
-                                        orderId: entity.id,
-                                        input: {
-                                            fullName: address.fullName,
-                                            company: address.company,
-                                            streetLine1: address.streetLine1,
-                                            streetLine2: address.streetLine2,
-                                            city: address.city,
-                                            province: address.province,
-                                            postalCode: address.postalCode,
-                                            countryCode: address.country.code,
-                                            phoneNumber: address.phoneNumber,
-                                        },
-                                    });
-                                }}
-                            />
+                            <div className="mt-4">
+                                <CustomerAddressSelector
+                                    customerId={entity.customer?.id}
+                                    onSelect={address => {
+                                        setShippingAddressForDraftOrder({
+                                            orderId: entity.id,
+                                            input: {
+                                                fullName: address.fullName,
+                                                company: address.company,
+                                                streetLine1: address.streetLine1,
+                                                streetLine2: address.streetLine2,
+                                                city: address.city,
+                                                province: address.province,
+                                                postalCode: address.postalCode,
+                                                countryCode: address.country.code,
+                                                phoneNumber: address.phoneNumber,
+                                            },
+                                        });
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                 </PageBlock>
@@ -444,25 +455,27 @@ function DraftOrderPage() {
                                 onClick={() => unsetBillingAddressForDraftOrder({ orderId: entity.id })}
                             />
                         ) : (
-                            <CustomerAddressSelector
-                                customerId={entity.customer?.id}
-                                onSelect={address => {
-                                    setBillingAddressForDraftOrder({
-                                        orderId: entity.id,
-                                        input: {
-                                            fullName: address.fullName,
-                                            company: address.company,
-                                            streetLine1: address.streetLine1,
-                                            streetLine2: address.streetLine2,
-                                            city: address.city,
-                                            province: address.province,
-                                            postalCode: address.postalCode,
-                                            countryCode: address.country.code,
-                                            phoneNumber: address.phoneNumber,
-                                        },
-                                    });
-                                }}
-                            />
+                            <div className="mt-4">
+                                <CustomerAddressSelector
+                                    customerId={entity.customer?.id}
+                                    onSelect={address => {
+                                        setBillingAddressForDraftOrder({
+                                            orderId: entity.id,
+                                            input: {
+                                                fullName: address.fullName,
+                                                company: address.company,
+                                                streetLine1: address.streetLine1,
+                                                streetLine2: address.streetLine2,
+                                                city: address.city,
+                                                province: address.province,
+                                                postalCode: address.postalCode,
+                                                countryCode: address.country.code,
+                                                phoneNumber: address.phoneNumber,
+                                            },
+                                        });
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                 </PageBlock>
