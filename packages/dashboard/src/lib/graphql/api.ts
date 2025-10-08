@@ -69,6 +69,20 @@ const awesomeClient = new AwesomeGraphQLClient({
     },
 });
 
+/**
+ * @description
+ * Handles the scenario where there's an invalid channel token in local storage.
+ * Most often seen in local development when testing multiple backends on the same
+ * localhost origin.
+ */
+function handleInvalidChannelToken(err: unknown) {
+    if (err instanceof Error) {
+        if ((err as any).extensions?.code === 'CHANNEL_NOT_FOUND') {
+            localStorage.removeItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+        }
+    }
+}
+
 export type VariablesAndRequestHeadersArgs<V extends Variables> =
     V extends Record<any, never>
         ? [variables?: V, requestHeaders?: HeadersInit]
@@ -79,7 +93,10 @@ function query<T, V extends Variables = Variables>(
     variables?: V,
 ): Promise<T> {
     const documentString = typeof document === 'string' ? document : print(document);
-    return awesomeClient.request(documentString, variables) as any;
+    return awesomeClient.request(documentString, variables).catch(err => {
+        handleInvalidChannelToken(err);
+        throw err;
+    }) as any;
 }
 
 function mutate<T, V extends Variables = Variables>(
