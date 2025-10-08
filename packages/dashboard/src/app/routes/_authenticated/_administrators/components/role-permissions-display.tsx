@@ -29,7 +29,7 @@ interface RolePermissionsDisplayProps {
 }
 
 export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsDisplayProps>) {
-    const { t } = useLingui();
+    const { i18n } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 
     const { data } = useQuery({
