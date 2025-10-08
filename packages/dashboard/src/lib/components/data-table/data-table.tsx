@@ -129,6 +129,7 @@ export function DataTable<TData>({
     );
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const prevSearchTermRef = useRef(searchTerm);
+    const prevColumnFiltersRef = useRef(columnFilters);
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -181,26 +182,44 @@ export function DataTable<TData>({
     }, [sorting]);
 
     useEffect(() => {
-        onFilterChange?.(table, columnFilters);
-    }, [columnFilters]);
-
-    useEffect(() => {
         onColumnVisibilityChange?.(table, columnVisibility);
     }, [columnVisibility]);
 
     useEffect(() => {
         if (page && page > 1 && itemsPerPage && prevSearchTermRef.current !== searchTerm) {
-            onPageChange?.(table, 1, itemsPerPage);
-            prevSearchTermRef.current = searchTerm;
+            // Set the page back to 1 when searchTerm changes
+            setPagination({
+                ...pagination,
+                pageIndex: 0,
+            });
         }
+        prevSearchTermRef.current = searchTerm;
     }, [onPageChange, searchTerm]);
 
-    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+    useEffect(() => {
+        onFilterChange?.(table, columnFilters);
+        if (
+            page &&
+            page > 1 &&
+            itemsPerPage &&
+            JSON.stringify(prevColumnFiltersRef.current) !== JSON.stringify(columnFilters)
+        ) {
+            // Set the page back to 1 when filters change
+            setPagination({
+                ...pagination,
+                pageIndex: 0,
+            });
+            pagination.pageIndex;
+        }
+        prevColumnFiltersRef.current = columnFilters;
+    }, [columnFilters.length]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
         onSearchTermChange?.(value);
     };
+
+    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
 
     return (
         <DataTableProvider
