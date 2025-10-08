@@ -1,3 +1,11 @@
+## <small>3.4.4 (2025-10-08)</small>
+
+
+#### Fixes
+
+* **core** Omit saving Order.customFields on applyPriceAdjustments ([293a74b](https://github.com/vendure-ecommerce/vendure/commit/293a74b))
+* **create** Fix package resolution in monorepos ([7590b56](https://github.com/vendure-ecommerce/vendure/commit/7590b56))
+
 ## <small>3.4.3 (2025-10-02)</small>
 
 
