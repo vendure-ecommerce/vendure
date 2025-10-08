@@ -13,6 +13,7 @@ import { ResultOf } from 'gql.tada';
 import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { collectionListDocument } from './collections.graphql.js';
 import {
@@ -123,6 +124,9 @@ function CollectionListPage() {
                             );
                         },
                     },
+                    description: {
+                        cell: RichTextDescriptionCell,
+                    },
                     breadcrumbs: {
                         cell: ({ cell }) => {
                             const value = cell.getValue();
@@ -204,6 +208,7 @@ function CollectionListPage() {
                     position: false,
                     parentId: false,
                     children: false,
+                    description: false,
                 }}
                 onSearchTermChange={searchTerm => {
                     return {

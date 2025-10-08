@@ -1,6 +1,7 @@
 import { BooleanDisplayBadge } from '@/vdb/components/data-display/boolean.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
@@ -46,6 +47,9 @@ function PromotionListPage() {
                 },
                 enabled: {
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
+                },
+                description: {
+                    cell: RichTextDescriptionCell,
                 },
             }}
             bulkActions={[
