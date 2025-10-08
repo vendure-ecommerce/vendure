@@ -131,35 +131,38 @@ This will add the `dashboard` property to your plugin as above, and will also cr
 which looks like this:
 
 ```tsx title="src/plugins/cms/dashboard/index.tsx"
-import { Button, defineDashboardExtension } from '@vendure/dashboard';
+import { Button, defineDashboardExtension, Page, PageBlock, PageLayout, PageTitle } from '@vendure/dashboard';
 import { useState } from 'react';
 
 defineDashboardExtension({
-    pageBlocks: [
-        // Here's an example of a page block extension. If you visit a product detail page,
-        // you should see the block in action.
+    routes: [
+        // Here's a custom page so you can test that your Dashboard extensions are working.
+        // You should be able to access this page via the "Catalog > Test Page" nav menu item.
         {
-            id: 'example-page-block',
-            location: {
-                pageId: 'product-detail',
-                position: {
-                    blockId: 'product-variants-table',
-                    order: 'after',
-                },
-                column: 'main',
+            path: '/test',
+            loader: () => ({ breadcrumb: 'Test Page' }),
+            navMenuItem: {
+                id: 'test',
+                title: 'Test Page',
+                sectionId: 'catalog',
             },
             component: () => {
                 const [count, setCount] = useState(0);
                 return (
-                    <div>
-                        <p>This is an example custom component.</p>
-                        <p className="text-muted-foreground mb-4">
-                            As is traditional, let's include counter functionality:
-                        </p>
-                        <Button variant="secondary" onClick={() => setCount(c => c + 1)}>
-                            Clicked {count} times
-                        </Button>
-                    </div>
+                    <Page pageId="test-page">
+                        <PageTitle>Test Page</PageTitle>
+                        <PageLayout>
+                            <PageBlock column="main" blockId="counter">
+                                <p>Congratulations, your Dashboard extension is working!</p>
+                                <p className="text-muted-foreground mb-4">
+                                    As is traditional, let's include a counter:
+                                </p>
+                                <Button variant="secondary" onClick={() => setCount(c => c + 1)}>
+                                    Clicked {count} times
+                                </Button>
+                            </PageBlock>
+                        </PageLayout>
+                    </Page>
                 );
             },
         },
@@ -167,7 +170,7 @@ defineDashboardExtension({
     // The following extension points are only listed here
     // to give you an idea of all the ways that the Dashboard
     // can be extended. Feel free to delete any that you don't need.
-    routes: [],
+    pageBlocks: [],
     navSections: [],
     actionBarItems: [],
     alerts: [],
@@ -178,7 +181,6 @@ defineDashboardExtension({
     login: {},
     historyEntries: [],
 });
-
 ```
 
 ## Dev Mode
