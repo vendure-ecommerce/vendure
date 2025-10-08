@@ -29,7 +29,7 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useRef } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
@@ -128,6 +128,7 @@ export function DataTable<TData>({
         defaultColumnVisibility ?? {},
     );
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    const prevSearchTermRef = useRef(searchTerm);
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -186,6 +187,13 @@ export function DataTable<TData>({
     useEffect(() => {
         onColumnVisibilityChange?.(table, columnVisibility);
     }, [columnVisibility]);
+
+    useEffect(() => {
+        if (page && page > 1 && itemsPerPage && prevSearchTermRef.current !== searchTerm) {
+            onPageChange?.(table, 1, itemsPerPage);
+            prevSearchTermRef.current = searchTerm;
+        }
+    }, [onPageChange, searchTerm]);
 
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
 
