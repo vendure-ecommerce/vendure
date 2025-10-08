@@ -51,11 +51,15 @@ function CustomerListPage() {
                 },
                 groups: {
                     cell: ({ row }) => {
-                        return row.original.groups?.map(g => (
-                            <Badge variant="secondary" key={g.id}>
-                                {g.name}
-                            </Badge>
-                        ));
+                        return (
+                            <div className="flex flex-wrap gap-1">
+                                {row.original.groups?.map(g => (
+                                    <Badge variant="secondary" key={g.id}>
+                                        {g.name}
+                                    </Badge>
+                                ))}
+                            </div>
+                        );
                     },
                 },
             }}
