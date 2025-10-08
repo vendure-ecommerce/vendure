@@ -2124,6 +2124,7 @@ export class OrderService {
                     'sellerOrders',
                     'customer',
                     'modifications',
+                    'customFields',
                 ]),
                 {
                     reload: false,
