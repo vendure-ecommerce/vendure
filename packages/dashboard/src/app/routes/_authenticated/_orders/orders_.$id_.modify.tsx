@@ -131,17 +131,22 @@ function ModifyOrderPage() {
     };
 
     const handleModificationSubmit = async (priceDifference?: number) => {
-        const transitionError =
-            priceDifference && priceDifference > 0
-                ? await transitionToState('ArrangingAdditionalPayment')
-                : await transitionToPreModifyingState();
-        if (!transitionError) {
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            await queryClient.invalidateQueries({ queryKey });
+        if (priceDifference === undefined) {
+            // the preview was cancelled
             setPreviewOpen(false);
-            await navigate({ to: `/orders/$id`, params: { id: entity?.id } });
         } else {
-            selectNextState({ onSuccess });
+            const transitionError =
+                priceDifference > 0
+                    ? await transitionToState('ArrangingAdditionalPayment')
+                    : await transitionToPreModifyingState();
+            if (!transitionError) {
+                const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+                await queryClient.invalidateQueries({ queryKey });
+                setPreviewOpen(false);
+                await navigate({ to: `/orders/$id`, params: { id: entity?.id } });
+            } else {
+                selectNextState({ onSuccess });
+            }
         }
     };
 
