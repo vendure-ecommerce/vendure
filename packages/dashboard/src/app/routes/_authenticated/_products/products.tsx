@@ -7,7 +7,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PlusIcon, RefreshCwIcon } from 'lucide-react';
+import { ListRestart, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     AssignFacetValuesToProductsBulkAction,
@@ -87,7 +87,7 @@ function ProductListPage() {
             <PageActionBarRight>
                 <PermissionGuard requires={['UpdateCatalog']}>
                     <Button variant="outline" onClick={handleRebuildSearchIndex}>
-                        <RefreshCwIcon />
+                        <ListRestart />
                         <Trans>Rebuild search index</Trans>
                     </Button>
                 </PermissionGuard>
