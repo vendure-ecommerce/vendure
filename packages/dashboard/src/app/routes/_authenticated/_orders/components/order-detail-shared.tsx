@@ -241,7 +241,7 @@ export function OrderDetailShared({
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer ? (
-                        <Button variant="ghost" asChild>
+                        <Button variant="outline" asChild>
                             <Link to={`/customers/${entity.customer.id}`}>
                                 <User className="w-4 h-4" />
                                 {entity.customer.firstName} {entity.customer.lastName}
@@ -255,7 +255,7 @@ export function OrderDetailShared({
                     <div className="mt-4 divide-y">
                         {entity?.shippingAddress && (
                             <div className="pb-6">
-                                <div className="font-medium">
+                                <div className="font-medium mb-6">
                                     <Trans>Shipping address</Trans>
                                 </div>
                                 <OrderAddress address={entity.shippingAddress} />
@@ -263,7 +263,7 @@ export function OrderDetailShared({
                         )}
                         {entity?.billingAddress && (
                             <div className="pt-4">
-                                <div className="font-medium">
+                                <div className="font-medium mb-6">
                                     <Trans>Billing address</Trans>
                                 </div>
                                 <OrderAddress address={entity.billingAddress} />
@@ -293,7 +293,7 @@ export function OrderDetailShared({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
+                        <div className="text-muted-foreground text-sm">
                             <Trans>No fulfillments</Trans>
                         </div>
                     )}

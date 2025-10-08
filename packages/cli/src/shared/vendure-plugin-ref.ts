@@ -1,11 +1,10 @@
+import { VendurePluginMetadata } from '@vendure/core';
 import {
     ClassDeclaration,
     InterfaceDeclaration,
     Node,
     PropertyAssignment,
-    StructureKind,
     SyntaxKind,
-    Type,
     VariableDeclaration,
 } from 'ts-morph';
 
@@ -164,6 +163,28 @@ export class VendurePluginRef {
         }
     }
 
+    addMetadataProperty<K extends keyof VendurePluginMetadata>(prop: K, value: string) {
+        const pluginOptions = this.getMetadataOptions();
+        const existingProperty = pluginOptions.getProperty(prop);
+        if (existingProperty) {
+            const existingValue = Node.isPropertyAssignment(existingProperty)
+                ? this.normalizeStringValue(existingProperty.getInitializer()?.getText())
+                : existingProperty.getText();
+            if (existingValue === value) {
+                // Value is already set to the same, so we can
+                // just return without changing anything
+                return;
+            }
+            throw new Error(`Property '${prop}' already exists with a value of ${existingValue}`);
+        }
+        pluginOptions
+            .addPropertyAssignment({
+                name: prop,
+                initializer: `'${value}'`,
+            })
+            .formatText();
+    }
+
     getEntities(): EntityRef[] {
         const metadataOptions = this.getMetadataOptions();
         const entitiesProperty = metadataOptions.getProperty('entities');
@@ -201,5 +222,46 @@ export class VendurePluginRef {
         return !!this.classDeclaration
             .getStaticProperties()
             .find(prop => prop.getType().getSymbol()?.getName() === AdminUiExtensionTypeName);
+    }
+
+    /**
+     * Normalizes string values for comparison by removing quotes and handling nested string literals.
+     *
+     * When working with AST nodes via ts-morph, property initializers are returned as raw text
+     * including their original quotation marks. For example:
+     * - A property `foo: './path'` returns `"'./path'"` from getText()
+     * - A property `foo: "./path"` returns `'"./path"'` from getText()
+     *
+     * This method ensures that when comparing these AST-derived strings with expected values,
+     * we compare the actual semantic content rather than the literal representation including quotes.
+     * This allows us to properly detect when a property already has the desired value and avoid
+     * duplicate property assignments or incorrect error messages.
+     *
+     * @param value The raw string value from an AST node's getText() method
+     * @returns The normalized string value without surrounding quotes
+     */
+    private normalizeStringValue(value: string | undefined): string {
+        if (!value) return '';
+
+        // Remove outer quotes (single or double)
+        let normalized = value.trim();
+        if (
+            (normalized.startsWith('"') && normalized.endsWith('"')) ||
+            (normalized.startsWith("'") && normalized.endsWith("'"))
+        ) {
+            normalized = normalized.slice(1, -1);
+        }
+
+        // Handle nested quoted strings by trying to parse as JSON
+        try {
+            const parsed = JSON.parse(`"${normalized}"`);
+            if (typeof parsed === 'string') {
+                return parsed;
+            }
+        } catch {
+            // If JSON parsing fails, just return the normalized string
+        }
+
+        return normalized;
     }
 }

@@ -1,4 +1,5 @@
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -24,15 +25,21 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Fragment } from 'react/jsx-runtime';
+import { VariablesOf } from 'gql.tada';
+import { Trash } from 'lucide-react';
 import { toast } from 'sonner';
+import { AddCurrencyDropdown } from './components/add-currency-dropdown.js';
+import { AddStockLocationDropdown } from './components/add-stock-location-dropdown.js';
 import { VariantPriceDetail } from './components/variant-price-detail.js';
 import {
     createProductVariantDocument,
     productVariantDetailDocument,
+    stockLocationsQueryDocument,
     updateProductVariantDocument,
 } from './product-variants.graphql.js';
 
@@ -57,12 +64,19 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
+type PriceInput = NonNullable<VariablesOf<typeof updateProductVariantDocument>['input']['prices']>[number];
+
 function ProductVariantDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
     const { activeChannel } = useChannel();
+
+    const { data: stockLocationsData } = useQuery({
+        queryKey: ['stockLocations'],
+        queryFn: () => api.query(stockLocationsQueryDocument, {}),
+    });
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -79,7 +93,7 @@ function ProductVariantDetailPage() {
                 facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
                 taxCategoryId: entity.taxCategory.id,
                 price: entity.price,
-                prices: [],
+                prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
@@ -117,7 +131,74 @@ function ProductVariantDetailPage() {
         },
     });
 
-    const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
+    const availableCurrencies = activeChannel?.availableCurrencyCodes ?? [];
+    const [prices, taxCategoryId, stockLevels] = form.watch(['prices', 'taxCategoryId', 'stockLevels']);
+
+    // Filter out deleted prices for display
+    const activePrices = prices?.filter(p => !p.delete) ?? [];
+
+    // Get currencies that are currently active (not deleted)
+    const usedCurrencies = activePrices.map(p => p.currencyCode);
+    const unusedCurrencies = availableCurrencies.filter(c => !usedCurrencies.includes(c));
+
+    // Get used stock location IDs
+    const usedStockLocationIds = stockLevels?.map(sl => sl.stockLocationId) ?? [];
+
+    const handleAddCurrency = (currencyCode: string) => {
+        const currentPrices = form.getValues('prices') || [];
+
+        // Check if this currency already exists (including deleted ones)
+        const existingPriceIndex = currentPrices.findIndex(p => p.currencyCode === currencyCode);
+
+        if (existingPriceIndex !== -1) {
+            // Currency exists, mark it as not deleted
+            const updatedPrices = [...currentPrices];
+            updatedPrices[existingPriceIndex] = {
+                ...updatedPrices[existingPriceIndex],
+                delete: false,
+            };
+            form.setValue('prices', updatedPrices, {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        } else {
+            // Add new currency
+            const newPrice = {
+                currencyCode,
+                price: 0,
+                delete: false,
+            } as PriceInput;
+            form.setValue('prices', [...currentPrices, newPrice], {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        }
+    };
+
+    const handleRemoveCurrency = (indexToRemove: number) => {
+        const currentPrices = form.getValues('prices') || [];
+        const updatedPrices = [...currentPrices];
+        updatedPrices[indexToRemove] = {
+            ...updatedPrices[indexToRemove],
+            delete: true,
+        };
+        form.setValue('prices', updatedPrices, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
+
+    const handleAddStockLocation = (stockLocationId: string, stockLocationName: string) => {
+        const currentStockLevels = form.getValues('stockLevels') || [];
+        const newStockLevel = {
+            stockLocationId,
+            stockOnHand: 0,
+        };
+        form.setValue('stockLevels', [...currentStockLevels, newStockLevel], {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -168,7 +249,7 @@ function ProductVariantDetailPage() {
                 <CustomFieldsPageBlock column="main" entityType="ProductVariant" control={form.control} />
 
                 <PageBlock column="main" blockId="price-and-tax" title={<Trans>Price and tax</Trans>}>
-                    <div className="grid grid-cols-2 gap-4 items-start">
+                    <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}
                             name="taxCategoryId"
@@ -177,56 +258,62 @@ function ProductVariantDetailPage() {
                                 <TaxCategorySelector value={field.value} onChange={field.onChange} />
                             )}
                         />
+                    </DetailFormGrid>
+                    {activePrices.map((price, displayIndex) => {
+                        // Find the actual index in the full prices array
+                        const actualIndex = prices?.findIndex(p => p === price) ?? displayIndex;
 
-                        <div>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="price"
-                                label={<Trans>Price</Trans>}
-                                render={({ field }) => (
-                                    <MoneyInput {...field} currency={entity?.currencyCode} />
-                                )}
-                            />
-                            <VariantPriceDetail
-                                priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
-                                price={price}
-                                currencyCode={
-                                    entity?.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
-                                }
-                                taxCategoryId={taxCategoryId}
-                            />
-                        </div>
-                    </div>
+                        const currencyCodeLabel = (
+                            <div className="uppercase text-muted-foreground">{price.currencyCode}</div>
+                        );
+                        const priceLabel = (
+                            <div className="flex gap-1 items-center justify-between">
+                                <Trans>Price</Trans> {activePrices.length > 1 ? currencyCodeLabel : null}
+                            </div>
+                        );
+                        return (
+                            <DetailFormGrid key={price.currencyCode}>
+                                <div className="flex gap-1 items-end">
+                                    <FormFieldWrapper
+                                        control={form.control}
+                                        name={`prices.${actualIndex}.price`}
+                                        label={priceLabel}
+                                        render={({ field }) => (
+                                            <MoneyInput {...field} currency={price.currencyCode} />
+                                        )}
+                                    />
+                                    {activePrices.length > 1 && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveCurrency(actualIndex)}
+                                            className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
+                                        >
+                                            <Trash className="size-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                                <VariantPriceDetail
+                                    priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
+                                    price={price.price}
+                                    currencyCode={
+                                        price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
+                                    }
+                                    taxCategoryId={taxCategoryId}
+                                />
+                            </DetailFormGrid>
+                        );
+                    })}
+                    {unusedCurrencies.length ? (
+                        <AddCurrencyDropdown
+                            onCurrencySelect={handleAddCurrency}
+                            unusedCurrencies={unusedCurrencies}
+                        />
+                    ) : null}
                 </PageBlock>
                 <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
                     <DetailFormGrid>
-                        {entity?.stockLevels.map((stockLevel, index) => (
-                            <Fragment key={stockLevel.id}>
-                                <FormFieldWrapper
-                                    control={form.control}
-                                    name={`stockLevels.${index}.stockOnHand`}
-                                    label={<Trans>Stock level</Trans>}
-                                    render={({ field }) => (
-                                        <Input
-                                            type="number"
-                                            value={field.value}
-                                            onChange={e => {
-                                                field.onChange(e.target.valueAsNumber);
-                                            }}
-                                        />
-                                    )}
-                                />
-                                <div>
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Allocated</Trans>
-                                        </FormLabel>
-                                        <div className="text-sm pt-1.5">{stockLevel.stockAllocated}</div>
-                                    </FormItem>
-                                </div>
-                            </Fragment>
-                        ))}
-
                         <FormFieldWrapper
                             control={form.control}
                             name="trackInventory"
@@ -292,6 +379,47 @@ function ProductVariantDetailPage() {
                             )}
                         />
                     </DetailFormGrid>
+                    {stockLevels?.map((stockLevel, index) => {
+                        const stockAllocated =
+                            entity?.stockLevels.find(sl => sl.stockLocation.id === stockLevel.stockLocationId)
+                                ?.stockAllocated ?? 0;
+                        const stockLocationName = stockLocationsData?.stockLocations.items?.find(
+                            sl => sl.id === stockLevel.stockLocationId,
+                        )?.name;
+                        const stockLocationNameLabel =
+                            stockLevels.length > 1 ? (
+                                <div className="text-muted-foreground">{stockLocationName}</div>
+                            ) : null;
+                        const stockLabel = (
+                            <>
+                                <Trans>Stock level</Trans>
+                                {stockLocationNameLabel}
+                            </>
+                        );
+                        return (
+                            <DetailFormGrid key={stockLevel.stockLocationId}>
+                                <FormFieldWrapper
+                                    control={form.control}
+                                    name={`stockLevels.${index}.stockOnHand`}
+                                    label={stockLabel}
+                                    render={({ field }) => <NumberInput {...field} value={field.value} />}
+                                />
+                                <div>
+                                    <FormItem>
+                                        <FormLabel>
+                                            <Trans>Allocated</Trans>
+                                        </FormLabel>
+                                        <div className="text-sm pt-1.5">{stockAllocated}</div>
+                                    </FormItem>
+                                </div>
+                            </DetailFormGrid>
+                        );
+                    })}
+                    <AddStockLocationDropdown
+                        availableStockLocations={stockLocationsData?.stockLocations.items ?? []}
+                        usedStockLocationIds={usedStockLocationIds}
+                        onStockLocationSelect={handleAddStockLocation}
+                    />
                 </PageBlock>
 
                 <PageBlock column="side" blockId="facet-values">

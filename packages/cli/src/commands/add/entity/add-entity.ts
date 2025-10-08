@@ -189,6 +189,7 @@ function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
         entityClass?.getProperty('translations')?.remove();
         removeImplementsFromClass('Translatable', entityClass);
         translationFile.delete();
+        entityFile.getImportDeclaration('./entity-translation.template')?.remove();
     } else {
         entityFile
             .getImportDeclaration('./entity-translation.template')
