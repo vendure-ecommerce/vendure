@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Sorgu uzatma hatası"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Sayfa varsayılan sorgu ile devam edecek."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Sorgu belgesi uzatılamadı"
@@ -37,18 +49,6 @@ msgstr "Sorgu uzatma geçersiz GraphQL sözdizimi içeriyor"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Sorgu uzatma hatası:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Sorgu uzatma hatası"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Sayfa varsayılan sorgu ile devam edecek."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -762,7 +762,7 @@ msgid "{0} selected"
 msgstr "{0} seçildi"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:150
+#: src/app/routes/_authenticated/_collections/collections.tsx:154
 msgid "{0} variants"
 msgstr "{0} varyant"
 
@@ -790,7 +790,7 @@ msgstr "{title}"
 msgid "+ {0} more"
 msgstr "+ {0} daha"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:168
+#: src/app/routes/_authenticated/_collections/collections.tsx:172
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} daha"
 
@@ -871,7 +871,7 @@ msgstr "Müşteri grupları ekle"
 msgid "Add facet value"
 msgstr "Özellik değeri ekle"
 
-#: src/lib/components/shared/facet-value-selector.tsx:256
+#: src/lib/components/shared/facet-value-selector.tsx:298
 msgid "Add facet values"
 msgstr "Özellik değerleri ekle"
 
@@ -1174,7 +1174,7 @@ msgstr "Mevcut:"
 msgid "Average Order Value"
 msgstr "Ortalama Sipariş Değeri"
 
-#: src/lib/components/shared/facet-value-selector.tsx:288
+#: src/lib/components/shared/facet-value-selector.tsx:370
 msgid "Back to search"
 msgstr "Aramaya dön"
 
@@ -1203,6 +1203,11 @@ msgstr "Sipariş için fatura adresi ayarlandı"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
 msgstr "Siparişten fatura adresi kaldırıldı"
+
+#: src/lib/components/shared/facet-value-selector.tsx:336
+#: src/lib/components/shared/facet-value-selector.tsx:353
+msgid "Browse facets"
+msgstr "Fasetlere göz at"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
@@ -1316,8 +1321,8 @@ msgid "Collection contents for {collectionName}"
 msgstr "{collectionName} için koleksiyon içeriği"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:29
-#: src/app/routes/_authenticated/_collections/collections.tsx:85
+#: src/app/routes/_authenticated/_collections/collections.tsx:30
+#: src/app/routes/_authenticated/_collections/collections.tsx:86
 msgid "Collections"
 msgstr "Koleksiyonlar"
 
@@ -1370,7 +1375,7 @@ msgid "contains"
 msgstr "içerir"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:143
+#: src/app/routes/_authenticated/_collections/collections.tsx:147
 msgid "Contents"
 msgstr "İçerik"
 
@@ -1831,7 +1836,7 @@ msgstr "Etkinleştir"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
@@ -1935,7 +1940,7 @@ msgstr "{facetName} için özellik değerleri"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
-#: src/lib/components/shared/facet-value-selector.tsx:321
+#: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "Özellikler"
 
@@ -2666,7 +2671,7 @@ msgstr "Etiketler yükleniyor..."
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
 #: src/lib/components/shared/customer-selector.tsx:90
-#: src/lib/components/shared/facet-value-selector.tsx:275
+#: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "Loading..."
 msgstr "Yükleniyor..."
@@ -2846,7 +2851,7 @@ msgstr "Yeni Kanal"
 msgid "New collection"
 msgstr "Yeni koleksiyon"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:242
+#: src/app/routes/_authenticated/_collections/collections.tsx:247
 msgid "New Collection"
 msgstr "Yeni Koleksiyon"
 
@@ -2904,7 +2909,7 @@ msgstr "Yeni seçenek"
 msgid "New payment method"
 msgstr "Yeni ödeme yöntemi"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
 msgid "New Payment Method"
 msgstr "Yeni Ödeme Yöntemi"
 
@@ -2913,7 +2918,7 @@ msgstr "Yeni Ödeme Yöntemi"
 msgid "New product"
 msgstr "Yeni ürün"
 
-#: src/app/routes/_authenticated/_products/products.tsx:98
+#: src/app/routes/_authenticated/_products/products.tsx:102
 msgid "New Product"
 msgstr "Yeni Ürün"
 
@@ -2934,7 +2939,7 @@ msgstr "Yeni ürün varyantı"
 msgid "New promotion"
 msgstr "Yeni promosyon"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:75
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
 msgid "New Promotion"
 msgstr "Yeni Promosyon"
 
@@ -2961,7 +2966,7 @@ msgstr "Yeni Satıcı"
 msgid "New shipping method"
 msgstr "Yeni kargo yöntemi"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:69
 msgid "New Shipping Method"
 msgstr "Yeni Kargo Yöntemi"
 
@@ -3075,8 +3080,12 @@ msgstr "Öğe seçilmedi"
 msgid "No modifications made"
 msgstr "Değişiklik yapılmadı"
 
+#: src/lib/components/shared/facet-value-selector.tsx:425
+msgid "No more facets"
+msgstr "Başka faset yok"
+
 #: src/lib/components/data-input/relation-selector.tsx:458
-#: src/lib/components/shared/facet-value-selector.tsx:314
+#: src/lib/components/shared/facet-value-selector.tsx:397
 msgid "No more items"
 msgstr "Başka öğe yok"
 
@@ -3102,7 +3111,7 @@ msgid "No results"
 msgstr "Sonuç yok"
 
 #: src/lib/components/data-input/relation-selector.tsx:430
-#: src/lib/components/shared/facet-value-selector.tsx:277
+#: src/lib/components/shared/facet-value-selector.tsx:344
 msgid "No results found"
 msgstr "Sonuç bulunamadı"
 
@@ -3366,8 +3375,8 @@ msgid "Payment method is required"
 msgstr "Ödeme yöntemi gereklidir"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
 msgid "Payment Methods"
 msgstr "Ödeme Yöntemleri"
 
@@ -3501,8 +3510,8 @@ msgstr "Ürün Varyantları"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:23
-#: src/app/routes/_authenticated/_products/products.tsx:46
+#: src/app/routes/_authenticated/_products/products.tsx:24
+#: src/app/routes/_authenticated/_products/products.tsx:47
 msgid "Products"
 msgstr "Ürünler"
 
@@ -3513,8 +3522,8 @@ msgid "Profile"
 msgstr "Profil"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
 msgid "Promotions"
 msgstr "Promosyonlar"
 
@@ -3539,7 +3548,7 @@ msgstr "Oran"
 msgid "Reason"
 msgstr "Sebep"
 
-#: src/app/routes/_authenticated/_products/products.tsx:91
+#: src/app/routes/_authenticated/_products/products.tsx:95
 msgid "Rebuild search index"
 msgstr "Arama indeksini yeniden oluştur"
 
@@ -3751,11 +3760,15 @@ msgstr "Kanalları ara..."
 msgid "Search currencies..."
 msgstr "Para birimlerini ara..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:34
+#: src/lib/components/shared/facet-value-selector.tsx:304
+msgid "Search facet values..."
+msgstr "Faset değerlerini ara..."
+
+#: src/app/routes/_authenticated/_products/products.tsx:35
 msgid "Search index rebuild could not be started"
 msgstr "Arama indeksi yeniden oluşturma başlatılamadı"
 
-#: src/app/routes/_authenticated/_products/products.tsx:31
+#: src/app/routes/_authenticated/_products/products.tsx:32
 msgid "Search index rebuild started"
 msgstr "Arama indeksi yeniden oluşturma başlatıldı"
 
@@ -3998,8 +4011,8 @@ msgid "Shipping method set for order"
 msgstr "Sipariş için kargo yöntemi ayarlandı"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
 msgid "Shipping Methods"
 msgstr "Kargo Yöntemleri"
 
@@ -4598,7 +4611,7 @@ msgstr "Seçili duruma geç"
 msgid "True"
 msgstr "Doğru"
 
-#: src/lib/components/shared/facet-value-selector.tsx:273
+#: src/lib/components/shared/facet-value-selector.tsx:328
 msgid "Type at least 2 characters to search..."
 msgstr "Aramak için en az 2 karakter yazın..."
 
@@ -4678,10 +4691,6 @@ msgstr "Varsayılan kargo adresi olarak kullan"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Use global out-of-stock threshold"
 msgstr "Genel stok tükenmesi eşiğini kullan"
-
-#: src/lib/components/login/login-form.tsx:112
-#~ msgid "Username"
-#~ msgstr "Kullanıcı adı"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:19
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
@@ -4781,10 +4790,6 @@ msgstr "Sadece yöneticilere görünür"
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
 msgstr "Müşteriye görünür"
-
-#: src/lib/components/login/login-form.tsx:89
-#~ msgid "Welcome back!"
-#~ msgstr "Tekrar hoş geldiniz!"
 
 #: src/lib/components/login/login-form.tsx:65
 msgid "Welcome to Vendure"

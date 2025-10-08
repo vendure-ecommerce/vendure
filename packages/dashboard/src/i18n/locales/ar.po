@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "خطأ في توسيع الاستعلام"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "ستستمر الصفحة بالاستعلام الافتراضي."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "فشل توسيع مستند الاستعلام"
@@ -37,18 +49,6 @@ msgstr "يحتوي توسيع الاستعلام على صيغة GraphQL غير 
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "خطأ في توسيع الاستعلام:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "خطأ في توسيع الاستعلام"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "ستستمر الصفحة بالاستعلام الافتراضي."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -762,7 +762,7 @@ msgid "{0} selected"
 msgstr "{0} محدد"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:150
+#: src/app/routes/_authenticated/_collections/collections.tsx:154
 msgid "{0} variants"
 msgstr "{0} متغير"
 
@@ -790,7 +790,7 @@ msgstr "{title}"
 msgid "+ {0} more"
 msgstr "+ {0} المزيد"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:168
+#: src/app/routes/_authenticated/_collections/collections.tsx:172
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} المزيد"
 
@@ -871,7 +871,7 @@ msgstr "إضافة مجموعات عملاء"
 msgid "Add facet value"
 msgstr "إضافة قيمة خاصية"
 
-#: src/lib/components/shared/facet-value-selector.tsx:256
+#: src/lib/components/shared/facet-value-selector.tsx:298
 msgid "Add facet values"
 msgstr "إضافة قيم الخصائص"
 
@@ -1174,7 +1174,7 @@ msgstr "متاح:"
 msgid "Average Order Value"
 msgstr "متوسط قيمة الطلب"
 
-#: src/lib/components/shared/facet-value-selector.tsx:288
+#: src/lib/components/shared/facet-value-selector.tsx:370
 msgid "Back to search"
 msgstr "العودة إلى البحث"
 
@@ -1203,6 +1203,11 @@ msgstr "تم تعيين عنوان الفوترة للطلب"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
 msgstr "تم إلغاء عنوان الفوترة من الطلب"
+
+#: src/lib/components/shared/facet-value-selector.tsx:336
+#: src/lib/components/shared/facet-value-selector.tsx:353
+msgid "Browse facets"
+msgstr "تصفح الفئات"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
@@ -1316,8 +1321,8 @@ msgid "Collection contents for {collectionName}"
 msgstr "محتويات المجموعة {collectionName}"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:29
-#: src/app/routes/_authenticated/_collections/collections.tsx:85
+#: src/app/routes/_authenticated/_collections/collections.tsx:30
+#: src/app/routes/_authenticated/_collections/collections.tsx:86
 msgid "Collections"
 msgstr "المجموعات"
 
@@ -1370,7 +1375,7 @@ msgid "contains"
 msgstr "يحتوي على"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:143
+#: src/app/routes/_authenticated/_collections/collections.tsx:147
 msgid "Contents"
 msgstr "المحتويات"
 
@@ -1831,7 +1836,7 @@ msgstr "تمكين"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
@@ -1935,7 +1940,7 @@ msgstr "قيم الخصائص لـ {facetName}"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
-#: src/lib/components/shared/facet-value-selector.tsx:321
+#: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "الخصائص"
 
@@ -2666,7 +2671,7 @@ msgstr "جارٍ تحميل العلامات..."
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
 #: src/lib/components/shared/customer-selector.tsx:90
-#: src/lib/components/shared/facet-value-selector.tsx:275
+#: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "Loading..."
 msgstr "جارٍ التحميل..."
@@ -2846,7 +2851,7 @@ msgstr "قناة جديدة"
 msgid "New collection"
 msgstr "مجموعة جديدة"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:242
+#: src/app/routes/_authenticated/_collections/collections.tsx:247
 msgid "New Collection"
 msgstr "مجموعة جديدة"
 
@@ -2904,7 +2909,7 @@ msgstr "خيار جديد"
 msgid "New payment method"
 msgstr "طريقة دفع جديدة"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
 msgid "New Payment Method"
 msgstr "طريقة دفع جديدة"
 
@@ -2913,7 +2918,7 @@ msgstr "طريقة دفع جديدة"
 msgid "New product"
 msgstr "منتج جديد"
 
-#: src/app/routes/_authenticated/_products/products.tsx:98
+#: src/app/routes/_authenticated/_products/products.tsx:102
 msgid "New Product"
 msgstr "منتج جديد"
 
@@ -2934,7 +2939,7 @@ msgstr "شكل منتج جديد"
 msgid "New promotion"
 msgstr "عرض ترويجي جديد"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:75
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
 msgid "New Promotion"
 msgstr "عرض ترويجي جديد"
 
@@ -2961,7 +2966,7 @@ msgstr "بائع جديد"
 msgid "New shipping method"
 msgstr "طريقة شحن جديدة"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:69
 msgid "New Shipping Method"
 msgstr "طريقة شحن جديدة"
 
@@ -3075,8 +3080,12 @@ msgstr "لم يتم تحديد عناصر"
 msgid "No modifications made"
 msgstr "لم يتم إجراء تعديلات"
 
+#: src/lib/components/shared/facet-value-selector.tsx:425
+msgid "No more facets"
+msgstr "لا توجد فئات أخرى"
+
 #: src/lib/components/data-input/relation-selector.tsx:458
-#: src/lib/components/shared/facet-value-selector.tsx:314
+#: src/lib/components/shared/facet-value-selector.tsx:397
 msgid "No more items"
 msgstr "لا توجد عناصر أخرى"
 
@@ -3102,7 +3111,7 @@ msgid "No results"
 msgstr "لا توجد نتائج"
 
 #: src/lib/components/data-input/relation-selector.tsx:430
-#: src/lib/components/shared/facet-value-selector.tsx:277
+#: src/lib/components/shared/facet-value-selector.tsx:344
 msgid "No results found"
 msgstr "لم يتم العثور على نتائج"
 
@@ -3366,8 +3375,8 @@ msgid "Payment method is required"
 msgstr "طريقة الدفع مطلوبة"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
 msgid "Payment Methods"
 msgstr "طرق الدفع"
 
@@ -3501,8 +3510,8 @@ msgstr "أشكال المنتجات"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:23
-#: src/app/routes/_authenticated/_products/products.tsx:46
+#: src/app/routes/_authenticated/_products/products.tsx:24
+#: src/app/routes/_authenticated/_products/products.tsx:47
 msgid "Products"
 msgstr "المنتجات"
 
@@ -3513,8 +3522,8 @@ msgid "Profile"
 msgstr "الملف الشخصي"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
 msgid "Promotions"
 msgstr "العروض الترويجية"
 
@@ -3539,7 +3548,7 @@ msgstr "المعدل"
 msgid "Reason"
 msgstr "السبب"
 
-#: src/app/routes/_authenticated/_products/products.tsx:91
+#: src/app/routes/_authenticated/_products/products.tsx:95
 msgid "Rebuild search index"
 msgstr "إعادة بناء فهرس البحث"
 
@@ -3751,11 +3760,15 @@ msgstr "بحث في القنوات..."
 msgid "Search currencies..."
 msgstr "بحث في العملات..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:34
+#: src/lib/components/shared/facet-value-selector.tsx:304
+msgid "Search facet values..."
+msgstr "البحث في قيم الفئات..."
+
+#: src/app/routes/_authenticated/_products/products.tsx:35
 msgid "Search index rebuild could not be started"
 msgstr "تعذر بدء إعادة بناء فهرس البحث"
 
-#: src/app/routes/_authenticated/_products/products.tsx:31
+#: src/app/routes/_authenticated/_products/products.tsx:32
 msgid "Search index rebuild started"
 msgstr "بدأت إعادة بناء فهرس البحث"
 
@@ -3998,8 +4011,8 @@ msgid "Shipping method set for order"
 msgstr "تم تعيين طريقة الشحن للطلب"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
 msgid "Shipping Methods"
 msgstr "طرق الشحن"
 
@@ -4598,7 +4611,7 @@ msgstr "الانتقال إلى الحالة المحددة"
 msgid "True"
 msgstr "صحيح"
 
-#: src/lib/components/shared/facet-value-selector.tsx:273
+#: src/lib/components/shared/facet-value-selector.tsx:328
 msgid "Type at least 2 characters to search..."
 msgstr "اكتب حرفين على الأقل للبحث..."
 
@@ -4678,10 +4691,6 @@ msgstr "استخدام كعنوان شحن افتراضي"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Use global out-of-stock threshold"
 msgstr "استخدام حد نفاد المخزون العام"
-
-#: src/lib/components/login/login-form.tsx:112
-#~ msgid "Username"
-#~ msgstr "اسم المستخدم"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:19
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
@@ -4781,10 +4790,6 @@ msgstr "مرئي للمسؤولين فقط"
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
 msgstr "مرئي للعميل"
-
-#: src/lib/components/login/login-form.tsx:89
-#~ msgid "Welcome back!"
-#~ msgstr "مرحبًا بعودتك!"
 
 #: src/lib/components/login/login-form.tsx:65
 msgid "Welcome to Vendure"

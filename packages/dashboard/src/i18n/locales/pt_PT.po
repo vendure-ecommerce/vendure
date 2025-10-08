@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Erro de extensão de consulta"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "A página continuará com a consulta predefinida."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Falha ao estender documento de consulta"
@@ -37,18 +49,6 @@ msgstr "Extensão de consulta contém sintaxe GraphQL inválida"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Erro de extensão de consulta:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Erro de extensão de consulta"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "A página continuará com a consulta predefinida."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -762,7 +762,7 @@ msgid "{0} selected"
 msgstr "{0} selecionados"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:150
+#: src/app/routes/_authenticated/_collections/collections.tsx:154
 msgid "{0} variants"
 msgstr "{0} variantes"
 
@@ -790,7 +790,7 @@ msgstr "{title}"
 msgid "+ {0} more"
 msgstr "+ {0} mais"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:168
+#: src/app/routes/_authenticated/_collections/collections.tsx:172
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} mais"
 
@@ -871,7 +871,7 @@ msgstr "Adicionar grupos de clientes"
 msgid "Add facet value"
 msgstr "Adicionar valor de faceta"
 
-#: src/lib/components/shared/facet-value-selector.tsx:256
+#: src/lib/components/shared/facet-value-selector.tsx:298
 msgid "Add facet values"
 msgstr "Adicionar valores de faceta"
 
@@ -1174,7 +1174,7 @@ msgstr "Disponível:"
 msgid "Average Order Value"
 msgstr "Valor médio da encomenda"
 
-#: src/lib/components/shared/facet-value-selector.tsx:288
+#: src/lib/components/shared/facet-value-selector.tsx:370
 msgid "Back to search"
 msgstr "Voltar à pesquisa"
 
@@ -1203,6 +1203,11 @@ msgstr "Endereço de faturação definido para a encomenda"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
 msgstr "Endereço de faturação removido da encomenda"
+
+#: src/lib/components/shared/facet-value-selector.tsx:336
+#: src/lib/components/shared/facet-value-selector.tsx:353
+msgid "Browse facets"
+msgstr "Explorar facetas"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
@@ -1316,8 +1321,8 @@ msgid "Collection contents for {collectionName}"
 msgstr "Conteúdo da coleção {collectionName}"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:29
-#: src/app/routes/_authenticated/_collections/collections.tsx:85
+#: src/app/routes/_authenticated/_collections/collections.tsx:30
+#: src/app/routes/_authenticated/_collections/collections.tsx:86
 msgid "Collections"
 msgstr "Coleções"
 
@@ -1370,7 +1375,7 @@ msgid "contains"
 msgstr "contém"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:143
+#: src/app/routes/_authenticated/_collections/collections.tsx:147
 msgid "Contents"
 msgstr "Conteúdo"
 
@@ -1831,7 +1836,7 @@ msgstr "Ativar"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
@@ -1935,7 +1940,7 @@ msgstr "Valores de faceta para {facetName}"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
-#: src/lib/components/shared/facet-value-selector.tsx:321
+#: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "Facetas"
 
@@ -2666,7 +2671,7 @@ msgstr "A carregar etiquetas..."
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
 #: src/lib/components/shared/customer-selector.tsx:90
-#: src/lib/components/shared/facet-value-selector.tsx:275
+#: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "Loading..."
 msgstr "A carregar..."
@@ -2846,7 +2851,7 @@ msgstr "Novo canal"
 msgid "New collection"
 msgstr "Nova coleção"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:242
+#: src/app/routes/_authenticated/_collections/collections.tsx:247
 msgid "New Collection"
 msgstr "Nova coleção"
 
@@ -2904,7 +2909,7 @@ msgstr "Nova opção"
 msgid "New payment method"
 msgstr "Novo método de pagamento"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
 msgid "New Payment Method"
 msgstr "Novo método de pagamento"
 
@@ -2913,7 +2918,7 @@ msgstr "Novo método de pagamento"
 msgid "New product"
 msgstr "Novo produto"
 
-#: src/app/routes/_authenticated/_products/products.tsx:98
+#: src/app/routes/_authenticated/_products/products.tsx:102
 msgid "New Product"
 msgstr "Novo produto"
 
@@ -2934,7 +2939,7 @@ msgstr "Nova variante de produto"
 msgid "New promotion"
 msgstr "Nova promoção"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:75
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
 msgid "New Promotion"
 msgstr "Nova promoção"
 
@@ -2961,7 +2966,7 @@ msgstr "Novo vendedor"
 msgid "New shipping method"
 msgstr "Novo método de envio"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:69
 msgid "New Shipping Method"
 msgstr "Novo método de envio"
 
@@ -3075,8 +3080,12 @@ msgstr "Nenhum item selecionado"
 msgid "No modifications made"
 msgstr "Nenhuma modificação efetuada"
 
+#: src/lib/components/shared/facet-value-selector.tsx:425
+msgid "No more facets"
+msgstr "Não existem mais facetas"
+
 #: src/lib/components/data-input/relation-selector.tsx:458
-#: src/lib/components/shared/facet-value-selector.tsx:314
+#: src/lib/components/shared/facet-value-selector.tsx:397
 msgid "No more items"
 msgstr "Não há mais itens"
 
@@ -3102,7 +3111,7 @@ msgid "No results"
 msgstr "Nenhum resultado"
 
 #: src/lib/components/data-input/relation-selector.tsx:430
-#: src/lib/components/shared/facet-value-selector.tsx:277
+#: src/lib/components/shared/facet-value-selector.tsx:344
 msgid "No results found"
 msgstr "Nenhum resultado encontrado"
 
@@ -3366,8 +3375,8 @@ msgid "Payment method is required"
 msgstr "Método de pagamento é obrigatório"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
 msgid "Payment Methods"
 msgstr "Métodos de pagamento"
 
@@ -3501,8 +3510,8 @@ msgstr "Variantes de produtos"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:23
-#: src/app/routes/_authenticated/_products/products.tsx:46
+#: src/app/routes/_authenticated/_products/products.tsx:24
+#: src/app/routes/_authenticated/_products/products.tsx:47
 msgid "Products"
 msgstr "Produtos"
 
@@ -3513,8 +3522,8 @@ msgid "Profile"
 msgstr "Perfil"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
 msgid "Promotions"
 msgstr "Promoções"
 
@@ -3539,7 +3548,7 @@ msgstr "Taxa"
 msgid "Reason"
 msgstr "Motivo"
 
-#: src/app/routes/_authenticated/_products/products.tsx:91
+#: src/app/routes/_authenticated/_products/products.tsx:95
 msgid "Rebuild search index"
 msgstr "Reconstruir índice de pesquisa"
 
@@ -3751,11 +3760,15 @@ msgstr "Pesquisar canais..."
 msgid "Search currencies..."
 msgstr "Pesquisar moedas..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:34
+#: src/lib/components/shared/facet-value-selector.tsx:304
+msgid "Search facet values..."
+msgstr "Pesquisar valores de facetas..."
+
+#: src/app/routes/_authenticated/_products/products.tsx:35
 msgid "Search index rebuild could not be started"
 msgstr "Reconstrução do índice de pesquisa não pôde ser iniciada"
 
-#: src/app/routes/_authenticated/_products/products.tsx:31
+#: src/app/routes/_authenticated/_products/products.tsx:32
 msgid "Search index rebuild started"
 msgstr "Reconstrução do índice de pesquisa iniciada"
 
@@ -3998,8 +4011,8 @@ msgid "Shipping method set for order"
 msgstr "Método de envio definido para a encomenda"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
 msgid "Shipping Methods"
 msgstr "Métodos de envio"
 
@@ -4598,7 +4611,7 @@ msgstr "Transitar para estado selecionado"
 msgid "True"
 msgstr "Verdadeiro"
 
-#: src/lib/components/shared/facet-value-selector.tsx:273
+#: src/lib/components/shared/facet-value-selector.tsx:328
 msgid "Type at least 2 characters to search..."
 msgstr "Digite pelo menos 2 caracteres para pesquisar..."
 
@@ -4678,10 +4691,6 @@ msgstr "Usar como morada de envio predefinida"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Use global out-of-stock threshold"
 msgstr "Usar limite global de esgotado"
-
-#: src/lib/components/login/login-form.tsx:112
-#~ msgid "Username"
-#~ msgstr "Nome de utilizador"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:19
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
@@ -4781,10 +4790,6 @@ msgstr "Visível apenas para administradores"
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
 msgstr "Visível para o cliente"
-
-#: src/lib/components/login/login-form.tsx:89
-#~ msgid "Welcome back!"
-#~ msgstr "Bem-vindo de volta!"
 
 #: src/lib/components/login/login-form.tsx:65
 msgid "Welcome to Vendure"

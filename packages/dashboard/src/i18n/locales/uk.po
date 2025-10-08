@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Помилка розширення запиту"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Сторінка продовжить роботу із запитом за замовчуванням."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Не вдалося розширити документ запиту"
@@ -37,18 +49,6 @@ msgstr "Розширення запиту містить недійсний си
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Помилка розширення запиту:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Помилка розширення запиту"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Сторінка продовжить роботу із запитом за замовчуванням."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:22
@@ -762,7 +762,7 @@ msgid "{0} selected"
 msgstr "{0} вибрано"
 
 #. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:150
+#: src/app/routes/_authenticated/_collections/collections.tsx:154
 msgid "{0} variants"
 msgstr "{0} варіантів"
 
@@ -790,7 +790,7 @@ msgstr "{title}"
 msgid "+ {0} more"
 msgstr "+ ще {0}"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:168
+#: src/app/routes/_authenticated/_collections/collections.tsx:172
 msgid "+ {leftOver} more"
 msgstr "+ ще {leftOver}"
 
@@ -871,7 +871,7 @@ msgstr "Додати групи клієнтів"
 msgid "Add facet value"
 msgstr "Додати значення фасету"
 
-#: src/lib/components/shared/facet-value-selector.tsx:256
+#: src/lib/components/shared/facet-value-selector.tsx:298
 msgid "Add facet values"
 msgstr "Додати значення фасетів"
 
@@ -1174,7 +1174,7 @@ msgstr "Доступно:"
 msgid "Average Order Value"
 msgstr "Середня вартість замовлення"
 
-#: src/lib/components/shared/facet-value-selector.tsx:288
+#: src/lib/components/shared/facet-value-selector.tsx:370
 msgid "Back to search"
 msgstr "Повернутися до пошуку"
 
@@ -1203,6 +1203,11 @@ msgstr "Адреса для виставлення рахунків встано
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:190
 msgid "Billing address unset for order"
 msgstr "Адреса для виставлення рахунків видалена із замовлення"
+
+#: src/lib/components/shared/facet-value-selector.tsx:336
+#: src/lib/components/shared/facet-value-selector.tsx:353
+msgid "Browse facets"
+msgstr "Перегляд фасетів"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
@@ -1316,8 +1321,8 @@ msgid "Collection contents for {collectionName}"
 msgstr "Вміст колекції {collectionName}"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:29
-#: src/app/routes/_authenticated/_collections/collections.tsx:85
+#: src/app/routes/_authenticated/_collections/collections.tsx:30
+#: src/app/routes/_authenticated/_collections/collections.tsx:86
 msgid "Collections"
 msgstr "Колекції"
 
@@ -1370,7 +1375,7 @@ msgid "contains"
 msgstr "містить"
 
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:143
+#: src/app/routes/_authenticated/_collections/collections.tsx:147
 msgid "Contents"
 msgstr "Вміст"
 
@@ -1831,7 +1836,7 @@ msgstr "Увімкнути"
 
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
@@ -1935,7 +1940,7 @@ msgstr "Значення фасетів для {facetName}"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
-#: src/lib/components/shared/facet-value-selector.tsx:321
+#: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "Фасети"
 
@@ -2666,7 +2671,7 @@ msgstr "Завантаження тегів..."
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
 #: src/lib/components/shared/customer-selector.tsx:90
-#: src/lib/components/shared/facet-value-selector.tsx:275
+#: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
 msgid "Loading..."
 msgstr "Завантаження..."
@@ -2846,7 +2851,7 @@ msgstr "Новий канал"
 msgid "New collection"
 msgstr "Нова колекція"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:242
+#: src/app/routes/_authenticated/_collections/collections.tsx:247
 msgid "New Collection"
 msgstr "Нова колекція"
 
@@ -2904,7 +2909,7 @@ msgstr "Нова опція"
 msgid "New payment method"
 msgstr "Новий спосіб оплати"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:77
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
 msgid "New Payment Method"
 msgstr "Новий спосіб оплати"
 
@@ -2913,7 +2918,7 @@ msgstr "Новий спосіб оплати"
 msgid "New product"
 msgstr "Новий товар"
 
-#: src/app/routes/_authenticated/_products/products.tsx:98
+#: src/app/routes/_authenticated/_products/products.tsx:102
 msgid "New Product"
 msgstr "Новий товар"
 
@@ -2934,7 +2939,7 @@ msgstr "Новий варіант товару"
 msgid "New promotion"
 msgstr "Нова акція"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:75
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
 msgid "New Promotion"
 msgstr "Нова акція"
 
@@ -2961,7 +2966,7 @@ msgstr "Новий продавець"
 msgid "New shipping method"
 msgstr "Новий спосіб доставки"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:65
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:69
 msgid "New Shipping Method"
 msgstr "Новий спосіб доставки"
 
@@ -3075,8 +3080,12 @@ msgstr "Елементи не вибрано"
 msgid "No modifications made"
 msgstr "Зміни не внесено"
 
+#: src/lib/components/shared/facet-value-selector.tsx:425
+msgid "No more facets"
+msgstr "Більше немає фасетів"
+
 #: src/lib/components/data-input/relation-selector.tsx:458
-#: src/lib/components/shared/facet-value-selector.tsx:314
+#: src/lib/components/shared/facet-value-selector.tsx:397
 msgid "No more items"
 msgstr "Більше немає елементів"
 
@@ -3102,7 +3111,7 @@ msgid "No results"
 msgstr "Немає результатів"
 
 #: src/lib/components/data-input/relation-selector.tsx:430
-#: src/lib/components/shared/facet-value-selector.tsx:277
+#: src/lib/components/shared/facet-value-selector.tsx:344
 msgid "No results found"
 msgstr "Результати не знайдено"
 
@@ -3366,8 +3375,8 @@ msgid "Payment method is required"
 msgstr "Спосіб оплати обов'язковий"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
 msgid "Payment Methods"
 msgstr "Способи оплати"
 
@@ -3501,8 +3510,8 @@ msgstr "Варіанти товару"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:23
-#: src/app/routes/_authenticated/_products/products.tsx:46
+#: src/app/routes/_authenticated/_products/products.tsx:24
+#: src/app/routes/_authenticated/_products/products.tsx:47
 msgid "Products"
 msgstr "Товари"
 
@@ -3513,8 +3522,8 @@ msgid "Profile"
 msgstr "Профіль"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
 msgid "Promotions"
 msgstr "Акції"
 
@@ -3539,7 +3548,7 @@ msgstr "Ставка"
 msgid "Reason"
 msgstr "Причина"
 
-#: src/app/routes/_authenticated/_products/products.tsx:91
+#: src/app/routes/_authenticated/_products/products.tsx:95
 msgid "Rebuild search index"
 msgstr "Перебудувати пошуковий індекс"
 
@@ -3751,11 +3760,15 @@ msgstr "Пошук каналів..."
 msgid "Search currencies..."
 msgstr "Пошук валют..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:34
+#: src/lib/components/shared/facet-value-selector.tsx:304
+msgid "Search facet values..."
+msgstr "Пошук значень фасетів..."
+
+#: src/app/routes/_authenticated/_products/products.tsx:35
 msgid "Search index rebuild could not be started"
 msgstr "Не вдалося розпочати перебудову пошукового індексу"
 
-#: src/app/routes/_authenticated/_products/products.tsx:31
+#: src/app/routes/_authenticated/_products/products.tsx:32
 msgid "Search index rebuild started"
 msgstr "Розпочато перебудову пошукового індексу"
 
@@ -3998,8 +4011,8 @@ msgid "Shipping method set for order"
 msgstr "Спосіб доставки встановлено для замовлення"
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
 msgid "Shipping Methods"
 msgstr "Способи доставки"
 
@@ -4598,7 +4611,7 @@ msgstr "Перейти до вибраного стану"
 msgid "True"
 msgstr "Істина"
 
-#: src/lib/components/shared/facet-value-selector.tsx:273
+#: src/lib/components/shared/facet-value-selector.tsx:328
 msgid "Type at least 2 characters to search..."
 msgstr "Введіть принаймні 2 символи для пошуку..."
 
@@ -4678,10 +4691,6 @@ msgstr "Використовувати як адресу доставки за �
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Use global out-of-stock threshold"
 msgstr "Використовувати глобальний поріг відсутності на складі"
-
-#: src/lib/components/login/login-form.tsx:112
-#~ msgid "Username"
-#~ msgstr "Ім'я користувача"
 
 #: src/lib/framework/dashboard-widget/base-widget.tsx:19
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
@@ -4781,10 +4790,6 @@ msgstr "Видимо лише адміністраторам"
 #: src/lib/components/shared/history-timeline/history-note-checkbox.tsx:24
 msgid "Visible to customer"
 msgstr "Видимо клієнту"
-
-#: src/lib/components/login/login-form.tsx:89
-#~ msgid "Welcome back!"
-#~ msgstr "З поверненням!"
 
 #: src/lib/components/login/login-form.tsx:65
 msgid "Welcome to Vendure"
