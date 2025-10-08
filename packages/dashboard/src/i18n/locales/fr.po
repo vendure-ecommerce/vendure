@@ -361,27 +361,27 @@ msgstr "Codes de devises disponibles"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:45
 msgid "fieldName.availableLanguageCodes"
-msgstr "fieldName.codesLangueSDisponibles"
+msgstr "Codes de langue disponibles"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:46
 msgid "fieldName.breadcrumbs"
-msgstr "fieldName.filAriane"
+msgstr "Fil d'Ariane"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:47
 msgid "fieldName.category"
-msgstr "fieldName.catégorie"
+msgstr "Catégorie"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:48
 msgid "fieldName.channels"
-msgstr "fieldName.canaux"
+msgstr "Canaux"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:49
 msgid "fieldName.children"
-msgstr "fieldName.enfants"
+msgstr "Enfants"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:50
@@ -391,7 +391,7 @@ msgstr "Code"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:51
 msgid "fieldName.couponCode"
-msgstr "fieldName.codeCoupon"
+msgstr "Code promo"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:52
@@ -406,22 +406,22 @@ msgstr "Code de devise"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:54
 msgid "fieldName.customer"
-msgstr "fieldName.client"
+msgstr "Client"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:55
 msgid "fieldName.customerGroup"
-msgstr "fieldName.groupeClient"
+msgstr "Groupe de clients"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:56
 msgid "fieldName.customers"
-msgstr "fieldName.clients"
+msgstr "Clients"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:57
 msgid "fieldName.customFields"
-msgstr "fieldName.champsPersonnalisés"
+msgstr "Champs personnalisés"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:58
@@ -436,32 +436,32 @@ msgstr "Code de devise par défaut"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:60
 msgid "fieldName.defaultLanguageCode"
-msgstr "fieldName.codeLangueParDéfaut"
+msgstr "Code de langue par défaut"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:61
 msgid "fieldName.defaultShippingZone"
-msgstr "fieldName.zoneExpéditionParDéfaut"
+msgstr "Zone d'expédition par défaut"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:62
 msgid "fieldName.defaultTaxZone"
-msgstr "fieldName.zoneTaxeParDéfaut"
+msgstr "Zone de taxe par défaut"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:63
 msgid "fieldName.description"
-msgstr "fieldName.description"
+msgstr "Description"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:64
 msgid "fieldName.duration"
-msgstr "fieldName.durée"
+msgstr "Durée"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:65
 msgid "fieldName.emailAddress"
-msgstr "fieldName.adresseEmail"
+msgstr "Adresse e-mail"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:66
@@ -471,27 +471,27 @@ msgstr "Activé"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:67
 msgid "fieldName.endsAt"
-msgstr "fieldName.seTermineLe"
+msgstr "Se termine le"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:68
 msgid "fieldName.error"
-msgstr "fieldName.erreur"
+msgstr "Erreur"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:69
 msgid "fieldName.featuredAsset"
-msgstr "fieldName.ressourceMiseEnAvant"
+msgstr "Ressource mise en avant"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:70
 msgid "fieldName.firstName"
-msgstr "fieldName.prénom"
+msgstr "Prénom"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:71
 msgid "fieldName.fulfillmentHandlerCode"
-msgstr "fieldName.codeGestionnaireExécution"
+msgstr "Code gestionnaire d'exécution"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:72
@@ -501,22 +501,22 @@ msgstr "ID"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:73
 msgid "fieldName.isDefault"
-msgstr "fieldName.estParDéfaut"
+msgstr "Par défaut"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:74
 msgid "fieldName.isPrivate"
-msgstr "fieldName.estPrivé"
+msgstr "Privé"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:75
 msgid "fieldName.isSettled"
-msgstr "fieldName.estRéglé"
+msgstr "Réglé"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:76
 msgid "fieldName.lastName"
-msgstr "fieldName.nomFamille"
+msgstr "Nom de famille"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:77
@@ -526,47 +526,47 @@ msgstr "Nom"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:78
 msgid "fieldName.orderPlacedAt"
-msgstr "fieldName.commandePasséeLe"
+msgstr "Commande passée le"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:79
 msgid "fieldName.parentId"
-msgstr "fieldName.idParent"
+msgstr "ID parent"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:80
 msgid "fieldName.perCustomerUsageLimit"
-msgstr "fieldName.limiteBUtilisationParClient"
+msgstr "Limite d'utilisation par client"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:81
 msgid "fieldName.permissions"
-msgstr "fieldName.permissions"
+msgstr "Permissions"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:82
 msgid "fieldName.position"
-msgstr "fieldName.position"
+msgstr "Position"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:83
 msgid "fieldName.price"
-msgstr "fieldName.prix"
+msgstr "Prix"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:84
 msgid "fieldName.priceWithTax"
-msgstr "fieldName.prixAvecTaxe"
+msgstr "Prix avec taxe"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:85
 msgid "fieldName.pricesIncludeTax"
-msgstr "fieldName.prixIncluentTaxe"
+msgstr "Prix incluent la taxe"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:86
 msgid "fieldName.productVariants"
-msgstr "fieldName.variantesProduit"
+msgstr "Variantes de produit"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:87
@@ -591,7 +591,7 @@ msgstr "Nouvelles tentatives"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:91
 msgid "fieldName.seller"
-msgstr "fieldName.vendeur"
+msgstr "Vendeur"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:92
@@ -601,17 +601,17 @@ msgstr "Réglé le"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:93
 msgid "fieldName.shippingLines"
-msgstr "fieldName.lignesExpédition"
+msgstr "Lignes d'expédition"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:94
 msgid "fieldName.sku"
-msgstr "fieldName.sku"
+msgstr "SKU"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:95
 msgid "fieldName.slug"
-msgstr "fieldName.slug"
+msgstr "Identifiant"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:96
@@ -621,7 +621,7 @@ msgstr "Commencé le"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:97
 msgid "fieldName.startsAt"
-msgstr "fieldName.commenceLe"
+msgstr "Commence le"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:98
@@ -631,22 +631,22 @@ msgstr "État"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:99
 msgid "fieldName.stockLevels"
-msgstr "fieldName.niveauxStock"
+msgstr "Niveaux de stock"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:100
 msgid "fieldName.token"
-msgstr "fieldName.jeton"
+msgstr "Jeton"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:101
 msgid "fieldName.total"
-msgstr "fieldName.total"
+msgstr "Total"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:102
 msgid "fieldName.totalWithTax"
-msgstr "fieldName.totalAvecTaxe"
+msgstr "Total avec taxe"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:103
@@ -661,27 +661,27 @@ msgstr "Mis à jour le"
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:105
 msgid "fieldName.usageLimit"
-msgstr "fieldName.limiteUtilisation"
+msgstr "Limite d'utilisation"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:106
 msgid "fieldName.user"
-msgstr "fieldName.utilisateur"
+msgstr "Utilisateur"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:107
 msgid "fieldName.value"
-msgstr "fieldName.valeur"
+msgstr "Valeur"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:108
 msgid "fieldName.valueList"
-msgstr "fieldName.listeValeurs"
+msgstr "Liste de valeurs"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:109
 msgid "fieldName.zone"
-msgstr "fieldName.zone"
+msgstr "Zone"
 
 #. js-lingui-explicit-id
 #: src/app/routes/_authenticated/_customers/components/customer-history/use-customer-history.ts:99
