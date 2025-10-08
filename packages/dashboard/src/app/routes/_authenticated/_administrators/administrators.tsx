@@ -24,10 +24,20 @@ function AdministratorListPage() {
             listQuery={administratorListDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
+                return searchTerm
+                    ? {
+                          firstName: { contains: searchTerm },
+                          lastName: { contains: searchTerm },
+                          emailAddress: { contains: searchTerm },
+                      }
+                    : {};
+            }}
+            transformVariables={variables => {
                 return {
-                    firstName: { contains: searchTerm },
-                    lastName: { contains: searchTerm },
-                    emailAddress: { contains: searchTerm },
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR',
+                    },
                 };
             }}
             additionalColumns={{
