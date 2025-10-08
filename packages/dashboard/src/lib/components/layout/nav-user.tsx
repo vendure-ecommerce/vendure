@@ -27,7 +27,7 @@ import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
 
 export function NavUser() {
-    const { isMobile } = useSidebar();
+    const { isMobile, state } = useSidebar();
     const router = useRouter();
     const navigate = useNavigate();
     const { humanReadableLanguage } = useDisplayLocale();
@@ -65,13 +65,15 @@ export function NavUser() {
                                 <div className="relative flex rounded-lg border justify-center items-center w-8 h-8">
                                     {avatarFallback}
                                 </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">
-                                        {user.firstName} {user.lastName}
-                                    </span>
-                                    <span className="truncate text-xs">{user.emailAddress}</span>
-                                </div>
-                                <ChevronsUpDown className="ml-auto size-4" />
+                                {state === 'expanded' ? (
+                                    <div className="grid flex-1 text-left text-sm leading-tight">
+                                        <span className="truncate font-semibold">
+                                            {user.firstName} {user.lastName}
+                                        </span>
+                                        <span className="truncate text-xs">{user.emailAddress}</span>
+                                    </div>
+                                ) : null}
+                                {state === 'expanded' ? <ChevronsUpDown className="ml-auto size-4" /> : null}
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -115,7 +117,9 @@ export function NavUser() {
                                     </DropdownMenuItem>
                                 </DialogTrigger>
                                 <DropdownMenuSub>
-                                    <DropdownMenuSubTrigger><Trans>Theme</Trans></DropdownMenuSubTrigger>
+                                    <DropdownMenuSubTrigger>
+                                        <Trans>Theme</Trans>
+                                    </DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
@@ -124,15 +128,15 @@ export function NavUser() {
                                             >
                                                 <DropdownMenuRadioItem value="light">
                                                     <Sun />
-                                                    <Trans context='theme'>Light</Trans>
+                                                    <Trans context="theme">Light</Trans>
                                                 </DropdownMenuRadioItem>
                                                 <DropdownMenuRadioItem value="dark">
                                                     <Moon />
-                                                    <Trans context='theme'>Dark</Trans>
+                                                    <Trans context="theme">Dark</Trans>
                                                 </DropdownMenuRadioItem>
                                                 <DropdownMenuRadioItem value="system">
                                                     <Monitor />
-                                                    <Trans context='theme'>System</Trans>
+                                                    <Trans context="theme">System</Trans>
                                                 </DropdownMenuRadioItem>
                                             </DropdownMenuRadioGroup>
                                         </DropdownMenuSubContent>
@@ -141,7 +145,9 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             {isDevMode && (
                                 <DropdownMenuSub>
-                                    <DropdownMenuSubTrigger><Trans>Dev Mode</Trans></DropdownMenuSubTrigger>
+                                    <DropdownMenuSubTrigger>
+                                        <Trans>Dev Mode</Trans>
+                                    </DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
