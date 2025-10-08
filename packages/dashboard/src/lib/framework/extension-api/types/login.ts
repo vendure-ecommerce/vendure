@@ -50,22 +50,6 @@ export interface LoginAfterFormExtension {
 
 /**
  * @description
- * Defines a custom login image component that replaces the default image panel.
- *
- * @docsCategory extensions-api
- * @docsPage Login
- * @since 3.4.0
- */
-export interface LoginImageExtension {
-    /**
-     * @description
-     * A React component that will replace the default login image panel.
-     */
-    component: React.ComponentType;
-}
-
-/**
- * @description
  * Defines all available login page extensions.
  *
  * @docsCategory extensions-api
@@ -89,9 +73,4 @@ export interface DashboardLoginExtensions {
      * Component to render after the login form.
      */
     afterForm?: LoginAfterFormExtension;
-    /**
-     * @description
-     * Custom login image component to replace the default image panel.
-     */
-    loginImage?: LoginImageExtension;
 }
