@@ -265,6 +265,77 @@ yarn vendure migrate -g my-migration -o ./custom/migrations
 | | `--revert` | Revert the last migration | `vendure migrate --revert` |
 | `-o` | `--output-dir <path>` | Custom output directory for migrations | `vendure migrate -g my-migration -o ./migrations` |
 
+## The Schema Command
+
+:::info
+The `schema` command was added in Vendure v3.5
+:::
+
+The `schema` command allows you to generate a schema file for your Admin or Shop APIs, in either the GraphQL schema definition language (SDL)
+or as JSON.
+
+This is useful when integrating with GraphQL tooling such as your [IDE's GraphQL plugin](/guides/getting-started/graphql-intro/#ide-plugins).
+
+### Interactive Mode
+
+From your project's **root directory**, run:
+
+<Tabs groupId="package-manager">
+<TabItem value="npm" label="npm" default>
+
+```bash
+npx vendure schema
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn vendure schema
+```
+
+</TabItem>
+</Tabs>
+
+### Non-Interactive Mode
+
+To automate or quickly generate a schema in one command
+
+<Tabs groupId="package-manager">
+<TabItem value="npm" label="npm" default>
+
+```bash
+# Create a schema file in SDL format for the Admin API
+npx vendure schema --api admin
+
+# Create a JSON format schema of the Shop API
+npx vendure migrate --api shop --format json
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+# Create a schema file in SDL format for the Admin API
+yarn vendure schema --api admin
+
+# Create a JSON format schema of the Shop API
+yarn vendure migrate --api shop --format json
+```
+
+</TabItem>
+</Tabs>
+
+#### Migrate Command Options
+
+| Flag | Long Form             | Description                                     | Example                                                        |
+|------|-----------------------|-------------------------------------------------|----------------------------------------------------------------|
+| `-a` | `--api <admin,shop>`  | Select the API (required)                       | `vendure schema --api admin`                                   |
+| `-d` | `--dir <dir>`         | Select the output dir (defaults to current dir) | `vendure schema --api admin --dir ../..`                       |
+| `-n` | `--file-name <name>`  | The name of the generated file                  | `vendure schema --api admin --file-name introspection.graphql` |
+| `-f` | `--format <sdl,json>` | The output format (defaults to SDL)             | `vendure schema --api admin --format json`                     |
+
+
 ## Getting Help
 
 To see all available commands and options:
@@ -273,4 +344,5 @@ To see all available commands and options:
 npx vendure --help
 npx vendure add --help
 npx vendure migrate --help
+npx vendure schema --help
 ```
