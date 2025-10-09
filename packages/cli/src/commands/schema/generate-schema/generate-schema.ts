@@ -10,7 +10,7 @@ import {
 } from '@vendure/core';
 import { writeFileSync } from 'fs-extra';
 import { getIntrospectionQuery, graphqlSync, printSchema } from 'graphql';
-import path from 'path';
+import path from 'node:path';
 
 import { loadVendureConfigFile } from '../../../shared/load-vendure-config-file';
 import { analyzeProject } from '../../../shared/shared-prompts';
