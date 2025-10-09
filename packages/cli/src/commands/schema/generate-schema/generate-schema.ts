@@ -22,10 +22,10 @@ const cancelledMessage = 'Generate schema cancelled';
 export async function generateSchema(options: SchemaOptions) {
     resetConfig();
     try {
-        const { project, tsConfigPath } = await analyzeProject({ cancelledMessage });
+        const { project, vendureTsConfig } = await analyzeProject({ cancelledMessage });
         const vendureConfig = new VendureConfigRef(project);
         log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
-        const config = await loadVendureConfigFile(vendureConfig, tsConfigPath);
+        const config = await loadVendureConfigFile(vendureConfig, vendureTsConfig);
         await setConfig(config);
 
         const apiType = options.api === 'shop' ? 'shop' : 'admin';

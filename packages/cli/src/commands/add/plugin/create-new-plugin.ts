@@ -40,7 +40,10 @@ export async function createNewPlugin(
     if (!isNonInteractive) {
         intro('Adding a new Vendure plugin!');
     }
-    const { project, config } = await analyzeProject({ cancelledMessage, config: options.config });
+    const { project, config, vendureTsConfig } = await analyzeProject({
+        cancelledMessage,
+        config: options.config,
+    });
     if (!options.name) {
         const name = await text({
             message: 'What is the name of the plugin?',
@@ -60,7 +63,8 @@ export async function createNewPlugin(
         }
     }
     const existingPluginDir = findExistingPluginsDir(project);
-    const pluginDir = getPluginDirName(options.name, existingPluginDir);
+    const vendureProjectDir = vendureTsConfig ? path.dirname(vendureTsConfig) : process.cwd();
+    const pluginDir = getPluginDirName(options.name, existingPluginDir, vendureProjectDir);
 
     if (isNonInteractive) {
         options.pluginDir = pluginDir;
@@ -237,8 +241,8 @@ function findExistingPluginsDir(project: Project): { prefix: string; suffix: str
 function getPluginDirName(
     name: string,
     existingPluginDirPattern: { prefix: string; suffix: string } | undefined,
+    vendureProjectDir: string,
 ) {
-    const cwd = process.cwd();
     const nameWithoutPlugin = name.replace(/-?plugin$/i, '');
     if (existingPluginDirPattern) {
         return path.join(
@@ -247,7 +251,9 @@ function getPluginDirName(
             existingPluginDirPattern.suffix,
         );
     } else {
-        return path.join(cwd, 'src', 'plugins', paramCase(nameWithoutPlugin));
+        // Use the Vendure project directory (which may be in a monorepo package)
+        // instead of cwd (which could be the monorepo root)
+        return path.join(vendureProjectDir, 'src', 'plugins', paramCase(nameWithoutPlugin));
     }
 }
 

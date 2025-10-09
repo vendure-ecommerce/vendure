@@ -4,6 +4,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { Project } from 'ts-morph';
 
+import { findPackageJsonWithDependency } from '../utilities/monorepo-utils';
+
 export interface PackageToInstall {
     pkg: string;
     version?: string;
@@ -151,34 +153,13 @@ export class PackageJson {
             return this._vendurePackageJsonPath;
         }
         const rootDir = this.getPackageRootDir().getPath();
-        const potentialMonorepoDirs = ['packages', 'apps', 'libs'];
+        const packageJsonPath = findPackageJsonWithDependency(rootDir, '@vendure/core');
 
-        const rootPackageJsonPath = path.join(this.getPackageRootDir().getPath(), 'package.json');
-        if (this.hasVendureDependency(rootPackageJsonPath)) {
-            return rootPackageJsonPath;
+        if (packageJsonPath) {
+            this._vendurePackageJsonPath = packageJsonPath;
         }
-        for (const dir of potentialMonorepoDirs) {
-            const monorepoDir = path.join(rootDir, dir);
-            // Check for a package.json in all subdirs
-            if (fs.existsSync(monorepoDir)) {
-                for (const subDir of fs.readdirSync(monorepoDir)) {
-                    const packageJsonPath = path.join(monorepoDir, subDir, 'package.json');
-                    if (this.hasVendureDependency(packageJsonPath)) {
-                        this._vendurePackageJsonPath = packageJsonPath;
-                        return packageJsonPath;
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
-    private hasVendureDependency(packageJsonPath: string) {
-        if (!fs.existsSync(packageJsonPath)) {
-            return false;
-        }
-        const packageJson = fs.readJsonSync(packageJsonPath);
-        return !!packageJson.dependencies?.['@vendure/core'];
+        return packageJsonPath;
     }
 
     private async runPackageManagerInstall(dependencies: string[], isDev: boolean) {
