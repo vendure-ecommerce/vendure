@@ -125,11 +125,13 @@ export class PackageJson {
         for (const dir of potentialMonorepoDirs) {
             const monorepoDir = path.join(rootDir, dir);
             // Check for a package.json in all subdirs
-            for (const subDir of fs.readdirSync(monorepoDir)) {
-                const packageJsonPath = path.join(monorepoDir, subDir, 'package.json');
-                if (this.hasVendureDependency(packageJsonPath)) {
-                    this._vendurePackageJsonPath = packageJsonPath;
-                    return packageJsonPath;
+            if (fs.existsSync(monorepoDir)) {
+                for (const subDir of fs.readdirSync(monorepoDir)) {
+                    const packageJsonPath = path.join(monorepoDir, subDir, 'package.json');
+                    if (this.hasVendureDependency(packageJsonPath)) {
+                        this._vendurePackageJsonPath = packageJsonPath;
+                        return packageJsonPath;
+                    }
                 }
             }
         }

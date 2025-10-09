@@ -28,7 +28,7 @@ export async function generateSchema(options: SchemaOptions) {
         const config = await loadVendureConfigFile(vendureConfig, tsConfigPath);
         await setConfig(config);
 
-        const apiType = options.api === 'admin' ? 'admin' : 'shop';
+        const apiType = options.api === 'shop' ? 'shop' : 'admin';
 
         const runtimeConfig = await runPluginConfigurations(getConfig() as any);
         const typesLoader = new GraphQLTypesLoader();
