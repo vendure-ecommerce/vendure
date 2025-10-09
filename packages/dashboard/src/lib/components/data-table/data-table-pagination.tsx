@@ -17,7 +17,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             </div>
             <div className="flex items-center space-x-6 lg:space-x-8">
                 <div className="flex items-center space-x-2">
-                    <p className="text-sm font-medium">Rows per page</p>
+                    <p className="hidden md:block text-sm font-medium">Rows per page</p>
                     <Select
                         value={`${table.getState().pagination.pageSize}`}
                         onValueChange={value => {
@@ -36,8 +36,10 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                <div className=" flex items-center justify-center text-sm font-medium">
+                    <span className="hidden md:block w-[100px] ">
+                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    </span>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Button
@@ -60,6 +62,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                         <span className="sr-only">Go to previous page</span>
                         <ChevronLeft />
                     </Button>
+                    <span className="md:hidden">{table.getState().pagination.pageIndex + 1}</span>
                     <Button
                         variant="outline"
                         type="button"

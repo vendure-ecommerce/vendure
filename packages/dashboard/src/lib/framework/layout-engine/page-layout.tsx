@@ -276,17 +276,17 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
     return (
-        <div className={cn('w-full space-y-4', className)}>
+        <div className={cn('w-full space-y-4', className, '@container/layout')}>
             {isDesktop ? (
-                <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-4 md:gap-4">
+                <div className="grid grid-cols-1 gap-4 @3xl/layout:grid-cols-4">
                     {fullWidthBlocks.length > 0 && (
-                        <div className="md:col-span-5 space-y-4">{fullWidthBlocks}</div>
+                        <div className="@md/layout:col-span-5 space-y-4">{fullWidthBlocks}</div>
                     )}
-                    <div className="md:col-span-3 space-y-4">{mainBlocks}</div>
-                    <div className="md:col-span-2 lg:col-span-1 space-y-4">{sideBlocks}</div>
+                    <div className="@3xl/layout:col-span-3 space-y-4">{mainBlocks}</div>
+                    <div className="@3xl/layout:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
             ) : (
-                <div className="md:hidden space-y-4">{children}</div>
+                <div className="space-y-4">{children}</div>
             )}
         </div>
     );
@@ -586,7 +586,9 @@ export function PageBlock({
                             {description && <CardDescription>{description}</CardDescription>}
                         </CardHeader>
                     ) : null}
-                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                    <CardContent className={cn(!title ? 'pt-6' : '', 'overflow-auto')}>
+                        {children}
+                    </CardContent>
                 </Card>
             </LocationWrapper>
         </PageBlockContext.Provider>
