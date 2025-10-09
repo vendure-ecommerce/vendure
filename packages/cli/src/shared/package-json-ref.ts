@@ -28,11 +28,14 @@ export class PackageJson {
 
     determineVendureVersion(): string | undefined {
         const packageJson = this.getPackageJsonContent();
-        return packageJson.dependencies['@vendure/core'];
+        return packageJson && packageJson.dependencies['@vendure/core'];
     }
 
     async installPackages(requiredPackages: PackageToInstall[]) {
         const packageJson = this.getPackageJsonContent();
+        if (!packageJson) {
+            return;
+        }
         const packagesToInstall = requiredPackages.filter(({ pkg, version, isDevDependency }) => {
             const hasDependency = isDevDependency
                 ? packageJson.devDependencies[pkg]
@@ -54,7 +57,7 @@ export class PackageJson {
         }
     }
 
-    getPackageJsonContent() {
+    getPackageJsonContent(): Record<string, any> | false {
         const packageJsonPath = this.locatePackageJsonWithVendureDependency();
         if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
             note(
@@ -70,7 +73,7 @@ export class PackageJson {
      * The Root package json can be different from the "vendure" package json when in a monorepo
      * setup.
      */
-    getRootPackageJsonContent() {
+    getRootPackageJsonContent(): Record<string, any> | false {
         const packageJsonPath = this.locateRootPackageJson();
         if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
             note(
@@ -104,11 +107,13 @@ export class PackageJson {
      */
     addScriptToVendurePackageJson(scriptName: string, script: string) {
         const packageJson = this.getPackageJsonContent();
-        packageJson.scripts = packageJson.scripts || {};
-        packageJson.scripts[scriptName] = script;
-        const packageJsonPath = this.vendurePackageJsonPath;
-        if (packageJsonPath) {
-            fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        if (packageJson) {
+            packageJson.scripts = packageJson.scripts || {};
+            packageJson.scripts[scriptName] = script;
+            const packageJsonPath = this.vendurePackageJsonPath;
+            if (packageJsonPath) {
+                fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+            }
         }
     }
 
@@ -119,11 +124,13 @@ export class PackageJson {
      */
     addScriptToRootPackageJson(scriptName: string, script: string) {
         const packageJson = this.getRootPackageJsonContent();
-        packageJson.scripts = packageJson.scripts || {};
-        packageJson.scripts[scriptName] = script;
-        const packageJsonPath = this.rootPackageJsonPath;
-        if (packageJsonPath) {
-            fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        if (packageJson) {
+            packageJson.scripts = packageJson.scripts || {};
+            packageJson.scripts[scriptName] = script;
+            const packageJsonPath = this.rootPackageJsonPath;
+            if (packageJsonPath) {
+                fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+            }
         }
     }
 

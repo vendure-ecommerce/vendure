@@ -7,6 +7,7 @@ import {
     runPluginConfigurations,
     setConfig,
     VENDURE_ADMIN_API_TYPE_PATHS,
+    VENDURE_SHOP_API_TYPE_PATHS,
 } from '@vendure/core';
 import { writeFileSync } from 'fs-extra';
 import { getIntrospectionQuery, graphqlSync, printSchema } from 'graphql';
@@ -29,12 +30,13 @@ export async function generateSchema(options: SchemaOptions) {
         await setConfig(config);
 
         const apiType = options.api === 'shop' ? 'shop' : 'admin';
+        const typePaths = apiType === 'shop' ? VENDURE_SHOP_API_TYPE_PATHS : VENDURE_ADMIN_API_TYPE_PATHS;
 
         const runtimeConfig = await runPluginConfigurations(getConfig() as any);
         const typesLoader = new GraphQLTypesLoader();
         const schema = await getFinalVendureSchema({
             config: runtimeConfig,
-            typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
+            typePaths,
             typesLoader,
             apiType,
         });
@@ -54,6 +56,6 @@ export async function generateSchema(options: SchemaOptions) {
         log.info(`Generated schema: ${outFile}`);
     } catch (e) {
         log.error(e instanceof Error ? e.message : String(e));
-        process.exit(0);
+        process.exit(1);
     }
 }
