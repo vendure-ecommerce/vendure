@@ -1,6 +1,5 @@
 import { GraphQLTypesLoader } from '@nestjs/graphql';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, GraphQLSchema, printSchema } from 'graphql/index';
+import { buildSchema, extendSchema, GraphQLSchema, print, printSchema } from 'graphql/index';
 import path from 'path';
 
 import {
@@ -10,6 +9,8 @@ import {
     UuidIdStrategy,
 } from '../../config/index';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
+import { applyDirectiveIntents } from '../schema/patches/apply-directive-intents';
+import { combineDirectiveIntents } from '../schema/patches/directive-intents';
 
 import { generateActiveOrderTypes } from './generate-active-order-types';
 import { generateAuthenticationTypes } from './generate-auth-types';
@@ -76,7 +77,12 @@ export async function getFinalVendureSchema(
     const normalizedPaths = typePaths.map(p => p.split(path.sep).join('/'));
     const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
     let schema = buildSchema(typeDefs);
-    schema = buildSchemaFromVendureConfig(schema, config, apiType);
+    const pluginExtensionSdls: string[] = [];
+    schema = buildSchemaFromVendureConfig(schema, config, apiType, {
+        collectExtensionSdl: sdl => pluginExtensionSdls.push(sdl),
+    });
+    const directiveIntents = combineDirectiveIntents(pluginExtensionSdls);
+    schema = applyDirectiveIntents(schema, directiveIntents);
     if (options.output === 'sdl') {
         return printSchema(schema);
     } else {
@@ -88,6 +94,7 @@ export function buildSchemaFromVendureConfig(
     schema: GraphQLSchema,
     config: RuntimeVendureConfig,
     apiType: 'shop' | 'admin',
+    options?: { collectExtensionSdl?: (sdl: string) => void },
 ): GraphQLSchema {
     const authStrategies =
         apiType === 'shop'
@@ -96,7 +103,12 @@ export function buildSchemaFromVendureConfig(
 
     const customFields = config.customFields;
 
-    schema = extendSchemaWithPluginApiExtensions(schema, config.plugins, apiType);
+    schema = extendSchemaWithPluginApiExtensions(
+        schema,
+        config.plugins,
+        apiType,
+        options?.collectExtensionSdl,
+    );
     schema = generateListOptions(schema);
     schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
     schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || [], apiType === 'shop');
@@ -122,11 +134,23 @@ function extendSchemaWithPluginApiExtensions(
     schema: GraphQLSchema,
     plugins: RuntimeVendureConfig['plugins'],
     apiType: 'admin' | 'shop',
+    collectExtensionSdl?: (sdl: string) => void,
 ) {
-    getPluginAPIExtensions(plugins, apiType)
-        .map(e => (typeof e.schema === 'function' ? e.schema(schema) : e.schema))
-        .filter(notNullOrUndefined)
-        .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+    const extensions = getPluginAPIExtensions(plugins, apiType);
+    for (const extension of extensions) {
+        if (!extension.schema) {
+            continue;
+        }
+        const documentNode =
+            typeof extension.schema === 'function' ? extension.schema(schema) : extension.schema;
+        if (!documentNode) {
+            continue;
+        }
+        if (collectExtensionSdl) {
+            collectExtensionSdl(print(documentNode));
+        }
+        schema = extendSchema(schema, documentNode);
+    }
     return schema;
 }
 
