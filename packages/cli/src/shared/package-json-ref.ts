@@ -63,6 +63,22 @@ export class PackageJson {
         return fs.readJsonSync(packageJsonPath);
     }
 
+    /**
+     * @description
+     * The Root package json can be different from the "vendure" package json when in a monorepo
+     * setup.
+     */
+    getRootPackageJsonContent() {
+        const packageJsonPath = this.locateRootPackageJson();
+        if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
+            note(
+                `Could not find root package.json in the current directory. Please run this command from the root of an npm project.`,
+            );
+            return false;
+        }
+        return fs.readJsonSync(packageJsonPath);
+    }
+
     determinePackageManager(): 'yarn' | 'npm' | 'pnpm' {
         const rootDir = this.getPackageRootDir().getPath();
         const yarnLockPath = path.join(rootDir, 'yarn.lock');
@@ -80,11 +96,30 @@ export class PackageJson {
         return 'npm';
     }
 
-    addScript(scriptName: string, script: string) {
+    /**
+     * Adds a script to the "vendure" package.json, which can differ from the root
+     * package.json if in a monorepo.
+     */
+    addScriptToVendurePackageJson(scriptName: string, script: string) {
         const packageJson = this.getPackageJsonContent();
         packageJson.scripts = packageJson.scripts || {};
         packageJson.scripts[scriptName] = script;
         const packageJsonPath = this.vendurePackageJsonPath;
+        if (packageJsonPath) {
+            fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        }
+    }
+
+    /**
+     * @description
+     * The Root package json can be different from the "vendure" package json when in a monorepo
+     * setup.
+     */
+    addScriptToRootPackageJson(scriptName: string, script: string) {
+        const packageJson = this.getRootPackageJsonContent();
+        packageJson.scripts = packageJson.scripts || {};
+        packageJson.scripts[scriptName] = script;
+        const packageJsonPath = this.rootPackageJsonPath;
         if (packageJsonPath) {
             fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
         }
