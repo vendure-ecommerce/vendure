@@ -3,9 +3,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { register } from 'ts-node';
 
-import { VendureConfigRef } from '../../shared/vendure-config-ref';
-import { selectTsConfigFile } from '../../utilities/ast-utils';
-import { isRunningInTsNode } from '../../utilities/utils';
+import { selectTsConfigFile } from '../utilities/ast-utils';
+import { isRunningInTsNode } from '../utilities/utils';
+
+import { VendureConfigRef } from './vendure-config-ref';
 
 export async function loadVendureConfigFile(
     vendureConfig: VendureConfigRef,
@@ -59,6 +60,5 @@ export async function loadVendureConfigFile(
         throw new Error('Could not find the exported variable name in the VendureConfig file');
     }
     const configModule = await import(vendureConfig.sourceFile.getFilePath());
-    const config = configModule[exportedVarName];
-    return config;
+    return configModule[exportedVarName];
 }

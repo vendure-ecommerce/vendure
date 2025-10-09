@@ -2,11 +2,10 @@ import { log } from '@clack/prompts';
 import { generateMigration, revertLastMigration, runMigrations, VendureConfig } from '@vendure/core';
 import path from 'path';
 
+import { loadVendureConfigFile } from '../../shared/load-vendure-config-file';
 import { validateVendureProjectDirectory } from '../../shared/project-validation';
 import { analyzeProject } from '../../shared/shared-prompts';
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
-
-import { loadVendureConfigFile } from './load-vendure-config-file';
 
 export interface MigrationOptions {
     name?: string;
