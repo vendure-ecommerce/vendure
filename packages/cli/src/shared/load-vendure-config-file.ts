@@ -28,16 +28,18 @@ export async function loadVendureConfigFile(
         try {
             tsConfigFileContent = readFileSync(tsConfigPath, 'utf-8');
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to read TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+            throw new Error(
+                `Failed to read TypeScript config file at ${tsConfigPath}: ${getErrorMessage(error)}`,
+            );
         }
 
         try {
             const { default: stripJsonComments } = await import('strip-json-comments');
             tsConfigJson = JSON.parse(stripJsonComments(tsConfigFileContent));
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to parse TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+            throw new Error(
+                `Failed to parse TypeScript config file at ${tsConfigPath}: ${getErrorMessage(error)}`,
+            );
         }
 
         const compilerOptions = tsConfigJson.compilerOptions;
@@ -61,4 +63,8 @@ export async function loadVendureConfigFile(
     }
     const configModule = await import(vendureConfig.sourceFile.getFilePath());
     return configModule[exportedVarName];
+}
+
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
 }
