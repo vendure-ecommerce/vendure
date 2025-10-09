@@ -16,7 +16,6 @@ import { addDashboardCommand } from '../dashboard/add-dashboard';
 import { addEntityCommand } from '../entity/add-entity';
 import { addJobQueueCommand } from '../job-queue/add-job-queue';
 import { addServiceCommand } from '../service/add-service';
-import { addUiExtensionsCommand } from '../ui-extensions/add-ui-extensions';
 
 import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
 
@@ -113,7 +112,6 @@ export async function createNewPlugin(
         addServiceCommand,
         addApiExtensionCommand,
         addJobQueueCommand,
-        addUiExtensionsCommand,
         addDashboardCommand,
         addCodegenCommand,
     ];
