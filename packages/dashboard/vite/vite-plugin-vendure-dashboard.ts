@@ -12,6 +12,7 @@ import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
+import { hmrPlugin } from './vite-plugin-hmr.js';
 import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
 import { themeVariablesPlugin, ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
@@ -140,6 +141,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         translationsPlugin({
             packageRoot,
         }),
+        hmrPlugin(),
     ];
 }
 
