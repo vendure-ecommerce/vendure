@@ -6,7 +6,7 @@ import { withInteractiveTimeout } from '../../utilities/utils';
 const cancelledMessage = 'Schema generation cancelled.';
 
 export interface SchemaOptions {
-    api: 'admin' | 'shop';
+    api?: 'admin' | 'shop';
     format?: 'sdl' | 'json';
     fileName?: string;
     outputDir?: string;
@@ -18,7 +18,7 @@ export interface SchemaOptions {
  */
 export async function schemaCommand(options?: SchemaOptions) {
     // Check if any non-interactive options are provided
-    if (options?.api) {
+    if (options) {
         // Non-interactive mode
         await handleNonInteractiveMode(options);
         return;
