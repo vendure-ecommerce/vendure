@@ -13,7 +13,7 @@ import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { cn } from '@/vdb/lib/utils.js';
 import type { Locale } from 'date-fns/locale';
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock, X } from 'lucide-react';
 
 /**
  * @description
@@ -62,24 +62,38 @@ export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardF
                 const currentHours = newDate.getHours();
                 newDate.setHours(value === 'PM' ? currentHours + 12 : currentHours - 12);
             }
-            onChange(newDate);
+            onChange(newDate.toISOString());
         }
     };
 
     return (
         <Popover open={isOpen} onOpenChange={readOnly ? undefined : setIsOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    disabled={readOnly}
-                    className={cn(
-                        'w-full justify-start text-left font-normal shadow-xs',
-                        !date && 'text-muted-foreground',
-                    )}
-                >
-                    <CalendarClock className="mr-2 h-4 w-4" />
-                    {date ? format(date, 'MM/dd/yyyy hh:mm aa') : <span>MM/DD/YYYY hh:mm aa</span>}
-                </Button>
+                <div className="flex items-center">
+                    <Button
+                        variant="outline"
+                        disabled={readOnly}
+                        className={cn(
+                            'w-full justify-start text-left font-normal shadow-xs',
+                            date ? 'rounded-r-none' : 'text-muted-foreground',
+                        )}
+                    >
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        {date ? format(date, 'MM/dd/yyyy hh:mm aa') : <span>MM/DD/YYYY hh:mm aa</span>}
+                    </Button>
+                    {date ? (
+                        <Button
+                            variant="outline"
+                            className="rounded-l-none border-l-0"
+                            onClick={e => {
+                                e.stopPropagation();
+                                onChange(null);
+                            }}
+                        >
+                            <X />
+                        </Button>
+                    ) : null}
+                </div>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
                 <div className="sm:flex">
