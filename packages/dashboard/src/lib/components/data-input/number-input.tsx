@@ -4,6 +4,12 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
+export type NumberInputProps = DashboardFormComponentProps & {
+    min?: number;
+    max?: number;
+    step?: number;
+};
+
 /**
  * @description
  * A component for displaying a numeric value.
@@ -11,12 +17,12 @@ import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
  * @docsCategory form-components
  * @docsPage NumberInput
  */
-export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<DashboardFormComponentProps>) {
+export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<NumberInputProps>) {
     const readOnly = fieldProps.disabled || isReadonlyField(fieldDef);
     const isFloat = fieldDef ? fieldDef.type === 'float' : false;
-    const min = fieldDef?.ui?.min;
-    const max = fieldDef?.ui?.max;
-    const step = fieldDef?.ui?.step || (isFloat ? 0.01 : 1);
+    const min = fieldProps.min ?? fieldDef?.ui?.min;
+    const max = fieldProps.max ?? fieldDef?.ui?.max;
+    const step = fieldProps.step ?? (fieldDef?.ui?.step || (isFloat ? 0.01 : 1));
     const prefix = fieldDef?.ui?.prefix;
     const suffix = fieldDef?.ui?.suffix;
     const shouldUseAffixedInput = prefix || suffix;
