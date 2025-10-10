@@ -46,7 +46,7 @@ async function handleNonInteractiveMode(options: SchemaOptions) {
 async function handleInteractiveMode() {
     // eslint-disable-next-line no-console
     console.log(`\n`);
-    intro(pc.blue('🛠️️ Generate a schema file of your GraphQL Admin API'));
+    intro(pc.blue('🛠️️ Generate a schema file of your GraphQL API'));
 
     const apiType: 'admin' | 'shop' | symbol = await withInteractiveTimeout(async () => {
         return await select({
