@@ -7,13 +7,14 @@ import {
     getSettingsStoreValueDocument,
     setSettingsStoreValueDocument,
 } from '../graphql/settings-store-operations.js';
+import { validatePerPageValue } from '../utils/pagination.js';
 import { Theme } from './theme-provider.js';
+import { DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 
 export interface TableSettings {
     columnVisibility?: Record<string, boolean>;
     columnOrder?: string[];
     columnFilters?: ColumnFiltersState;
-    pageSize?: number;
 }
 
 export interface UserSettings {
@@ -26,6 +27,7 @@ export interface UserSettings {
     activeChannelId: string;
     devMode: boolean;
     hasSeenOnboarding: boolean;
+    itemsPerPage: number;
     tableSettings?: Record<string, TableSettings>;
     widgetLayout?: Record<string, { x: number; y: number; w: number; h: number }>;
 }
@@ -40,6 +42,7 @@ const defaultSettings: UserSettings = {
     activeChannelId: '',
     devMode: false,
     hasSeenOnboarding: false,
+    itemsPerPage: DEFAULT_PER_PAGE,
     tableSettings: {},
 };
 
@@ -60,6 +63,7 @@ export interface UserSettingsContextType {
     setActiveChannelId: (channelId: string) => void;
     setDevMode: (devMode: boolean) => void;
     setHasSeenOnboarding: (hasSeen: boolean) => void;
+    setItemsPerPage: (itemsPerPage: number) => void;
     setTableSettings: <K extends keyof TableSettings>(
         tableId: string,
         key: K,
@@ -83,7 +87,12 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         try {
             const storedSettings = localStorage.getItem(LS_KEY_USER_SETTINGS);
             if (storedSettings) {
-                return { ...defaultSettings, ...JSON.parse(storedSettings) };
+                const parsed = JSON.parse(storedSettings);
+                return {
+                    ...defaultSettings,
+                    ...parsed,
+                    itemsPerPage: validatePerPageValue(parsed.itemsPerPage ?? defaultSettings.itemsPerPage),
+                };
             }
         } catch (e) {
             console.error('Failed to load user settings from localStorage', e);
@@ -145,8 +154,14 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
                 const serverSettingsData =
                     serverSettingsResponse?.getSettingsStoreValue as UserSettings | null;
                 if (serverSettingsData) {
-                    // Server has settings, use them
-                    const mergedSettings = { ...defaultSettings, ...serverSettingsData };
+                    // Server has settings, use them and validate itemsPerPage
+                    const mergedSettings = {
+                        ...defaultSettings,
+                        ...serverSettingsData,
+                        itemsPerPage: validatePerPageValue(
+                            serverSettingsData.itemsPerPage ?? defaultSettings.itemsPerPage
+                        ),
+                    };
                     setSettings(mergedSettings);
                     setServerSettings(mergedSettings);
                     setIsReady(true);
@@ -210,6 +225,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         setActiveChannelId: channelId => updateSetting('activeChannelId', channelId),
         setDevMode: devMode => updateSetting('devMode', devMode),
         setHasSeenOnboarding: hasSeen => updateSetting('hasSeenOnboarding', hasSeen),
+        setItemsPerPage: itemsPerPage => updateSetting('itemsPerPage', validatePerPageValue(itemsPerPage)),
         setTableSettings: (tableId, key, value) => {
             setSettings(prev => ({
                 ...prev,

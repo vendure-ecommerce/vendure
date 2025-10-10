@@ -17,6 +17,7 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 import {
     FullWidthPageBlock,
     Page,
@@ -24,6 +25,7 @@ import {
     PageLayout,
     PageTitle,
 } from '../layout-engine/page-layout.js';
+import { DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 
 /**
  * @description
@@ -485,12 +487,18 @@ export function ListPage<
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
-    const { setTableSettings, settings } = useUserSettings();
+    const { setTableSettings, setItemsPerPage, settings } = useUserSettings();
     const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
 
+    const itemsPerPage = routeSearch.perPage
+        ? validatePerPageValue(parseInt(routeSearch.perPage))
+        : validatePerPageValue(settings.itemsPerPage) ?? DEFAULT_PER_PAGE;
+
+    const page = routeSearch.page ? parseInt(routeSearch.page) : 1;
+
     const pagination = {
-        page: routeSearch.page ? parseInt(routeSearch.page) : 1,
-        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : (tableSettings?.pageSize ?? 10),
+        page,
+        itemsPerPage,
     };
 
     const columnVisibility = pageId
@@ -557,9 +565,7 @@ export function ListPage<
                         columnFilters={columnFilters}
                         onPageChange={(table, page, perPage) => {
                             persistListStateToUrl(table, { page, perPage });
-                            if (pageId) {
-                                setTableSettings(pageId, 'pageSize', perPage);
-                            }
+                            setItemsPerPage(perPage);
                         }}
                         onSortChange={(table, sorting) => {
                             persistListStateToUrl(table, { sort: sorting });

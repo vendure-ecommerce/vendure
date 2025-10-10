@@ -35,6 +35,7 @@ import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
+import { DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 
 export interface FacetedFilter {
     title: string;
@@ -120,9 +121,16 @@ export function DataTable<TData>({
     const savedViewsResult = useSavedViews();
     const globalViews = pageId && onFilterChange ? savedViewsResult.globalViews : [];
     const { t } = useLingui();
+
+    // Calculate safe page value with validation
+    const pageSize = itemsPerPage ?? DEFAULT_PER_PAGE;
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const requestedPage = page ?? 1;
+    const safePage = Math.min(Math.max(requestedPage, 1), totalPages);
+
     const [pagination, setPagination] = React.useState<PaginationState>({
-        pageIndex: (page ?? 1) - 1,
-        pageSize: itemsPerPage ?? 10,
+        pageIndex: safePage - 1,
+        pageSize: pageSize,
     });
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
         defaultColumnVisibility ?? {},
@@ -172,6 +180,19 @@ export function DataTable<TData>({
     }
 
     const table = useReactTable(tableOptions);
+
+    // Sync pagination state when props change
+    useEffect(() => {
+        const newPageIndex = safePage - 1;
+        const newPageSize = pageSize;
+
+        if (pagination.pageIndex !== newPageIndex || pagination.pageSize !== newPageSize) {
+            setPagination({
+                pageIndex: newPageIndex,
+                pageSize: newPageSize,
+            });
+        }
+    }, [safePage, pageSize]);
 
     useEffect(() => {
         onPageChange?.(table, pagination.pageIndex + 1, pagination.pageSize);
