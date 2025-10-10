@@ -1,4 +1,4 @@
-import { LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import { LS_KEY_USER_SETTINGS, DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import React, { createContext, useEffect, useRef, useState } from 'react';
@@ -9,7 +9,6 @@ import {
 } from '../graphql/settings-store-operations.js';
 import { validatePerPageValue } from '../utils/pagination.js';
 import { Theme } from './theme-provider.js';
-import { DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 
 export interface TableSettings {
     columnVisibility?: Record<string, boolean>;

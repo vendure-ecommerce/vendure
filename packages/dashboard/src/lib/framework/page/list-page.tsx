@@ -491,10 +491,10 @@ export function ListPage<
     const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
 
     const itemsPerPage = routeSearch.perPage
-        ? validatePerPageValue(parseInt(routeSearch.perPage))
-        : validatePerPageValue(settings.itemsPerPage) ?? DEFAULT_PER_PAGE;
+        ? validatePerPageValue(Number.parseInt(routeSearch.perPage))
+        : validatePerPageValue(settings.itemsPerPage);
 
-    const page = routeSearch.page ? parseInt(routeSearch.page) : 1;
+    const page = routeSearch.page ? Number.parseInt(routeSearch.page) : 1;
 
     const pagination = {
         page,
