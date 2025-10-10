@@ -638,8 +638,24 @@ export const modifyOrderDocument = graphql(
         mutation ModifyOrder($input: ModifyOrderInput!) {
             modifyOrder(input: $input) {
                 __typename
-                ...OrderDetail
                 ...ErrorResult
+                ... on Order {
+                    lines {
+                        productVariant {
+                            featuredAsset {
+                                id
+                                preview
+                            }
+                            product {
+                                featuredAsset {
+                                    id
+                                    preview
+                                }
+                            }
+                        }
+                    }
+                }
+                ...OrderDetail
             }
         }
     `,

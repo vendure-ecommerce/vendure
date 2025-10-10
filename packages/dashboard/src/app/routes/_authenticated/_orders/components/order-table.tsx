@@ -34,7 +34,10 @@ function createCustomizeColumns(currencyCode: string) {
             accessorKey: 'featuredAsset',
             cell: ({ row }: { row: any }) => {
                 const asset = row.original.featuredAsset;
-                return <VendureImage asset={asset} preset="tiny" />;
+                const fallbackAsset =
+                    row.original.productVariant?.featuredAsset ??
+                    row.original.productVariant?.product?.featuredAsset;
+                return <VendureImage asset={asset ?? fallbackAsset} preset="tiny" />;
             },
         },
         productVariant: {
