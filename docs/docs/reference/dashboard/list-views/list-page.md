@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="452" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="459" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
@@ -48,6 +48,7 @@ const getArticleList = graphql(`
                 body
                 customFields
             }
+            totalItems
         }
     }
 `);
@@ -113,7 +114,7 @@ Parameters
 
 ## ListPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="30" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="36" packageName="@vendure/dashboard" since="3.3.0" />
 
 Props to configure the <a href='/reference/dashboard/list-views/list-page#listpage'>ListPage</a> component.
 

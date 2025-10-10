@@ -142,13 +142,19 @@ const sidebars = {
             items: [
                 'guides/extending-the-dashboard/getting-started/index',
                 'guides/extending-the-dashboard/extending-overview/index',
-                'guides/extending-the-dashboard/creating-list-pages/index',
-
+                {
+                    type: 'category',
+                    label: 'Creating Pages',
+                    link: { type: 'doc', id: 'guides/extending-the-dashboard/creating-pages/index' },
+                    items: [
+                        'guides/extending-the-dashboard/creating-pages/list-pages',
+                        'guides/extending-the-dashboard/creating-pages/detail-pages',
+                    ],
+                },
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
                 'guides/extending-the-dashboard/theming/index',
-                'guides/extending-the-dashboard/cms-tutorial/index',
                 {
                     type: 'category',
                     label: 'Custom Form Elements',

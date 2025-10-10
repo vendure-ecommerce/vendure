@@ -24,7 +24,7 @@ npx vendure add --plugin cms
 Now let's add an entity to the plugin:
 
 ```bash
-npx vendure add --entity Article --selected-plugin CmsPlugin
+npx vendure add --entity Article --selected-plugin CmsPlugin --custom-fields
 ```
 
 You now have your `CmsPlugin` created with a new `Article` entity. You can find the plugin in the `./src/plugins/cms` directory.
@@ -182,6 +182,28 @@ defineDashboardExtension({
     historyEntries: [],
 });
 ```
+
+## IDE GraphQL Integration
+
+When extending the dashboard, you'll very often need to work with GraphQL documents for fetching data and executing mutations.
+
+Plugins are available for most popular IDEs & editors which provide auto-complete and type-checking for GraphQL operations
+as you write them. This is a huge productivity boost, and is **highly recommended**.
+
+- [GraphQL extension for VS Code](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql)
+- [GraphQL plugin for IntelliJ](https://plugins.jetbrains.com/plugin/8097-graphql) (including WebStorm)
+
+:::cli
+Run the `npx vendure schema` to generate a GraphQL schema file that your IDE plugin
+can use to provide autocomplete.
+:::
+
+1. Install the GraphQL plugin for your IDE
+2. Run `npx vendure schema --api admin` to generate a `schema.graphql` file in your root directory
+3. Create a `graphql.config.yml` file in your root directory with the following content:
+   ```yaml title="graphql.config.yml"
+   schema: 'schema.graphql'
+   ```
 
 ## Dev Mode
 

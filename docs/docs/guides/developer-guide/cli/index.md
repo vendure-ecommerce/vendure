@@ -297,6 +297,8 @@ yarn vendure schema
 </TabItem>
 </Tabs>
 
+![Schema command](./schema-command.webp)
+
 ### Non-Interactive Mode
 
 To automate or quickly generate a schema in one command

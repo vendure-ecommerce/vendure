@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardLoginExtensions
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/login.ts" sourceLine="76" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/login.ts" sourceLine="60" packageName="@vendure/dashboard" since="3.4.0" />
 
 Defines all available login page extensions.
 
@@ -20,7 +20,6 @@ interface DashboardLoginExtensions {
     logo?: LoginLogoExtension;
     beforeForm?: LoginBeforeFormExtension;
     afterForm?: LoginAfterFormExtension;
-    loginImage?: LoginImageExtension;
 }
 ```
 
@@ -41,11 +40,6 @@ Component to render before the login form.
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/login#loginafterformextension'>LoginAfterFormExtension</a>`}   />
 
 Component to render after the login form.
-### loginImage
-
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/login#loginimageextension'>LoginImageExtension</a>`}   />
-
-Custom login image component to replace the default image panel.
 
 
 </div>
@@ -118,30 +112,6 @@ interface LoginAfterFormExtension {
 <MemberInfo kind="property" type={`React.ComponentType`}   />
 
 A React component that will be rendered after the login form.
-
-
-</div>
-
-
-## LoginImageExtension
-
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/login.ts" sourceLine="59" packageName="@vendure/dashboard" since="3.4.0" />
-
-Defines a custom login image component that replaces the default image panel.
-
-```ts title="Signature"
-interface LoginImageExtension {
-    component: React.ComponentType;
-}
-```
-
-<div className="members-wrapper">
-
-### component
-
-<MemberInfo kind="property" type={`React.ComponentType`}   />
-
-A React component that will replace the default login image panel.
 
 
 </div>

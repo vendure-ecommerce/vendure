@@ -21,7 +21,8 @@ interface DashboardPageBlockDefinition {
     id: string;
     title?: React.ReactNode;
     location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
+    component?: React.FunctionComponent<{ context: PageContextValue }>;
+    shouldRender?: (context: PageContextValue) => boolean;
     requiresPermission?: string | string[];
 }
 ```
@@ -32,27 +33,45 @@ interface DashboardPageBlockDefinition {
 
 <MemberInfo kind="property" type={`string`}   />
 
-
+An ID for the page block. Should be unique at least
+to the page in which it appears.
 ### title
 
 <MemberInfo kind="property" type={`React.ReactNode`}   />
 
-
+An optional title for the page block
 ### location
 
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/page-blocks#pageblocklocation'>PageBlockLocation</a>`}   />
 
-
+The location of the page block. It specifies the pageId, and then the
+relative location compared to another existing block.
 ### component
 
 <MemberInfo kind="property" type={`React.FunctionComponent&#60;{ context: PageContextValue }&#62;`}   />
 
+The component to be rendered inside the page block.
+### shouldRender
 
+<MemberInfo kind="property" type={`(context: PageContextValue) =&#62; boolean`}  since="3.5.0"  />
+
+Control whether to render the page block depending on your custom
+logic.
+
+This can also be used to disable any built-in blocks you
+do not need to display.
+
+If you need to query aspects about the current context not immediately
+provided in the `PageContextValue`, you can also use hooks such as
+`useChannel` in this function.
 ### requiresPermission
 
 <MemberInfo kind="property" type={`string | string[]`}   />
 
+If provided, the logged-in user must have one or more of the specified
+permissions in order for the block to render.
 
+For more advanced control over rendering, use the `shouldRender` function.
 
 
 </div>

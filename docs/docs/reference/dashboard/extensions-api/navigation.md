@@ -61,16 +61,17 @@ Optional order number to control the position of this section in the sidebar.
 </div>
 
 
-## NavMenuBaseItem
+## NavMenuItem
 
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/nav-menu/nav-menu-extensions.ts" sourceLine="16" packageName="@vendure/dashboard" since="3.4.0" />
 
-The base configuration for navigation items and sections of the main app nav bar.
+Defines an items in the navigation menu.
 
 ```ts title="Signature"
-interface NavMenuBaseItem {
+interface NavMenuItem {
     id: string;
     title: string;
+    url: string;
     icon?: LucideIcon;
     order?: number;
     placement?: NavMenuSectionPlacement;
@@ -84,22 +85,31 @@ interface NavMenuBaseItem {
 
 <MemberInfo kind="property" type={`string`}   />
 
-
+A unique ID for this nav menu item
 ### title
 
 <MemberInfo kind="property" type={`string`}   />
 
+The title that will appear in the nav menu
+### url
 
+<MemberInfo kind="property" type={`string`}   />
+
+The url of the route which this nav item links to.
 ### icon
 
 <MemberInfo kind="property" type={`LucideIcon`}   />
 
-
+An optional icon component to represent the item,
+which should be imported from `lucide-react`.
 ### order
 
 <MemberInfo kind="property" type={`number`}   />
 
-
+The order is an number which allows you to control
+the relative position in relation to other items in the
+menu.
+A higher number appears further down the list.
 ### placement
 
 <MemberInfo kind="property" type={`NavMenuSectionPlacement`}   />
@@ -111,33 +121,6 @@ interface NavMenuBaseItem {
 
 This can be used to restrict the menu item to the given
 permission or permissions.
-
-
-</div>
-
-
-## NavMenuItem
-
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/nav-menu/nav-menu-extensions.ts" sourceLine="38" packageName="@vendure/dashboard" since="3.4.0" />
-
-Defines an items in the navigation menu.
-
-```ts title="Signature"
-interface NavMenuItem extends NavMenuBaseItem {
-    url: string;
-}
-```
-* Extends: <code><a href='/reference/dashboard/extensions-api/navigation#navmenubaseitem'>NavMenuBaseItem</a></code>
-
-
-
-<div className="members-wrapper">
-
-### url
-
-<MemberInfo kind="property" type={`string`}   />
-
-The url of the route which this nav item links to.
 
 
 </div>
