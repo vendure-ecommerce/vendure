@@ -25,7 +25,6 @@ import {
     PageLayout,
     PageTitle,
 } from '../layout-engine/page-layout.js';
-import { DEFAULT_PER_PAGE } from '@/vdb/constants.js';
 
 /**
  * @description
