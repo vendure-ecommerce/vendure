@@ -1,3 +1,7 @@
+---
+title: 'Data Fetching'
+---
+
 ## API Client
 
 The API client is the primary way to send queries and mutations to the Vendure backend. It handles channel tokens and authentication automatically.
@@ -104,3 +108,19 @@ function ProductForm({ product }) {
     );
 }
 ```
+
+## Type Safety
+
+The Dashboard Vite plugin incorporates [gql.tada](https://gql-tada.0no.co/), which gives you type safety _without_ any code generation step!
+
+It works by analyzing your Admin API schema (including all your custom fields and other API extensions), and outputs the results
+to a file - by default you can find it at `src/gql/graphql-env.d.ts`.
+
+When you then use the `import { graphql } from '@/gql'` function to define your queries and mutations, you get automatic
+type safety when using the results in your components!
+
+When you have the `@/gql` path mapping correctly [set up as per the getting started guide](/guides/extending-the-dashboard/getting-started/#installation--setup), you should see that
+your IDE is able to infer the TypeScript type of your queries and mutations, including the correct inputs and return
+types!
+
+![Type inference](./type-inference.webp)

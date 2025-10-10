@@ -154,6 +154,7 @@ const sidebars = {
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
+                'guides/extending-the-dashboard/data-fetching/index',
                 'guides/extending-the-dashboard/theming/index',
                 {
                     type: 'category',

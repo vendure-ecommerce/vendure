@@ -122,7 +122,7 @@ import { defineDashboardExtension } from '@vendure/dashboard';
 // highlight-next-line
 import { articleList } from './article-list';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     routes: [
         // highlight-next-line
         articleList,

@@ -125,7 +125,7 @@ import { articleList } from './article-list';
 // highlight-next-line
 import { articleDetail } from './article-detail';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     routes: [
         articleList,
         // highlight-next-line

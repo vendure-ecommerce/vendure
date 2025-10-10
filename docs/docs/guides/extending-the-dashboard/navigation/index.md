@@ -11,7 +11,7 @@ The simplest way to add navigation is to add menu items to existing sections. Th
 ```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     routes: [
         {
             path: '/my-custom-page',
@@ -55,7 +55,7 @@ You can create entirely new navigation sections with their own icons and orderin
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { FileTextIcon, SettingsIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     // Define custom navigation sections
     navSections: [
         {
@@ -111,7 +111,7 @@ The navigation sidebar is divided into two areas:
 ### Placement Examples
 
 ```tsx
-export default defineDashboardExtension({
+defineDashboardExtension({
     navSections: [
         {
             id: 'reports',
@@ -201,7 +201,7 @@ Here's a comprehensive example showing how to create a complete navigation struc
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { FileTextIcon, ImageIcon, TagIcon, FolderIcon, SettingsIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     // Create custom navigation sections
     navSections: [
         {

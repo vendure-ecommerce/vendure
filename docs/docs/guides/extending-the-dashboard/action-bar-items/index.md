@@ -2,10 +2,12 @@
 title: 'Action Bar Items'
 ---
 
-Like in the old Admin UI, we have the concept of the "action bar", which is the bar at the top of the page where you can add
+The Action Bar is the bar at the top of the page where you can add
 buttons and other actions.
 
-Currently, we only support adding buttons, but dropdown menu support is coming soon.
+:::info
+All available options are documented in the [DashboardActionBarItem reference](/reference/dashboard/extensions-api/action-bar#dashboardactionbaritem)
+:::
 
 ## Basic Action Bar Item
 
@@ -15,7 +17,7 @@ Here's a simple example of adding a button to the action bar:
 import { Button, defineDashboardExtension } from '@vendure/dashboard';
 import { useState } from 'react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     actionBarItems: [
         {
             pageId: 'product-detail',
@@ -32,6 +34,8 @@ export default defineDashboardExtension({
 });
 ```
 
+![Action bar button](./action-bar-button.webp)
+
 ## Context Data
 
 The `context` prop provides access to:
@@ -39,6 +43,30 @@ The `context` prop provides access to:
 - **`entity`**: The current entity being viewed/edited (e.g., Product, Customer, etc.)
 - **`form`**: The React Hook Form instance for the current page (if applicable)
 - **`route`**: Route information and parameters
+
+## Dropdown Menu
+
+You can also define dropdown menu items for the Action Bar. This is useful for secondary actions that are needed
+less often by administrators.
+
+Make sure to always wrap these in the `DropdownMenuItem` component for consistent styling.
+
+```tsx
+import { DropdownMenuItem, defineDashboardExtension } from '@vendure/dashboard';
+import { useState } from 'react';
+
+defineDashboardExtension({
+    actionBarItems: [
+        {
+            pageId: 'product-list',
+            type: 'dropdown',
+            component: () => <DropdownMenuItem variant="default">My Item</DropdownMenuItem>
+        }
+    ],
+});
+```
+
+![Action bar dropdown](./action-bar-dropdown.webp)
 
 ## Practical Examples
 
@@ -48,7 +76,7 @@ The `context` prop provides access to:
 import { Button, defineDashboardExtension } from '@vendure/dashboard';
 import { DownloadIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     actionBarItems: [
         {
             pageId: 'product-detail',
@@ -89,7 +117,7 @@ import { RefreshCwIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     actionBarItems: [
         {
             pageId: 'product-detail',
@@ -134,7 +162,7 @@ You can conditionally show action bar items based on the entity or user permissi
 import { Button, defineDashboardExtension, PermissionGuard } from '@vendure/dashboard';
 import { SendIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     actionBarItems: [
         {
             pageId: 'customer-detail',
@@ -173,7 +201,7 @@ You can add multiple action bar items to the same page:
 import { Button, defineDashboardExtension } from '@vendure/dashboard';
 import { DownloadIcon, RefreshCwIcon, SendIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     actionBarItems: [
         {
             pageId: 'product-detail',
