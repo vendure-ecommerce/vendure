@@ -107,14 +107,6 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     )}
                                     {!isVerifying && <Trans>Sign in</Trans>}
                                 </Button>
-                                <div className="text-center text-sm">
-                                    <Trans>
-                                        <span className="text-muted-foreground mr-0.5">Forgot password?</span>
-                                        <a tabIndex={-1} href="#" className="text-primary hover:underline">
-                                            Request reset
-                                        </a>
-                                    </Trans>
-                                </div>
                             </div>
                             {loginExtensions.afterForm && (
                                 <>
