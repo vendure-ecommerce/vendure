@@ -113,7 +113,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                 id: fieldInfo.name,
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
-                enableSorting: fieldInfo.isScalar && enableSorting,
+                enableSorting: fieldInfo.isScalar && fieldInfo.type !== 'Boolean' && enableSorting,
                 // Filtering is done on the server side, but we set this to 'equalsString' because
                 // otherwise the TanStack Table with apply an "auto" function which somehow
                 // prevents certain filters from working.

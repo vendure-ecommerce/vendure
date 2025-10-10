@@ -41,6 +41,14 @@ function PromotionListPage() {
                     couponCode: { contains: searchTerm },
                 };
             }}
+            transformVariables={variables => {
+                return {
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR' as const,
+                    },
+                };
+            }}
             customizeColumns={{
                 name: {
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
