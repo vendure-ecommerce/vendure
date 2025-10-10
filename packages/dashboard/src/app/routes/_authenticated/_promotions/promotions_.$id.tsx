@@ -203,13 +203,17 @@ function PromotionDetailPage() {
                             control={form.control}
                             name="perCustomerUsageLimit"
                             label={<Trans>Per customer usage limit</Trans>}
-                            render={({ field }) => <NumberInput {...field} value={field.value ?? ''} />}
+                            render={({ field }) => (
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
+                            )}
                         />
                         <FormFieldWrapper
                             control={form.control}
                             name="usageLimit"
                             label={<Trans>Usage limit</Trans>}
-                            render={({ field }) => <NumberInput {...field} value={field.value ?? ''} />}
+                            render={({ field }) => (
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
+                            )}
                         />
                     </DetailFormGrid>
                 </PageBlock>

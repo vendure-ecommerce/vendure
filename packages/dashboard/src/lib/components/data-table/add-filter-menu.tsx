@@ -53,7 +53,12 @@ export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
-            {selectedColumn && <DataTableFilterDialog column={selectedColumn as any} />}
+            {selectedColumn && (
+                <DataTableFilterDialog
+                    column={selectedColumn as any}
+                    onEnter={() => setIsDialogOpen(false)}
+                />
+            )}
         </Dialog>
     );
 }

@@ -5,7 +5,205 @@ title: 'Extending the Dashboard'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This guide covers the core concepts and best practices for extending the Vendure Dashboard. Understanding these fundamentals will help you build robust and maintainable dashboard extensions.
+The custom functionality you create in your Vendure plugins often needs to be exposed via the Dashboard so that
+administrators can interact with it.
+
+This guide covers how you can set up your plugins with extensions to the Dashboard.
+
+## Plugin Setup
+
+For the purposes of the guides in this section of the docs, we will work with a simple Content Management System (CMS)
+plugin that allows us to create and manage content articles.
+
+Let's create the plugin:
+
+```bash
+npx vendure add --plugin cms
+```
+
+Now let's add an entity to the plugin:
+
+```bash
+npx vendure add --entity Article --selected-plugin CmsPlugin --custom-fields
+```
+
+You now have your `CmsPlugin` created with a new `Article` entity. You can find the plugin in the `./src/plugins/cms` directory.
+
+Let's edit the entity to add the appropriate fields:
+
+```ts title="src/plugins/cms/entities/article.entity.ts"
+import { DeepPartial, HasCustomFields, VendureEntity } from '@vendure/core';
+import { Column, Entity } from 'typeorm';
+
+export class ArticleCustomFields {}
+
+@Entity()
+export class Article extends VendureEntity implements HasCustomFields {
+    constructor(input?: DeepPartial<Article>) {
+        super(input);
+    }
+
+    @Column()
+    slug: string;
+
+    @Column()
+    title: string;
+
+    @Column('text')
+    body: string;
+
+    @Column()
+    isPublished: boolean;
+
+    @Column(type => ArticleCustomFields)
+    customFields: ArticleCustomFields;
+}
+```
+
+Now let's create a new `ArticleService` to handle the business logic of our new entity:
+
+```bash
+npx vendure add --service ArticleService --selected-plugin CmsPlugin --selected-entity Article
+```
+
+The service will be created in the `./src/plugins/cms/services` directory.
+
+Finally, we'll extend the GraphQL API to expose those CRUD operations:
+
+```bash
+npx vendure add --api-extension CmsPlugin --selected-service ArticleService --query-name ArticleQuery
+```
+
+Now the api extensions and resolver has been created in the `./src/plugins/cms/api-extensions` directory.
+
+The last step is to create a migration for our newly-created entity:
+
+```bash
+npx vendure migrate --generate article
+```
+
+Your project should now have the following structure:
+
+```
+src
+└── plugins/
+    └── cms/
+        ├── api/
+        │   ├── api-extensions.ts
+        │   └── article-admin.resolver.ts
+        ├── entities/
+        │   └── article.entity.ts
+        ├── services/
+        │   └── article.service.ts
+        ├── cms.plugin.ts
+        ├── constants.ts
+        └── types.ts
+```
+
+## Add Dashboard to Plugin
+
+Dashboard extensions are declared directly on the plugin metadata. Unlike the old AdminUiPlugin, you do not need to separately
+declare ui extensions anywhere except on the plugin itself.
+
+```ts title="src/plugins/cms/cms.plugin.ts"
+@VendurePlugin({
+    // ...
+    entities: [Article],
+    adminApiExtensions: {
+        schema: adminApiExtensions,
+        resolvers: [ArticleAdminResolver],
+    },
+    // highlight-next-line
+    dashboard: './dashboard/index.tsx',
+})
+export class CmsPlugin {
+    // ...
+}
+```
+
+You can do this automatically with the CLI command:
+
+```bash
+npx vendure add --dashboard CmsPlugin
+```
+
+This will add the `dashboard` property to your plugin as above, and will also create the `/dashboard/index.tsx` file
+which looks like this:
+
+```tsx title="src/plugins/cms/dashboard/index.tsx"
+import { Button, defineDashboardExtension, Page, PageBlock, PageLayout, PageTitle } from '@vendure/dashboard';
+import { useState } from 'react';
+
+defineDashboardExtension({
+    routes: [
+        // Here's a custom page so you can test that your Dashboard extensions are working.
+        // You should be able to access this page via the "Catalog > Test Page" nav menu item.
+        {
+            path: '/test',
+            loader: () => ({ breadcrumb: 'Test Page' }),
+            navMenuItem: {
+                id: 'test',
+                title: 'Test Page',
+                sectionId: 'catalog',
+            },
+            component: () => {
+                const [count, setCount] = useState(0);
+                return (
+                    <Page pageId="test-page">
+                        <PageTitle>Test Page</PageTitle>
+                        <PageLayout>
+                            <PageBlock column="main" blockId="counter">
+                                <p>Congratulations, your Dashboard extension is working!</p>
+                                <p className="text-muted-foreground mb-4">
+                                    As is traditional, let's include a counter:
+                                </p>
+                                <Button variant="secondary" onClick={() => setCount(c => c + 1)}>
+                                    Clicked {count} times
+                                </Button>
+                            </PageBlock>
+                        </PageLayout>
+                    </Page>
+                );
+            },
+        },
+    ],
+    // The following extension points are only listed here
+    // to give you an idea of all the ways that the Dashboard
+    // can be extended. Feel free to delete any that you don't need.
+    pageBlocks: [],
+    navSections: [],
+    actionBarItems: [],
+    alerts: [],
+    widgets: [],
+    customFormComponents: {},
+    dataTables: [],
+    detailForms: [],
+    login: {},
+    historyEntries: [],
+});
+```
+
+## IDE GraphQL Integration
+
+When extending the dashboard, you'll very often need to work with GraphQL documents for fetching data and executing mutations.
+
+Plugins are available for most popular IDEs & editors which provide auto-complete and type-checking for GraphQL operations
+as you write them. This is a huge productivity boost, and is **highly recommended**.
+
+- [GraphQL extension for VS Code](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql)
+- [GraphQL plugin for IntelliJ](https://plugins.jetbrains.com/plugin/8097-graphql) (including WebStorm)
+
+:::cli
+Run the `npx vendure schema` to generate a GraphQL schema file that your IDE plugin
+can use to provide autocomplete.
+:::
+
+1. Install the GraphQL plugin for your IDE
+2. Run `npx vendure schema --api admin` to generate a `schema.graphql` file in your root directory
+3. Create a `graphql.config.yml` file in your root directory with the following content:
+   ```yaml title="graphql.config.yml"
+   schema: 'schema.graphql'
+   ```
 
 ## Dev Mode
 
@@ -18,218 +216,8 @@ In Dev Mode, hovering any block in the dashboard will allow you to find the corr
 - Identifying where to place custom page blocks
 - Finding action bar locations
 - Understanding the page structure
-- Debugging your extensions
 
 ![Finding the location ids](./location-id.webp)
-
-## Recommended Folder Structure
-
-While you can organize your dashboard extensions however you prefer (it's a standard React application), we recommend following this convention for consistency and maintainability:
-
-```
-src/plugins/my-plugin/
-└── dashboard/
-    ├── index.tsx           # Main entrypoint linked in plugin decorator
-    ├── pages/              # Top-level page components
-    ├── routes/             # Route definitions
-    ├── form-components/    # Input, custom fields, and display components
-    ├── detail-forms/       # Detail form definitions
-    └── action-bar/         # Action bar items
-```
-
-### Entry Point (index.tsx)
-
-The main entry point that is linked in your plugin decorator:
-
-```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
-import { defineDashboardExtension } from '@vendure/dashboard';
-
-export default defineDashboardExtension({
-    routes: [],
-    navSections: [],
-    pageBlocks: [],
-    actionBarItems: [],
-    alerts: [],
-    widgets: [],
-    customFormComponents: {},
-    dataTables: [],
-    detailForms: [],
-    login: {},
-});
-```
-
-:::tip
-This folder structure is particularly important when open-sourcing Vendure plugins. Following the official conventions makes it easier for other developers to understand and contribute to your plugin.
-:::
-
-## Form Handling
-
-Form handling in the dashboard is powered by [react-hook-form](https://react-hook-form.com/), which is also the foundation for Shadcn's form components. This provides:
-
-- Excellent performance with minimal re-renders
-- Built-in validation
-- TypeScript support
-- Easy integration with the dashboard's UI components
-
-### Basic Form Example
-
-```tsx
-import { useForm } from 'react-hook-form';
-import { Form, FormFieldWrapper, Input, Button } from '@vendure/dashboard';
-
-function MyForm() {
-    const form = useForm({
-        defaultValues: {
-            name: '',
-            email: '',
-        },
-    });
-
-    const onSubmit = data => {
-        console.log(data);
-    };
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormFieldWrapper
-                    control={form.control}
-                    name="name"
-                    label="Name"
-                    render={({ field }) => <Input {...field} />}
-                />
-                <FormFieldWrapper
-                    control={form.control}
-                    name="email"
-                    label="Email"
-                    render={({ field }) => <Input type="email" {...field} />}
-                />
-                <Button type="submit">Submit</Button>
-            </form>
-        </Form>
-    );
-}
-```
-
-### Advanced Example
-
-For a comprehensive example of advanced form handling, including complex validation, dynamic fields, and custom components, check out the [order detail page implementation](https://github.com/vendure-ecommerce/vendure/blob/master/packages/dashboard/src/app/routes/_authenticated/_orders/orders_.%24id.tsx) in the Vendure source code.
-
-## API Client
-
-The API client is the primary way to send queries and mutations to the Vendure backend. It handles channel tokens and authentication automatically.
-
-### Importing the API Client
-
-```tsx
-import { api } from '@vendure/dashboard';
-```
-
-The API client exposes two main methods:
-
-- `query` - For GraphQL queries
-- `mutate` - For GraphQL mutations
-
-### Using with TanStack Query
-
-The API client is designed to work seamlessly with TanStack Query for optimal data fetching and caching:
-
-#### Query Example
-
-```tsx
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@vendure/dashboard';
-import { graphql } from '@/gql';
-
-const getProductsQuery = graphql(`
-    query GetProducts($options: ProductListOptions) {
-        products(options: $options) {
-            items {
-                id
-                name
-                slug
-            }
-            totalItems
-        }
-    }
-`);
-
-function ProductList() {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['products'],
-        queryFn: () =>
-            api.query(getProductsQuery, {
-                options: {
-                    take: 10,
-                    skip: 0,
-                },
-            }),
-    });
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-
-    return <ul>{data?.products.items.map(product => <li key={product.id}>{product.name}</li>)}</ul>;
-}
-```
-
-#### Mutation Example
-
-```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@vendure/dashboard';
-import { graphql } from '@/gql';
-import { toast } from 'sonner';
-
-const updateProductMutation = graphql(`
-    mutation UpdateProduct($input: UpdateProductInput!) {
-        updateProduct(input: $input) {
-            id
-            name
-            slug
-        }
-    }
-`);
-
-function ProductForm({ product }) {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        mutationFn: input => api.mutate(updateProductMutation, { input }),
-        onSuccess: () => {
-            // Invalidate and refetch product queries
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-            toast.success('Product updated successfully');
-        },
-        onError: error => {
-            toast.error('Failed to update product', {
-                description: error.message,
-            });
-        },
-    });
-
-    const handleSubmit = data => {
-        mutation.mutate({
-            id: product.id,
-            ...data,
-        });
-    };
-
-    return (
-        // Form implementation
-        <form onSubmit={handleSubmit}>{/* Form fields */}</form>
-    );
-}
-```
-
-## Best Practices
-
-1. **Follow the folder structure**: It helps maintain consistency, especially when sharing plugins
-2. **Use TypeScript**: Take advantage of the generated GraphQL types for type safety
-3. **Leverage TanStack Query**: Use it for all data fetching to benefit from caching and optimistic updates
-4. **Handle errors gracefully**: Always provide user feedback for both success and error states
-5. **Use the dashboard's UI components**: Maintain visual consistency with the rest of the dashboard
-6. **Test in Dev Mode**: Use Dev Mode to verify your extensions are placed correctly
 
 ## What's Next?
 

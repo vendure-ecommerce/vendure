@@ -42,7 +42,8 @@ export function OrderModificationSummary({
             if (
                 orig &&
                 (adj.quantity !== orig.quantity ||
-                    JSON.stringify(adj.customFields) !== JSON.stringify((orig as any).customFields))
+                    JSON.stringify(adj.customFields) !== JSON.stringify((orig as any).customFields)) &&
+                adj.quantity > 0
             ) {
                 return {
                     orderLineId: adj.orderLineId,

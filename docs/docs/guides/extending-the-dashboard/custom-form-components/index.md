@@ -92,7 +92,7 @@ First we need to register the component with the `defineDashboardExtension` func
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { ColorPickerComponent } from './components/color-picker';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     customFormComponents: {
         // Custom field components for custom fields
         customFields: [
@@ -195,7 +195,7 @@ You can then use this component in your detail form definition:
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { MarkdownEditorComponent } from './components/markdown-editor';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     detailForms: [
         {
             // highlight-start

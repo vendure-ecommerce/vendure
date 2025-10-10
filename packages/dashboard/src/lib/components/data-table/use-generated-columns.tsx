@@ -36,7 +36,12 @@ import {
 } from '../ui/alert-dialog.js';
 import { Button } from '../ui/button.js';
 import { Checkbox } from '../ui/checkbox.js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu.js';
 import { DataTableColumnHeader } from './data-table-column-header.js';
 
 /**
@@ -108,7 +113,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                 id: fieldInfo.name,
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
-                enableSorting: fieldInfo.isScalar && enableSorting,
+                enableSorting: fieldInfo.isScalar && fieldInfo.type !== 'Boolean' && enableSorting,
                 // Filtering is done on the server side, but we set this to 'equalsString' because
                 // otherwise the TanStack Table with apply an "auto" function which somehow
                 // prevents certain filters from working.
@@ -158,7 +163,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
+            finalColumns.push(columnHelper.accessor(id as any, { ...column, id, enableColumnFilter: false }));
         }
 
         if (defaultColumnOrder) {

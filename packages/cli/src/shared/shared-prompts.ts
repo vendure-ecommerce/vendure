@@ -57,13 +57,16 @@ export async function analyzeProject(options: {
     const providedVendurePlugin = options.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
     let tsConfigPath: string | undefined;
+    let vendureTsConfig: string | undefined;
+    let rootTsConfig: string | undefined;
+    let isMonorepo: boolean | undefined;
 
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
         const tsConfigFile = selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject(
+        const result = await getTsMorphProject(
             {
                 compilerOptions: {
                     // When running via the CLI, we want to find all source files,
@@ -73,11 +76,21 @@ export async function analyzeProject(options: {
             },
             tsConfigFile,
         );
-        project = _project;
-        tsConfigPath = _tsConfigPath;
+        project = result.project;
+        tsConfigPath = result.tsConfigPath;
+        vendureTsConfig = result.vendureTsConfig;
+        rootTsConfig = result.rootTsConfig;
+        isMonorepo = result.isMonorepo;
         projectSpinner.stop('Project analyzed');
     }
-    return { project: project as Project, tsConfigPath, config: options.config };
+    return {
+        project: project as Project,
+        tsConfigPath,
+        vendureTsConfig,
+        rootTsConfig,
+        isMonorepo,
+        config: options.config,
+    };
 }
 
 export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {

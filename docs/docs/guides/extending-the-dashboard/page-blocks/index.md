@@ -7,6 +7,10 @@ app (see [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode
 
 You can also define your own blocks, which can be added to any page and can even replace the default blocks.
 
+:::info
+All available options are documented in the [DashboardPageBlockDefinition reference](/reference/dashboard/extensions-api/page-blocks#dashboardpageblockdefinition)
+:::
+
 ## Basic Page Block Example
 
 Here's an example of how to define a custom page block:
@@ -14,7 +18,7 @@ Here's an example of how to define a custom page block:
 ```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     pageBlocks: [
         {
             id: 'related-articles',
@@ -99,6 +103,50 @@ The `context` prop provides access to:
 - **`form`**: The React Hook Form instance for the current page (if applicable)
 - **`route`**: Route information and parameters
 
+## Block Visibility
+
+The visibility of a block can be dynamically controlled using the `shouldRender` function. This function receives the same
+context object as the block component, and should return a boolean to determine whether the block should be rendered.
+
+```ts
+import { defineDashboardExtension } from '@vendure/dashboard';
+
+import { AdvancedTaxInfo } from './advanced-tax-info.tsx';
+
+defineDashboardExtension({
+    pageBlocks: [
+        {
+            id: 'advanced-tax-info',
+            location: {
+                pageId: 'product-variant-detail',
+                column: 'side',
+                position: {
+                    blockId: 'facet-values',
+                    order: 'after',
+                },
+            },
+            component: AdvancedTaxInfo,
+            shouldRender: context => {
+                // You can use custom and build-in hooks
+                // in this function
+                const { activeChannel } = useChannel();
+
+                const hasTaxSettings = context.entity?.customFields?.taxSettings
+                // This block will only render if the entity has the
+                // expected custom field data, and the active channel has
+                // the given tax setting
+                return hasTaxSettings && activeChannel.pricesIncludeTax === false;
+            },
+        },
+    ],
+});
+```
+
+:::tip
+The `shouldRender` function can be used to hide built-in blocks by combining it with the "replace" position
+on an existing blockId.
+:::
+
 ## Advanced Example
 
 Here's a more complex example that shows different types of blocks:
@@ -107,7 +155,7 @@ Here's a more complex example that shows different types of blocks:
 import { defineDashboardExtension, Button } from '@vendure/dashboard';
 import { useState } from 'react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     pageBlocks: [
         // Analytics block for product page
         {
@@ -185,14 +233,11 @@ To find the `pageId` and `blockId` values for positioning your blocks:
 3. Hover over existing blocks to see their IDs
 4. Use these IDs in your block positioning configuration
 
-## TypeScript Support
-
-The dashboard provides full TypeScript support for page blocks. The `context` prop is typed based on the page you're targeting, giving you autocomplete and type safety for the entity properties.
-
-## Best Practices
+:::tip Best Practices
 
 1. **Use descriptive IDs**: Choose clear, unique IDs for your blocks
 2. **Position thoughtfully**: Consider the user experience when placing blocks
 3. **Handle loading states**: Show appropriate loading indicators for async operations
 4. **Follow design patterns**: Use the dashboard's existing UI components for consistency
 5. **Test thoroughly**: Verify your blocks work correctly on different screen sizes
+:::

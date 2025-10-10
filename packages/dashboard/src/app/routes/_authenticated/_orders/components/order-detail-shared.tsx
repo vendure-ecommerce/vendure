@@ -234,7 +234,7 @@ export function OrderDetailShared({
                 {/* Side Column Blocks */}
                 <PageBlock column="side" blockId="state">
                     <StateTransitionControl
-                        currentState={getTranslatedOrderState(entity?.state)}
+                        currentState={entity?.state}
                         actions={stateTransitionActions}
                         isLoading={transitionOrderToStateMutation.isPending}
                     />

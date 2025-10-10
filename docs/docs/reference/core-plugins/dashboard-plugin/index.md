@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardPlugin
 
-<GenerationInfo sourceFile="packages/dashboard/plugin/dashboard.plugin.ts" sourceLine="101" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/plugin/dashboard.plugin.ts" sourceLine="119" packageName="@vendure/dashboard" />
 
 This plugin serves the static files of the Vendure Dashboard and provides the
 GraphQL extensions needed for the order metrics on the dashboard index page.
@@ -25,10 +25,16 @@ GraphQL extensions needed for the order metrics on the dashboard index page.
 First you need to set up compilation of the Dashboard, using the Vite configuration
 described in the [Dashboard Getting Started Guide](/guides/extending-the-dashboard/getting-started/)
 
-Once set up, you run `npx vite build` to build the production version of the dashboard app.
+## Development vs Production
 
-The built app files will be output to the location specified by `build.outDir` in your Vite
-config file. This should then be passed to the `appDir` init option, as in the example below:
+When developing, you can run `npx vite` (or `npm run dev`) to start the Vite development server.
+The plugin will automatically detect if Vite is running on the default port (5173) and proxy
+requests to it instead of serving static files. This enables hot module replacement and faster
+development iterations.
+
+For production, run `npx vite build` to build the dashboard app. The built app files will be
+output to the location specified by `build.outDir` in your Vite config file. This should then
+be passed to the `appDir` init option, as in the example below:
 
 *Example*
 
@@ -41,6 +47,8 @@ const config: VendureConfig = {
     DashboardPlugin.init({
       route: 'dashboard',
       appDir: './dist/dashboard',
+      // Optional: customize Vite dev server port (defaults to 5173)
+      viteDevServerPort: 3000,
     }),
   ],
 };

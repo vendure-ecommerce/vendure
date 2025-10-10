@@ -2,8 +2,8 @@ import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const promotionListDocument = graphql(`
-    query PromotionList {
-        promotions {
+    query PromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
             items {
                 id
                 createdAt

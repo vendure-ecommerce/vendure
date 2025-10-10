@@ -5,22 +5,12 @@ title: 'Getting Started'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::warning
-The `@vendure/dashboard` package is currently **RC.1** (release candiate) and can be used in production. 
-There won't be any _major_ breaking API changes anymore. **The official release is targeted for the end of September 2025.**
+:::info
+From Vendure v3.5.0, the `@vendure/dashboard` package and configuration comes as standard with new projects that are started with
+the `npx @vendure/create` command.
+
+This guide serves mainly for those adding the Dashboard to existing project set up prior to v3.5.0.
 :::
-
-Our new React-based dashboard is currently in the release candidate phase, and you can try it out now!
-
-The goal of the new dashboard:
-
-- Improve the developer experience to make it significantly easier and faster to build customizations
-- Reduce boilerplate (repetitive code) by using schema-driven UI generation
-- Modern, AI-ready stack using React, Tailwind & Shadcn.
-- Built-in type-safety with zero extra configuration
-
-Because the dashboard is in the release candidate phase, not all planned features are available yet. However, enough has been implemented that
-you can try it out and give us feedback.
 
 ## Installation & Setup
 
@@ -39,11 +29,12 @@ Then create a `vite.config.mts` file in the root of your project (on the same le
 
 ```ts title="vite.config.mts"
 import { vendureDashboardPlugin } from '@vendure/dashboard/vite';
+import { join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
-import { resolve, join } from 'path';
 
 export default defineConfig({
+    base: '/dashboard',
     build: {
         outDir: join(__dirname, 'dist/dashboard'),
     },
@@ -74,7 +65,7 @@ export default defineConfig({
 ```
 
 You should also add the following to your existing `tsconfig.json` file to exclude the dashboard extensions and Vite config
-from your build.
+from your build, and reference a new `tsconfig.dashboard.json` that will have compiler settings for the Dashboard code.
 
 ```json title="tsconfig.json"
 {
@@ -86,14 +77,17 @@ from your build.
         "admin-ui",
         // highlight-start
         "src/plugins/**/dashboard/*",
+        "src/gql/*",
         "vite.*.*ts"
         // highlight-end
     ],
+    // highlight-start
     "references": [
         {
             "path": "./tsconfig.dashboard.json"
         }
     ]
+    // highlight-end
 }
 ```
 
@@ -103,28 +97,74 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
 ```json title="tsconfig.dashboard.json"
 {
     "compilerOptions": {
+        "composite": true,
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "jsx": "react-jsx",
         "paths": {
             // Import alias for the GraphQL types
             // Please adjust to the location that you have set in your `vite.config.mts`
-            "@/gql": ["./src/gql/graphql.ts"],
+            "@/gql": [
+                "./src/gql/graphql.ts"
+            ],
             // This line allows TypeScript to properly resolve internal
             // Vendure Dashboard imports, which is necessary for
             // type safety in your dashboard extensions.
             // This path assumes a root-level tsconfig.json file.
             // You may need to adjust it if your project structure is different.
-            "@/vdb/*": ["./node_modules/@vendure/dashboard/src/lib/*"]
+            "@/vdb/*": [
+                "./node_modules/@vendure/dashboard/src/lib/*"
+            ]
         }
     },
-    "include": ["src/plugins/**/dashboard/*", "src/gql/**/*.ts"]
+    "include": [
+        "src/plugins/**/dashboard/*",
+        "src/gql/**/*.ts"
+    ]
 }
 ```
 
+## The DashboardPlugin
+
+In your `vendure-config.ts` file, you should also import and configure the [DashboardPlugin](/reference/core-plugins/dashboard-plugin/).
+
+```ts title="src/vendure-config.ts"
+import { DashboardPlugin } from '@vendure/dashboard/plugin';
+
+const config: VendureConfig = {
+    plugins: [
+        // ... existing plugins
+        // highlight-start  
+        DashboardPlugin.init({
+            // The route should correspond to the `base` setting
+            // in the vite.config.mts file
+            route: 'dashboard',
+            // This appDir should correspond to the `build.outDir`
+            // setting in the vite.config.mtx file
+            appDir: './dist/dashboard',
+        }),
+        // highlight-end  
+    ],
+};
+```
+
+The `DashboardPlugin` adds the following features that enhance the use of the Dashboard:
+
+- It exposes a set of queries which power the Insights page metrics.
+- It registers SettingsStore entries that are used to store your personal display settings on the server side, which
+  allow administrators to enjoy a consistent experience across browsers and devices.
+- It serves the dashboard with a static server at the `/dashboard` route (by default), meaning you do not
+  need to set up a separate web server.
+
 ## Running the Dashboard
 
-Now you can run the dashboard in development mode with:
+Once the above is set up, you can run `npm run dev` to start your Vendure server, and then visit
+
+```
+http://localhost:3000/dashboard
+```
+
+which will display a developer placeholder until you start the Vite dev server using
 
 ```bash
 npx vite
@@ -132,25 +172,19 @@ npx vite
 
 To stop the running dashboard, type `q` and hit enter.
 
-## What's Next?
+:::warning Compatibility with the legacy Admin UI
+If you still need to run the legacy Angular-based Admin UI in parallel with the Dashboard,
+this is totally possible.
 
-Now that you have the dashboard up and running, you can start extending it:
+You just need to make sure to set the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) setting in the
+AdminUiPlugin's init options.
 
-- [Extending the Dashboard](/guides/extending-the-dashboard/extending-overview/) - Core concepts and best practices
-- [Navigation](/guides/extending-the-dashboard/navigation/) - Add custom navigation sections and menu items
-- [Page Blocks](/guides/extending-the-dashboard/page-blocks/) - Add custom blocks to existing pages
-- [Action Bar Items](/guides/extending-the-dashboard/action-bar-items/) - Add custom buttons to page action bars
-- [Tech Stack](/guides/extending-the-dashboard/tech-stack/) - Learn about the technologies used in the dashboard
-- [Dashboard Theming](/guides/extending-the-dashboard/theming) - Customize the look and feel of the dashboard
-- [CMS Tutorial](/guides/extending-the-dashboard/cms-tutorial/) - Complete tutorial showing how to build a CMS plugin with custom pages and forms
+```ts
+AdminUiPlugin.init({
+  // ...
+  // highlight-next-line  
+  compatibilityMode: true,  
+})
+```
+:::
 
-## Still to come
-
-We hope this gives you a taste of what is possible with the new dashboard.
-
-We're still working to bring feature-parity with the existing Admin UI - so support for things like:
-
-- history timeline components
-- translations of the dashboard itself
-
-The final release (expected Q3 2025) will also include much more extensive documentation & guides.

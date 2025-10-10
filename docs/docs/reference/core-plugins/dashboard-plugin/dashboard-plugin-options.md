@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardPluginOptions
 
-<GenerationInfo sourceFile="packages/dashboard/plugin/dashboard.plugin.ts" sourceLine="27" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/plugin/dashboard.plugin.ts" sourceLine="29" packageName="@vendure/dashboard" />
 
 Configuration options for the <a href='/reference/core-plugins/dashboard-plugin/#dashboardplugin'>DashboardPlugin</a>.
 
@@ -19,6 +19,7 @@ Configuration options for the <a href='/reference/core-plugins/dashboard-plugin/
 interface DashboardPluginOptions {
     route: string;
     appDir: string;
+    viteDevServerPort?: number;
 }
 ```
 
@@ -33,8 +34,14 @@ The route to the Dashboard UI.
 
 <MemberInfo kind="property" type={`string`}   />
 
-The path to the dashboard UI app dist directory. By default, the built-in dashboard UI
-will be served. This can be overridden with a custom build of the dashboard.
+The path to the dashboard UI app dist directory.
+### viteDevServerPort
+
+<MemberInfo kind="property" type={`number`} default={`5173`}   />
+
+The port on which to check for a running Vite dev server.
+If a Vite dev server is detected on this port, requests will be proxied to it
+instead of serving static files from appDir.
 
 
 </div>

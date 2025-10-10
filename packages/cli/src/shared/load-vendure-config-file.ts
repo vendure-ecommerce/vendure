@@ -3,9 +3,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { register } from 'ts-node';
 
-import { VendureConfigRef } from '../../shared/vendure-config-ref';
-import { selectTsConfigFile } from '../../utilities/ast-utils';
-import { isRunningInTsNode } from '../../utilities/utils';
+import { selectTsConfigFile } from '../utilities/ast-utils';
+import { isRunningInTsNode } from '../utilities/utils';
+
+import { VendureConfigRef } from './vendure-config-ref';
 
 export async function loadVendureConfigFile(
     vendureConfig: VendureConfigRef,
@@ -27,16 +28,18 @@ export async function loadVendureConfigFile(
         try {
             tsConfigFileContent = readFileSync(tsConfigPath, 'utf-8');
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to read TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+            throw new Error(
+                `Failed to read TypeScript config file at ${tsConfigPath}: ${getErrorMessage(error)}`,
+            );
         }
 
         try {
             const { default: stripJsonComments } = await import('strip-json-comments');
             tsConfigJson = JSON.parse(stripJsonComments(tsConfigFileContent));
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(`Failed to parse TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+            throw new Error(
+                `Failed to parse TypeScript config file at ${tsConfigPath}: ${getErrorMessage(error)}`,
+            );
         }
 
         const compilerOptions = tsConfigJson.compilerOptions;
@@ -59,6 +62,9 @@ export async function loadVendureConfigFile(
         throw new Error('Could not find the exported variable name in the VendureConfig file');
     }
     const configModule = await import(vendureConfig.sourceFile.getFilePath());
-    const config = configModule[exportedVarName];
-    return config;
+    return configModule[exportedVarName];
+}
+
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
 }

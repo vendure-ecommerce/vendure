@@ -16,8 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/vdb/graphql/api.js';
 import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
 import { formatFileSize } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Loader2, Search, Upload, X } from 'lucide-react';
@@ -153,18 +153,18 @@ export interface AssetGalleryProps {
  * @docsWeight 0
  */
 export function AssetGallery({
-                                 onSelect,
-                                 selectable = true,
-                                 multiSelect = undefined,
-                                 initialSelectedAssets = [],
-                                 pageSize = 24,
-                                 fixedHeight = false,
-                                 showHeader = true,
-                                 className = '',
-                                 onFilesDropped,
-                                 bulkActions,
-                                 displayBulkActions = true,
-                             }: AssetGalleryProps) {
+    onSelect,
+    selectable = true,
+    multiSelect = undefined,
+    initialSelectedAssets = [],
+    pageSize = 24,
+    fixedHeight = false,
+    showHeader = true,
+    className = '',
+    onFilesDropped,
+    bulkActions,
+    displayBulkActions = true,
+}: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
@@ -380,8 +380,7 @@ export function AssetGallery({
                 <input {...getInputProps()} />
 
                 {isDragActive && (
-                    <div
-                        className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
                         <Upload className="h-12 w-12 text-primary mb-2" />
                         <p className="text-center font-medium">Drop files here to upload</p>
                     </div>
@@ -389,7 +388,7 @@ export function AssetGallery({
 
                 <div
                     data-asset-gallery
-                    className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1"
+                    className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1"
                 >
                     {isLoading ? (
                         <div className="col-span-full flex justify-center py-12">

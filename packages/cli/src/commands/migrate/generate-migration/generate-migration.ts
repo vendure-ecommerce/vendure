@@ -4,10 +4,10 @@ import { generateMigration, VendureConfig } from '@vendure/core';
 import path from 'path';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
+import { loadVendureConfigFile } from '../../../shared/load-vendure-config-file';
 import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { withInteractiveTimeout } from '../../../utilities/utils';
-import { loadVendureConfigFile } from '../load-vendure-config-file';
 
 const cancelledMessage = 'Generate migration cancelled';
 

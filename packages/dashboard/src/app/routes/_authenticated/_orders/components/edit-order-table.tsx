@@ -5,7 +5,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import {
     ColumnDef,
     flexRender,
@@ -14,7 +14,7 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
     couponCodeSelectorPromotionListDocument,
     draftOrderEligibleShippingMethodsDocument,
@@ -44,7 +44,11 @@ export interface OrderTableProps {
         price?: any;
         priceWithTax?: any;
     }) => void;
-    onAdjustLine: (event: { lineId: string; quantity: number; customFields: Record<string, any> }) => void;
+    onAdjustLine: (event: {
+        lineId: string;
+        quantity: number;
+        customFields: Record<string, any> | undefined;
+    }) => void;
     onRemoveLine: (event: { lineId: string }) => void;
     onSetShippingMethod: (event: { shippingMethodId: string }) => void;
     onApplyCouponCode: (event: { couponCode: string }) => void;
@@ -53,95 +57,113 @@ export interface OrderTableProps {
 }
 
 export function EditOrderTable({
-                                   order,
-                                   eligibleShippingMethods,
-                                   onAddItem,
-                                   onAdjustLine,
-                                   onRemoveLine,
-                                   onSetShippingMethod,
-                                   onApplyCouponCode,
-                                   onRemoveCouponCode,
-                                   displayTotals = true,
-                               }: Readonly<OrderTableProps>) {
+    order,
+    eligibleShippingMethods,
+    onAddItem,
+    onAdjustLine,
+    onRemoveLine,
+    onSetShippingMethod,
+    onApplyCouponCode,
+    onRemoveCouponCode,
+    displayTotals = true,
+}: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const { t } = useLingui();
     const currencyCode = order.currencyCode;
-    const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
-        {
-            header: 'Image',
-            accessorKey: 'featuredAsset',
-            cell: ({ row }) => {
-                const asset = row.original.featuredAsset;
-                return <VendureImage asset={asset} preset="tiny" />;
+    const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = useMemo(
+        () => [
+            {
+                header: '',
+                accessorKey: 'featuredAsset',
+                cell: ({ row }) => {
+                    const asset = row.original.featuredAsset;
+                    const removing = row.original.quantity === 0;
+                    return (
+                        <VendureImage className={removing ? 'opacity-50' : ''} asset={asset} preset="tiny" />
+                    );
+                },
             },
-        },
-        {
-            header: 'Product',
-            accessorKey: 'productVariant.name',
-        },
-        {
-            header: 'SKU',
-            accessorKey: 'productVariant.sku',
-        },
-        {
-            header: 'Unit price',
-            accessorKey: 'unitPriceWithTax',
-            cell: ({ row }) => {
-                const value = row.original.unitPriceWithTax;
-                const netValue = row.original.unitPrice;
-                return <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />;
+            {
+                header: t`Product`,
+                accessorKey: 'productVariant.name',
+                cell: ({ row }) => {
+                    const value = row.original.productVariant.name;
+                    const removing = row.original.quantity === 0;
+                    return <div className={removing ? 'text-muted-foreground' : ''}>{value}</div>;
+                },
             },
-        },
-        {
-            header: 'Quantity',
-            accessorKey: 'quantity',
-            cell: ({ row }) => {
-                return (
-                    <div className="flex gap-2">
-                        <Input
-                            type="number"
-                            value={row.original.quantity}
-                            onChange={e =>
-                                onAdjustLine({
-                                    lineId: row.original.id,
-                                    quantity: e.target.valueAsNumber,
-                                    customFields: row.original.customFields ?? {},
-                                })
-                            }
-                        />
-                        <Button
-                            variant="outline"
-                            type="button"
-                            size="icon"
-                            onClick={() => onRemoveLine({ lineId: row.original.id })}
-                        >
-                            <Trash2 />
-                        </Button>
-                        {row.original.customFields && (
-                            <OrderLineCustomFieldsForm
-                                onUpdate={customFields => {
+            {
+                header: t`SKU`,
+                accessorKey: 'productVariant.sku',
+            },
+            {
+                header: t`Unit price`,
+                accessorKey: 'unitPriceWithTax',
+                cell: ({ row }) => {
+                    const value = row.original.unitPriceWithTax;
+                    const netValue = row.original.unitPrice;
+                    return (
+                        <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />
+                    );
+                },
+            },
+            {
+                header: t`Quantity`,
+                accessorKey: 'quantity',
+                cell: ({ row }) => {
+                    return (
+                        <div className="flex gap-2">
+                            <Input
+                                type="number"
+                                value={row.original.quantity}
+                                min={0}
+                                onChange={e =>
                                     onAdjustLine({
                                         lineId: row.original.id,
-                                        quantity: row.original.quantity,
-                                        customFields: customFields,
-                                    });
-                                }}
-                                value={row.original.customFields}
+                                        quantity: e.target.valueAsNumber,
+                                        customFields: row.original.customFields,
+                                    })
+                                }
                             />
-                        )}
-                    </div>
-                );
+                            <Button
+                                variant="outline"
+                                type="button"
+                                size="icon"
+                                disabled={row.original.quantity === 0}
+                                onClick={() => onRemoveLine({ lineId: row.original.id })}
+                            >
+                                <Trash2 />
+                            </Button>
+                            {row.original.customFields && (
+                                <OrderLineCustomFieldsForm
+                                    onUpdate={customFields => {
+                                        onAdjustLine({
+                                            lineId: row.original.id,
+                                            quantity: row.original.quantity,
+                                            customFields: customFields,
+                                        });
+                                    }}
+                                    value={row.original.customFields}
+                                />
+                            )}
+                        </div>
+                    );
+                },
             },
-        },
-        {
-            header: 'Total',
-            accessorKey: 'linePriceWithTax',
-            cell: ({ row }) => {
-                const value = row.original.linePriceWithTax;
-                const netValue = row.original.linePrice;
-                return <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />;
+            {
+                header: t`Total`,
+                accessorKey: 'linePriceWithTax',
+                cell: ({ row }) => {
+                    const value = row.original.linePriceWithTax;
+                    const netValue = row.original.linePrice;
+                    return (
+                        <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />
+                    );
+                },
             },
-        },
-    ];
+        ],
+        [],
+    );
 
     const data = order.lines;
 
@@ -169,9 +191,9 @@ export function EditOrderTable({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
+                                                      header.column.columnDef.header,
+                                                      header.getContext(),
+                                                  )}
                                         </TableHead>
                                     );
                                 })}
@@ -181,14 +203,14 @@ export function EditOrderTable({
                     <TableBody>
                         {table.getRowModel().rows?.length
                             ? table.getRowModel().rows.map(row => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
+                                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                                      {row.getVisibleCells().map(cell => (
+                                          <TableCell key={cell.id}>
+                                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                          </TableCell>
+                                      ))}
+                                  </TableRow>
+                              ))
                             : null}
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-12">
