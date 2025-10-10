@@ -17,7 +17,7 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { validatePerPageValue } from '@/vdb/utils/pagination.js';
+import { validatePageValue, validatePerPageValue } from '@/vdb/utils/pagination.js';
 import {
     FullWidthPageBlock,
     Page,
@@ -493,7 +493,8 @@ export function ListPage<
         ? validatePerPageValue(Number.parseInt(routeSearch.perPage))
         : validatePerPageValue(settings.itemsPerPage);
 
-    const page = routeSearch.page ? Number.parseInt(routeSearch.page) : 1;
+    const page = routeSearch.page ? validatePageValue(Number.parseInt(routeSearch.page)) : 1;
+
 
     const pagination = {
         page,
