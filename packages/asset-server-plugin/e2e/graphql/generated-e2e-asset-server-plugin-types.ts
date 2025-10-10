@@ -6622,7 +6622,7 @@ export type CreateAssetsMutation = {
               preview: string;
               focalPoint?: { x: number; y: number } | null;
           }
-        | {}
+        | Record<PropertyKey, never>
     >;
 };
 
