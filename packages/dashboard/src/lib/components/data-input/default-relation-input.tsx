@@ -1,11 +1,14 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { ControllerRenderProps } from 'react-hook-form';
+import { useMemo } from 'react';
 import { MultiRelationInput, SingleRelationInput } from './relation-input.js';
 import { createRelationSelectorConfig } from './relation-selector.js';
 
-import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import {
+    DashboardFormComponentMetadata,
+    DashboardFormComponentProps,
+    RelationCustomFieldConfig,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isRelationCustomFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 
 interface PlaceholderIconProps {
@@ -549,11 +552,9 @@ const createEntityConfigs = (i18n: any) => ({
     }),
 });
 
-interface DefaultRelationInputProps {
-    fieldDef: RelationCustomFieldConfig;
-    field: ControllerRenderProps<any, any>;
-    disabled?: boolean;
-}
+type DefaultRelationInputProps = DashboardFormComponentProps & {
+    entityType?: keyof ReturnType<typeof createEntityConfigs>;
+};
 
 export function DefaultRelationInput({
     fieldDef,
@@ -563,13 +564,14 @@ export function DefaultRelationInput({
     name,
     ref,
     disabled,
-}: Readonly<DashboardFormComponentProps>) {
+    entityType,
+}: Readonly<DefaultRelationInputProps>) {
     const { t } = useLingui();
-    if (!fieldDef || !isRelationCustomFieldConfig(fieldDef)) {
+    if (!fieldDef || (!isRelationCustomFieldConfig(fieldDef) && !entityType)) {
         return null;
     }
-    const entityName = fieldDef.entity;
-    const ENTITY_CONFIGS = createEntityConfigs(t);
+    const entityName = entityType ?? (fieldDef as RelationCustomFieldConfig).entity;
+    const ENTITY_CONFIGS = useMemo(() => createEntityConfigs(t), [t]);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {
@@ -618,3 +620,7 @@ export function DefaultRelationInput({
         );
     }
 }
+
+DefaultRelationInput.metadata = {
+    isListInput: 'dynamic',
+} as DashboardFormComponentMetadata;

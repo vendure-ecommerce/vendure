@@ -15,6 +15,11 @@ import { globalRegistry } from '../registry/global-registry.js';
 
 globalRegistry.register('inputComponents', new Map<string, DashboardFormComponent>());
 
+const DefaultProductInput: DashboardFormComponent = props => (
+    <DefaultRelationInput {...props} entityType="ProductVariant" />
+);
+DefaultProductInput.metadata = { isListInput: 'dynamic' };
+
 // Register built-in input components
 const inputComponents = globalRegistry.get('inputComponents');
 inputComponents.set('facet-value-input', FacetValueInput);
@@ -28,7 +33,7 @@ inputComponents.set('textarea-form-input', TextareaInput);
 inputComponents.set('html-editor-form-input', RichTextInput);
 inputComponents.set('rich-text-form-input', RichTextInput);
 inputComponents.set('password-form-input', PasswordInput);
-inputComponents.set('product-selector-form-input', DefaultRelationInput);
+inputComponents.set('product-selector-form-input', DefaultProductInput);
 inputComponents.set('relation-form-input', DefaultRelationInput);
 inputComponents.set('select-form-input', SelectWithOptions);
 inputComponents.set('product-multi-form-input', ProductMultiInput);
