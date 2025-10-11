@@ -1,5 +1,7 @@
 export class CustomAddressFields {}
 export class CustomAdministratorFields {}
+export class CustomApiKeyFields {}
+export class CustomApiKeyFieldsTranslation {}
 export class CustomAssetFields {}
 export class CustomChannelFields {}
 export class CustomCollectionFields {}

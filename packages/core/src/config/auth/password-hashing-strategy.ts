@@ -2,17 +2,23 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
 
 /**
  * @description
- * Defines how user passwords get hashed when using the {@link NativeAuthenticationStrategy}.
+ * Defines how sensitive user credentials like passwords and API-Keys get hashed.
  *
- * :::info
+ * :::info Config
  *
- * This is configured via the `authOptions.passwordHashingStrategy` property of
+ * Hashing for passwords when using the {@link NativeAuthenticationStrategy} can be
+ * configured via the `authOptions.passwordHashingStrategy` property of
  * your VendureConfig.
+ *
+ * Hashing for API-Keys can be configured via the {@link ApiKeyAuthorizationOptions},
+ * more specifically `authOptions.adminApiKeyAuthorizationOptions.hashingStrategy` and
+ * `authOptions.shopApiKeyAuthorizationOptions.hashingStrategy`.
  *
  * :::
  *
  * @docsCategory auth
  * @since 1.3.0
+ * @since // TODO api key release
  */
 export interface PasswordHashingStrategy extends InjectableStrategy {
     hash(plaintext: string): Promise<string>;
