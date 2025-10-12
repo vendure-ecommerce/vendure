@@ -28,6 +28,7 @@ export interface CompilerOptions {
     pathAdapter?: PathAdapter;
     logger?: Logger;
     pluginPackageScanner?: PackageScannerConfig;
+    customTransformers?: ts.CustomTransformers;
 }
 
 export interface CompileResult {
@@ -41,7 +42,14 @@ export interface CompileResult {
  * and in node_modules.
  */
 export async function compile(options: CompilerOptions): Promise<CompileResult> {
-    const { vendureConfigPath, outputPath, pathAdapter, logger = noopLogger, pluginPackageScanner } = options;
+    const {
+        vendureConfigPath,
+        outputPath,
+        pathAdapter,
+        logger = noopLogger,
+        pluginPackageScanner,
+        customTransformers,
+    } = options;
     const getCompiledConfigPath =
         pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
     const transformTsConfigPathMappings =
@@ -57,6 +65,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         outputPath,
         logger,
         transformTsConfigPathMappings,
+        customTransformers,
     });
     logger.info(`TypeScript compilation completed in ${Date.now() - compileStart}ms`);
 
@@ -137,11 +146,13 @@ async function compileTypeScript({
     outputPath,
     logger,
     transformTsConfigPathMappings,
+    customTransformers,
 }: {
     inputPath: string;
     outputPath: string;
     logger: Logger;
     transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
+    customTransformers?: ts.CustomTransformers;
 }): Promise<void> {
     await fs.ensureDir(outputPath);
 
@@ -192,7 +203,7 @@ async function compileTypeScript({
     logger.debug(`tsConfig baseUrl: ${tsConfigInfo?.baseUrl ?? 'UNKNOWN'}`);
 
     // Create a custom transformer to rewrite the output paths
-    const customTransformers: ts.CustomTransformers = {
+    const defaultCustomTransformers: ts.CustomTransformers = {
         after: [
             context => {
                 return sourceFile => {
@@ -207,8 +218,14 @@ async function compileTypeScript({
         ],
     };
 
+    // Merge custom transformers with default ones
+    const mergedCustomTransformers: ts.CustomTransformers = {
+        before: [...(customTransformers?.before ?? []), ...(defaultCustomTransformers.before ?? [])],
+        after: [...(customTransformers?.after ?? []), ...(defaultCustomTransformers.after ?? [])],
+    };
+
     const program = ts.createProgram([inputPath], compilerOptions);
-    const emitResult = program.emit(undefined, undefined, undefined, undefined, customTransformers);
+    const emitResult = program.emit(undefined, undefined, undefined, undefined, mergedCustomTransformers);
 
     // Only log actual emit errors, not type errors
     if (emitResult.emitSkipped) {
