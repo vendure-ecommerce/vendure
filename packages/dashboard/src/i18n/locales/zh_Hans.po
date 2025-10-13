@@ -51,170 +51,175 @@ msgid "The page will continue with the default query."
 msgstr "页面将继续使用默认查询。"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:22
+#: src/lib/framework/defaults.ts:24
 msgid "Insights"
 msgstr "洞察"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:30
+#: src/lib/framework/defaults.ts:32
 msgid "Catalog"
 msgstr "目录"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:37
+#: src/lib/framework/defaults.ts:39
 msgid "Products"
 msgstr "商品"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:44
+#: src/lib/framework/defaults.ts:46
 msgid "Product Variants"
 msgstr "商品变体"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:51
+#: src/lib/framework/defaults.ts:53
 msgid "Facets"
 msgstr "属性"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:58
+#: src/lib/framework/defaults.ts:60
 msgid "Collections"
 msgstr "集合"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:65
+#: src/lib/framework/defaults.ts:67
 msgid "Assets"
 msgstr "资源"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:74
+#: src/lib/framework/defaults.ts:76
 msgid "Sales"
 msgstr "销售"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:81
+#: src/lib/framework/defaults.ts:83
 msgid "Orders"
 msgstr "订单"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:90
-#: src/lib/framework/defaults.ts:97
+#: src/lib/framework/defaults.ts:92
+#: src/lib/framework/defaults.ts:99
 msgid "Customers"
 msgstr "客户"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:104
+#: src/lib/framework/defaults.ts:106
 msgid "Customer Groups"
 msgstr "客户组"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:113
+#: src/lib/framework/defaults.ts:115
 msgid "Marketing"
 msgstr "营销"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:120
+#: src/lib/framework/defaults.ts:122
 msgid "Promotions"
 msgstr "促销"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:129
+#: src/lib/framework/defaults.ts:131
 msgid "System"
 msgstr "系统"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:136
+#: src/lib/framework/defaults.ts:138
 msgid "Job Queue"
 msgstr "作业队列"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:143
+#: src/lib/framework/defaults.ts:145
 msgid "Healthchecks"
 msgstr "健康检查"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:150
+#: src/lib/framework/defaults.ts:152
 msgid "Scheduled Tasks"
 msgstr "计划任务"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:159
+#: src/lib/framework/defaults.ts:161
 msgid "Settings"
 msgstr "设置"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:166
+#: src/lib/framework/defaults.ts:168
 msgid "Sellers"
 msgstr "卖家"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:173
+#: src/lib/framework/defaults.ts:175
 msgid "Channels"
 msgstr "渠道"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:180
+#: src/lib/framework/defaults.ts:182
 msgid "Stock Locations"
 msgstr "库存位置"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:187
+#: src/lib/framework/defaults.ts:189
 msgid "Administrators"
 msgstr "管理员"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:194
+#: src/lib/framework/defaults.ts:196
 msgid "Roles"
 msgstr "角色"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:201
+#: src/lib/framework/defaults.ts:203
 msgid "Shipping Methods"
 msgstr "配送方式"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:208
+#: src/lib/framework/defaults.ts:210
 msgid "Payment Methods"
 msgstr "支付方式"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:215
+#: src/lib/framework/defaults.ts:217
 msgid "Tax Categories"
 msgstr "税务类别"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:222
+#: src/lib/framework/defaults.ts:224
 msgid "Tax Rates"
 msgstr "税率"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:229
+#: src/lib/framework/defaults.ts:231
 msgid "Countries"
 msgstr "国家"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:236
+#: src/lib/framework/defaults.ts:238
 msgid "Zones"
 msgstr "区域"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:243
+#: src/lib/framework/defaults.ts:245
 msgid "Global Settings"
 msgstr "全局设置"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:255
+#: src/lib/framework/defaults.ts:257
 msgid "Metrics Widget"
 msgstr "指标小部件"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:263
+#: src/lib/framework/defaults.ts:265
 msgid "Latest Orders Widget"
 msgstr "最新订单小部件"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:270
+#: src/lib/framework/defaults.ts:272
 msgid "Orders Summary Widget"
 msgstr "订单摘要小部件"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+msgid "Running pending search index updates"
+msgstr "正在运行待处理的搜索索引更新"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -735,7 +740,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
-#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
 msgid "{0}"
 msgstr "{0}"
 
@@ -795,8 +800,8 @@ msgid "+ {leftOver} more"
 msgstr "+ {leftOver} 个更多"
 
 #: src/lib/components/login/login-form.tsx:111
-msgid "<0>Forgot password?</0><1>Request reset</1>"
-msgstr "<0>忘记密码？</0><1>请求重置</1>"
+#~ msgid "<0>Forgot password?</0><1>Request reset</1>"
+#~ msgstr "<0>忘记密码？</0><1>请求重置</1>"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
@@ -854,7 +859,7 @@ msgstr "在前面添加列"
 msgid "Add Country"
 msgstr "添加国家"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:260
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
 msgid "Add coupon code"
 msgstr "添加优惠券代码"
 
@@ -1693,7 +1698,7 @@ msgstr "禁用"
 msgid "Disabled"
 msgstr "已禁用"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
 msgid "Discount"
 msgstr "折扣"
 
@@ -2686,6 +2691,7 @@ msgstr "正在加载标签..."
 #: src/lib/components/data-input/product-multi-selector-input.tsx:82
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
+#: src/lib/components/shared/customer-group-selector.tsx:58
 #: src/lib/components/shared/customer-selector.tsx:90
 #: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
@@ -2955,7 +2961,7 @@ msgstr "新商品变体"
 msgid "New promotion"
 msgstr "新促销"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
 msgid "New Promotion"
 msgstr "新促销"
 
@@ -3043,6 +3049,10 @@ msgstr "无地址"
 msgid "No addresses found"
 msgstr "未找到地址"
 
+#: src/lib/components/shared/alerts.tsx:43
+msgid "No alerts"
+msgstr "无提醒"
+
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
 msgid "No billing address"
 msgstr "无账单地址"
@@ -3123,6 +3133,7 @@ msgid "No result yet"
 msgstr "尚无结果"
 
 #: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "无结果"
 
@@ -3503,8 +3514,8 @@ msgstr "私有集合在商店中不可见"
 msgid "Private facets are not visible in the shop"
 msgstr "私有属性在商店中不可见"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:84
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
 msgid "Product"
 msgstr "商品"
 
@@ -3558,9 +3569,9 @@ msgstr "促销"
 msgid "public"
 msgstr "公开"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:106
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:80
 msgid "Quantity"
 msgstr "数量"
 
@@ -3819,7 +3830,7 @@ msgstr "搜索角色..."
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
-#: src/lib/components/data-input/default-relation-input.tsx:616
+#: src/lib/components/data-input/default-relation-input.tsx:618
 msgid "Select {0}"
 msgstr "选择 {0}"
 
@@ -3829,7 +3840,7 @@ msgid "Select {0} Items"
 msgstr "选择 {0} 个项目"
 
 #. placeholder {0}: entityName.toLowerCase()
-#: src/lib/components/data-input/default-relation-input.tsx:603
+#: src/lib/components/data-input/default-relation-input.tsx:605
 msgid "Select {0}s"
 msgstr "选择 {0}"
 
@@ -3999,7 +4010,7 @@ msgstr "完成支付"
 msgid "Settle refund"
 msgstr "完成退款"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
 msgid "Shipping"
 msgstr "配送"
@@ -4065,7 +4076,7 @@ msgstr "登录"
 msgid "Sign in to access the admin dashboard"
 msgstr "登录以访问管理仪表板"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:93
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
@@ -4161,7 +4172,7 @@ msgstr "街道地址"
 msgid "Street Address 2"
 msgstr "街道地址 2"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
 msgid "Sub total"
 msgstr "小计"
 
@@ -4403,7 +4414,7 @@ msgstr "修改摘要"
 msgid "Super Admin"
 msgstr "超级管理员"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
 msgid "Surcharge"
 msgstr "附加费"
 
@@ -4585,9 +4596,9 @@ msgstr "切换标题行"
 msgid "Token"
 msgstr "令牌"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:149
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
 msgid "Total"
@@ -4653,8 +4664,8 @@ msgstr "是"
 msgid "Type at least 2 characters to search..."
 msgstr "至少输入 2 个字符进行搜索..."
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:97
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
 msgid "Unit price"
 msgstr "单价"
 

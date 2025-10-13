@@ -51,170 +51,175 @@ msgid "The page will continue with the default query."
 msgstr "Sayfa varsayılan sorgu ile devam edecek."
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:22
+#: src/lib/framework/defaults.ts:24
 msgid "Insights"
 msgstr "İçgörüler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:30
+#: src/lib/framework/defaults.ts:32
 msgid "Catalog"
 msgstr "Katalog"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:37
+#: src/lib/framework/defaults.ts:39
 msgid "Products"
 msgstr "Ürünler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:44
+#: src/lib/framework/defaults.ts:46
 msgid "Product Variants"
 msgstr "Ürün Varyantları"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:51
+#: src/lib/framework/defaults.ts:53
 msgid "Facets"
 msgstr "Özellikler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:58
+#: src/lib/framework/defaults.ts:60
 msgid "Collections"
 msgstr "Koleksiyonlar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:65
+#: src/lib/framework/defaults.ts:67
 msgid "Assets"
 msgstr "Varlıklar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:74
+#: src/lib/framework/defaults.ts:76
 msgid "Sales"
 msgstr "Satışlar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:81
+#: src/lib/framework/defaults.ts:83
 msgid "Orders"
 msgstr "Siparişler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:90
-#: src/lib/framework/defaults.ts:97
+#: src/lib/framework/defaults.ts:92
+#: src/lib/framework/defaults.ts:99
 msgid "Customers"
 msgstr "Müşteriler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:104
+#: src/lib/framework/defaults.ts:106
 msgid "Customer Groups"
 msgstr "Müşteri Grupları"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:113
+#: src/lib/framework/defaults.ts:115
 msgid "Marketing"
 msgstr "Pazarlama"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:120
+#: src/lib/framework/defaults.ts:122
 msgid "Promotions"
 msgstr "Promosyonlar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:129
+#: src/lib/framework/defaults.ts:131
 msgid "System"
 msgstr "Sistem"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:136
+#: src/lib/framework/defaults.ts:138
 msgid "Job Queue"
 msgstr "İş Kuyruğu"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:143
+#: src/lib/framework/defaults.ts:145
 msgid "Healthchecks"
 msgstr "Sağlık Kontrolleri"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:150
+#: src/lib/framework/defaults.ts:152
 msgid "Scheduled Tasks"
 msgstr "Zamanlanmış Görevler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:159
+#: src/lib/framework/defaults.ts:161
 msgid "Settings"
 msgstr "Ayarlar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:166
+#: src/lib/framework/defaults.ts:168
 msgid "Sellers"
 msgstr "Satıcılar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:173
+#: src/lib/framework/defaults.ts:175
 msgid "Channels"
 msgstr "Kanallar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:180
+#: src/lib/framework/defaults.ts:182
 msgid "Stock Locations"
 msgstr "Stok Konumları"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:187
+#: src/lib/framework/defaults.ts:189
 msgid "Administrators"
 msgstr "Yöneticiler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:194
+#: src/lib/framework/defaults.ts:196
 msgid "Roles"
 msgstr "Roller"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:201
+#: src/lib/framework/defaults.ts:203
 msgid "Shipping Methods"
 msgstr "Kargo Yöntemleri"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:208
+#: src/lib/framework/defaults.ts:210
 msgid "Payment Methods"
 msgstr "Ödeme Yöntemleri"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:215
+#: src/lib/framework/defaults.ts:217
 msgid "Tax Categories"
 msgstr "Vergi Kategorileri"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:222
+#: src/lib/framework/defaults.ts:224
 msgid "Tax Rates"
 msgstr "Vergi Oranları"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:229
+#: src/lib/framework/defaults.ts:231
 msgid "Countries"
 msgstr "Ülkeler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:236
+#: src/lib/framework/defaults.ts:238
 msgid "Zones"
 msgstr "Bölgeler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:243
+#: src/lib/framework/defaults.ts:245
 msgid "Global Settings"
 msgstr "Genel Ayarlar"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:255
+#: src/lib/framework/defaults.ts:257
 msgid "Metrics Widget"
 msgstr "Metrik Widget'ı"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:263
+#: src/lib/framework/defaults.ts:265
 msgid "Latest Orders Widget"
 msgstr "Son Siparişler Widget'ı"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:270
+#: src/lib/framework/defaults.ts:272
 msgid "Orders Summary Widget"
 msgstr "Sipariş Özeti Widget'ı"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+msgid "Running pending search index updates"
+msgstr "Bekleyen arama dizini güncellemeleri çalıştırılıyor"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -735,7 +740,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
-#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
 msgid "{0}"
 msgstr "{0}"
 
@@ -795,8 +800,8 @@ msgid "+ {leftOver} more"
 msgstr "+ {leftOver} daha"
 
 #: src/lib/components/login/login-form.tsx:111
-msgid "<0>Forgot password?</0><1>Request reset</1>"
-msgstr "<0>Şifrenizi mi unuttunuz?</0><1>Sıfırlama talep et</1>"
+#~ msgid "<0>Forgot password?</0><1>Request reset</1>"
+#~ msgstr "<0>Şifrenizi mi unuttunuz?</0><1>Sıfırlama talep et</1>"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
@@ -854,7 +859,7 @@ msgstr "Öncesine sütun ekle"
 msgid "Add Country"
 msgstr "Ülke Ekle"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:260
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
 msgid "Add coupon code"
 msgstr "Kupon kodu ekle"
 
@@ -1693,7 +1698,7 @@ msgstr "Devre dışı bırak"
 msgid "Disabled"
 msgstr "Devre dışı"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
 msgid "Discount"
 msgstr "İndirim"
 
@@ -2686,6 +2691,7 @@ msgstr "Etiketler yükleniyor..."
 #: src/lib/components/data-input/product-multi-selector-input.tsx:82
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
+#: src/lib/components/shared/customer-group-selector.tsx:58
 #: src/lib/components/shared/customer-selector.tsx:90
 #: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
@@ -2955,7 +2961,7 @@ msgstr "Yeni ürün varyantı"
 msgid "New promotion"
 msgstr "Yeni promosyon"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
 msgid "New Promotion"
 msgstr "Yeni Promosyon"
 
@@ -3043,6 +3049,10 @@ msgstr "Adres yok"
 msgid "No addresses found"
 msgstr "Adres bulunamadı"
 
+#: src/lib/components/shared/alerts.tsx:43
+msgid "No alerts"
+msgstr "Uyarı yok"
+
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
 msgid "No billing address"
 msgstr "Fatura adresi yok"
@@ -3123,6 +3133,7 @@ msgid "No result yet"
 msgstr "Henüz sonuç yok"
 
 #: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Sonuç yok"
 
@@ -3503,8 +3514,8 @@ msgstr "Özel koleksiyonlar mağazada görünmez"
 msgid "Private facets are not visible in the shop"
 msgstr "Özel özellikler mağazada görünmez"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:84
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
 msgid "Product"
 msgstr "Ürün"
 
@@ -3558,9 +3569,9 @@ msgstr "Promosyonlar"
 msgid "public"
 msgstr "genel"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:106
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:80
 msgid "Quantity"
 msgstr "Miktar"
 
@@ -3819,7 +3830,7 @@ msgstr "Rolleri ara..."
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
-#: src/lib/components/data-input/default-relation-input.tsx:616
+#: src/lib/components/data-input/default-relation-input.tsx:618
 msgid "Select {0}"
 msgstr "{0} seç"
 
@@ -3829,7 +3840,7 @@ msgid "Select {0} Items"
 msgstr "{0} Öğe Seç"
 
 #. placeholder {0}: entityName.toLowerCase()
-#: src/lib/components/data-input/default-relation-input.tsx:603
+#: src/lib/components/data-input/default-relation-input.tsx:605
 msgid "Select {0}s"
 msgstr "{0} seç"
 
@@ -3999,7 +4010,7 @@ msgstr "Ödemeyi tamamla"
 msgid "Settle refund"
 msgstr "İadeyi tamamla"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
 msgid "Shipping"
 msgstr "Kargo"
@@ -4065,7 +4076,7 @@ msgstr "Oturum aç"
 msgid "Sign in to access the admin dashboard"
 msgstr "Yönetici panosuna erişmek için oturum açın"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:93
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
@@ -4161,7 +4172,7 @@ msgstr "Sokak Adresi"
 msgid "Street Address 2"
 msgstr "Sokak Adresi 2"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
 msgid "Sub total"
 msgstr "Ara toplam"
 
@@ -4403,7 +4414,7 @@ msgstr "Değişiklik özeti"
 msgid "Super Admin"
 msgstr "Süper Yönetici"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
 msgid "Surcharge"
 msgstr "Ek ücret"
 
@@ -4585,9 +4596,9 @@ msgstr "Başlık satırını değiştir"
 msgid "Token"
 msgstr "Token"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:149
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
 msgid "Total"
@@ -4653,8 +4664,8 @@ msgstr "Doğru"
 msgid "Type at least 2 characters to search..."
 msgstr "Aramak için en az 2 karakter yazın..."
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:97
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
 msgid "Unit price"
 msgstr "Birim fiyat"
 
