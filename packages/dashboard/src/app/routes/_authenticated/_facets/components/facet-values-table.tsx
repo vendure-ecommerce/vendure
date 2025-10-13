@@ -1,14 +1,14 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { Button } from '@/vdb/components/ui/button.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { PlusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { deleteFacetValuesDocument } from '../facets.graphql.js';
+import { DeleteFacetValuesBulkAction } from './facet-value-bulk-actions.js';
 
 export const facetValueListDocument = graphql(`
     query FacetValueList($options: FacetValueListOptions) {
@@ -42,7 +42,6 @@ export function FacetValuesTable({ facetId, registerRefresher }: Readonly<FacetV
         <>
             <PaginatedListDataTable
                 listQuery={addCustomFields(facetValueListDocument)}
-                deleteMutation={deleteFacetValuesDocument}
                 page={page}
                 itemsPerPage={pageSize}
                 sorting={sorting}
@@ -94,6 +93,12 @@ export function FacetValuesTable({ facetId, registerRefresher }: Readonly<FacetV
                         ),
                     },
                 }}
+                bulkActions={[
+                    {
+                        order: 400,
+                        component: DeleteFacetValuesBulkAction,
+                    },
+                ]}
             />
             <div className="mt-4">
                 <Button asChild variant="outline">
