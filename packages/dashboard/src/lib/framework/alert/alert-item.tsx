@@ -1,44 +1,39 @@
 import { Button } from '@/vdb/components/ui/button.js';
+import { Alert } from '@/vdb/hooks/use-alerts.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { useQuery } from '@tanstack/react-query';
 import { ComponentProps } from 'react';
 
-import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
-
 interface AlertItemProps extends ComponentProps<'div'> {
-    alert: DashboardAlertDefinition;
+    alert: Alert;
 }
 
 export function AlertItem({ alert, className, ...props }: Readonly<AlertItemProps>) {
-    const { data } = useQuery({
-        queryKey: ['alert', alert.id],
-        queryFn: () => alert.check(),
-        refetchInterval: alert.recheckInterval,
-    });
-
-    const isAlertActive = alert.shouldShow?.(data);
-
-    if (!isAlertActive) {
+    if (!alert.active) {
         return null;
     }
+    const { definition: def } = alert;
 
     return (
         <div className={cn('flex items-center justify-between gap-1', className)} {...props}>
             <div className="flex flex-col">
-                <span className="font-semibold">
-                    {typeof alert.title === 'string' ? alert.title : alert.title(data)}
+                <span className="text-sm">
+                    {typeof def.title === 'string' ? def.title : def.title(alert.lastData)}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                    {typeof alert.description === 'string' ? alert.description : alert.description?.(data)}
+                <span className="text-xs text-muted-foreground">
+                    {typeof def.description === 'string'
+                        ? def.description
+                        : def.description?.(alert.lastData)}
                 </span>
             </div>
             <div className="flex items-center gap-1">
-                {alert.actions?.map(action => (
+                {def.actions?.map(action => (
                     <Button
                         key={action.label}
                         variant="secondary"
                         size="sm"
-                        onClick={() => action.onClick(data)}
+                        onClick={async () => {
+                            await action.onClick({ data: alert.lastData, dismiss: () => alert.dismiss() });
+                        }}
                     >
                         {action.label}
                     </Button>
