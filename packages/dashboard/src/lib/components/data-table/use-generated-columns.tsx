@@ -106,12 +106,12 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
+            const { header, meta, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
             return columnHelper.accessor(fieldInfo.name as any, {
                 id: fieldInfo.name,
-                meta: { fieldInfo, isCustomField },
+                meta: { fieldInfo, isCustomField, ...(meta ?? {}) },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar && fieldInfo.type !== 'Boolean' && enableSorting,
                 // Filtering is done on the server side, but we set this to 'equalsString' because
