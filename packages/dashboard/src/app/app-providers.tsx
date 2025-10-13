@@ -1,3 +1,4 @@
+import { AlertsProvider } from '@/vdb/providers/alerts-provider.js';
 import { AuthProvider } from '@/vdb/providers/auth.js';
 import { ChannelProvider } from '@/vdb/providers/channel-provider.js';
 import { I18nProvider } from '@/vdb/providers/i18n-provider.js';
@@ -17,7 +18,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     <ThemeProvider defaultTheme="system">
                         <AuthProvider>
                             <ServerConfigProvider>
-                                <ChannelProvider>{children}</ChannelProvider>
+                                <ChannelProvider>
+                                    <AlertsProvider>{children}</AlertsProvider>
+                                </ChannelProvider>
                             </ServerConfigProvider>
                         </AuthProvider>
                     </ThemeProvider>

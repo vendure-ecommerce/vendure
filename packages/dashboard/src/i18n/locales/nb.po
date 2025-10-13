@@ -51,170 +51,175 @@ msgid "The page will continue with the default query."
 msgstr "Siden vil fortsette med standardspørringen."
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:22
+#: src/lib/framework/defaults.ts:24
 msgid "Insights"
 msgstr "Innsikt"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:30
+#: src/lib/framework/defaults.ts:32
 msgid "Catalog"
 msgstr "Katalog"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:37
+#: src/lib/framework/defaults.ts:39
 msgid "Products"
 msgstr "Produkter"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:44
+#: src/lib/framework/defaults.ts:46
 msgid "Product Variants"
 msgstr "Produktvarianter"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:51
+#: src/lib/framework/defaults.ts:53
 msgid "Facets"
 msgstr "Fasetter"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:58
+#: src/lib/framework/defaults.ts:60
 msgid "Collections"
 msgstr "Samlinger"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:65
+#: src/lib/framework/defaults.ts:67
 msgid "Assets"
 msgstr "Ressurser"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:74
+#: src/lib/framework/defaults.ts:76
 msgid "Sales"
 msgstr "Salg"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:81
+#: src/lib/framework/defaults.ts:83
 msgid "Orders"
 msgstr "Bestillinger"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:90
-#: src/lib/framework/defaults.ts:97
+#: src/lib/framework/defaults.ts:92
+#: src/lib/framework/defaults.ts:99
 msgid "Customers"
 msgstr "Kunder"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:104
+#: src/lib/framework/defaults.ts:106
 msgid "Customer Groups"
 msgstr "Kundegrupper"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:113
+#: src/lib/framework/defaults.ts:115
 msgid "Marketing"
 msgstr "Markedsføring"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:120
+#: src/lib/framework/defaults.ts:122
 msgid "Promotions"
 msgstr "Kampanjer"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:129
+#: src/lib/framework/defaults.ts:131
 msgid "System"
 msgstr "System"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:136
+#: src/lib/framework/defaults.ts:138
 msgid "Job Queue"
 msgstr "Jobbkø"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:143
+#: src/lib/framework/defaults.ts:145
 msgid "Healthchecks"
 msgstr "Helsesjekker"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:150
+#: src/lib/framework/defaults.ts:152
 msgid "Scheduled Tasks"
 msgstr "Planlagte oppgaver"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:159
+#: src/lib/framework/defaults.ts:161
 msgid "Settings"
 msgstr "Innstillinger"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:166
+#: src/lib/framework/defaults.ts:168
 msgid "Sellers"
 msgstr "Selgere"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:173
+#: src/lib/framework/defaults.ts:175
 msgid "Channels"
 msgstr "Kanaler"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:180
+#: src/lib/framework/defaults.ts:182
 msgid "Stock Locations"
 msgstr "Lagerlokasjoner"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:187
+#: src/lib/framework/defaults.ts:189
 msgid "Administrators"
 msgstr "Administratorer"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:194
+#: src/lib/framework/defaults.ts:196
 msgid "Roles"
 msgstr "Roller"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:201
+#: src/lib/framework/defaults.ts:203
 msgid "Shipping Methods"
 msgstr "Fraktmetoder"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:208
+#: src/lib/framework/defaults.ts:210
 msgid "Payment Methods"
 msgstr "Betalingsmetoder"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:215
+#: src/lib/framework/defaults.ts:217
 msgid "Tax Categories"
 msgstr "Skattekategorier"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:222
+#: src/lib/framework/defaults.ts:224
 msgid "Tax Rates"
 msgstr "Skattesatser"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:229
+#: src/lib/framework/defaults.ts:231
 msgid "Countries"
 msgstr "Land"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:236
+#: src/lib/framework/defaults.ts:238
 msgid "Zones"
 msgstr "Soner"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:243
+#: src/lib/framework/defaults.ts:245
 msgid "Global Settings"
 msgstr "Globale innstillinger"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:255
+#: src/lib/framework/defaults.ts:257
 msgid "Metrics Widget"
 msgstr "Metrikk-widget"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:263
+#: src/lib/framework/defaults.ts:265
 msgid "Latest Orders Widget"
 msgstr "Siste bestillinger-widget"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:270
+#: src/lib/framework/defaults.ts:272
 msgid "Orders Summary Widget"
 msgstr "Bestillingsoversikt-widget"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+msgid "Running pending search index updates"
+msgstr "Kjører ventende søkeindeksoppdateringer"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -735,7 +740,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
-#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
 msgid "{0}"
 msgstr "{0}"
 
@@ -795,8 +800,8 @@ msgid "+ {leftOver} more"
 msgstr "+ {leftOver} flere"
 
 #: src/lib/components/login/login-form.tsx:111
-msgid "<0>Forgot password?</0><1>Request reset</1>"
-msgstr "<0>Glemt passord?</0><1>Be om tilbakestilling</1>"
+#~ msgid "<0>Forgot password?</0><1>Request reset</1>"
+#~ msgstr "<0>Glemt passord?</0><1>Be om tilbakestilling</1>"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
@@ -854,7 +859,7 @@ msgstr "Legg til kolonne før"
 msgid "Add Country"
 msgstr "Legg til land"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:260
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
 msgid "Add coupon code"
 msgstr "Legg til kupongkode"
 
@@ -1693,7 +1698,7 @@ msgstr "Deaktiver"
 msgid "Disabled"
 msgstr "Deaktivert"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
 msgid "Discount"
 msgstr "Rabatt"
 
@@ -2686,6 +2691,7 @@ msgstr "Laster tagger..."
 #: src/lib/components/data-input/product-multi-selector-input.tsx:82
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
+#: src/lib/components/shared/customer-group-selector.tsx:58
 #: src/lib/components/shared/customer-selector.tsx:90
 #: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
@@ -2955,7 +2961,7 @@ msgstr "Ny produktvariant"
 msgid "New promotion"
 msgstr "Ny kampanje"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
 msgid "New Promotion"
 msgstr "Ny kampanje"
 
@@ -3043,6 +3049,10 @@ msgstr "Ingen adresse"
 msgid "No addresses found"
 msgstr "Ingen adresser funnet"
 
+#: src/lib/components/shared/alerts.tsx:43
+msgid "No alerts"
+msgstr "Ingen varsler"
+
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
 msgid "No billing address"
 msgstr "Ingen fakturaadresse"
@@ -3123,6 +3133,7 @@ msgid "No result yet"
 msgstr "Ingen resultat ennå"
 
 #: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Ingen resultater"
 
@@ -3503,8 +3514,8 @@ msgstr "Private samlinger er ikke synlige i butikken"
 msgid "Private facets are not visible in the shop"
 msgstr "Private fasetter er ikke synlige i butikken"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:84
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
 msgid "Product"
 msgstr "Produkt"
 
@@ -3558,9 +3569,9 @@ msgstr "Kampanjer"
 msgid "public"
 msgstr "offentlig"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:106
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:80
 msgid "Quantity"
 msgstr "Antall"
 
@@ -3819,7 +3830,7 @@ msgstr "Søk roller..."
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
-#: src/lib/components/data-input/default-relation-input.tsx:616
+#: src/lib/components/data-input/default-relation-input.tsx:618
 msgid "Select {0}"
 msgstr "Velg {0}"
 
@@ -3829,7 +3840,7 @@ msgid "Select {0} Items"
 msgstr "Velg {0} varer"
 
 #. placeholder {0}: entityName.toLowerCase()
-#: src/lib/components/data-input/default-relation-input.tsx:603
+#: src/lib/components/data-input/default-relation-input.tsx:605
 msgid "Select {0}s"
 msgstr "Velg {0}"
 
@@ -3999,7 +4010,7 @@ msgstr "Gjennomfør betaling"
 msgid "Settle refund"
 msgstr "Gjennomfør refusjon"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
 msgid "Shipping"
 msgstr "Frakt"
@@ -4065,7 +4076,7 @@ msgstr "Logg inn"
 msgid "Sign in to access the admin dashboard"
 msgstr "Logg inn for å få tilgang til administrasjonspanelet"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:93
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
@@ -4161,7 +4172,7 @@ msgstr "Gateadresse"
 msgid "Street Address 2"
 msgstr "Gateadresse 2"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
 msgid "Sub total"
 msgstr "Delsum"
 
@@ -4403,7 +4414,7 @@ msgstr "Oppsummering av endringer"
 msgid "Super Admin"
 msgstr "Superadministrator"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
 msgid "Surcharge"
 msgstr "Tilleggsgebyr"
 
@@ -4585,9 +4596,9 @@ msgstr "Veksle overskriftsrad"
 msgid "Token"
 msgstr "Token"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:149
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
 msgid "Total"
@@ -4653,8 +4664,8 @@ msgstr "Sann"
 msgid "Type at least 2 characters to search..."
 msgstr "Skriv minst 2 tegn for å søke..."
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:97
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
 msgid "Unit price"
 msgstr "Enhetspris"
 

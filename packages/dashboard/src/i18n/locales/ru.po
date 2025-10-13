@@ -51,170 +51,175 @@ msgid "The page will continue with the default query."
 msgstr "Страница продолжит работу с запросом по умолчанию."
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:22
+#: src/lib/framework/defaults.ts:24
 msgid "Insights"
 msgstr "Аналитика"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:30
+#: src/lib/framework/defaults.ts:32
 msgid "Catalog"
 msgstr "Каталог"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:37
+#: src/lib/framework/defaults.ts:39
 msgid "Products"
 msgstr "Товары"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:44
+#: src/lib/framework/defaults.ts:46
 msgid "Product Variants"
 msgstr "Варианты товаров"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:51
+#: src/lib/framework/defaults.ts:53
 msgid "Facets"
 msgstr "Аспекты"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:58
+#: src/lib/framework/defaults.ts:60
 msgid "Collections"
 msgstr "Коллекции"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:65
+#: src/lib/framework/defaults.ts:67
 msgid "Assets"
 msgstr "Ресурсы"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:74
+#: src/lib/framework/defaults.ts:76
 msgid "Sales"
 msgstr "Продажи"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:81
+#: src/lib/framework/defaults.ts:83
 msgid "Orders"
 msgstr "Заказы"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:90
-#: src/lib/framework/defaults.ts:97
+#: src/lib/framework/defaults.ts:92
+#: src/lib/framework/defaults.ts:99
 msgid "Customers"
 msgstr "Клиенты"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:104
+#: src/lib/framework/defaults.ts:106
 msgid "Customer Groups"
 msgstr "Группы клиентов"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:113
+#: src/lib/framework/defaults.ts:115
 msgid "Marketing"
 msgstr "Маркетинг"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:120
+#: src/lib/framework/defaults.ts:122
 msgid "Promotions"
 msgstr "Акции"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:129
+#: src/lib/framework/defaults.ts:131
 msgid "System"
 msgstr "Система"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:136
+#: src/lib/framework/defaults.ts:138
 msgid "Job Queue"
 msgstr "Очередь задач"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:143
+#: src/lib/framework/defaults.ts:145
 msgid "Healthchecks"
 msgstr "Проверки состояния"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:150
+#: src/lib/framework/defaults.ts:152
 msgid "Scheduled Tasks"
 msgstr "Запланированные задачи"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:159
+#: src/lib/framework/defaults.ts:161
 msgid "Settings"
 msgstr "Настройки"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:166
+#: src/lib/framework/defaults.ts:168
 msgid "Sellers"
 msgstr "Продавцы"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:173
+#: src/lib/framework/defaults.ts:175
 msgid "Channels"
 msgstr "Каналы"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:180
+#: src/lib/framework/defaults.ts:182
 msgid "Stock Locations"
 msgstr "Складские местоположения"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:187
+#: src/lib/framework/defaults.ts:189
 msgid "Administrators"
 msgstr "Администраторы"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:194
+#: src/lib/framework/defaults.ts:196
 msgid "Roles"
 msgstr "Роли"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:201
+#: src/lib/framework/defaults.ts:203
 msgid "Shipping Methods"
 msgstr "Способы доставки"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:208
+#: src/lib/framework/defaults.ts:210
 msgid "Payment Methods"
 msgstr "Способы оплаты"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:215
+#: src/lib/framework/defaults.ts:217
 msgid "Tax Categories"
 msgstr "Налоговые категории"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:222
+#: src/lib/framework/defaults.ts:224
 msgid "Tax Rates"
 msgstr "Налоговые ставки"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:229
+#: src/lib/framework/defaults.ts:231
 msgid "Countries"
 msgstr "Страны"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:236
+#: src/lib/framework/defaults.ts:238
 msgid "Zones"
 msgstr "Зоны"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:243
+#: src/lib/framework/defaults.ts:245
 msgid "Global Settings"
 msgstr "Глобальные настройки"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:255
+#: src/lib/framework/defaults.ts:257
 msgid "Metrics Widget"
 msgstr "Виджет метрик"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:263
+#: src/lib/framework/defaults.ts:265
 msgid "Latest Orders Widget"
 msgstr "Виджет последних заказов"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:270
+#: src/lib/framework/defaults.ts:272
 msgid "Orders Summary Widget"
 msgstr "Виджет сводки заказов"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+msgid "Running pending search index updates"
+msgstr "Выполнение ожидающих обновлений поискового индекса"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -735,7 +740,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
-#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:421
+#: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
 msgid "{0}"
 msgstr "{0}"
 
@@ -795,8 +800,8 @@ msgid "+ {leftOver} more"
 msgstr "+ ещё {leftOver}"
 
 #: src/lib/components/login/login-form.tsx:111
-msgid "<0>Forgot password?</0><1>Request reset</1>"
-msgstr "<0>Забыли пароль?</0><1>Запросить сброс</1>"
+#~ msgid "<0>Forgot password?</0><1>Request reset</1>"
+#~ msgstr "<0>Забыли пароль?</0><1>Запросить сброс</1>"
 
 #: src/lib/components/data-table/human-readable-operator.tsx:24
 msgid "="
@@ -854,7 +859,7 @@ msgstr "Добавить столбец до"
 msgid "Add Country"
 msgstr "Добавить страну"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:260
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
 msgid "Add coupon code"
 msgstr "Добавить код купона"
 
@@ -1693,7 +1698,7 @@ msgstr "Отключить"
 msgid "Disabled"
 msgstr "Отключено"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:36
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
 msgid "Discount"
 msgstr "Скидка"
 
@@ -2686,6 +2691,7 @@ msgstr "Загрузка тегов..."
 #: src/lib/components/data-input/product-multi-selector-input.tsx:82
 #: src/lib/components/data-input/relation-selector.tsx:427
 #: src/lib/components/shared/country-selector.tsx:88
+#: src/lib/components/shared/customer-group-selector.tsx:58
 #: src/lib/components/shared/customer-selector.tsx:90
 #: src/lib/components/shared/facet-value-selector.tsx:340
 #: src/lib/components/shared/seller-selector.tsx:92
@@ -2955,7 +2961,7 @@ msgstr "Новый вариант товара"
 msgid "New promotion"
 msgstr "Новая акция"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:79
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
 msgid "New Promotion"
 msgstr "Новая акция"
 
@@ -3043,6 +3049,10 @@ msgstr "Нет адреса"
 msgid "No addresses found"
 msgstr "Адреса не найдены"
 
+#: src/lib/components/shared/alerts.tsx:43
+msgid "No alerts"
+msgstr "Нет оповещений"
+
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
 msgid "No billing address"
 msgstr "Нет адреса выставления счёта"
@@ -3123,6 +3133,7 @@ msgid "No result yet"
 msgstr "Результатов пока нет"
 
 #: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Нет результатов"
 
@@ -3503,8 +3514,8 @@ msgstr "Приватные коллекции не видны в магазин�
 msgid "Private facets are not visible in the shop"
 msgstr "Приватные фасеты не видны в магазине"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:84
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:41
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
 msgid "Product"
 msgstr "Товар"
 
@@ -3558,9 +3569,9 @@ msgstr "Акции"
 msgid "public"
 msgstr "публичное"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:106
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:77
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:80
 msgid "Quantity"
 msgstr "Количество"
 
@@ -3819,7 +3830,7 @@ msgstr "Поиск ролей..."
 #. placeholder {0}: entityName.toLowerCase()
 #. placeholder {0}: group.name
 #: src/app/routes/_authenticated/_products/components/product-option-select.tsx:58
-#: src/lib/components/data-input/default-relation-input.tsx:616
+#: src/lib/components/data-input/default-relation-input.tsx:618
 msgid "Select {0}"
 msgstr "Выбрать {0}"
 
@@ -3829,7 +3840,7 @@ msgid "Select {0} Items"
 msgstr "Выбрать {0} элементов"
 
 #. placeholder {0}: entityName.toLowerCase()
-#: src/lib/components/data-input/default-relation-input.tsx:603
+#: src/lib/components/data-input/default-relation-input.tsx:605
 msgid "Select {0}s"
 msgstr "Выбрать {0}"
 
@@ -3999,7 +4010,7 @@ msgstr "Провести платёж"
 msgid "Settle refund"
 msgstr "Провести возврат"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:62
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
 #: src/app/routes/_authenticated/_orders/orders.tsx:83
 msgid "Shipping"
 msgstr "Доставка"
@@ -4065,7 +4076,7 @@ msgstr "Войти"
 msgid "Sign in to access the admin dashboard"
 msgstr "Войдите для доступа к панели администратора"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:93
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
@@ -4161,7 +4172,7 @@ msgstr "Улица"
 msgid "Street Address 2"
 msgstr "Улица (строка 2)"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:50
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
 msgid "Sub total"
 msgstr "Промежуточный итог"
 
@@ -4403,7 +4414,7 @@ msgstr "Сводка изменений"
 msgid "Super Admin"
 msgstr "Суперадминистратор"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:20
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
 msgid "Surcharge"
 msgstr "Доплата"
 
@@ -4585,9 +4596,9 @@ msgstr "Переключить строку заголовка"
 msgid "Token"
 msgstr "Токен"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:149
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:74
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:111
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
 msgid "Total"
@@ -4653,8 +4664,8 @@ msgstr "Истина"
 msgid "Type at least 2 characters to search..."
 msgstr "Введите минимум 2 символа для поиска..."
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:97
-#: src/app/routes/_authenticated/_orders/components/order-table.tsx:54
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
+#: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
 msgid "Unit price"
 msgstr "Цена за единицу"
 
