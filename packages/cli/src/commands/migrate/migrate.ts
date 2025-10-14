@@ -19,9 +19,8 @@ export interface MigrateOptions {
 }
 
 /**
- * This command is currently not exposed due to unresolved issues which I think are related to
- * peculiarities in loading ESM modules vs CommonJS modules. More time is needed to dig into
- * this before we expose this command in the cli.ts file.
+ * @description
+ * Generate, run or revert a migration
  */
 export async function migrateCommand(options?: MigrateOptions) {
     // Check if any non-interactive options are provided

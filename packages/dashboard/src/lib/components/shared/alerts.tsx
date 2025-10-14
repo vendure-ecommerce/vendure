@@ -1,38 +1,50 @@
-import { useAlerts } from '@/vdb/framework/alert/alert-extensions.js';
 import { AlertItem } from '@/vdb/framework/alert/alert-item.js';
 import { AlertsIndicator } from '@/vdb/framework/alert/alerts-indicator.js';
+import { useAlerts } from '@/vdb/hooks/use-alerts.js';
+import { Trans } from '@lingui/react/macro';
 import { BellIcon } from 'lucide-react';
 import { Button } from '../ui/button.js';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu.js';
 import { ScrollArea } from '../ui/scroll-area.js';
 
 export function Alerts() {
-    const { alerts } = useAlerts();
+    const { alerts, activeCount } = useAlerts();
 
     if (alerts.length === 0) {
         return null;
     }
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
                 <Button size="icon" variant="ghost" className="relative">
                     <BellIcon />
                     <AlertsIndicator />
                 </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Alerts</DialogTitle>
-                </DialogHeader>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-w-[800px] min-w-96">
+                <DropdownMenuLabel>Alerts</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <ScrollArea className="max-h-[500px]">
-                    <div className="flex flex-col divide-y divide-border">
-                        {alerts.map(alert => (
-                            <AlertItem className="py-2" key={alert.id} alert={alert} />
-                        ))}
-                    </div>
+                    {activeCount > 0 ? (
+                        <div className="flex flex-col divide-y divide-border px-2">
+                            {alerts.map(alert => (
+                                <AlertItem className="py-2" key={alert.definition.id} alert={alert} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center py-10 text-muted-foreground">
+                            <Trans>No alerts</Trans>
+                        </div>
+                    )}
                 </ScrollArea>
-            </DialogContent>
-        </Dialog>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

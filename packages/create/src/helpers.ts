@@ -218,8 +218,8 @@ export function getDependencies(
         `@vendure/core${vendurePkgVersion}`,
         `@vendure/email-plugin${vendurePkgVersion}`,
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
-        `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         `@vendure/graphiql-plugin${vendurePkgVersion}`,
+        `@vendure/dashboard${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
     ];
@@ -313,9 +313,9 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         await client.connect();
 
         const schema = await client.query(
-            `SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${
-                options.schema as string
-            }'`,
+            `SELECT schema_name
+             FROM information_schema.schemata
+             WHERE schema_name = '${options.schema as string}'`,
         );
         if (schema.rows.length === 0) {
             throw new Error('NO_SCHEMA');
@@ -533,17 +533,19 @@ export function cleanUpDockerResources(name: string) {
     }
 }
 
-export function resolvePackageRootDir(packageName: string) {
+export function resolvePackageRootDir(packageName: string, rootDir: string) {
     let packageEntryPath: string;
     try {
-        packageEntryPath = require.resolve(packageName);
+        packageEntryPath = require.resolve(packageName, { paths: [rootDir] });
     } catch {
         log(`Falling back to direct node_modules lookup for ${packageName}`);
         const fallbackPath = path.join(process.cwd(), 'node_modules', packageName);
         if (fs.existsSync(fallbackPath)) {
             return fallbackPath;
         }
-        throw new Error(`Cannot resolve package "${packageName}". Is it installed?`);
+        throw new Error(
+            `Cannot resolve package "${packageName}" (checked in ${fallbackPath}). Is it installed?`,
+        );
     }
 
     const target = packageName.split('/').pop();

@@ -3,6 +3,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/vdb/compone
 import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { LS_KEY_SHIPPING_TEST_ADDRESS } from '@/vdb/constants.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@lingui/react/macro';
@@ -43,20 +44,20 @@ export function TestAddressForm({ onAddressChange }: Readonly<TestAddressFormPro
     const form = useForm<TestAddress>({
         defaultValues: (() => {
             try {
-                const stored = localStorage.getItem('shippingTestAddress');
+                const stored = localStorage.getItem(LS_KEY_SHIPPING_TEST_ADDRESS);
                 return stored
                     ? JSON.parse(stored)
                     : {
-                        fullName: '',
-                        company: '',
-                        streetLine1: '',
-                        streetLine2: '',
-                        city: '',
-                        province: '',
-                        postalCode: '',
-                        countryCode: '',
-                        phoneNumber: '',
-                    };
+                          fullName: '',
+                          company: '',
+                          streetLine1: '',
+                          streetLine2: '',
+                          city: '',
+                          province: '',
+                          postalCode: '',
+                          countryCode: '',
+                          phoneNumber: '',
+                      };
             } catch {
                 return {
                     fullName: '',
@@ -92,7 +93,7 @@ export function TestAddressForm({ onAddressChange }: Readonly<TestAddressFormPro
                 previousValuesRef.current = currentValueString;
 
                 try {
-                    localStorage.setItem('shippingTestAddress', currentValueString);
+                    localStorage.setItem(LS_KEY_SHIPPING_TEST_ADDRESS, currentValueString);
                 } catch {
                     // Ignore localStorage errors
                 }

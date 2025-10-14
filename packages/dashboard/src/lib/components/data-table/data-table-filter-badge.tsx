@@ -7,30 +7,40 @@ import { ColumnDataType } from './types.js';
 export function DataTableFilterBadge({
     filter,
     onRemove,
+    onClick,
     dataType,
     currencyCode,
 }: {
     filter: any;
     onRemove: (filter: any) => void;
+    onClick?: (filter: any) => void;
     dataType: ColumnDataType;
     currencyCode: string;
 }) {
     const [operator, value] = Object.entries(filter.value as Record<string, unknown>)[0];
     return (
-        <Badge
-            key={filter.id}
-            className="flex gap-1 items-center font-mono cursor-pointer "
-            variant="outline"
-            onClick={() => onRemove(filter)}
-        >
-            <Filter size="12" className="opacity-50" />
-            <div>{filter.id}</div>
-            <div className="text-muted-foreground">
-                <HumanReadableOperator operator={operator as Operator} mode="short" />
+        <Badge key={filter.id} className="flex gap-2 flex-wrap items-center" variant="outline">
+            <div
+                className="flex gap-1 flex-wrap items-center cursor-pointer flex-1"
+                onClick={() => onClick?.(filter)}
+            >
+                <Filter size="12" className="opacity-50 flex-shrink-0" />
+                <div
+                    className="@xs:overflow-hidden @xs:text-ellipsis @xs:whitespace-nowrap"
+                    title={filter.id}
+                >
+                    {filter.id}
+                </div>
+                <div className="text-muted-foreground flex-shrink-0">
+                    <HumanReadableOperator operator={operator as Operator} mode="short" />
+                </div>
+                <div className="@xs:overflow-hidden @xs:text-ellipsis @xs:whitespace-nowrap flex flex-col @xl:flex-row @2xl:gap-1">
+                    <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
+                </div>
             </div>
-            <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
-
-            <XIcon className="h-4" />
+            <button className="border-l -mr-2" onClick={() => onRemove(filter)}>
+                <XIcon className="h-4 flex-shrink-0 cursor-pointer" />
+            </button>
         </Badge>
     );
 }
@@ -65,7 +75,11 @@ function FilterValue({
         );
     }
     if (typeof value === 'string' && isDateIsoString(value)) {
-        return <div>{formatDate(value, { dateStyle: 'short', timeStyle: 'short' })}</div>;
+        return (
+            <div title={formatDate(value, { dateStyle: 'short', timeStyle: 'long' })}>
+                {formatDate(value, { dateStyle: 'short' })}
+            </div>
+        );
     }
     if (typeof value === 'boolean') {
         return <div>{value ? 'true' : 'false'}</div>;

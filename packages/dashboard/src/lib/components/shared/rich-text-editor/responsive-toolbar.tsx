@@ -83,6 +83,10 @@ export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolb
         [],
     );
 
+    const canUndo = !!editor?.can().undo();
+    const canRedo = !!editor?.can().redo();
+    const canInsertTable = !!editor?.can().insertTable();
+
     const toolbarItems: ToolbarItem[] = useMemo(() => {
         if (!editor) return [];
 
@@ -272,7 +276,7 @@ export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolb
                                 .run()
                         }
                         className={`h-8 px-2 ${editor.isActive('table') ? 'bg-accent' : ''}`}
-                        disabled={disabled || !editor.can().insertTable()}
+                        disabled={disabled || !canInsertTable}
                     >
                         <TableIcon className="h-4 w-4" />
                     </Button>
@@ -290,7 +294,7 @@ export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolb
                         variant="ghost"
                         size="sm"
                         onClick={() => editor.chain().focus().undo().run()}
-                        disabled={disabled || !editor.can().undo()}
+                        disabled={disabled || !canUndo}
                         className="h-8 px-2"
                     >
                         <Undo2Icon className="h-4 w-4" />
@@ -309,7 +313,7 @@ export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolb
                         variant="ghost"
                         size="sm"
                         onClick={() => editor.chain().focus().redo().run()}
-                        disabled={disabled || !editor.can().redo()}
+                        disabled={disabled || !canRedo}
                         className="h-8 px-2"
                     >
                         <Redo2Icon className="h-4 w-4" />
@@ -317,7 +321,7 @@ export function ResponsiveToolbar({ editor, disabled }: Readonly<ResponsiveToolb
                 ),
             },
         ];
-    }, [editor, disabled, linkDialogOpen, imageDialogOpen]);
+    }, [editor, disabled, linkDialogOpen, imageDialogOpen, canUndo, canRedo, canInsertTable]);
 
     useEffect(() => {
         const calculateVisibleItems = () => {

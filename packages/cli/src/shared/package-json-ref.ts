@@ -4,6 +4,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { Project } from 'ts-morph';
 
+import { findPackageJsonWithDependency } from '../utilities/monorepo-utils';
+
 export interface PackageToInstall {
     pkg: string;
     version?: string;
@@ -26,11 +28,14 @@ export class PackageJson {
 
     determineVendureVersion(): string | undefined {
         const packageJson = this.getPackageJsonContent();
-        return packageJson.dependencies['@vendure/core'];
+        return packageJson && packageJson.dependencies['@vendure/core'];
     }
 
     async installPackages(requiredPackages: PackageToInstall[]) {
         const packageJson = this.getPackageJsonContent();
+        if (!packageJson) {
+            return;
+        }
         const packagesToInstall = requiredPackages.filter(({ pkg, version, isDevDependency }) => {
             const hasDependency = isDevDependency
                 ? packageJson.devDependencies[pkg]
@@ -52,11 +57,27 @@ export class PackageJson {
         }
     }
 
-    getPackageJsonContent() {
+    getPackageJsonContent(): Record<string, any> | false {
         const packageJsonPath = this.locatePackageJsonWithVendureDependency();
         if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
             note(
                 `Could not find a package.json in the current directory. Please run this command from the root of a Vendure project.`,
+            );
+            return false;
+        }
+        return fs.readJsonSync(packageJsonPath);
+    }
+
+    /**
+     * @description
+     * The Root package json can be different from the "vendure" package json when in a monorepo
+     * setup.
+     */
+    getRootPackageJsonContent(): Record<string, any> | false {
+        const packageJsonPath = this.locateRootPackageJson();
+        if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
+            note(
+                `Could not find root package.json in the current directory. Please run this command from the root of an npm project.`,
             );
             return false;
         }
@@ -80,13 +101,36 @@ export class PackageJson {
         return 'npm';
     }
 
-    addScript(scriptName: string, script: string) {
+    /**
+     * Adds a script to the "vendure" package.json, which can differ from the root
+     * package.json if in a monorepo.
+     */
+    addScriptToVendurePackageJson(scriptName: string, script: string) {
         const packageJson = this.getPackageJsonContent();
-        packageJson.scripts = packageJson.scripts || {};
-        packageJson.scripts[scriptName] = script;
-        const packageJsonPath = this.vendurePackageJsonPath;
-        if (packageJsonPath) {
-            fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        if (packageJson) {
+            packageJson.scripts = packageJson.scripts || {};
+            packageJson.scripts[scriptName] = script;
+            const packageJsonPath = this.vendurePackageJsonPath;
+            if (packageJsonPath) {
+                fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+            }
+        }
+    }
+
+    /**
+     * @description
+     * The Root package json can be different from the "vendure" package json when in a monorepo
+     * setup.
+     */
+    addScriptToRootPackageJson(scriptName: string, script: string) {
+        const packageJson = this.getRootPackageJsonContent();
+        if (packageJson) {
+            packageJson.scripts = packageJson.scripts || {};
+            packageJson.scripts[scriptName] = script;
+            const packageJsonPath = this.rootPackageJsonPath;
+            if (packageJsonPath) {
+                fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+            }
         }
     }
 
@@ -116,32 +160,13 @@ export class PackageJson {
             return this._vendurePackageJsonPath;
         }
         const rootDir = this.getPackageRootDir().getPath();
-        const potentialMonorepoDirs = ['packages', 'apps', 'libs'];
+        const packageJsonPath = findPackageJsonWithDependency(rootDir, '@vendure/core');
 
-        const rootPackageJsonPath = path.join(this.getPackageRootDir().getPath(), 'package.json');
-        if (this.hasVendureDependency(rootPackageJsonPath)) {
-            return rootPackageJsonPath;
+        if (packageJsonPath) {
+            this._vendurePackageJsonPath = packageJsonPath;
         }
-        for (const dir of potentialMonorepoDirs) {
-            const monorepoDir = path.join(rootDir, dir);
-            // Check for a package.json in all subdirs
-            for (const subDir of fs.readdirSync(monorepoDir)) {
-                const packageJsonPath = path.join(monorepoDir, subDir, 'package.json');
-                if (this.hasVendureDependency(packageJsonPath)) {
-                    this._vendurePackageJsonPath = packageJsonPath;
-                    return packageJsonPath;
-                }
-            }
-        }
-        return null;
-    }
 
-    private hasVendureDependency(packageJsonPath: string) {
-        if (!fs.existsSync(packageJsonPath)) {
-            return false;
-        }
-        const packageJson = fs.readJsonSync(packageJsonPath);
-        return !!packageJson.dependencies?.['@vendure/core'];
+        return packageJsonPath;
     }
 
     private async runPackageManagerInstall(dependencies: string[], isDev: boolean) {

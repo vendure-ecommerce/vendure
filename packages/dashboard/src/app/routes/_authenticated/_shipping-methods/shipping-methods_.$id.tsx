@@ -86,11 +86,9 @@ function ShippingMethodDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast.success(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created shipping method'
-                        : 'Successfully updated shipping method',
-                ),
+                creatingNewEntity
+                    ? t`Successfully created shipping method`
+                    : t`Successfully updated shipping method`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -99,11 +97,7 @@ function ShippingMethodDetailPage() {
         },
         onError: err => {
             toast.error(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Failed to create shipping method'
-                        : 'Failed to update shipping method',
-                ),
+                creatingNewEntity ? t`Failed to create shipping method` : t`Failed to update shipping method`,
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },

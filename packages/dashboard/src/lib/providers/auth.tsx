@@ -1,3 +1,4 @@
+import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -170,8 +171,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     // Clear all cached queries to prevent stale data
                     queryClient.clear();
                     // Clear selected channel from localStorage
-                    localStorage.removeItem('vendure-selected-channel');
-                    localStorage.removeItem('vendure-selected-channel-token');
+                    localStorage.removeItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
                     setStatus('unauthenticated');
                     setIsLoginLogoutInProgress(false);
                     onLogoutSuccess?.();

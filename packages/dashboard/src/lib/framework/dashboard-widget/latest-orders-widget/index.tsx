@@ -5,7 +5,6 @@ import {
     OrderStateCell,
 } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
@@ -39,7 +38,6 @@ export function LatestOrdersWidget() {
             },
         },
     ]);
-    const { formatCurrency } = useLocalFormat();
 
     // Update filters when date range changes
     useEffect(() => {

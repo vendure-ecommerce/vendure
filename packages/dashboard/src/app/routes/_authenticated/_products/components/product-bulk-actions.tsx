@@ -108,12 +108,6 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
         <DuplicateBulkAction
             entityType="Product"
             duplicatorCode="product-duplicator"
-            duplicatorArguments={[
-                {
-                    name: 'includeVariants',
-                    value: 'true',
-                },
-            ]}
             requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
             entityName="Product"
             selection={selection}

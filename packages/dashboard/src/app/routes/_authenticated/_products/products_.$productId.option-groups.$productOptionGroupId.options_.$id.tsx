@@ -124,11 +124,9 @@ function ProductOptionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created product option'
-                        : 'Successfully updated product option',
-                ),
+                creatingNewEntity
+                    ? t`Successfully created product option`
+                    : t`Successfully updated product option`,
             );
             resetForm();
             const created = Array.isArray(data) ? data[0] : data;
@@ -138,9 +136,7 @@ function ProductOptionDetailPage() {
         },
         onError: err => {
             toast(
-                i18n.t(
-                    creatingNewEntity ? 'Failed to create product option' : 'Failed to update product option',
-                ),
+                creatingNewEntity ? t`Failed to create product option` : t`Failed to update product option`,
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },

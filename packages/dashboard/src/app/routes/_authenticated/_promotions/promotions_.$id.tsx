@@ -1,4 +1,5 @@
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
@@ -203,11 +204,7 @@ function PromotionDetailPage() {
                             name="perCustomerUsageLimit"
                             label={<Trans>Per customer usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                         <FormFieldWrapper
@@ -215,11 +212,7 @@ function PromotionDetailPage() {
                             name="usageLimit"
                             label={<Trans>Usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                     </DetailFormGrid>

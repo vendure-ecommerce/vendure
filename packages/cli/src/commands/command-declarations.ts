@@ -1,5 +1,13 @@
 import { CliCommandDefinition } from '../shared/cli-command-definition';
 
+import { addApiExtension } from './add/api-extension/add-api-extension';
+import { addCodegen } from './add/codegen/add-codegen';
+import { addDashboard } from './add/dashboard/add-dashboard';
+import { addEntity } from './add/entity/add-entity';
+import { addJobQueue } from './add/job-queue/add-job-queue';
+import { createNewPlugin } from './add/plugin/create-new-plugin';
+import { addService } from './add/service/add-service';
+
 export const cliCommands: CliCommandDefinition[] = [
     {
         name: 'add',
@@ -15,12 +23,18 @@ export const cliCommands: CliCommandDefinition[] = [
                 long: '--plugin <name>',
                 description: 'Create a new plugin with the specified name',
                 required: false,
+                interactiveId: 'create-new-plugin',
+                interactiveCategory: 'Plugin',
+                interactiveFn: createNewPlugin,
             },
             {
                 short: '-e',
                 long: '--entity <name>',
-                description: 'Add a new entity with the specified class name',
+                description: 'Add a new entity to a plugin',
                 required: false,
+                interactiveId: 'add-entity',
+                interactiveCategory: 'Plugin: Entity',
+                interactiveFn: addEntity,
                 subOptions: [
                     {
                         long: '--selected-plugin <name>',
@@ -42,8 +56,11 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-s',
                 long: '--service <name>',
-                description: 'Add a new service with the specified class name',
+                description: 'Add a new service to a plugin',
                 required: false,
+                interactiveId: 'add-service',
+                interactiveCategory: 'Plugin: Service',
+                interactiveFn: addService,
                 subOptions: [
                     {
                         long: '--selected-plugin <name>',
@@ -66,8 +83,11 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-j',
                 long: '--job-queue [plugin]',
-                description: 'Add job-queue support to the specified plugin',
+                description: 'Add job queue support to a plugin',
                 required: false,
+                interactiveId: 'add-job-queue',
+                interactiveCategory: 'Plugin: Job Queue',
+                interactiveFn: addJobQueue,
                 subOptions: [
                     {
                         long: '--name <name>',
@@ -84,14 +104,20 @@ export const cliCommands: CliCommandDefinition[] = [
             {
                 short: '-c',
                 long: '--codegen [plugin]',
-                description: 'Add GraphQL codegen configuration to the specified plugin',
+                description: 'Set up GraphQL code generation',
                 required: false,
+                interactiveId: 'add-codegen',
+                interactiveCategory: 'Project: Codegen',
+                interactiveFn: addCodegen,
             },
             {
                 short: '-a',
                 long: '--api-extension [plugin]',
-                description: 'Add an API extension scaffold to the specified plugin',
+                description: 'Add an API extension to a plugin',
                 required: false,
+                interactiveId: 'add-api-extension',
+                interactiveCategory: 'Plugin: API',
+                interactiveFn: addApiExtension,
                 subOptions: [
                     {
                         long: '--query-name <name>',
@@ -111,9 +137,19 @@ export const cliCommands: CliCommandDefinition[] = [
                 ],
             },
             {
+                short: '-d',
+                long: '--dashboard [plugin]',
+                description: 'Add Dashboard extensions to a plugin',
+                required: false,
+                interactiveId: 'add-dashboard',
+                interactiveCategory: 'Plugin: Dashboard',
+                interactiveFn: addDashboard,
+            },
+            {
                 short: '-u',
                 long: '--ui-extensions [plugin]',
-                description: 'Add Admin UI extensions setup to the specified plugin',
+                description:
+                    'Add UI extensions to a plugin (deprecated: considering migrating to the new Dashboard)',
                 required: false,
             },
         ],
@@ -154,6 +190,41 @@ export const cliCommands: CliCommandDefinition[] = [
         action: async options => {
             const { migrateCommand } = await import('./migrate/migrate');
             await migrateCommand(options);
+            process.exit(0);
+        },
+    },
+    {
+        name: 'schema',
+        description: 'Generate a schema file from your GraphQL APIs',
+        options: [
+            {
+                short: '-a',
+                long: '--api <admin|shop>',
+                description: 'Which GraphQL API to generate a schema for',
+                required: true,
+            },
+            {
+                short: '-d',
+                long: '--dir <dir>',
+                description: 'Output directory. Defaults to current directory.',
+                required: false,
+            },
+            {
+                short: '-n',
+                long: '--file-name <name>',
+                description: 'File name. Defaults to "schema.graphql|json" or "schema-shop.graphql|json"',
+                required: false,
+            },
+            {
+                short: '-f',
+                long: '--format <sdl|json>',
+                description: 'Output format, either SDL or JSON',
+                required: false,
+            },
+        ],
+        action: async options => {
+            const { schemaCommand } = await import('./schema/schema');
+            await schemaCommand(options as any);
             process.exit(0);
         },
     },

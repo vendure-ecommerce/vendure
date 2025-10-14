@@ -29,12 +29,12 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useRef } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
-import { DataTableFilterBadge } from './data-table-filter-badge.js';
+import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
 
 export interface FacetedFilter {
     title: string;
@@ -128,6 +128,8 @@ export function DataTable<TData>({
         defaultColumnVisibility ?? {},
     );
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    const prevSearchTermRef = useRef(searchTerm);
+    const prevColumnFiltersRef = useRef(columnFilters);
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -180,19 +182,44 @@ export function DataTable<TData>({
     }, [sorting]);
 
     useEffect(() => {
-        onFilterChange?.(table, columnFilters);
-    }, [columnFilters]);
-
-    useEffect(() => {
         onColumnVisibilityChange?.(table, columnVisibility);
     }, [columnVisibility]);
 
-    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+    useEffect(() => {
+        if (page && page > 1 && itemsPerPage && prevSearchTermRef.current !== searchTerm) {
+            // Set the page back to 1 when searchTerm changes
+            setPagination({
+                ...pagination,
+                pageIndex: 0,
+            });
+        }
+        prevSearchTermRef.current = searchTerm;
+    }, [onPageChange, searchTerm]);
+
+    useEffect(() => {
+        onFilterChange?.(table, columnFilters);
+        if (
+            page &&
+            page > 1 &&
+            itemsPerPage &&
+            JSON.stringify(prevColumnFiltersRef.current) !== JSON.stringify(columnFilters)
+        ) {
+            // Set the page back to 1 when filters change
+            setPagination({
+                ...pagination,
+                pageIndex: 0,
+            });
+            pagination.pageIndex;
+        }
+        prevColumnFiltersRef.current = columnFilters;
+    }, [columnFilters]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
         onSearchTermChange?.(value);
     };
+
+    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
 
     return (
         <DataTableProvider
@@ -243,20 +270,21 @@ export function DataTable<TData>({
 
                 {(pageId && onFilterChange && globalViews.length > 0) ||
                 columnFilters.filter(f => !facetedFilters?.[f.id]).length > 0 ? (
-                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2">
+                    <div className="flex items-center justify-between bg-muted/40 rounded border border-border p-2 @container">
                         <div className="flex items-center">
                             {pageId && onFilterChange && <GlobalViewsBar />}
                         </div>
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-1 flex-wrap items-center">
                             {columnFilters
                                 .filter(f => !facetedFilters?.[f.id])
                                 .map(f => {
                                     const column = table.getColumn(f.id);
                                     const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
                                     return (
-                                        <DataTableFilterBadge
+                                        <DataTableFilterBadgeEditable
                                             key={f.id}
                                             filter={f}
+                                            column={column}
                                             currencyCode={currency}
                                             dataType={
                                                 (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
@@ -303,7 +331,7 @@ export function DataTable<TData>({
                         </TableHeader>
                         <TableBody>
                             {isLoading && !data?.length ? (
-                                Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
                                     <TableRow
                                         key={`skeleton-${index}`}
                                         className="animate-in fade-in duration-100"

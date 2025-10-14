@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -86,6 +87,7 @@ export function RemoveFromChannelBulkAction({
             }
             icon={LayersIcon}
             className="text-warning"
+            disabled={activeChannel.code === DEFAULT_CHANNEL_CODE}
         />
     );
 }

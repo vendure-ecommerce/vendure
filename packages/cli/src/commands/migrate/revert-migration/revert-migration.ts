@@ -2,9 +2,9 @@ import { log, spinner } from '@clack/prompts';
 import { revertLastMigration } from '@vendure/core';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
+import { loadVendureConfigFile } from '../../../shared/load-vendure-config-file';
 import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
-import { loadVendureConfigFile } from '../load-vendure-config-file';
 
 const cancelledMessage = 'Revert migrations cancelled';
 

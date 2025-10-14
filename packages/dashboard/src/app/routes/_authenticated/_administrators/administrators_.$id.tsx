@@ -75,11 +75,9 @@ function AdministratorDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created administrator'
-                        : 'Successfully updated administrator',
-                ),
+                creatingNewEntity
+                    ? t`Successfully created administrator`
+                    : t`Successfully updated administrator`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -87,14 +85,9 @@ function AdministratorDetailPage() {
             }
         },
         onError: err => {
-            toast(
-                i18n.t(
-                    creatingNewEntity ? 'Failed to create administrator' : 'Failed to update administrator',
-                ),
-                {
-                    description: err instanceof Error ? err.message : 'Unknown error',
-                },
-            );
+            toast(creatingNewEntity ? t`Failed to create administrator` : t`Failed to update administrator`, {
+                description: err instanceof Error ? err.message : 'Unknown error',
+            });
         },
     });
 

@@ -99,9 +99,9 @@ export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElem
     useFocalPoint?: boolean;
     /**
      * @description
-     * The fallback to show if no asset is provided. If no fallback is provided, 
+     * The fallback to show if no asset is provided. If no fallback is provided,
      * a default placeholder will be shown.
-     */ 
+     */
     fallback?: React.ReactNode;
     /**
      * @description
@@ -113,9 +113,9 @@ export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElem
 /**
  * @description
  * A component for displaying an image from a Vendure asset.
- * 
+ *
  * Supports the following features:
- * 
+ *
  * * Presets
  * * Cropping
  * * Resizing
@@ -123,7 +123,7 @@ export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElem
  * * Quality
  * * Focal point
  * * Fallback
- * 
+ *
  * @example
  * ```tsx
  *  <VendureImage
@@ -154,14 +154,13 @@ export function VendureImage({
     ref,
     ...imgProps
 }: VendureImageProps) {
-    if (!asset) {
+    if (!asset || !asset.preview) {
         return fallback ? (
             <>{fallback}</>
         ) : (
             <PlaceholderImage preset={preset} width={width} height={height} className={className} />
         );
     }
-
     // Build the URL with query parameters
     const url = new URL(asset.preview);
 

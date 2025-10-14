@@ -394,17 +394,6 @@ export function PaginatedListDataTable<
         return { ...acc, [field]: direction };
     }, {});
 
-    const filter = columnFilters?.length
-        ? {
-              _and: columnFilters.map(f => {
-                  if (Array.isArray(f.value)) {
-                      return { [f.id]: { in: f.value } };
-                  }
-                  return { [f.id]: f.value };
-              }),
-          }
-        : undefined;
-
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
@@ -438,6 +427,17 @@ export function PaginatedListDataTable<
         }));
     const minimalListQuery = includeOnlySelectedListFields(extendedListQuery, visibleColumns);
 
+    const filter = columnFilters?.length
+        ? {
+              _and: columnFilters.map(f => {
+                  if (Array.isArray(f.value)) {
+                      return { [f.id]: { in: f.value } };
+                  }
+                  return { [f.id]: f.value };
+              }),
+          }
+        : undefined;
+
     const defaultQueryKey = [
         PaginatedListDataTableKey,
         minimalListQuery,
@@ -456,7 +456,7 @@ export function PaginatedListDataTable<
             const mergedFilter = { ...filter, ...searchFilter };
             const variables = {
                 options: {
-                    take: itemsPerPage,
+                    take: Math.min(itemsPerPage, 100),
                     skip: (page - 1) * itemsPerPage,
                     sort,
                     filter: mergedFilter,

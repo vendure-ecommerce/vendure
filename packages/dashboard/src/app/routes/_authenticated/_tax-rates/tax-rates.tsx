@@ -8,6 +8,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { mapFacetedFilterFields } from '../../../common/map-faceted-filter-fields.js';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
 import { zoneListQuery } from '../_zones/zones.graphql.js';
 import { DeleteTaxRatesBulkAction } from './components/tax-rate-bulk-actions.js';
@@ -41,6 +42,14 @@ function TaxRateListPage() {
                 return {
                     name: { contains: searchTerm },
                 };
+            }}
+            transformVariables={input => {
+                const facetedFilters = input.options?.filter?._and ?? [];
+                mapFacetedFilterFields(facetedFilters, {
+                    category: 'categoryId',
+                    zone: 'zoneId',
+                });
+                return input;
             }}
             facetedFilters={{
                 enabled: {

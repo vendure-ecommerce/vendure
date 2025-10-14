@@ -3,6 +3,7 @@ import {
     getSettingsStoreValueDocument,
     setSettingsStoreValueDocument,
 } from '@/vdb/graphql/settings-store-operations.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { SavedView, SavedViewsStore, SaveViewInput, UpdateViewInput } from '@/vdb/types/saved-views.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
@@ -19,6 +20,7 @@ const generateId = () => {
 
 export function useSavedViews() {
     const queryClient = useQueryClient();
+    const { settingsStoreIsAvailable } = useUserSettings();
     const { pageId } = usePage();
     const pageBlock = usePageBlock({ optional: true });
     const blockId = pageBlock?.blockId || 'default';
@@ -38,6 +40,8 @@ export function useSavedViews() {
             const allUserViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
             return allUserViews[pageId]?.[blockId] || [];
         },
+        retry: false,
+        enabled: settingsStoreIsAvailable,
     });
 
     // Query for global views
@@ -48,6 +52,8 @@ export function useSavedViews() {
             const allGlobalViews = (result?.getSettingsStoreValue as SavedViewsStore) || {};
             return allGlobalViews[pageId]?.[blockId] || [];
         },
+        retry: false,
+        enabled: settingsStoreIsAvailable,
     });
 
     // Save user view mutation
@@ -217,6 +223,7 @@ export function useSavedViews() {
     const canManageGlobalViews = hasPermissions(['WriteDashboardGlobalViews']);
 
     return {
+        savedViewsAreAvailable: settingsStoreIsAvailable,
         userViews: userViewsData || [],
         globalViews: globalViewsData || [],
         isLoading: userViewsLoading || globalViewsLoading,

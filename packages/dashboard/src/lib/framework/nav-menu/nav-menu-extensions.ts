@@ -7,17 +7,46 @@ export type NavMenuSectionPlacement = 'top' | 'bottom';
 
 /**
  * @description
- * The base configuration for navigation items and sections of the main app nav bar.
+ * Defines an items in the navigation menu.
  *
  * @docsCategory extensions-api
  * @docsPage Navigation
  * @since 3.4.0
  */
-interface NavMenuBaseItem {
+interface NavMenuItem {
+    /**
+     * @description
+     * A unique ID for this nav menu item
+     */
     id: string;
+    /**
+     * @description
+     * The title that will appear in the nav menu
+     */
     title: string;
+    /**
+     * @description
+     * The url of the route which this nav item links to.
+     */
+    url: string;
+    /**
+     * @description
+     * An optional icon component to represent the item,
+     * which should be imported from `lucide-react`.
+     */
     icon?: LucideIcon;
+    /**
+     * @description
+     * The order is an number which allows you to control
+     * the relative position in relation to other items in the
+     * menu.
+     * A higher number appears further down the list.
+     */
     order?: number;
+    /**
+     * Whether this item should appear in the top of bottom section
+     * of the nav menu.
+     */
     placement?: NavMenuSectionPlacement;
     /**
      * @description
@@ -27,23 +56,7 @@ interface NavMenuBaseItem {
     requiresPermission?: string | string[];
 }
 
-/**
- * @description
- * Defines an items in the navigation menu.
- *
- * @docsCategory extensions-api
- * @docsPage Navigation
- * @since 3.4.0
- */
-export interface NavMenuItem extends NavMenuBaseItem {
-    /**
-     * @description
-     * The url of the route which this nav item links to.
-     */
-    url: string;
-}
-
-export interface NavMenuSection extends NavMenuBaseItem {
+export interface NavMenuSection extends Omit<NavMenuItem, 'url'> {
     defaultOpen?: boolean;
     items?: NavMenuItem[];
 }

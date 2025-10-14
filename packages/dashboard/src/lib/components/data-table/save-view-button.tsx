@@ -13,7 +13,7 @@ interface SaveViewButtonProps {
 
 export const SaveViewButton: React.FC<SaveViewButtonProps> = ({ disabled }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { userViews, globalViews } = useSavedViews();
+    const { userViews, globalViews, savedViewsAreAvailable } = useSavedViews();
     const { columnFilters, searchTerm } = useDataTableContext();
 
     const hasFilters = columnFilters.length > 0 || (searchTerm && searchTerm.length > 0);
@@ -21,6 +21,10 @@ export const SaveViewButton: React.FC<SaveViewButtonProps> = ({ disabled }) => {
 
     // Don't show the button if there are no filters or if filters match an existing saved view
     if (!hasFilters || matchesExistingView) {
+        return null;
+    }
+
+    if (!savedViewsAreAvailable) {
         return null;
     }
 

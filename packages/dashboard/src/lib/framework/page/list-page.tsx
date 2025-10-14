@@ -17,7 +17,13 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
+import {
+    FullWidthPageBlock,
+    Page,
+    PageActionBar,
+    PageLayout,
+    PageTitle,
+} from '../layout-engine/page-layout.js';
 
 /**
  * @description
@@ -393,6 +399,7 @@ export interface ListPageProps<
  *                 body
  *                 customFields
  *             }
+ *             totalItems
  *         }
  *     }
  * `);

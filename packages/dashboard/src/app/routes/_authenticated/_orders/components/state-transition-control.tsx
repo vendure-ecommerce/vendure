@@ -5,9 +5,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { Trans } from '@lingui/react/macro';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { EllipsisVertical, CircleDashed, CircleCheck, CircleX } from 'lucide-react';
+import { Trans } from '@lingui/react/macro';
+import { CircleCheck, CircleDashed, CircleX, EllipsisVertical } from 'lucide-react';
 
 export type StateType = 'default' | 'destructive' | 'success';
 
@@ -44,6 +45,7 @@ export function StateTransitionControl({
     actions,
     isLoading,
 }: Readonly<StateTransitionControlProps>) {
+    const { getTranslatedOrderState } = useDynamicTranslations();
     const currentStateType = getTypeForState(currentState);
     const iconForType = {
         destructive: <CircleX className="h-4 w-4 text-destructive" />,
@@ -61,9 +63,7 @@ export function StateTransitionControl({
                 title={currentState}
             >
                 <div className="flex-shrink-0">{iconForType[currentStateType]}</div>
-                <span className="truncate">
-                    {currentState}
-                </span>
+                <span className="truncate">{getTranslatedOrderState(currentState)}</span>
             </div>
             {actions.length > 0 && (
                 <DropdownMenu>
@@ -72,10 +72,7 @@ export function StateTransitionControl({
                             variant="outline"
                             size="sm"
                             disabled={isLoading}
-                            className={cn(
-                                'rounded-l-none border-l-0 shadow-none',
-                                'bg-background',
-                            )}
+                            className={cn('rounded-l-none border-l-0 shadow-none', 'bg-background')}
                         >
                             <EllipsisVertical className="h-4 w-4" />
                         </Button>

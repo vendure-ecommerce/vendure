@@ -38,7 +38,9 @@ const routerOptions: RouterOptions<AnyRoute, any> = {
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
         queryClient,
     },
-    defaultErrorComponent: ({ error }: { error: Error }) => <div>Uh Oh!!! {error.message}</div>,
+    defaultErrorComponent: ({ error }: { error: Error }) => (
+        <div className="text-destructive p-6">An error occurred: {error.message}</div>
+    ),
 };
 
 // Create a type-only router instance for TypeScript type registration

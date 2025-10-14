@@ -1,5 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
@@ -7,7 +8,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PlusIcon, RefreshCwIcon } from 'lucide-react';
+import { ListRestart, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     AssignFacetValuesToProductsBulkAction,
@@ -48,6 +49,9 @@ function ProductListPage() {
                 name: {
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
+                description: {
+                    cell: RichTextDescriptionCell,
+                },
             }}
             onSearchTermChange={searchTerm => {
                 return {
@@ -87,7 +91,7 @@ function ProductListPage() {
             <PageActionBarRight>
                 <PermissionGuard requires={['UpdateCatalog']}>
                     <Button variant="outline" onClick={handleRebuildSearchIndex}>
-                        <RefreshCwIcon />
+                        <ListRestart />
                         <Trans>Rebuild search index</Trans>
                     </Button>
                 </PermissionGuard>

@@ -1,6 +1,6 @@
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
-import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -30,6 +30,7 @@ export interface DataTableBulkActionItemProps {
     onClick: () => void;
     className?: string;
     requiresPermission?: string[];
+    disabled?: boolean;
 }
 
 /**
@@ -63,13 +64,14 @@ export interface DataTableBulkActionItemProps {
  * @since 3.4.0
  */
 export function DataTableBulkActionItem({
-                                            label,
-                                            icon: Icon,
-                                            confirmationText,
-                                            className,
-                                            onClick,
-                                            requiresPermission,
-                                        }: Readonly<DataTableBulkActionItemProps>) {
+    label,
+    icon: Icon,
+    confirmationText,
+    className,
+    onClick,
+    requiresPermission,
+    disabled,
+}: Readonly<DataTableBulkActionItemProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const { hasPermissions } = usePermissions();
     const userHasPermission = hasPermissions(requiresPermission ?? []);
@@ -100,7 +102,7 @@ export function DataTableBulkActionItem({
         return (
             <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
                 <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onClick={handleClick} disabled={!userHasPermission}>
+                    <DropdownMenuItem onClick={handleClick} disabled={!userHasPermission || disabled}>
                         {Icon && <Icon className={cn('mr-1 h-4 w-4', className)} />}
                         <span className={cn('text-sm', className)}>
                             <Trans>{label}</Trans>

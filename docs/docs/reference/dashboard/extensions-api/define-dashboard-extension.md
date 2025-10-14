@@ -122,7 +122,7 @@ given components and optionally also add a nav menu item.
 Unified registration for custom form custom field components.
 ### dataTables
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/data-table#dashboarddatatableextensiondefinition'>DashboardDataTableExtensionDefinition</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/data-tables#dashboarddatatableextensiondefinition'>DashboardDataTableExtensionDefinition</a>[]`}   />
 
 Allows you to customize aspects of existing data tables in the dashboard.
 ### detailForms

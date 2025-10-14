@@ -542,6 +542,18 @@ as you write them. This is a huge productivity boost, and is **highly recommende
 - [GraphQL extension for VS Code](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql)
 - [GraphQL plugin for IntelliJ](https://plugins.jetbrains.com/plugin/8097-graphql) (including WebStorm)
 
+:::cli
+Run the `npx vendure schema` to generate a GraphQL schema file that your IDE plugin
+can use to provide autocomplete.
+:::
+
+1. Install the GraphQL plugin for your IDE
+2. Run `npx vendure schema --api admin` to generate a `schema.graphql` file in your root directory
+3. Create a `graphql.config.yml` file in your root directory with the following content:
+   ```yaml title="graphql.config.yml"
+   schema: 'schema.graphql'
+   ```
+
 ## Code generation
 
 Code generation means the automatic generation of TypeScript types based on your GraphQL schema and your GraphQL operations. This is a very powerful feature that allows you to write your code in a type-safe manner, without you needing to manually write any types for your API calls.

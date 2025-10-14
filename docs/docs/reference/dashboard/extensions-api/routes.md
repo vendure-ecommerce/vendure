@@ -21,6 +21,8 @@ interface DashboardRouteDefinition {
     path: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
     loader?: RouteOptions['loader'];
+    validateSearch?: RouteOptions['validateSearch'];
+    authenticated?: boolean;
 }
 ```
 
@@ -53,6 +55,19 @@ have been defined using the `navSections` extension property.
 Optional loader function to fetch data before the route renders.
 The value is a Tanstack Router
 [loader function](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#route-loaders)
+### validateSearch
+
+<MemberInfo kind="property" type={`RouteOptions['validateSearch']`}   />
+
+Optional search parameter validation function.
+The value is a Tanstack Router
+[validateSearch function](https://tanstack.com/router/latest/docs/framework/react/guide/search-params#search-param-validation)
+### authenticated
+
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
+
+Define if the route should be under the authentication context, i.e have the authenticated route
+as a parent.
 
 
 </div>

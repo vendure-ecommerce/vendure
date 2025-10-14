@@ -15,8 +15,8 @@ export const shippingMethodItemFragment = graphql(`
 
 export const shippingMethodListQuery = graphql(
     `
-        query ShippingMethodList {
-            shippingMethods {
+        query ShippingMethodList($options: ShippingMethodListOptions) {
+            shippingMethods(options: $options) {
                 items {
                     ...ShippingMethodItem
                 }

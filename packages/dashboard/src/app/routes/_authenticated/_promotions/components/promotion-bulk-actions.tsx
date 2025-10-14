@@ -63,16 +63,6 @@ export const DuplicatePromotionsBulkAction: BulkActionComponent<any> = ({ select
         <DuplicateBulkAction
             entityType="Promotion"
             duplicatorCode="promotion-duplicator"
-            duplicatorArguments={[
-                {
-                    name: 'includeConditions',
-                    value: 'true',
-                },
-                {
-                    name: 'includeActions',
-                    value: 'true',
-                },
-            ]}
             requiredPermissions={['CreatePromotion']}
             entityName="Promotion"
             selection={selection}
