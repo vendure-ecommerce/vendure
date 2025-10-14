@@ -147,7 +147,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.1.1",
     "@eslint/js": "^9.19.0",
     "@storybook/addon-a11y": "^10.0.0-beta.9",
     "@storybook/addon-docs": "^10.0.0-beta.9",

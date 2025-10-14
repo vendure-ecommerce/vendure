@@ -42,7 +42,7 @@ const preview: Preview = {
                 <I18nProvider>
                     <QueryClientProvider client={queryClient}>
                         <UserSettingsProvider queryClient={queryClient}>
-                            <ThemeProvider defaultTheme="system">
+                            <ThemeProvider defaultTheme="light">
                                 <AuthProvider>
                                     <DemoAuthProvider>
                                         <ServerConfigProvider>
