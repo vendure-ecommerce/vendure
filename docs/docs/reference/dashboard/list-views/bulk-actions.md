@@ -23,6 +23,7 @@ interface DataTableBulkActionItemProps {
     onClick: () => void;
     className?: string;
     requiresPermission?: string[];
+    disabled?: boolean;
 }
 ```
 
@@ -58,6 +59,11 @@ interface DataTableBulkActionItemProps {
 <MemberInfo kind="property" type={`string[]`}   />
 
 
+### disabled
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+
 
 
 </div>
@@ -65,7 +71,7 @@ interface DataTableBulkActionItemProps {
 
 ## DataTableBulkActionItem
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table-bulk-action-item.tsx" sourceLine="65" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table-bulk-action-item.tsx" sourceLine="66" packageName="@vendure/dashboard" since="3.4.0" />
 
 A component that should be used to implement any bulk actions for list pages & data tables.
 
