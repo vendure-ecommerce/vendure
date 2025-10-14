@@ -161,6 +161,7 @@ const sidebars = {
                         'guides/extending-the-dashboard/customizing-pages/customizing-login-page',
                         'guides/extending-the-dashboard/customizing-pages/page-blocks',
                         'guides/extending-the-dashboard/customizing-pages/action-bar-items',
+                        'guides/extending-the-dashboard/customizing-pages/insights-widgets',
                     ],
                 },
                 {

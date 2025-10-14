@@ -169,7 +169,7 @@ when needed.
 
 ## DashboardDataTableDisplayComponent
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="13" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="16" packageName="@vendure/dashboard" since="3.4.0" />
 
 Allows you to define custom display components for specific columns in data tables.
 The pageId is already defined in the data table extension, so only the column name is needed.
@@ -177,7 +177,7 @@ The pageId is already defined in the data table extension, so only the column na
 ```ts title="Signature"
 interface DashboardDataTableDisplayComponent {
     column: string;
-    component: React.ComponentType<{ value: any; [key: string]: any }>;
+    component: React.ComponentType<DataDisplayComponentProps<CellContext<any, any>>>;
 }
 ```
 
@@ -190,7 +190,7 @@ interface DashboardDataTableDisplayComponent {
 The name of the column where this display component should be used.
 ### component
 
-<MemberInfo kind="property" type={`React.ComponentType&#60;{ value: any; [key: string]: any }&#62;`}   />
+<MemberInfo kind="property" type={`React.ComponentType&#60;DataDisplayComponentProps&#60;CellContext&#60;any, any&#62;&#62;&#62;`}   />
 
 The React component that will be rendered as the display.
 It should accept `value` and other standard display props.
