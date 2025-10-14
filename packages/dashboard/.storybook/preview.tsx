@@ -11,6 +11,7 @@ import type { Preview } from '@storybook/react-vite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { DemoAuthProvider } from './demo-auth-provider.js';
+import { transformDocumentNodeInSource } from './transform-document-node.js';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,13 @@ const preview: Preview = {
             // 'error' - fail CI on a11y violations
             // 'off' - skip a11y checks entirely
             test: 'todo',
+        },
+        docs: {
+            source: {
+                transform: async (source: string, storyContext: any) => {
+                    return transformDocumentNodeInSource(source, storyContext);
+                },
+            },
         },
     },
     decorators: [
