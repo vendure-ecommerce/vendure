@@ -158,6 +158,7 @@ const sidebars = {
                     items: [
                         'guides/extending-the-dashboard/customizing-pages/customizing-list-pages',
                         'guides/extending-the-dashboard/customizing-pages/customizing-detail-pages',
+                        'guides/extending-the-dashboard/customizing-pages/customizing-login-page',
                         'guides/extending-the-dashboard/customizing-pages/page-blocks',
                         'guides/extending-the-dashboard/customizing-pages/action-bar-items',
                     ],
