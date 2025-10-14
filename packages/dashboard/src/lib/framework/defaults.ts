@@ -1,15 +1,7 @@
 import { registerAlert } from '@/vdb/framework/alert/alert-extensions.js';
 import { searchIndexBufferAlert } from '@/vdb/framework/alert/search-index-buffer-alert/search-index-buffer-alert.js';
 import { setNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
-import {
-    LayoutDashboardIcon,
-    Mail,
-    Settings2,
-    ShoppingCart,
-    SquareTerminal,
-    Terminal,
-    Users,
-} from 'lucide-react';
+import { ChartLine, Percent, Settings2, ShoppingBag, Tags, Terminal, Users } from 'lucide-react';
 
 import { LatestOrdersWidget } from './dashboard-widget/latest-orders-widget/index.js';
 import { MetricsWidget } from './dashboard-widget/metrics-widget/index.js';
@@ -23,14 +15,14 @@ export function registerDefaults() {
                 id: 'insights',
                 title: /* i18n*/ 'Insights',
                 placement: 'top',
-                icon: LayoutDashboardIcon,
+                icon: ChartLine,
                 url: '/',
                 order: 100,
             },
             {
                 id: 'catalog',
                 title: /* i18n*/ 'Catalog',
-                icon: SquareTerminal,
+                icon: Tags,
                 placement: 'top',
                 order: 200,
                 items: [
@@ -74,7 +66,7 @@ export function registerDefaults() {
             {
                 id: 'sales',
                 title: /* i18n*/ 'Sales',
-                icon: ShoppingCart,
+                icon: ShoppingBag,
                 placement: 'top',
                 order: 300,
                 items: [
@@ -113,7 +105,7 @@ export function registerDefaults() {
             {
                 id: 'marketing',
                 title: /* i18n*/ 'Marketing',
-                icon: Mail,
+                icon: Percent,
                 placement: 'top',
                 order: 500,
                 items: [
