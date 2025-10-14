@@ -12,6 +12,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { DemoAuthProvider } from './demo-auth-provider.js';
 
+const queryClient = new QueryClient();
+
 const preview: Preview = {
     parameters: {
         controls: {
@@ -30,15 +32,11 @@ const preview: Preview = {
     },
     decorators: [
         Story => {
-            const queryClient = new QueryClient();
-
             useEffect(() => {
                 // With this method we dynamically load the catalogs
                 void dynamicActivate(defaultLocale);
                 registerDefaults();
             }, []);
-
-            useEffect(() => {}, []);
 
             return (
                 <I18nProvider>
