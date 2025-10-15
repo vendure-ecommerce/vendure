@@ -11,16 +11,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NumberInput
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/number-input.tsx" sourceLine="14" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/number-input.tsx" sourceLine="20" packageName="@vendure/dashboard" />
 
 A component for displaying a numeric value.
 
 ```ts title="Signature"
-function NumberInput(props: Readonly<DashboardFormComponentProps>): void
+function NumberInput(props: Readonly<NumberInputProps>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`Readonly&#60;<a href='/reference/dashboard/extensions-api/form-components#dashboardformcomponentprops'>DashboardFormComponentProps</a>&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;NumberInputProps&#62;`} />
 

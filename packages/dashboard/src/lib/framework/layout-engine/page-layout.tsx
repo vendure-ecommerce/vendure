@@ -579,7 +579,7 @@ export function PageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <Card className={cn('@container  w-full', className)}>
+                <Card className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
                     {title || description ? (
                         <CardHeader>
                             {title && <CardTitle>{title}</CardTitle>}
@@ -615,7 +615,7 @@ export function FullWidthPageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <div className={cn('w-full', className)}>{children}</div>
+                <div className={cn('w-full', className, 'animate-in fade-in duration-300')}>{children}</div>
             </LocationWrapper>
         </PageBlockContext.Provider>
     );

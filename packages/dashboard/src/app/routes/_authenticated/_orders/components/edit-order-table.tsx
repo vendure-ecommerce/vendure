@@ -117,13 +117,16 @@ export function EditOrderTable({
                                 type="number"
                                 value={row.original.quantity}
                                 min={0}
-                                onChange={e =>
+                                onChange={e => {
+                                    const value = Number.isNaN(e.target.valueAsNumber)
+                                        ? 0
+                                        : e.target.valueAsNumber;
                                     onAdjustLine({
                                         lineId: row.original.id,
-                                        quantity: e.target.valueAsNumber,
+                                        quantity: value,
                                         customFields: row.original.customFields,
-                                    })
-                                }
+                                    });
+                                }}
                             />
                             <Button
                                 variant="outline"

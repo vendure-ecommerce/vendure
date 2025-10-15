@@ -31,13 +31,13 @@ export function TestPage() {
 
 - [Page component](/reference/dashboard/page-layout/page)
   - [PageTitle component](/reference/dashboard/page-layout/page-title)
-  - [PageLayout component](/reference/dashboard/page-layout/page-layout)
+  - [PageLayout component](/reference/dashboard/page-layout)
     - [PageBlock components](/reference/dashboard/page-layout/page-block)
 
 Following this structure ensures that:
 - Your pages look consistent with the rest of the Dashboard
 - Your page content is responsive
-- Your page can be further extended using the [pageBlocks API](/guides/extending-the-dashboard/page-blocks/)
+- Your page can be further extended using the [pageBlocks API](/guides/extending-the-dashboard/customizing-pages/page-blocks)
 
 :::info
 Note that the [ListPage](/reference/dashboard/list-views/list-page) and [DetailPage](/reference/dashboard/detail-views/detail-page)

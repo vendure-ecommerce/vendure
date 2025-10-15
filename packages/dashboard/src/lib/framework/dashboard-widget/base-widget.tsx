@@ -1,8 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { DashboardBaseWidgetProps } from '@/vdb/framework/extension-api/types/index.js';
-import { Trans } from '@lingui/react/macro';
-import { useLingui } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 type WidgetDimensions = {
@@ -21,14 +20,24 @@ export const useWidgetDimensions = () => {
     return context;
 };
 
+/**
+ * @description
+ * A wrapper component that should be used for any custom Insights page widgets.
+ * This ensures that your custom widget has all the basic functionality needed to be
+ * correctly rendered on the Insights page.
+ *
+ * @docsCategory extensions-api
+ * @docsPage widgets
+ * @since 3.3.0
+ */
 export function DashboardBaseWidget({
-                                        id,
-                                        config,
-                                        children,
-                                        title,
-                                        description,
-                                        actions,
-                                    }: DashboardBaseWidgetProps) {
+    id,
+    config,
+    children,
+    title,
+    description,
+    actions,
+}: DashboardBaseWidgetProps) {
     const headerRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);

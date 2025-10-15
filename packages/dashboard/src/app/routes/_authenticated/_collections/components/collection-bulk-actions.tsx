@@ -68,7 +68,6 @@ export const DuplicateCollectionsBulkAction: BulkActionComponent<any> = ({ selec
         <DuplicateBulkAction
             entityType="Collection"
             duplicatorCode="collection-duplicator"
-            duplicatorArguments={[]}
             requiredPermissions={['UpdateCatalog', 'UpdateCollection']}
             entityName="Collection"
             selection={selection}

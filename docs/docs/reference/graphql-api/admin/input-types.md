@@ -3754,6 +3754,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">TaxRateFilterParameter</span> &#123;</div>
+<div class="graphql-code-line ">zoneId: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">categoryId: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
+
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
 
 <div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/admin/input-types#dateoperators">DateOperators</a></div>

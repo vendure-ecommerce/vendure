@@ -125,6 +125,7 @@ function TaxRateDetailPage() {
                                     {...field}
                                     type="number"
                                     suffix="%"
+                                    min={0}
                                     value={field.value}
                                     onChange={e => field.onChange(e.target.valueAsNumber)}
                                 />
