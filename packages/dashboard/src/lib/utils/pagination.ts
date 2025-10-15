@@ -16,7 +16,7 @@ export function validatePerPageValue(value: number): number {
  * If the value is not a valid positive integer, returns 1.
  */
 export function validatePageValue(value: number): number {
-    if (Number.isFinite(value) && !Number.isNaN(value) && value >= 1 && Number.isInteger(value)) {
+    if (Number.isFinite(value) && value >= 1 && Number.isInteger(value)) {
         return value;
     }
     return 1;

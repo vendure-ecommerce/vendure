@@ -2,6 +2,8 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/react-table';
@@ -33,9 +35,10 @@ export function ProductOptionsTable({
     productOptionGroupId,
     registerRefresher,
 }: Readonly<ProductOptionsTableProps>) {
+    const { settings, setItemsPerPage } = useUserSettings();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
@@ -55,6 +58,7 @@ export function ProductOptionsTable({
                 onPageChange={(_, page, perPage) => {
                     setPage(page);
                     setPageSize(perPage);
+                    setItemsPerPage(perPage);
                 }}
                 onSortChange={(_, sorting) => {
                     setSorting(sorting);
