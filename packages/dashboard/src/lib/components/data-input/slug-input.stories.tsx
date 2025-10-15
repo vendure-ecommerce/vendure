@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { SlugInput } from './slug-input.js';
+import { FormProvider, useForm } from 'react-hook-form';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { SlugInput } from './slug-input.js';
 
 const meta = {
     title: 'Form Components/SlugInput',
@@ -115,8 +115,8 @@ export const WithExistingValue: Story = {
                         />
                     </div>
                     <div className="text-sm text-muted-foreground">
-                        Click the Edit button to manually edit the slug, or click Regenerate to update from the name
-                        field.
+                        Click the Edit button to manually edit the slug, or click Regenerate to update from
+                        the name field.
                     </div>
                 </div>
             </FormProvider>
@@ -145,7 +145,9 @@ export const ManualEditing: Story = {
                         />
                     </div>
                     <div>
-                        <label className="text-sm font-medium mb-2 block">Slug (click Edit to customize)</label>
+                        <label className="text-sm font-medium mb-2 block">
+                            Slug (click Edit to customize)
+                        </label>
                         <SlugInput
                             {...form.register('slug')}
                             value={form.watch('slug')}
@@ -156,8 +158,8 @@ export const ManualEditing: Story = {
                         />
                     </div>
                     <div className="text-sm text-muted-foreground">
-                        Click the Edit button to switch to manual mode. Click the Lock button to switch back to
-                        auto-generation.
+                        Click the Edit button to switch to manual mode. Click the Lock button to switch back
+                        to auto-generation.
                     </div>
                 </div>
             </FormProvider>

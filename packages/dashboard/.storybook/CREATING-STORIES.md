@@ -51,7 +51,7 @@ Every story file should follow this structure:
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
 import { ComponentName } from './component-name.js';
-import { withDescription } from '../../../.storybook/with-description.js';
+import { withDescription } from '../../../../.storybook/with-description.js';
 
 const meta = {
     title: 'Category/ComponentName',
@@ -276,7 +276,7 @@ Here's a complete example for a simple input component:
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
 import { TextInput } from './text-input.js';
-import { withDescription } from '../../../.storybook/with-description.js';
+import { withDescription } from '../../../../.storybook/with-description.js';
 
 const meta = {
     title: 'Form Components/TextInput',

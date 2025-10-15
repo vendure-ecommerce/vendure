@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
-import { RichTextInput } from './rich-text-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { RichTextInput } from './rich-text-input.js';
 
 const meta = {
     title: 'Form Components/RichTextInput',

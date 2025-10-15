@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 
 /**
  * Vite plugin that extracts JSDoc documentation from component files and inlines it into Storybook stories.
@@ -20,7 +20,7 @@ import { resolve, dirname } from 'path';
  *
  * **Usage in story files:**
  * ```typescript
- * import { withDescription } from '../../../.storybook/with-description.js';
+ * import { withDescription } from '../../../../.storybook/with-description.js';
  *
  * const meta = {
  *   title: 'Form Components/AffixedInput',
@@ -42,8 +42,10 @@ export function extractJSDocPlugin() {
             const withDescRegex = /withDescription\(import\.meta\.url,\s*['"]([^'"]+)['"]\)/g;
             let match;
             let transformed = code;
+            let hasWithDescription = false;
 
             while ((match = withDescRegex.exec(code)) !== null) {
+                hasWithDescription = true;
                 const componentPath = match[1];
                 const fullMatch = match[0];
 
@@ -60,7 +62,10 @@ export function extractJSDocPlugin() {
 
                     if (description) {
                         // Remove the spread and the withDescription call
-                        const removePattern = new RegExp(`\\.\\.\\.${fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')},?\\s*`, 'g');
+                        const removePattern = new RegExp(
+                            `\\.\\.\\.${fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')},?\\s*`,
+                            'g',
+                        );
                         transformed = transformed.replace(removePattern, '');
 
                         // Add the description to parameters.docs.description.component
@@ -70,23 +75,36 @@ export function extractJSDocPlugin() {
                             // Add docs.description.component to existing parameters
                             transformed = transformed.replace(
                                 /(parameters:\s*\{)/,
-                                `$1\n        docs: { description: { component: ${JSON.stringify(description)} } },`
+                                `$1\n        docs: { description: { component: ${JSON.stringify(description)} } },`,
                             );
                         } else {
                             // Add new parameters object
                             transformed = transformed.replace(
                                 /(}\s*satisfies\s+Meta)/,
-                                `,\n    parameters: {\n        docs: { description: { component: ${JSON.stringify(description)} } }\n    }$1`
+                                `,\n    parameters: {\n        docs: { description: { component: ${JSON.stringify(description)} } }\n    }$1`,
                             );
                         }
+                    } else {
+                        // Even if we couldn't extract description, still remove the withDescription call
+                        const removePattern = new RegExp(
+                            `\\.\\.\\.${fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')},?\\s*`,
+                            'g',
+                        );
+                        transformed = transformed.replace(removePattern, '');
                     }
                 } catch (error) {
                     console.error(`Failed to extract description for ${componentPath}:`, error);
+                    // Even on error, remove the withDescription call to avoid import errors
+                    const removePattern = new RegExp(
+                        `\\.\\.\\.${fullMatch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')},?\\s*`,
+                        'g',
+                    );
+                    transformed = transformed.replace(removePattern, '');
                 }
             }
 
-            if (transformed !== code) {
-                // Remove the withDescription import since we've inlined everything
+            // Always remove the withDescription import if we found any withDescription calls
+            if (hasWithDescription) {
                 transformed = transformed.replace(
                     /import\s+\{\s*withDescription\s*\}\s+from\s+['"][^'"]+with-description\.js['"];?\s*\n?/,
                     '',
@@ -108,45 +126,55 @@ function extractDescription(source, componentPath) {
     // e.g., './datetime-input.js' -> 'datetime-input'
     const fileName = componentPath.replace(/^\.\//, '').replace(/\.js$/, '');
 
-    console.log(`[extractJSDocPlugin] Looking for component matching file: ${fileName}`);
+    // Convert kebab-case filename to PascalCase component name
+    // e.g., 'datetime-input' -> 'DateTimeInput', 'asset-gallery' -> 'AssetGallery'
+    const expectedComponentName = fileName
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
 
-    // Find all JSDoc blocks with their associated exports
-    // This regex captures the JSDoc content and the export statement that follows
-    const allExportsPattern = /\/\*\*([\s\S]*?)\*\/\s*export\s+(?:function|const)\s+(\w+)/g;
-    const matches = [...source.matchAll(allExportsPattern)];
+    // Strategy: Find the component export first, then look backward for its JSDoc
+    // This ensures we get the comment IMMEDIATELY before the export, not an earlier one
 
-    console.log(`[extractJSDocPlugin] Found ${matches.length} exports with JSDoc: ${matches.map(m => m[2]).join(', ')}`);
+    // Step 1: Find the position of the component export
+    const exportPattern = new RegExp(
+        `export\\s+(?:function|const)\\s+${expectedComponentName}\\b`,
+        'g',
+    );
 
-    if (matches.length === 0) {
+    const exportMatch = exportPattern.exec(source);
+
+    if (!exportMatch) {
         return null;
     }
 
-    // Strategy: Find the export whose name, when converted to kebab-case, matches the filename
-    // e.g., DateTimeInput -> datetime-input
-    const componentMatch = matches.find(match => {
-        const exportName = match[2];
-        // Convert PascalCase to kebab-case
-        const kebabCase = exportName
-            .replace(/([a-z])([A-Z])/g, '$1-$2')
-            .toLowerCase();
-        return kebabCase === fileName;
-    });
+    // Step 2: Look backward from the export to find the JSDoc comment immediately before it
+    // We only want the comment that has ONLY whitespace between it and the export
+    const beforeExport = source.substring(0, exportMatch.index);
 
-    if (!componentMatch) {
-        console.warn(
-            `[extractJSDocPlugin] Could not find component matching ${fileName}, using last export: ${matches[matches.length - 1][2]}`
-        );
-        // Use the LAST export (most likely to be the main component)
-        return extractJSDocContent(matches[matches.length - 1][1]);
+    // Find the position of the LAST /** in the text before the export
+    const lastJsDocStart = beforeExport.lastIndexOf('/**');
+
+    if (lastJsDocStart === -1) {
+        return null;
     }
 
-    console.log(`[extractJSDocPlugin] Found JSDoc for ${componentMatch[2]}`);
-    const jsdocContent = componentMatch[1];
+    // Extract from the last /** to the end of beforeExport
+    const jsdocText = beforeExport.substring(lastJsDocStart);
+
+    // Now match /**...*/ followed by only whitespace
+    const jsdocPattern = /^\/\*\*([\s\S]*?)\*\/\s*$/;
+    const match = jsdocPattern.exec(jsdocText);
+
+    if (!match) {
+        return null;
+    }
+
+    const jsdocContent = match[1];
     return extractJSDocContent(jsdocContent);
 }
 
 function extractJSDocContent(jsdocContent) {
-
     // Extract description (text after @description tag, before next tag or end)
     const descriptionMatch = jsdocContent.match(/@description\s*\n\s*\*\s*([\s\S]*?)(?=\n\s*\*\s*@|\n\s*$)/);
 

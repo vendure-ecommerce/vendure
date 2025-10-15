@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
-import { CheckboxInput } from './checkbox-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { CheckboxInput } from './checkbox-input.js';
 
 const meta = {
     title: 'Form Components/CheckboxInput',

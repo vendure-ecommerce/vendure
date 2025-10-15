@@ -145,12 +145,12 @@ export interface AssetGalleryProps {
  * @example
  * ```tsx
  *  <AssetGallery
- onSelect={handleAssetSelect}
- multiSelect="manual"
- initialSelectedAssets={initialSelectedAssets}
- fixedHeight={false}
- displayBulkActions={false}
- />
+ *   onSelect={handleAssetSelect}
+ *   multiSelect="manual"
+ *   initialSelectedAssets={initialSelectedAssets}
+ *   fixedHeight={false}
+ *   displayBulkActions={false}
+ *   />
  * ```
  *
  * @docsCategory components

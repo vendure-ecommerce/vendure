@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
-import { TextInput } from './text-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { TextInput } from './text-input.js';
 
 const meta = {
     title: 'Form Components/TextInput',

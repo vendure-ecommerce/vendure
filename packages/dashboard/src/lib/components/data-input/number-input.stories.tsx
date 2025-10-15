@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
-import { NumberInput } from './number-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { NumberInput } from './number-input.js';
 
 const meta = {
     title: 'Form Components/NumberInput',
@@ -51,10 +51,7 @@ export const Playground: Story = {
         const field = register('playground');
         return (
             <div className="w-[300px]">
-                <NumberInput
-                    {...field}
-                    {...args}
-                />
+                <NumberInput {...field} {...args} />
             </div>
         );
     },
@@ -66,11 +63,7 @@ export const Float: Story = {
         const field = register('float');
         return (
             <div className="w-[300px] space-y-2">
-                <NumberInput
-                    {...field}
-                    step={0.01}
-                    fieldDef={{ type: 'float' }}
-                />
+                <NumberInput {...field} step={0.01} fieldDef={{ type: 'float' }} />
                 <div className="text-sm text-muted-foreground">
                     <div>Floating point with step 0.01</div>
                 </div>
@@ -85,11 +78,7 @@ export const WithPrefixAndSuffix: Story = {
         const field = register('withAffix');
         return (
             <div className="w-[300px] space-y-2">
-                <NumberInput
-                    {...field}
-                    fieldDef={{ ui: { prefix: '$', suffix: 'USD' } }}
-                    step={10}
-                />
+                <NumberInput {...field} fieldDef={{ ui: { prefix: '$', suffix: 'USD' } }} step={10} />
                 <div className="text-sm text-muted-foreground">
                     Demonstrates fieldDef.ui.prefix and fieldDef.ui.suffix
                 </div>
@@ -104,9 +93,7 @@ export const NullValue: Story = {
         const field = register('nullValue');
         return (
             <div className="w-[300px] space-y-2">
-                <NumberInput
-                    {...field}
-                />
+                <NumberInput {...field} />
                 <div className="text-sm text-muted-foreground">
                     <div className="mt-1 text-xs">When input is cleared, value becomes null</div>
                 </div>

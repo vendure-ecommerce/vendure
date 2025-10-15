@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
-import { PasswordInput } from './password-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { PasswordInput } from './password-input.js';
 
 const meta = {
     title: 'Form Components/PasswordInput',
@@ -36,10 +36,7 @@ export const Playground: Story = {
         const field = register('password');
         return (
             <div className="w-[300px]">
-                <PasswordInput
-                    {...field}
-                    {...args}
-                />
+                <PasswordInput {...field} {...args} />
             </div>
         );
     },

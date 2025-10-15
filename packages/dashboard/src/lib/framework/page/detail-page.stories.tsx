@@ -1,12 +1,6 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-    createMemoryHistory,
-    createRootRoute,
-    createRoute,
-    createRouter,
-    RouterProvider,
-} from '@tanstack/react-router';
+import { DemoRouterProvider } from '../../../../.storybook/demo-router-provider.js';
 import { DetailPage, DetailPageProps } from './detail-page.js';
 
 // Sample GraphQL query for a product detail
@@ -73,26 +67,14 @@ const updateProductDocument = graphql(`
     }
 `);
 
-// Wrapper component that sets up the router
 function DetailPageStoryWrapper(props: Omit<DetailPageProps<any, any, any>, 'route'>) {
-    const StoryComponent = () => <DetailPage {...props} route={productRoute} />;
-
-    const rootRoute = createRootRoute();
-    const productRoute = createRoute({
-        getParentRoute: () => rootRoute,
-        path: '/products/$id',
-        component: StoryComponent,
-        loader: () => ({ breadcrumb: 'Product Details' }),
-    });
-
-    const router = createRouter({
-        routeTree: rootRoute.addChildren([productRoute]),
-        history: createMemoryHistory({
-            initialEntries: ['/products/1'],
-        }),
-    });
-
-    return <RouterProvider router={router} />;
+    return (
+        <DemoRouterProvider
+            component={route => <DetailPage {...props} route={route} />}
+            path={'/products/$id'}
+            initialPath={'/products/1'}
+        />
+    );
 }
 
 const meta = {

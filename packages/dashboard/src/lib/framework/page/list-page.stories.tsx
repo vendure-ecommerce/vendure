@@ -1,11 +1,11 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage, ListPageProps } from '@/vdb/framework/page/list-page.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import type { Meta, StoryObj } from '@storybook/react';
-import { createMemoryHistory, createRootRoute, createRoute, createRouter, RouterProvider } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { ListPage, ListPageProps } from './list-page.js';
+import { DemoRouterProvider } from '../../../../.storybook/demo-router-provider.js';
 
 // Sample GraphQL query for countries
 const countryItemFragment = graphql(`
@@ -42,26 +42,8 @@ const deleteCountryDocument = graphql(`
     }
 `);
 
-// Wrapper component that sets up the router
 function ListPageStoryWrapper(props: Omit<ListPageProps<any, any, any, any>, 'route'>) {
-    const StoryComponent = () => <ListPage {...props} route={() => countriesRoute} />;
-
-    const rootRoute = createRootRoute();
-    const countriesRoute = createRoute({
-        getParentRoute: () => rootRoute,
-        path: '/countries',
-        component: StoryComponent,
-        loader: () => ({ breadcrumb: 'Countries' }),
-    });
-
-    const router = createRouter({
-        routeTree: rootRoute.addChildren([countriesRoute]),
-        history: createMemoryHistory({
-            initialEntries: ['/countries'],
-        }),
-    });
-
-    return <RouterProvider router={router} />;
+    return <DemoRouterProvider component={route => <ListPage {...props} route={() => route} />} />;
 }
 
 const meta = {
