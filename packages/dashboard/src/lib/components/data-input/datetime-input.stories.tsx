@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { DateTimeInput } from './datetime-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -27,27 +27,11 @@ export const Playground: Story = {
         value: new Date('2024-06-15T14:30:00').toISOString(),
     },
     render: args => {
-        const [value, setValue] = useState<string | null>(args.value as string);
+        const { register } = useForm();
+        const field = register('playground');
         return (
-            <div className="w-[400px] space-y-2">
-                <DateTimeInput
-                    {...args}
-                    value={value}
-                    onChange={setValue}
-                    name="playground"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    {value ? (
-                        <>
-                            <div>Selected: {new Date(value).toLocaleString()}</div>
-                            <div className="text-xs mt-1">ISO: {value}</div>
-                        </>
-                    ) : (
-                        <div>No date selected</div>
-                    )}
-                </div>
+            <div className="w-[400px]">
+                <DateTimeInput {...field} {...args} />
             </div>
         );
     },
@@ -55,28 +39,11 @@ export const Playground: Story = {
 
 export const FutureDate: Story = {
     render: () => {
-        const [value, setValue] = useState<string | null>(new Date('2025-12-31T23:59:00').toISOString());
+        const { register } = useForm();
+        const field = register('future');
         return (
-            <div className="w-[400px] space-y-2">
-                <DateTimeInput
-                    value={value}
-                    onChange={setValue}
-                    name="future"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    {value ? (
-                        <>
-                            <div>Selected: {new Date(value).toLocaleString()}</div>
-                            <div className="text-xs mt-1">
-                                Time until: {Math.floor((new Date(value).getTime() - Date.now()) / 86400000)} days
-                            </div>
-                        </>
-                    ) : (
-                        <div>No date selected</div>
-                    )}
-                </div>
+            <div className="w-[400px]">
+                <DateTimeInput {...field} />
             </div>
         );
     },
@@ -84,26 +51,11 @@ export const FutureDate: Story = {
 
 export const ClearableValue: Story = {
     render: () => {
-        const [value, setValue] = useState<string | null>(new Date().toISOString());
+        const { register } = useForm();
+        const field = register('clearable');
         return (
-            <div className="w-[400px] space-y-2">
-                <DateTimeInput
-                    value={value}
-                    onChange={setValue}
-                    name="clearable"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    {value ? (
-                        <>
-                            <div>Selected: {new Date(value).toLocaleString()}</div>
-                            <div className="text-xs mt-1">Click the X button to clear the value</div>
-                        </>
-                    ) : (
-                        <div>No date selected. Click to select a date and time.</div>
-                    )}
-                </div>
+            <div className="w-[400px]">
+                <DateTimeInput {...field} />
             </div>
         );
     },

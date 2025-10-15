@@ -49,7 +49,7 @@ Every story file should follow this structure:
 
 ```typescript
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ComponentName } from './component-name.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -171,7 +171,9 @@ argTypes: {
 
 Every story file should have a `Playground` story as the first story. This allows users to experiment with the component interactively.
 
-### Structure
+### Structure for Form Components
+
+For form components that extend `DashboardFormComponentProps`, use React Hook Form's `register()`:
 
 ```typescript
 export const Playground: Story = {
@@ -181,20 +183,9 @@ export const Playground: Story = {
         disabled: false,
     },
     render: args => {
-        // State management for interactive values
-        const [value, setValue] = useState(args.value as string);
-
-        return (
-            <ComponentName
-                {...args}
-                value={value}
-                onChange={setValue}
-                // Required form props (for form components)
-                name="playground"
-                onBlur={() => {}}
-                ref={() => {}}
-            />
-        );
+        const { register } = useForm();
+        const field = register('fieldName');
+        return <ComponentName {...field} {...args} />;
     },
 };
 ```
@@ -202,9 +193,10 @@ export const Playground: Story = {
 ### Key Points
 
 1. **args**: Define default values for all interactive props
-2. **useState**: Manage state for props that change (like `value`)
-3. **Spread args**: Use `{...args}` to pass all argTypes props
-4. **Required props**: Provide stub values for required props like `name`, `onBlur`, `ref`
+2. **useForm()**: Use React Hook Form's `useForm` hook
+3. **register()**: Register the field to get form props (`name`, `ref`, `onChange`, `onBlur`)
+4. **Field spreading**: Use `{...field}` to spread form registration props
+5. **Args spreading**: Use `{...args}` to pass argTypes props (will override field defaults)
 
 ---
 
@@ -282,7 +274,7 @@ Here's a complete example for a simple input component:
 
 ```typescript
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { TextInput } from './text-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -320,45 +312,18 @@ export const Playground: Story = {
         placeholder: 'Enter text',
     },
     render: args => {
-        const [value, setValue] = useState(args.value as string);
-        return (
-            <div className="w-[300px] space-y-2">
-                <TextInput
-                    {...args}
-                    value={value}
-                    onChange={setValue}
-                    name="playground"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    {value ? `Value: "${value}" (${value.length} chars)` : 'Empty'}
-                </div>
-            </div>
-        );
+        const { register } = useForm();
+        const field = register('text');
+        return <TextInput {...field} {...args} />;
     },
 };
 
 // Only include if it demonstrates something non-trivial
 export const LongText: Story = {
     render: () => {
-        const [value, setValue] = useState(
-            'This is a very long text input value that will overflow the input field width'
-        );
-        return (
-            <div className="w-[300px] space-y-2">
-                <TextInput
-                    value={value}
-                    onChange={setValue}
-                    name="long-text"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    Length: {value.length} characters
-                </div>
-            </div>
-        );
+        const { register } = useForm();
+        const field = register('longText');
+        return <TextInput {...field} />;
     },
 };
 ```
@@ -369,18 +334,15 @@ export const LongText: Story = {
 
 ### Form Components with DashboardFormComponentProps
 
-Form components that extend `DashboardFormComponentProps` require `name`, `onBlur`, and `ref` props:
+Form components that extend `DashboardFormComponentProps` use React Hook Form's `register()`:
 
 ```typescript
-<ComponentName
-    {...args}
-    value={value}
-    onChange={setValue}
-    name="unique-name"      // Required
-    onBlur={() => {}}        // Required
-    ref={() => {}}           // Required
-/>
+const { register } = useForm();
+const field = register('fieldName');
+return <ComponentName {...field} {...args} />;
 ```
+
+The `register()` function automatically provides `name`, `ref`, `onChange`, and `onBlur` props.
 
 ### Components with fieldDef
 
@@ -389,15 +351,12 @@ To demonstrate `fieldDef` features (like prefix/suffix or readonly):
 ```typescript
 export const WithPrefixAndSuffix: Story = {
     render: () => {
-        const [value, setValue] = useState(1500);
+        const { register } = useForm();
+        const field = register('affix');
         return (
             <NumberInput
-                value={value}
-                onChange={setValue}
+                {...field}
                 fieldDef={{ ui: { prefix: '$', suffix: 'USD' } }}
-                name="affix"
-                onBlur={() => {}}
-                ref={() => {}}
             />
         );
     },
@@ -483,7 +442,7 @@ When creating a new story file:
 - [ ] Create a `Playground` story with `args` and interactive state
 - [ ] Review existing demonstration stories and remove trivial ones
 - [ ] Keep only stories that demonstrate complex interactions or patterns
-- [ ] Ensure all required props are provided (name, onBlur, ref for form components)
+- [ ] Use `useForm()` and `register()` for form components to automatically provide required props
 - [ ] Test that description and examples appear in Storybook docs
 - [ ] Verify interactive controls work in the Playground story
 

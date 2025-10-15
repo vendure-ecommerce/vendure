@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { PasswordInput } from './password-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -32,20 +32,14 @@ export const Playground: Story = {
         disabled: false,
     },
     render: args => {
-        const [value, setValue] = useState(args.value as string);
+        const { register } = useForm();
+        const field = register('password');
         return (
-            <div className="w-[300px] space-y-2">
+            <div className="w-[300px]">
                 <PasswordInput
+                    {...field}
                     {...args}
-                    value={value}
-                    onChange={setValue}
-                    name="playground"
-                    onBlur={() => {}}
-                    ref={() => {}}
                 />
-                <div className="text-sm text-muted-foreground">
-                    Password length: {value?.length || 0} characters
-                </div>
             </div>
         );
     },
@@ -53,49 +47,20 @@ export const Playground: Story = {
 
 export const ChangePassword: Story = {
     render: () => {
-        const [currentPassword, setCurrentPassword] = useState('');
-        const [newPassword, setNewPassword] = useState('');
-        const [confirmPassword, setConfirmPassword] = useState('');
+        const { register } = useForm();
         return (
             <div className="w-[300px] space-y-4">
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Current Password</label>
-                    <PasswordInput
-                        value={currentPassword}
-                        onChange={setCurrentPassword}
-                        name="current"
-                        onBlur={() => {}}
-                        ref={() => {}}
-                    />
+                    <PasswordInput {...register('currentPassword')} />
                 </div>
                 <div className="space-y-2">
                     <label className="text-sm font-medium">New Password</label>
-                    <PasswordInput
-                        value={newPassword}
-                        onChange={setNewPassword}
-                        name="new"
-                        onBlur={() => {}}
-                        ref={() => {}}
-                    />
+                    <PasswordInput {...register('newPassword')} />
                 </div>
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Confirm New Password</label>
-                    <PasswordInput
-                        value={confirmPassword}
-                        onChange={setConfirmPassword}
-                        name="confirm"
-                        onBlur={() => {}}
-                        ref={() => {}}
-                    />
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    {newPassword && confirmPassword && newPassword === confirmPassword ? (
-                        <span className="text-green-600">Passwords match ✓</span>
-                    ) : newPassword && confirmPassword ? (
-                        <span className="text-red-600">Passwords do not match ✗</span>
-                    ) : (
-                        <span>Enter and confirm your new password</span>
-                    )}
+                    <PasswordInput {...register('confirmPassword')} />
                 </div>
             </div>
         );

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { BooleanInput } from './boolean-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -27,21 +27,12 @@ export const Playground: Story = {
         value: false,
     },
     render: args => {
-        const [checked, setChecked] = useState(args.value as boolean);
+        const { register } = useForm();
+        const field = register('playground');
         return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput
-                        {...args}
-                        value={checked}
-                        onChange={setChecked}
-                        name="playground"
-                        onBlur={() => {}}
-                        ref={() => {}}
-                    />
-                    <label className="text-sm font-medium">Enable notifications</label>
-                </div>
-                <div className="text-sm text-muted-foreground">Status: {checked ? 'On' : 'Off'}</div>
+            <div className="flex items-center gap-2">
+                <BooleanInput {...field} {...args} />
+                <label className="text-sm font-medium">Enable notifications</label>
             </div>
         );
     },
@@ -49,65 +40,38 @@ export const Playground: Story = {
 
 export const ProductSettings: Story = {
     render: () => {
-        const [enabled, setEnabled] = useState(true);
-        const [featured, setFeatured] = useState(false);
-        const [trackInventory, setTrackInventory] = useState(true);
-        const [allowBackorder, setAllowBackorder] = useState(false);
+        const { register } = useForm();
         return (
-            <div className="w-[350px] space-y-4">
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <label className="text-sm font-medium">Product enabled</label>
-                            <p className="text-xs text-muted-foreground">Make this product visible in the catalog</p>
-                        </div>
-                        <BooleanInput
-                            value={enabled}
-                            onChange={setEnabled}
-                            name="enabled"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
+            <div className="w-[350px] space-y-3">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <label className="text-sm font-medium">Product enabled</label>
+                        <p className="text-xs text-muted-foreground">
+                            Make this product visible in the catalog
+                        </p>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <label className="text-sm font-medium">Featured</label>
-                            <p className="text-xs text-muted-foreground">Show on homepage</p>
-                        </div>
-                        <BooleanInput
-                            value={featured}
-                            onChange={setFeatured}
-                            name="featured"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
+                    <BooleanInput {...register('enabled')} />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <label className="text-sm font-medium">Featured</label>
+                        <p className="text-xs text-muted-foreground">Show on homepage</p>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <label className="text-sm font-medium">Track inventory</label>
-                            <p className="text-xs text-muted-foreground">Monitor stock levels</p>
-                        </div>
-                        <BooleanInput
-                            value={trackInventory}
-                            onChange={setTrackInventory}
-                            name="trackInventory"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
+                    <BooleanInput {...register('featured')} />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <label className="text-sm font-medium">Track inventory</label>
+                        <p className="text-xs text-muted-foreground">Monitor stock levels</p>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <label className="text-sm font-medium">Allow backorder</label>
-                            <p className="text-xs text-muted-foreground">Accept orders when out of stock</p>
-                        </div>
-                        <BooleanInput
-                            value={allowBackorder}
-                            onChange={setAllowBackorder}
-                            name="allowBackorder"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
+                    <BooleanInput {...register('trackInventory')} />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <label className="text-sm font-medium">Allow backorder</label>
+                        <p className="text-xs text-muted-foreground">Accept orders when out of stock</p>
                     </div>
+                    <BooleanInput {...register('allowBackorder')} />
                 </div>
             </div>
         );
@@ -116,41 +80,17 @@ export const ProductSettings: Story = {
 
 export const StringValues: Story = {
     render: () => {
-        const [trueValue, setTrueValue] = useState('true');
-        const [falseValue, setFalseValue] = useState('false');
+        const { register } = useForm();
         return (
             <div className="space-y-4">
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <BooleanInput
-                            value={trueValue}
-                            onChange={setTrueValue}
-                            name="string-true"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
-                        <label className="text-sm font-medium">String value: "true"</label>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                        Value: {typeof trueValue === 'string' ? `"${trueValue}" (string)` : `${trueValue} (boolean)`}
-                    </div>
+                <div className="flex items-center gap-2">
+                    <BooleanInput {...register('trueValue')} />
+                    <label className="text-sm font-medium">String value: "true"</label>
                 </div>
 
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <BooleanInput
-                            value={falseValue}
-                            onChange={setFalseValue}
-                            name="string-false"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
-                        <label className="text-sm font-medium">String value: "false"</label>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                        Value:{' '}
-                        {typeof falseValue === 'string' ? `"${falseValue}" (string)` : `${falseValue} (boolean)`}
-                    </div>
+                <div className="flex items-center gap-2">
+                    <BooleanInput {...register('falseValue')} />
+                    <label className="text-sm font-medium">String value: "false"</label>
                 </div>
 
                 <div className="text-sm text-muted-foreground">

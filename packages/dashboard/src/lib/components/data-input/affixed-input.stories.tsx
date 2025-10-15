@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
-import { AffixedInput } from './affixed-input.js';
+import { Mail } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { withDescription } from '../../../.storybook/with-description.js';
+import { AffixedInput } from './affixed-input.js';
 
 const meta = {
     title: 'Form Components/AffixedInput',
@@ -53,122 +54,40 @@ export const Playground: Story = {
         disabled: false,
     },
     render: args => {
-        const [value, setValue] = useState(args.value as string);
-        return (
-            <AffixedInput
-                {...args}
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                name="playground"
-                onBlur={() => {}}
-                ref={() => {}}
-            />
-        );
+        const { register } = useForm();
+        const field = register('amount');
+        return <AffixedInput {...field} {...args} />;
     },
 };
 
-export const WithPrefix: Story = {
+export const WithIconPrefix: Story = {
     render: () => {
-        const [value, setValue] = useState('example.com');
-        return (
-            <AffixedInput
-                prefix="https://"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                placeholder="Enter domain"
-            />
-        );
+        const { register } = useForm();
+        const field = register('email');
+        return <AffixedInput {...field} prefix={<Mail className="w-4 h-4" />} placeholder="Enter email" />;
     },
 };
 
 export const WithSuffix: Story = {
     render: () => {
-        const [value, setValue] = useState('25');
-        return (
-            <AffixedInput
-                type="number"
-                suffix="%"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                placeholder="Enter percentage"
-            />
-        );
-    },
-};
-
-export const WithBothPrefixAndSuffix: Story = {
-    render: () => {
-        const [value, setValue] = useState('99.99');
-        return (
-            <AffixedInput
-                type="number"
-                prefix="$"
-                suffix="USD"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                placeholder="Enter amount"
-            />
-        );
+        const { register } = useForm();
+        const field = register('percentage');
+        return <AffixedInput {...field} type="number" suffix="%" placeholder="Enter percentage" />;
     },
 };
 
 export const Disabled: Story = {
     render: () => {
-        return (
-            <AffixedInput
-                prefix="https://"
-                suffix=".com"
-                value="example"
-                disabled
-                onChange={() => {}}
-            />
-        );
-    },
-};
-
-export const WithLongAffix: Story = {
-    render: () => {
-        const [value, setValue] = useState('5000');
-        return (
-            <AffixedInput
-                type="number"
-                prefix="Price per unit:"
-                suffix="credits/month"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-            />
-        );
+        const { register } = useForm();
+        const field = register('website');
+        return <AffixedInput {...field} prefix="https://" suffix=".com" disabled />;
     },
 };
 
 export const NumberWithSteps: Story = {
     render: () => {
-        const [value, setValue] = useState('0.5');
-        return (
-            <AffixedInput
-                type="number"
-                suffix="kg"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                step="0.1"
-                min="0"
-                max="100"
-            />
-        );
-    },
-};
-
-export const EmailPrefix: Story = {
-    render: () => {
-        const [value, setValue] = useState('john.doe');
-        return (
-            <AffixedInput
-                type="text"
-                suffix="@company.com"
-                value={value}
-                onChange={e => setValue(e.target.value)}
-                placeholder="username"
-            />
-        );
+        const { register } = useForm();
+        const field = register('weight');
+        return <AffixedInput {...field} type="number" suffix="kg" step="0.1" min="0" max="100" />;
     },
 };

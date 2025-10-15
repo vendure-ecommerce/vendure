@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { CheckboxInput } from './checkbox-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -27,23 +27,12 @@ export const Playground: Story = {
         value: false,
     },
     render: args => {
-        const [checked, setChecked] = useState(args.value as boolean);
+        const { register } = useForm();
+        const field = register('playground');
         return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <CheckboxInput
-                        {...args}
-                        value={checked}
-                        onChange={setChecked}
-                        name="playground"
-                        onBlur={() => {}}
-                        ref={() => {}}
-                    />
-                    <label className="text-sm font-medium">Accept terms and conditions</label>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Status: {checked ? 'Checked ✓' : 'Unchecked'}
-                </div>
+            <div className="flex items-center gap-2">
+                <CheckboxInput {...field} {...args} />
+                <label className="text-sm font-medium">Accept terms and conditions</label>
             </div>
         );
     },
@@ -51,48 +40,20 @@ export const Playground: Story = {
 
 export const MultipleCheckboxes: Story = {
     render: () => {
-        const [notifications, setNotifications] = useState(true);
-        const [marketing, setMarketing] = useState(false);
-        const [updates, setUpdates] = useState(true);
+        const { register } = useForm();
         return (
-            <div className="space-y-4">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <CheckboxInput
-                            value={notifications}
-                            onChange={setNotifications}
-                            name="notifications"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
-                        <label className="text-sm font-medium">Email notifications</label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <CheckboxInput
-                            value={marketing}
-                            onChange={setMarketing}
-                            name="marketing"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
-                        <label className="text-sm font-medium">Marketing emails</label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <CheckboxInput
-                            value={updates}
-                            onChange={setUpdates}
-                            name="updates"
-                            onBlur={() => {}}
-                            ref={() => {}}
-                        />
-                        <label className="text-sm font-medium">Product updates</label>
-                    </div>
+            <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                    <CheckboxInput {...register('notifications')} />
+                    <label className="text-sm font-medium">Email notifications</label>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                    Selected:{' '}
-                    {[notifications && 'Notifications', marketing && 'Marketing', updates && 'Updates']
-                        .filter(Boolean)
-                        .join(', ') || 'None'}
+                <div className="flex items-center gap-2">
+                    <CheckboxInput {...register('marketing')} />
+                    <label className="text-sm font-medium">Marketing emails</label>
+                </div>
+                <div className="flex items-center gap-2">
+                    <CheckboxInput {...register('updates')} />
+                    <label className="text-sm font-medium">Product updates</label>
                 </div>
             </div>
         );

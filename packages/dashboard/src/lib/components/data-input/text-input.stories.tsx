@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { TextInput } from './text-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -16,6 +16,14 @@ const meta = {
             control: 'text',
             description: 'The current value',
         },
+        placeholder: {
+            control: 'text',
+            description: 'Placeholder text',
+        },
+        disabled: {
+            control: 'boolean',
+            description: 'Whether the input is disabled',
+        },
     },
 } satisfies Meta<typeof TextInput>;
 
@@ -25,46 +33,20 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
     args: {
         value: 'Edit me!',
+        placeholder: 'Enter text',
+        disabled: false,
     },
     render: args => {
-        const [value, setValue] = useState(args.value as string);
-        return (
-            <div className="w-[300px] space-y-2">
-                <TextInput
-                    {...args}
-                    value={value}
-                    onChange={setValue}
-                    name="playground"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    {value ? `Value: "${value}" (${value.length} chars)` : 'Empty'}
-                </div>
-            </div>
-        );
+        const { register } = useForm();
+        const field = register('text');
+        return <TextInput {...field} {...args} />;
     },
 };
 
 export const LongText: Story = {
     render: () => {
-        const [value, setValue] = useState(
-            'This is a very long text input value that will overflow the input field width',
-        );
-        return (
-            <div className="w-[300px] space-y-2">
-                <TextInput
-                    value={value}
-                    onChange={setValue}
-                    name="long-text"
-                    onBlur={() => {}}
-                    ref={() => {}}
-                />
-                <div className="text-sm text-muted-foreground">
-                    <div className="break-all">Value: "{value}"</div>
-                    <div>Length: {value?.length} characters</div>
-                </div>
-            </div>
-        );
+        const { register } = useForm();
+        const field = register('longText');
+        return <TextInput {...field} />;
     },
 };

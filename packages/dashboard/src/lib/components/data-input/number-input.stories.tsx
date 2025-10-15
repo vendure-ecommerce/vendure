@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { NumberInput } from './number-input.js';
 import { withDescription } from '../../../.storybook/with-description.js';
 
@@ -47,18 +47,14 @@ export const Playground: Story = {
         disabled: false,
     },
     render: args => {
-        const [value, setValue] = useState<number | null>(args.value as number);
+        const { register } = useForm();
+        const field = register('playground');
         return (
             <div className="w-[300px]">
                 <NumberInput
+                    {...field}
                     {...args}
-                    value={value}
-                    onChange={setValue}
-                    name="playground"
-                    onBlur={() => {}}
-                    ref={() => {}}
                 />
-                <div className="mt-2 text-sm text-muted-foreground">Value: {value}</div>
             </div>
         );
     },
@@ -66,20 +62,16 @@ export const Playground: Story = {
 
 export const Float: Story = {
     render: () => {
-        const [value, setValue] = useState<number | null>(3.14159);
+        const { register } = useForm();
+        const field = register('float');
         return (
             <div className="w-[300px] space-y-2">
                 <NumberInput
-                    value={value}
-                    onChange={setValue}
+                    {...field}
                     step={0.01}
                     fieldDef={{ type: 'float' }}
-                    name="float"
-                    onBlur={() => {}}
-                    ref={() => {}}
                 />
                 <div className="text-sm text-muted-foreground">
-                    <div>Value: {value}</div>
                     <div>Floating point with step 0.01</div>
                 </div>
             </div>
@@ -89,17 +81,14 @@ export const Float: Story = {
 
 export const WithPrefixAndSuffix: Story = {
     render: () => {
-        const [value, setValue] = useState<number | null>(1500);
+        const { register } = useForm();
+        const field = register('withAffix');
         return (
             <div className="w-[300px] space-y-2">
                 <NumberInput
-                    value={value}
-                    onChange={setValue}
+                    {...field}
                     fieldDef={{ ui: { prefix: '$', suffix: 'USD' } }}
                     step={10}
-                    name="with-affix"
-                    onBlur={() => {}}
-                    ref={() => {}}
                 />
                 <div className="text-sm text-muted-foreground">
                     Demonstrates fieldDef.ui.prefix and fieldDef.ui.suffix
@@ -111,18 +100,14 @@ export const WithPrefixAndSuffix: Story = {
 
 export const NullValue: Story = {
     render: () => {
-        const [value, setValue] = useState<number | null>(null);
+        const { register } = useForm();
+        const field = register('nullValue');
         return (
             <div className="w-[300px] space-y-2">
                 <NumberInput
-                    value={value}
-                    onChange={setValue}
-                    name="null-value"
-                    onBlur={() => {}}
-                    ref={() => {}}
+                    {...field}
                 />
                 <div className="text-sm text-muted-foreground">
-                    Value: {value === null ? 'null' : value}
                     <div className="mt-1 text-xs">When input is cleared, value becomes null</div>
                 </div>
             </div>
