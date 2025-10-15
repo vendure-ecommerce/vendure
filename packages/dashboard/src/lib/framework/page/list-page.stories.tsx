@@ -47,7 +47,7 @@ function ListPageStoryWrapper(props: Omit<ListPageProps<any, any, any, any>, 'ro
 }
 
 const meta = {
-    title: 'Framework/ListPage',
+    title: 'Layout/ListPage',
     component: ListPageStoryWrapper,
     parameters: {
         layout: 'fullscreen',

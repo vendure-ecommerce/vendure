@@ -78,7 +78,7 @@ function DetailPageStoryWrapper(props: Omit<DetailPageProps<any, any, any>, 'rou
 }
 
 const meta = {
-    title: 'Framework/DetailPage',
+    title: 'Layout/DetailPage',
     component: DetailPageStoryWrapper,
     parameters: {
         layout: 'fullscreen',
