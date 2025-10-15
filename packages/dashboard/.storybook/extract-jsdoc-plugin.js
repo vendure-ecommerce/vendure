@@ -56,7 +56,7 @@ export function extractJSDocPlugin() {
                     const source = readFileSync(componentFilePath, 'utf-8');
 
                     // Extract description and examples from JSDoc
-                    const description = extractDescription(source);
+                    const description = extractDescription(source, componentPath);
 
                     if (description) {
                         // Remove the spread and the withDescription call
@@ -103,14 +103,49 @@ export function extractJSDocPlugin() {
     };
 }
 
-function extractDescription(source) {
-    // Find JSDoc comment before export function/const
-    const jsdocMatch = source.match(/\/\*\*([\s\S]*?)\*\/[\s\S]*?export\s+(?:function|const)/);
-    if (!jsdocMatch) {
+function extractDescription(source, componentPath) {
+    // Get the base filename without path and extension
+    // e.g., './datetime-input.js' -> 'datetime-input'
+    const fileName = componentPath.replace(/^\.\//, '').replace(/\.js$/, '');
+
+    console.log(`[extractJSDocPlugin] Looking for component matching file: ${fileName}`);
+
+    // Find all JSDoc blocks with their associated exports
+    // This regex captures the JSDoc content and the export statement that follows
+    const allExportsPattern = /\/\*\*([\s\S]*?)\*\/\s*export\s+(?:function|const)\s+(\w+)/g;
+    const matches = [...source.matchAll(allExportsPattern)];
+
+    console.log(`[extractJSDocPlugin] Found ${matches.length} exports with JSDoc: ${matches.map(m => m[2]).join(', ')}`);
+
+    if (matches.length === 0) {
         return null;
     }
 
-    const jsdocContent = jsdocMatch[1];
+    // Strategy: Find the export whose name, when converted to kebab-case, matches the filename
+    // e.g., DateTimeInput -> datetime-input
+    const componentMatch = matches.find(match => {
+        const exportName = match[2];
+        // Convert PascalCase to kebab-case
+        const kebabCase = exportName
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .toLowerCase();
+        return kebabCase === fileName;
+    });
+
+    if (!componentMatch) {
+        console.warn(
+            `[extractJSDocPlugin] Could not find component matching ${fileName}, using last export: ${matches[matches.length - 1][2]}`
+        );
+        // Use the LAST export (most likely to be the main component)
+        return extractJSDocContent(matches[matches.length - 1][1]);
+    }
+
+    console.log(`[extractJSDocPlugin] Found JSDoc for ${componentMatch[2]}`);
+    const jsdocContent = componentMatch[1];
+    return extractJSDocContent(jsdocContent);
+}
+
+function extractJSDocContent(jsdocContent) {
 
     // Extract description (text after @description tag, before next tag or end)
     const descriptionMatch = jsdocContent.match(/@description\s*\n\s*\*\s*([\s\S]*?)(?=\n\s*\*\s*@|\n\s*$)/);

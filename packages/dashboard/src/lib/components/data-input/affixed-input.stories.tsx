@@ -11,10 +11,61 @@ const meta = {
         layout: 'centered',
     },
     tags: ['autodocs'],
+    argTypes: {
+        prefix: {
+            control: 'text',
+            description: 'Content to display before the input',
+        },
+        suffix: {
+            control: 'text',
+            description: 'Content to display after the input',
+        },
+        type: {
+            control: 'select',
+            options: ['text', 'number', 'email', 'url', 'tel'],
+            description: 'Input type',
+        },
+        placeholder: {
+            control: 'text',
+            description: 'Placeholder text',
+        },
+        disabled: {
+            control: 'boolean',
+            description: 'Whether the input is disabled',
+        },
+        value: {
+            control: 'text',
+            description: 'Input value',
+        },
+    },
 } satisfies Meta<typeof AffixedInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Playground: Story = {
+    args: {
+        prefix: '$',
+        suffix: 'USD',
+        value: '100.00',
+        type: 'text',
+        placeholder: 'Enter amount',
+        disabled: false,
+    },
+    render: args => {
+        const [value, setValue] = useState(args.value as string);
+        return (
+            <AffixedInput
+                {...args}
+                value={value}
+                onChange={e => setValue(e.target.value)}
+                name="playground"
+                onBlur={() => {}}
+                ref={() => {}}
+            />
+        );
+    },
+};
 
 export const WithPrefix: Story = {
     render: () => {

@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { SlugInput } from './slug-input.js';
+import { withDescription } from '../../../.storybook/with-description.js';
 
 const meta = {
     title: 'Form Components/SlugInput',
     component: SlugInput,
+    ...withDescription(import.meta.url, './slug-input.js'),
     parameters: {
         layout: 'centered',
     },
@@ -16,6 +18,24 @@ const meta = {
             </div>
         ),
     ],
+    argTypes: {
+        entityName: {
+            control: 'text',
+            description: 'The name of the entity (e.g., "Product", "Collection")',
+        },
+        fieldName: {
+            control: 'text',
+            description: 'The name of the field to check for uniqueness (e.g., "slug", "code")',
+        },
+        watchFieldName: {
+            control: 'text',
+            description: 'The name of the field to watch for changes',
+        },
+        defaultReadonly: {
+            control: 'boolean',
+            description: 'Whether the input should start in readonly mode',
+        },
+    },
 } satisfies Meta<typeof SlugInput>;
 
 export default meta;

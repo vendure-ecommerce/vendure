@@ -1,91 +1,47 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { BooleanInput } from './boolean-input.js';
+import { withDescription } from '../../../.storybook/with-description.js';
 
 const meta = {
     title: 'Form Components/BooleanInput',
     component: BooleanInput,
+    ...withDescription(import.meta.url, './boolean-input.js'),
     parameters: {
         layout: 'centered',
     },
     tags: ['autodocs'],
+    argTypes: {
+        value: {
+            control: 'boolean',
+            description: 'Whether the switch is on',
+        },
+    },
 } satisfies Meta<typeof BooleanInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Off: Story = {
-    render: () => {
-        const [checked, setChecked] = useState(false);
+export const Playground: Story = {
+    args: {
+        value: false,
+    },
+    render: args => {
+        const [checked, setChecked] = useState(args.value as boolean);
         return (
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                    <BooleanInput value={checked} onChange={setChecked} />
+                    <BooleanInput
+                        {...args}
+                        value={checked}
+                        onChange={setChecked}
+                        name="playground"
+                        onBlur={() => {}}
+                        ref={() => {}}
+                    />
                     <label className="text-sm font-medium">Enable notifications</label>
                 </div>
                 <div className="text-sm text-muted-foreground">Status: {checked ? 'On' : 'Off'}</div>
-            </div>
-        );
-    },
-};
-
-export const On: Story = {
-    render: () => {
-        const [checked, setChecked] = useState(true);
-        return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={checked} onChange={setChecked} />
-                    <label className="text-sm font-medium">Dark mode</label>
-                </div>
-                <div className="text-sm text-muted-foreground">Status: {checked ? 'On' : 'Off'}</div>
-            </div>
-        );
-    },
-};
-
-export const WithLabel: Story = {
-    render: () => {
-        const [checked, setChecked] = useState(false);
-        return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={checked} onChange={setChecked} />
-                    <label className="text-sm">Enable two-factor authentication for enhanced security</label>
-                </div>
-                <div className="text-sm text-muted-foreground">Status: {checked ? 'Enabled ✓' : 'Disabled'}</div>
-            </div>
-        );
-    },
-};
-
-export const MultipleSwitches: Story = {
-    render: () => {
-        const [autoSave, setAutoSave] = useState(true);
-        const [spellCheck, setSpellCheck] = useState(false);
-        const [syntaxHighlight, setSyntaxHighlight] = useState(true);
-        return (
-            <div className="space-y-4">
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Auto-save</label>
-                        <BooleanInput value={autoSave} onChange={setAutoSave} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Spell check</label>
-                        <BooleanInput value={spellCheck} onChange={setSpellCheck} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium">Syntax highlighting</label>
-                        <BooleanInput value={syntaxHighlight} onChange={setSyntaxHighlight} />
-                    </div>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Enabled features:{' '}
-                    {[autoSave && 'Auto-save', spellCheck && 'Spell check', syntaxHighlight && 'Syntax highlight']
-                        .filter(Boolean)
-                        .join(', ') || 'None'}
-                </div>
             </div>
         );
     },
@@ -105,28 +61,52 @@ export const ProductSettings: Story = {
                             <label className="text-sm font-medium">Product enabled</label>
                             <p className="text-xs text-muted-foreground">Make this product visible in the catalog</p>
                         </div>
-                        <BooleanInput value={enabled} onChange={setEnabled} />
+                        <BooleanInput
+                            value={enabled}
+                            onChange={setEnabled}
+                            name="enabled"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
                             <label className="text-sm font-medium">Featured</label>
                             <p className="text-xs text-muted-foreground">Show on homepage</p>
                         </div>
-                        <BooleanInput value={featured} onChange={setFeatured} />
+                        <BooleanInput
+                            value={featured}
+                            onChange={setFeatured}
+                            name="featured"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
                             <label className="text-sm font-medium">Track inventory</label>
                             <p className="text-xs text-muted-foreground">Monitor stock levels</p>
                         </div>
-                        <BooleanInput value={trackInventory} onChange={setTrackInventory} />
+                        <BooleanInput
+                            value={trackInventory}
+                            onChange={setTrackInventory}
+                            name="trackInventory"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
                             <label className="text-sm font-medium">Allow backorder</label>
                             <p className="text-xs text-muted-foreground">Accept orders when out of stock</p>
                         </div>
-                        <BooleanInput value={allowBackorder} onChange={setAllowBackorder} />
+                        <BooleanInput
+                            value={allowBackorder}
+                            onChange={setAllowBackorder}
+                            name="allowBackorder"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
                     </div>
                 </div>
             </div>
@@ -134,63 +114,48 @@ export const ProductSettings: Story = {
     },
 };
 
-export const StringValueTrue: Story = {
+export const StringValues: Story = {
     render: () => {
-        const [checked, setChecked] = useState('true');
+        const [trueValue, setTrueValue] = useState('true');
+        const [falseValue, setFalseValue] = useState('false');
         return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={checked} onChange={setChecked} />
-                    <label className="text-sm font-medium">String value: "true"</label>
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <BooleanInput
+                            value={trueValue}
+                            onChange={setTrueValue}
+                            name="string-true"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
+                        <label className="text-sm font-medium">String value: "true"</label>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        Value: {typeof trueValue === 'string' ? `"${trueValue}" (string)` : `${trueValue} (boolean)`}
+                    </div>
                 </div>
+
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <BooleanInput
+                            value={falseValue}
+                            onChange={setFalseValue}
+                            name="string-false"
+                            onBlur={() => {}}
+                            ref={() => {}}
+                        />
+                        <label className="text-sm font-medium">String value: "false"</label>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        Value:{' '}
+                        {typeof falseValue === 'string' ? `"${falseValue}" (string)` : `${falseValue} (boolean)`}
+                    </div>
+                </div>
+
                 <div className="text-sm text-muted-foreground">
-                    Value: {typeof checked === 'string' ? `"${checked}" (string)` : `${checked} (boolean)`}
+                    Demonstrates handling of string "true"/"false" values
                 </div>
-            </div>
-        );
-    },
-};
-
-export const StringValueFalse: Story = {
-    render: () => {
-        const [checked, setChecked] = useState('false');
-        return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={checked} onChange={setChecked} />
-                    <label className="text-sm font-medium">String value: "false"</label>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                    Value: {typeof checked === 'string' ? `"${checked}" (string)` : `${checked} (boolean)`}
-                </div>
-            </div>
-        );
-    },
-};
-
-export const Disabled: Story = {
-    render: () => {
-        return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={true} onChange={() => {}} fieldDef={{ readonly: true }} />
-                    <label className="text-sm font-medium text-muted-foreground">Disabled and on</label>
-                </div>
-                <div className="text-sm text-muted-foreground">This switch is disabled (fieldDef.readonly=true)</div>
-            </div>
-        );
-    },
-};
-
-export const DisabledOff: Story = {
-    render: () => {
-        return (
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <BooleanInput value={false} onChange={() => {}} fieldDef={{ readonly: true }} />
-                    <label className="text-sm font-medium text-muted-foreground">Disabled and off</label>
-                </div>
-                <div className="text-sm text-muted-foreground">This switch is disabled</div>
             </div>
         );
     },

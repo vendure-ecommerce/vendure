@@ -1,41 +1,64 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { NumberInput } from './number-input.js';
+import { withDescription } from '../../../.storybook/with-description.js';
 
 const meta = {
     title: 'Form Components/NumberInput',
     component: NumberInput,
+    ...withDescription(import.meta.url, './number-input.js'),
     parameters: {
         layout: 'centered',
     },
     tags: ['autodocs'],
+    argTypes: {
+        value: {
+            control: 'number',
+            description: 'The current value',
+        },
+        min: {
+            control: 'number',
+            description: 'Minimum value',
+        },
+        max: {
+            control: 'number',
+            description: 'Maximum value',
+        },
+        step: {
+            control: 'number',
+            description: 'Step increment',
+        },
+        disabled: {
+            control: 'boolean',
+            description: 'Whether the input is disabled',
+        },
+    },
 } satisfies Meta<typeof NumberInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
-    render: () => {
-        const [value, setValue] = useState<number | null>(42);
+export const Playground: Story = {
+    args: {
+        value: 42,
+        min: 0,
+        max: 100,
+        step: 1,
+        disabled: false,
+    },
+    render: args => {
+        const [value, setValue] = useState<number | null>(args.value as number);
         return (
             <div className="w-[300px]">
-                <NumberInput value={value} onChange={setValue} />
+                <NumberInput
+                    {...args}
+                    value={value}
+                    onChange={setValue}
+                    name="playground"
+                    onBlur={() => {}}
+                    ref={() => {}}
+                />
                 <div className="mt-2 text-sm text-muted-foreground">Value: {value}</div>
-            </div>
-        );
-    },
-};
-
-export const WithMinMax: Story = {
-    render: () => {
-        const [value, setValue] = useState<number | null>(50);
-        return (
-            <div className="w-[300px] space-y-2">
-                <NumberInput value={value} onChange={setValue} min={0} max={100} />
-                <div className="text-sm text-muted-foreground">
-                    <div>Value: {value}</div>
-                    <div>Range: 0-100</div>
-                </div>
             </div>
         );
     },
@@ -46,42 +69,18 @@ export const Float: Story = {
         const [value, setValue] = useState<number | null>(3.14159);
         return (
             <div className="w-[300px] space-y-2">
-                <NumberInput value={value} onChange={setValue} step={0.01} fieldDef={{ type: 'float' }} />
-                <div className="text-sm text-muted-foreground">
-                    <div>Value: {value}</div>
-                    <div>Step: 0.01</div>
-                </div>
-            </div>
-        );
-    },
-};
-
-export const WithPrefix: Story = {
-    render: () => {
-        const [value, setValue] = useState<number | null>(99.99);
-        return (
-            <div className="w-[300px] space-y-2">
                 <NumberInput
                     value={value}
                     onChange={setValue}
                     step={0.01}
-                    fieldDef={{ type: 'float', ui: { prefix: '$' } }}
+                    fieldDef={{ type: 'float' }}
+                    name="float"
+                    onBlur={() => {}}
+                    ref={() => {}}
                 />
-                <div className="text-sm text-muted-foreground">Value: ${value}</div>
-            </div>
-        );
-    },
-};
-
-export const WithSuffix: Story = {
-    render: () => {
-        const [value, setValue] = useState<number | null>(25);
-        return (
-            <div className="w-[300px] space-y-2">
-                <NumberInput value={value} onChange={setValue} fieldDef={{ ui: { suffix: '%' } }} min={0} max={100} />
                 <div className="text-sm text-muted-foreground">
-                    <div>Value: {value}%</div>
-                    <div>Range: 0-100</div>
+                    <div>Value: {value}</div>
+                    <div>Floating point with step 0.01</div>
                 </div>
             </div>
         );
@@ -98,44 +97,12 @@ export const WithPrefixAndSuffix: Story = {
                     onChange={setValue}
                     fieldDef={{ ui: { prefix: '$', suffix: 'USD' } }}
                     step={10}
+                    name="with-affix"
+                    onBlur={() => {}}
+                    ref={() => {}}
                 />
-                <div className="text-sm text-muted-foreground">Value: ${value} USD</div>
-            </div>
-        );
-    },
-};
-
-export const Disabled: Story = {
-    render: () => {
-        return (
-            <div className="w-[300px] space-y-2">
-                <NumberInput value={100} onChange={() => {}} disabled />
-                <div className="text-sm text-muted-foreground">This input is disabled</div>
-            </div>
-        );
-    },
-};
-
-export const Readonly: Story = {
-    render: () => {
-        return (
-            <div className="w-[300px] space-y-2">
-                <NumberInput value={500} onChange={() => {}} fieldDef={{ readonly: true }} />
-                <div className="text-sm text-muted-foreground">This input is readonly (fieldDef.readonly=true)</div>
-            </div>
-        );
-    },
-};
-
-export const CustomStep: Story = {
-    render: () => {
-        const [value, setValue] = useState<number | null>(0);
-        return (
-            <div className="w-[300px] space-y-2">
-                <NumberInput value={value} onChange={setValue} step={5} min={0} max={100} />
                 <div className="text-sm text-muted-foreground">
-                    <div>Value: {value}</div>
-                    <div>Step: 5</div>
+                    Demonstrates fieldDef.ui.prefix and fieldDef.ui.suffix
                 </div>
             </div>
         );
@@ -147,7 +114,13 @@ export const NullValue: Story = {
         const [value, setValue] = useState<number | null>(null);
         return (
             <div className="w-[300px] space-y-2">
-                <NumberInput value={value} onChange={setValue} />
+                <NumberInput
+                    value={value}
+                    onChange={setValue}
+                    name="null-value"
+                    onBlur={() => {}}
+                    ref={() => {}}
+                />
                 <div className="text-sm text-muted-foreground">
                     Value: {value === null ? 'null' : value}
                     <div className="mt-1 text-xs">When input is cleared, value becomes null</div>
