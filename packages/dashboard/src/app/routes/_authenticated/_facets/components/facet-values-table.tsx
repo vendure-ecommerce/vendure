@@ -3,7 +3,6 @@ import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-d
 import { Button } from '@/vdb/components/ui/button.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
@@ -37,11 +36,10 @@ export interface FacetValuesTableProps {
 }
 
 export function FacetValuesTable({ facetId, registerRefresher }: Readonly<FacetValuesTableProps>) {
-    const { settings, setItemsPerPage } = useUserSettings();
+    const { settings, setItemsPerPage, setTableSettings } = useUserSettings();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
-    const { setTableSettings, settings } = useUserSettings();
     const refreshRef = useRef<() => void>(() => {});
 
     const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
