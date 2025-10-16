@@ -61,9 +61,11 @@ function OrderListPage() {
             route={Route}
             customizeColumns={{
                 total: {
+                    meta: { dependencies: ['currencyCode'] },
                     cell: OrderMoneyCell,
                 },
                 totalWithTax: {
+                    meta: { dependencies: ['currencyCode'] },
                     cell: OrderMoneyCell,
                 },
                 state: {
