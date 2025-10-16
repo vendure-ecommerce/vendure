@@ -39,12 +39,9 @@ const preview: Preview = {
         },
         options: {
             storySort: {
-                order: ['Intro', 'Layout', 'Components', 'Form Inputs', 'UI'],
+                order: ['Introduction', 'Layout', 'Components', 'Form Inputs', 'UI'],
             },
-            // Set the Introduction page as the default home page
-            initialActive: 'introduction',
         },
-
         a11y: {
             // 'todo' - show a11y violations in the test UI only
             // 'error' - fail CI on a11y violations
