@@ -26,7 +26,8 @@
     "i18n:extract": "lingui extract && node ./scripts/translate/i18n-tool.js extract",
     "i18n:apply": "node ./scripts/translate/i18n-tool.js apply",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "storybook:build": "storybook build",
+    "storybook:deploy": "npm run build --prefix ../common && npm run build --prefix ../core && npm run build:vite && storybook build"
   },
   "module": "./src/lib/index.ts",
   "main": "./src/lib/index.ts",

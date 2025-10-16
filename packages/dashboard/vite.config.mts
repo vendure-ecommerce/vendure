@@ -31,7 +31,6 @@ export default ({ mode }: { mode: string }) => {
             vendureDashboardPlugin({
                 vendureConfigPath: pathToFileURL(vendureConfigPath),
                 api: { host: adminApiHost, port: adminApiPort },
-                gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
             }) as any,
         ],
