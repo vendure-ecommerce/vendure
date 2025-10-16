@@ -107,9 +107,12 @@ export function DemoRouterProvider(props: {
 export function DemoAuthProvider({ children }: PropsWithChildren) {
     const { login, isAuthenticated } = useAuth();
 
+    const username = process.env.VITE_ADMIN_USERNAME ?? 'admin';
+    const password = process.env.VITE_ADMIN_PASSWORD ?? 'admin';
+
     useEffect(() => {
         if (!isAuthenticated) {
-            login('admin', 'admin');
+            login(username, password);
         }
     }, [isAuthenticated]);
     return children;
