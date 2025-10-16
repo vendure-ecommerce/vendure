@@ -135,8 +135,6 @@ export function uiConfigPlugin(options: UiConfigPluginOptions = {}): Plugin {
     let configLoaderApi: ConfigLoaderApi;
     let vendureConfig: VendureConfig;
 
-    console.log({ options });
-
     return {
         name: 'vendure:dashboard-ui-config',
         configResolved({ plugins }) {
@@ -153,11 +151,7 @@ export function uiConfigPlugin(options: UiConfigPluginOptions = {}): Plugin {
                     const result = await configLoaderApi.getVendureConfig();
                     vendureConfig = result.vendureConfig;
                 }
-
                 const config = getUiConfig(vendureConfig, options);
-
-                console.log({ config });
-
                 return `
                     export const uiConfig = ${JSON.stringify(config)}
                 `;
