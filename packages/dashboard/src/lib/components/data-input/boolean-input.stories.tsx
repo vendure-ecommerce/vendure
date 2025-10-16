@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { BooleanInput } from './boolean-input.js';
 
 const meta = {
-    title: 'Form Components/BooleanInput',
+    title: 'Form Inputs/BooleanInput',
     component: BooleanInput,
     ...withDescription(import.meta.url, './boolean-input.js'),
     parameters: {

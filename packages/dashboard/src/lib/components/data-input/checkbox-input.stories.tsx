@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { CheckboxInput } from './checkbox-input.js';
 
 const meta = {
-    title: 'Form Components/CheckboxInput',
+    title: 'Form Inputs/CheckboxInput',
     component: CheckboxInput,
     ...withDescription(import.meta.url, './checkbox-input.js'),
     parameters: {

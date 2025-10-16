@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { SlugInput } from './slug-input.js';
 
 const meta = {
-    title: 'Form Components/SlugInput',
+    title: 'Form Inputs/SlugInput',
     component: SlugInput,
     ...withDescription(import.meta.url, './slug-input.js'),
     parameters: {

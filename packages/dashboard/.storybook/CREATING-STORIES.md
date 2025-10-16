@@ -279,7 +279,7 @@ import { TextInput } from './text-input.js';
 import { withDescription } from '../../../../.storybook/with-description.js';
 
 const meta = {
-    title: 'Form Components/TextInput',
+    title: 'Form Inputs/TextInput',
     component: TextInput,
     ...withDescription(import.meta.url, './text-input.js'),
     parameters: {
@@ -369,7 +369,7 @@ For components with complex dependencies (like React Hook Form context), keep al
 
 ```typescript
 const meta = {
-    title: 'Form Components/SlugInput',
+    title: 'Form Inputs/SlugInput',
     component: SlugInput,
     ...withDescription(import.meta.url, './slug-input.js'),
     decorators: [

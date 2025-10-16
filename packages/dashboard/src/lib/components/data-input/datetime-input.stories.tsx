@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { DateTimeInput } from './datetime-input.js';
 
 const meta = {
-    title: 'Form Components/DateTimeInput',
+    title: 'Form Inputs/DateTimeInput',
     component: DateTimeInput,
     ...withDescription(import.meta.url, './datetime-input.js'),
     parameters: {

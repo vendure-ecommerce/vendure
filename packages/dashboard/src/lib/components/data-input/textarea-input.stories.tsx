@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { TextareaInput } from './textarea-input.js';
 
 const meta = {
-    title: 'Form Components/TextareaInput',
+    title: 'Form Inputs/TextareaInput',
     component: TextareaInput,
     ...withDescription(import.meta.url, './textarea-input.js'),
     parameters: {

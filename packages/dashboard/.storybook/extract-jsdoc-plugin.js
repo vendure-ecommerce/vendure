@@ -23,7 +23,7 @@ import { dirname, resolve } from 'path';
  * import { withDescription } from '../../../../.storybook/with-description.js';
  *
  * const meta = {
- *   title: 'Form Components/AffixedInput',
+ *   title: 'Form Inputs/AffixedInput',
  *   component: AffixedInput,
  *   ...withDescription(import.meta.url, './affixed-input.js'),
  * } satisfies Meta<typeof AffixedInput>;
@@ -137,10 +137,7 @@ function extractDescription(source, componentPath) {
     // This ensures we get the comment IMMEDIATELY before the export, not an earlier one
 
     // Step 1: Find the position of the component export
-    const exportPattern = new RegExp(
-        `export\\s+(?:function|const)\\s+${expectedComponentName}\\b`,
-        'g',
-    );
+    const exportPattern = new RegExp(`export\\s+(?:function|const)\\s+${expectedComponentName}\\b`, 'g');
 
     const exportMatch = exportPattern.exec(source);
 

@@ -14,7 +14,7 @@ import {
 } from './page-layout.js';
 
 const meta = {
-    title: 'Layout/Page',
+    title: 'Layout/Page Layout',
     component: Page,
     parameters: {
         layout: 'fullscreen',

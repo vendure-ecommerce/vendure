@@ -5,7 +5,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { AffixedInput } from './affixed-input.js';
 
 const meta = {
-    title: 'Form Components/AffixedInput',
+    title: 'Form Inputs/AffixedInput',
     component: AffixedInput,
     ...withDescription(import.meta.url, './affixed-input.js'),
     parameters: {

@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { PasswordInput } from './password-input.js';
 
 const meta = {
-    title: 'Form Components/PasswordInput',
+    title: 'Form Inputs/PasswordInput',
     component: PasswordInput,
     ...withDescription(import.meta.url, './password-input.js'),
     parameters: {

@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { RichTextInput } from './rich-text-input.js';
 
 const meta = {
-    title: 'Form Components/RichTextInput',
+    title: 'Form Inputs/RichTextInput',
     component: RichTextInput,
     ...withDescription(import.meta.url, './rich-text-input.js'),
     parameters: {

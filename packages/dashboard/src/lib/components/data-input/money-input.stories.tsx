@@ -4,7 +4,7 @@ import { withDescription } from '../../../.storybook/with-description.js';
 import { MoneyInput } from './money-input.js';
 
 const meta = {
-    title: 'Form Components/MoneyInput',
+    title: 'Form Inputs/MoneyInput',
     component: MoneyInput,
     ...withDescription(import.meta.url, './money-input.js'),
     parameters: {
