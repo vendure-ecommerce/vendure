@@ -1,10 +1,10 @@
 import { Button } from '@/vdb/components/ui/button.js';
-import { Alert } from '@/vdb/hooks/use-alerts.js';
+import { AlertEntry } from '@/vdb/hooks/use-alerts.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { ComponentProps } from 'react';
 
 interface AlertItemProps extends ComponentProps<'div'> {
-    alert: Alert;
+    alert: AlertEntry;
 }
 
 export function AlertItem({ alert, className, ...props }: Readonly<AlertItemProps>) {

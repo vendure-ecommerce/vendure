@@ -10,7 +10,7 @@ import { useMemo } from 'react';
  * @docsPage useAlerts
  * @since 3.5.0
  */
-export interface Alert {
+export interface AlertEntry {
     definition: DashboardAlertDefinition;
     active: boolean;
     currentSeverity?: AlertSeverity;
@@ -28,7 +28,7 @@ export interface Alert {
  * @docsWeight 0
  * @since 3.5.0
  */
-export function useAlerts(): { alerts: Alert[]; activeCount: number; highestSeverity: AlertSeverity } {
+export function useAlerts(): { alerts: AlertEntry[]; activeCount: number; highestSeverity: AlertSeverity } {
     const { alertDefs, rawResults, dismissedAlerts, setDismissedAlerts } = useAlertsContext();
 
     const alerts = useMemo(() => {

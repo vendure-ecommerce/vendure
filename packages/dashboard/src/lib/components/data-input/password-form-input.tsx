@@ -9,7 +9,7 @@ import { Input } from '../ui/input.js';
  * @docsCategory form-components
  * @docsPage PasswordInput
  */
-export function PasswordInput(props: Readonly<DashboardFormComponentProps>) {
+export function PasswordFormInput(props: Readonly<DashboardFormComponentProps>) {
     const readOnly = props.disabled || isReadonlyField(props.fieldDef);
     return (
         <Input
