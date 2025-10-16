@@ -17,14 +17,18 @@ import { defineDashboardExtension } from '@vendure/dashboard';
 import { MarkdownEditor } from './markdown-editor';
 
 defineDashboardExtension({
-  dataTables: [{
-      pageId: 'product-detail',
-      inputs: [{
-          blockId: 'main-form',
-          field: 'description',
-          component: MarkdownEditor,
-      }],
-  }]
+    detailForms: [
+        {
+            pageId: 'product-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'description',
+                    component: MarkdownEditor,
+                },
+            ],
+        },
+    ],
 });
 ```
 
@@ -32,17 +36,17 @@ To learn how to build custom form components, see the [Custom Form Elements guid
 
 ## Extending the detail query
 
-You might want to extend the GraphQL query used to fetch the data for the detail page. For example, to include new 
+You might want to extend the GraphQL query used to fetch the data for the detail page. For example, to include new
 fields that your plugin has defined so that you can render them in [custom page blocks](/guides/extending-the-dashboard/customizing-pages/page-blocks).
-
 
 ```tsx title="index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
 defineDashboardExtension({
-  dataTables: [{
-      pageId: 'product-detail',
-      extendDetailDocument: `
+    detailForms: [
+        {
+            pageId: 'product-detail',
+            extendDetailDocument: `
           query {
               product(id: $id) {
                   relatedProducts {
@@ -56,6 +60,7 @@ defineDashboardExtension({
               }
           }
       `,
-  }]
+        },
+    ],
 });
 ```
