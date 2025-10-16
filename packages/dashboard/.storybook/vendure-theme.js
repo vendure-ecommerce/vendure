@@ -1,5 +1,5 @@
 import { create } from 'storybook/theming';
-import logo from '../src/stories/assets/vendure-logo.svg';
+import logo from './assets/vendure-logo.svg';
 
 export default create({
     base: 'dark',

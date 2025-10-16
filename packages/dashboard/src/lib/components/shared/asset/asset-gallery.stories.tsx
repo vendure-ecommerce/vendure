@@ -2,7 +2,7 @@ import { AssetGallery } from '@/vdb/components/shared/asset/asset-gallery.js';
 import { FullWidthPageBlock, Page, PageLayout } from '@/vdb/framework/layout-engine/page-layout.js';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RouterContextProvider } from '@tanstack/react-router';
-import { createDemoRoute } from '../../../../../.storybook/demo-router-provider.js';
+import { createDemoRoute } from '../../../../../.storybook/providers.js';
 import { withDescription } from '../../../../../.storybook/with-description.js';
 
 const meta = {

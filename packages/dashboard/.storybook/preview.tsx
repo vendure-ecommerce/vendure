@@ -1,19 +1,11 @@
 import '../src/app/styles.css';
 
 import { registerDefaults } from '@/vdb/framework/defaults.js';
-import { AuthProvider } from '@/vdb/providers/auth.js';
-import { ChannelProvider } from '@/vdb/providers/channel-provider.js';
-import { defaultLocale, dynamicActivate, I18nProvider } from '@/vdb/providers/i18n-provider.js';
-import { ServerConfigProvider } from '@/vdb/providers/server-config.js';
-import { ThemeProvider } from '@/vdb/providers/theme-provider.js';
-import { UserSettingsProvider } from '@/vdb/providers/user-settings.js';
+import { defaultLocale, dynamicActivate } from '@/vdb/providers/i18n-provider.js';
 import type { Preview } from '@storybook/react-vite';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { DemoAuthProvider } from './demo-auth-provider.js';
+import { CommonProviders } from './providers.js';
 import { transformDocumentNodeInSource } from './transform-document-node.js';
-
-const queryClient = new QueryClient();
 
 /**
  * Clean JSDoc tags from component descriptions
@@ -44,6 +36,13 @@ const preview: Preview = {
                 color: /(background|color)$/i,
                 date: /Date$/i,
             },
+        },
+        options: {
+            storySort: {
+                order: ['Intro', 'Layout', 'Components', 'Form Inputs', 'UI'],
+            },
+            // Set the Introduction page as the default home page
+            initialActive: 'introduction',
         },
 
         a11y: {
@@ -98,23 +97,9 @@ const preview: Preview = {
             }, []);
 
             return (
-                <I18nProvider>
-                    <QueryClientProvider client={queryClient}>
-                        <UserSettingsProvider queryClient={queryClient}>
-                            <ThemeProvider defaultTheme="light">
-                                <AuthProvider>
-                                    <DemoAuthProvider>
-                                        <ServerConfigProvider>
-                                            <ChannelProvider>
-                                                <Story />
-                                            </ChannelProvider>
-                                        </ServerConfigProvider>
-                                    </DemoAuthProvider>
-                                </AuthProvider>
-                            </ThemeProvider>
-                        </UserSettingsProvider>
-                    </QueryClientProvider>
-                </I18nProvider>
+                <CommonProviders>
+                    <Story />
+                </CommonProviders>
             );
         },
     ],

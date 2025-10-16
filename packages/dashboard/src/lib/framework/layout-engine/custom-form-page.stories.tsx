@@ -1,12 +1,13 @@
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Textarea } from '@/vdb/components/ui/textarea.js';
-import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RouterContextProvider } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { createDemoRoute } from '../../../../.storybook/demo-router-provider.js';
+import { createDemoRoute } from '../../../../.storybook/providers.js';
 import {
     DetailFormGrid,
     Page,
@@ -16,7 +17,6 @@ import {
     PageLayout,
     PageTitle,
 } from './page-layout.js';
-import { Trans } from '@lingui/react/macro';
 
 // Sample GraphQL query for a product detail
 const productFragment = graphql(`

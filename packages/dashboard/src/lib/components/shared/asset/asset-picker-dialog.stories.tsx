@@ -2,7 +2,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RouterContextProvider } from '@tanstack/react-router';
 import { useState } from 'react';
-import { createDemoRoute } from '../../../../../.storybook/demo-router-provider.js';
+import { createDemoRoute } from '../../../../../.storybook/providers.js';
 import { withDescription } from '../../../../../.storybook/with-description.js';
 import { AssetPickerDialog } from './asset-picker-dialog.js';
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RouterContextProvider } from '@tanstack/react-router';
-import { createDemoRoute } from '../../../../.storybook/demo-router-provider.js';
+import { createDemoRoute } from '../../../../.storybook/providers.js';
 import { withDescription } from '../../../../.storybook/with-description.js';
 import { DetailPageButton } from './detail-page-button.js';
 

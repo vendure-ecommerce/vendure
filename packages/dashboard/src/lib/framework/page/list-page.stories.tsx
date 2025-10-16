@@ -5,7 +5,8 @@ import { ListPage, ListPageProps } from '@/vdb/framework/page/list-page.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import type { Meta, StoryObj } from '@storybook/react';
 import { PlusIcon } from 'lucide-react';
-import { DemoRouterProvider } from '../../../../.storybook/demo-router-provider.js';
+
+import { DemoRouterProvider } from '../../../../.storybook/providers.js';
 
 // Sample GraphQL query for countries
 const countryItemFragment = graphql(`

@@ -1,6 +1,6 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
 import type { Meta, StoryObj } from '@storybook/react';
-import { DemoRouterProvider } from '../../../../.storybook/demo-router-provider.js';
+import { DemoRouterProvider } from '../../../../.storybook/providers.js';
 import { DetailPage, DetailPageProps } from './detail-page.js';
 
 // Sample GraphQL query for a product detail
