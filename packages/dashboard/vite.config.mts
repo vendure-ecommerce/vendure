@@ -1,5 +1,8 @@
+import path from 'path';
+import { pathToFileURL } from 'url';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { vendureDashboardPlugin } from './vite/vite-plugin-vendure-dashboard.js';
 
 /**
  * This config is used for local development
@@ -24,13 +27,13 @@ export default ({ mode }: { mode: string }) => {
             environment: 'jsdom',
             exclude: ['./plugin/**/*', '**/node_modules/**/*'],
         },
-        // plugins: [
-        //     vendureDashboardPlugin({
-        //         vendureConfigPath: pathToFileURL(vendureConfigPath),
-        //         api: { host: adminApiHost, port: adminApiPort },
-        //         gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
-        //         tempCompilationDir: path.resolve(__dirname, './.temp'),
-        //     }) as any,
-        // ],
+        plugins: [
+            vendureDashboardPlugin({
+                vendureConfigPath: pathToFileURL(vendureConfigPath),
+                api: { host: adminApiHost, port: adminApiPort },
+                gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
+                tempCompilationDir: path.resolve(__dirname, './.temp'),
+            }) as any,
+        ],
     });
 };
