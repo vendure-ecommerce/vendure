@@ -151,9 +151,7 @@ export function uiConfigPlugin(options: UiConfigPluginOptions = {}): Plugin {
                     const result = await configLoaderApi.getVendureConfig();
                     vendureConfig = result.vendureConfig;
                 }
-
                 const config = getUiConfig(vendureConfig, options);
-
                 return `
                     export const uiConfig = ${JSON.stringify(config)}
                 `;
