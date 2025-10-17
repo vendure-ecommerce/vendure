@@ -10,6 +10,8 @@ export interface SchemaOptions {
     format?: 'sdl' | 'json';
     fileName?: string;
     outputDir?: string;
+    /** Specify the path to a custom Vendure config file */
+    config?: string;
 }
 
 /**
@@ -25,7 +27,7 @@ export async function schemaCommand(options?: SchemaOptions) {
     }
 
     // Interactive mode (original behavior)
-    await handleInteractiveMode();
+    await handleInteractiveMode(options?.config);
 }
 
 async function handleNonInteractiveMode(options: SchemaOptions) {
@@ -43,7 +45,7 @@ async function handleNonInteractiveMode(options: SchemaOptions) {
     }
 }
 
-async function handleInteractiveMode() {
+async function handleInteractiveMode(configFile?: string) {
     // eslint-disable-next-line no-console
     console.log(`\n`);
     intro(pc.blue('🛠️️ Generate a schema file of your GraphQL API'));
@@ -108,6 +110,7 @@ async function handleInteractiveMode() {
             format,
             fileName,
             outputDir,
+            config: configFile,
         });
         outro('✅ Done!');
         process.env.VENDURE_RUNNING_IN_CLI = undefined;

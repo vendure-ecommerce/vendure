@@ -16,6 +16,8 @@ export interface MigrateOptions {
     run?: boolean;
     revert?: boolean;
     outputDir?: string;
+    /** Specify the path to a custom Vendure config file */
+    config?: string;
 }
 
 /**
@@ -31,7 +33,7 @@ export async function migrateCommand(options?: MigrateOptions) {
     }
 
     // Interactive mode (original behavior)
-    await handleInteractiveMode();
+    await handleInteractiveMode(options?.config);
 }
 
 async function handleNonInteractiveMode(options: MigrateOptions) {
@@ -42,6 +44,7 @@ async function handleNonInteractiveMode(options: MigrateOptions) {
             const result = await generateMigrationOperation({
                 name: options.generate,
                 outputDir: options.outputDir,
+                config: options.config,
             });
 
             if (result.success) {
@@ -51,7 +54,7 @@ async function handleNonInteractiveMode(options: MigrateOptions) {
                 process.exit(1);
             }
         } else if (options.run) {
-            const result = await runMigrationsOperation();
+            const result = await runMigrationsOperation(options.config);
 
             if (result.success) {
                 log.success(result.message);
@@ -60,7 +63,7 @@ async function handleNonInteractiveMode(options: MigrateOptions) {
                 process.exit(1);
             }
         } else if (options.revert) {
-            const result = await revertMigrationOperation();
+            const result = await revertMigrationOperation(options.config);
 
             if (result.success) {
                 log.success(result.message);
@@ -80,7 +83,7 @@ async function handleNonInteractiveMode(options: MigrateOptions) {
     }
 }
 
-async function handleInteractiveMode() {
+async function handleInteractiveMode(configFile?: string) {
     // eslint-disable-next-line no-console
     console.log(`\n`);
     intro(pc.blue('🛠️️ Vendure migrations'));
@@ -104,11 +107,11 @@ async function handleInteractiveMode() {
         process.env.VENDURE_RUNNING_IN_CLI = 'true';
         if (action === 'generate') {
             const { generateMigrationCommand } = await import('./generate-migration/generate-migration');
-            await generateMigrationCommand.run();
+            await generateMigrationCommand.run({ configFile });
         }
         if (action === 'run') {
             const { runMigrationCommand } = await import('./run-migration/run-migration');
-            await runMigrationCommand.run();
+            await runMigrationCommand.run({ configFile });
         }
         if (action === 'revert') {
             const { revertMigrationCommand } = await import('./revert-migration/revert-migration');

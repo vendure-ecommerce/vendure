@@ -24,7 +24,7 @@ export async function generateSchema(options: SchemaOptions) {
     resetConfig();
     try {
         const { project, vendureTsConfig } = await analyzeProject({ cancelledMessage });
-        const vendureConfig = new VendureConfigRef(project);
+        const vendureConfig = new VendureConfigRef(project, options.config);
         log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
         const config = await loadVendureConfigFile(vendureConfig, vendureTsConfig);
         await setConfig(config);

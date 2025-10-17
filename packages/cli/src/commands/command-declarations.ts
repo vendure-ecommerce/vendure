@@ -186,6 +186,11 @@ export const cliCommands: CliCommandDefinition[] = [
                 description: 'Output directory for generated migrations',
                 required: false,
             },
+            {
+                long: '--config <path>',
+                description: 'Specify the path to a custom Vendure config file',
+                required: false,
+            },
         ],
         action: async options => {
             const { migrateCommand } = await import('./migrate/migrate');
@@ -219,6 +224,11 @@ export const cliCommands: CliCommandDefinition[] = [
                 short: '-f',
                 long: '--format <sdl|json>',
                 description: 'Output format, either SDL or JSON',
+                required: false,
+            },
+            {
+                long: '--config <path>',
+                description: 'Specify the path to a custom Vendure config file',
                 required: false,
             },
         ],
