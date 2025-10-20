@@ -180,6 +180,12 @@ const sidebars = {
                 'guides/extending-the-dashboard/theming/index',
                 'guides/extending-the-dashboard/deployment/index',
                 'guides/extending-the-dashboard/tech-stack/index',
+                'guides/extending-the-dashboard/migration/index',
+                {
+                    type: 'link',
+                    label: 'Component Library', // The link label
+                    href: 'https://storybook.vendure.io', // The external URL
+                },
             ],
         },
         {

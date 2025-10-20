@@ -12,7 +12,8 @@
         "serve": "docusaurus serve",
         "write-translations": "docusaurus write-translations",
         "write-heading-ids": "docusaurus write-heading-ids",
-        "typecheck": "tsc"
+        "typecheck": "tsc",
+        "generate-migration-prompt": "ts-node --compilerOptions '{\"downlevelIteration\":true}' ./scripts/generate-migration-prompt.ts"
     },
     "dependencies": {
         "@docusaurus/core": "^3.7.0",
