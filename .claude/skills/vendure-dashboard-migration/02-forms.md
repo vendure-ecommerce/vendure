@@ -48,13 +48,15 @@
             render={({ field }) => <Input {...field} />}
         />
     </DetailFormGrid>
-    <FormFieldWrapper
-        control={form.control}
-        name="body"
-        label="Content"
-        render={({ field }) => (
-            <RichTextInput value={field.value ?? ''} onChange={field.onChange} />
-        )}
-    />
-</PageBlock>
+    <div className="space-y-6">
+        <FormFieldWrapper
+            control={form.control}
+            name="body"
+            label="Content"
+            render={({ field }) => (
+                <RichTextInput value={field.value ?? ''} onChange={field.onChange} />
+            )}
+        />
+    </div>
+</PageBlock>;
 ```

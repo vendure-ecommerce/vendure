@@ -237,57 +237,57 @@ const deleteArticleDocument = graphql(`
 `);
 
 export const articleList: DashboardRouteDefinition = {
-navMenuItem: {
-sectionId: 'catalog',
-id: 'articles',
-url: '/articles',
-title: 'CMS Articles',
-},
-path: '/articles',
-loader: () => ({
-breadcrumb: 'Articles',
-}),
-component: route => (
-<ListPage
-pageId="article-list"
-title="Articles"
-listQuery={getArticleList}
-deleteMutation={deleteArticleDocument}
-route={route}
-customizeColumns={{
-title: {
-cell: ({ row }) => {
-const post = row.original;
-return <DetailPageButton id={post.id} label={post.title} />;
-},
-},
-}}
-defaultVisibility={{
-type: true,
-summary: true,
-state: true,
-rating: true,
-authorName: true,
-authorLocation: true,
-}}
-defaultColumnOrder={[
-'type',
-'summary',
-'authorName',
-'authorLocation',
-'rating',
-]}
->
-<PageActionBarRight>
-<Button asChild>
-<Link to="./new">
-<PlusIcon className="mr-2 h-4 w-4" />
-New article
-</Link>
-</Button>
-</PageActionBarRight>
-</ListPage>
-),
+    navMenuItem: {
+        sectionId: 'catalog',
+        id: 'articles',
+        url: '/articles',
+        title: 'CMS Articles',
+    },
+    path: '/articles',
+    loader: () => ({
+        breadcrumb: 'Articles',
+    }),
+    component: route => (
+        <ListPage
+            pageId="article-list"
+            title="Articles"
+            listQuery={getArticleList}
+            deleteMutation={deleteArticleDocument}
+            route={route}
+            customizeColumns={{
+                title: {
+                    cell: ({ row }) => {
+                        const post = row.original;
+                        return <DetailPageButton id={post.id} label={post.title} />;
+                    },
+                },
+            }}
+            defaultVisibility={{
+                type: true,
+                summary: true,
+                state: true,
+                rating: true,
+                authorName: true,
+                authorLocation: true,
+            }}
+            defaultColumnOrder={[
+                'type',
+                'summary',
+                'authorName',
+                'authorLocation',
+                'rating',
+            ]}
+        >
+            <PageActionBarRight>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        New article
+                    </Link>
+                </Button>
+            </PageActionBarRight>
+        </ListPage>
+    ),
 };
 ```
 

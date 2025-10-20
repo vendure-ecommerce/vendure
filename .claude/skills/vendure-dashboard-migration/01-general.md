@@ -158,10 +158,6 @@ Important:
     ```
     --color-background
     --color-foreground
-    --color-card
-    --color-card-foreground
-    --color-popover
-    --color-popover-foreground
     --color-primary
     --color-primary-foreground
     --color-secondary
