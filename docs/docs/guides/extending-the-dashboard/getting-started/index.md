@@ -140,7 +140,7 @@ const config: VendureConfig = {
             // in the vite.config.mts file
             route: 'dashboard',
             // This appDir should correspond to the `build.outDir`
-            // setting in the vite.config.mtx file
+            // setting in the vite.config.mts file
             appDir: './dist/dashboard',
         }),
         // highlight-end  
