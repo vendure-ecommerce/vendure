@@ -2,6 +2,8 @@ import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-d
 import { Button } from '@/vdb/components/ui/button.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -29,9 +31,10 @@ export interface CollectionContentsTableProps {
 }
 
 export function CollectionContentsTable({ collectionId }: Readonly<CollectionContentsTableProps>) {
+    const { settings, setItemsPerPage } = useUserSettings();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
     return (
@@ -64,6 +67,7 @@ export function CollectionContentsTable({ collectionId }: Readonly<CollectionCon
             onPageChange={(_, page, perPage) => {
                 setPage(page);
                 setPageSize(perPage);
+                setItemsPerPage(perPage);
             }}
             onSortChange={(_, sorting) => {
                 setSorting(sorting);

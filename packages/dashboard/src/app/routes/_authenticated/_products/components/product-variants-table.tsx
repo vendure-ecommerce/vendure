@@ -15,6 +15,8 @@ import {
     RemoveProductVariantsFromChannelBulkAction,
 } from '../../_product-variants/components/product-variant-bulk-actions.js';
 import { productVariantListDocument } from '../products.graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -27,9 +29,10 @@ export function ProductVariantsTable({
     registerRefresher,
     fromProductDetailPage,
 }: ProductVariantsTableProps) {
+    const { settings, setItemsPerPage } = useUserSettings();
     const { formatCurrencyName } = useLocalFormat();
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
@@ -102,6 +105,7 @@ export function ProductVariantsTable({
             onPageChange={(_, page, perPage) => {
                 setPage(page);
                 setPageSize(perPage);
+                setItemsPerPage(perPage);
             }}
             onSortChange={(_, sorting) => {
                 setSorting(sorting);

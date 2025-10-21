@@ -7,6 +7,8 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -42,9 +44,10 @@ export function CustomerGroupMembersTable({
     customerGroupId,
     canAddCustomers = true,
 }: CustomerGroupMembersTableProps) {
+    const { settings, setItemsPerPage } = useUserSettings();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
     const { t } = useLingui();
     const queryClient = useQueryClient();
@@ -77,6 +80,7 @@ export function CustomerGroupMembersTable({
                 onPageChange={(_, page, perPage) => {
                     setPage(page);
                     setPageSize(perPage);
+                    setItemsPerPage(perPage);
                 }}
                 onSortChange={(_, sorting) => {
                     setSorting(sorting);

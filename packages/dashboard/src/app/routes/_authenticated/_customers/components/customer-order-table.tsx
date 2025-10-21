@@ -6,14 +6,17 @@ import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { customerOrderListDocument } from '../customers.graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 
 interface CustomerOrderTableProps {
     customerId: string;
 }
 
 export function CustomerOrderTable({ customerId }: Readonly<CustomerOrderTableProps>) {
+    const { settings, setItemsPerPage } = useUserSettings();
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
     const [sorting, setSorting] = useState<SortingState>([{ id: 'orderPlacedAt', desc: true }]);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
@@ -78,6 +81,7 @@ export function CustomerOrderTable({ customerId }: Readonly<CustomerOrderTablePr
             onPageChange={(_, page, perPage) => {
                 setPage(page);
                 setPageSize(perPage);
+                setItemsPerPage(perPage);
             }}
             onSortChange={(_, sorting) => {
                 setSorting(sorting);

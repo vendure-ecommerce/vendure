@@ -16,6 +16,7 @@ import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-c
 import React from 'react';
 import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
+import { validatePageValue, validatePerPageValue } from '@/vdb/utils/pagination.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -379,6 +380,10 @@ export function PaginatedListDataTable<
     transformData,
     registerRefresher,
 }: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
+    // Validate pagination props to prevent invalid values
+    const validatedPage = validatePageValue(page);
+    const validatedItemsPerPage = validatePerPageValue(itemsPerPage);
+
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
@@ -393,6 +398,17 @@ export function PaginatedListDataTable<
         }
         return { ...acc, [field]: direction };
     }, {});
+
+    const filter = columnFilters?.length
+        ? {
+              _and: columnFilters.map(f => {
+                  if (Array.isArray(f.value)) {
+                      return { [f.id]: { in: f.value } };
+                  }
+                  return { [f.id]: f.value };
+              }),
+          }
+        : undefined;
 
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
@@ -427,23 +443,12 @@ export function PaginatedListDataTable<
         }));
     const minimalListQuery = includeOnlySelectedListFields(extendedListQuery, visibleColumns);
 
-    const filter = columnFilters?.length
-        ? {
-              _and: columnFilters.map(f => {
-                  if (Array.isArray(f.value)) {
-                      return { [f.id]: { in: f.value } };
-                  }
-                  return { [f.id]: f.value };
-              }),
-          }
-        : undefined;
-
     const defaultQueryKey = [
         PaginatedListDataTableKey,
         minimalListQuery,
         visibleColumns,
-        page,
-        itemsPerPage,
+        validatedPage,
+        validatedItemsPerPage,
         sorting,
         filter,
         debouncedSearchTerm,
@@ -456,8 +461,8 @@ export function PaginatedListDataTable<
             const mergedFilter = { ...filter, ...searchFilter };
             const variables = {
                 options: {
-                    take: Math.min(itemsPerPage, 100),
-                    skip: (page - 1) * itemsPerPage,
+                    take: Math.min(validatedItemsPerPage, 100),
+                    skip: (validatedPage - 1) * validatedItemsPerPage,
                     sort,
                     filter: mergedFilter,
                 },
@@ -482,8 +487,8 @@ export function PaginatedListDataTable<
                 columns={columns}
                 data={transformedData}
                 isLoading={isFetching}
-                page={page}
-                itemsPerPage={itemsPerPage}
+                page={validatedPage}
+                itemsPerPage={validatedItemsPerPage}
                 sorting={sorting}
                 columnFilters={columnFilters}
                 totalItems={listData?.totalItems ?? 0}

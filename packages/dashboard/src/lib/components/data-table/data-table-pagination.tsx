@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 
 import { Button } from '@/vdb/components/ui/button.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { ALLOWED_PER_PAGE_VALUES } from '@/vdb/constants.js';
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>;
@@ -27,11 +28,11 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                             table.setPageSize(Number(value));
                         }}
                     >
-                        <SelectTrigger className="h-8 w-[70px]">
+                        <SelectTrigger className="h-8 max-w-20">
                             <SelectValue placeholder={table.getState().pagination.pageSize} />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {[10, 20, 30, 40, 50].map(pageSize => (
+                            {ALLOWED_PER_PAGE_VALUES.map(pageSize => (
                                 <SelectItem key={pageSize} value={`${pageSize}`}>
                                     {pageSize}
                                 </SelectItem>
@@ -40,7 +41,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
                     </Select>
                 </div>
                 <div className=" flex items-center justify-center text-sm font-medium">
-                    <span className="hidden md:block w-[100px] ">
+                    <span className="hidden md:block max-w-28 ">
                         <Trans>
                             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
                         </Trans>

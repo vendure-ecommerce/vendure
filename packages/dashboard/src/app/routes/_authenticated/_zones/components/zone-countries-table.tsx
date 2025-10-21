@@ -9,6 +9,8 @@ import {
     removeCountryFromZoneMutation,
     zoneMembersQuery,
 } from '../zones.graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { validatePerPageValue } from '@/vdb/utils/pagination.js';
 
 interface ZoneCountriesTableProps {
     zoneId: string;
@@ -27,9 +29,10 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
             refetch();
         },
     });
-
+    
+    const { settings, setItemsPerPage } = useUserSettings();
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(validatePerPageValue(settings.itemsPerPage));
 
     const paginatedItems = useMemo(() => {
         return data?.zone?.members?.slice((page - 1) * pageSize, page * pageSize);
@@ -58,6 +61,7 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
                 onPageChange={(table, page, itemsPerPage) => {
                     setPage(page);
                     setPageSize(itemsPerPage);
+                    setItemsPerPage(itemsPerPage);
                 }}
                 totalItems={data?.zone?.members?.length ?? 0}
             />

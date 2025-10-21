@@ -14,6 +14,12 @@ export const LS_KEY_SHIPPING_TEST_ORDER = 'vendure-shipping-test-order';
 export const LS_KEY_SHIPPING_TEST_ADDRESS = 'vendure-shipping-test-address';
 
 /**
+ * Pagination constants
+ */
+export const DEFAULT_PER_PAGE = 10;
+export const ALLOWED_PER_PAGE_VALUES = [10, 25, 50, 100] as const;
+
+/**
  * This is copied from the generated types from @vendure/common/lib/generated-types.d.ts
  * It is used to provide a list of available currency codes for the user to select from.
  * esbuild currently does not support import enums.
