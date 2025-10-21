@@ -29,14 +29,14 @@ in around 20-30 minutes.
 
 ### Full Prompt
 
-Paste this into your AI assistant and make sure to specify the plugin by path, i.e.:
+Give a prompt like this to your AI assistant and make sure to specify the plugin by path, i.e.:
 
 ```
 Migrate the plugin at @src/plugins/my-plugin/ 
 to use the new dashboard.
-
-[Pasted text #1 +1390 lines]
 ```
+
+Then paste the following prompt in full:
 
 <div style={{ width: '100%', height: '500px', overflow: 'auto' }}>
 
@@ -1539,6 +1539,10 @@ defineDashboardExtension({
 ````
 
 </div>
+
+:::tip
+The full prompt is quite large, so it can make sense to first clear the current LLM context,
+e.g. with `/clear` in Claude Code or `/new` in Codex CLI
 
 ### Claude Skills
 
