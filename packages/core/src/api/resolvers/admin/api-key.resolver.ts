@@ -51,7 +51,6 @@ export class ApiKeyResolver {
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationCreateApiKeyArgs,
     ): Promise<CreateApiKeyResult> {
-        // TODO This should never happen? Could this only fail if ctx has an underlying bug? Could non null assert..?
         if (!ctx.activeUserId)
             throw new InternalServerError('error.active-user-does-not-have-sufficient-permissions');
 
