@@ -121,7 +121,13 @@ function ShippingMethodDetailPage() {
                     <PermissionGuard requires={['UpdateShippingMethod']}>
                         <Button
                             type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            disabled={
+                                !form.formState.isDirty ||
+                                !form.formState.isValid ||
+                                isPending ||
+                                !checker?.code ||
+                                !calculator?.code
+                            }
                         >
                             {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
