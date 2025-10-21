@@ -236,7 +236,7 @@ export function DataTable<TData>({
             isLoading={isLoading}
             table={table}
         >
-            <div className="space-y-2">
+            <div className="space-y-2 @container/table">
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                         {onSearchTermChange && (
