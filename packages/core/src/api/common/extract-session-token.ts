@@ -42,15 +42,18 @@ export async function extractSessionToken(
 
     const apiKeyHeader = req.get(apiKeyHeaderKey)?.trim();
     const apiKeyLookupHeader = req.get(apiKeyLookupHeaderKey)?.trim();
+
     if (apiKeyHeader && apiKeyLookupHeader && tokenMethod.includes('api-key')) {
         const apiKeyHash = await apiKeyService.getHashByLookupId(apiKeyLookupHeader);
 
-        // TODO lookupIds might be vulnerable to timing attacks because
-        // we only hash the apiKeyHeader if we find a matching lookupId.
-        // think about substituting a fake hash if no ApiKey is found.
-        let token: string;
-        if (apiKeyHash && (await apiKeyHashingStrategy.check(apiKeyHeader, apiKeyHash))) {
-            token = apiKeyHash;
+        if (!apiKeyHash) {
+            // Eventhough we know that there is no corresponding ApiKey entity, because
+            // the lookup ID yielded no result, we still hash the input, so that regardless
+            // of the ApiKey existing or not, this function takes around the same amount of time.
+            return void (await apiKeyHashingStrategy.hash(apiKeyHeader));
+        }
+
+        if (await apiKeyHashingStrategy.check(apiKeyHeader, apiKeyHash)) {
             // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
             apiKeyService
                 .updateLastUsedAtByLookupId(apiKeyLookupHeader)
@@ -61,12 +64,7 @@ export async function extractSessionToken(
                         err?.stack,
                     ),
                 );
-        } else {
-            // Even though we know that there is no corresponding ApiKey entity,
-            // we still hash the provided key to avoid leaking timing information.
-            token = await apiKeyHashingStrategy.hash(apiKeyHeader);
+            return { method: 'api-key', token: apiKeyHash };
         }
-
-        return { method: 'api-key', token };
     }
 }

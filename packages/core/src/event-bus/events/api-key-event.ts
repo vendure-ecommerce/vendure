@@ -13,7 +13,7 @@ type ApiKeyInputTypes = CreateApiKeyInput | UpdateApiKeyInput | ID;
  *
  * @docsCategory events
  * @docsPage Event Types
- * @since // TODO
+ * @since 3.6.0
  */
 export class ApiKeyEvent extends VendureEntityEvent<ApiKey, ApiKeyInputTypes> {
     constructor(

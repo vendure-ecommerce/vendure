@@ -233,7 +233,6 @@ export class ApiKeyService {
         // If this is an underlying user solely for holding permission, delete them
         else {
             // SoftDelete should also delete the related sessions & cache
-            // TODO because its only a soft delete the IDs stay in the `user_roles_role` junction table huh
             await this.userService.softDelete(ctx, apiKey.userId);
         }
 

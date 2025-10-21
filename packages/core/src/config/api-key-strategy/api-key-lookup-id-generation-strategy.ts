@@ -23,14 +23,14 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * :::
  *
  * @docsCategory auth
- * @since // TODO
+ * @since 3.6.0
  */
 export interface ApiKeyLookupIdGenerationStrategy extends InjectableStrategy {
     /**
      * @description
      * Generates an API-Key lookup ID.
      *
-     * @since // TODO
+     * @since 3.6.0
      */
     generateLookupId(ctx: RequestContext): Promise<string>;
 }

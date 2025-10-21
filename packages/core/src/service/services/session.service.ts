@@ -342,8 +342,18 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * Deletes all existing sessions with the given activeOrder.
      */
     async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID): Promise<void> {
-        // TODO think about apikey sessions
-        const sessions = await this.connection.getRepository(ctx, Session).find({ where: { activeOrderId } });
+        const sessions = await this.connection
+            .getRepository(ctx, Session)
+            // Using a query builder here because sessions utilize @TableInheritance,
+            // `authenticationStrategy` only exists on `AuthenticatedSession`
+            .createQueryBuilder()
+            .where('activeOrderId = :activeOrderId', { activeOrderId })
+            // Specifically do not delete api key based sessions,
+            // else the api key becomes unusable!
+            .andWhere('(authenticationStrategy != :name OR authenticationStrategy IS NULL)', {
+                name: API_KEY_AUTH_STRATEGY_NAME,
+            })
+            .getMany();
         await this.connection.getRepository(ctx, Session).remove(sessions);
         for (const session of sessions) {
             await this.withTimeout(this.sessionCacheStrategy.delete(session.token));

@@ -26,6 +26,6 @@ import { PasswordHashingStrategy } from '../auth/password-hashing-strategy';
  * :::
  *
  * @docsCategory auth
- * @since // TODO
+ * @since 3.6.0
  */
 export interface ApiKeyHashingStrategy extends PasswordHashingStrategy {}

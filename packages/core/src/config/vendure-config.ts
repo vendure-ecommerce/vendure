@@ -387,7 +387,7 @@ export interface AuthOptions {
      *
      * From v1.2.0 it is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
      *
-     * From // TODO it is possible to include 'api-key' as additional method in the method-tuple to allow for long-lived
+     * From v3.6.0 it is possible to include 'api-key' as additional method in the method-tuple to allow for long-lived
      * API-Key based authorization.
      *
      * @default 'cookie'
@@ -506,12 +506,12 @@ export interface AuthOptions {
     passwordHashingStrategy?: PasswordHashingStrategy;
     /**
      * Defines how authorization via API-Keys is managed for the Admin API.
-     * @since // TODO
+     * @since 3.6.0
      */
     adminApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
     /**
      * Defines how authorization via API-Keys is managed for the Shop API.
-     * @since // TODO
+     * @since 3.6.0
      */
     shopApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
     /**

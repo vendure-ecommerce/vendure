@@ -18,7 +18,6 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  *
  * @docsCategory auth
  * @since 1.3.0
- * @since // TODO api key release
  */
 export interface PasswordHashingStrategy extends InjectableStrategy {
     hash(plaintext: string): Promise<string>;

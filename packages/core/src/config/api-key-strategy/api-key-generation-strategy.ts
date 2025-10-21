@@ -19,14 +19,14 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * :::
  *
  * @docsCategory auth
- * @since // TODO
+ * @since 3.6.0
  */
 export interface ApiKeyGenerationStrategy extends InjectableStrategy {
     /**
      * @description
      * Generates an API-Key.
      *
-     * @since // TODO
+     * @since 3.6.0
      */
     generateApiKey(ctx: RequestContext): Promise<string>;
 }

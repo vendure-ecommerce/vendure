@@ -32,7 +32,7 @@ export const DEFAULT_SIZE_RANDOM_BYTES_LOOKUP = 12;
  * A generation strategy that uses `node:crypto` to generate random hex strings for API-Keys via `randomBytes`.
  *
  * @docsCategory auth
- * @since // TODO
+ * @since 3.6.0
  */
 export class RandomBytesApiKeyGenerationStrategy
     implements ApiKeyGenerationStrategy, ApiKeyLookupIdGenerationStrategy
