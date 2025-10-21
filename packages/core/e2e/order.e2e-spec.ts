@@ -257,8 +257,48 @@ describe('Orders resolver', () => {
             expect(result.order!.id).toBe('T_2');
         });
 
+        it('correctly resolves asset preview urls with edge-case query', async () => {
+            // This came up as a strange edge-case where the AssetInterceptorPlugin was unable to
+            // correctly transform the asset preview URL. It is not directly to do with Orders per se,
+            // but manifested when attempting an order-related query.
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                gql(`
+                    query OrderAssetEdgeCase($id: ID!) {
+                        order(id: $id) {
+                             lines {
+                               id
+                             }
+                            ...OrderDetail
+                        }
+                    }
+
+                    fragment OrderDetail on Order {
+                        id
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+
+                    fragment OrderLine on OrderLine {
+                        id
+                        featuredAsset {
+                            preview
+                        }
+                    }
+                `),
+                {
+                    id: 'T_2',
+                },
+            );
+            expect(result.order!.lines.length).toBe(2);
+            expect(result.order!.lines.map(l => l.featuredAsset?.preview)).toEqual([
+                'test-url/test-assets/derick-david-409858-unsplash__preview.jpg',
+                'test-url/test-assets/derick-david-409858-unsplash__preview.jpg',
+            ]);
+        });
+
         it('order with calculated line properties', async () => {
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 gql`
                     query GetOrderWithLineCalculatedProps($id: ID!) {
                         order(id: $id) {
@@ -2844,19 +2884,19 @@ describe('Orders resolver', () => {
                     {
                         productVariantId: 'T_2',
                         quantity: 999999, // Exceeds limit
-                    }
+                    },
                 ],
             });
-            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1')
+            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1');
             // Should have added 1 of T_1
             expect(t1?.quantity).toBe(1);
             // Should not have added T_2
-            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2')
-            expect(t2).toBeUndefined(); 
+            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2');
+            expect(t2).toBeUndefined();
             // Should have errors
             expect(addItemsToOrder.errorResults.length).toBe(1);
-            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR')
-            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR')
+            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR');
+            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR');
         });
     });
 });

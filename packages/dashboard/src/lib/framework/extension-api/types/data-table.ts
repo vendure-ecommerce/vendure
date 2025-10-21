@@ -1,5 +1,8 @@
+import { DataDisplayComponentProps } from '@/vdb/framework/component-registry/component-registry.js';
 import { Table } from '@tanstack/react-table';
+import { CellContext } from '@tanstack/table-core';
 import { DocumentNode } from 'graphql';
+import React from 'react';
 
 /**
  * @description
@@ -21,7 +24,7 @@ export interface DashboardDataTableDisplayComponent {
      * The React component that will be rendered as the display.
      * It should accept `value` and other standard display props.
      */
-    component: React.ComponentType<{ value: any; [key: string]: any }>;
+    component: React.ComponentType<DataDisplayComponentProps<CellContext<any, any>>>;
 }
 
 export type BulkActionContext<Item extends { id: string } & Record<string, any>> = {
@@ -120,7 +123,7 @@ export type BulkAction = {
  * This allows you to customize aspects of existing data tables in the dashboard.
  *
  * @docsCategory extensions-api
- * @docsPage DataTable
+ * @docsPage DataTables
  * @since 3.4.0
  */
 export interface DashboardDataTableExtensionDefinition {

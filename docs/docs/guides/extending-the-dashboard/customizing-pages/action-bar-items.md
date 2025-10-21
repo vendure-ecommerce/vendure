@@ -34,7 +34,7 @@ defineDashboardExtension({
 });
 ```
 
-![Action bar button](./action-bar-button.webp)
+![Action bar button](action-bar-button.webp)
 
 ## Context Data
 
@@ -66,7 +66,7 @@ defineDashboardExtension({
 });
 ```
 
-![Action bar dropdown](./action-bar-dropdown.webp)
+![Action bar dropdown](action-bar-dropdown.webp)
 
 ## Practical Examples
 

@@ -60,17 +60,18 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                             className="flex flex-col items-center gap-6"
                             onSubmit={form.handleSubmit(data => onFormSubmit?.(data.username, data.password))}
                         >
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <h1 className="text-2xl font-semibold tracking-tight">
-                                    <Trans>Welcome to Vendure</Trans>
-                                </h1>
-                                <p className="text-sm text-muted-foreground">
-                                    <Trans>Sign in to access the admin dashboard</Trans>
-                                </p>
-                            </div>
-                            {loginExtensions.beforeForm && (
+                            {loginExtensions.beforeForm ? (
                                 <div className="w-full">
                                     <loginExtensions.beforeForm.component />
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center text-center gap-2">
+                                    <h1 className="text-2xl font-semibold tracking-tight">
+                                        <Trans>Welcome to Vendure</Trans>
+                                    </h1>
+                                    <p className="text-sm text-muted-foreground">
+                                        <Trans>Sign in to access the admin dashboard</Trans>
+                                    </p>
                                 </div>
                             )}
                             <div className="grid gap-4 w-full">

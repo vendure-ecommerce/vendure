@@ -131,6 +131,11 @@ export interface AssetGalleryProps {
      * Whether the gallery should display bulk actions.
      */
     displayBulkActions?: boolean;
+    /**
+     * @description
+     * The function to call when the page size changes.
+     */
+    onPageSizeChange?: (pageSize: number) => void;
 }
 
 /**
@@ -140,12 +145,12 @@ export interface AssetGalleryProps {
  * @example
  * ```tsx
  *  <AssetGallery
- onSelect={handleAssetSelect}
- multiSelect="manual"
- initialSelectedAssets={initialSelectedAssets}
- fixedHeight={false}
- displayBulkActions={false}
- />
+ *   onSelect={handleAssetSelect}
+ *   multiSelect="manual"
+ *   initialSelectedAssets={initialSelectedAssets}
+ *   fixedHeight={false}
+ *   displayBulkActions={false}
+ *   />
  * ```
  *
  * @docsCategory components
@@ -164,6 +169,7 @@ export function AssetGallery({
     onFilesDropped,
     bulkActions,
     displayBulkActions = true,
+    onPageSizeChange,
 }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
@@ -469,119 +475,148 @@ export function AssetGallery({
                 </div>
             </div>
 
-            {totalPages > 1 && (
-                <Pagination className="mt-4 flex-shrink-0">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                size="default"
-                                onClick={e => {
-                                    e.preventDefault();
-                                    goToPage(page - 1);
-                                }}
-                                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
-                            />
-                        </PaginationItem>
+            <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 mt-4 flex-shrink-0">
+                <div className="mt-2 text-xs text-muted-foreground flex-shrink-0">
+                    {totalItems} {totalItems === 1 ? 'asset' : 'assets'} found
+                    {selected.length > 0 && `, ${selected.length} selected`}
+                </div>
+                <div className="flex-1"></div>
+                {/* Items per page selector */}
+                {onPageSizeChange && (
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Items per page</span>
+                        <Select
+                            value={pageSize.toString()}
+                            onValueChange={value => {
+                                const newPageSize = parseInt(value, 10);
+                                onPageSizeChange(newPageSize);
+                                setPage(1); // Reset to first page when changing page size
+                            }}
+                        >
+                            <SelectTrigger className="h-8 w-[70px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent side="top">
+                                {[12, 24, 48, 96].map(size => (
+                                    <SelectItem key={size} value={`${size}`}>
+                                        {size}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
 
-                        {/* First page */}
-                        {page > 2 && (
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <Pagination className="w-auto">
+                        <PaginationContent>
                             <PaginationItem>
-                                <PaginationLink
+                                <PaginationPrevious
                                     href="#"
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        goToPage(1);
-                                    }}
-                                >
-                                    1
-                                </PaginationLink>
-                            </PaginationItem>
-                        )}
-
-                        {/* Ellipsis if needed */}
-                        {page > 3 && (
-                            <PaginationItem>
-                                <PaginationEllipsis />
-                            </PaginationItem>
-                        )}
-
-                        {/* Previous page */}
-                        {page > 1 && (
-                            <PaginationItem>
-                                <PaginationLink
-                                    href="#"
+                                    size="default"
                                     onClick={e => {
                                         e.preventDefault();
                                         goToPage(page - 1);
                                     }}
-                                >
-                                    {page - 1}
+                                    className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {/* First page */}
+                            {page > 2 && (
+                                <PaginationItem>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            goToPage(1);
+                                        }}
+                                    >
+                                        1
+                                    </PaginationLink>
+                                </PaginationItem>
+                            )}
+
+                            {/* Ellipsis if needed */}
+                            {page > 3 && (
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                            )}
+
+                            {/* Previous page */}
+                            {page > 1 && (
+                                <PaginationItem>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            goToPage(page - 1);
+                                        }}
+                                    >
+                                        {page - 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            )}
+
+                            {/* Current page */}
+                            <PaginationItem>
+                                <PaginationLink href="#" isActive>
+                                    {page}
                                 </PaginationLink>
                             </PaginationItem>
-                        )}
 
-                        {/* Current page */}
-                        <PaginationItem>
-                            <PaginationLink href="#" isActive>
-                                {page}
-                            </PaginationLink>
-                        </PaginationItem>
+                            {/* Next page */}
+                            {page < totalPages && (
+                                <PaginationItem>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            goToPage(page + 1);
+                                        }}
+                                    >
+                                        {page + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            )}
 
-                        {/* Next page */}
-                        {page < totalPages && (
+                            {/* Ellipsis if needed */}
+                            {page < totalPages - 2 && (
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                            )}
+
+                            {/* Last page */}
+                            {page < totalPages - 1 && (
+                                <PaginationItem>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={e => {
+                                            e.preventDefault();
+                                            goToPage(totalPages);
+                                        }}
+                                    >
+                                        {totalPages}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            )}
+
                             <PaginationItem>
-                                <PaginationLink
+                                <PaginationNext
                                     href="#"
                                     onClick={e => {
                                         e.preventDefault();
                                         goToPage(page + 1);
                                     }}
-                                >
-                                    {page + 1}
-                                </PaginationLink>
+                                    className={page === totalPages ? 'pointer-events-none opacity-50' : ''}
+                                />
                             </PaginationItem>
-                        )}
-
-                        {/* Ellipsis if needed */}
-                        {page < totalPages - 2 && (
-                            <PaginationItem>
-                                <PaginationEllipsis />
-                            </PaginationItem>
-                        )}
-
-                        {/* Last page */}
-                        {page < totalPages - 1 && (
-                            <PaginationItem>
-                                <PaginationLink
-                                    href="#"
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        goToPage(totalPages);
-                                    }}
-                                >
-                                    {totalPages}
-                                </PaginationLink>
-                            </PaginationItem>
-                        )}
-
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={e => {
-                                    e.preventDefault();
-                                    goToPage(page + 1);
-                                }}
-                                className={page === totalPages ? 'pointer-events-none opacity-50' : ''}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
-
-            <div className="mt-2 text-xs text-muted-foreground flex-shrink-0">
-                {totalItems} {totalItems === 1 ? 'asset' : 'assets'} found
-                {selected.length > 0 && `, ${selected.length} selected`}
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
         </div>
     );

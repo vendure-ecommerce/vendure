@@ -8,16 +8,16 @@ import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 
 const cancelledMessage = 'Revert migrations cancelled';
 
-export const revertMigrationCommand = new CliCommand({
+export const revertMigrationCommand = new CliCommand<{ configFile?: string }>({
     id: 'run-migration',
     category: 'Other',
     description: 'Run any pending database migrations',
-    run: () => runRevertMigration(),
+    run: options => runRevertMigration(options?.configFile),
 });
 
-async function runRevertMigration(): Promise<CliCommandReturnVal> {
+async function runRevertMigration(configFile?: string): Promise<CliCommandReturnVal> {
     const { project } = await analyzeProject({ cancelledMessage });
-    const vendureConfig = new VendureConfigRef(project);
+    const vendureConfig = new VendureConfigRef(project, configFile);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
     const config = await loadVendureConfigFile(vendureConfig);
 

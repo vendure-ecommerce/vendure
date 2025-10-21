@@ -5,8 +5,14 @@ import {
     getOperationVariablesFields,
     getTypeFieldInfo,
 } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import {
+    generateDisplayComponentKey,
+    getDisplayComponent,
+} from '@/vdb/framework/extension-api/display-component-extensions.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
+import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
@@ -82,6 +88,8 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     columns: Array<AccessorKeyColumnDef<any> | AccessorFnColumnDef<any>>;
     customFieldColumnNames: string[];
 } {
+    const { pageId } = usePage();
+    const pageBlock = usePageBlock();
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
     const allBulkActions = useAllBulkActions(bulkActions ?? []);
 
@@ -106,47 +114,39 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
+            const { header, meta, cell: customCell, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
             return columnHelper.accessor(fieldInfo.name as any, {
                 id: fieldInfo.name,
-                meta: { fieldInfo, isCustomField },
+                meta: { fieldInfo, isCustomField, ...(meta ?? {}) },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar && fieldInfo.type !== 'Boolean' && enableSorting,
                 // Filtering is done on the server side, but we set this to 'equalsString' because
                 // otherwise the TanStack Table with apply an "auto" function which somehow
                 // prevents certain filters from working.
                 filterFn: 'equalsString',
-                cell: ({ cell, row }) => {
+                cell: cellContext => {
+                    const { cell, row } = cellContext;
                     const cellValue = cell.getValue();
                     const value =
                         cellValue ??
                         (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
+                    const displayComponentId =
+                        pageId && pageBlock?.blockId
+                            ? generateDisplayComponentKey(pageId, pageBlock.blockId, fieldInfo.name)
+                            : undefined;
 
-                    if (fieldInfo.list && Array.isArray(value)) {
-                        return value.join(', ');
+                    const CustomDisplayComponent =
+                        displayComponentId && getDisplayComponent(displayComponentId);
+
+                    if (CustomDisplayComponent) {
+                        return <CustomDisplayComponent value={value} {...cellContext} />;
                     }
-                    if (
-                        (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
-                        value instanceof Date
-                    ) {
-                        return <DisplayComponent id="vendure:dateTime" value={value} />;
+                    if (typeof customCell === 'function') {
+                        return customCell(cellContext);
                     }
-                    if (fieldInfo.type === 'Boolean') {
-                        if (cell.column.id === 'enabled') {
-                            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
-                        } else {
-                            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
-                        }
-                    }
-                    if (fieldInfo.type === 'Asset') {
-                        return <DisplayComponent id="vendure:asset" value={value} />;
-                    }
-                    if (value !== null && typeof value === 'object') {
-                        return <DisplayComponent id="vendure:json" value={value} />;
-                    }
-                    return value;
+                    return <DefaultDisplayComponent value={value} fieldInfo={fieldInfo} />;
                 },
                 header: headerContext => {
                     return (
@@ -262,6 +262,29 @@ function getRowActions(
             );
         },
     };
+}
+
+function DefaultDisplayComponent({ value, fieldInfo }: { value: any; fieldInfo: FieldInfo }) {
+    if (fieldInfo.list && Array.isArray(value)) {
+        return value.join(', ');
+    }
+    if ((fieldInfo.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+        return <DisplayComponent id="vendure:dateTime" value={value} />;
+    }
+    if (fieldInfo.type === 'Boolean') {
+        if (fieldInfo.name === 'enabled') {
+            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
+        } else {
+            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
+        }
+    }
+    if (fieldInfo.type === 'Asset') {
+        return <DisplayComponent id="vendure:asset" value={value} />;
+    }
+    if (value !== null && typeof value === 'object') {
+        return <DisplayComponent id="vendure:json" value={value} />;
+    }
+    return value;
 }
 
 function DeleteMutationRowAction({

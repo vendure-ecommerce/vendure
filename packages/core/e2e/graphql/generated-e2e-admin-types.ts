@@ -6281,12 +6281,14 @@ export type TaxRate = Node & {
 export type TaxRateFilterParameter = {
     _and?: InputMaybe<Array<TaxRateFilterParameter>>;
     _or?: InputMaybe<Array<TaxRateFilterParameter>>;
+    categoryId?: InputMaybe<IdOperators>;
     createdAt?: InputMaybe<DateOperators>;
     enabled?: InputMaybe<BooleanOperators>;
     id?: InputMaybe<IdOperators>;
     name?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
     value?: InputMaybe<NumberOperators>;
+    zoneId?: InputMaybe<IdOperators>;
 };
 
 export type TaxRateList = PaginatedList & {
@@ -7046,7 +7048,9 @@ export type UpdateGlobalLanguagesMutationVariables = Exact<{
 }>;
 
 export type UpdateGlobalLanguagesMutation = {
-    updateGlobalSettings: { id: string; availableLanguages: Array<LanguageCode> } | {};
+    updateGlobalSettings:
+        | { id: string; availableLanguages: Array<LanguageCode> }
+        | Record<PropertyKey, never>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = Exact<{ [key: string]: never }>;
@@ -11879,6 +11883,21 @@ export type GetTaxRateListQuery = {
     };
 };
 
+export type OrderAssetEdgeCaseQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type OrderAssetEdgeCaseQuery = {
+    order?: { id: string; lines: Array<{ id: string; featuredAsset?: { preview: string } | null }> } | null;
+};
+
+export type OrderDetailFragment = {
+    id: string;
+    lines: Array<{ id: string; featuredAsset?: { preview: string } | null }>;
+};
+
+export type OrderLineFragment = { id: string; featuredAsset?: { preview: string } | null };
+
 export type GetOrderWithLineCalculatedPropsQueryVariables = Exact<{
     id: Scalars['ID']['input'];
 }>;
@@ -15569,6 +15588,75 @@ export const OrderWithModificationsFragmentDoc = {
         },
     ],
 } as unknown as DocumentNode<OrderWithModificationsFragment, unknown>;
+export const OrderLineFragmentDoc = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderLine' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderLine' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'featuredAsset' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preview' } }],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OrderLineFragment, unknown>;
+export const OrderDetailFragmentDoc = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderDetail' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'OrderLine' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderLine' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderLine' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'featuredAsset' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preview' } }],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OrderDetailFragment, unknown>;
 export const RefundFragmentDoc = {
     kind: 'Document',
     definitions: [
@@ -35428,6 +35516,96 @@ export const GetTaxRateListDocument = {
         },
     ],
 } as unknown as DocumentNode<GetTaxRateListQuery, GetTaxRateListQueryVariables>;
+export const OrderAssetEdgeCaseDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'OrderAssetEdgeCase' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'order' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'lines' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'OrderDetail' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderLine' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderLine' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'featuredAsset' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preview' } }],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderDetail' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'OrderLine' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OrderAssetEdgeCaseQuery, OrderAssetEdgeCaseQueryVariables>;
 export const GetOrderWithLineCalculatedPropsDocument = {
     kind: 'Document',
     definitions: [

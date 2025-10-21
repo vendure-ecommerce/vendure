@@ -34,7 +34,10 @@ function createCustomizeColumns(currencyCode: string) {
             accessorKey: 'featuredAsset',
             cell: ({ row }: { row: any }) => {
                 const asset = row.original.featuredAsset;
-                return <VendureImage asset={asset} preset="tiny" />;
+                const fallbackAsset =
+                    row.original.productVariant?.featuredAsset ??
+                    row.original.productVariant?.product?.featuredAsset;
+                return <VendureImage asset={asset ?? fallbackAsset} preset="tiny" />;
             },
         },
         productVariant: {
@@ -154,14 +157,13 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
         customizeColumns: customizeColumns as any,
         deleteMutation: undefined,
         defaultColumnOrder: columnOrder,
-        additionalColumns: {},
         includeSelectionColumn: false,
         includeActionsColumn: false,
         enableSorting: false,
     });
 
     const columnVisibility = getColumnVisibility(columns, defaultColumnVisibility, customFieldColumnNames);
-    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length - 2; // -2 for "actions" and "selection" cols
     const data = order.lines;
 
     return (

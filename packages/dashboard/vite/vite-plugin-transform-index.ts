@@ -19,7 +19,15 @@ export function transformIndexHtmlPlugin(): Plugin {
         },
         // Only apply this plugin during the build phase
         apply: 'build',
-        transformIndexHtml(html) {
+        transformIndexHtml(html, ctx) {
+            // Don't transform Storybook HTML files
+            if (
+                ctx.filename &&
+                (ctx.filename.includes('iframe.html') || ctx.filename.includes('storybook'))
+            ) {
+                return html;
+            }
+
             if (config.base && config.base !== '/') {
                 // Remove the base path from hrefs and srcs
                 const basePath = config.base.replace(/\/$/, ''); // Remove trailing slash

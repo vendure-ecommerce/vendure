@@ -6281,12 +6281,14 @@ export type TaxRate = Node & {
 export type TaxRateFilterParameter = {
     _and?: InputMaybe<Array<TaxRateFilterParameter>>;
     _or?: InputMaybe<Array<TaxRateFilterParameter>>;
+    categoryId?: InputMaybe<IdOperators>;
     createdAt?: InputMaybe<DateOperators>;
     enabled?: InputMaybe<BooleanOperators>;
     id?: InputMaybe<IdOperators>;
     name?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
     value?: InputMaybe<NumberOperators>;
+    zoneId?: InputMaybe<IdOperators>;
 };
 
 export type TaxRateList = PaginatedList & {
@@ -6802,7 +6804,7 @@ export type CreateAssetsMutation = {
               preview: string;
               focalPoint?: { x: number; y: number } | null;
           }
-        | {}
+        | Record<PropertyKey, never>
     >;
 };
 

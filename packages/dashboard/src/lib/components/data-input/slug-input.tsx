@@ -168,20 +168,19 @@ export function SlugInput({
 
     const watchFieldState = form.getFieldState(actualWatchFieldName);
     const debouncedWatchedValue = useDebounce(watchedValue, 500);
-
-    const shouldAutoGenerate = isReadonly && !value && watchFieldState.isDirty;
-
+    const shouldAutoGenerate = isReadonly && !entityId && watchFieldState.isDirty;
+    const queryKey = ['slugForEntity', entityName, fieldName, debouncedWatchedValue, entityId];
+    const enabled = !!debouncedWatchedValue && shouldAutoGenerate;
     const {
         data: generatedSlug,
         isLoading,
         refetch,
     } = useQuery({
-        queryKey: ['slugForEntity', entityName, fieldName, debouncedWatchedValue, entityId],
+        queryKey,
         queryFn: async () => {
             if (!debouncedWatchedValue) {
                 return '';
             }
-
             const result = await api.query(slugForEntityDocument, {
                 input: {
                     entityName,
@@ -193,14 +192,14 @@ export function SlugInput({
 
             return result.slugForEntity;
         },
-        enabled: !!debouncedWatchedValue && shouldAutoGenerate,
+        enabled,
     });
 
     useEffect(() => {
-        if (isReadonly && generatedSlug && generatedSlug !== value) {
+        if (shouldAutoGenerate && generatedSlug && generatedSlug !== value) {
             onChange?.(generatedSlug);
         }
-    }, [generatedSlug, isReadonly, value, onChange]);
+    }, [generatedSlug, shouldAutoGenerate, value, onChange]);
 
     const toggleReadonly = () => {
         if (!isFormReadonly) {
@@ -221,8 +220,8 @@ export function SlugInput({
         onChange?.(newValue);
     };
 
-    const displayValue = isReadonly && generatedSlug ? generatedSlug : value || '';
-    const showLoading = isLoading && isReadonly;
+    const displayValue = shouldAutoGenerate && generatedSlug ? generatedSlug : value || '';
+    const showLoading = isLoading && shouldAutoGenerate;
 
     return (
         <div className="relative flex items-center gap-2">

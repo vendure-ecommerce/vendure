@@ -61,11 +61,13 @@ function ProductListPage() {
                     cell: ({ row: { original } }) => formatCurrencyName(original.currencyCode, 'full'),
                 },
                 price: {
+                    meta: { dependencies: ['currencyCode'] },
                     cell: ({ row: { original } }) => (
                         <Money value={original.price} currency={original.currencyCode} />
                     ),
                 },
                 priceWithTax: {
+                    meta: { dependencies: ['currencyCode'] },
                     cell: ({ row: { original } }) => (
                         <Money value={original.priceWithTax} currency={original.currencyCode} />
                     ),

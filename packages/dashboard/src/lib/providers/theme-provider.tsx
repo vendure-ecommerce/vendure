@@ -29,15 +29,18 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: R
 
         root.classList.remove('light', 'dark');
 
-        if (settings.theme === 'system') {
+        const activeTheme =
+            defaultTheme !== 'system' && settings.theme === 'system' ? defaultTheme : settings.theme;
+
+        if (activeTheme === 'system') {
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
             root.classList.add(systemTheme);
             return;
         }
 
-        root.classList.add(settings.theme);
-    }, [settings.theme]);
+        root.classList.add(activeTheme);
+    }, [settings.theme, defaultTheme]);
 
     return (
         <ThemeProviderContext.Provider

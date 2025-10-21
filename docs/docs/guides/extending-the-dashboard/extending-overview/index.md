@@ -223,8 +223,6 @@ In Dev Mode, hovering any block in the dashboard will allow you to find the corr
 
 Now that you understand the fundamentals of extending the dashboard, explore these specific guides:
 
-- [Navigation](/guides/extending-the-dashboard/navigation/) - Add custom navigation sections
-- [Page Blocks](/guides/extending-the-dashboard/page-blocks/) - Enhance existing pages
-- [Action Bar Items](/guides/extending-the-dashboard/action-bar-items/) - Add custom actions
-- [Custom Form Components](/guides/extending-the-dashboard/custom-form-components/) - Build specialized inputs
-- [CMS Tutorial](/guides/extending-the-dashboard/cms-tutorial/) - Complete walkthrough example
+- [Creating Pages](/guides/extending-the-dashboard/creating-pages/) 
+- [Customizing Pages](/guides/extending-the-dashboard/customizing-pages/) 
+- [Navigation](/guides/extending-the-dashboard/navigation/) 
