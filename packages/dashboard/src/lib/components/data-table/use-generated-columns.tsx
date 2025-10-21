@@ -252,7 +252,11 @@ function getRowActions(
                             </DropdownMenuItem>
                         ))}
                         {bulkActions?.map((action, index) => (
-                            <action.component key={`bulk-action-${index}`} selection={[row]} table={table} />
+                            <action.component
+                                key={`bulk-action-${index}`}
+                                selection={[row.original]}
+                                table={table}
+                            />
                         ))}
                         {deleteMutation && (
                             <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
