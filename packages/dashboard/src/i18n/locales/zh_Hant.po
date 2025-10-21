@@ -26,31 +26,6 @@ msgid "The page will continue with the default query."
 msgstr "頁面將繼續使用預設查詢。"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:41
-msgid "Failed to extend query document"
-msgstr "擴充查詢文件失敗"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:43
-msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "查詢擴充無效：必須至少有一個頂層欄位"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:47
-msgid "Query extension mismatch: "
-msgstr "查詢擴充不符："
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:49
-msgid "Query extension contains invalid GraphQL syntax"
-msgstr "查詢擴充包含無效的 GraphQL 語法"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:51
-msgid "Query extension error: "
-msgstr "查詢擴充錯誤："
-
-#. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
 msgid "Insights"
 msgstr "洞察"
@@ -215,6 +190,31 @@ msgstr "最新訂單小工具"
 #: src/lib/framework/defaults.ts:264
 msgid "Orders Summary Widget"
 msgstr "訂單摘要小工具"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "擴充查詢文件失敗"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "查詢擴充無效：必須至少有一個頂層欄位"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "查詢擴充不符："
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "查詢擴充包含無效的 GraphQL 語法"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "查詢擴充錯誤："
 
 #. js-lingui-explicit-id
 #: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
@@ -1049,7 +1049,7 @@ msgstr "之後"
 msgid "All resources are up and running"
 msgstr "所有資源正在執行"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:410
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:411
 msgid "Allocated"
 msgstr "已配置"
 
@@ -1111,7 +1111,7 @@ msgstr "確定要刪除此草稿訂單嗎？"
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "確定要刪除此全域檢視嗎？此動作無法復原，將影響所有使用者。"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:348
+#: src/lib/components/data-table/use-generated-columns.tsx:352
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "確定要刪除此項目嗎？此動作無法復原。"
 
@@ -1136,7 +1136,7 @@ msgstr "確定要從目前通路中移除 {0} {entityType} 嗎？"
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
 #: src/app/routes/_authenticated/_assets/assets.tsx:30
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:438
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:443
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:208
 msgid "Assets"
 msgstr "資源"
@@ -1225,7 +1225,7 @@ msgstr "計算機"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:416
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
@@ -1234,7 +1234,7 @@ msgstr "計算機"
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
 #: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
-#: src/lib/components/data-table/use-generated-columns.tsx:355
+#: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
 #: src/lib/components/layout/manage-languages-dialog.tsx:396
@@ -1335,7 +1335,7 @@ msgstr "{collectionName} 的集合內容"
 msgid "Collections"
 msgstr "集合"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:282
 msgid "Collections moved successfully"
 msgstr "集合移動成功"
 
@@ -1371,7 +1371,7 @@ msgstr "確認"
 msgid "Confirm Action"
 msgstr "確認動作"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:345
+#: src/lib/components/data-table/use-generated-columns.tsx:349
 msgid "Confirm deletion"
 msgstr "確認刪除"
 
@@ -1431,7 +1431,7 @@ msgstr "已為訂單設定優惠券代碼"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:215
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
@@ -1624,8 +1624,8 @@ msgstr "預設稅務區域"
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:338
-#: src/lib/components/data-table/use-generated-columns.tsx:369
+#: src/lib/components/data-table/use-generated-columns.tsx:342
+#: src/lib/components/data-table/use-generated-columns.tsx:373
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1667,7 +1667,7 @@ msgstr "已刪除 {deleted} {entityName}"
 msgid "Deleted {selectionLength} assets"
 msgstr "已刪除 {selectionLength} 個資源"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:319
+#: src/lib/components/data-table/use-generated-columns.tsx:323
 msgid "Deleted successfully"
 msgstr "成功刪除"
 
@@ -1710,7 +1710,7 @@ msgstr "折扣"
 msgid "Display language"
 msgstr "顯示語言"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:343
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:344
 msgid "Do not track"
 msgstr "不追蹤"
 
@@ -1846,7 +1846,7 @@ msgstr "啟用"
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
 #: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
@@ -1933,10 +1933,10 @@ msgid "Facet"
 msgstr "屬性"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:429
 msgid "Facet values"
 msgstr "屬性值"
 
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:426
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:199
 msgid "Facet Values"
 msgstr "屬性值"
@@ -2044,7 +2044,7 @@ msgstr "建立商品選項群組失敗"
 msgid "Failed to create product options"
 msgstr "建立商品選項失敗"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
 msgid "Failed to create product variant"
 msgstr "建立商品變體失敗"
@@ -2082,8 +2082,8 @@ msgstr "建立稅率失敗"
 msgid "Failed to create zone"
 msgstr "建立區域失敗"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:321
-#: src/lib/components/data-table/use-generated-columns.tsx:327
+#: src/lib/components/data-table/use-generated-columns.tsx:325
+#: src/lib/components/data-table/use-generated-columns.tsx:331
 msgid "Failed to delete"
 msgstr "刪除失敗"
 
@@ -2133,7 +2133,7 @@ msgstr "載入全域設定失敗"
 msgid "Failed to modify order"
 msgstr "修改訂單失敗"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:290
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
 msgid "Failed to move collections"
 msgstr "移動集合失敗"
 
@@ -2245,7 +2245,7 @@ msgstr "更新產品選項失敗"
 msgid "Failed to update product option group"
 msgstr "更新商品選項群組失敗"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
 msgid "Failed to update product variant"
 msgstr "更新商品變體失敗"
 
@@ -2294,7 +2294,7 @@ msgstr "否"
 msgid "Filter by {columnId}"
 msgstr "按 {columnId} 篩選"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:366
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:365
 msgid "Filter by collection name"
 msgstr "按集合名稱篩選"
 
@@ -2520,7 +2520,7 @@ msgstr "在"
 msgid "Inherit filters"
 msgstr "繼承篩選器"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:337
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
 msgid "Inherit from global settings"
 msgstr "從全域設定繼承"
 
@@ -2679,7 +2679,7 @@ msgstr "載入更多"
 msgid "Loading addresses..."
 msgstr "正在載入地址..."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:377
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:374
 msgid "Loading collections..."
 msgstr "正在載入集合..."
 
@@ -2802,23 +2802,23 @@ msgstr "更多檢視"
 msgid "Move"
 msgstr "移動"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:336
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:425
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:335
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:422
 msgid "Move Collections"
 msgstr "移動集合"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:106
 msgid "Move to the top level"
 msgstr "移動到頂層"
 
 #. placeholder {0}: collectionsToMove.length
 #. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
 #. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:74
 msgid "Moving {0} collection{1} into {2}"
 msgstr "正在將 {0} 個集合移動到 {2}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:420
 msgid "Moving..."
 msgstr "正在移動..."
 
@@ -2948,7 +2948,7 @@ msgstr "新增付款方式"
 msgid "New product"
 msgstr "新增商品"
 
-#: src/app/routes/_authenticated/_products/products.tsx:102
+#: src/app/routes/_authenticated/_products/products.tsx:114
 msgid "New Product"
 msgstr "新增商品"
 
@@ -2960,7 +2960,7 @@ msgstr "新增商品選項"
 msgid "New product option group"
 msgstr "新增商品選項群組"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:206
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:207
 msgid "New product variant"
 msgstr "新增商品變體"
 
@@ -3349,7 +3349,7 @@ msgstr "訂單"
 msgid "Orders Summary"
 msgstr "訂單摘要"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:352
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:353
 msgid "Out-of-stock threshold"
 msgstr "缺貨臨界值"
 
@@ -3358,6 +3358,10 @@ msgstr "缺貨臨界值"
 #: src/lib/components/data-table/data-table-pagination.tsx:44
 msgid "Page {0} of {1}"
 msgstr "第 {0} 頁，共 {1} 頁"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:436
+msgid "Parent product"
+msgstr "父級產品"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:137
 #: src/app/routes/_authenticated/_profile/profile.tsx:110
@@ -3467,7 +3471,7 @@ msgstr "下單時間"
 msgid "Please add products and complete the shipping address to run the test."
 msgstr "請新增商品並填寫配送地址以執行測試。"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:308
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:307
 msgid "Please select a target collection"
 msgstr "請選取目標集合"
 
@@ -3491,14 +3495,14 @@ msgid "Preview order modifications"
 msgstr "預覽訂單修改"
 
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:271
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/lib/components/layout/language-dialog.tsx:108
 msgid "Price"
 msgstr "價格"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:251
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:252
 msgid "Price and tax"
 msgstr "價格和稅金"
 
@@ -3532,7 +3536,6 @@ msgstr "私人屬性在商店中不可見"
 msgid "Product"
 msgstr "商品"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:237
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:133
 msgid "Product name"
 msgstr "商品名稱"
@@ -3550,13 +3553,13 @@ msgstr "商品選項"
 msgid "Product Options"
 msgstr "商品選項"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:61
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:62
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
 msgid "Product Variants"
 msgstr "商品變體"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:56
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:57
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
@@ -3600,7 +3603,7 @@ msgstr "費率"
 msgid "Reason"
 msgstr "原因"
 
-#: src/app/routes/_authenticated/_products/products.tsx:95
+#: src/app/routes/_authenticated/_products/products.tsx:107
 msgid "Rebuild search index"
 msgstr "重建搜尋索引"
 
@@ -3876,7 +3879,7 @@ msgstr "選取一個國家"
 msgid "Select a currency"
 msgstr "選取一種貨幣"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:82
 msgid "Select a destination collection"
 msgstr "選取目標集合"
 
@@ -3889,7 +3892,7 @@ msgid "Select a role"
 msgstr "選取一個角色"
 
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:338
 msgid "Select a target collection to move {0} to."
 msgstr "選取要將 {0} 移動到的目標集合。"
 
@@ -4008,8 +4011,8 @@ msgstr "設定所有通路可用的語言。然後，各個通路可以支援這
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
 msgstr "設定將此變體視為缺貨的庫存水準。使用負值可啟用延期交貨支援。可由商品變體覆寫。"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:354
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:372
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:355
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:373
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
 msgstr "設定將此變體視為缺貨的庫存水準。使用負值可啟用延期交貨支援。"
 
@@ -4094,7 +4097,7 @@ msgid "Sign in to access the admin dashboard"
 msgstr "登入以存取管理儀表板"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
@@ -4148,7 +4151,7 @@ msgstr "州/省"
 msgid "Status"
 msgstr "狀態"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:315
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:316
 msgid "Stock"
 msgstr "庫存"
 
@@ -4156,12 +4159,12 @@ msgstr "庫存"
 msgid "Stock allocated"
 msgstr "庫存已配置"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:395
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:396
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
 msgid "Stock level"
 msgstr "庫存水準"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:320
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:321
 msgid "Stock levels"
 msgstr "庫存水準"
 
@@ -4265,7 +4268,7 @@ msgstr "成功建立商品選項群組"
 msgid "Successfully created product options"
 msgstr "已成功建立商品選項"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:116
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
 msgid "Successfully created product variant"
 msgstr "已成功建立商品變體"
@@ -4383,7 +4386,7 @@ msgstr "成功更新產品選項"
 msgid "Successfully updated product option group"
 msgstr "成功更新商品選項群組"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:118
 msgid "Successfully updated product variant"
 msgstr "已成功更新商品變體"
 
@@ -4454,7 +4457,7 @@ msgstr "稅基"
 msgid "Tax Categories"
 msgstr "稅務類別"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:257
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:137
 msgid "Tax category"
 msgstr "稅務類別"
@@ -4637,7 +4640,7 @@ msgstr "退款總計："
 msgid "Total Revenue"
 msgstr "總收入"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:340
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
 msgid "Track"
 msgstr "追蹤"
 
@@ -4715,7 +4718,7 @@ msgstr "未驗證"
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:101
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:215
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
@@ -4759,7 +4762,7 @@ msgstr "用作預設帳單地址"
 msgid "Use as the default shipping address"
 msgstr "用作預設配送地址"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:371
 msgid "Use global out-of-stock threshold"
 msgstr "使用全域缺貨臨界值"
 
@@ -4790,6 +4793,10 @@ msgstr "變體"
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
 msgid "Variant deleted successfully"
 msgstr "變體已成功刪除"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:238
+msgid "Variant name"
+msgstr "變體名稱"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
 msgid "Variant updated successfully"
@@ -4866,7 +4873,7 @@ msgstr "客戶可見"
 msgid "Welcome to Vendure"
 msgstr "歡迎使用 Vendure"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:122
 msgid "When enabled, a product is available in the shop"
 msgstr "啟用後，商品在商店中可用"
