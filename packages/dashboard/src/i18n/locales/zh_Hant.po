@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "查詢擴充錯誤"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "頁面將繼續使用預設查詢。"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "擴充查詢文件失敗"
@@ -39,185 +51,173 @@ msgid "Query extension error: "
 msgstr "查詢擴充錯誤："
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "查詢擴充錯誤"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "頁面將繼續使用預設查詢。"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:24
+#: src/lib/framework/defaults.ts:16
 msgid "Insights"
 msgstr "洞察"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:32
+#: src/lib/framework/defaults.ts:24
 msgid "Catalog"
 msgstr "目錄"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:39
+#: src/lib/framework/defaults.ts:31
 msgid "Products"
 msgstr "商品"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:46
+#: src/lib/framework/defaults.ts:38
 msgid "Product Variants"
 msgstr "商品變體"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:53
+#: src/lib/framework/defaults.ts:45
 msgid "Facets"
 msgstr "屬性"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:60
+#: src/lib/framework/defaults.ts:52
 msgid "Collections"
 msgstr "集合"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:67
+#: src/lib/framework/defaults.ts:59
 msgid "Assets"
 msgstr "資源"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:76
+#: src/lib/framework/defaults.ts:68
 msgid "Sales"
 msgstr "銷售"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:83
+#: src/lib/framework/defaults.ts:75
 msgid "Orders"
 msgstr "訂單"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:92
-#: src/lib/framework/defaults.ts:99
+#: src/lib/framework/defaults.ts:84
+#: src/lib/framework/defaults.ts:91
 msgid "Customers"
 msgstr "客戶"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:106
+#: src/lib/framework/defaults.ts:98
 msgid "Customer Groups"
 msgstr "客戶群組"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:115
+#: src/lib/framework/defaults.ts:107
 msgid "Marketing"
 msgstr "行銷"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:122
+#: src/lib/framework/defaults.ts:114
 msgid "Promotions"
 msgstr "促銷"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:131
+#: src/lib/framework/defaults.ts:123
 msgid "System"
 msgstr "系統"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:138
+#: src/lib/framework/defaults.ts:130
 msgid "Job Queue"
 msgstr "工作佇列"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:145
+#: src/lib/framework/defaults.ts:137
 msgid "Healthchecks"
 msgstr "健康檢查"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:152
+#: src/lib/framework/defaults.ts:144
 msgid "Scheduled Tasks"
 msgstr "排程任務"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:161
+#: src/lib/framework/defaults.ts:153
 msgid "Settings"
 msgstr "設定"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:168
+#: src/lib/framework/defaults.ts:160
 msgid "Sellers"
 msgstr "賣家"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:175
+#: src/lib/framework/defaults.ts:167
 msgid "Channels"
 msgstr "通路"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:182
+#: src/lib/framework/defaults.ts:174
 msgid "Stock Locations"
 msgstr "庫存位置"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:189
+#: src/lib/framework/defaults.ts:181
 msgid "Administrators"
 msgstr "管理員"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:196
+#: src/lib/framework/defaults.ts:188
 msgid "Roles"
 msgstr "角色"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:203
+#: src/lib/framework/defaults.ts:195
 msgid "Shipping Methods"
 msgstr "配送方式"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:210
+#: src/lib/framework/defaults.ts:202
 msgid "Payment Methods"
 msgstr "付款方式"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:217
+#: src/lib/framework/defaults.ts:209
 msgid "Tax Categories"
 msgstr "稅務類別"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:224
+#: src/lib/framework/defaults.ts:216
 msgid "Tax Rates"
 msgstr "稅率"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:231
+#: src/lib/framework/defaults.ts:223
 msgid "Countries"
 msgstr "國家"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:238
+#: src/lib/framework/defaults.ts:230
 msgid "Zones"
 msgstr "區域"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:245
+#: src/lib/framework/defaults.ts:237
 msgid "Global Settings"
 msgstr "全域設定"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:257
+#: src/lib/framework/defaults.ts:249
 msgid "Metrics Widget"
 msgstr "指標小工具"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:265
+#: src/lib/framework/defaults.ts:257
 msgid "Latest Orders Widget"
 msgstr "最新訂單小工具"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:272
+#: src/lib/framework/defaults.ts:264
 msgid "Orders Summary Widget"
 msgstr "訂單摘要小工具"
 
 #. js-lingui-explicit-id
-#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "正在執行待處理的搜尋索引更新"
 
@@ -777,8 +777,8 @@ msgstr "{0} 個變體"
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
 msgid "{label}"
 msgstr "{label}"
 
@@ -786,7 +786,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:80
+#: src/lib/framework/dashboard-widget/base-widget.tsx:89
 msgid "{title}"
 msgstr "{title}"
 
@@ -859,7 +859,7 @@ msgstr "在前面新增欄"
 msgid "Add Country"
 msgstr "新增國家"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:272
 msgid "Add coupon code"
 msgstr "新增優惠券代碼"
 
@@ -871,7 +871,7 @@ msgstr "新增客戶"
 msgid "Add customer groups"
 msgstr "新增客戶群組"
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:102
+#: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:133
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:169
 msgid "Add facet value"
 msgstr "新增屬性值"
@@ -883,6 +883,10 @@ msgstr "新增屬性值"
 #: src/lib/components/data-table/add-filter-menu.tsx:39
 msgid "Add filter"
 msgstr "新增篩選器"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:80
+msgid "Add filters to preview the collection contents."
+msgstr "新增篩選器以預覽集合內容。"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:289
 msgid "Add item"
@@ -1107,7 +1111,7 @@ msgstr "確定要刪除此草稿訂單嗎？"
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "確定要刪除此全域檢視嗎？此動作無法復原，將影響所有使用者。"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:325
+#: src/lib/components/data-table/use-generated-columns.tsx:348
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "確定要刪除此項目嗎？此動作無法復原。"
 
@@ -1124,13 +1128,13 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "確定要離開此頁面嗎？任何未儲存的變更都將遺失。"
 
 #. placeholder {0}: selection.length
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:83
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "確定要從目前通路中移除 {0} {entityType} 嗎？"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
-#: src/app/routes/_authenticated/_assets/assets.tsx:16
+#: src/app/routes/_authenticated/_assets/assets.tsx:30
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:438
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:208
@@ -1215,13 +1219,13 @@ msgid "Browse facets"
 msgstr "瀏覽分面"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
 msgid "Calculator"
 msgstr "計算機"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:414
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:416
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
@@ -1229,8 +1233,8 @@ msgstr "計算機"
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:119
-#: src/lib/components/data-table/use-generated-columns.tsx:332
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
+#: src/lib/components/data-table/use-generated-columns.tsx:355
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
 #: src/lib/components/layout/manage-languages-dialog.tsx:396
@@ -1256,7 +1260,7 @@ msgstr "取消修改"
 msgid "Cancel payment"
 msgstr "取消付款"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:63
 msgid "Category"
 msgstr "類別"
 
@@ -1299,7 +1303,7 @@ msgstr "全部清除"
 msgid "Clear filter"
 msgstr "清除篩選器"
 
-#: src/lib/components/data-table/data-table-faceted-filter.tsx:163
+#: src/lib/components/data-table/data-table-faceted-filter.tsx:185
 msgid "Clear filters"
 msgstr "清除篩選器"
 
@@ -1310,13 +1314,13 @@ msgstr "按一下「執行測試」以測試此配送方式。"
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:140
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:141
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
 msgid "Code"
 msgstr "代碼"
@@ -1350,7 +1354,7 @@ msgid "Complete draft"
 msgstr "完成草稿"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:221
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:167
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
 msgid "Conditions"
 msgstr "條件"
 
@@ -1363,11 +1367,11 @@ msgstr "為您的商店和通路設定可用語言"
 msgid "Confirm"
 msgstr "確認"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:113
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
 msgid "Confirm Action"
 msgstr "確認動作"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:322
+#: src/lib/components/data-table/use-generated-columns.tsx:345
 msgid "Confirm deletion"
 msgstr "確認刪除"
 
@@ -1384,7 +1388,7 @@ msgstr "包含"
 msgid "Contents"
 msgstr "內容"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "繼續"
@@ -1424,7 +1428,7 @@ msgstr "已為訂單設定優惠券代碼"
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:215
@@ -1435,9 +1439,9 @@ msgstr "已為訂單設定優惠券代碼"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:126
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 msgid "Create"
@@ -1620,8 +1624,8 @@ msgstr "預設稅務區域"
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:315
-#: src/lib/components/data-table/use-generated-columns.tsx:346
+#: src/lib/components/data-table/use-generated-columns.tsx:338
+#: src/lib/components/data-table/use-generated-columns.tsx:369
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1663,7 +1667,7 @@ msgstr "已刪除 {deleted} {entityName}"
 msgid "Deleted {selectionLength} assets"
 msgstr "已刪除 {selectionLength} 個資源"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:296
+#: src/lib/components/data-table/use-generated-columns.tsx:319
 msgid "Deleted successfully"
 msgstr "成功刪除"
 
@@ -1673,7 +1677,7 @@ msgstr "成功刪除"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:155
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:167
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:98
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:151
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:157
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
 msgid "Description"
@@ -1693,7 +1697,7 @@ msgid "Disable"
 msgstr "停用"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:50
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:59
 #: src/lib/components/layout/nav-user.tsx:161
 msgid "Disabled"
 msgstr "已停用"
@@ -1715,7 +1719,7 @@ msgid "does not contain"
 msgstr "不包含"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:295
-#: src/app/routes/_authenticated/_orders/orders.tsx:113
+#: src/app/routes/_authenticated/_orders/orders.tsx:115
 msgid "Draft order"
 msgstr "草稿訂單"
 
@@ -1762,7 +1766,7 @@ msgstr "例如：紅色、大號、棉質"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:241
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:267
-#: src/lib/components/shared/asset/asset-gallery.tsx:456
+#: src/lib/components/shared/asset/asset-gallery.tsx:462
 #: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
 msgid "Edit"
 msgstr "編輯"
@@ -1805,8 +1809,8 @@ msgstr "編輯備註"
 msgid "Edit or delete existing tags"
 msgstr "編輯或刪除現有標籤"
 
-#: src/lib/components/data-input/slug-input.tsx:279
-#: src/lib/components/data-input/slug-input.tsx:281
+#: src/lib/components/data-input/slug-input.tsx:278
+#: src/lib/components/data-input/slug-input.tsx:280
 msgid "Edit slug manually"
 msgstr "手動編輯 slug"
 
@@ -1814,7 +1818,7 @@ msgstr "手動編輯 slug"
 msgid "Edit the address details below."
 msgstr "編輯下方的地址詳細資料。"
 
-#: src/lib/components/login/login-form.tsx:83
+#: src/lib/components/login/login-form.tsx:84
 msgid "Email"
 msgstr "電子郵件"
 
@@ -1848,8 +1852,8 @@ msgstr "啟用"
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:117
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:47
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:49
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "已啟用"
@@ -1862,7 +1866,7 @@ msgstr "結束於"
 msgid "Enter refund note"
 msgstr "輸入退款備註"
 
-#: src/lib/components/data-input/slug-input.tsx:239
+#: src/lib/components/data-input/slug-input.tsx:238
 msgid "Enter slug manually"
 msgstr "手動輸入 slug"
 
@@ -1924,7 +1928,7 @@ msgstr "不含稅："
 msgid "Explore Enterprise Edition"
 msgstr "探索企業版"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:122
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:123
 msgid "Facet"
 msgstr "屬性"
 
@@ -1941,7 +1945,7 @@ msgstr "屬性值"
 msgid "Facet values for {facetName}"
 msgstr "{facetName} 的屬性值"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:39
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
@@ -2011,7 +2015,7 @@ msgstr "建立客戶群組失敗"
 msgid "Failed to create facet"
 msgstr "建立屬性失敗"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
 msgid "Failed to create facet value"
 msgstr "建立屬性值失敗"
 
@@ -2066,7 +2070,7 @@ msgstr "建立配送方式失敗"
 msgid "Failed to create stock location"
 msgstr "建立庫存位置失敗"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
 msgid "Failed to create tax category"
 msgstr "建立稅務類別失敗"
 
@@ -2078,8 +2082,8 @@ msgstr "建立稅率失敗"
 msgid "Failed to create zone"
 msgstr "建立區域失敗"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:298
-#: src/lib/components/data-table/use-generated-columns.tsx:304
+#: src/lib/components/data-table/use-generated-columns.tsx:321
+#: src/lib/components/data-table/use-generated-columns.tsx:327
 msgid "Failed to delete"
 msgstr "刪除失敗"
 
@@ -2201,7 +2205,7 @@ msgstr "更新客戶群組失敗"
 msgid "Failed to update facet"
 msgstr "更新屬性失敗"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
 msgid "Failed to update facet value"
 msgstr "更新屬性值失敗"
 
@@ -2270,7 +2274,7 @@ msgstr "更新配送方式失敗"
 msgid "Failed to update stock location"
 msgstr "更新庫存位置失敗"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
 msgid "Failed to update tax category"
 msgstr "更新稅務類別失敗"
 
@@ -2364,7 +2368,7 @@ msgid "Fulfillment details"
 msgstr "履行詳細資料"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:159
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
 msgid "Fulfillment handler"
 msgstr "履行處理器"
 
@@ -2390,8 +2394,8 @@ msgstr "全名"
 msgid "General"
 msgstr "一般"
 
-#: src/lib/components/data-input/slug-input.tsx:279
-#: src/lib/components/data-input/slug-input.tsx:281
+#: src/lib/components/data-input/slug-input.tsx:278
+#: src/lib/components/data-input/slug-input.tsx:280
 msgid "Generate slug automatically"
 msgstr "自動產生 slug"
 
@@ -2488,6 +2492,10 @@ msgstr "健康檢查"
 msgid "Height"
 msgstr "高度"
 
+#: src/lib/components/ui/password-input.tsx:20
+msgid "Hide password"
+msgstr "隱藏密碼"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:107
 msgid "ID"
 msgstr "ID"
@@ -2541,7 +2549,7 @@ msgstr "在之前"
 msgid "is between"
 msgstr "在之間"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:115
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:116
 msgid "Is default tax category"
 msgstr "預設稅務類別"
 
@@ -2671,7 +2679,7 @@ msgstr "載入更多"
 msgid "Loading addresses..."
 msgstr "正在載入地址..."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:376
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:377
 msgid "Loading collections..."
 msgstr "正在載入集合..."
 
@@ -2790,12 +2798,12 @@ msgstr "本月至今"
 msgid "More views"
 msgstr "更多檢視"
 
-#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:112
+#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:111
 msgid "Move"
 msgstr "移動"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:336
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:425
 msgid "Move Collections"
 msgstr "移動集合"
 
@@ -2810,7 +2818,7 @@ msgstr "移動到頂層"
 msgid "Moving {0} collection{1} into {2}"
 msgstr "正在將 {0} 個集合移動到 {2}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:421
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
 msgid "Moving..."
 msgstr "正在移動..."
 
@@ -2828,7 +2836,7 @@ msgstr "我的儲存檢視"
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
 #: src/app/routes/_authenticated/_customers/customers.tsx:72
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:134
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:135
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
@@ -2837,9 +2845,9 @@ msgstr "我的儲存檢視"
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:181
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:158
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:137
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:109
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:109
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:110
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
 msgid "Name"
@@ -2913,8 +2921,8 @@ msgstr "新增屬性"
 msgid "New Facet"
 msgstr "新增屬性"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:41
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:103
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:42
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:104
 msgid "New facet value"
 msgstr "新增屬性值"
 
@@ -3002,7 +3010,7 @@ msgid "New Stock Location"
 msgstr "新增庫存位置"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:89
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:90
 msgid "New tax category"
 msgstr "新增稅務類別"
 
@@ -3015,7 +3023,7 @@ msgstr "新增稅務類別"
 msgid "New tax rate"
 msgstr "新增稅率"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:103
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:112
 msgid "New Tax Rate"
 msgstr "新增稅率"
 
@@ -3353,7 +3361,7 @@ msgstr "第 {0} 頁，共 {1} 頁"
 
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:137
 #: src/app/routes/_authenticated/_profile/profile.tsx:110
-#: src/lib/components/login/login-form.tsx:95
+#: src/lib/components/login/login-form.tsx:96
 msgid "Password"
 msgstr "密碼"
 
@@ -3468,6 +3476,11 @@ msgstr "請選取目標集合"
 #: src/lib/components/shared/customer-address-form.tsx:213
 msgid "Postal Code"
 msgstr "郵遞區號"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:77
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:88
+msgid "Preview"
+msgstr "預覽"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:206
 msgid "Preview changes"
@@ -3634,8 +3647,8 @@ msgstr "退款已轉換"
 msgid "Refunds ({0})"
 msgstr "退款 ({0})"
 
+#: src/lib/components/data-input/slug-input.tsx:264
 #: src/lib/components/data-input/slug-input.tsx:265
-#: src/lib/components/data-input/slug-input.tsx:266
 msgid "Regenerate slug from source field"
 msgstr "從來源欄位重新產生 slug"
 
@@ -3655,7 +3668,7 @@ msgstr "剩餘："
 msgid "Remove"
 msgstr "移除"
 
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:81
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:82
 msgid "Remove from current channel"
 msgstr "從目前通路中移除"
 
@@ -4011,7 +4024,7 @@ msgid "Settle refund"
 msgstr "完成退款"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
-#: src/app/routes/_authenticated/_orders/orders.tsx:83
+#: src/app/routes/_authenticated/_orders/orders.tsx:85
 msgid "Shipping"
 msgstr "配送"
 
@@ -4063,16 +4076,20 @@ msgstr "配送方式"
 msgid "Short date"
 msgstr "短日期"
 
+#: src/lib/components/ui/password-input.tsx:20
+msgid "Show password"
+msgstr "顯示密碼"
+
 #. placeholder {0}: filteredTags.length
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:167
 msgid "Showing all {0} results"
 msgstr "顯示所有 {0} 個結果"
 
-#: src/lib/components/login/login-form.tsx:108
+#: src/lib/components/login/login-form.tsx:109
 msgid "Sign in"
 msgstr "登入"
 
-#: src/lib/components/login/login-form.tsx:68
+#: src/lib/components/login/login-form.tsx:73
 msgid "Sign in to access the admin dashboard"
 msgstr "登入以存取管理儀表板"
 
@@ -4090,11 +4107,11 @@ msgstr "SKU"
 msgid "Slug"
 msgstr "Slug"
 
-#: src/lib/components/data-input/slug-input.tsx:237
+#: src/lib/components/data-input/slug-input.tsx:236
 msgid "Slug is set"
 msgstr "Slug 已設定"
 
-#: src/lib/components/data-input/slug-input.tsx:238
+#: src/lib/components/data-input/slug-input.tsx:237
 msgid "Slug will be generated automatically..."
 msgstr "Slug 將自動產生..."
 
@@ -4112,7 +4129,7 @@ msgstr "開始於"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
-#: src/app/routes/_authenticated/_orders/orders.tsx:99
+#: src/app/routes/_authenticated/_orders/orders.tsx:101
 #: src/app/routes/_authenticated/_system/job-queue.tsx:222
 msgid "State"
 msgstr "州/省"
@@ -4220,7 +4237,7 @@ msgstr "已成功建立客戶群組"
 msgid "Successfully created facet"
 msgstr "已成功建立屬性"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
 msgid "Successfully created facet value"
 msgstr "已成功建立屬性值"
 
@@ -4273,7 +4290,7 @@ msgstr "成功建立配送方式"
 msgid "Successfully created stock location"
 msgstr "已成功建立庫存位置"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
 msgid "Successfully created tax category"
 msgstr "已成功建立稅務類別"
 
@@ -4293,7 +4310,7 @@ msgstr "已成功複製 {count} {entityName}"
 msgid "Successfully fulfilled order"
 msgstr "已成功履行訂單"
 
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:52
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:53
 msgid "Successfully removed {selectionLength} {entityType} from channel"
 msgstr "已成功從通路中移除 {selectionLength} {entityType}"
 
@@ -4333,7 +4350,7 @@ msgstr "已成功更新客戶群組"
 msgid "Successfully updated facet"
 msgstr "已成功更新屬性"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
 msgid "Successfully updated facet value"
 msgstr "已成功更新屬性值"
 
@@ -4394,7 +4411,7 @@ msgstr "成功更新配送方式"
 msgid "Successfully updated stock location"
 msgstr "已成功更新庫存位置"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:70
 msgid "Successfully updated tax category"
 msgstr "已成功更新稅務類別"
 
@@ -4438,7 +4455,7 @@ msgid "Tax Categories"
 msgstr "稅務類別"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:136
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:137
 msgid "Tax category"
 msgstr "稅務類別"
 
@@ -4451,8 +4468,8 @@ msgid "Tax rate: {taxRate}%"
 msgstr "稅率：{taxRate}%"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:19
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:29
 msgid "Tax Rates"
 msgstr "稅率"
 
@@ -4547,6 +4564,10 @@ msgstr "這些語言將可供所有通路使用"
 msgid "This is a default Role and cannot be modified"
 msgstr "這是預設角色，無法修改"
 
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:91
+msgid "This is a preview of the collection contents based on the current filter settings. Once you save the collection, the contents will be updated to reflect the new filter settings."
+msgstr "這是基於目前篩選器設定的集合內容預覽。儲存集合後,內容將更新以反映新的篩選器設定。"
+
 #: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:39
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "這是 <0>{collectionName}</0> 集合的內容。"
@@ -4596,7 +4617,7 @@ msgstr "切換標題列"
 msgid "Token"
 msgstr "權杖"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:157
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
@@ -4689,7 +4710,7 @@ msgstr "未驗證"
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:101
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
@@ -4703,9 +4724,9 @@ msgstr "未驗證"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:126
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 #: src/lib/framework/page/detail-page.tsx:202
@@ -4720,7 +4741,7 @@ msgstr "更新備註內容或可見性"
 msgid "Updated"
 msgstr "已更新"
 
-#: src/lib/components/shared/asset/asset-gallery.tsx:355
+#: src/lib/components/shared/asset/asset-gallery.tsx:361
 msgid "Upload"
 msgstr "上傳"
 
@@ -4742,11 +4763,11 @@ msgstr "用作預設配送地址"
 msgid "Use global out-of-stock threshold"
 msgstr "使用全域缺貨臨界值"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+#: src/lib/framework/dashboard-widget/base-widget.tsx:18
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
 msgstr "useWidgetDimensions 必須在 DashboardBaseWidget 中使用"
 
-#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:33
 msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
 msgstr "useWidgetFilters 必須在 WidgetFiltersProvider 中使用"
 
@@ -4841,7 +4862,7 @@ msgstr "僅管理員可見"
 msgid "Visible to customer"
 msgstr "客戶可見"
 
-#: src/lib/components/login/login-form.tsx:65
+#: src/lib/components/login/login-form.tsx:70
 msgid "Welcome to Vendure"
 msgstr "歡迎使用 Vendure"
 
@@ -4896,8 +4917,8 @@ msgstr "您的最新訂單"
 msgid "Your orders summary"
 msgstr "您的訂單摘要"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:145
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:73
 msgid "Zone"
 msgstr "區域"
 

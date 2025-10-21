@@ -30,6 +30,7 @@ export default defineConfig({
         {
             path: '<rootDir>/src/i18n/locales/{locale}',
             include: ['<rootDir>/src'],
+            exclude: ['<rootDir>/src/**/*.stories.tsx'],
         },
     ],
 });
