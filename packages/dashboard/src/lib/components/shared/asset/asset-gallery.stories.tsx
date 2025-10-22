@@ -6,7 +6,7 @@ import { createDemoRoute } from '../../../../../.storybook/providers.js';
 import { withDescription } from '../../../../../.storybook/with-description.js';
 
 const meta = {
-    title: 'Components/AssetGallery',
+    title: 'Framework/AssetGallery',
     component: AssetGallery,
     ...withDescription(import.meta.url, './asset-gallery.js'),
     parameters: {

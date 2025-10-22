@@ -30,7 +30,7 @@ const sampleData: Product[] = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 const meta = {
-    title: 'Components/DataTable',
+    title: 'Framework/DataTable',
     component: DataTable,
     ...withDescription(import.meta.url, './data-table.js'),
     parameters: {

@@ -55,7 +55,7 @@ const config: StorybookConfig = {
                     },
                     gqlOutputPath: resolve(__dirname, '../src/lib/graphql/'),
                     tempCompilationDir: resolve(__dirname, '../.temp'),
-                    disablePlugins: { tanstackRouter: true },
+                    disablePlugins: { tanstackRouter: true, react: true },
                 }),
             ],
         };

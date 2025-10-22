@@ -4,7 +4,7 @@ import vendureTheme from './vendure-theme';
 addons.setConfig({
     theme: vendureTheme,
     sidebar: {
-        collapsedRoots: ['ui', 'form-inputs', 'layout', 'components'],
+        collapsedRoots: ['ui', 'form-inputs', 'layout', 'framework'],
     },
     layoutCustomisations: {},
 });

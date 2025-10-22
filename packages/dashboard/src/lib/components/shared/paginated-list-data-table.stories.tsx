@@ -39,7 +39,7 @@ const productsListDocument = graphql(`
 `);
 
 const meta = {
-    title: 'Components/PaginatedListDataTable',
+    title: 'Framework/PaginatedListDataTable',
     component: PaginatedListDataTable,
     ...withDescription(import.meta.url, './paginated-list-data-table.js'),
     parameters: {
