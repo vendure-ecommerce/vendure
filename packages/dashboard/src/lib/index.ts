@@ -72,7 +72,6 @@ export * from './components/layout/nav-item-wrapper.js';
 export * from './components/layout/nav-main.js';
 export * from './components/layout/nav-projects.js';
 export * from './components/layout/nav-user.js';
-export * from './components/layout/prerelease-popup.js';
 export * from './components/login/login-form.js';
 export * from './components/shared/alerts.js';
 export * from './components/shared/animated-number.js';
