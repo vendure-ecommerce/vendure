@@ -124,6 +124,22 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
 }
 ```
 
+### Monorepo Setup
+
+If your project uses a monorepo structure, such as with Nx or Turborepo, then you'll need to make some adjustments
+to the paths given above:
+
+If each Vendure plugin is its own "package", outside the main Vendure server app, then it would need its own
+tsconfig for each plugin package. You might run into errors like:
+
+```
+Error loading Vendure config: Cannot find module
+```
+
+In this case, you'll need to configure a [PathAdapter](/reference/dashboard/vite-plugin/vendure-dashboard-plugin#pathadapter).
+
+You should also put your `vite.config.mts` file into the Vendure app directory rather than the root.
+
 ## The DashboardPlugin
 
 In your `vendure-config.ts` file, you should also import and configure the [DashboardPlugin](/reference/core-plugins/dashboard-plugin/).

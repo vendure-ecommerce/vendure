@@ -7,6 +7,15 @@ import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader
 const virtualModuleId = 'virtual:vendure-ui-config';
 const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
+/**
+ * @description
+ * Options used by the {@link vendureDashboardPlugin} to configure how the Dashboard
+ * connects to the Vendure Admin API
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ */
 export interface ApiConfig {
     /**
      * @description
@@ -60,6 +69,15 @@ export interface ApiConfig {
     channelTokenKey?: string;
 }
 
+/**
+ * @description
+ * Options used by the {@link vendureDashboardPlugin} to configure aspects of the
+ * Dashboard UI behaviour.
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ */
 export interface I18nConfig {
     /**
      * @description
@@ -94,6 +112,15 @@ export interface I18nConfig {
     availableLocales?: string[];
 }
 
+/**
+ * @description
+ * Options used by the {@link vendureDashboardPlugin} to configure aspects of the
+ * Dashboard UI behaviour.
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ */
 export interface UiConfigPluginOptions {
     /**
      * @description

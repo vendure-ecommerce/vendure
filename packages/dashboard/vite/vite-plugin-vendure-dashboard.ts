@@ -22,6 +22,11 @@ import { uiConfigPlugin, UiConfigPluginOptions } from './vite-plugin-ui-config.j
 /**
  * @description
  * Options for the {@link vendureDashboardPlugin} Vite plugin.
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ * @docsWeight 1
  */
 export type VitePluginVendureDashboardOptions = {
     /**
@@ -81,7 +86,6 @@ export type VitePluginVendureDashboardOptions = {
      */
     gqlOutputPath?: string;
     tempCompilationDir?: string;
-    disableTansStackRouterPlugin?: boolean;
     /**
      * @description
      * Allows you to customize the location of node_modules & glob patterns used to scan for potential
@@ -134,6 +138,19 @@ type PluginMapEntry = {
     plugin: () => PluginOption | PluginOption[] | false | '';
 };
 
+/**
+ * @description
+ * This is the Vite plugin which powers the Vendure Dashboard, including:
+ *
+ * - Configuring routing, styling and React support
+ * - Analyzing your VendureConfig file and introspecting your schema
+ * - Loading your custom Dashboard extensions
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ * @docsWeight 0
+ */
 export function vendureDashboardPlugin(options: VitePluginVendureDashboardOptions): PluginOption[] {
     const tempDir = options.tempCompilationDir ?? path.join(import.meta.dirname, './.vendure-dashboard-temp');
     const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
@@ -149,7 +166,6 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         {
             key: 'tanstackRouter',
             plugin: () =>
-                !options.disableTansStackRouterPlugin &&
                 tanstackRouter({
                     autoCodeSplitting: true,
                     routeFileIgnorePattern: '.graphql.ts|components|hooks|utils',
