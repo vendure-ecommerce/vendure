@@ -1,6 +1,5 @@
 ## 3.5.0 (2025-10-22)
 
-
 #### Fixes
 
 * **cli** Fix custom config path handling for migrate & schema commands ([3bfe632](https://github.com/vendure-ecommerce/vendure/commit/3bfe632))
@@ -93,7 +92,6 @@
 * **cli** Introduce new `schema` command ([134e0fe](https://github.com/vendure-ecommerce/vendure/commit/134e0fe))
 * **core** Add read/write permission support for settings store (#3828) ([6d585a2](https://github.com/vendure-ecommerce/vendure/commit/6d585a2)), closes [#3828](https://github.com/vendure-ecommerce/vendure/issues/3828)
 * **core** Implement tax rate filtering by zoneId, categoryId ([08eb48e](https://github.com/vendure-ecommerce/vendure/commit/08eb48e))
-* **core** Update to Apollo Server v5 ([b75e83b](https://github.com/vendure-ecommerce/vendure/commit/b75e83b))
 * **create** Include Dashboard with new Vendure projects (#3862) ([b6152d5](https://github.com/vendure-ecommerce/vendure/commit/b6152d5)), closes [#3862](https://github.com/vendure-ecommerce/vendure/issues/3862)
 * **dashboard** Add date range filtering to dashboard widgets (#3818) ([1643313](https://github.com/vendure-ecommerce/vendure/commit/1643313)), closes [#3818](https://github.com/vendure-ecommerce/vendure/issues/3818)
 * **dashboard** Add dev mode wrapper for table columns ([2f7e321](https://github.com/vendure-ecommerce/vendure/commit/2f7e321))
