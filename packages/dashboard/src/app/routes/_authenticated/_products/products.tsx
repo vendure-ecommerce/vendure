@@ -54,8 +54,20 @@ function ProductListPage() {
                 },
             }}
             onSearchTermChange={searchTerm => {
+                return searchTerm
+                    ? {
+                          name: { contains: searchTerm },
+                          slug: { contains: searchTerm },
+                          sku: { contains: searchTerm },
+                      }
+                    : {};
+            }}
+            transformVariables={variables => {
                 return {
-                    name: { contains: searchTerm },
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR',
+                    },
                 };
             }}
             defaultVisibility={{

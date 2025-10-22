@@ -39,7 +39,7 @@ const preview: Preview = {
         },
         options: {
             storySort: {
-                order: ['Introduction', 'Layout', 'Components', 'Form Inputs', 'UI'],
+                order: ['Introduction', 'Layout', 'Framework', 'Form Inputs', 'UI'],
             },
         },
         a11y: {

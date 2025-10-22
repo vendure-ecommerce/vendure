@@ -5,7 +5,7 @@ import { withDescription } from '../../../../.storybook/with-description.js';
 import { DetailPageButton } from './detail-page-button.js';
 
 const meta = {
-    title: 'Components/DetailPageButton',
+    title: 'Framework/DetailPageButton',
     component: DetailPageButton,
     ...withDescription(import.meta.url, './detail-page-button.js'),
     parameters: {

@@ -1,6 +1,7 @@
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
 import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
@@ -234,7 +235,7 @@ function ProductVariantDetailPage() {
                         <TranslatableFormFieldWrapper
                             control={form.control}
                             name="name"
-                            label={<Trans>Product name</Trans>}
+                            label={<Trans>Variant name</Trans>}
                             render={({ field }) => <Input {...field} />}
                         />
 
@@ -422,21 +423,25 @@ function ProductVariantDetailPage() {
                     />
                 </PageBlock>
 
-                <PageBlock column="side" blockId="facet-values">
+                <PageBlock column="side" blockId="facet-values" title={<Trans>Facet Values</Trans>}>
                     <FormFieldWrapper
                         control={form.control}
                         name="facetValueIds"
-                        label={<Trans>Facet values</Trans>}
                         render={({ field }) => (
                             <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
                         )}
                     />
                 </PageBlock>
-                <PageBlock column="side" blockId="assets">
+
+                <PageBlock column="side" blockId="parent-product" title={<Trans>Parent product</Trans>}>
+                    <DetailPageButton
+                        label={entity?.product.name}
+                        href={`/products/${entity?.product.id}`}
+                        className="border"
+                    />
+                </PageBlock>
+                <PageBlock column="side" blockId="assets" title={<Trans>Assets</Trans>}>
                     <FormItem>
-                        <FormLabel>
-                            <Trans>Assets</Trans>
-                        </FormLabel>
                         <FormControl>
                             <EntityAssets
                                 assets={entity?.assets}

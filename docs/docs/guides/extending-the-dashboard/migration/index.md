@@ -8,6 +8,26 @@ sidebar_position: 1
 If you have existing extensions to the legacy Angular-based Admin UI, you will want to migrate to the new Dashboard to enjoy
 an improved developer experience, many more customization options, and ongoing support from the Vendure team.
 
+:::warning
+The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues. 
+Community contributions will always be merged and released.
+:::
+
+## Running In Parallel
+
+A recommended approach to migrating is to run both the Admin UI _and_ the new Dashboard in parallel. This allows you to start building
+new features right away with the new Dashboard while maintaining access to existing features that have not yet been migrated.
+
+To do so, follow the instructions to [set up the Dashboard](/guides/extending-the-dashboard/getting-started/#installation--setup),
+and then make sure you set the [AdminUiPlugin compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) option to `true`:
+
+```ts
+AdminUiPlugin.init({
+    // ... existing config
+    compatibilityMode: true,
+}),
+```
+
 ## AI-Assisted Migration
 
 We highly recommend using AI tools such as Claude Code, Codex etc to assist with migrations from the legacy Angular-based UI extensions
@@ -15,7 +35,7 @@ to the new React-based Dashboard.
 
 :::info
 The results of AI-assisted migration are heavily dependent on the model that you use. We tested with
-Claude Code using Sonnet 4.5, and had good results
+Claude Code using Sonnet 4.5 & Codex using gpt-5-codex
 :::
 
 In our testing, we were able to perform complete migrations quickly using the following approach:
@@ -29,16 +49,16 @@ in around 20-30 minutes.
 
 ### Full Prompt
 
-Paste this into your AI assistant and make sure to specify the plugin by path, i.e.:
+Give a prompt like this to your AI assistant and make sure to specify the plugin by path, i.e.:
 
 ```
 Migrate the plugin at @src/plugins/my-plugin/ 
 to use the new dashboard.
-
-[Pasted text #1 +1390 lines]
 ```
 
-<div style={{ width: '100%', height: '500px', overflow: 'auto' }}>
+Then paste the following prompt in full:
+
+<div style={{ width: '100%', height: '500px', overflow: 'auto', marginBottom: '20px' }}>
 
 <!-- Note: the following code block should not be edited. It is auto-generated from the files in the 
      `.claude/skills/vendure-dashboard-migration` dir, by running the npm script `generate-migration-prompt` from
@@ -1539,6 +1559,11 @@ defineDashboardExtension({
 ````
 
 </div>
+
+:::tip
+The full prompt is quite large, so it can make sense to first clear the current LLM context,
+e.g. with `/clear` in Claude Code or `/new` in Codex CLI
+:::
 
 ### Claude Skills
 

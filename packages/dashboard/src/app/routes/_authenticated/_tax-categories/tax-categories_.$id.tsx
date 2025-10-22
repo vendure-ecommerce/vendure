@@ -58,6 +58,7 @@ function TaxCategoryDetailPage() {
             return {
                 id: entity.id,
                 name: entity.name,
+                isDefault: entity.isDefault,
                 customFields: entity.customFields,
             };
         },

@@ -7,7 +7,7 @@ import { withDescription } from '../../../../../.storybook/with-description.js';
 import { AssetPickerDialog } from './asset-picker-dialog.js';
 
 const meta = {
-    title: 'Components/AssetPickerDialog',
+    title: 'Framework/AssetPickerDialog',
     component: AssetPickerDialog,
     ...withDescription(import.meta.url, './asset-picker-dialog.js'),
     parameters: {

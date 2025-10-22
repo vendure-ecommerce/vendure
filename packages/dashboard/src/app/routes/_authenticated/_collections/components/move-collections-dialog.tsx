@@ -14,7 +14,6 @@ import {
     DialogTitle,
 } from '@/vdb/components/ui/dialog.js';
 import { Input } from '@/vdb/components/ui/input.js';
-import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { ChevronRight, Folder, FolderOpen, Search } from 'lucide-react';
@@ -68,7 +67,7 @@ function TargetAlert({
     collectionNameCache,
 }: Readonly<TargetAlertProps>) {
     return (
-        <Alert className={selectedCollectionId ? 'border-blue-200 bg-blue-50' : ''}>
+        <Alert className={selectedCollectionId ? 'border-blue-200 bg-blue-50' : 'opacity-50'}>
             <Folder className="h-4 w-4" />
             <AlertDescription>
                 {selectedCollectionId ? (
@@ -330,8 +329,8 @@ export function MoveCollectionsDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0 gap-0">
+                <DialogHeader className="px-6 pt-6 pb-4">
                     <DialogTitle>
                         <Trans>Move Collections</Trans>
                     </DialogTitle>
@@ -345,7 +344,7 @@ export function MoveCollectionsDialog({
                         </Trans>
                     </DialogDescription>
                 </DialogHeader>
-                <div className="px-6 py-3 bg-muted/50 border-b">
+                <div className="px-6 py-3 bg-muted/50 border-y shrink-0">
                     <div className="flex flex-wrap gap-2">
                         {collectionsToMove.map(collection => (
                             <div
@@ -358,9 +357,9 @@ export function MoveCollectionsDialog({
                         ))}
                     </div>
                 </div>
-                <div className="py-4">
-                    <div className="px-6 pb-3">
-                        <div className="relative mb-3">
+                <div className="flex-1 min-h-0 overflow-auto px-6 py-4">
+                    <div className="h-full flex flex-col gap-3">
+                        <div className="relative shrink-0">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder={t`Filter by collection name`}
@@ -369,47 +368,47 @@ export function MoveCollectionsDialog({
                                 className="pl-10"
                             />
                         </div>
-                        <ScrollArea className="h-[400px]">
-                            <div className="space-y-1">
-                                {isLoading ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <Trans>Loading collections...</Trans>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {!debouncedSearchTerm && !selectionHasTopLevelParent && (
-                                            <MoveToTopLevel
-                                                selectedCollectionId={selectedCollectionId}
-                                                topLevelCollectionId={topLevelCollectionId}
-                                                onSelect={setSelectedCollectionId}
-                                            />
-                                        )}
-                                        {collections.map((collection: Collection) => (
-                                            <CollectionTreeNode
-                                                key={collection.id}
-                                                collection={collection}
-                                                depth={0}
-                                                expanded={expanded}
-                                                onToggleExpanded={handleToggleExpanded}
-                                                onSelect={handleSelect}
-                                                selectedCollectionId={selectedCollectionId}
-                                                collectionsToMove={collectionsToMove}
-                                                childCollectionsByParentId={childCollectionsByParentId}
-                                            />
-                                        ))}
-                                    </>
-                                )}
-                            </div>
-                        </ScrollArea>
-                        <TargetAlert
-                            selectedCollectionId={selectedCollectionId}
-                            collectionsToMove={collectionsToMove}
-                            topLevelCollectionId={topLevelCollectionId}
-                            collectionNameCache={collectionNameCache}
-                        />
+                        <div className="space-y-1">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Trans>Loading collections...</Trans>
+                                </div>
+                            ) : (
+                                <>
+                                    {!debouncedSearchTerm && !selectionHasTopLevelParent && (
+                                        <MoveToTopLevel
+                                            selectedCollectionId={selectedCollectionId}
+                                            topLevelCollectionId={topLevelCollectionId}
+                                            onSelect={setSelectedCollectionId}
+                                        />
+                                    )}
+                                    {collections.map((collection: Collection) => (
+                                        <CollectionTreeNode
+                                            key={collection.id}
+                                            collection={collection}
+                                            depth={0}
+                                            expanded={expanded}
+                                            onToggleExpanded={handleToggleExpanded}
+                                            onSelect={handleSelect}
+                                            selectedCollectionId={selectedCollectionId}
+                                            collectionsToMove={collectionsToMove}
+                                            childCollectionsByParentId={childCollectionsByParentId}
+                                        />
+                                    ))}
+                                </>
+                            )}
+                        </div>
+                        <div className="shrink-0">
+                            <TargetAlert
+                                selectedCollectionId={selectedCollectionId}
+                                collectionsToMove={collectionsToMove}
+                                topLevelCollectionId={topLevelCollectionId}
+                                collectionNameCache={collectionNameCache}
+                            />
+                        </div>
                     </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="px-6 pb-6 pt-4 shrink-0">
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
                         <Trans>Cancel</Trans>
                     </Button>

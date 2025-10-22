@@ -75,7 +75,7 @@ const sections: DocsSectionConfig[] = [
         outputPath: 'admin-ui-api',
     },
     {
-        sourceDirs: ['packages/dashboard/src/'],
+        sourceDirs: ['packages/dashboard/src/', 'packages/dashboard/vite/'],
         outputPath: 'dashboard',
     },
 ];

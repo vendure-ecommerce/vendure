@@ -3,7 +3,7 @@ import { withDescription } from '../../../../.storybook/with-description.js';
 import { FacetValueSelector } from './facet-value-selector.js';
 
 const meta = {
-    title: 'Components/FacetValueSelector',
+    title: 'Framework/FacetValueSelector',
     component: FacetValueSelector,
     ...withDescription(import.meta.url, './facet-value-selector.js'),
     parameters: {

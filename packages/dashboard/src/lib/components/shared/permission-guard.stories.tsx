@@ -4,7 +4,7 @@ import { withDescription } from '../../../../.storybook/with-description.js';
 import { PermissionGuard } from './permission-guard.js';
 
 const meta = {
-    title: 'Components/PermissionGuard',
+    title: 'Framework/PermissionGuard',
     component: PermissionGuard,
     ...withDescription(import.meta.url, './permission-guard.js'),
     parameters: {

@@ -18,7 +18,7 @@ const mockAssetWithFocalPoint: AssetLike = {
 };
 
 const meta = {
-    title: 'Components/VendureImage',
+    title: 'Framework/VendureImage',
     component: VendureImage,
     ...withDescription(import.meta.url, './vendure-image.js'),
     parameters: {

@@ -19,12 +19,12 @@ A component for displaying a gallery of assets.
 
 ```tsx
  <AssetGallery
-onSelect={handleAssetSelect}
-multiSelect="manual"
-initialSelectedAssets={initialSelectedAssets}
-fixedHeight={false}
-displayBulkActions={false}
-/>
+  onSelect={handleAssetSelect}
+  multiSelect="manual"
+  initialSelectedAssets={initialSelectedAssets}
+  fixedHeight={false}
+  displayBulkActions={false}
+  />
 ```
 
 ```ts title="Signature"

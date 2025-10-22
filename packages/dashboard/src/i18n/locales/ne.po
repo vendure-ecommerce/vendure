@@ -14,6 +14,184 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "क्वेरी विस्तार त्रुटि"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:16
+msgid "Insights"
+msgstr "अन्तर्दृष्टि"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:24
+msgid "Catalog"
+msgstr "सूची"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:31
+msgid "Products"
+msgstr "उत्पादनहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:38
+msgid "Product Variants"
+msgstr "उत्पादन भेरियन्टहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:45
+msgid "Facets"
+msgstr "विशेषताहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:52
+msgid "Collections"
+msgstr "संग्रहहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:59
+msgid "Assets"
+msgstr "सम्पत्तिहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:68
+msgid "Sales"
+msgstr "बिक्री"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:75
+msgid "Orders"
+msgstr "अर्डरहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:84
+#: src/lib/framework/defaults.ts:91
+msgid "Customers"
+msgstr "ग्राहकहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:98
+msgid "Customer Groups"
+msgstr "ग्राहक समूहहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:107
+msgid "Marketing"
+msgstr "मार्केटिङ"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:114
+msgid "Promotions"
+msgstr "प्रमोशनहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:123
+msgid "System"
+msgstr "प्रणाली"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:130
+msgid "Job Queue"
+msgstr "कार्य पंक्ति"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:137
+msgid "Healthchecks"
+msgstr "स्वास्थ्य जाँच"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:144
+msgid "Scheduled Tasks"
+msgstr "अनुसूचित कार्यहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:153
+msgid "Settings"
+msgstr "सेटिङहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:160
+msgid "Sellers"
+msgstr "विक्रेताहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:167
+msgid "Channels"
+msgstr "च्यानलहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:174
+msgid "Stock Locations"
+msgstr "स्टक स्थानहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:181
+msgid "Administrators"
+msgstr "प्रशासकहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:188
+msgid "Roles"
+msgstr "भूमिकाहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:195
+msgid "Shipping Methods"
+msgstr "ढुवानी विधिहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:202
+msgid "Payment Methods"
+msgstr "भुक्तानी विधिहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:209
+msgid "Tax Categories"
+msgstr "कर वर्गहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:216
+msgid "Tax Rates"
+msgstr "कर दरहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:223
+msgid "Countries"
+msgstr "देशहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:230
+msgid "Zones"
+msgstr "क्षेत्रहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:237
+msgid "Global Settings"
+msgstr "ग्लोबल सेटिङहरू"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:249
+msgid "Metrics Widget"
+msgstr "मेट्रिक्स विजेट"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:257
+msgid "Latest Orders Widget"
+msgstr "पछिल्लो अर्डरहरू विजेट"
+
+#. js-lingui-explicit-id
+#: src/lib/framework/defaults.ts:264
+msgid "Orders Summary Widget"
+msgstr "अर्डर सारांश विजेट"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "क्वेरी कागजात विस्तार गर्न असफल"
@@ -39,185 +217,7 @@ msgid "Query extension error: "
 msgstr "क्वेरी विस्तार त्रुटि:"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "क्वेरी विस्तार त्रुटि"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "पृष्ठ पूर्वनिर्धारित क्वेरीसँग जारी रहनेछ।"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:24
-msgid "Insights"
-msgstr "अन्तर्दृष्टि"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:32
-msgid "Catalog"
-msgstr "सूची"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:39
-msgid "Products"
-msgstr "उत्पादनहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:46
-msgid "Product Variants"
-msgstr "उत्पादन भेरियन्टहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:53
-msgid "Facets"
-msgstr "विशेषताहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:60
-msgid "Collections"
-msgstr "संग्रहहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:67
-msgid "Assets"
-msgstr "सम्पत्तिहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:76
-msgid "Sales"
-msgstr "बिक्री"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:83
-msgid "Orders"
-msgstr "अर्डरहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:92
-#: src/lib/framework/defaults.ts:99
-msgid "Customers"
-msgstr "ग्राहकहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:106
-msgid "Customer Groups"
-msgstr "ग्राहक समूहहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:115
-msgid "Marketing"
-msgstr "मार्केटिङ"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:122
-msgid "Promotions"
-msgstr "प्रमोशनहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:131
-msgid "System"
-msgstr "प्रणाली"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:138
-msgid "Job Queue"
-msgstr "कार्य पंक्ति"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:145
-msgid "Healthchecks"
-msgstr "स्वास्थ्य जाँच"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:152
-msgid "Scheduled Tasks"
-msgstr "अनुसूचित कार्यहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:161
-msgid "Settings"
-msgstr "सेटिङहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:168
-msgid "Sellers"
-msgstr "विक्रेताहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:175
-msgid "Channels"
-msgstr "च्यानलहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:182
-msgid "Stock Locations"
-msgstr "स्टक स्थानहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:189
-msgid "Administrators"
-msgstr "प्रशासकहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:196
-msgid "Roles"
-msgstr "भूमिकाहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:203
-msgid "Shipping Methods"
-msgstr "ढुवानी विधिहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:210
-msgid "Payment Methods"
-msgstr "भुक्तानी विधिहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:217
-msgid "Tax Categories"
-msgstr "कर वर्गहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:224
-msgid "Tax Rates"
-msgstr "कर दरहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:231
-msgid "Countries"
-msgstr "देशहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:238
-msgid "Zones"
-msgstr "क्षेत्रहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:245
-msgid "Global Settings"
-msgstr "ग्लोबल सेटिङहरू"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:257
-msgid "Metrics Widget"
-msgstr "मेट्रिक्स विजेट"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:265
-msgid "Latest Orders Widget"
-msgstr "पछिल्लो अर्डरहरू विजेट"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/defaults.ts:272
-msgid "Orders Summary Widget"
-msgstr "अर्डर सारांश विजेट"
-
-#. js-lingui-explicit-id
-#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.tsx:35
+#: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "पेन्डिङ खोज अनुक्रमणिका अद्यावधिकहरू चलाइँदै"
 
@@ -777,8 +777,8 @@ msgstr "{0} प्रकारहरू"
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:106
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:134
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
 msgid "{label}"
 msgstr "{label}"
 
@@ -786,7 +786,7 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:80
+#: src/lib/framework/dashboard-widget/base-widget.tsx:89
 msgid "{title}"
 msgstr "{title}"
 
@@ -859,7 +859,7 @@ msgstr "अघि स्तम्भ थप्नुहोस्"
 msgid "Add Country"
 msgstr "देश थप्नुहोस्"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:269
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:272
 msgid "Add coupon code"
 msgstr "कुपन कोड थप्नुहोस्"
 
@@ -871,7 +871,7 @@ msgstr "ग्राहक थप्नुहोस्"
 msgid "Add customer groups"
 msgstr "ग्राहक समूहहरू थप्नुहोस्"
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:102
+#: src/app/routes/_authenticated/_facets/components/facet-values-table.tsx:133
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:169
 msgid "Add facet value"
 msgstr "विशेषता मान थप्नुहोस्"
@@ -883,6 +883,10 @@ msgstr "विशेषता मानहरू थप्नुहोस्"
 #: src/lib/components/data-table/add-filter-menu.tsx:39
 msgid "Add filter"
 msgstr "फिल्टर थप्नुहोस्"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:80
+msgid "Add filters to preview the collection contents."
+msgstr "सङ्ग्रह सामग्रीहरूको पूर्वावलोकन गर्न फिल्टरहरू थप्नुहोस्।"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:289
 msgid "Add item"
@@ -1045,7 +1049,7 @@ msgstr "पछि"
 msgid "All resources are up and running"
 msgstr "सबै स्रोतहरू चलिरहेका छन्"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:410
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:411
 msgid "Allocated"
 msgstr "आवंटित"
 
@@ -1107,7 +1111,7 @@ msgstr "के तपाईं निश्चित हुनुहुन्छ
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं यो ग्लोबल दृश्य मेट्न चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन र सबै प्रयोगकर्ताहरूलाई असर गर्नेछ।"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:325
+#: src/lib/components/data-table/use-generated-columns.tsx:352
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं यो वस्तु मेट्न चाहनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।"
 
@@ -1124,15 +1128,15 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं यो पृष्ठबाट बाहिर जान चाहनुहुन्छ? कुनै पनि असुरक्षित परिवर्तनहरू हराउनेछन्।"
 
 #. placeholder {0}: selection.length
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:83
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "के तपाईं निश्चित हुनुहुन्छ कि तपाईं हालको च्यानलबाट {0} {entityType} हटाउन चाहनुहुन्छ?"
 
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
-#: src/app/routes/_authenticated/_assets/assets.tsx:16
+#: src/app/routes/_authenticated/_assets/assets.tsx:30
 #: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:438
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:443
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:208
 msgid "Assets"
 msgstr "सम्पत्तिहरू"
@@ -1215,13 +1219,13 @@ msgid "Browse facets"
 msgstr "फासेटहरू ब्राउज गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:179
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
 msgid "Calculator"
 msgstr "क्याल्कुलेटर"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:414
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
 #: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
@@ -1229,8 +1233,8 @@ msgstr "क्याल्कुलेटर"
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:119
-#: src/lib/components/data-table/use-generated-columns.tsx:332
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
+#: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
 #: src/lib/components/layout/manage-languages-dialog.tsx:396
@@ -1256,7 +1260,7 @@ msgstr "परिमार्जन रद्द गर्नुहोस्"
 msgid "Cancel payment"
 msgstr "भुक्तानी रद्द गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:54
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:63
 msgid "Category"
 msgstr "श्रेणी"
 
@@ -1299,7 +1303,7 @@ msgstr "सबै खाली गर्नुहोस्"
 msgid "Clear filter"
 msgstr "फिल्टर खाली गर्नुहोस्"
 
-#: src/lib/components/data-table/data-table-faceted-filter.tsx:163
+#: src/lib/components/data-table/data-table-faceted-filter.tsx:185
 msgid "Clear filters"
 msgstr "फिल्टरहरू खाली गर्नुहोस्"
 
@@ -1310,13 +1314,13 @@ msgstr "यो ढुवानी विधि परीक्षण गर्�
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:140
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:141
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
 msgid "Code"
 msgstr "कोड"
@@ -1331,7 +1335,7 @@ msgstr "{collectionName} को संग्रह सामग्री"
 msgid "Collections"
 msgstr "संग्रहहरू"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:283
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:282
 msgid "Collections moved successfully"
 msgstr "संग्रहहरू सफलतापूर्वक सारिएको"
 
@@ -1350,7 +1354,7 @@ msgid "Complete draft"
 msgstr "मस्यौदा पूरा गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:221
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:167
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
 msgid "Conditions"
 msgstr "शर्तहरू"
 
@@ -1363,11 +1367,11 @@ msgstr "तपाईंको स्टोर र च्यानलहरूक
 msgid "Confirm"
 msgstr "पुष्टि गर्नुहोस्"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:113
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
 msgid "Confirm Action"
 msgstr "कार्य पुष्टि गर्नुहोस्"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:322
+#: src/lib/components/data-table/use-generated-columns.tsx:349
 msgid "Confirm deletion"
 msgstr "मेटाउने पुष्टि गर्नुहोस्"
 
@@ -1384,7 +1388,7 @@ msgstr "समावेश गर्दछ"
 msgid "Contents"
 msgstr "सामग्रीहरू"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "जारी राख्नुहोस्"
@@ -1424,10 +1428,10 @@ msgstr "अर्डरको लागि कुपन कोड सेट ग�
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:215
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
@@ -1435,9 +1439,9 @@ msgstr "अर्डरको लागि कुपन कोड सेट ग�
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:126
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 msgid "Create"
@@ -1620,8 +1624,8 @@ msgstr "पूर्वनिर्धारित कर क्षेत्र"
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:315
-#: src/lib/components/data-table/use-generated-columns.tsx:346
+#: src/lib/components/data-table/use-generated-columns.tsx:342
+#: src/lib/components/data-table/use-generated-columns.tsx:373
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1663,7 +1667,7 @@ msgstr "{deleted} {entityName} मेटियो"
 msgid "Deleted {selectionLength} assets"
 msgstr "{selectionLength} सम्पत्तिहरू मेटियो"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:296
+#: src/lib/components/data-table/use-generated-columns.tsx:323
 msgid "Deleted successfully"
 msgstr "सफलतापूर्वक मेटियो"
 
@@ -1673,7 +1677,7 @@ msgstr "सफलतापूर्वक मेटियो"
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:155
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:167
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:98
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:151
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:157
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
 msgid "Description"
@@ -1693,7 +1697,7 @@ msgid "Disable"
 msgstr "असक्षम पार्नुहोस्"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:50
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:59
 #: src/lib/components/layout/nav-user.tsx:161
 msgid "Disabled"
 msgstr "असक्षम"
@@ -1706,7 +1710,7 @@ msgstr "छुट"
 msgid "Display language"
 msgstr "प्रदर्शन भाषा"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:343
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:344
 msgid "Do not track"
 msgstr "ट्र्याक नगर्नुहोस्"
 
@@ -1715,7 +1719,7 @@ msgid "does not contain"
 msgstr "समावेश गर्दैन"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:295
-#: src/app/routes/_authenticated/_orders/orders.tsx:113
+#: src/app/routes/_authenticated/_orders/orders.tsx:115
 msgid "Draft order"
 msgstr "मस्यौदा अर्डर"
 
@@ -1762,7 +1766,7 @@ msgstr "जस्तै रातो, ठूलो, कपास"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:241
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:267
-#: src/lib/components/shared/asset/asset-gallery.tsx:456
+#: src/lib/components/shared/asset/asset-gallery.tsx:462
 #: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
 msgid "Edit"
 msgstr "सम्पादन गर्नुहोस्"
@@ -1805,8 +1809,8 @@ msgstr "टिप्पणी सम्पादन गर्नुहोस्"
 msgid "Edit or delete existing tags"
 msgstr "अवस्थित ट्यागहरू सम्पादन वा मेट्नुहोस्"
 
-#: src/lib/components/data-input/slug-input.tsx:279
-#: src/lib/components/data-input/slug-input.tsx:281
+#: src/lib/components/data-input/slug-input.tsx:278
+#: src/lib/components/data-input/slug-input.tsx:280
 msgid "Edit slug manually"
 msgstr "स्लग म्यानुअल रूपमा सम्पादन गर्नुहोस्"
 
@@ -1814,7 +1818,7 @@ msgstr "स्लग म्यानुअल रूपमा सम्पाद
 msgid "Edit the address details below."
 msgstr "तलको ठेगाना विवरणहरू सम्पादन गर्नुहोस्।"
 
-#: src/lib/components/login/login-form.tsx:83
+#: src/lib/components/login/login-form.tsx:84
 msgid "Email"
 msgstr "इमेल"
 
@@ -1842,14 +1846,14 @@ msgstr "सक्षम पार्नुहोस्"
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
 #: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:225
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:121
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:117
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:47
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:49
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "सक्षम"
@@ -1862,7 +1866,7 @@ msgstr "समाप्त हुन्छ"
 msgid "Enter refund note"
 msgstr "रिफन्ड टिप्पणी प्रविष्ट गर्नुहोस्"
 
-#: src/lib/components/data-input/slug-input.tsx:239
+#: src/lib/components/data-input/slug-input.tsx:238
 msgid "Enter slug manually"
 msgstr "स्लग म्यानुअल रूपमा प्रविष्ट गर्नुहोस्"
 
@@ -1924,15 +1928,15 @@ msgstr "कर बाहेक:"
 msgid "Explore Enterprise Edition"
 msgstr "Enterprise Edition अन्वेषण गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:122
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:123
 msgid "Facet"
 msgstr "विशेषता"
 
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:429
 msgid "Facet values"
 msgstr "विशेषता मानहरू"
 
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:426
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:199
 msgid "Facet Values"
 msgstr "विशेषता मानहरू"
@@ -1941,7 +1945,7 @@ msgstr "विशेषता मानहरू"
 msgid "Facet values for {facetName}"
 msgstr "{facetName} को विशेषता मानहरू"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:39
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
 #: src/app/routes/_authenticated/_facets/facets.tsx:24
 #: src/app/routes/_authenticated/_facets/facets.tsx:64
@@ -2011,7 +2015,7 @@ msgstr "ग्राहक समूह सिर्जना गर्न अ�
 msgid "Failed to create facet"
 msgstr "विशेषता सिर्जना गर्न असफल"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
 msgid "Failed to create facet value"
 msgstr "विशेषता मान सिर्जना गर्न असफल"
 
@@ -2040,7 +2044,7 @@ msgstr "उत्पादन विकल्प समूह सिर्जन
 msgid "Failed to create product options"
 msgstr "उत्पादन विकल्पहरू सिर्जना गर्न असफल"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
 msgid "Failed to create product variant"
 msgstr "उत्पादन भेरियन्ट सिर्जना गर्न असफल"
@@ -2066,7 +2070,7 @@ msgstr "ढुवानी विधि सिर्जना गर्न अ�
 msgid "Failed to create stock location"
 msgstr "स्टक स्थान सिर्जना गर्न असफल"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
 msgid "Failed to create tax category"
 msgstr "कर वर्ग सिर्जना गर्न असफल"
 
@@ -2078,8 +2082,8 @@ msgstr "कर दर सिर्जना गर्न असफल"
 msgid "Failed to create zone"
 msgstr "क्षेत्र सिर्जना गर्न असफल"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:298
-#: src/lib/components/data-table/use-generated-columns.tsx:304
+#: src/lib/components/data-table/use-generated-columns.tsx:325
+#: src/lib/components/data-table/use-generated-columns.tsx:331
 msgid "Failed to delete"
 msgstr "मेट्न असफल"
 
@@ -2129,7 +2133,7 @@ msgstr "ग्लोबल सेटिङहरू लोड गर्न अ�
 msgid "Failed to modify order"
 msgstr "अर्डर परिमार्जन गर्न असफल"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:290
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
 msgid "Failed to move collections"
 msgstr "संग्रहहरू सार्न असफल"
 
@@ -2201,7 +2205,7 @@ msgstr "ग्राहक समूह अपडेट गर्न असफ�
 msgid "Failed to update facet"
 msgstr "विशेषता अपडेट गर्न असफल"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
 msgid "Failed to update facet value"
 msgstr "विशेषता मान अपडेट गर्न असफल"
 
@@ -2241,7 +2245,7 @@ msgstr "उत्पादन विकल्प अद्यावधिक ग
 msgid "Failed to update product option group"
 msgstr "उत्पादन विकल्प समूह अद्यावधिक गर्न असफल"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
 msgid "Failed to update product variant"
 msgstr "उत्पादन भेरियन्ट अपडेट गर्न असफल"
 
@@ -2270,7 +2274,7 @@ msgstr "ढुवानी विधि अद्यावधिक गर्न
 msgid "Failed to update stock location"
 msgstr "स्टक स्थान अपडेट गर्न असफल"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:78
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
 msgid "Failed to update tax category"
 msgstr "कर वर्ग अपडेट गर्न असफल"
 
@@ -2290,7 +2294,7 @@ msgstr "गलत"
 msgid "Filter by {columnId}"
 msgstr "{columnId} द्वारा फिल्टर गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:366
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:365
 msgid "Filter by collection name"
 msgstr "संग्रह नामद्वारा फिल्टर गर्नुहोस्"
 
@@ -2364,7 +2368,7 @@ msgid "Fulfillment details"
 msgstr "पूर्ति विवरणहरू"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:159
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
 msgid "Fulfillment handler"
 msgstr "पूर्ति ह्यान्डलर"
 
@@ -2390,8 +2394,8 @@ msgstr "पूरा नाम"
 msgid "General"
 msgstr "सामान्य"
 
-#: src/lib/components/data-input/slug-input.tsx:279
-#: src/lib/components/data-input/slug-input.tsx:281
+#: src/lib/components/data-input/slug-input.tsx:278
+#: src/lib/components/data-input/slug-input.tsx:280
 msgid "Generate slug automatically"
 msgstr "स्लग स्वचालित रूपमा उत्पन्न गर्नुहोस्"
 
@@ -2488,6 +2492,10 @@ msgstr "स्वास्थ्य जाँच"
 msgid "Height"
 msgstr "उचाइ"
 
+#: src/lib/components/ui/password-input.tsx:20
+msgid "Hide password"
+msgstr "पासवर्ड लुकाउनुहोस्"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:107
 msgid "ID"
 msgstr "ID"
@@ -2512,7 +2520,7 @@ msgstr "मा"
 msgid "Inherit filters"
 msgstr "फिल्टरहरू विरासतमा प्राप्त गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:337
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
 msgid "Inherit from global settings"
 msgstr "ग्लोबल सेटिङहरूबाट विरासतमा प्राप्त गर्नुहोस्"
 
@@ -2541,7 +2549,7 @@ msgstr "अघि छ"
 msgid "is between"
 msgstr "बीचमा छ"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:115
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:116
 msgid "Is default tax category"
 msgstr "पूर्वनिर्धारित कर वर्ग हो"
 
@@ -2671,7 +2679,7 @@ msgstr "थप लोड गर्नुहोस्"
 msgid "Loading addresses..."
 msgstr "ठेगानाहरू लोड गर्दै..."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:376
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:374
 msgid "Loading collections..."
 msgstr "संग्रहहरू लोड गर्दै..."
 
@@ -2790,27 +2798,27 @@ msgstr "महिनाको सुरुदेखि आजसम्म"
 msgid "More views"
 msgstr "थप दृश्यहरू"
 
-#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:112
+#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:111
 msgid "Move"
 msgstr "सार्नुहोस्"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:336
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:423
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:335
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:422
 msgid "Move Collections"
 msgstr "संग्रहहरू सार्नुहोस्"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:106
 msgid "Move to the top level"
 msgstr "शीर्ष स्तरमा सार्नुहोस्"
 
 #. placeholder {0}: collectionsToMove.length
 #. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
 #. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:74
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0} संग्रह(हरू) {2} मा सार्दै"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:421
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:420
 msgid "Moving..."
 msgstr "सार्दै..."
 
@@ -2828,7 +2836,7 @@ msgstr "मेरो सुरक्षित दृश्यहरू"
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
 #: src/app/routes/_authenticated/_customers/customers.tsx:72
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:134
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:135
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
@@ -2837,9 +2845,9 @@ msgstr "मेरो सुरक्षित दृश्यहरू"
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:181
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:158
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:137
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:109
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:109
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:110
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
 msgid "Name"
@@ -2913,8 +2921,8 @@ msgstr "नयाँ विशेषता"
 msgid "New Facet"
 msgstr "नयाँ विशेषता"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:41
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:103
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:42
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:104
 msgid "New facet value"
 msgstr "नयाँ विशेषता मान"
 
@@ -2940,7 +2948,7 @@ msgstr "नयाँ भुक्तानी विधि"
 msgid "New product"
 msgstr "नयाँ उत्पादन"
 
-#: src/app/routes/_authenticated/_products/products.tsx:102
+#: src/app/routes/_authenticated/_products/products.tsx:114
 msgid "New Product"
 msgstr "नयाँ उत्पादन"
 
@@ -2952,7 +2960,7 @@ msgstr "नयाँ उत्पादन विकल्प"
 msgid "New product option group"
 msgstr "नयाँ उत्पादन विकल्प समूह"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:206
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:207
 msgid "New product variant"
 msgstr "नयाँ उत्पादन भेरियन्ट"
 
@@ -3002,7 +3010,7 @@ msgid "New Stock Location"
 msgstr "नयाँ स्टक स्थान"
 
 #: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:89
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:90
 msgid "New tax category"
 msgstr "नयाँ कर वर्ग"
 
@@ -3015,7 +3023,7 @@ msgstr "नयाँ कर वर्ग"
 msgid "New tax rate"
 msgstr "नयाँ कर दर"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:103
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:112
 msgid "New Tax Rate"
 msgstr "नयाँ कर दर"
 
@@ -3341,7 +3349,7 @@ msgstr "अर्डरहरू"
 msgid "Orders Summary"
 msgstr "अर्डर सारांश"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:352
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:353
 msgid "Out-of-stock threshold"
 msgstr "स्टक बाहिर थ्रेसहोल्ड"
 
@@ -3351,9 +3359,13 @@ msgstr "स्टक बाहिर थ्रेसहोल्ड"
 msgid "Page {0} of {1}"
 msgstr "पृष्ठ {0} को {1}"
 
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:436
+msgid "Parent product"
+msgstr "मुख्य उत्पादन"
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:137
 #: src/app/routes/_authenticated/_profile/profile.tsx:110
-#: src/lib/components/login/login-form.tsx:95
+#: src/lib/components/login/login-form.tsx:96
 msgid "Password"
 msgstr "पासवर्ड"
 
@@ -3459,7 +3471,7 @@ msgstr "राखिएको मिति"
 msgid "Please add products and complete the shipping address to run the test."
 msgstr "कृपया परीक्षण चलाउन उत्पादनहरू थप्नुहोस् र ढुवानी ठेगाना पूरा गर्नुहोस्।"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:308
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:307
 msgid "Please select a target collection"
 msgstr "कृपया लक्ष्य संग्रह चयन गर्नुहोस्"
 
@@ -3468,6 +3480,11 @@ msgstr "कृपया लक्ष्य संग्रह चयन गर�
 #: src/lib/components/shared/customer-address-form.tsx:213
 msgid "Postal Code"
 msgstr "हुलाक कोड"
+
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:77
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:88
+msgid "Preview"
+msgstr "पूर्वावलोकन"
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:206
 msgid "Preview changes"
@@ -3478,14 +3495,14 @@ msgid "Preview order modifications"
 msgstr "अर्डर परिमार्जनहरू पूर्वावलोकन गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:271
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/lib/components/layout/language-dialog.tsx:108
 msgid "Price"
 msgstr "मूल्य"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:251
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:252
 msgid "Price and tax"
 msgstr "मूल्य र कर"
 
@@ -3519,7 +3536,6 @@ msgstr "निजी विशेषताहरू पसलमा देखि
 msgid "Product"
 msgstr "उत्पादन"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:237
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:133
 msgid "Product name"
 msgstr "उत्पादन नाम"
@@ -3537,13 +3553,13 @@ msgstr "उत्पादन विकल्पहरू"
 msgid "Product Options"
 msgstr "उत्पादन विकल्पहरू"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:61
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:62
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
 msgid "Product Variants"
 msgstr "उत्पादन भेरियन्टहरू"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:56
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:57
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:45
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
@@ -3587,7 +3603,7 @@ msgstr "दर"
 msgid "Reason"
 msgstr "कारण"
 
-#: src/app/routes/_authenticated/_products/products.tsx:95
+#: src/app/routes/_authenticated/_products/products.tsx:107
 msgid "Rebuild search index"
 msgstr "खोज सूचकांक पुनर्निर्माण गर्नुहोस्"
 
@@ -3634,8 +3650,8 @@ msgstr "रिफन्ड संक्रमण भयो"
 msgid "Refunds ({0})"
 msgstr "रिफन्डहरू ({0})"
 
+#: src/lib/components/data-input/slug-input.tsx:264
 #: src/lib/components/data-input/slug-input.tsx:265
-#: src/lib/components/data-input/slug-input.tsx:266
 msgid "Regenerate slug from source field"
 msgstr "स्रोत फिल्डबाट स्लग पुन: उत्पन्न गर्नुहोस्"
 
@@ -3655,7 +3671,7 @@ msgstr "बाँकी:"
 msgid "Remove"
 msgstr "हटाउनुहोस्"
 
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:81
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:82
 msgid "Remove from current channel"
 msgstr "हालको च्यानलबाट हटाउनुहोस्"
 
@@ -3863,7 +3879,7 @@ msgstr "देश चयन गर्नुहोस्"
 msgid "Select a currency"
 msgstr "मुद्रा चयन गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:82
 msgid "Select a destination collection"
 msgstr "गन्तव्य संग्रह चयन गर्नुहोस्"
 
@@ -3876,7 +3892,7 @@ msgid "Select a role"
 msgstr "भूमिका चयन गर्नुहोस्"
 
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:338
 msgid "Select a target collection to move {0} to."
 msgstr "{0} सार्न लक्ष्य संग्रह चयन गर्नुहोस्।"
 
@@ -3995,8 +4011,8 @@ msgstr "सबै च्यानलहरूको लागि उपलब्
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
 msgstr "यो भेरियन्ट स्टक बाहिर मानिने स्टक स्तर सेट गर्दछ। नकारात्मक मान प्रयोग गर्दा ब्याकअर्डर समर्थन सक्षम हुन्छ। उत्पादन भेरियन्टहरूद्वारा ओभरराइड गर्न सकिन्छ।"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:354
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:372
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:355
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:373
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
 msgstr "यो भेरियन्ट स्टक बाहिर मानिने स्टक स्तर सेट गर्दछ। नकारात्मक मान प्रयोग गर्दा ब्याकअर्डर समर्थन सक्षम हुन्छ।"
 
@@ -4011,7 +4027,7 @@ msgid "Settle refund"
 msgstr "रिफन्ड सम्पन्न गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
-#: src/app/routes/_authenticated/_orders/orders.tsx:83
+#: src/app/routes/_authenticated/_orders/orders.tsx:85
 msgid "Shipping"
 msgstr "ढुवानी"
 
@@ -4063,21 +4079,25 @@ msgstr "ढुवानी विधिहरू"
 msgid "Short date"
 msgstr "छोटो मिति"
 
+#: src/lib/components/ui/password-input.tsx:20
+msgid "Show password"
+msgstr "पासवर्ड देखाउनुहोस्"
+
 #. placeholder {0}: filteredTags.length
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:167
 msgid "Showing all {0} results"
 msgstr "सबै {0} परिणामहरू देखाउँदै"
 
-#: src/lib/components/login/login-form.tsx:108
+#: src/lib/components/login/login-form.tsx:109
 msgid "Sign in"
 msgstr "साइन इन गर्नुहोस्"
 
-#: src/lib/components/login/login-form.tsx:68
+#: src/lib/components/login/login-form.tsx:73
 msgid "Sign in to access the admin dashboard"
 msgstr "प्रशासक ड्यासबोर्ड पहुँच गर्न साइन इन गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:244
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
@@ -4090,11 +4110,11 @@ msgstr "SKU"
 msgid "Slug"
 msgstr "स्लग"
 
-#: src/lib/components/data-input/slug-input.tsx:237
+#: src/lib/components/data-input/slug-input.tsx:236
 msgid "Slug is set"
 msgstr "स्लग सेट गरिएको छ"
 
-#: src/lib/components/data-input/slug-input.tsx:238
+#: src/lib/components/data-input/slug-input.tsx:237
 msgid "Slug will be generated automatically..."
 msgstr "स्लग स्वचालित रूपमा उत्पन्न हुनेछ..."
 
@@ -4112,7 +4132,7 @@ msgstr "सुरु हुन्छ"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
-#: src/app/routes/_authenticated/_orders/orders.tsx:99
+#: src/app/routes/_authenticated/_orders/orders.tsx:101
 #: src/app/routes/_authenticated/_system/job-queue.tsx:222
 msgid "State"
 msgstr "राज्य"
@@ -4131,7 +4151,7 @@ msgstr "राज्य/प्रान्त"
 msgid "Status"
 msgstr "स्थिति"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:315
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:316
 msgid "Stock"
 msgstr "स्टक"
 
@@ -4139,12 +4159,12 @@ msgstr "स्टक"
 msgid "Stock allocated"
 msgstr "स्टक आवंटित गरियो"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:395
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:396
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
 msgid "Stock level"
 msgstr "स्टक स्तर"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:320
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:321
 msgid "Stock levels"
 msgstr "स्टक स्तरहरू"
 
@@ -4220,7 +4240,7 @@ msgstr "ग्राहक समूह सफलतापूर्वक सि
 msgid "Successfully created facet"
 msgstr "विशेषता सफलतापूर्वक सिर्जना गरियो"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
 msgid "Successfully created facet value"
 msgstr "विशेषता मान सफलतापूर्वक सिर्जना गरियो"
 
@@ -4248,7 +4268,7 @@ msgstr "उत्पादन विकल्प समूह सफलताप
 msgid "Successfully created product options"
 msgstr "उत्पादन विकल्पहरू सफलतापूर्वक सिर्जना गरियो"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:116
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
 msgid "Successfully created product variant"
 msgstr "उत्पादन भेरियन्ट सफलतापूर्वक सिर्जना गरियो"
@@ -4273,7 +4293,7 @@ msgstr "ढुवानी विधि सफलतापूर्वक सि
 msgid "Successfully created stock location"
 msgstr "स्टक स्थान सफलतापूर्वक सिर्जना गरियो"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
 msgid "Successfully created tax category"
 msgstr "कर वर्ग सफलतापूर्वक सिर्जना गरियो"
 
@@ -4293,7 +4313,7 @@ msgstr "{count} {entityName} सफलतापूर्वक नक्कल �
 msgid "Successfully fulfilled order"
 msgstr "अर्डर सफलतापूर्वक पूरा गरियो"
 
-#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:52
+#: src/lib/components/shared/remove-from-channel-bulk-action.tsx:53
 msgid "Successfully removed {selectionLength} {entityType} from channel"
 msgstr "च्यानलबाट {selectionLength} {entityType} सफलतापूर्वक हटाइयो"
 
@@ -4333,7 +4353,7 @@ msgstr "ग्राहक समूह सफलतापूर्वक अप
 msgid "Successfully updated facet"
 msgstr "विशेषता सफलतापूर्वक अपडेट गरियो"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:85
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
 msgid "Successfully updated facet value"
 msgstr "विशेषता मान सफलतापूर्वक अपडेट गरियो"
 
@@ -4366,7 +4386,7 @@ msgstr "उत्पादन विकल्प सफलतापूर्व�
 msgid "Successfully updated product option group"
 msgstr "उत्पादन विकल्प समूह सफलतापूर्वक अद्यावधिक गरियो"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:118
 msgid "Successfully updated product variant"
 msgstr "उत्पादन भेरियन्ट सफलतापूर्वक अपडेट गरियो"
 
@@ -4394,7 +4414,7 @@ msgstr "ढुवानी विधि सफलतापूर्वक अद
 msgid "Successfully updated stock location"
 msgstr "स्टक स्थान सफलतापूर्वक अपडेट गरियो"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:70
 msgid "Successfully updated tax category"
 msgstr "कर वर्ग सफलतापूर्वक अपडेट गरियो"
 
@@ -4437,8 +4457,8 @@ msgstr "कर आधार"
 msgid "Tax Categories"
 msgstr "कर वर्गहरू"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:136
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:257
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:137
 msgid "Tax category"
 msgstr "कर वर्ग"
 
@@ -4451,8 +4471,8 @@ msgid "Tax rate: {taxRate}%"
 msgstr "कर दर: {taxRate}%"
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:19
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:29
 msgid "Tax Rates"
 msgstr "कर दरहरू"
 
@@ -4547,6 +4567,10 @@ msgstr "यी भाषाहरू सबै च्यानलहरूला
 msgid "This is a default Role and cannot be modified"
 msgstr "यो पूर्वनिर्धारित भूमिका हो र परिमार्जन गर्न सकिँदैन"
 
+#: src/app/routes/_authenticated/_collections/components/collection-contents-preview-table.tsx:91
+msgid "This is a preview of the collection contents based on the current filter settings. Once you save the collection, the contents will be updated to reflect the new filter settings."
+msgstr "यो हालको फिल्टर सेटिङहरूमा आधारित सङ्ग्रह सामग्रीहरूको पूर्वावलोकन हो। तपाईंले सङ्ग्रह सुरक्षित गरेपछि, नयाँ फिल्टर सेटिङहरू प्रतिबिम्बित गर्न सामग्रीहरू अपडेट गरिनेछ।"
+
 #: src/app/routes/_authenticated/_collections/components/collection-contents-sheet.tsx:39
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "यो <0>{collectionName}</0> संग्रहको सामग्री हो।"
@@ -4596,7 +4620,7 @@ msgstr "हेडर पङ्क्ति टगल गर्नुहोस्
 msgid "Token"
 msgstr "टोकन"
 
-#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:154
+#: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:157
 #: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
@@ -4616,7 +4640,7 @@ msgstr "कुल रिफन्ड:"
 msgid "Total Revenue"
 msgstr "कुल राजस्व"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:340
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
 msgid "Track"
 msgstr "ट्र्याक गर्नुहोस्"
 
@@ -4689,12 +4713,12 @@ msgstr "प्रमाणित नगरिएको"
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
 #: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:112
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:101
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:215
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
@@ -4703,9 +4727,9 @@ msgstr "प्रमाणित नगरिएको"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:126
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
 #: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:98
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
 #: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
 #: src/lib/framework/page/detail-page.tsx:202
@@ -4720,7 +4744,7 @@ msgstr "टिप्पणी सामग्री वा दृश्यता
 msgid "Updated"
 msgstr "अपडेट गरिएको"
 
-#: src/lib/components/shared/asset/asset-gallery.tsx:355
+#: src/lib/components/shared/asset/asset-gallery.tsx:361
 msgid "Upload"
 msgstr "अपलोड गर्नुहोस्"
 
@@ -4738,15 +4762,15 @@ msgstr "पूर्वनिर्धारित बिलिङ ठेगा�
 msgid "Use as the default shipping address"
 msgstr "पूर्वनिर्धारित ढुवानी ठेगानाको रूपमा प्रयोग गर्नुहोस्"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:371
 msgid "Use global out-of-stock threshold"
 msgstr "ग्लोबल स्टक बाहिर थ्रेसहोल्ड प्रयोग गर्नुहोस्"
 
-#: src/lib/framework/dashboard-widget/base-widget.tsx:19
+#: src/lib/framework/dashboard-widget/base-widget.tsx:18
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
 msgstr "useWidgetDimensions लाई DashboardBaseWidget भित्र प्रयोग गर्नुपर्छ"
 
-#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:32
+#: src/lib/framework/dashboard-widget/widget-filters-context.tsx:33
 msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
 msgstr "useWidgetFilters लाई WidgetFiltersProvider भित्र प्रयोग गर्नुपर्छ"
 
@@ -4769,6 +4793,10 @@ msgstr "भेरियन्ट"
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:182
 msgid "Variant deleted successfully"
 msgstr "भेरियन्ट सफलतापूर्वक मेटियो"
+
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:238
+msgid "Variant name"
+msgstr "भिन्नता नाम"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:174
 msgid "Variant updated successfully"
@@ -4841,11 +4869,11 @@ msgstr "प्रशासकहरूलाई मात्र देखिन�
 msgid "Visible to customer"
 msgstr "ग्राहकलाई देखिने"
 
-#: src/lib/components/login/login-form.tsx:65
+#: src/lib/components/login/login-form.tsx:70
 msgid "Welcome to Vendure"
 msgstr "Vendure मा स्वागत छ"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:122
 msgid "When enabled, a product is available in the shop"
 msgstr "सक्षम पारिएको बेला, उत्पादन पसलमा उपलब्ध हुन्छ"
@@ -4896,8 +4924,8 @@ msgstr "तपाईंको नवीनतम अर्डरहरू"
 msgid "Your orders summary"
 msgstr "तपाईंको अर्डर सारांश"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:144
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:64
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:145
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:73
 msgid "Zone"
 msgstr "क्षेत्र"
 
