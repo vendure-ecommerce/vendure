@@ -169,7 +169,7 @@ function ShippingMethodDetailPage() {
                         />
                     </DetailFormGrid>
                 </PageBlock>
-                <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                <CustomFieldsPageBlock column="main" entityType="ShippingMethod" control={form.control} />
                 <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
                     <FormFieldWrapper
                         control={form.control}
