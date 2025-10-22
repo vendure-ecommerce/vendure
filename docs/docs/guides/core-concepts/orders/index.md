@@ -99,7 +99,7 @@ Let's take a look at each of these states, and the transitions between them:
 * **`ArrangingPayment:`** From there, the Order can transition to the `ArrangingPayment`, which will prevent any further modifications to the order, which ensures the price that is sent to the payment provider is the same as the price that the customer saw when they added the items to their cart. At this point, the storefront will execute the [`addPaymentToOrder` mutation](/reference/graphql-api/shop/mutations/#addpaymenttoorder).
 * **`PaymentAuthorized:`** Depending on the configured payment method, the order may then transition to the `PaymentAuthorized` state, which indicates that the payment has been successfully authorized by the payment provider. This is the state that the order will be in if the payment is not captured immediately. Once the payment is captured, the order will transition to the `PaymentSettled` state.
 * **`PaymentSettled:`** If the payment captured immediately, the order will transition to the `PaymentSettled` state once the payment succeeds.
-* At this point, one or more fulfillments can be created. A `Fulfillment` represents the process of shipping one or more items to the customer ("shipping" applies equally to physical or digital goods - it just means getting the product to the customer by any means). A fulfillment can be created via the [`addFulfillmentToOrder` mutation](/reference/graphql-api/admin/mutations/#addfulfillmenttoorder), or via the Admin UI. If multiple fulfillments are created, then the order can end up partial states - `PartiallyShipped` or `PartiallyDelivered`. If there is only a single fulfillment which includes the entire order, then partial states are not possible.
+* At this point, one or more fulfillments can be created. A `Fulfillment` represents the process of shipping one or more items to the customer ("shipping" applies equally to physical or digital goods - it just means getting the product to the customer by any means). A fulfillment can be created via the [`addFulfillmentToOrder` mutation](/reference/graphql-api/admin/mutations/#addfulfillmenttoorder), or via the Dashboard. If multiple fulfillments are created, then the order can end up partial states - `PartiallyShipped` or `PartiallyDelivered`. If there is only a single fulfillment which includes the entire order, then partial states are not possible.
 * **`Shipped:`** When all fulfillments have been shipped, the order will transition to the `Shipped` state. This means the goods have left the warehouse and are en route to the customer.
 * **`Delivered:`** When all fulfillments have been delivered, the order will transition to the `Delivered` state. This means the goods have arrived at the customer's address. This is the final state of the order.
 
@@ -346,9 +346,9 @@ declare module '@vendure/core' {
 
 This technique uses advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and  [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules).
 
-## Controlling custom states in the Admin UI
+## Controlling custom states in the Dashboard
 
-If you have defined custom order states, the Admin UI will allow you to manually transition an 
+If you have defined custom order states, the Dashboard will allow you to manually transition an 
 order from one state to another:
 
 ![./custom-order-ui.webp](./custom-order-ui.webp)
