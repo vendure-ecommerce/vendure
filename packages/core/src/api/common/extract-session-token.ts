@@ -1,43 +1,70 @@
 import { Request } from 'express';
 
+import { ApiKeyHashingStrategy, Logger } from '../../config';
 import { AuthOptions } from '../../config/vendure-config';
+import { ApiKeyService } from '../../service/services/api-key.service';
+
+// Helper that gives us the content of the tokenmethod array so we dont duplicate options
+type ExtractArrayElement<T> = T extends ReadonlyArray<infer U> ? U : T;
+
+export type ExtractTokenResult = {
+    method: Exclude<ExtractArrayElement<AuthOptions['tokenMethod']>, undefined>;
+    token: string;
+};
 
 /**
- * Get the session token from either the cookie or the Authorization header, depending
- * on the configured tokenMethod.
+ * Depending on the configured `tokenMethod`, tries to extract a session token in the order:
+ *
+ * 1. Cookie
+ * 2. Authorization Header
+ * 3. API-Key Header
+ *     - If an ApiKey is found, its `lastUsedAt` timestamp will be updated in the background.
+ *
+ * @see {@link AuthOptions}
  */
-export function extractSessionToken(
+export async function extractSessionToken(
     req: Request,
     tokenMethod: Exclude<AuthOptions['tokenMethod'], undefined>,
-): string | undefined {
-    const tokenFromCookie = getFromCookie(req);
-    const tokenFromHeader = getFromHeader(req);
+    apiKeyHeaderKey: string,
+    apiKeyLookupHeaderKey: string,
+    apiKeyService: ApiKeyService,
+    apiKeyHashingStrategy: ApiKeyHashingStrategy,
+): Promise<ExtractTokenResult | undefined> {
+    if (req.session?.token && (tokenMethod === 'cookie' || tokenMethod.includes('cookie'))) {
+        return { method: 'cookie', token: req.session.token as string };
+    }
 
-    if (tokenMethod === 'cookie') {
-        return tokenFromCookie;
-    } else if (tokenMethod === 'bearer') {
-        return tokenFromHeader;
+    const authHeader = req.get('Authorization')?.trim();
+    if (authHeader && (tokenMethod === 'bearer' || tokenMethod.includes('bearer'))) {
+        const matchesBearer = authHeader.match(/^bearer\s(.+)$/i);
+        if (matchesBearer) return { method: 'bearer', token: matchesBearer[1] };
     }
-    if (tokenMethod.includes('cookie') && tokenFromCookie) {
-        return tokenFromCookie;
-    }
-    if (tokenMethod.includes('bearer') && tokenFromHeader) {
-        return tokenFromHeader;
-    }
-}
 
-function getFromCookie(req: Request): string | undefined {
-    if (req.session && req.session.token) {
-        return req.session.token;
-    }
-}
+    const apiKeyHeader = req.get(apiKeyHeaderKey)?.trim();
+    const apiKeyLookupHeader = req.get(apiKeyLookupHeaderKey)?.trim();
 
-function getFromHeader(req: Request): string | undefined {
-    const authHeader = req.get('Authorization');
-    if (authHeader) {
-        const matches = authHeader.trim().match(/^bearer\s(.+)$/i);
-        if (matches) {
-            return matches[1];
+    if (apiKeyHeader && apiKeyLookupHeader && tokenMethod.includes('api-key')) {
+        const apiKeyHash = await apiKeyService.getHashByLookupId(apiKeyLookupHeader);
+
+        if (!apiKeyHash) {
+            // Eventhough we know that there is no corresponding ApiKey entity, because
+            // the lookup ID yielded no result, we still hash the input, so that regardless
+            // of the ApiKey existing or not, this function takes around the same amount of time.
+            return void (await apiKeyHashingStrategy.hash(apiKeyHeader));
+        }
+
+        if (await apiKeyHashingStrategy.check(apiKeyHeader, apiKeyHash)) {
+            // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
+            apiKeyService
+                .updateLastUsedAtByLookupId(apiKeyLookupHeader)
+                .catch(err =>
+                    Logger.error(
+                        `Failed to update lastUsedAt for ApiKey with lookupId ${apiKeyLookupHeader}`,
+                        undefined,
+                        err?.stack,
+                    ),
+                );
+            return { method: 'api-key', token: apiKeyHash };
         }
     }
 }
