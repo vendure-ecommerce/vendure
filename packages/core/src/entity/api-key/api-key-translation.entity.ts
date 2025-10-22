@@ -11,7 +11,7 @@ import { ApiKey } from './api-key.entity';
 
 @Entity()
 export class ApiKeyTranslation extends VendureEntity implements Translation<ApiKey>, HasCustomFields {
-    constructor(input?: DeepPartial<Translation<ApiKeyTranslation>>) {
+    constructor(input?: DeepPartial<Translation<ApiKey>>) {
         super(input);
     }
 
