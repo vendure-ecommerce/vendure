@@ -3,6 +3,7 @@ title: 'Settings Store'
 showtoc: true
 ---
 
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -131,7 +132,7 @@ Each field supports the following configuration options:
 | `name`               | `string`                     | The field name (combined with namespace to create full key) |
 | `scope`              | `SettingsStoreScopeFunction`      | How the field should be scoped (see scoping section)        |
 | `readonly`           | `boolean`                    | If true, field cannot be modified via GraphQL API           |
-| `requiresPermission` | `Permission \| Permission[]` | Permissions required to access this field                   |
+| `requiresPermission` | `Permission \| Permission[] \| { read: Permission, write: Permission }` | Permissions required to access this field                   |
 | `validate`           | `function`                   | Custom validation function for field values                 |
 
 ### Scoping
@@ -157,6 +158,8 @@ SettingsStoreScopes.userAndChannel;
 You can also create custom scope functions:
 
 ```ts
+import { VendureConfig, SettingsStoreScopeFunction } from '@vendure/core';
+
 const customScope: SettingsStoreScopeFunction = ({ key, value, ctx }) => {
     // Custom scoping logic
     const env = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
@@ -171,6 +174,51 @@ export const config: VendureConfig = {
                 // The value will be saved with the scope
                 // "env:prod" or "env:dev"
                 scope: customScope,
+            },
+        ],
+    },
+};
+```
+
+### Permissions
+
+You can control access to the Settings Store entry via the `requiresPermission` configuration property.
+If not specified, basic authentication is required for Admin API access.
+
+Can be either:
+- A single permission or array of permissions (applies to both read and write)
+- An object with `read` and `write` properties for granular control. For custom permissions you can use
+  a [RwPermissionDefinition](/reference/typescript-api/auth/permission-definition#rwpermissiondefinition).
+
+@example
+```ts
+import { Permission, VendureConfig, RwPermissionDefinition } from '@vendure/core';
+
+export const dashboardSavedViews = new RwPermissionDefinition('DashboardSavedViews');
+
+export const config: VendureConfig = {
+    settingsStoreFields: {
+        myNamespace: [
+            {
+                name: 'myField1',
+                // Single permission for both read and write
+                requiresPermission: Permission.UpdateSettings,
+            },
+            {
+                name: 'myField2',
+                // Separate read and write permissions
+                requiresPermission: {
+                  read: Permission.ReadSettings,
+                  write: Permission.UpdateSettings,
+                },
+            },
+            {
+                name: 'myField3',
+                // Using custom RwPermissionDefinition
+                requiresPermission: {
+                  read: dashboardSavedViews.Read,
+                  write: dashboardSavedViews.Write,
+                },
             },
         ],
     },
