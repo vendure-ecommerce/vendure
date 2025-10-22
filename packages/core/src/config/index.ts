@@ -1,6 +1,7 @@
 export * from './api-key-strategy/api-key-authentication-options';
 export * from './api-key-strategy/api-key-generation-strategy';
 export * from './api-key-strategy/api-key-hashing-strategy';
+export * from './api-key-strategy/api-key-lookup-id-generation-strategy';
 export * from './api-key-strategy/noop-api-key-hashing-strategy';
 export * from './api-key-strategy/random-bytes-api-key-generation-strategy';
 export * from './asset-import-strategy/asset-import-strategy';
