@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 The Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/). The Angular Admin UI will not be maintained after **July 2026**. 
 Until then, we will continue patching critical bugs and security issues. Community contributions will always be merged and released.
 
-**For new projects, we strongly recommend using the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
+**For new projects, use the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
 
 If you want to use the Admin UI and the Dashboard together please change the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) to true.
 :::
