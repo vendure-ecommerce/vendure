@@ -11,12 +11,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SentryPlugin
 
-<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="127" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="146" packageName="@vendure/sentry-plugin" />
 
 This plugin integrates the [Sentry](https://sentry.io) error tracking & performance monitoring
 service with your Vendure server. In addition to capturing errors, it also provides built-in
 support for [tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/) as well as
 enriching your Sentry events with additional context about the request.
+
+:::info
+This documentation applies from v3.5.0 of the plugin, which works differently to previous
+versions. Documentation for prior versions can
+be found [here](https://github.com/vendure-ecommerce/vendure/blob/1bb9cf8ca1584bce026ccc82f33f866b766ef47d/packages/sentry-plugin/src/sentry-plugin.ts).
+:::
 
 ## Pre-requisites
 
@@ -34,11 +40,24 @@ which you will need to provide to the plugin.
 npm install --save @vendure/sentry-plugin
 ```
 
+## Environment Variables
+
+The following environment variables are used to control how the Sentry
+integration behaves:
+
+- `SENTRY_DSN`: (required) Sentry Data Source Name
+- `SENTRY_TRACES_SAMPLE_RATE`: Number between 0 and 1
+- `SENTRY_PROFILES_SAMPLE_RATE`: Number between 0 and 1
+- `SENTRY_ENABLE_LOGS`: Boolean. Captures calls to the console API as logs in Sentry. Default `false`
+- `SENTRY_CAPTURE_LOG_LEVELS`: 'debug' | 'info' | 'warn' | 'error' | 'log' | 'assert' | 'trace'
+
 ## Configuration
 
 Setting up the Sentry plugin requires two steps:
 
 ### Step 1: Preload the Sentry instrument file
+
+Make sure the `SENTRY_DSN` environment variable is defined.
 
 The Sentry SDK must be initialized before your application starts. This is done by preloading
 the instrument file when starting your Vendure server:
@@ -77,7 +96,7 @@ export const config: VendureConfig = {
 
 This plugin includes built-in support for [tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/), which allows you to see the performance of your.
 To enable tracing, preload the instrument file as described in [Step 1](#step-1-preload-the-sentry-instrument-file).
-This make sure that the Sentry SDK is initialized before any other code is executed.
+This ensures that the Sentry SDK is initialized before any other code is executed.
 
 You can also set the `tracesSampleRate` and `profilesSampleRate` options to control the sample rate for
 tracing and profiling, with the following environment variables:
@@ -122,7 +141,7 @@ You should then be able to see the error in your Sentry dashboard (it may take a
 ```ts title="Signature"
 class SentryPlugin {
     static options: SentryPluginOptions = {} as any;
-    init(options: SentryPluginOptions) => ;
+    init(options?: SentryPluginOptions) => ;
 }
 ```
 
@@ -135,7 +154,7 @@ class SentryPlugin {
 
 ### init
 
-<MemberInfo kind="method" type={`(options: <a href='/reference/core-plugins/sentry-plugin/sentry-plugin-options#sentrypluginoptions'>SentryPluginOptions</a>) => `}   />
+<MemberInfo kind="method" type={`(options?: <a href='/reference/core-plugins/sentry-plugin/sentry-plugin-options#sentrypluginoptions'>SentryPluginOptions</a>) => `}   />
 
 
 

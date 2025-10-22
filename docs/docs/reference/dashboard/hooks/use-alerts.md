@@ -17,18 +17,18 @@ Returns information about all registered Alerts, including how many are
 active and at what severity.
 
 ```ts title="Signature"
-function useAlerts(): { alerts: Alert[]; activeCount: number; highestSeverity: AlertSeverity }
+function useAlerts(): { alerts: AlertEntry[]; activeCount: number; highestSeverity: AlertSeverity }
 ```
 
 
-## Alert
+## AlertEntry
 
 <GenerationInfo sourceFile="packages/dashboard/src/lib/hooks/use-alerts.ts" sourceLine="13" packageName="@vendure/dashboard" since="3.5.0" />
 
 An individual Alert item.
 
 ```ts title="Signature"
-interface Alert {
+interface AlertEntry {
     definition: DashboardAlertDefinition;
     active: boolean;
     currentSeverity?: AlertSeverity;
