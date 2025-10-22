@@ -149,27 +149,34 @@ export function addGraphQLCustomFields(
             // Define any Struct input types that are required by
             // the create and/or update input types.
             for (const structCustomField of structCustomFields) {
-                customFieldTypeDefs += `
-                        input ${getStructInputName(entityName, structCustomField)} {
-                            ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlInputType(entityName)))}
-                        }
-                    `;
+                const structInputName = getStructInputName(entityName, structCustomField);
+                if (!schema.getType(structInputName)) {
+                    customFieldTypeDefs += `
+                            input ${structInputName} {
+                                ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlInputType(entityName)))}
+                            }
+                        `;
+                }
             }
         }
 
         if (hasCreateInputType) {
             if (writeableNonLocalizedFields.length) {
+                const createCustomFieldsInputType = `Create${entityName}CustomFieldsInput`;
+                if (!schema.getType(createCustomFieldsInputType)) {
+                    customFieldTypeDefs += `
+                        input ${createCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                }
                 customFieldTypeDefs += `
-                    input Create${entityName}CustomFieldsInput {
-                       ${mapToFields(
-                           writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType(entityName)),
-                           getGraphQlInputName,
-                       )}
-                    }
-
                     extend input Create${entityName}Input {
-                        customFields: Create${entityName}CustomFieldsInput
+                        customFields: ${createCustomFieldsInputType}
                     }
                 `;
             } else {
@@ -183,17 +190,21 @@ export function addGraphQLCustomFields(
 
         if (hasUpdateInputType) {
             if (writeableNonLocalizedFields.length) {
+                const updateCustomFieldsInputType = `Update${entityName}CustomFieldsInput`;
+                if (!schema.getType(updateCustomFieldsInputType)) {
+                    customFieldTypeDefs += `
+                        input ${updateCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                }
                 customFieldTypeDefs += `
-                    input Update${entityName}CustomFieldsInput {
-                       ${mapToFields(
-                           writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType(entityName)),
-                           getGraphQlInputName,
-                       )}
-                    }
-
                     extend input Update${entityName}Input {
-                        customFields: Update${entityName}CustomFieldsInput
+                        customFields: ${updateCustomFieldsInputType}
                     }
                 `;
             } else {
@@ -389,13 +400,18 @@ export function addRegisterCustomerCustomFieldsInput(
     if (publicWritableCustomFields.length < 1) {
         return schema;
     }
-    const customFieldTypeDefs = `
-        input RegisterCustomerCustomFieldsInput {
-            ${mapToFields(publicWritableCustomFields, wrapListType(getGraphQlInputType('Customer')), getGraphQlInputName)}
-        }
-
+    let customFieldTypeDefs = '';
+    const registerCustomFieldsInputType = 'RegisterCustomerCustomFieldsInput';
+    if (!schema.getType(registerCustomFieldsInputType)) {
+        customFieldTypeDefs += `
+            input ${registerCustomFieldsInputType} {
+                ${mapToFields(publicWritableCustomFields, wrapListType(getGraphQlInputType('Customer')), getGraphQlInputName)}
+            }
+        `;
+    }
+    customFieldTypeDefs += `
         extend input RegisterCustomerInput {
-            customFields: RegisterCustomerCustomFieldsInput
+            customFields: ${registerCustomFieldsInputType}
         }
     `;
     return extendSchema(schema, parse(customFieldTypeDefs));
