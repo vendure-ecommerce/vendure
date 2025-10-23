@@ -1,0 +1,3 @@
+directive @vendureRemove on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @vendureMakeNullable on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
