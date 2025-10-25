@@ -152,7 +152,7 @@ export interface AdminUiPluginOptions {
         },
         resolvers: () => {
             const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
-            return compatibilityMode ? [] : [MetricsResolver];
+            return compatibilityMode ? [MetricsResolver] : [];
         },
     },
     providers: [MetricsService],
