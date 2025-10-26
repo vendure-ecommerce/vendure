@@ -83,7 +83,7 @@ export function ProductVariantsTable({
                 },
                 price: {
                     meta: {
-                        dependencies: ["currencyCode"]
+                        dependencies: ['currencyCode']
                     },
                     cell: ({ row: { original } }) => (
                         <Money value={original.price} currency={original.currencyCode} />
@@ -91,7 +91,7 @@ export function ProductVariantsTable({
                 },
                 priceWithTax: {
                     meta: {
-                        dependencies: ["currencyCode"]
+                        dependencies: ['currencyCode']
                     },
                     cell: ({ row: { original } }) => (
                         <Money value={original.priceWithTax} currency={original.currencyCode} />
