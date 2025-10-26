@@ -21,6 +21,7 @@ import {
     createProductVariantsDocument,
 } from '../products.graphql.js';
 import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 export function CreateProductVariantsDialog({
     productId,
@@ -32,6 +33,7 @@ export function CreateProductVariantsDialog({
     onSuccess?: () => void;
 }) {
     const { activeChannel } = useChannel();
+    const { toMinorUnits } = useLocalFormat();
     const [variantData, setVariantData] = useState<VariantConfiguration | null>(null);
     const [open, setOpen] = useState(false);
 
@@ -95,10 +97,11 @@ export function CreateProductVariantsDialog({
                     const name = variant.options.length
                         ? `${productName} ${variant.options.map(option => option.value).join(' ')}`
                         : productName;
+
                     return {
                         productId,
                         sku: variant.sku,
-                        price: Number(variant.price),
+                        price: toMinorUnits(Number(variant.price)),
                         stockOnHand: Number(variant.stock),
                         optionIds: variant.options.map(option => {
                             const optionGroup = createdOptionGroups.find(g => g.name === option.name);
