@@ -80,7 +80,7 @@ export interface AdminUiPluginOptions {
     /**
      * @description
      * If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
-     * set this to `true` in order to avoid a conflict caused by both plugins defining the same
+     * set this to `true` in order to let AdminUiPlugin provide its metrics schema and resolvers
      * schema extensions.
      *
      * @since 3.4.0

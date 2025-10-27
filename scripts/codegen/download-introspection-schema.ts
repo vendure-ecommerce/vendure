@@ -27,7 +27,11 @@ export const config: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    plugins: [AdminUiPlugin],
+    plugins: [AdminUiPlugin.init({
+        compatibilityMode: true,
+        route: 'admin',
+        port: 3355
+    })],
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
 };
 
