@@ -30,7 +30,10 @@ export const config: VendureConfig = {
     plugins: [AdminUiPlugin.init({
         compatibilityMode: true,
         route: 'admin',
-        port: 3355
+        port: 3002,
+        adminUiConfig: {
+            apiPort: 3355,
+        }
     })],
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
 };
