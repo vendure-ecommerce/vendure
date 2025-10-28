@@ -159,17 +159,31 @@ export function addGraphQLCustomFields(
 
         if (hasCreateInputType) {
             if (writeableNonLocalizedFields.length) {
+                const createCustomFieldsInputType = `Create${entityName}CustomFieldsInput`;
+                if (!schema.getType(createCustomFieldsInputType)) {
+                    customFieldTypeDefs += `
+                        input ${createCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                } else {
+                    customFieldTypeDefs += `
+                        extend input ${createCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                }
                 customFieldTypeDefs += `
-                    input Create${entityName}CustomFieldsInput {
-                       ${mapToFields(
-                           writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType(entityName)),
-                           getGraphQlInputName,
-                       )}
-                    }
-
                     extend input Create${entityName}Input {
-                        customFields: Create${entityName}CustomFieldsInput
+                        customFields: ${createCustomFieldsInputType}
                     }
                 `;
             } else {
@@ -183,17 +197,31 @@ export function addGraphQLCustomFields(
 
         if (hasUpdateInputType) {
             if (writeableNonLocalizedFields.length) {
+                const updateCustomFieldsInputType = `Update${entityName}CustomFieldsInput`;
+                if (!schema.getType(updateCustomFieldsInputType)) {
+                    customFieldTypeDefs += `
+                        input ${updateCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                } else {
+                    customFieldTypeDefs += `
+                        extend input ${updateCustomFieldsInputType} {
+                           ${mapToFields(
+                               writeableNonLocalizedFields,
+                               wrapListType(getGraphQlInputType(entityName)),
+                               getGraphQlInputName,
+                           )}
+                        }
+                    `;
+                }
                 customFieldTypeDefs += `
-                    input Update${entityName}CustomFieldsInput {
-                       ${mapToFields(
-                           writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType(entityName)),
-                           getGraphQlInputName,
-                       )}
-                    }
-
                     extend input Update${entityName}Input {
-                        customFields: Update${entityName}CustomFieldsInput
+                        customFields: ${updateCustomFieldsInputType}
                     }
                 `;
             } else {

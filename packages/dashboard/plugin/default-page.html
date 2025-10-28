@@ -148,8 +148,13 @@
         let pollInterval;
         let statusElement = document.getElementById('status');
 
+        function statusUrlForCurrentPath() {
+            const segments = location.pathname.split('/').filter(Boolean);
+            return segments.length === 0 ? '/__status' : `/${segments[0]}/__status`;
+        }
+
         function pollStatus() {
-            fetch('__status')
+            fetch(statusUrlForCurrentPath())
                 .then(response => response.json())
                 .then(data => {
                     if (data.mode === 'vite') {
