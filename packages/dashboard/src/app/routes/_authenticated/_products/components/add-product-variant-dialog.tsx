@@ -25,7 +25,6 @@ import * as z from 'zod';
 import { createProductOptionDocument } from '../products.graphql.js';
 import { CreateProductOptionsDialog } from './create-product-options-dialog.js';
 import { ProductOptionSelect } from './product-option-select.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 const getProductOptionGroupsDocument = graphql(`
     query GetProductOptionGroups($productId: ID!) {
@@ -87,7 +86,6 @@ export function AddProductVariantDialog({
     const { t } = useLingui();
     const [duplicateVariantError, setDuplicateVariantError] = useState<string | null>(null);
     const [nameTouched, setNameTouched] = useState(false);
-    const { toMinorUnits } = useLocalFormat();
 
     const { data: productData, refetch } = useQuery({
         queryKey: ['productOptionGroups', productId],
@@ -207,7 +205,7 @@ export function AddProductVariantDialog({
                 input: {
                     productId,
                     sku: values.sku,
-                    price: toMinorUnits(Number(values.price)),
+                    price: Number(values.price),
                     stockOnHand: Number(values.stockOnHand),
                     optionIds: Object.values(values.options),
                     translations: [

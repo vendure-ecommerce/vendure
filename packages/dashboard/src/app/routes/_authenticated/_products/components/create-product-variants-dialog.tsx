@@ -101,7 +101,7 @@ export function CreateProductVariantsDialog({
                     return {
                         productId,
                         sku: variant.sku,
-                        price: toMinorUnits(Number(variant.price)),
+                        price: Number(variant.price),
                         stockOnHand: Number(variant.stock),
                         optionIds: variant.options.map(option => {
                             const optionGroup = createdOptionGroups.find(g => g.name === option.name);
