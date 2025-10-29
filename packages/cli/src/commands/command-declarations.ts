@@ -234,7 +234,10 @@ export const cliCommands: CliCommandDefinition[] = [
         ],
         action: async options => {
             const { schemaCommand } = await import('./schema/schema');
-            await schemaCommand(options as any);
+            await schemaCommand({
+                ...(options as any),
+                outputDir: options?.dir,
+            });
             process.exit(0);
         },
     },
