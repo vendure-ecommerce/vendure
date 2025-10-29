@@ -147,6 +147,7 @@ const sidebars = {
                     items: [
                         'guides/extending-the-dashboard/creating-pages/list-pages',
                         'guides/extending-the-dashboard/creating-pages/detail-pages',
+                        'guides/extending-the-dashboard/creating-pages/tabbed-pages',
                     ],
                 },
                 {
