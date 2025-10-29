@@ -19,48 +19,14 @@ This is where this guide comes in.
 
 ## Tabbed Page Example
 
+![Tabbed Page Example](./tabbed-page-example.webp)
+
 The Dashboard provides tab components that work seamlessly with the `Page` component to create tabbed interfaces.
 Using the correct format is important to avoid style issues and ensure consistent behavior.
 
-Let's create a new simple example page:
+When a component grows, you may want to consider using the `Tabs` component to help you organize your content.
 
 ```tsx title="src/plugins/my-plugin/dashboard/settings-page.tsx"
-import React from 'react';
-import {
-    Page,
-    PageTitle,
-    PageLayout,
-    PageBlock
-    DashboardRouteDefinition,
-} from '@vendure/dashboard';
-
-export const settingsPage: DashboardRouteDefinition = {
-    // redacted for brevity
-    component: () => {
-        return (
-            <Page pageId="my-settings">
-                <PageTitle>My Page</PageTitle>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-stuff">
-                        This will display in the main area
-                    </PageBlock>
-                    <PageBlock column="main" blockId="also-main-stuff">
-                        This will display in the main area *under* the previous component
-                    </PageBlock>
-                    <PageBlock column="side" blockId="side-stuff">
-                        This will display in the side area
-                    </PageBlock>
-                </PageLayout>
-            </Page>
-        );
-    },
-};
-```
-
-When this component grows, you may want to consider using the `Tabs` component to help you organize your content.
-
-```tsx title="src/plugins/my-plugin/dashboard/settings-page.tsx"
-import React from 'react';
 import {
     Page,
     PageTitle,
@@ -72,6 +38,7 @@ import {
 } from '@vendure/dashboard';
 
 export const settingsPage: DashboardRouteDefinition = {
+    navMenuItem: { sectionId: 'settings', title: 'My Settings', order: 10 },
     path: '/settings/my-settings',
     loader: () => ({
         breadcrumb: 'My Settings',
@@ -81,22 +48,26 @@ export const settingsPage: DashboardRouteDefinition = {
             <Page pageId="my-settings">
                 <PageTitle>My Tabbed Page</PageTitle>
 
-                <Tabs defaultValue="general" className="w-full">
+                <Tabs defaultValue="main-stuff" className="w-full">
                     <TabsList>
                         <TabsTrigger value="main-stuff">main stuff</TabsTrigger>
-                        <TabsTrigger value="also-main-stuff">also main stuff</TabsTrigger>
+                        <TabsTrigger value="other-stuff">other stuff</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="main-stuff">
-                        <PageBlock column="main" blockId="main-stuff">
-                            This will display in the main area *in a new tab*
-                        </PageBlock>
+                        <PageLayout>
+                            <PageBlock column="main" blockId="main-stuff">
+                                This will display in the main area *in a tab*
+                            </PageBlock>
+                        </PageLayout>
                     </TabsContent>
 
-                    <TabsContent value="also-main-stuff">
-                        <PageBlock column="main" blockId="also-main-stuff">
-                            This will display in the main area *in another tab*
-                        </PageBlock>
+                    <TabsContent value="other-stuff">
+                        <PageLayout>
+                            <PageBlock column="main" blockId="other-stuff">
+                                This will display in the main area *in another tab*
+                            </PageBlock>
+                        </PageLayout>
                     </TabsContent>
                 </Tabs>
             </Page>
@@ -110,7 +81,7 @@ export const settingsPage: DashboardRouteDefinition = {
 This uses the stock shadcn tab component, docs are avilable [here](https://ui.shadcn.com/docs/components/tabs).
 
 :::note
-Always use the `Page` and `PageLayout` components as the root component when creating tabbed pages. This ensures proper styling
+Always use the `Page` component as the root and `PageLayout` as the only child of the `TabContent` when creating tabbed pages. This ensures proper styling
 and integration with the Dashboard layout system.
 :::
 
@@ -122,11 +93,10 @@ The purpose of this structure is to avoid nested layout components, which can ca
 One might be tempted to wrap tab content in a `FullWidthPageBlock` or `PageLayout` and then place other `PageBlock` components inside it. **This will cause layout problems.**
 
 Instead, place `PageBlock` components directly inside each `TabsContent`, just as you would in a regular detail page.
-:::
 
 **Incorrect approach:**
 
-```tsx
+```tsx title="DO NOT DO THIS"
 <Tabs value="general">
     <PageLayout>
         // this will not render correctly
@@ -145,6 +115,8 @@ Instead, place `PageBlock` components directly inside each `TabsContent`, just a
     </PageLayout>
 </Tabs>
 ```
+
+:::
 
 ## Using Tabs with Components
 
