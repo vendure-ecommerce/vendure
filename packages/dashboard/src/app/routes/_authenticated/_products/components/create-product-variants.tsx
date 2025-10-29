@@ -269,7 +269,7 @@ export function CreateProductVariants({
                                                                     {...field}
                                                                     value={Number(field.value) || 0}
                                                                     onChange={value => field.onChange(value.toString())}
-                                                                    currency={activeChannel?.defaultCurrencyCode ?? 'USD'}
+                                                                    currency={activeChannel?.defaultCurrencyCode}
                                                                 />
                                                         </FormControl>
                                                         <FormMessage />

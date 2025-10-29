@@ -21,7 +21,6 @@ import {
     createProductVariantsDocument,
 } from '../products.graphql.js';
 import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 export function CreateProductVariantsDialog({
     productId,
@@ -33,7 +32,6 @@ export function CreateProductVariantsDialog({
     onSuccess?: () => void;
 }) {
     const { activeChannel } = useChannel();
-    const { toMinorUnits } = useLocalFormat();
     const [variantData, setVariantData] = useState<VariantConfiguration | null>(null);
     const [open, setOpen] = useState(false);
 
