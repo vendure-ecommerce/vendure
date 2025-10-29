@@ -28,8 +28,11 @@ function HealthchecksPage() {
     const { data, refetch, dataUpdatedAt } = useQuery({
         queryKey: ['healthchecks'],
         queryFn: async () => {
-            const schemeAndHost =
-                uiConfig.api.host + (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '');
+            const host =
+                uiConfig.api.host !== 'auto'
+                    ? uiConfig.api.host
+                    : `${window.location.protocol}//${window.location.hostname}`;
+            const schemeAndHost = host + (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '');
 
             const res = await fetch(`${schemeAndHost}/health`);
             return res.json() as Promise<HealthcheckResponse>;
