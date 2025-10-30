@@ -27,11 +27,14 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     async writeFileFromStream(
         fileName: string,
         data: ReadStream,
-        encoding?: BufferEncoding,
+        encoding?: BufferEncoding | null,
     ): Promise<string> {
         const filePath = path.join(this.uploadPath, fileName);
         await fs.ensureDir(path.dirname(filePath));
-        const writeStream = fs.createWriteStream(filePath, encoding ?? 'binary');
+        const writeStream = fs.createWriteStream(
+            filePath,
+            encoding === undefined ? 'binary' : encoding === null ? undefined : encoding,
+        );
         return new Promise<string>((resolve, reject) => {
             data.pipe(writeStream);
             writeStream.on('close', () => resolve(this.filePathToIdentifier(filePath)));
@@ -58,8 +61,11 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
         return fs.readFile(this.identifierToFilePath(identifier));
     }
 
-    readFileToStream(identifier: string, encoding?: BufferEncoding): Promise<Stream> {
-        const readStream = fs.createReadStream(this.identifierToFilePath(identifier), encoding ?? 'binary');
+    readFileToStream(identifier: string, encoding?: BufferEncoding | null): Promise<Stream> {
+        const readStream = fs.createReadStream(
+            this.identifierToFilePath(identifier),
+            encoding === undefined ? 'binary' : encoding === null ? undefined : encoding,
+        );
         return Promise.resolve(readStream);
     }
 
