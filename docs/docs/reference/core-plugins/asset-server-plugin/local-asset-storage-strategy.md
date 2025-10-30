@@ -19,11 +19,11 @@ A persistence strategy which saves files to the local file system.
 class LocalAssetStorageStrategy implements AssetStorageStrategy {
     toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
     constructor(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string)
-    writeFileFromStream(fileName: string, data: ReadStream) => Promise<string>;
+    writeFileFromStream(fileName: string, data: ReadStream, encoding? BufferEncoding) => Promise<string>;
     writeFileFromBuffer(fileName: string, data: Buffer) => Promise<string>;
     fileExists(fileName: string) => Promise<boolean>;
     readFileToBuffer(identifier: string) => Promise<Buffer>;
-    readFileToStream(identifier: string) => Promise<Stream>;
+    readFileToStream(identifier: string, encoding? BufferEncoding) => Promise<Stream>;
     deleteFile(identifier: string) => Promise<void>;
 }
 ```
@@ -45,7 +45,7 @@ class LocalAssetStorageStrategy implements AssetStorageStrategy {
 
 ### writeFileFromStream
 
-<MemberInfo kind="method" type={`(fileName: string, data: ReadStream) => Promise&#60;string&#62;`}   />
+<MemberInfo kind="method" type={`(fileName: string, data: ReadStream, encoding? BufferEncoding) => Promise&#60;string&#62;`}   />
 
 
 ### writeFileFromBuffer
@@ -65,7 +65,7 @@ class LocalAssetStorageStrategy implements AssetStorageStrategy {
 
 ### readFileToStream
 
-<MemberInfo kind="method" type={`(identifier: string) => Promise&#60;Stream&#62;`}   />
+<MemberInfo kind="method" type={`(identifier: string, encoding? BufferEncoding) => Promise&#60;Stream&#62;`}   />
 
 
 ### deleteFile
