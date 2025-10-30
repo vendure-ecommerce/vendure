@@ -1462,4 +1462,68 @@ describe('Custom field relations', () => {
             ]);
         });
     });
+
+    // Test for tree-relations-qb-joiner.ts fix
+    // Ensures self-referencing custom field relations don't trigger tree entity behavior
+    describe('self-referencing Product custom fields', () => {
+        it('set self-referencing cfProduct relation', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { cfProductId: "T_2" } }) {
+                        id
+                        customFields {
+                            cfProduct {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(updateProduct.customFields.cfProduct).toEqual({
+                id: 'T_2',
+                name: 'Curvy Monitor',
+            });
+        });
+
+        it('query product with self-referencing cfProduct relation', async () => {
+            const { product } = await adminClient.query(gql`
+                query {
+                    product(id: "T_1") {
+                        id
+                        name
+                        customFields {
+                            cfProduct {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(product.customFields.cfProduct.id).toBe('T_2');
+            expect(product.customFields.cfProduct.name).toBe('Curvy Monitor');
+        });
+
+        it('set circular self-reference', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { cfProductId: "T_1" } }) {
+                        id
+                        customFields {
+                            cfProduct {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(updateProduct.customFields.cfProduct.id).toBe('T_1');
+            expect(updateProduct.customFields.cfProduct.name).toBe('Laptop');
+        });
+    });
 });
