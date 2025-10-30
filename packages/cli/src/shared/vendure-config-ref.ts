@@ -15,45 +15,32 @@ export class VendureConfigRef {
 
     constructor(
         private project: Project,
-        options: { checkFileName?: boolean } = {},
+        configFilePath?: string,
     ) {
-        const checkFileName = options.checkFileName ?? true;
-
-        const getVendureConfigSourceFile = (sourceFiles: SourceFile[]) => {
-            return sourceFiles.find(sf => {
-                return (
-                    (checkFileName ? sf.getFilePath().endsWith('vendure-config.ts') : true) &&
-                    sf.getVariableDeclarations().find(v => this.isVendureConfigVariableDeclaration(v))
-                );
-            });
-        };
-
-        const findAndAddVendureConfigToProject = () => {
-            // If the project does not contain a vendure-config.ts file, we'll look for a vendure-config.ts file
-            // in the src directory.
-            const srcDir = project.getDirectory('src');
-            if (srcDir) {
-                const srcDirPath = srcDir.getPath();
-                const srcFiles = fs.readdirSync(srcDirPath);
-
-                const filePath = srcFiles.find(file => file.includes('vendure-config.ts'));
-                if (filePath) {
-                    project.addSourceFileAtPath(path.join(srcDirPath, filePath));
-                }
+        if (configFilePath) {
+            const sourceFile = project.getSourceFile(sf => sf.getFilePath().endsWith(configFilePath));
+            if (!sourceFile) {
+                throw new Error(`Could not find a config file at "${configFilePath}"`);
             }
-        };
+            this.sourceFile = sourceFile;
+        } else {
+            const sourceFiles = project
+                .getSourceFiles()
+                .filter(sf => this.isVendureConfigFile(sf, { checkFileName: false }));
+            if (sourceFiles.length > 1) {
+                throw new Error(
+                    `Multiple Vendure config files found. Please specify which one to use with the --config flag:\n` +
+                        sourceFiles.map(sf => `  - ${sf.getFilePath()}`).join('\n'),
+                );
+            }
+            if (sourceFiles.length === 0) {
+                throw new Error('Could not find the VendureConfig declaration in your project.');
+            }
+            this.sourceFile = sourceFiles[0];
+        }
 
-        let vendureConfigFile = getVendureConfigSourceFile(project.getSourceFiles());
-        if (!vendureConfigFile) {
-            findAndAddVendureConfigToProject();
-            vendureConfigFile = getVendureConfigSourceFile(project.getSourceFiles());
-        }
-        if (!vendureConfigFile) {
-            throw new Error('Could not find the VendureConfig declaration in your project.');
-        }
-        this.sourceFile = vendureConfigFile;
-        this.configObject = vendureConfigFile
-            ?.getVariableDeclarations()
+        this.configObject = this.sourceFile
+            .getVariableDeclarations()
             .find(v => this.isVendureConfigVariableDeclaration(v))
             ?.getChildren()
             .find(Node.isObjectLiteralExpression) as ObjectLiteralExpression;
@@ -81,6 +68,17 @@ export class VendureConfigRef {
 
     addToPluginsArray(text: string) {
         this.getPluginsArray()?.addElement(text).formatText();
+    }
+
+    private isVendureConfigFile(
+        sourceFile: SourceFile,
+        options: { checkFileName?: boolean } = {},
+    ): boolean {
+        const checkFileName = options.checkFileName ?? true;
+        return (
+            (checkFileName ? sourceFile.getFilePath().endsWith('vendure-config.ts') : true) &&
+            !!sourceFile.getVariableDeclarations().find(v => this.isVendureConfigVariableDeclaration(v))
+        );
     }
 
     private isVendureConfigVariableDeclaration(v: VariableDeclaration) {

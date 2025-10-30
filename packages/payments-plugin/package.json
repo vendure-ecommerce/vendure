@@ -1,6 +1,6 @@
 {
     "name": "@vendure/payments-plugin",
-    "version": "3.3.7",
+    "version": "3.5.0",
     "license": "GPL-3.0-or-later",
     "main": "package/index.js",
     "types": "package/index.d.ts",
@@ -28,7 +28,7 @@
         "access": "public"
     },
     "peerDependencies": {
-        "@mollie/api-client": "3.x",
+        "@mollie/api-client": "4.x",
         "braintree": "3.x",
         "stripe": "13.x"
     },
@@ -47,12 +47,12 @@
         }
     },
     "devDependencies": {
-        "@mollie/api-client": "^3.7.0",
+        "@mollie/api-client": "^4.3.3",
         "@types/braintree": "^3.3.11",
         "@types/localtunnel": "2.0.4",
-        "@vendure/common": "3.3.7",
-        "@vendure/core": "3.3.7",
-        "@vendure/testing": "3.3.7",
+        "@vendure/common": "3.5.0",
+        "@vendure/core": "3.5.0",
+        "@vendure/testing": "3.5.0",
         "braintree": "^3.22.0",
         "localtunnel": "2.0.2",
         "nock": "^13.1.4",

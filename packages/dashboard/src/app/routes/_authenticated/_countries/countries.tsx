@@ -3,11 +3,11 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCountriesBulkAction } from './components/country-bulk-actions.js';
-import { countriesListQuery, deleteCountryDocument } from './countries.graphql.js';
+import { countriesListQuery } from './countries.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries')({
     component: CountryListPage,
@@ -19,9 +19,8 @@ function CountryListPage() {
         <ListPage
             pageId="country-list"
             listQuery={countriesListQuery}
-            deleteMutation={deleteCountryDocument}
             route={Route}
-            title="Countries"
+            title={<Trans>Countries</Trans>}
             defaultVisibility={{
                 name: true,
                 code: true,
@@ -48,7 +47,6 @@ function CountryListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}

@@ -13,9 +13,22 @@ import {
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
+import { ReviewSelectWithCreate } from './review-select-with-create';
+import { routeWithoutAuth } from './route-without-auth';
 
 defineDashboardExtension({
-    routes: [reviewList, reviewDetail],
+    login: {
+        afterForm: {
+            component: () => (
+                <div>
+                    <Button variant="secondary" className="w-full">
+                        Login with Vendure ID
+                    </Button>
+                </div>
+            ),
+        },
+    },
+    routes: [reviewList, reviewDetail, routeWithoutAuth],
     widgets: [
         {
             id: 'custom-widget',
@@ -70,39 +83,43 @@ defineDashboardExtension({
                 id: 'review-multi-select',
                 component: ReviewMultiSelect,
             },
+            {
+                id: 'review-multi-select-with-create',
+                component: ReviewSelectWithCreate,
+            },
         ],
     },
     detailForms: [
         {
             pageId: 'product-variant-detail',
-            extendDetailDocument: `
-                query {
-                    productVariant(id: $id) {
-                        stockOnHand
-                        product {
-                          facetValues {
-                            id
-                            name
-                            facet {
-                            code
-                            }
-                          }
-                          customFields {
-                            featuredReview {
-                                id
-                                productVariant {
-                                    id
-                                    name
-                                }
-                                product {
-                                name
-                                }
-                            }
-                          }
-                        }
-                    }
-                }
-            `,
+            // extendDetailDocument: `
+            //     query {
+            //         productVariant(id: $id) {
+            //             stockOnHand
+            //             product {
+            //               facetValues {
+            //                 id
+            //                 name
+            //                 facet {
+            //                 code
+            //                 }
+            //               }
+            //               customFields {
+            //                 featuredReview {
+            //                     id
+            //                     productVariant {
+            //                         id
+            //                         name
+            //                     }
+            //                     product {
+            //                     name
+            //                     }
+            //                 }
+            //               }
+            //             }
+            //         }
+            //     }
+            // `,
         },
         {
             pageId: 'review-detail',
@@ -117,8 +134,6 @@ defineDashboardExtension({
                     field: 'state',
                     component: ReviewStateSelect,
                 },
-            ],
-            displays: [
                 {
                     blockId: 'main-form',
                     field: 'response',
@@ -144,23 +159,23 @@ defineDashboardExtension({
                     ),
                 },
             ],
-            extendListDocument: `
-                query {
-                    products {
-                        items {
-                            customFields {
-                                featuredReview {
-                                    id
-                                    productVariant {
-                                        id
-                                        name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `,
+            // extendListDocument: `
+            //     query {
+            //         products {
+            //             items {
+            //                 customFields {
+            //                     featuredReview {
+            //                         id
+            //                         productVariant {
+            //                             id
+            //                             name
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // `,
         },
     ],
 });

@@ -1,36 +1,33 @@
-import { cancel, isCancel, log, select } from '@clack/prompts';
+import { log } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from 'ts-morph';
 
 import { defaultManipulationSettings } from '../constants';
 import { EntityRef } from '../shared/entity-ref';
+import { PackageJson } from '../shared/package-json-ref';
 
-export async function selectTsConfigFile() {
+import { detectMonorepoStructure, findTsConfigInDir } from './monorepo-utils';
+
+export function selectTsConfigFile() {
     const tsConfigFiles = fs.readdirSync(process.cwd()).filter(f => /^tsconfig.*\.json$/.test(f));
     if (tsConfigFiles.length === 0) {
         throw new Error('No tsconfig files found in current directory');
     }
-    if (tsConfigFiles.length === 1) {
-        return tsConfigFiles[0];
+
+    // Prefer the canonical "tsconfig.json" when multiple configs are present.
+    const defaultConfig = 'tsconfig.json';
+    if (tsConfigFiles.includes(defaultConfig)) {
+        return defaultConfig;
     }
-    const selectedConfigFile = await select({
-        message: 'Multiple tsconfig files found. Select one:',
-        options: tsConfigFiles.map(c => ({
-            value: c,
-            label: path.basename(c),
-        })),
-        maxItems: 10,
-    });
-    if (isCancel(selectedConfigFile)) {
-        cancel();
-        process.exit(0);
-    }
-    return selectedConfigFile as string;
+
+    // Fallback: return the first match (stable order from fs.readdirSync).
+    return tsConfigFiles[0];
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function getTsMorphProject(options: ProjectOptions = {}, providedTsConfigPath?: string) {
-    const tsConfigFile = providedTsConfigPath ?? (await selectTsConfigFile());
+    const tsConfigFile = providedTsConfigPath ?? selectTsConfigFile();
     const tsConfigPath = path.join(process.cwd(), tsConfigFile);
     if (!fs.existsSync(tsConfigPath)) {
         throw new Error('No tsconfig.json found in current directory');
@@ -44,7 +41,65 @@ export async function getTsMorphProject(options: ProjectOptions = {}, providedTs
         ...options,
     });
     project.enableLogging(false);
-    return { project, tsConfigPath };
+
+    const { vendureTsConfig, rootTsConfig, isMonorepo } = detectTsConfigPaths(tsConfigPath, project);
+
+    return { project, tsConfigPath, vendureTsConfig, rootTsConfig, isMonorepo };
+}
+
+/**
+ * Detects whether we're in a monorepo setup and returns the appropriate tsconfig paths.
+ * In a regular repo, vendureTsConfig and rootTsConfig will be the same.
+ * In a monorepo, vendureTsConfig points to the package-level config (e.g., packages/backend/tsconfig.json)
+ * and rootTsConfig points to the root-level config.
+ */
+function detectTsConfigPaths(
+    currentTsConfigPath: string,
+    project: Project,
+): {
+    vendureTsConfig: string;
+    rootTsConfig: string;
+    isMonorepo: boolean;
+} {
+    const packageJson = new PackageJson(project);
+
+    // Find vendure package.json (this handles monorepo search automatically)
+    const vendurePackageJsonPath = packageJson.locatePackageJsonWithVendureDependency();
+
+    if (!vendurePackageJsonPath) {
+        // Couldn't find vendure package, use current tsconfig
+        return {
+            vendureTsConfig: currentTsConfigPath,
+            rootTsConfig: currentTsConfigPath,
+            isMonorepo: false,
+        };
+    }
+
+    const vendureDir = path.dirname(vendurePackageJsonPath);
+
+    // Find vendure tsconfig (in the same dir as vendure package.json)
+    const vendureTsConfig = findTsConfigInDir(vendureDir) || currentTsConfigPath;
+
+    // Detect if we're in a monorepo by checking if vendureDir is nested under a packages/apps/libs structure
+    const monorepoInfo = detectMonorepoStructure(vendureDir);
+
+    if (!monorepoInfo.isMonorepo || !monorepoInfo.root) {
+        // Not in a monorepo structure, regular mode
+        return {
+            vendureTsConfig,
+            rootTsConfig: vendureTsConfig,
+            isMonorepo: false,
+        };
+    }
+
+    // Find root tsconfig
+    const rootTsConfig = findTsConfigInDir(monorepoInfo.root) || vendureTsConfig;
+
+    return {
+        vendureTsConfig,
+        rootTsConfig,
+        isMonorepo: true,
+    };
 }
 
 export function getPluginClasses(project: Project) {

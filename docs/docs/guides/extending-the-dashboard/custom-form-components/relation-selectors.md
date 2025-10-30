@@ -451,7 +451,7 @@ import {
     ActiveCustomerSelectorComponent,
 } from './components';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     detailForms: [
         {
             pageId: 'product-detail',

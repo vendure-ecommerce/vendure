@@ -14,6 +14,7 @@ export const productsPercentageDiscount = new PromotionItemAction({
             ui: {
                 component: 'number-form-input',
                 suffix: '%',
+                min: 0,
             },
         },
         productVariantIds: {

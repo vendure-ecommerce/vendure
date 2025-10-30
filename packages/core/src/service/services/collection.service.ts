@@ -609,6 +609,7 @@ export class CollectionService implements OnModuleInit {
         await this.triggerApplyFiltersJob(ctx, {
             collectionIds: [target.id],
         });
+        await this.eventBus.publish(new CollectionEvent(ctx, target, 'updated'));
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 

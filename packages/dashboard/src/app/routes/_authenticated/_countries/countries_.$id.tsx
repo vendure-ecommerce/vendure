@@ -18,7 +18,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { countryDetailDocument, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries_/$id'
         pageId,
         queryDocument: countryDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/countries', label: 'Countries' },
+            { path: '/countries', label: <Trans>Countries</Trans> },
             isNew ? <Trans>New country</Trans> : entity?.name,
         ],
     }),
@@ -42,7 +42,7 @@ function CountryDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,14 +61,14 @@ function CountryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated country'));
+            toast(creatingNewEntity ? t`Successfully created country` : t`Successfully updated country`);
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update country'), {
+            toast(creatingNewEntity ? t`Failed to create country` : t`Failed to update country`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -84,7 +84,7 @@ function CountryDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

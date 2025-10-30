@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendurePlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="163" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="164" packageName="@vendure/core" />
 
 The VendurePlugin decorator is a means of configuring and/or extending the functionality of the Vendure server. A Vendure plugin is
 a [Nestjs Module](https://docs.nestjs.com/modules), with optional additional metadata defining things like extensions to the GraphQL API, custom

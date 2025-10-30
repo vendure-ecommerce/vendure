@@ -1,9 +1,15 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderChartDataQuery = graphql(`
-    query GetOrderChartData($refresh: Boolean, $types: [MetricType!]!) {
-        metricSummary(input: { interval: Daily, types: $types, refresh: $refresh }) {
-            interval
+    query GetOrderChartData(
+        $refresh: Boolean
+        $types: [DashboardMetricType!]!
+        $startDate: DateTime!
+        $endDate: DateTime!
+    ) {
+        dashboardMetricSummary(
+            input: { types: $types, refresh: $refresh, startDate: $startDate, endDate: $endDate }
+        ) {
             type
             entries {
                 label

@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 import { Select, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 
@@ -14,9 +14,9 @@ export interface DataTableBooleanFilterProps {
 export const BOOLEAN_OPERATORS = ['eq', 'isNull'] as const;
 
 export function DataTableBooleanFilter({
-    value: incomingValue,
-    onChange,
-}: Readonly<DataTableBooleanFilterProps>) {
+                                           value: incomingValue,
+                                           onChange,
+                                       }: Readonly<DataTableBooleanFilterProps>) {
     const initialOperator = incomingValue ? (Object.keys(incomingValue)[0] ?? 'eq') : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : true;
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');

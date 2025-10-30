@@ -2,27 +2,52 @@
 
 import { format } from 'date-fns';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/vdb/components/ui/button.js';
 import { Calendar } from '@/vdb/components/ui/calendar.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { ScrollArea, ScrollBar } from '@/vdb/components/ui/scroll-area.js';
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { CalendarClock } from 'lucide-react';
+import type { Locale } from 'date-fns/locale';
+import { CalendarClock, X } from 'lucide-react';
 
-export interface DateTimeInputProps {
-    value: Date | string | undefined;
-    onChange: (value: Date) => void;
+/**
+ * @description
+ * Returns a `Locale` object that can be passed to the react-day-picker
+ * `locale` prop.
+ */
+export function useDayPickerLocale() {
+    const { bcp47Tag } = useDisplayLocale();
+    const [calendarLocale, setCalendarLocale] = useState<Locale | undefined>(undefined);
+    useEffect(() => {
+        import('react-day-picker/locale').then(mod => {
+            setCalendarLocale(bcpTagToDatePickerLocale(bcp47Tag, mod));
+        });
+    }, [bcp47Tag]);
+    return calendarLocale;
 }
 
-export function DateTimeInput(props: DateTimeInputProps) {
-    const date = props.value && props.value instanceof Date ? props.value.toISOString() : (props.value ?? '');
+/**
+ * @description
+ * A component for selecting a date and time.
+ *
+ * @docsCategory form-components
+ * @docsPage DateTimeInput
+ */
+export function DateTimeInput({ value, onChange, fieldDef }: Readonly<DashboardFormComponentProps>) {
+    const readOnly = isReadonlyField(fieldDef);
+    const locale = useDayPickerLocale();
+    const date = value && value instanceof Date ? value.toISOString() : (value ?? '');
     const [isOpen, setIsOpen] = React.useState(false);
 
     const hours = Array.from({ length: 12 }, (_, i) => i + 1);
     const handleDateSelect = (selectedDate: Date | undefined) => {
         if (selectedDate) {
-            props.onChange(selectedDate);
+            onChange(selectedDate.toISOString());
         }
     };
 
@@ -37,28 +62,44 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 const currentHours = newDate.getHours();
                 newDate.setHours(value === 'PM' ? currentHours + 12 : currentHours - 12);
             }
-            props.onChange(newDate);
+            onChange(newDate.toISOString());
         }
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={readOnly ? undefined : setIsOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !date && 'text-muted-foreground',
-                    )}
-                >
-                    <CalendarClock className="mr-2 h-4 w-4" />
-                    {date ? format(date, 'MM/dd/yyyy hh:mm aa') : <span>MM/DD/YYYY hh:mm aa</span>}
-                </Button>
+                <div className="flex items-center">
+                    <Button
+                        variant="outline"
+                        disabled={readOnly}
+                        className={cn(
+                            'w-full justify-start text-left font-normal shadow-xs',
+                            date ? 'rounded-r-none' : 'text-muted-foreground',
+                        )}
+                    >
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        {date ? format(date, 'MM/dd/yyyy hh:mm aa') : <span>MM/DD/YYYY hh:mm aa</span>}
+                    </Button>
+                    {date ? (
+                        <Button
+                            variant="outline"
+                            className="rounded-l-none border-l-0"
+                            onClick={e => {
+                                e.stopPropagation();
+                                onChange(null);
+                            }}
+                        >
+                            <X />
+                        </Button>
+                    ) : null}
+                </div>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
                 <div className="sm:flex">
                     <Calendar
                         mode="single"
+                        locale={locale}
                         selected={new Date(date)}
                         onSelect={handleDateSelect}
                         initialFocus
@@ -130,4 +171,22 @@ export function DateTimeInput(props: DateTimeInputProps) {
             </PopoverContent>
         </Popover>
     );
+}
+
+function bcpTagToDatePickerLocale(
+    tag: string,
+    module: typeof import('react-day-picker/locale'),
+): Locale | undefined {
+    switch (tag) {
+        case 'zh-Hans':
+            return module.zhCN;
+        case 'zh-Hant':
+            return module.zhTW;
+        case 'pt-BR':
+            return module.ptBR;
+        default: {
+            const lang = tag.split('-').at(0);
+            return lang ? module[lang as keyof typeof module] : undefined;
+        }
+    }
 }

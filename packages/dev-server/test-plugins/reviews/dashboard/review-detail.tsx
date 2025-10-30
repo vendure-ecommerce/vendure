@@ -30,13 +30,6 @@ const reviewDetailDocument = graphql(`
                 id
                 languageCode
                 text
-                customFields {
-                    reviewerName
-                }
-            }
-            customFields {
-                verifiedReviewerName
-                reviewerName
             }
         }
     }

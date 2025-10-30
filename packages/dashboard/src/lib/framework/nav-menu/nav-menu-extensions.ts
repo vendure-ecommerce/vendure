@@ -5,19 +5,58 @@ import { globalRegistry } from '../registry/global-registry.js';
 // Define the placement options for navigation sections
 export type NavMenuSectionPlacement = 'top' | 'bottom';
 
-interface NavMenuBaseItem {
+/**
+ * @description
+ * Defines an items in the navigation menu.
+ *
+ * @docsCategory extensions-api
+ * @docsPage Navigation
+ * @since 3.4.0
+ */
+interface NavMenuItem {
+    /**
+     * @description
+     * A unique ID for this nav menu item
+     */
     id: string;
+    /**
+     * @description
+     * The title that will appear in the nav menu
+     */
     title: string;
-    icon?: LucideIcon;
-    order?: number;
-    placement?: NavMenuSectionPlacement;
-}
-
-export interface NavMenuItem extends NavMenuBaseItem {
+    /**
+     * @description
+     * The url of the route which this nav item links to.
+     */
     url: string;
+    /**
+     * @description
+     * An optional icon component to represent the item,
+     * which should be imported from `lucide-react`.
+     */
+    icon?: LucideIcon;
+    /**
+     * @description
+     * The order is an number which allows you to control
+     * the relative position in relation to other items in the
+     * menu.
+     * A higher number appears further down the list.
+     */
+    order?: number;
+    /**
+     * Whether this item should appear in the top of bottom section
+     * of the nav menu.
+     */
+    placement?: NavMenuSectionPlacement;
+    /**
+     * @description
+     * This can be used to restrict the menu item to the given
+     * permission or permissions.
+     */
+    requiresPermission?: string | string[];
 }
 
-export interface NavMenuSection extends NavMenuBaseItem {
+export interface NavMenuSection extends Omit<NavMenuItem, 'url'> {
     defaultOpen?: boolean;
     items?: NavMenuItem[];
 }

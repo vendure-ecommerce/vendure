@@ -31,6 +31,7 @@ import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifi
 import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
+import { SlugStrategy } from './entity/slug-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -54,6 +55,7 @@ import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { RefundProcess } from './refund/refund-process';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
@@ -191,6 +193,14 @@ export interface ApiOptions {
     middleware?: Middleware[];
     /**
      * @description
+     * Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
+     *
+     * @default false
+     * @since 3.4.0
+     */
+    trustProxy?: TrustProxyOptions;
+    /**
+     * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
      * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
      *
@@ -221,6 +231,18 @@ export interface ApiOptions {
      */
     introspection?: boolean;
 }
+
+/**
+ * @description
+ * Configures Express trust proxy settings when running behind a reverse proxy (usually the case with most hosting services).
+ * Setting `trustProxy` allows you to retrieve the original IP address from the `X-Forwarded-For` header.
+ *
+ * See the [express documentation](https://expressjs.com/en/guide/behind-proxies.html) for more details.
+ *
+ * @docsCategory configuration
+ * @since 3.4.0
+ */
+export type TrustProxyOptions = boolean | number | string | string[] | ((ip: string) => boolean);
 
 /**
  * @description
@@ -1091,6 +1113,15 @@ export interface EntityOptions {
      * @default []
      */
     metadataModifiers?: EntityMetadataModifier[];
+    /**
+     * @description
+     * Defines the strategy for generating slugs from input strings.
+     * Slugs are URL-friendly versions of text commonly used for entity identifiers in URLs.
+     *
+     * @since 3.5.0
+     * @default DefaultSlugStrategy
+     */
+    slugStrategy?: SlugStrategy;
 }
 
 /**
@@ -1167,6 +1198,16 @@ export interface VendureConfig {
      * @default {}
      */
     customFields?: CustomFields;
+    /**
+     * @description
+     * Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
+     * and via the {@link SettingsStoreService}. These differ from custom fields in that they are not associated
+     * with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
+     * require any changes to the database schema.
+     *
+     * @since 3.4.0
+     */
+    settingsStoreFields?: SettingsStoreFields;
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.

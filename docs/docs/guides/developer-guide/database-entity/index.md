@@ -123,65 +123,14 @@ The full list of TypeORM decorators can be found in the [TypeORM decorator refer
 
 Once you have defined a new DB entity, it is likely that you want to expose it in your GraphQL API. Here's how to [define a new type in your GraphQL API](/guides/developer-guide/extend-graphql-api/#defining-a-new-type).
 
+## Supporting translations
+
+In case you'd like to make the `ProductReview` entity support content in multiple languages, here's how to [implement the `Translatable` Interface](/guides/developer-guide/translatable).
+
+## Supporting channels
+
+In case you'd like to support separate `ProductReview` entities per Channel, here's how to [implement the `ChannelAware` Interface](/guides/developer-guide/channel-aware).
+
 ## Supporting custom fields
 
-From Vendure v2.2, it is possible to add support for [custom fields](/guides/developer-guide/custom-fields/) to your custom entities. This
-is useful when you are defining a custom entity as part of a plugin which is intended to be used by other developers. For example, a plugin
-which defines a new entity for storing product reviews might want to allow the developer to add custom fields to the review entity.
-
-First you need to update your entity class to implement the `HasCustomFields` interface, and provide an empty class
-which will be used to store the custom field values:
-
-```ts title="src/plugins/reviews/entities/product-review.entity.ts"
-import {
-    DeepPartial,
-    HasCustomFields,
-    Product,
-    VendureEntity,
-} from '@vendure/core';
-import { Column, Entity, ManyToOne } from 'typeorm';
-
-// highlight-next-line
-export class CustomProductReviewFields {}
-
-@Entity()
-// highlight-next-line
-export class ProductReview extends VendureEntity implements HasCustomFields {
-    constructor(input?: DeepPartial<ProductReview>) {
-        super(input);
-    }
-
-    // highlight-start
-    @Column(type => CustomProductReviewFields)
-    customFields: CustomProductReviewFields;
-    // highlight-end
-    
-    @ManyToOne(type => Product)
-    product: Product;
-
-    @EntityId()
-    productId: ID;
-
-    @Column()
-    text: string;
-
-    @Column()
-    rating: number;
-}
-```
-
-Now you'll be able to add custom fields to the `ProductReview` entity via the VendureConfig:
-
-```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-
-export const config: VendureConfig = {
-    // ...
-    customFields: {
-        ProductReview: [
-            { name: 'reviewerName', type: 'string' },
-            { name: 'reviewerLocation', type: 'string' },
-        ],
-    },
-};
-```
+Just like you can extend Vendures native entities like `Product` to support your custom needs, you may enable other developers to extend your custom entities too! Here's how to [implement the `HasCustomFields` Interface](/guides/developer-guide/has-custom-fields).

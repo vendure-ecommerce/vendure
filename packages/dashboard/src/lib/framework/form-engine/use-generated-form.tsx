@@ -9,14 +9,35 @@ import { getOperationVariablesFields } from '../document-introspection/get-docum
 import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
 import { removeEmptyIdFields, transformRelationFields } from './utils.js';
 
+/**
+ * @description
+ * Options for the useGeneratedForm hook.
+ *
+ * @docsCategory detail-views
+ * @docsPage useGeneratedForm
+ * @since 3.3.0
+ */
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
     VarName extends keyof VariablesOf<T> | undefined = 'input',
     E extends Record<string, any> = Record<string, any>,
 > {
+    /**
+     * @description
+     * The document to use to generate the form.
+     */
     document?: T;
+    /**
+     * @description
+     * The name of the variable to use in the document.
+     */
     varName?: VarName;
+    /**
+     * @description
+     * The entity to use to generate the form.
+     */
     entity: E | null | undefined;
+    customFieldConfig?: any[]; // Add custom field config for validation
     setValues: (
         entity: NonNullable<E>,
     ) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
@@ -31,19 +52,49 @@ export interface GeneratedFormOptions<
  * It will create a form with the fields defined in the document's input type.
  * It will also create a submit handler that will submit the form to the server.
  *
+ * This hook is mostly used internally by the higher-level {@link useDetailPage} hook,
+ * but can in some cases be useful to use directly.
+ *
+ * @example
+ * ```tsx
+ * const { form, submitHandler } = useGeneratedForm({
+ *  document: setDraftOrderCustomFieldsDocument,
+ *  varName: undefined,
+ *  entity: entity,
+ *  setValues: entity => {
+ *    return {
+ *      orderId: entity.id,
+ *      input: {
+ *        customFields: entity.customFields,
+ *      },
+ *    };
+ *  },
+ * });
+ * ```
+ *
+ * @docsCategory detail-views
+ * @docsPage useGeneratedForm
+ * @since 3.3.0
+ * @docsWeight 0
  */
 export function useGeneratedForm<
     T extends TypedDocumentNode<any, any>,
     VarName extends keyof VariablesOf<T> | undefined,
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
-    const { document, entity, setValues, onSubmit, varName } = options;
+    const { document, entity, setValues, onSubmit, varName, customFieldConfig } = options;
     const { activeChannel } = useChannel();
-    const availableLanguages = useServerConfig()?.availableLanguages || [];
+    const serverConfig = useServerConfig();
+    const availableLanguages = serverConfig?.availableLanguages || [];
     const updateFields = document ? getOperationVariablesFields(document, varName) : [];
-    const schema = createFormSchemaFromFields(updateFields);
+
+    const schema = createFormSchemaFromFields(updateFields, customFieldConfig);
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
+
+    const values = processedEntity
+        ? transformRelationFields(updateFields, setValues(processedEntity))
+        : defaultValues;
 
     const form = useForm({
         resolver: async (values, context, options) => {
@@ -55,15 +106,24 @@ export function useGeneratedForm<
         },
         mode: 'onChange',
         defaultValues,
-        values: processedEntity
-            ? transformRelationFields(updateFields, setValues(processedEntity))
-            : defaultValues,
+        values,
     });
-    let submitHandler = (event: FormEvent) => {
+    let submitHandler = (event: FormEvent): any => {
         event.preventDefault();
     };
     if (onSubmit) {
-        submitHandler = (event: FormEvent) => {
+        submitHandler = async (event: FormEvent) => {
+            event.preventDefault();
+
+            // Trigger validation on ALL fields, not just dirty ones
+            const isValid = await form.trigger();
+
+            if (!isValid) {
+                console.log(`Form invalid!`);
+                event.stopPropagation();
+                return;
+            }
+
             const onSubmitWrapper = (values: any) => {
                 onSubmit(removeEmptyIdFields(values, updateFields));
             };

@@ -40,11 +40,11 @@ export class NodemailerEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
     private _sesTransport: Mail | undefined;
-    private isNew(transport: Mail, options: EmailTransportOptions, ){
+    private isNew(transport: Mail, options: EmailTransportOptions) {
         try {
-        return  JSON.stringify(transport?.options) !== JSON.stringify(options)
-        } catch (error:any) {
-            Logger.error( format(error.message), loggerCtx);
+            return JSON.stringify(transport?.options) !== JSON.stringify(options);
+        } catch (error: any) {
+            Logger.error(format(error.message), loggerCtx);
             return false;
         }
     }
@@ -83,9 +83,7 @@ export class NodemailerEmailSender implements EmailSender {
     }
 
     private getSmtpTransport(options: SMTPTransportOptions) {
-        if (!this._smtpTransport ||
-            this.isNew(this._smtpTransport, options)
-        ) {
+        if (!this._smtpTransport || this.isNew(this._smtpTransport, options)) {
             (options as any).logger = options.logging ? this.createLogger() : false;
             this._smtpTransport = createTransport(options);
         }
@@ -93,17 +91,16 @@ export class NodemailerEmailSender implements EmailSender {
     }
 
     private getSesTransport(options: SESTransportOptions) {
-        if (!this._sesTransport ||
-           this.isNew(this._sesTransport,options)
-        ) {
+        if (!this._sesTransport || this.isNew(this._sesTransport, options)) {
             this._sesTransport = createTransport(options);
         }
         return this._sesTransport;
     }
 
     private getSendMailTransport(options: SendmailTransportOptions) {
-        if (!this._sendMailTransport ||
-           this.isNew(this._sendMailTransport, { sendmail: true, ...options } as any)
+        if (
+            !this._sendMailTransport ||
+            this.isNew(this._sendMailTransport, { sendmail: true, ...options } as any)
         ) {
             this._sendMailTransport = createTransport({ sendmail: true, ...options });
         }

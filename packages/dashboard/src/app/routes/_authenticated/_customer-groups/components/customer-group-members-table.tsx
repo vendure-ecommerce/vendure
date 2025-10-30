@@ -7,7 +7,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
@@ -46,19 +46,19 @@ export function CustomerGroupMembersTable({
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
 
     const { mutate: addCustomerToGroup } = useMutation({
         mutationFn: api.mutate(addCustomerToGroupDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Customer added to group'));
+            toast.success(t`Customer added to group`);
             queryClient.invalidateQueries({
                 queryKey: [PaginatedListDataTableKey, customerGroupMemberListDocument],
             });
         },
         onError: () => {
-            toast.error(i18n.t('Failed to add customer to group'));
+            toast.error(t`Failed to add customer to group`);
         },
     });
 

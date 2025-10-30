@@ -10,6 +10,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 
 
+## AddItemInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">AddItemInput</span> &#123;</div>
+<div class="graphql-code-line ">productVariantId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+
+<div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## AuthenticationInput
 
 <div class="graphql-code-block">

@@ -102,7 +102,7 @@ Another option, if you wish to stick with integer IDs, is to create a custom [En
 
 ## Database Timezone
 
-Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Admin UI as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
+Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Dashboard as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
 
 You can check the timezone in **MySQL/MariaDB** by executing:
 
@@ -116,6 +116,24 @@ In **Postgres**, you can execute:
 show timezone;
 ```
 and you should expect to see `UTC` or `Etc/UTC`.
+
+## Trust proxy
+
+When deploying your Vendure application behind a reverse proxy (usually the case with most hosting services), consider configuring Express's `trust proxy` setting. This allows you to retrieve the original IP address from the `X-Forwarded-For` header, which proxies use to forward the client's IP address.
+
+You can set the `trustProxy` option in your `VendureConfig`:
+
+```ts
+import { VendureConfig } from '@vendure/core';
+
+export const config: VendureConfig = {
+    apiOptions: {
+        trustProxy: 1, // Trust the first proxy in front of your app
+    },
+};
+```
+
+For more details on configuring `trust proxy`, refer to the [Express documentation](https://expressjs.com/en/guide/behind-proxies.html).
 
 ## Security Considerations
 

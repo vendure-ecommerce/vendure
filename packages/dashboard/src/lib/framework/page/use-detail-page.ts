@@ -1,4 +1,4 @@
-import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
+import { removeReadonlyAndLocalizedCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -37,9 +37,9 @@ const NEW_ENTITY_ID = '__NEW__';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Options used to configure the result of the `useDetailPage` hook.
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @since 3.3.0
  */
@@ -148,9 +148,8 @@ export type DetailPageEntity<
 
 /**
  * @description
- * **Status: Developer Preview**
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @since 3.3.0
  */
@@ -231,7 +230,7 @@ export interface UseDetailPageResult<
  * });
  * ```
  *
- * @docsCategory hooks
+ * @docsCategory detail-views
  * @docsPage useDetailPage
  * @docsWeight 0
  * @since 3.3.0
@@ -307,10 +306,10 @@ export function useDetailPage<
         document,
         varName: 'input',
         entity,
+        customFieldConfig,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
-            // Filter out readonly custom fields before submitting
-            const filteredValues = removeReadonlyCustomFields(values, customFieldConfig || []);
+            const filteredValues = removeReadonlyAndLocalizedCustomFields(values, customFieldConfig || []);
 
             if (isNew) {
                 const finalInput = transformCreateInput?.(filteredValues) ?? filteredValues;

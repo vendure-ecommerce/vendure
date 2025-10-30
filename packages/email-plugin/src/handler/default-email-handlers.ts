@@ -31,8 +31,13 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
     .loadData(async ({ event, injector }) => {
+        const entityHydrator = injector.get(EntityHydrator);
+        await entityHydrator.hydrate(event.ctx, event.order, {
+            relations: ['lines.featuredAsset', 'shippingLines.shippingMethod'],
+        });
+
         transformOrderLineAssetUrls(event.ctx, event.order, injector);
-        const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);
+        const shippingLines = shippingLinesWithMethod(event.order);
         return { shippingLines };
     })
     .setRecipient(event => event.order.customer!.emailAddress)
@@ -113,24 +118,16 @@ export function transformOrderLineAssetUrls(ctx: RequestContext, order: Order, i
 
 /**
  * @description
- * Ensures that the ShippingLines are hydrated so that we can use the
+ * Ensures that the ShippingLines have a shippingMethod so that we can use the
  * `shippingMethod.name` property in the email template.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email utils
  */
-export async function hydrateShippingLines(
-    ctx: RequestContext,
-    order: Order,
-    injector: Injector,
-): Promise<ShippingLine[]> {
+export function shippingLinesWithMethod(order: Order): ShippingLine[] {
     const shippingLines: ShippingLine[] = [];
-    const entityHydrator = injector.get(EntityHydrator);
 
     for (const line of order.shippingLines || []) {
-        await entityHydrator.hydrate(ctx, line, {
-            relations: ['shippingMethod'],
-        });
         if (line.shippingMethod) {
             shippingLines.push(line);
         }

@@ -117,6 +117,7 @@ import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { isForeignKeyViolationError } from '../helpers/utils/db-errors';
 import { getOrdersFromLines, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -504,7 +505,7 @@ export class OrderService {
         order = patchEntity(order, { customFields });
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, updatedOrder);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', { customFields }));
         return updatedOrder;
     }
 
@@ -538,7 +539,7 @@ export class OrderService {
         }
 
         const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', targetCustomer));
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId,
@@ -781,11 +782,24 @@ export class OrderService {
                 }
             }
             if (customFields != null) {
-                orderLine.customFields = customFields;
+                // Merge custom fields instead of replacing them entirely
+                // This preserves existing values while allowing updates and null-based unsetting
+                const existingCustomFields = orderLine.customFields || {};
+                const mergedCustomFields = { ...existingCustomFields } as any;
+
+                for (const [key, value] of Object.entries(customFields)) {
+                    if (value !== undefined) {
+                        // Update with the new value (including explicit null to unset)
+                        mergedCustomFields[key] = value;
+                    }
+                    // If value is undefined, preserve the existing value (don't set it)
+                }
+
+                orderLine.customFields = mergedCustomFields;
                 await this.customFieldRelationService.updateRelations(
                     ctx,
                     OrderLine,
-                    { customFields },
+                    { customFields: mergedCustomFields },
                     orderLine,
                 );
             }
@@ -1876,7 +1890,38 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            await this.deleteOrder(ctx, orderToDelete);
+            try {
+                // Separate transaction to isolate foreign key failure, so it doesn't roll back the entire outer transaction
+                await this.connection.withTransaction(ctx, async innerCtx => {
+                    await this.deleteOrder(innerCtx, orderToDelete);
+                });
+            } catch (e: any) {
+                if (!isForeignKeyViolationError(e)) throw e;
+                if (!order)
+                    throw new Error(
+                        `Cannot complete order merge: active order not found, while cancelling order ${orderToDelete.id}`,
+                    );
+
+                // If the order has a foreign key violation (e.g. with cancelled payments),
+                // instead of deleting it we cancel the order and leave a note with an explanation.
+                // This way the previous order and all its information are preserved.
+                await this.cancelOrder(ctx, { orderId: orderToDelete.id });
+
+                const note = [
+                    'This order was cancelled during user sign-in because merging with the active order was not possible.',
+                    `The active order is ${order.code}. This order has been preserved for reference.`,
+                ].join(' ');
+
+                await this.historyService.createHistoryEntryForOrder(
+                    {
+                        ctx,
+                        orderId: orderToDelete.id,
+                        type: HistoryEntryType.ORDER_NOTE,
+                        data: { note },
+                    },
+                    false,
+                );
+            }
         }
         if (order && linesToDelete) {
             const orderId = order.id;
@@ -2079,6 +2124,7 @@ export class OrderService {
                     'sellerOrders',
                     'customer',
                     'modifications',
+                    'customFields',
                 ]),
                 {
                     reload: false,

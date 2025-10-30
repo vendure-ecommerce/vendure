@@ -41,3 +41,14 @@ export const jobQueueListDocument = graphql(`
         }
     }
 `);
+
+export const cancelJobDocument = graphql(
+    `
+        mutation CancelJob($jobId: ID!) {
+            cancelJob(jobId: $jobId) {
+                ...JobInfo
+            }
+        }
+    `,
+    [jobInfoFragment],
+);

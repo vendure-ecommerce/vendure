@@ -1,10 +1,11 @@
 import { BooleanDisplayBadge } from '@/vdb/components/data-display/boolean.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import {
@@ -13,7 +14,7 @@ import {
     DuplicatePromotionsBulkAction,
     RemovePromotionsFromChannelBulkAction,
 } from './components/promotion-bulk-actions.js';
-import { deletePromotionDocument, promotionListDocument } from './promotions.graphql.js';
+import { promotionListDocument } from './promotions.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
     component: PromotionListPage,
@@ -25,9 +26,8 @@ function PromotionListPage() {
         <ListPage
             pageId="promotion-list"
             listQuery={promotionListDocument}
-            deleteMutation={deletePromotionDocument}
             route={Route}
-            title="Promotions"
+            title={<Trans>Promotions</Trans>}
             defaultVisibility={{
                 name: true,
                 couponCode: true,
@@ -41,14 +41,23 @@ function PromotionListPage() {
                     couponCode: { contains: searchTerm },
                 };
             }}
+            transformVariables={variables => {
+                return {
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR' as const,
+                    },
+                };
+            }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: 'Enabled',
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
+                },
+                description: {
+                    cell: RichTextDescriptionCell,
                 },
             }}
             bulkActions={[

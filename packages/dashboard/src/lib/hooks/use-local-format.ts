@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { useDisplayLocale } from './use-display-locale.js';
 import { useServerConfig } from './use-server-config.js';
 
 /**
@@ -26,7 +27,8 @@ import { useServerConfig } from './use-server-config.js';
 export function useLocalFormat() {
     const { moneyStrategyPrecision } = useServerConfig() ?? { moneyStrategyPrecision: 2 };
     const precisionFactor = useMemo(() => Math.pow(10, moneyStrategyPrecision), [moneyStrategyPrecision]);
-    const locale = 'en';
+    const { bcp47Tag } = useDisplayLocale();
+    const locale = bcp47Tag;
 
     const toMajorUnits = useCallback(
         (value: number): number => {
@@ -77,15 +79,30 @@ export function useLocalFormat() {
             if (diffSeconds < 60) {
                 return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'seconds');
             } else if (diffSeconds < 3600) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'minutes');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 60) * -1),
+                    'minutes',
+                );
             } else if (diffSeconds < 86400) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'hours');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 3600) * -1),
+                    'hours',
+                );
             } else if (diffSeconds < 2592000) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'days');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 86400) * -1),
+                    'days',
+                );
             } else if (diffSeconds < 31536000) {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'months');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 2592000) * -1),
+                    'months',
+                );
             } else {
-                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'years');
+                return new Intl.RelativeTimeFormat(locale, options).format(
+                    Math.floor((diffSeconds / 31536000) * -1),
+                    'years',
+                );
             }
         },
         [locale],
@@ -97,6 +114,17 @@ export function useLocalFormat() {
                 return (
                     new Intl.DisplayNames([locale], { type: 'language' }).of(value.replace('_', '-')) ?? value
                 );
+            } catch (e: any) {
+                return value;
+            }
+        },
+        [locale],
+    );
+
+    const formatRegionName = useCallback(
+        (value: string): string => {
+            try {
+                return new Intl.DisplayNames([locale], { type: 'region' }).of(value) ?? value;
             } catch (e: any) {
                 return value;
             }
@@ -139,6 +167,7 @@ export function useLocalFormat() {
         formatDate,
         formatRelativeDate,
         formatLanguageName,
+        formatRegionName,
         formatCurrencyName,
         toMajorUnits,
         toMinorUnits,

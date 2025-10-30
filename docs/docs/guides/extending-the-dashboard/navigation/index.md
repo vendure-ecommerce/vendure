@@ -11,7 +11,7 @@ The simplest way to add navigation is to add menu items to existing sections. Th
 ```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     routes: [
         {
             path: '/my-custom-page',
@@ -41,6 +41,12 @@ The dashboard comes with several built-in sections:
 - **`marketing`** - For promotions and marketing tools
 - **`settings`** - For configuration and admin settings
 
+### Finding Section IDs & Ordering
+
+You can find the available IDs & their order value for all navigation sections and items using [Dev mode](/guides/extending-the-dashboard/extending-overview/#dev-mode):
+
+![Dev mode navigation ids](./dev-mode-nav.webp)
+
 ## Creating Custom Navigation Sections
 
 You can create entirely new navigation sections with their own icons and ordering:
@@ -49,7 +55,7 @@ You can create entirely new navigation sections with their own icons and orderin
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { FileTextIcon, SettingsIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     // Define custom navigation sections
     navSections: [
         {
@@ -90,31 +96,10 @@ export default defineDashboardExtension({
 });
 ```
 
-## Navigation Section Properties
+For documentation on all the configuration properties available, see the reference docs:
 
-### Required Properties
-
-- **`id`**: Unique identifier for the section
-- **`title`**: Display name shown in the navigation
-
-### Optional Properties
-
-- **`icon`**: Lucide React icon component to display next to the section title
-- **`order`**: Number controlling the position of the section within its placement area (lower numbers appear first)
-- **`placement`**: Either `'top'` or `'bottom'` - determines which area of the sidebar the section appears in
-
-## Navigation Item Properties
-
-### Required Properties
-
-- **`sectionId`**: ID of the section where this item should appear
-- **`id`**: Unique identifier for the menu item
-- **`title`**: Display text for the menu item
-
-### Optional Properties
-
-- **`url`**: Custom URL if different from the route path
-- **`icon`**: Icon for the individual menu item (rarely used as sections typically have icons)
+- [DashboardNavSectionDefinition](/reference/dashboard/extensions-api/navigation#dashboardnavsectiondefinition)
+- [NavMenuItem](/reference/dashboard/extensions-api/navigation#navmenuitem)
 
 ## Section Placement and Ordering
 
@@ -126,7 +111,7 @@ The navigation sidebar is divided into two areas:
 ### Placement Examples
 
 ```tsx
-export default defineDashboardExtension({
+defineDashboardExtension({
     navSections: [
         {
             id: 'reports',
@@ -177,6 +162,37 @@ This means if you want to add a section between Catalog and Sales in the top are
 If you don't specify a `placement`, sections default to `'top'` placement.
 :::
 
+## Unauthenticated Routes
+
+By default, all navigation is assumed to be for authenticated routes, i.e. the routes are only accessible to administrators
+who are logged in.
+
+Sometimes you want to make a certain route accessible to unauthenticated users. For example, you may want to implement
+a completely custom login page or a password recovery page, which must be accessible to everyone.
+
+This is done by setting `authenticated: false` in your route definition:
+
+```tsx
+import { defineDashboardExtension } from '@vendure/dashboard';
+
+defineDashboardExtension({
+    routes: [
+        {
+            path: '/public',
+            component: () => (
+                <div className="flex h-screen items-center justify-center text-2xl">This is a public page!</div>
+            ),
+            // highlight-next-line
+            authenticated: false
+        },
+    ]
+});
+```
+
+This page will then be accessible to all users at `http://localhost:4873/dashboard/public`
+
+![Unauthenticated page](./unauthenticated-page.webp)
+
 ## Complete Example
 
 Here's a comprehensive example showing how to create a complete navigation structure for a content management system:
@@ -185,7 +201,7 @@ Here's a comprehensive example showing how to create a complete navigation struc
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { FileTextIcon, ImageIcon, TagIcon, FolderIcon, SettingsIcon } from 'lucide-react';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     // Create custom navigation sections
     navSections: [
         {
@@ -304,15 +320,3 @@ Common icons for navigation sections:
 5. **Keep section counts reasonable**: Avoid creating too many sections as it can clutter the navigation
 6. **Use consistent naming**: Follow consistent patterns for menu item names within sections
    :::
-
-## Finding Existing Sections
-
-:::info Discovering Section IDs
-To see what navigation sections are available, you can:
-
-1. Enable [Dev Mode](/guides/extending-the-dashboard/getting-started/#dev-mode) in the dashboard
-2. Examine the navigation sidebar to see section IDs
-3. Look at other plugins' navigation configuration for examples
-   :::
-
-This gives you complete control over how your dashboard extensions integrate with the navigation system, allowing you to create a cohesive and well-organized user experience.

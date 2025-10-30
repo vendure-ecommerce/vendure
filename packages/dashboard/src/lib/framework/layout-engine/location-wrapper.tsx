@@ -1,12 +1,11 @@
 import { CopyableText } from '@/vdb/components/shared/copyable-text.js';
-import { Button } from '@/vdb/components/ui/button.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { CodeXmlIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { DevModeButton } from './dev-mode-button.js';
 
 // Singleton state for hover tracking
 let globalHoveredId: string | null = null;
@@ -74,10 +73,10 @@ export function LocationWrapper({ children, identifier }: Readonly<LocationWrapp
         return (
             <div
                 className={cn(
-                    `ring-2 transition-all delay-50 relative`,
+                    `ring-2 transition-all ring-offset-4 ring-offset-background delay-50 relative`,
                     isHovered || isPopoverOpen ? 'ring-dev-mode' : 'ring-transparent',
-                    isPageWrapper ? 'ring-inset' : '',
-                    identifier ? 'rounded-md' : 'rounded-xl',
+                    isPageWrapper ? 'ring-offset-8' : '',
+                    identifier ? 'rounded-md' : 'rounded',
                 )}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
@@ -87,13 +86,7 @@ export function LocationWrapper({ children, identifier }: Readonly<LocationWrapp
                 >
                     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                         <PopoverTrigger asChild>
-                            <Button
-                                variant="secondary"
-                                size="icon"
-                                className="h-8 w-8 rounded-full bg-dev-mode/10 hover:bg-dev-mode/20 border border-dev-mode/20 shadow-sm"
-                            >
-                                <CodeXmlIcon className="text-dev-mode w-4 h-4" />
-                            </Button>
+                            <DevModeButton />
                         </PopoverTrigger>
                         <PopoverContent className="w-48 p-3">
                             <div className="space-y-2">
