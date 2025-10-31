@@ -10,9 +10,9 @@ import { VendureEntity } from '../../../entity';
  * Check if the current entity has one or more self-referencing relations
  * to determine if it is a tree type or has tree relations.
  * @param metadata
- * @private
+ * @internal
  */
-function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
+export function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
     if (metadata.treeType !== undefined) {
         return true;
     }
