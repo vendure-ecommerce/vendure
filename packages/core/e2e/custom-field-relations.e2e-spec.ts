@@ -1463,8 +1463,6 @@ describe('Custom field relations', () => {
         });
     });
 
-    // Test for tree-relations-qb-joiner.ts fix
-    // Ensures self-referencing custom field relations don't trigger tree entity behavior
     describe('self-referencing Product custom fields', () => {
         it('set self-referencing cfProduct relation', async () => {
             const { updateProduct } = await adminClient.query(gql`

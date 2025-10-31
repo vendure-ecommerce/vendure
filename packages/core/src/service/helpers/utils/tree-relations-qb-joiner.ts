@@ -16,12 +16,15 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
     if (metadata.treeType !== undefined) {
         return true;
     }
-
     for (const relation of metadata.relations) {
         if (relation.isTreeParent || relation.isTreeChildren) {
             return true;
         }
-        if (relation.inverseEntityMetadata === metadata) {
+
+        // Skip custom field relations when determining if entity is a tree
+        const isCustomFieldRelation =
+            relation.propertyPath && relation.propertyPath.startsWith('customFields.');
+        if (relation.inverseEntityMetadata === metadata && !isCustomFieldRelation) {
             return true;
         }
     }
