@@ -22,8 +22,7 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
         }
 
         // Skip custom field relations when determining if entity is a tree
-        const isCustomFieldRelation =
-            relation.propertyPath && relation.propertyPath.startsWith('customFields.');
+        const isCustomFieldRelation = relation.propertyPath?.startsWith('customFields.');
         if (relation.inverseEntityMetadata === metadata && !isCustomFieldRelation) {
             return true;
         }
