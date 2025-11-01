@@ -55,6 +55,7 @@ export class ApiKeyService {
     ) {}
 
     /**
+     * @description
      * Returns the appropriate {@link ApiKeyAuthorizationOptions} based on the {@link ApiType}.
      * This is needed because the admin and shop ApiKey options may be configured differently.
      */
@@ -65,6 +66,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Checks that the active user is allowed to grant the specified Roles for an API-Key
      *
      * // TODO this is taken & slightly modified from adminservice, could merge to not repeat logic
@@ -94,12 +96,22 @@ export class ApiKeyService {
         return roles;
     }
 
+    /**
+     * @description
+     * Simple user identifier generation function because it is a non-nullable field on User.
+     *
+     * Because this simply appends the lookupId, some databases like MySQL/Maria may run into
+     * length issues if the lookupId has too many characters. Practically speaking this
+     * should not happen but worth to keep in mind.
+     *
+     * @internal
+     */
     private generateApiKeyUserIdentifier(lookupId: string): string {
-        // Too long identifiers could be an issue depending on the underlying DB
         return `apikey-user-${lookupId}`;
     }
 
     /**
+     * @description
      * Creates a new API-Key for the given User
      *
      * **Important**: The caller is responsible for avoiding privilege escalations by
@@ -174,6 +186,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Updates an API-Key. Is Channel-Aware.
      *
      * @throws {EntityNotFoundError} If API-Key cannot be found
@@ -213,6 +226,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Soft-Deletes an API-Key and removes its session. Is Channel-Aware.
      *
      * @throws {EntityNotFoundError} If API-Key cannot be found
@@ -248,6 +262,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Replaces the old with a new API-Key.
      *
      * This is a convenience method to invalidate an API-Key without
@@ -285,6 +300,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Is channel-/ and soft-delete aware, translates the entity as well.
      */
     async findOne(
@@ -301,6 +317,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Is channel-/ and soft-delete aware, translates the entity as well.
      */
     async findAll(
@@ -323,7 +340,9 @@ export class ApiKeyService {
     }
 
     /**
-     * Helper, intended for the AuthGuard to quickly find the ApiKeyHash
+     * @description
+     * Helper, intended for the AuthGuard to quickly find the ApiKeyHash.
+     * Does not return hash for a soft-deleted ApiKey.
      */
     async getHashByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<string | null> {
         const entity = await this.connection.rawConnection.getRepository(ApiKey).findOneBy({
@@ -334,6 +353,7 @@ export class ApiKeyService {
     }
 
     /**
+     * @description
      * Helper, intended for the AuthGuard to quickly update the lastUsedAt timestamp
      */
     async updateLastUsedAtByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<UpdateResult> {

@@ -146,23 +146,25 @@ export class AuthGuard implements CanActivate {
         hasOwnerPermission: boolean,
         apiKeyHashingStrategy: ApiKeyHashingStrategy,
     ): Promise<CachedSession | undefined> {
-        const sessionToken = (
-            await extractSessionToken(
-                req,
-                this.configService.authOptions.tokenMethod,
-                this.configService.authOptions.apiKeyHeaderKey,
-                this.configService.authOptions.apiKeyLookupHeaderKey,
-                this.apiKeyService,
-                apiKeyHashingStrategy,
-            )
-        )?.token;
+        const sessionToken = await extractSessionToken(
+            req,
+            this.configService.authOptions.tokenMethod,
+            this.configService.authOptions.apiKeyHeaderKey,
+            this.configService.authOptions.apiKeyLookupHeaderKey,
+            this.apiKeyService,
+            apiKeyHashingStrategy,
+        );
 
         let serializedSession: CachedSession | undefined;
         if (sessionToken) {
-            serializedSession = await this.sessionService.getSessionFromToken(sessionToken);
+            serializedSession = await this.sessionService.getSessionFromToken(sessionToken.token);
             if (serializedSession) {
                 return serializedSession;
             }
+            // TODO(Dan): If we cant find an associated session for a valid Apikey, it means the key is broken!
+            // For example someone could have deleted the session manually in the DB.
+            // Think about moving the hashing into here instead of extract session token
+
             // if there is a token but it cannot be validated to a Session,
             // then the token is no longer valid and should be unset.
             setSessionToken({
