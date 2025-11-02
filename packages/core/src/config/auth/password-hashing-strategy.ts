@@ -10,9 +10,9 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * configured via the `authOptions.passwordHashingStrategy` property of
  * your VendureConfig.
  *
- * Hashing for API-Keys can be configured via the {@link ApiKeyAuthorizationOptions},
- * more specifically `authOptions.adminApiKeyAuthorizationOptions.hashingStrategy` and
- * `authOptions.shopApiKeyAuthorizationOptions.hashingStrategy`.
+ * Hashing for API-Keys can be configured via the {@link ApiKeyStrategy},
+ * more specifically `authOptions.adminApiKeyStrategy.hashingStrategy` and
+ * `authOptions.shopApiKeyStrategy.hashingStrategy`.
  *
  * :::
  *

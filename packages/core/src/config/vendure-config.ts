@@ -12,7 +12,6 @@ import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-sto
 import { ScheduledTask } from '../scheduler/scheduled-task';
 import { SchedulerStrategy } from '../scheduler/scheduler-strategy';
 
-import { ApiKeyAuthorizationOptions } from './api-key-strategy/api-key-authentication-options';
 import { ApiKeyStrategy } from './api-key-strategy/api-key-strategy';
 import { AssetImportStrategy } from './asset-import-strategy/asset-import-strategy';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -505,17 +504,6 @@ export interface AuthOptions {
      * @since 1.3.0
      */
     passwordHashingStrategy?: PasswordHashingStrategy;
-    /**
-     * Defines how authorization via API-Keys is managed for the Admin API.
-     * // TODO(Dan): remove
-     * @since 3.6.0
-     */
-    adminApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
-    /**
-     * Defines how authorization via API-Keys is managed for the Shop API.
-     * @since 3.6.0
-     */
-    shopApiKeyAuthorizationOptions?: ApiKeyAuthorizationOptions;
     /**
      * Defines how authorization via API-Keys is managed for the Admin API.
      * @since 3.6.0

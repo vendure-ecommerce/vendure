@@ -63,7 +63,7 @@ export class BaseAuthResolver {
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
-        const apiKeyHashingStrategy = this.apiKeyService.getApiKeyAuthOptionsByApiType(
+        const apiKeyHashingStrategy = this.apiKeyService.getApiKeyStrategyByApiType(
             ctx.apiType,
         ).hashingStrategy;
 

@@ -20,6 +20,7 @@ import {
     UserInputError,
 } from '../../common';
 import { API_KEY_AUTH_STRATEGY_NAME, ConfigService, Logger } from '../../config';
+import { ApiKeyStrategy } from '../../config/api-key-strategy/api-key-strategy';
 import { TransactionalConnection } from '../../connection';
 import { AuthenticationMethod, Role, User } from '../../entity';
 import { ApiKeyTranslation } from '../../entity/api-key/api-key-translation.entity';
@@ -56,13 +57,13 @@ export class ApiKeyService {
 
     /**
      * @description
-     * Returns the appropriate {@link ApiKeyAuthorizationOptions} based on the {@link ApiType}.
-     * This is needed because the admin and shop ApiKey options may be configured differently.
+     * Returns the appropriate {@link ApiKeyStrategy} based on the {@link ApiType}.
+     * This is needed because the admin and shop ApiKeyStrategy may differ.
      */
-    getApiKeyAuthOptionsByApiType(apiType: ApiType) {
+    getApiKeyStrategyByApiType(apiType: ApiType): ApiKeyStrategy {
         return apiType === 'admin'
-            ? this.configService.authOptions.adminApiKeyAuthorizationOptions
-            : this.configService.authOptions.shopApiKeyAuthorizationOptions;
+            ? this.configService.authOptions.adminApiKeyStrategy
+            : this.configService.authOptions.shopApiKeyStrategy;
     }
 
     /**
@@ -136,7 +137,7 @@ export class ApiKeyService {
         const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
 
         const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
-        const authOptions = this.getApiKeyAuthOptionsByApiType(ctx.apiType);
+        const authOptions = this.getApiKeyStrategyByApiType(ctx.apiType);
         const lookupId = await authOptions.lookupIdStrategy.generateLookupId(ctx);
         const apiKeyUser = userIdApiKeyUser
             ? await this.connection.getEntityOrThrow(ctx, User, userIdApiKeyUser, {
@@ -278,7 +279,7 @@ export class ApiKeyService {
             relations: { user: { roles: { channels: true } } },
         });
 
-        const authOptions = this.getApiKeyAuthOptionsByApiType(ctx.apiType);
+        const authOptions = this.getApiKeyStrategyByApiType(ctx.apiType);
         const apiKey = await authOptions.generationStrategy.generateApiKey(ctx);
         const hash = await authOptions.hashingStrategy.hash(apiKey);
 
@@ -361,4 +362,22 @@ export class ApiKeyService {
             .getRepository(ApiKey)
             .update({ lookupId }, { lastUsedAt: new Date() });
     }
+
+    /**
+     * @description
+     * Helper, intended to repair "broken" API-Keys i.e. keys which have no associated Session.
+     * For example someone might accidently "clean up" (delete) old sessions manually, resulting in a broken API-Key.
+     * This could also happen when the hashing function changes.
+     */
+    // async assertHasSessionTODODODODO(ctx: RequestContext, apiKey: ApiKey): Promise<CachedSession | undefined> {
+    //     throw new Error("UNIMPLEMENTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+
+    //     return this.sessionService.getSessionFromToken(apiKey.apiKeyHash);
+    //     await this.sessionService.createNewAuthenticatedSession(
+    //         ctx,
+    //         apiKey.user,
+    //         API_KEY_AUTH_STRATEGY_NAME,
+    //         apiKey.apiKeyHash,
+    //     );
+    // }
 }
