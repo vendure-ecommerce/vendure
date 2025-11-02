@@ -33,11 +33,11 @@ export type ApiKeyStrategyParseResult = null | {
 export interface ApiKeyStrategy extends InjectableStrategy {
     /**
      * @description
-     * Generates an API-Key.
+     * Generates the API-Key secret which ultimately gets hashed and determines the session id.
      *
      * @since 3.6.0
      */
-    generateApiKey(ctx: RequestContext): Promise<string>;
+    generateSecret(ctx: RequestContext): Promise<string>;
 
     /**
      * @description
@@ -74,16 +74,34 @@ export interface ApiKeyStrategy extends InjectableStrategy {
 
     /**
      * @description
-     * In order to allow users to send only one header with their API-Key, while still supporting
-     * a separate lookup ID, strategies must be able to parse provided tokens into both parts.
+     * Constructs an API-Key which the {@link User}s supply to the API.
      *
-     * We do not force an arbitrary delimiter, for example a colon `':'`, because the API-Key itself
+     * Each strategy determines how it combines the lookup ID with the secret itself,
+     * because lookup-/ and secret-generation are customizable leading to Vendure not
+     * enforcing a fixed delimiter.
+     *
+     * The output of this function must be parsable via this strategys {@link tryParse} function.
+     *
+     * @see {@link tryParse}
+     * @since 3.6.0
+     */
+    constructApiKey(lookupId: string, secret: string): string;
+
+    /**
+     * @description
+     * In order to allow users to send only one header with their API-Key, while still supporting
+     * a separate lookup ID, strategies must be able to parse provided tokens into both parts, more
+     * specifically this function must be able to parse the output of {@link constructApiKey}.
+     *
+     * We do not force an arbitrary delimiter, for example a colon `':'`, because the secret itself
      * and the lookup ID are both customizable and may conflict with it, hence the need for custom parsing.
      *
      * Custom parsing also allows strategies to use special characters in their API-Keys, by requiring
      * the token to be base64 encoded for example.
      *
      * @since 3.6.0
+     * @see {@link constructApiKey}
+     * @returns Either both parts for further processing or `null` if parsing failed.
      */
     tryParse(token: string): ApiKeyStrategyParseResult;
 }

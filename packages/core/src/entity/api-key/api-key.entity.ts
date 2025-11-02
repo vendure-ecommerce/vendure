@@ -14,13 +14,14 @@ import { ApiKeyTranslation } from './api-key-translation.entity';
 /**
  * @description
  * An ApiKey is mostly used for authenticating non-interactive clients such as scripts
- * or other types of services. An ApiKey is associated with a single {@link User} whose
+ * or other types of services. An ApiKey is associated with a {@link User} whose
  * permissions will apply when the ApiKey is used for authorization.
  *
  * Similar to how passwords are handled, only a hash of the API key is stored in the database
  * meaning, generated API-Keys are not viewable after creation, Users are responsible for storing them.
  *
- * If a User forgets their ApiKey, the old one should be deleted and a new one created.
+ * Hence, if a User forgets their ApiKey, the old one must be deleted and a new one created.
+ * This is called "rotating" an ApiKey.
  *
  * @docsCategory entities
  */
