@@ -16,6 +16,7 @@
     },
     "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
+    "test-field": "temporary change to test lerna --since",
     "publishConfig": {
         "access": "public"
     },
