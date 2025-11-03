@@ -264,7 +264,7 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                     const ExtensionBlock =
                         extensionBlock.component && extensionBlockShouldRender ? (
                             <PageBlock
-                                key={childBlock.key}
+                                key={extensionBlock.id}
                                 column={extensionBlock.location.column}
                                 blockId={extensionBlock.id}
                                 title={extensionBlock.title}
