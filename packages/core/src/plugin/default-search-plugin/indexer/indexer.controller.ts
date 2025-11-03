@@ -437,7 +437,7 @@ export class IndexerController {
                 for (const channel of variant.channels) {
                     const availableCurrencyCodes = this.options.indexCurrencyCode
                         ? unique(channel.availableCurrencyCodes)
-                        : [ctx.channel.defaultCurrencyCode];
+                        : [channel.defaultCurrencyCode];
 
                     for (const currencyCode of availableCurrencyCodes) {
                         const ch = new Channel({ ...channel, defaultCurrencyCode: currencyCode });
