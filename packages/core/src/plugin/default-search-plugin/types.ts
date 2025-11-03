@@ -28,6 +28,7 @@ export interface DefaultSearchPluginInitOptions {
      * `search` query results. Enabling this option on an existing Vendure installation
      * will require a DB migration/synchronization.
      *
+     * @since 3.6.0
      * @default false.
      */
     indexCurrencyCode?: boolean;
