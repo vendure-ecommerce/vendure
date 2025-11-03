@@ -1,6 +1,8 @@
 type Query {
     productOptionGroups(filterTerm: String): [ProductOptionGroup!]!
     productOptionGroup(id: ID!): ProductOptionGroup
+    productOptions(options: ProductOptionListOptions, groupId: ID): ProductOptionList!
+    productOption(id: ID!): ProductOption
 }
 
 type Mutation {
@@ -14,6 +16,13 @@ type Mutation {
     updateProductOption(input: UpdateProductOptionInput!): ProductOption!
     "Delete a ProductOption"
     deleteProductOption(id: ID!): DeletionResponse!
+}
+
+input ProductOptionListOptions
+
+type ProductOptionList implements PaginatedList {
+    totalItems: Int!
+    items: [ProductOption!]!
 }
 
 input ProductOptionGroupTranslationInput {

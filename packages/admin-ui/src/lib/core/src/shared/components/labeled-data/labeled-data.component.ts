@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './labeled-data.component.html',
     styleUrls: ['./labeled-data.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LabeledDataComponent {
     @Input() label: string;

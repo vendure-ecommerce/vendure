@@ -9,6 +9,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
     templateUrl: './create-facet-value-dialog.component.html',
     styleUrls: ['./create-facet-value-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateFacetValueDialogComponent implements Dialog<CreateFacetValueInput> {
     resolveWith: (result?: CreateFacetValueInput) => void;

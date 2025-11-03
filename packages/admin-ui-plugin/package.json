@@ -1,11 +1,15 @@
 {
     "name": "@vendure/admin-ui-plugin",
-    "version": "3.1.1",
+    "version": "3.5.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
         "lib/**/*"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
     "license": "GPL-3.0-or-later",
     "scripts": {
         "build": "rimraf lib && node -r ts-node/register build.ts && npm run compile",
@@ -13,24 +17,24 @@
         "lint": "eslint --fix .",
         "compile": "tsc -p ./tsconfig.build.json"
     },
-    "homepage": "https://www.vendure.io/",
+    "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
         "access": "public"
     },
     "devDependencies": {
-        "@types/express": "^4.17.21",
+        "@types/express": "^5.0.1",
         "@types/fs-extra": "^11.0.4",
-        "@vendure/admin-ui": "^3.1.1",
-        "@vendure/common": "^3.1.1",
-        "@vendure/core": "^3.1.1",
-        "express": "^4.18.3",
+        "@vendure/admin-ui": "3.5.0",
+        "@vendure/common": "3.5.0",
+        "@vendure/core": "3.5.0",
+        "express": "^5.1.0",
         "rimraf": "^5.0.5",
-        "typescript": "5.4.2"
+        "typescript": "5.8.2"
     },
     "dependencies": {
-        "date-fns": "^2.30.0",
-        "express-rate-limit": "^7.4.0",
+        "date-fns": "^4.0.0",
+        "express-rate-limit": "^7.5.0",
         "fs-extra": "^11.2.0"
     }
 }

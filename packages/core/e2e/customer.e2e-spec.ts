@@ -1,26 +1,18 @@
-import { OnModuleInit } from '@nestjs/common';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
-import {
-    AccountRegistrationEvent,
-    EventBus,
-    EventBusModule,
-    mergeConfig,
-    VendurePlugin,
-} from '@vendure/core';
+import { AccountRegistrationEvent, EventBus } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it, Mock } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
-import { DeletionResult, ErrorCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
+import { DeletionResult, ErrorCode } from './graphql/generated-e2e-admin-types';
 import {
     ActiveOrderCustomerFragment,
     AddItemToOrderMutation,
@@ -47,31 +39,11 @@ import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-let sendEmailFn: Mock;
-
-/**
- * This mock plugin simulates an EmailPlugin which would send emails
- * on the registration & password reset events.
- */
-@VendurePlugin({
-    imports: [EventBusModule],
-})
-class TestEmailPlugin implements OnModuleInit {
-    constructor(private eventBus: EventBus) {}
-
-    onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
-            sendEmailFn?.(event);
-        });
-    }
-}
 
 type CustomerListItem = Codegen.GetCustomerListQuery['customers']['items'][number];
 
 describe('Customer resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig(), { plugins: [TestEmailPlugin] }),
-    );
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     let firstCustomer: CustomerListItem;
     let secondCustomer: CustomerListItem;
@@ -470,7 +442,19 @@ describe('Customer resolver', () => {
 
     describe('creation', () => {
         it('triggers verification event if no password supplied', async () => {
-            sendEmailFn = vi.fn();
+            const sendEmailFn = vi.fn();
+            let resolveFn: () => void;
+            const subscription = server.app
+                .get(EventBus)
+                .ofType(AccountRegistrationEvent)
+                .subscribe(event => {
+                    sendEmailFn(event);
+                    resolveFn?.();
+                });
+            const eventReceived = new Promise<void>(resolve => {
+                resolveFn = resolve;
+            });
+
             const { createCustomer } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
@@ -484,13 +468,31 @@ describe('Customer resolver', () => {
             customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(false);
+
+            // Wait for the event to be received before making assertions
+            await eventReceived;
+
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(sendEmailFn.mock.calls[0][0] instanceof AccountRegistrationEvent).toBe(true);
             expect(sendEmailFn.mock.calls[0][0].user.identifier).toBe('test1@test.com');
+
+            subscription.unsubscribe();
         });
 
         it('creates a verified Customer', async () => {
-            sendEmailFn = vi.fn();
+            const sendEmailFn = vi.fn();
+            let resolveFn: () => void;
+            const subscription = server.app
+                .get(EventBus)
+                .ofType(AccountRegistrationEvent)
+                .subscribe(event => {
+                    sendEmailFn(event);
+                    resolveFn?.();
+                });
+            const eventReceived = new Promise<void>(resolve => {
+                resolveFn = resolve;
+            });
+
             const { createCustomer } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
@@ -504,8 +506,13 @@ describe('Customer resolver', () => {
             });
             customerErrorGuard.assertSuccess(createCustomer);
 
+            // Wait for the event to be received before making assertions
+            await eventReceived;
+
             expect(createCustomer.user!.verified).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
+
+            subscription.unsubscribe();
         });
 
         it('return error result when using an existing, non-deleted emailAddress', async () => {

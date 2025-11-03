@@ -16,12 +16,7 @@ import {
     LanguageCode,
 } from './graphql/generated-admin-types';
 import { ADD_ITEM_TO_ORDER, APPLY_COUPON_CODE } from './graphql/shop-queries';
-import {
-    CREATE_MOLLIE_PAYMENT_INTENT,
-    createFixedDiscountCoupon,
-    createFreeShippingCoupon,
-    setShipping,
-} from './payment-helpers';
+import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
 
 /**
  * This should only be used to locally test the Mollie payment plugin
@@ -104,12 +99,29 @@ async function runMollieDevServer() {
     await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'FREE_SHIPPING' });
 
     // Create Payment Intent
-    const result = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
+    const result = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+        input: {
+            locale: 'nl_NL',
+            // immediateCapture: true,
+        },
+    });
     // eslint-disable-next-line no-console
     console.log('Payment intent result', result);
 
-    // Create another Payment Intent to test duplicate paymnets
-    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
+    // Add another item to the order
+    await shopClient.query(ADD_ITEM_TO_ORDER, {
+        productVariantId: 'T_1',
+        quantity: 1,
+    });
+
+    // Wait X seconds and create another payment intent
+    await new Promise(resolve => setTimeout(resolve, 20000));
+
+    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+        input: {
+            locale: 'nl_NL',
+        },
+    });
     // eslint-disable-next-line no-console
     console.log('Second payment intent result', result2);
 }

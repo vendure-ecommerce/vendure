@@ -15,6 +15,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
     templateUrl: './create-product-option-group-dialog.component.html',
     styleUrls: ['./create-product-option-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateProductOptionGroupDialogComponent implements Dialog<CreateProductOptionGroupInput> {
     resolveWith: (result?: CreateProductOptionGroupInput) => void;

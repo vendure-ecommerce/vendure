@@ -22,6 +22,7 @@ import { SplitViewLeftDirective, SplitViewRightDirective } from './split-view.di
     templateUrl: './split-view.component.html',
     styleUrls: ['./split-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SplitViewComponent implements AfterContentInit, AfterViewInit {
     @Input() rightPanelOpen = false;
@@ -36,7 +37,10 @@ export class SplitViewComponent implements AfterContentInit, AfterViewInit {
     protected leftPanelWidth$: Observable<SafeStyle>;
     protected resizing$: Observable<boolean>;
 
-    constructor(private viewContainerRef: ViewContainerRef, private domSanitizer: DomSanitizer) {}
+    constructor(
+        private viewContainerRef: ViewContainerRef,
+        private domSanitizer: DomSanitizer,
+    ) {}
 
     ngAfterContentInit(): void {
         if (!this.leftTemplate) {

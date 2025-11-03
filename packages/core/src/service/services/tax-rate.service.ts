@@ -3,6 +3,7 @@ import {
     CreateTaxRateInput,
     DeletionResponse,
     DeletionResult,
+    TaxRateFilterParameter,
     UpdateTaxRateInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -10,6 +11,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -33,6 +35,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class TaxRateService {
     private readonly defaultTaxRate = new TaxRate({
         value: 0,
@@ -63,8 +66,30 @@ export class TaxRateService {
         options?: ListQueryOptions<TaxRate>,
         relations?: RelationPaths<TaxRate>,
     ): Promise<PaginatedList<TaxRate>> {
+        const effectiveRelations = relations || ['customerGroup'];
+        const customPropertyMap: { [name: string]: string } = {};
+        const hasZoneIdFilter = this.listQueryBuilder.filterObjectHasProperty<TaxRateFilterParameter>(
+            options?.filter,
+            'zoneId',
+        );
+        const hasCategoryIdFilter = this.listQueryBuilder.filterObjectHasProperty<TaxRateFilterParameter>(
+            options?.filter,
+            'categoryId',
+        );
+        if (hasZoneIdFilter) {
+            effectiveRelations.push('zone');
+            customPropertyMap.zoneId = 'zone.id';
+        }
+        if (hasCategoryIdFilter) {
+            effectiveRelations.push('category');
+            customPropertyMap.zoneId = 'category.id';
+        }
         return this.listQueryBuilder
-            .build(TaxRate, options, { relations: relations ?? ['category', 'zone', 'customerGroup'], ctx })
+            .build(TaxRate, options, {
+                relations: effectiveRelations,
+                ctx,
+                customPropertyMap,
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

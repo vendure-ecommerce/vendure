@@ -26,6 +26,7 @@ const GET_PRODUCT_VARIANTS_QUICK_JUMP = gql`
     templateUrl: './product-variant-quick-jump.component.html',
     styleUrls: ['./product-variant-quick-jump.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductVariantQuickJumpComponent implements OnInit {
     @Input() productId: string;

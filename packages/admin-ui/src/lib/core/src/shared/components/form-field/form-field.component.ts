@@ -10,6 +10,7 @@ import { FormFieldControlDirective } from './form-field-control.directive';
     selector: 'vdr-form-field',
     templateUrl: './form-field.component.html',
     styleUrls: ['./form-field.component.scss'],
+    standalone: false,
 })
 export class FormFieldComponent implements OnInit {
     @Input() label: string;

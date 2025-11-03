@@ -7,6 +7,7 @@ import {
     DeletionResponse,
     DeletionResult,
     JobState,
+    LanguageCode,
     MoveCollectionInput,
     Permission,
     PreviewCollectionVariantsInput,
@@ -18,17 +19,13 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { merge } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';
 
-import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
+import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import {
-    ForbiddenError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -48,6 +45,7 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { RequestContextService } from '../helpers/request-context/request-context.service';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -58,7 +56,14 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 
 export type ApplyCollectionFiltersJobData = {
-    ctx: SerializedRequestContext;
+    // We store this channel data inside a `ctx` object for backward-compatible reasons
+    // since there is a chance that some external plugins assume the existence of a `ctx`
+    // property on this payload. Notably, the AdvancedSearchPlugin defines its own
+    // CollectionJobBuffer which makes this assumption.
+    ctx: {
+        channelToken: string;
+        languageCode: LanguageCode;
+    };
     collectionIds: ID[];
     applyToChangedVariantsOnly?: boolean;
 };
@@ -70,9 +75,11 @@ export type ApplyCollectionFiltersJobData = {
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
+    private applyAllFiltersOnProductUpdates = true;
 
     constructor(
         private connection: TransactionalConnection,
@@ -88,6 +95,7 @@ export class CollectionService implements OnModuleInit {
         private customFieldRelationService: CustomFieldRelationService,
         private translator: TranslatorService,
         private roleService: RoleService,
+        private requestContextService: RequestContextService,
     ) {}
 
     /**
@@ -98,32 +106,45 @@ export class CollectionService implements OnModuleInit {
         const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
 
         merge(productEvents$, variantEvents$)
-            .pipe(debounceTime(50))
+            .pipe(
+                filter(() => {
+                    if (!this.applyAllFiltersOnProductUpdates) {
+                        Logger.debug(
+                            `Detected product data change, but skipping applyCollectionFilters because applyAllFiltersOnProductUpdates = false`,
+                        );
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }),
+                debounceTime(50),
+            )
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             .subscribe(async event => {
-                const collections = await this.connection.rawConnection
-                    .getRepository(Collection)
-                    .createQueryBuilder('collection')
-                    .select('collection.id', 'id')
-                    .getRawMany();
-                await this.applyFiltersQueue.add(
-                    {
-                        ctx: event.ctx.serialize(),
-                        collectionIds: collections.map(c => c.id),
-                        applyToChangedVariantsOnly: true,
-                    },
-                    { ctx: event.ctx },
-                );
+                await this.triggerApplyFiltersJob(event.ctx);
             });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             process: async job => {
-                const ctx = RequestContext.deserialize(job.data.ctx);
-
-                Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
+                const ctx = await this.requestContextService.create({
+                    apiType: 'admin',
+                    languageCode: job.data.ctx.languageCode,
+                    channelOrToken: job.data.ctx.channelToken,
+                });
+                let collectionIds = job.data.collectionIds;
+                if (collectionIds.length === 0) {
+                    // An empty array means that all collections should be updated
+                    const collections = await this.connection.rawConnection
+                        .getRepository(Collection)
+                        .createQueryBuilder('collection')
+                        .select('collection.id', 'id')
+                        .getRawMany();
+                    collectionIds = collections.map(c => c.id);
+                }
+                Logger.verbose(`Processing ${collectionIds.length} Collections`);
                 let completed = 0;
-                for (const collectionId of job.data.collectionIds) {
+                for (const collectionId of collectionIds) {
                     if (job.state === JobState.CANCELLED) {
                         throw new Error(`Job was cancelled`);
                     }
@@ -153,17 +174,18 @@ export class CollectionService implements OnModuleInit {
                             Logger.error(e.message);
                             continue;
                         }
-                        job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
+                        job.setProgress(Math.ceil((completed / collectionIds.length) * 100));
                         if (affectedVariantIds.length) {
                             // To avoid performance issues on huge collections we first split the affected variant ids into chunks
                             this.chunkArray(affectedVariantIds, 50000).map(chunk =>
                                 this.eventBus.publish(
-                                    new CollectionModificationEvent(ctx, collection as Collection, chunk),
+                                    new CollectionModificationEvent(ctx, collection, chunk),
                                 ),
                             );
                         }
                     }
                 }
+                return { processedCollections: completed };
             },
         });
     }
@@ -303,7 +325,7 @@ export class CollectionService implements OnModuleInit {
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
-    ): Promise<Array<{ name: string; id: ID, slug: string }>> {
+    ): Promise<Array<{ name: string; id: ID; slug: string }>> {
         const rootCollection = await this.getRootCollection(ctx);
         if (idsAreEqual(collection.id, rootCollection.id)) {
             return [pick(rootCollection, ['id', 'name', 'slug'])];
@@ -392,6 +414,12 @@ export class CollectionService implements OnModuleInit {
                 .loadOne();
             if (parent) {
                 if (!parent.isRoot) {
+                    if (idsAreEqual(parent.id, id)) {
+                        Logger.error(
+                            `Circular reference detected in Collection tree: Collection ${id} is its own parent`,
+                        );
+                        return _ancestors;
+                    }
                     _ancestors.push(parent);
                     return getParent(parent.id, _ancestors);
                 }
@@ -444,8 +472,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = applicableFilters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const filter of filtersOfType) {
-                    qb = filterType.apply(qb, filter.args);
+                for (const collectionFilter of filtersOfType) {
+                    qb = filterType.apply(qb, collectionFilter.args);
                 }
             }
         }
@@ -480,13 +508,9 @@ export class CollectionService implements OnModuleInit {
             input,
             collection,
         );
-        await this.applyFiltersQueue.add(
-            {
-                ctx: ctx.serialize(),
-                collectionIds: [collection.id],
-            },
-            { ctx },
-        );
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: [collection.id],
+        });
         await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -508,14 +532,10 @@ export class CollectionService implements OnModuleInit {
         });
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
-            await this.applyFiltersQueue.add(
-                {
-                    ctx: ctx.serialize(),
-                    collectionIds: [collection.id],
-                    applyToChangedVariantsOnly: false,
-                },
-                { ctx },
-            );
+            await this.triggerApplyFiltersJob(ctx, {
+                collectionIds: [collection.id],
+                applyToChangedVariantsOnly: false,
+            });
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
             await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
@@ -586,14 +606,56 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(ctx, Collection).save(siblings);
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: [target.id],
+        });
+        await this.eventBus.publish(new CollectionEvent(ctx, target, 'updated'));
+        return assertFound(this.findOne(ctx, input.collectionId));
+    }
+
+    /**
+     * @description
+     * By default, whenever product data is updated (as determined by subscribing to the
+     * {@link ProductEvent} and {@link ProductVariantEvent} events), the CollectionFilters are re-applied
+     * to all Collections.
+     *
+     * In certain scenarios, such as when a large number of products are updated at once due to
+     * bulk data import, this can be inefficient. In such cases, you can disable this behaviour
+     * for the duration of the import process by calling this method with `false`, and then
+     * re-enable it by calling with `true`.
+     *
+     * Afterward, you can call the `triggerApplyFiltersJob` method to manually re-apply the filters.
+     *
+     * @since 3.1.3
+     */
+    setApplyAllFiltersOnProductUpdates(applyAllFiltersOnProductUpdates: boolean) {
+        this.applyAllFiltersOnProductUpdates = applyAllFiltersOnProductUpdates;
+    }
+
+    /**
+     * @description
+     * Triggers the creation of an `apply-collection-filters` job which will cause the contents
+     * of the specified collections to be re-evaluated against their filters.
+     *
+     * If no `collectionIds` option is passed, then all collections will be re-evaluated.
+     *
+     * @since 3.1.3
+     */
+    async triggerApplyFiltersJob(
+        ctx: RequestContext,
+        options?: { collectionIds?: ID[]; applyToChangedVariantsOnly?: boolean },
+    ) {
         await this.applyFiltersQueue.add(
             {
-                ctx: ctx.serialize(),
-                collectionIds: [target.id],
+                ctx: {
+                    languageCode: ctx.languageCode,
+                    channelToken: ctx.channel.token,
+                },
+                applyToChangedVariantsOnly: options?.applyToChangedVariantsOnly,
+                collectionIds: options?.collectionIds ?? [],
             },
             { ctx },
         );
-        return assertFound(this.findOne(ctx, input.collectionId));
     }
 
     private getCollectionFiltersFromInput(
@@ -601,8 +663,8 @@ export class CollectionService implements OnModuleInit {
     ): ConfigurableOperation[] {
         const filters: ConfigurableOperation[] = [];
         if (input.filters) {
-            for (const filter of input.filters) {
-                filters.push(this.configArgService.parseInput('CollectionFilter', filter));
+            for (const filterInput of input.filters) {
+                filters.push(this.configArgService.parseInput('CollectionFilter', filterInput));
             }
         }
         return filters;
@@ -646,8 +708,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = filters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const filter of filtersOfType) {
-                    filteredQb = filterType.apply(filteredQb, filter.args);
+                for (const collectionFilter of filtersOfType) {
+                    filteredQb = filterType.apply(filteredQb, collectionFilter.args);
                 }
             }
         }
@@ -876,14 +938,9 @@ export class CollectionService implements OnModuleInit {
             ([] as ID[]).concat(...collectionsToAssign.map(c => c.assets.map(a => a.assetId))),
         );
         await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
-
-        await this.applyFiltersQueue.add(
-            {
-                ctx: ctx.serialize(),
-                collectionIds: collectionsToAssign.map(collection => collection.id),
-            },
-            { ctx },
-        );
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: collectionsToAssign.map(collection => collection.id),
+        });
 
         return this.connection
             .findByIdsInChannel(

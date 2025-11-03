@@ -16,6 +16,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     templateUrl: './password-form-input.component.html',
     styleUrls: ['./password-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PasswordFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'password-form-input';

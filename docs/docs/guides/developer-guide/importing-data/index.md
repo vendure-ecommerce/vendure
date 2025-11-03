@@ -3,7 +3,7 @@ title: "Importing Data"
 showtoc: true
 ---
 
-If you have hundreds, thousands or more products, inputting all the data by hand via the Admin UI can be too inefficient. To solve this, Vendure supports bulk-importing product and other data.
+If you have hundreds, thousands or more products, inputting all the data by hand via the Dashboard can be too inefficient. To solve this, Vendure supports bulk-importing product and other data.
 
 Data import is also useful for setting up test or demo environments, and is also used by the `@vendure/testing` package for end-to-end tests.
 
@@ -219,7 +219,7 @@ populate(
 
 :::note
 When removing the `DefaultJobQueuePlugin` from the plugins list as in the code snippet above, one should manually rebuild the search index in order for the newly added products to appear.
-In the Admin UI, this can be done by navigating to the product list view and clicking the three icon next to the search input:
+In the Dashboard, this can be done by navigating to the product list view and clicking the button in the top right:
 
 ![Rebuild search index](./reindex.webp)
 :::
@@ -277,6 +277,79 @@ In addition to all the services available in the [Service Layer](/guides/develop
 Using these specialized import services is preferable to using the normal service-layer services (`ProductService`, `ProductVariantService` etc.) for bulk imports. This is because these import services are optimized for bulk imports (they omit unnecessary checks, use optimized SQL queries) and also do not publish events when creating new entities.
 
 However, it is still possible to use the normal service-layer services if you prefer. For example, the following code snippet shows how to create a new ProductVariant using the `ProductVariantService`:
+
+```ts title="src/create-new-variant-service.ts"
+import { INestApplicationContext } from '@nestjs/common';
+import {
+    ProductVariantService,
+    TransactionalConnection,
+    LanguageCode,
+    RequestContext,
+    RequestContextService,
+    bootstrapWorker,
+    ConfigService,
+    ID,
+    User,
+    SearchService,
+} from '@vendure/core';
+
+import { config } from './vendure-config';
+
+async function createNewVariantService() {
+    // We use the bootstrapWorker() function instead of bootstrap() because we don't
+    // need to start the server, we just need access to the services.
+    const { app } = await bootstrapWorker(config);
+
+    // Most service methods require a RequestContext, so we'll create one here.
+    const ctx = await getSuperadminContext(app);
+
+    // Get the ProductVariantService instance from the application
+    const productVariantService = app.get(ProductVariantService);
+
+    // To reindex after importing products
+    const searchService = app.get(SearchService);
+
+    // Example: Creating a new ProductVariant for an existing product with ID 1
+    const productId = '1' as ID;
+    // Create input data for the new variant
+    const variantInput = {
+        productId,
+        translations: [
+            {
+                languageCode: LanguageCode.en,
+                name: 'New Variant 1',
+            },
+        ],
+        sku: 'NEW-VARIANT-001',
+        // Specify additional variant properties...
+    };
+
+    // Create the variant
+    const newVariants = await productVariantService.create(ctx, [variantInput]);
+
+    console.log('Created new product variants:', newVariants);
+
+    // Rebuild search index to include the new variant
+    await searchService.reindex(ctx);
+
+    await app.close();
+}
+
+/**
+ * Creates a RequestContext configured for the default Channel with the activeUser set
+ * as the superadmin user.
+ */
+export async function getSuperadminContext(app: INestApplicationContext): Promise<RequestContext> {
+    const {superadminCredentials} = app.get(ConfigService).authOptions;
+    const superAdminUser = await app.get(TransactionalConnection)
+        .getRepository(User)
+        .findOneOrFail({where: {identifier: superadminCredentials.identifier}});
+    return app.get(RequestContextService).create({
+        apiType: 'admin',
+        user: superAdminUser,
+    });
+}
+```
 
 ## Importing from other platforms
 

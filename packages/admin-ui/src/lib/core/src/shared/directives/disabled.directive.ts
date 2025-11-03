@@ -7,6 +7,7 @@ import { FormControl, FormControlDirective, FormControlName } from '@angular/for
  */
 @Directive({
     selector: '[vdrDisabled]',
+    standalone: false,
 })
 export class DisabledDirective {
     @Input('vdrDisabled') set disabled(val: boolean) {

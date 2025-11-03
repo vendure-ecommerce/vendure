@@ -30,6 +30,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DropdownComponent {
     isOpen = false;

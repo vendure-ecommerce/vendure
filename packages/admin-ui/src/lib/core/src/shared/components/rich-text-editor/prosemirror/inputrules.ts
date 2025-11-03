@@ -60,21 +60,31 @@ export function headingRule(nodeType, maxLevel) {
 export function buildInputRules(schema: Schema): Plugin {
     const rules = smartQuotes.concat(ellipsis, emDash);
     let type: NodeType;
-    /* eslint-disable no-cond-assign */
-    if ((type = schema.nodes.blockquote)) {
+
+    type = schema.nodes.blockquote;
+    if (type) {
         rules.push(blockQuoteRule(type));
     }
-    if ((type = schema.nodes.ordered_list)) {
+
+    type = schema.nodes.ordered_list;
+    if (type) {
         rules.push(orderedListRule(type));
     }
-    if ((type = schema.nodes.bullet_list)) {
+
+    type = schema.nodes.bullet_list;
+    if (type) {
         rules.push(bulletListRule(type));
     }
-    if ((type = schema.nodes.code_block)) {
+
+    type = schema.nodes.code_block;
+    if (type) {
         rules.push(codeBlockRule(type));
     }
-    if ((type = schema.nodes.heading)) {
+
+    type = schema.nodes.heading;
+    if (type) {
         rules.push(headingRule(type, 6));
     }
+
     return inputRules({ rules });
 }

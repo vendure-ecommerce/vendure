@@ -22,7 +22,19 @@ const icon = {
     cloudArrowUp: `<path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 01-1.44-8.765 4.5 4.5 0 018.302-3.046 3.5 3.5 0 014.504 4.272A4 4 0 0115 17H5.5zm3.75-2.75a.75.75 0 001.5 0V9.66l1.95 2.1a.75.75 0 101.1-1.02l-3.25-3.5a.75.75 0 00-1.1 0l-3.25 3.5a.75.75 0 101.1 1.02l1.95-2.1v4.59z" clip-rule="evenodd" />`,
     tsLogo: `<rect fill="#3178c6" height="128" rx="6" width="128"></rect><path clip-rule="evenodd" d="m74.2622 99.468v14.026c2.2724 1.168 4.9598 2.045 8.0625 2.629 3.1027.585 6.3728.877 9.8105.877 3.3503 0 6.533-.321 9.5478-.964 3.016-.643 5.659-1.702 7.932-3.178 2.272-1.476 4.071-3.404 5.397-5.786 1.325-2.381 1.988-5.325 1.988-8.8313 0-2.5421-.379-4.7701-1.136-6.6841-.758-1.9139-1.85-3.6159-3.278-5.1062-1.427-1.4902-3.139-2.827-5.134-4.0104-1.996-1.1834-4.246-2.3011-6.752-3.353-1.8352-.7597-3.4812-1.4975-4.9378-2.2134-1.4567-.7159-2.6948-1.4464-3.7144-2.1915-1.0197-.7452-1.8063-1.5341-2.3598-2.3669-.5535-.8327-.8303-1.7751-.8303-2.827 0-.9643.2476-1.8336.7429-2.6079s1.1945-1.4391 2.0976-1.9943c.9031-.5551 2.0101-.9861 3.3211-1.2929 1.311-.3069 2.7676-.4603 4.3699-.4603 1.1658 0 2.3958.0877 3.6928.263 1.296.1753 2.6.4456 3.911.8109 1.311.3652 2.585.8254 3.824 1.3806 1.238.5552 2.381 1.198 3.43 1.9285v-13.1051c-2.127-.8182-4.45-1.4245-6.97-1.819s-5.411-.5917-8.6744-.5917c-3.3211 0-6.4674.3579-9.439 1.0738-2.9715.7159-5.5862 1.8336-7.844 3.353-2.2578 1.5195-4.0422 3.4553-5.3531 5.8075-1.311 2.3522-1.9665 5.1646-1.9665 8.4373 0 4.1785 1.2017 7.7433 3.6052 10.6945 2.4035 2.9513 6.0523 5.4496 10.9466 7.495 1.9228.7889 3.7145 1.5633 5.375 2.323 1.6606.7597 3.0954 1.5486 4.3044 2.3668s2.1628 1.7094 2.8618 2.6736c.7.9643 1.049 2.06 1.049 3.2873 0 .9062-.218 1.7462-.655 2.5202s-1.1 1.446-1.9885 2.016c-.8886.57-1.9956 1.016-3.3212 1.337-1.3255.321-2.8768.482-4.6539.482-3.0299 0-6.0305-.533-9.0021-1.6-2.9715-1.066-5.7245-2.666-8.2591-4.799zm-23.5596-34.9136h18.2974v-11.5544h-51v11.5544h18.2079v51.4456h14.4947z" fill="#fff" fill-rule="evenodd"></path>`,
     graphqlLogo: `<path fill-rule="evenodd" fill="#e10098" clip-rule="evenodd" d="M50 6.90308L87.323 28.4515V71.5484L50 93.0968L12.677 71.5484V28.4515L50 6.90308ZM16.8647 30.8693V62.5251L44.2795 15.0414L16.8647 30.8693ZM50 13.5086L18.3975 68.2457H81.6025L50 13.5086ZM77.4148 72.4334H22.5852L50 88.2613L77.4148 72.4334ZM83.1353 62.5251L55.7205 15.0414L83.1353 30.8693V62.5251Z"></path><circle fill="#e10098"  cx="50" cy="9.3209" r="8.82"></circle><circle fill="#e10098"  cx="85.2292" cy="29.6605" r="8.82"></circle><circle fill="#e10098"  cx="85.2292" cy="70.3396" r="8.82"></circle><circle fill="#e10098"  cx="50" cy="90.6791" r="8.82"></circle><circle fill="#e10098"  cx="14.7659" cy="70.3396" r="8.82"></circle><circle fill="#e10098"  cx="14.7659" cy="29.6605" r="8.82"></circle>`,
+    reactLogo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-11.5 -10.23174 23 20.46348">
+  <title>React Logo</title>
+  <circle cx="0" cy="0" r="2.05" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1" fill="none">
+    <ellipse rx="11" ry="4.2"/>
+    <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+    <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+  </g>
+</svg>`,
+    clockFiles: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M8 14v2.2l1.6 1"/><circle cx="8" cy="16" r="6"/></svg>`,
 };
+
+const htmlSeparator = '<hr style="margin: 0; background-color: rgba(150, 150, 150, 0.2);" />';
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
@@ -77,6 +89,7 @@ const sidebars = {
                 'guides/developer-guide/testing/index',
                 'guides/developer-guide/updating/index',
                 'guides/developer-guide/worker-job-queue/index',
+                'guides/developer-guide/settings-store/index',
                 {
                     type: 'html',
                     value: 'Extend',
@@ -91,15 +104,16 @@ const sidebars = {
                     value: 'Advanced Topics',
                     className: 'sidebar-section-header',
                 },
+                'guides/developer-guide/custom-strategies-in-plugins/index',
+                'guides/developer-guide/channel-aware/index',
+                'guides/developer-guide/translatable/index',
+                'guides/developer-guide/has-custom-fields/index',
                 'guides/developer-guide/cache/index',
+                'guides/developer-guide/dataloaders/index',
                 'guides/developer-guide/db-subscribers/index',
                 'guides/developer-guide/importing-data/index',
                 'guides/developer-guide/logging/index',
-                {
-                    type: 'category',
-                    label: 'Migrating from v1',
-                    items: [{ type: 'autogenerated', dirName: 'guides/developer-guide/migrating-from-v1' }],
-                },
+                'guides/developer-guide/scheduled-tasks/index',
                 'guides/developer-guide/stand-alone-scripts/index',
                 'guides/developer-guide/translations/index',
                 'guides/developer-guide/uploading-files/index',
@@ -119,39 +133,58 @@ const sidebars = {
         },
         {
             type: 'category',
-            label: 'Extending the Admin UI',
+            label: 'React Admin Dashboard',
             customProps: {
-                icon: icon.computer,
+                icon: icon.reactLogo,
             },
             items: [
-                'guides/extending-the-admin-ui/getting-started/index',
-                'guides/extending-the-admin-ui/ui-library/index',
-                'guides/extending-the-admin-ui/admin-ui-theming-branding/index',
-                'guides/extending-the-admin-ui/adding-ui-translations/index',
-                'guides/extending-the-admin-ui/using-other-frameworks/index',
+                'guides/extending-the-dashboard/getting-started/index',
+                'guides/extending-the-dashboard/extending-overview/index',
                 {
-                    type: 'html',
-                    value: 'Providers',
-                    className: 'sidebar-section-header',
+                    type: 'category',
+                    label: 'Creating Pages',
+                    link: { type: 'doc', id: 'guides/extending-the-dashboard/creating-pages/index' },
+                    items: [
+                        'guides/extending-the-dashboard/creating-pages/list-pages',
+                        'guides/extending-the-dashboard/creating-pages/detail-pages',
+                        'guides/extending-the-dashboard/creating-pages/tabbed-pages',
+                    ],
                 },
-                'guides/extending-the-admin-ui/nav-menu/index',
-                'guides/extending-the-admin-ui/alerts/index',
-                'guides/extending-the-admin-ui/add-actions-to-pages/index',
-                'guides/extending-the-admin-ui/page-tabs/index',
-                'guides/extending-the-admin-ui/custom-form-inputs/index',
-                'guides/extending-the-admin-ui/custom-data-table-components/index',
-                'guides/extending-the-admin-ui/custom-detail-components/index',
-                'guides/extending-the-admin-ui/bulk-actions/index',
-                'guides/extending-the-admin-ui/dashboard-widgets/index',
-                'guides/extending-the-admin-ui/custom-timeline-components/index',
                 {
-                    type: 'html',
-                    value: 'Routes',
-                    className: 'sidebar-section-header',
+                    type: 'category',
+                    label: 'Customizing Pages',
+                    link: { type: 'doc', id: 'guides/extending-the-dashboard/customizing-pages/index' },
+                    items: [
+                        'guides/extending-the-dashboard/customizing-pages/customizing-list-pages',
+                        'guides/extending-the-dashboard/customizing-pages/customizing-detail-pages',
+                        'guides/extending-the-dashboard/customizing-pages/customizing-login-page',
+                        'guides/extending-the-dashboard/customizing-pages/page-blocks',
+                        'guides/extending-the-dashboard/customizing-pages/action-bar-items',
+                        'guides/extending-the-dashboard/customizing-pages/insights-widgets',
+                        'guides/extending-the-dashboard/customizing-pages/history-entries',
+                    ],
                 },
-                'guides/extending-the-admin-ui/defining-routes/index',
-                'guides/extending-the-admin-ui/creating-list-views/index',
-                'guides/extending-the-admin-ui/creating-detail-views/index',
+                {
+                    type: 'category',
+                    label: 'Custom Form Elements',
+                    link: { type: 'doc', id: 'guides/extending-the-dashboard/custom-form-components/index' },
+                    items: [
+                        'guides/extending-the-dashboard/custom-form-components/form-component-examples',
+                        'guides/extending-the-dashboard/custom-form-components/relation-selectors',
+                    ],
+                },
+                'guides/extending-the-dashboard/navigation/index',
+                'guides/extending-the-dashboard/alerts/index',
+                'guides/extending-the-dashboard/data-fetching/index',
+                'guides/extending-the-dashboard/theming/index',
+                'guides/extending-the-dashboard/deployment/index',
+                'guides/extending-the-dashboard/tech-stack/index',
+                'guides/extending-the-dashboard/migration/index',
+                {
+                    type: 'link',
+                    label: 'Component Library', // The link label
+                    href: 'https://storybook.vendure.io', // The external URL
+                },
             ],
         },
         {
@@ -202,6 +235,59 @@ const sidebars = {
                 'guides/deployment/deploy-to-google-cloud-run/index',
             ],
         },
+        {
+            type: 'html',
+            value: htmlSeparator,
+            defaultStyle: true, // Use the default menu item styling
+        },
+        {
+            type: 'category',
+            label: 'Legacy APIs',
+            customProps: {
+                icon: icon.clockFiles,
+            },
+            items: [
+                {
+                    type: 'category',
+                    label: 'Angular Admin UI',
+                    items: [
+                        'guides/extending-the-admin-ui/getting-started/index',
+                        'guides/extending-the-admin-ui/ui-library/index',
+                        'guides/extending-the-admin-ui/admin-ui-theming-branding/index',
+                        'guides/extending-the-admin-ui/adding-ui-translations/index',
+                        'guides/extending-the-admin-ui/using-other-frameworks/index',
+                        {
+                            type: 'html',
+                            value: 'Providers',
+                            className: 'sidebar-section-header',
+                        },
+                        'guides/extending-the-admin-ui/nav-menu/index',
+                        'guides/extending-the-admin-ui/alerts/index',
+                        'guides/extending-the-admin-ui/add-actions-to-pages/index',
+                        'guides/extending-the-admin-ui/page-tabs/index',
+                        'guides/extending-the-admin-ui/custom-form-inputs/index',
+                        'guides/extending-the-admin-ui/custom-data-table-components/index',
+                        'guides/extending-the-admin-ui/custom-detail-components/index',
+                        'guides/extending-the-admin-ui/bulk-actions/index',
+                        'guides/extending-the-admin-ui/dashboard-widgets/index',
+                        'guides/extending-the-admin-ui/custom-timeline-components/index',
+                        {
+                            type: 'html',
+                            value: 'Routes',
+                            className: 'sidebar-section-header',
+                        },
+                        'guides/extending-the-admin-ui/defining-routes/index',
+                        'guides/extending-the-admin-ui/creating-list-views/index',
+                        'guides/extending-the-admin-ui/creating-detail-views/index',
+                    ],
+                },
+                {
+                    type: 'category',
+                    label: 'Migrating from v1',
+                    items: [{ type: 'autogenerated', dirName: 'guides/developer-guide/migrating-from-v1' }],
+                },
+            ],
+        },
     ],
     referenceSidebar: [
         {
@@ -244,6 +330,12 @@ const sidebars = {
                 },
                 {
                     type: 'category',
+                    label: 'DashboardPlugin',
+                    link: { type: 'doc', id: 'reference/core-plugins/dashboard-plugin/index' },
+                    items: [{ type: 'autogenerated', dirName: 'reference/core-plugins/dashboard-plugin' }],
+                },
+                {
+                    type: 'category',
                     label: 'ElasticsearchPlugin',
                     link: { type: 'doc', id: 'reference/core-plugins/elasticsearch-plugin/index' },
                     items: [
@@ -255,6 +347,12 @@ const sidebars = {
                     label: 'EmailPlugin',
                     link: { type: 'doc', id: 'reference/core-plugins/email-plugin/index' },
                     items: [{ type: 'autogenerated', dirName: 'reference/core-plugins/email-plugin' }],
+                },
+                {
+                    type: 'category',
+                    label: 'GraphiQLPlugin',
+                    link: { type: 'doc', id: 'reference/core-plugins/graphiql-plugin/index' },
+                    items: [{ type: 'autogenerated', dirName: 'reference/core-plugins/graphiql-plugin' }],
                 },
                 {
                     type: 'category',
@@ -286,6 +384,12 @@ const sidebars = {
                     link: { type: 'doc', id: 'reference/core-plugins/stellate-plugin/index' },
                     items: [{ type: 'autogenerated', dirName: 'reference/core-plugins/stellate-plugin' }],
                 },
+                {
+                    type: 'category',
+                    label: 'TelemetryPlugin',
+                    link: { type: 'doc', id: 'reference/core-plugins/telemetry-plugin/index' },
+                    items: [{ type: 'autogenerated', dirName: 'reference/core-plugins/telemetry-plugin' }],
+                },
             ],
         },
         {
@@ -307,6 +411,19 @@ const sidebars = {
                 viewBox: '0 0 100 100',
                 icon: icon.graphqlLogo,
             },
+        },
+        {
+            type: 'category',
+            label: 'Dashboard API',
+            items: [{ type: 'autogenerated', dirName: 'reference/dashboard' }],
+            customProps: {
+                icon: icon.reactLogo,
+            },
+        },
+        {
+            type: 'html',
+            value: htmlSeparator,
+            defaultStyle: true, // Use the default menu item styling
         },
         {
             type: 'category',

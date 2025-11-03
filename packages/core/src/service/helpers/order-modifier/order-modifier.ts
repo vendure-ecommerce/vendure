@@ -33,16 +33,17 @@ import {
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../../common/instrument-decorator';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { Order } from '../../../entity/order/order.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
@@ -65,6 +66,7 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
+import { OrderEvent } from '../../../event-bus';
 
 /**
  * @description
@@ -80,6 +82,7 @@ import { patchEntity } from '../utils/patch-entity';
  * @docsCategory service-helpers
  */
 @Injectable()
+@Instrument()
 export class OrderModifier {
     constructor(
         private connection: TransactionalConnection,
@@ -346,7 +349,7 @@ export class OrderModifier {
                     adjustmentSource: 'CANCEL_ORDER',
                     type: AdjustmentType.OTHER,
                     description: 'shipping cancellation',
-                    amount: -shippingLine.discountedPriceWithTax,
+                    amount: -shippingLine.discountedPrice,
                     data: {},
                 });
                 await this.connection.getRepository(ctx, ShippingLine).save(shippingLine, { reload: false });
@@ -690,6 +693,7 @@ export class OrderModifier {
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'updated', input));
         return { order, modification: createdModification };
     }
 

@@ -28,6 +28,7 @@ export const GET_SHIPPING_METHOD_LIST = gql`
     templateUrl: './shipping-method-list.component.html',
     styleUrls: ['./shipping-method-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ShippingMethodListComponent
     extends TypedBaseListComponent<typeof GetShippingMethodListDocument, 'shippingMethods'>

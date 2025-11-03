@@ -175,6 +175,7 @@ describe('Stripe payments', () => {
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
+            'metadata[languageCode]': 'en',
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
     });
@@ -207,6 +208,7 @@ describe('Stripe payments', () => {
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
+            'metadata[languageCode]': 'en',
             'metadata[customerEmail]': customers[0].emailAddress,
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
@@ -240,6 +242,7 @@ describe('Stripe payments', () => {
             description: `Order #${activeOrder!.code} for ${activeOrder!.customer!.emailAddress}`,
             'automatic_payment_methods[enabled]': 'true',
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[languageCode]': 'en',
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
         });
@@ -249,7 +252,7 @@ describe('Stripe payments', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/3183
     it('should attach additional options to payment intent using requestOptions', async () => {
-        StripePlugin.options.requestOptions = async (injector, ctx, currentOrder) => {
+        StripePlugin.options.requestOptions = (injector, ctx, currentOrder) => {
             return {
                 stripeAccount: 'acct_connected',
             };
@@ -280,6 +283,7 @@ describe('Stripe payments', () => {
             'automatic_payment_methods[enabled]': 'true',
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
+            'metadata[languageCode]': 'en',
             'metadata[orderCode]': activeOrder?.code,
         });
         expect(connectedAccountHeader).toEqual('acct_connected');

@@ -19,6 +19,7 @@ import {
     selector: 'vdr-custom-field-control',
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
+    standalone: false,
 })
 export class CustomFieldControlComponent implements OnInit {
     @Input() entityName: CustomFieldEntityName;

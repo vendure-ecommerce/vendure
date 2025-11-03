@@ -22,6 +22,7 @@ type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right
     templateUrl: './context-menu.component.html',
     styleUrls: ['./context-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ContextMenuComponent implements AfterViewInit, OnDestroy {
     @Input() editorMenuElement: HTMLElement | null | undefined;

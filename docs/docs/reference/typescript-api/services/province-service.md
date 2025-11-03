@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProvinceService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/province.service.ts" sourceLine="31" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/province.service.ts" sourceLine="32" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/province#province'>Province</a> entities.
 

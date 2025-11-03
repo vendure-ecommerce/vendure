@@ -31,6 +31,7 @@ export const GET_TAX_CATEGORY_DETAIL = gql`
     templateUrl: './tax-category-detail.component.html',
     styleUrls: ['./tax-category-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TaxCategoryDetailComponent
     extends TypedBaseDetailComponent<typeof GetTaxCategoryDetailDocument, 'taxCategory'>

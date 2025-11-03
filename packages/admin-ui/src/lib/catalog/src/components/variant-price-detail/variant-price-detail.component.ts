@@ -8,6 +8,7 @@ import { map, tap } from 'rxjs/operators';
     templateUrl: './variant-price-detail.component.html',
     styleUrls: ['./variant-price-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VariantPriceDetailComponent implements OnInit, OnChanges {
     @Input() priceIncludesTax: boolean;

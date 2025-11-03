@@ -13,6 +13,7 @@ export type SelectCustomerDialogResult = (Customer | CreateCustomerInput) & { no
     templateUrl: './select-customer-dialog.component.html',
     styleUrls: ['./select-customer-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SelectCustomerDialogComponent implements OnInit, Dialog<SelectCustomerDialogResult> {
     resolveWith: (result?: SelectCustomerDialogResult) => void;

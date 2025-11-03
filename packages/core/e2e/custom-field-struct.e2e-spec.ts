@@ -85,6 +85,19 @@ const customConfig = mergeConfig(testConfig(), {
                 ],
             },
         ],
+        // https://github.com/vendure-ecommerce/vendure/issues/3381
+        GlobalSettings: [
+            {
+                name: 'tipsPercentage',
+                type: 'struct',
+                list: true,
+                fields: [
+                    { name: 'percentage', type: 'float' },
+                    { name: 'name', type: 'string' },
+                    { name: 'isDefault', type: 'boolean' },
+                ],
+            },
+        ],
     },
 });
 

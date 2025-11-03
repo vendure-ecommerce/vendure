@@ -155,6 +155,10 @@
             .then((res) => renderList(res));
     }
 
+    const ESCAPE_ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+    const escapeChar = char => ESCAPE_ENTITIES[char] || char;
+    const escapeHTMLEntities = value => String(value).replace(/[<>"&]/g, escapeChar);
+
     function renderList(items) {
         const list = document.querySelector('.list');
         list.innerHTML = '';
@@ -165,7 +169,7 @@
             row.innerHTML = `
                 <div class="meta">
                     <div class="date">${item.date}</div>
-                    <div class="recipient">${item.recipient}</div>
+                    <div class="recipient">${escapeHTMLEntities(item.recipient)}</div>
                 </div>
                 <div class="subject">${item.subject}</div>`;
 
@@ -196,7 +200,7 @@
         <table>
             <tr>
                 <td>Recipient:</td>
-                <td>${email.recipient}</td>
+                <td>${escapeHTMLEntities(email.recipient)}</td>
             </tr>
             <tr>
                 <td>Subject:</td>

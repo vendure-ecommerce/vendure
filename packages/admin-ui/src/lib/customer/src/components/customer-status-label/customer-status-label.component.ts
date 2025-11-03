@@ -6,6 +6,7 @@ import { CustomerFragment } from '@vendure/admin-ui/core';
     templateUrl: './customer-status-label.component.html',
     styleUrls: ['./customer-status-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerStatusLabelComponent {
     @Input() customer: CustomerFragment;

@@ -15,6 +15,7 @@ export interface TestAddress {
     templateUrl: './test-address-form.component.html',
     styleUrls: ['./test-address-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TestAddressFormComponent implements OnInit, OnDestroy {
     @Output() addressChange = new EventEmitter<TestAddress>();

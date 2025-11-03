@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## transformOrderLineAssetUrls
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="101" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="106" packageName="@vendure/email-plugin" />
 
 Applies the configured `AssetStorageStrategy.toAbsoluteUrl()` function to each of the
 OrderLine's `featuredAsset.preview` properties, so that they can be correctly displayed
@@ -40,27 +40,19 @@ Parameters
 
 
 
-## hydrateShippingLines
+## shippingLinesWithMethod
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="122" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="127" packageName="@vendure/email-plugin" />
 
-Ensures that the ShippingLines are hydrated so that we can use the
+Ensures that the ShippingLines have a shippingMethod so that we can use the
 `shippingMethod.name` property in the email template.
 
 ```ts title="Signature"
-function hydrateShippingLines(ctx: RequestContext, order: Order, injector: Injector): Promise<ShippingLine[]>
+function shippingLinesWithMethod(order: Order): ShippingLine[]
 ```
 Parameters
-
-### ctx
-
-<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`} />
 
 ### order
 
 <MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`} />
-
-### injector
-
-<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/common/injector#injector'>Injector</a>`} />
 

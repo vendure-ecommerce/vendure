@@ -8,6 +8,7 @@ import { ActiveAlert, AlertsService } from '../../providers/alerts/alerts.servic
     templateUrl: './alerts.component.html',
     styleUrls: ['./alerts.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AlertsComponent {
     protected hasAlerts$: Observable<boolean>;

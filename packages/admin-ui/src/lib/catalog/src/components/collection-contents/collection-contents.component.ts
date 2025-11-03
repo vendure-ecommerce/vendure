@@ -36,6 +36,7 @@ import {
     templateUrl: './collection-contents.component.html',
     styleUrls: ['./collection-contents.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy {
     @Input() collectionId: string;

@@ -47,7 +47,6 @@ import {
     PaymentFragment,
     RefundFragment,
     RefundOrderDocument,
-    SettlePaymentDocument,
     SortOrder,
     StockMovementType,
     TransitFulfillmentDocument,
@@ -77,6 +76,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_MULTIPLE_ITEMS_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
@@ -221,6 +221,32 @@ describe('Orders resolver', () => {
             expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
+        it('filtering by total', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: { total: { gt: 1000_00 } },
+                },
+            });
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
+        it('filtering by total using boolean expression', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: {
+                        _and: [{ total: { gt: 1000_00 } }],
+                    },
+                },
+            });
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
         it('order', async () => {
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
@@ -231,8 +257,48 @@ describe('Orders resolver', () => {
             expect(result.order!.id).toBe('T_2');
         });
 
+        it('correctly resolves asset preview urls with edge-case query', async () => {
+            // This came up as a strange edge-case where the AssetInterceptorPlugin was unable to
+            // correctly transform the asset preview URL. It is not directly to do with Orders per se,
+            // but manifested when attempting an order-related query.
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                gql(`
+                    query OrderAssetEdgeCase($id: ID!) {
+                        order(id: $id) {
+                             lines {
+                               id
+                             }
+                            ...OrderDetail
+                        }
+                    }
+
+                    fragment OrderDetail on Order {
+                        id
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+
+                    fragment OrderLine on OrderLine {
+                        id
+                        featuredAsset {
+                            preview
+                        }
+                    }
+                `),
+                {
+                    id: 'T_2',
+                },
+            );
+            expect(result.order!.lines.length).toBe(2);
+            expect(result.order!.lines.map(l => l.featuredAsset?.preview)).toEqual([
+                'test-url/test-assets/derick-david-409858-unsplash__preview.jpg',
+                'test-url/test-assets/derick-david-409858-unsplash__preview.jpg',
+            ]);
+        });
+
         it('order with calculated line properties', async () => {
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 gql`
                     query GetOrderWithLineCalculatedProps($id: ID!) {
                         order(id: $id) {
@@ -1079,9 +1145,8 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
-                GET_ORDER_LIST_FULFILLMENTS,
-            );
+            const { orders } =
+                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
@@ -1170,7 +1235,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, failsToSettlePaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1290,7 +1355,7 @@ describe('Orders resolver', () => {
         });
 
         it('cannot cancel from ArrangingPayment state', async () => {
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {
@@ -1708,7 +1773,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order!.shipping,
+                    shipping: order!.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId,
@@ -1716,7 +1781,7 @@ describe('Orders resolver', () => {
             });
             refundGuard.assertSuccess(refundOrder);
 
-            expect(refundOrder.shipping).toBe(order!.shipping);
+            expect(refundOrder.shipping).toBe(order!.shippingWithTax);
             expect(refundOrder.items).toBe(order!.subTotalWithTax);
             expect(refundOrder.total).toBe(order!.totalWithTax);
             expect(refundOrder.transactionId).toBe(null);
@@ -1815,7 +1880,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, singleStageRefundFailingPaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1827,7 +1892,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -1843,7 +1908,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -1862,7 +1927,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1886,7 +1951,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -2181,7 +2246,7 @@ describe('Orders resolver', () => {
         });
 
         it('adds a partial payment', async () => {
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
@@ -2779,6 +2844,59 @@ describe('Orders resolver', () => {
                 id: order.id,
             });
             expect(order2?.state).toBe('PartiallyShipped');
+        });
+    });
+
+    describe('multiple items to order', () => {
+        it('adds multiple items to a new active order', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemsToOrder } = await shopClient.query<
+                CodegenShop.AddItemsToOrderMutation,
+                CodegenShop.AddItemsToOrderMutationVariables
+            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+                inputs: [
+                    {
+                        productVariantId: 'T_1',
+                        quantity: 5,
+                    },
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 3,
+                    },
+                ],
+            });
+            expect(addItemsToOrder.order.lines.length).toBe(2);
+            expect(addItemsToOrder.order.lines[0].quantity).toBe(5);
+            expect(addItemsToOrder.order.lines[1].quantity).toBe(3);
+        });
+
+        it('adds successful items and returns error results for failed items', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemsToOrder } = await shopClient.query<
+                CodegenShop.AddItemsToOrderMutation,
+                CodegenShop.AddItemsToOrderMutationVariables
+            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+                inputs: [
+                    {
+                        productVariantId: 'T_1',
+                        quantity: 1,
+                    },
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 999999, // Exceeds limit
+                    },
+                ],
+            });
+            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1');
+            // Should have added 1 of T_1
+            expect(t1?.quantity).toBe(1);
+            // Should not have added T_2
+            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2');
+            expect(t2).toBeUndefined();
+            // Should have errors
+            expect(addItemsToOrder.errorResults.length).toBe(1);
+            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR');
+            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR');
         });
     });
 });

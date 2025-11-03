@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## UserService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="38" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/user#user'>User</a> entities.
 
@@ -102,7 +102,7 @@ Sets the <a href='/reference/typescript-api/entities/authentication-method#nativ
 flow.
 ### resetPasswordByToken
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
 
 Verifies a passwordResetToken by looking for a User which has previously had it set using the
 `setPasswordResetToken()` method, and checks that the token is valid and has not expired.
@@ -122,7 +122,7 @@ Sets the <a href='/reference/typescript-api/entities/authentication-method#nativ
 flow.
 ### changeIdentifierByToken
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/reference/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/reference/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;`}   />
 
 Changes the User identifier as part of the storefront flow used by Customers to set a
 new email address, with the token previously set using the `setIdentifierChangeToken()` method.

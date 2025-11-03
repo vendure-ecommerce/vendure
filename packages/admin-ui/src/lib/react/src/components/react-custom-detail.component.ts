@@ -20,8 +20,7 @@ export interface ReactCustomDetailComponentContext {
     template: ` <div [vdrReactComponentHost]="reactComponent" [context]="context" [props]="props"></div> `,
     styleUrls: ['./react-global-styles.scss'],
     encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [ReactComponentHostDirective],
+    imports: [ReactComponentHostDirective]
 })
 export class ReactCustomDetailComponent implements CustomDetailComponent, OnInit {
     detailForm: UntypedFormGroup;

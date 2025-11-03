@@ -17,6 +17,7 @@ import { I18nService } from '../../providers/i18n/i18n.service';
  */
 @Pipe({
     name: 'duration',
+    standalone: false,
 })
 export class DurationPipe implements PipeTransform {
     constructor(private i18nService: I18nService) {}

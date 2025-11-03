@@ -43,6 +43,7 @@ export const GET_ADMINISTRATOR_LIST = gql`
     selector: 'vdr-administrator-list',
     templateUrl: './administrator-list.component.html',
     styleUrls: ['./administrator-list.component.scss'],
+    standalone: false
 })
 export class AdministratorListComponent extends TypedBaseListComponent<
     typeof GetAdministratorListDocument,

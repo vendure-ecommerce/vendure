@@ -41,6 +41,7 @@ const GET_LATEST_ORDERS = gql`
     templateUrl: './latest-orders-widget.component.html',
     styleUrls: ['./latest-orders-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LatestOrdersWidgetComponent implements OnInit {
     latestOrders$: Observable<Array<ItemOf<GetLatestOrdersQuery, 'orders'>>>;

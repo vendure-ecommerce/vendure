@@ -27,6 +27,7 @@ export const GET_COUPON_CODE_SELECTOR_PROMOTION_LIST = gql`
     templateUrl: './coupon-code-selector.component.html',
     styleUrls: ['./coupon-code-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CouponCodeSelectorComponent implements OnInit {
     @Input() couponCodes: string[];

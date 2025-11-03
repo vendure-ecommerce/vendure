@@ -19,6 +19,7 @@ import {
     ADD_ITEM_TO_ORDER,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
+    REMOVE_ALL_ORDER_LINES,
     REMOVE_ITEM_FROM_ORDER,
 } from './graphql/shop-definitions';
 
@@ -154,7 +155,7 @@ describe('Order interceptor', () => {
         expect(interceptor1.willAdjustOrderLineSpy.mock.calls[0][2].customFields).toBeUndefined();
     });
 
-    it('willRemoveItemFromOrder', async () => {
+    it('willRemoveItemFromOrder when removing an item', async () => {
         const { removeOrderLine } = await shopClient.query<
             CodegenShop.RemoveItemFromOrderMutation,
             CodegenShop.RemoveItemFromOrderMutationVariables
@@ -168,6 +169,47 @@ describe('Order interceptor', () => {
         expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][0]).toBeInstanceOf(RequestContext);
         expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][1]).toBeInstanceOf(Order);
         expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][2].productVariant.id).toEqual(1);
+    });
+
+    it('willRemoveItemFromOrder when removing all items', async () => {
+        const { addItemToOrder: addFirstItem } = await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
+
+        orderResultGuard.assertSuccess(addFirstItem);
+
+        const { addItemToOrder: addSecondItem } = await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_2',
+            quantity: 2,
+        });
+
+        orderResultGuard.assertSuccess(addSecondItem);
+
+        interceptor1.willRemoveItemFromOrderSpy.mockClear();
+
+        const { removeAllOrderLines } = await shopClient.query<
+            CodegenShop.RemoveAllOrderLinesMutation,
+            CodegenShop.RemoveAllOrderLinesMutationVariables
+        >(REMOVE_ALL_ORDER_LINES, undefined, {
+            overridden: 1,
+        });
+
+        orderResultGuard.assertSuccess(removeAllOrderLines);
+
+        expect(interceptor1.willRemoveItemFromOrderSpy).toHaveBeenCalledTimes(2);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][0]).toBeInstanceOf(RequestContext);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][1]).toBeInstanceOf(Order);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[0][2].productVariant.id).toEqual(1);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[1][0]).toBeInstanceOf(RequestContext);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[1][1]).toBeInstanceOf(Order);
+        expect(interceptor1.willRemoveItemFromOrderSpy.mock.calls[1][2].productVariant.id).toEqual(2);
     });
 
     it('willAddItemToOrder with error', async () => {
@@ -209,7 +251,7 @@ describe('Order interceptor', () => {
             CodegenShop.AdjustItemQuantityMutation,
             CodegenShop.AdjustItemQuantityMutationVariables
         >(ADJUST_ITEM_QUANTITY, {
-            orderLineId: 'T_2',
+            orderLineId: 'T_4',
             quantity: 1,
         });
 
@@ -232,7 +274,7 @@ describe('Order interceptor', () => {
             CodegenShop.AdjustItemQuantityMutation,
             CodegenShop.AdjustItemQuantityMutationVariables
         >(ADJUST_ITEM_QUANTITY, {
-            orderLineId: 'T_2',
+            orderLineId: 'T_4',
             quantity: 5,
         });
 
@@ -246,7 +288,7 @@ describe('Order interceptor', () => {
             CodegenShop.RemoveItemFromOrderMutation,
             CodegenShop.RemoveItemFromOrderMutationVariables
         >(REMOVE_ITEM_FROM_ORDER, {
-            orderLineId: 'T_2',
+            orderLineId: 'T_4',
         });
 
         orderResultGuard.assertErrorResult(removeOrderLine);
@@ -270,7 +312,7 @@ describe('Order interceptor', () => {
         >(
             REMOVE_ITEM_FROM_ORDER,
             {
-                orderLineId: 'T_2',
+                orderLineId: 'T_4',
             },
             {
                 overridden: 1,

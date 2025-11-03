@@ -6,75 +6,69 @@ import {
     facetValueCollectionFilter,
     mergeConfig,
 } from '@vendure/core';
-import {
-    createTestEnvironment,
-    E2E_DEFAULT_CHANNEL_TOKEN,
-    registerInitializer,
-    SimpleGraphQLClient,
-    SqljsInitializer,
-} from '@vendure/testing';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { SEARCH_PRODUCTS_ADMIN } from './graphql/admin-definitions';
 import {
+    AssignProductsToChannelMutation,
+    AssignProductsToChannelMutationVariables,
+    AssignProductVariantsToChannelMutation,
+    AssignProductVariantsToChannelMutationVariables,
     ChannelFragment,
-    CurrencyCode,
-    LanguageCode,
-    SearchInput,
-    SearchResultSortParameter,
-    SortOrder,
-    SearchProductsAdminQuery,
-    SearchProductsAdminQueryVariables,
-    SearchFacetValuesQuery,
-    SearchFacetValuesQueryVariables,
-    UpdateProductMutation,
-    UpdateProductMutationVariables,
-    SearchCollectionsQuery,
-    SearchCollectionsQueryVariables,
-    SearchGetPricesQuery,
-    SearchGetPricesQueryVariables,
-    CreateFacetMutation,
-    CreateFacetMutationVariables,
-    UpdateProductVariantsMutation,
-    UpdateProductVariantsMutationVariables,
-    DeleteProductVariantMutation,
-    DeleteProductVariantMutationVariables,
-    DeleteProductMutation,
-    DeleteProductMutationVariables,
-    UpdateCollectionMutation,
-    UpdateCollectionMutationVariables,
+    CreateChannelMutation,
+    CreateChannelMutationVariables,
     CreateCollectionMutation,
     CreateCollectionMutationVariables,
-    UpdateTaxRateMutation,
-    UpdateTaxRateMutationVariables,
-    SearchGetAssetsQuery,
-    SearchGetAssetsQueryVariables,
-    UpdateAssetMutation,
-    UpdateAssetMutationVariables,
-    DeleteAssetMutation,
-    DeleteAssetMutationVariables,
-    ReindexMutation,
+    CreateFacetMutation,
+    CreateFacetMutationVariables,
     CreateProductMutation,
     CreateProductMutationVariables,
     CreateProductVariantsMutation,
     CreateProductVariantsMutationVariables,
-    CreateChannelMutation,
-    CreateChannelMutationVariables,
-    AssignProductsToChannelMutation,
-    AssignProductsToChannelMutationVariables,
+    CurrencyCode,
+    DeleteAssetMutation,
+    DeleteAssetMutationVariables,
+    DeleteProductMutation,
+    DeleteProductMutationVariables,
+    DeleteProductVariantMutation,
+    DeleteProductVariantMutationVariables,
+    LanguageCode,
+    ReindexMutation,
     RemoveProductsFromChannelMutation,
     RemoveProductsFromChannelMutationVariables,
-    AssignProductVariantsToChannelMutation,
-    AssignProductVariantsToChannelMutationVariables,
     RemoveProductVariantsFromChannelMutation,
     RemoveProductVariantsFromChannelMutationVariables,
+    SearchCollectionsQuery,
+    SearchCollectionsQueryVariables,
+    SearchFacetValuesQuery,
+    SearchFacetValuesQueryVariables,
+    SearchGetAssetsQuery,
+    SearchGetAssetsQueryVariables,
+    SearchGetPricesQuery,
+    SearchGetPricesQueryVariables,
+    SearchInput,
+    SearchProductsAdminQuery,
+    SearchProductsAdminQueryVariables,
+    SearchResultSortParameter,
+    SortOrder,
+    UpdateAssetMutation,
+    UpdateAssetMutationVariables,
     UpdateChannelMutation,
     UpdateChannelMutationVariables,
+    UpdateCollectionMutation,
+    UpdateCollectionMutationVariables,
+    UpdateProductMutation,
+    UpdateProductMutationVariables,
+    UpdateProductVariantsMutation,
+    UpdateProductVariantsMutationVariables,
+    UpdateTaxRateMutation,
+    UpdateTaxRateMutationVariables,
 } from './graphql/generated-e2e-admin-types';
 import {
     LogicalOperator,
@@ -82,8 +76,8 @@ import {
     SearchProductsShopQueryVariables,
 } from './graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -92,8 +86,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_CHANNEL,
     UPDATE_COLLECTION,
@@ -103,8 +97,6 @@ import {
 } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
-
-registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {

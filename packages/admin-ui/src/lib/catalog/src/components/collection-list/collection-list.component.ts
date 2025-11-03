@@ -18,6 +18,7 @@ import { CollectionOrderEvent } from '../collection-data-table/collection-data-t
     templateUrl: './collection-list.component.html',
     styleUrls: ['./collection-list.component.scss', './collection-list-common.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CollectionListComponent
     extends TypedBaseListComponent<typeof GetCollectionListDocument, 'collections'>

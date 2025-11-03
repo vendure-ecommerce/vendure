@@ -149,7 +149,7 @@ describe('Order modification', () => {
     let testShippingMethodId: string;
     let testExpressShippingMethodId: string;
     const orderGuard: ErrorResultGuard<
-        UpdatedOrderFragment | OrderWithModificationsFragment | OrderFragment
+        UpdatedOrderFragment | OrderWithModificationsFragment | OrderFragment | TestOrderWithPaymentsFragment
     > = createErrorResultGuard(input => !!input.id);
 
     beforeAll(async () => {
@@ -1963,7 +1963,7 @@ describe('Order modification', () => {
             order = modifyOrder;
         });
 
-        it('creates a Refund with the correct amount', async () => {
+        it('creates a Refund with the correct amount', () => {
             expect(order.payments?.[0].refunds[0].total).toBe(SHIPPING_OTHER - SHIPPING_GB);
         });
 
@@ -2532,6 +2532,91 @@ describe('Order modification', () => {
             expect(modifyOrder.lines[1].proratedLinePriceWithTax).toBe(
                 modifyOrder.lines[1].discountedLinePriceWithTax / 2,
             );
+        });
+    });
+
+    describe('payment handling with multiple modifications  ', () => {
+        let orderId3: string;
+
+        it('should handle manual payment after multiple modifications', async () => {
+            // 1. Create an order
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            ]);
+
+            // 2. First modification - add an item
+            const { modifyOrder: firstModification } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    addItems: [{ productVariantId: 'T_2', quantity: 1 }],
+                },
+            });
+            orderGuard.assertSuccess(firstModification);
+
+            // 3. Second modification - add another item
+            const { modifyOrder: secondModification } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    addItems: [{ productVariantId: 'T_3', quantity: 1 }],
+                },
+            });
+            orderGuard.assertSuccess(secondModification);
+
+            // 4. Transition to ArrangingAdditionalPayment state
+            const transitionResult = await adminTransitionOrderToState(
+                order.id,
+                'ArrangingAdditionalPayment',
+            );
+            orderGuard.assertSuccess(transitionResult);
+            expect(transitionResult.state).toBe('ArrangingAdditionalPayment');
+
+            // 5. Add manual payment - this should currently fail due to a bug
+            const { addManualPaymentToOrder } = await adminClient.query<
+                Codegen.AddManualPaymentMutation,
+                Codegen.AddManualPaymentMutationVariables
+            >(ADD_MANUAL_PAYMENT, {
+                input: {
+                    orderId: order.id,
+                    method: 'test',
+                    transactionId: 'MULTI_MOD_123',
+                    metadata: {
+                        test: 'multiple modifications',
+                    },
+                },
+            });
+
+            // This should fail due to the bug, but we expect it to succeed after the fix
+            orderGuard.assertSuccess(addManualPaymentToOrder);
+
+            // Verify the payment was added correctly
+            expect(addManualPaymentToOrder.payments?.length).toBe(2);
+            expect(addManualPaymentToOrder.payments?.[1]).toEqual({
+                id: expect.any(String),
+                transactionId: 'MULTI_MOD_123',
+                state: 'Settled',
+                amount: expect.any(Number),
+                method: 'test',
+                metadata: {
+                    test: 'multiple modifications',
+                },
+                refunds: [],
+            });
+
+            // Verify the modifications are properly settled
+            expect(addManualPaymentToOrder.modifications.length).toBe(2);
+            expect(addManualPaymentToOrder.modifications[0].isSettled).toBe(true);
+            expect(addManualPaymentToOrder.modifications[1].isSettled).toBe(true);
         });
     });
 

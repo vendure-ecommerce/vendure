@@ -6,6 +6,7 @@
     "add-asset": "افزودن دارایی",
     "add-asset-with-count": "اضافه کردن {count} دارایی",
     "assets-selected-count": "{ count } دارایی انتخاب شده است.",
+    "change-asset": "تغییر دارایی",
     "dimensions": "ابعاد",
     "focal-point": "نقطه کانونی",
     "notify-create-assets-success": "{count} دارایی جدید ایجاد شد.",
@@ -16,6 +17,7 @@
     "select-assets": "دارایی ها را انتخاب کنید",
     "set-as-featured-asset": "تنظیم به عنوان دارایی برجسته",
     "set-focal-point": "نقطه کانونی را تنظیم کنید",
+    "size": "اندازه",
     "source-file": "فایل منبع",
     "unset-focal-point": "نقطه کانونی را حذف کنید",
     "update-focal-point": "نقطه کانونی را بروزرسانی کنید",
@@ -45,6 +47,7 @@
     "profile": "پروفایل",
     "promotions": "تبلیغات",
     "roles": "نقش ها",
+    "scheduled-tasks": "وظایف مجدول",
     "seller-orders": "سفارشات فروشنده",
     "sellers": "فروشندگان",
     "shipping-methods": "روش های حمل و نقل",
@@ -237,12 +240,14 @@
     "delete": "حذف",
     "description": "توضیحات",
     "details": "جزئیات",
+    "disable": "غیرفعال",
     "disabled": "غیرفعال است",
     "discard-changes": "لغو تغییرات",
     "duplicate": "تکثیر",
     "edit": "ویرایش",
     "edit-field": "ویرایش فیلد",
     "edit-note": "ویرایش یادداشت",
+    "enable": "فعال",
     "enabled": "فعال است",
     "end-date": "تاریخ پایان",
     "expand-entries": "مشاهده گزینه ها",
@@ -274,7 +279,7 @@
     "name": "نام",
     "no-alerts": "هیچ پیغامی وجود ندارد",
     "no-bulk-actions-available": "هیچ اقدام انبوهی در دسترس نیست.",
-    "no-channel-selected": "",
+    "no-channel-selected": "هیچ کانالی انتخاب نشده است",
     "no-results": "بدون نتیجه",
     "not-applicable": "قابل اجرا نیست",
     "not-set": "تنظیم نشده است.",
@@ -475,6 +480,7 @@
     "year": "سال"
   },
   "editor": {
+    "height": "ارتفاع",
     "image-alt": "توضیحات",
     "image-src": "منبع",
     "image-title": "عنوان",
@@ -483,7 +489,8 @@
     "link-target": "نحوه اجرای لینک",
     "link-title": "عنوان لینک",
     "remove-link": "حذف",
-    "set-link": "تنظیم لینک"
+    "set-link": "تنظیم لینک",
+    "width": "عرض"
   },
   "error": {
     "403-forbidden": "شما در حال حاضر مجاز به دسترسی به \"{ path }\" نیستید. یا فاقد مجوز هستید یا جلسه شما منقضی شده است.",
@@ -528,6 +535,7 @@
     "promotions": "تبلیغات",
     "roles": "نقش ها",
     "sales": "فروش",
+    "scheduled-tasks": "وظایف مجدول",
     "sellers": "فروشندگان",
     "settings": "تنظیمات",
     "shipping-methods": "روش های حمل و نقل",
@@ -643,6 +651,7 @@
     "previous-customer": "مشتری قبلی",
     "product-name": "نام محصول",
     "product-sku": "شناسه انحصاری محصول",
+    "product-variant": "گونه محصول",
     "promotions-applied": "کد تخفیف تبلیغاتی اعمال شد",
     "prorated-unit-price": "تخصیص قیمت واحد",
     "quantity": "تعداد",
@@ -675,7 +684,7 @@
     "set-billing-address": "تعیین آدرس صورتحساب",
     "set-coupon-codes": "تعیین کد تخفیف",
     "set-customer-for-order": "تعیین مشتری",
-    "set-customer-success": "",
+    "set-customer-success": "مشتری با موفقیت تعیین شد",
     "set-fulfillment-state": "علامت زدن بعنوان {state}",
     "set-shipping-address": "تنظیم آدرس حمل و نقل",
     "set-shipping-method": "تنظیم شیوه حمل و نقل",
@@ -790,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "صف صف های وظایف",
+    "could-not-trigger-task": "نمی تواند وظیفه را اجرا کند",
     "health-all-systems-up": "همه بخش ها بدرستی کار میکند.",
     "health-error": "خطا! یک بخش یا بیشتر از سیستم از دسترس خارج شده است.",
     "health-last-checked": "زمان آخرین بررسی",
@@ -809,6 +819,13 @@
     "job-state-completed": "تکمیل شده",
     "job-state-failed": "ناموفق",
     "job-state-pending": "در انتظار",
-    "job-state-running": "در حال اجرا"
+    "job-state-running": "در حال اجرا",
+    "last-executed-at": "آخرین اجرا",
+    "last-result": "آخرین نتیجه",
+    "next-execution-at": "تالی",
+    "run-task": "اجرا کار",
+    "schedule": "جدول",
+    "task-id": "شناسه کار",
+    "task-will-be-triggered": "کار اجرا خواهد شد"
   }
 }

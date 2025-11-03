@@ -7,7 +7,7 @@ import {
     LanguageCode,
     Product,
     ProductVariant,
-    RequestContext
+    RequestContext,
 } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
@@ -192,8 +192,8 @@ export interface ElasticsearchOptions {
      * If this property is set to `false` it's not accessible in the `customMappings` field but it's still getting
      * parsed to the elasticsearch index.
      *
-     * This config option defines custom mappings which are accessible when the "groupByProduct"
-     * input options is set to `true`. In addition, custom variant mappings can be accessed by using
+     * This config option defines custom mappings which are accessible when the "groupByProduct" or "groupBySKU"
+     * input options is set to `true` (Do not set both to true at the same time). In addition, custom variant mappings can be accessed by using
      * the `customProductVariantMappings` field, which is always available.
      *
      * @example
@@ -240,12 +240,14 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector, RequestContext]>;
+        [fieldName: string]: CustomMapping<
+            [Product, ProductVariant[], LanguageCode, Injector, RequestContext]
+        >;
     };
     /**
      * @description
-     * This config option defines custom mappings which are accessible when the "groupByProduct"
-     * input options is set to `false`. In addition, custom product mappings can be accessed by using
+     * This config option defines custom mappings which are accessible when the "groupByProduct" and "groupBySKU"
+     * input options are both set to `false`. In addition, custom product mappings can be accessed by using
      * the `customProductMappings` field, which is always available.
      *
      * @example
@@ -487,8 +489,8 @@ export interface SearchConfig {
      *
      * @example
      * ```ts
-     * mapQuery: (query, input, searchConfig, channelId, enabledOnly){
-     *   if(query.bool.must){
+     * mapQuery: (query, input, searchConfig, channelId, enabledOnly, ctx) => {
+     *   if (query.bool.must) {
      *     delete query.bool.must;
      *   }
      *   query.bool.should = [
@@ -523,6 +525,7 @@ export interface SearchConfig {
         searchConfig: DeepRequired<SearchConfig>,
         channelId: ID,
         enabledOnly: boolean,
+        ctx: RequestContext,
     ) => any;
     /**
      * @description
@@ -728,8 +731,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
         totalItemsMaxSize: 10000,
         multiMatchType: 'best_fields',
         boostFields: {
-            productName: 1,
-            productVariantName: 1,
+            productName: 5,
+            productVariantName: 5,
             description: 1,
             sku: 1,
         },

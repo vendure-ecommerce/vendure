@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CollectionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="72" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="77" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/collection#collection'>Collection</a> entities.
 
 ```ts title="Signature"
 class CollectionService implements OnModuleInit {
-    constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService)
+    constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService, requestContextService: RequestContextService)
     findAll(ctx: RequestContext, options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean }, relations?: RelationPaths<Collection>) => Promise<PaginatedList<Translated<Collection>>>;
     findOne(ctx: RequestContext, collectionId: ID, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
     findByIds(ctx: RequestContext, ids: ID[], relations?: RelationPaths<Collection>) => Promise<Array<Translated<Collection>>>;
@@ -25,7 +25,7 @@ class CollectionService implements OnModuleInit {
     getAvailableFilters(ctx: RequestContext) => ConfigurableOperationDefinition[];
     getParent(ctx: RequestContext, collectionId: ID) => Promise<Collection | undefined>;
     getChildren(ctx: RequestContext, collectionId: ID) => Promise<Collection[]>;
-    getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID, slug: string }>>;
+    getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID; slug: string }>>;
     getCollectionsByProductId(ctx: RequestContext, productId: ID, publicOnly: boolean) => Promise<Array<Translated<Collection>>>;
     getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER) => Promise<Array<Translated<Collection>>>;
     getAncestors(collectionId: ID) => Promise<Collection[]>;
@@ -36,6 +36,8 @@ class CollectionService implements OnModuleInit {
     update(ctx: RequestContext, input: UpdateCollectionInput) => Promise<Translated<Collection>>;
     delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
     move(ctx: RequestContext, input: MoveCollectionInput) => Promise<Translated<Collection>>;
+    setApplyAllFiltersOnProductUpdates(applyAllFiltersOnProductUpdates: boolean) => ;
+    triggerApplyFiltersJob(ctx: RequestContext, options?: { collectionIds?: ID[]; applyToChangedVariantsOnly?: boolean }) => ;
     getCollectionProductVariantIds(collection: Collection, ctx?: RequestContext) => Promise<ID[]>;
     assignCollectionsToChannel(ctx: RequestContext, input: AssignCollectionsToChannelInput) => Promise<Array<Translated<Collection>>>;
     removeCollectionsFromChannel(ctx: RequestContext, input: RemoveCollectionsFromChannelInput) => Promise<Array<Translated<Collection>>>;
@@ -49,7 +51,7 @@ class CollectionService implements OnModuleInit {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, jobQueueService: <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, configService: ConfigService, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>) => CollectionService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, jobQueueService: <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, configService: ConfigService, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, requestContextService: <a href='/reference/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a>) => CollectionService`}   />
 
 
 ### findAll
@@ -89,7 +91,7 @@ Returns all configured CollectionFilters, as specified by the <a href='/referenc
 Returns all child Collections of the Collection with the given id.
 ### getBreadcrumbs
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>) => Promise&#60;Array&#60;{ name: string; id: <a href='/reference/typescript-api/common/id#id'>ID</a>, slug: string }&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>) => Promise&#60;Array&#60;{ name: string; id: <a href='/reference/typescript-api/common/id#id'>ID</a>; slug: string }&#62;&#62;`}   />
 
 Returns an array of name/id pairs representing all ancestor Collections up
 to the Root Collection.
@@ -146,6 +148,28 @@ will produce more queries the deeper the collection is in the tree.
 
 Moves a Collection by specifying the parent Collection ID, and an index representing the order amongst
 its siblings.
+### setApplyAllFiltersOnProductUpdates
+
+<MemberInfo kind="method" type={`(applyAllFiltersOnProductUpdates: boolean) => `}  since="3.1.3"  />
+
+By default, whenever product data is updated (as determined by subscribing to the
+<a href='/reference/typescript-api/events/event-types#productevent'>ProductEvent</a> and <a href='/reference/typescript-api/events/event-types#productvariantevent'>ProductVariantEvent</a> events), the CollectionFilters are re-applied
+to all Collections.
+
+In certain scenarios, such as when a large number of products are updated at once due to
+bulk data import, this can be inefficient. In such cases, you can disable this behaviour
+for the duration of the import process by calling this method with `false`, and then
+re-enable it by calling with `true`.
+
+Afterward, you can call the `triggerApplyFiltersJob` method to manually re-apply the filters.
+### triggerApplyFiltersJob
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: { collectionIds?: <a href='/reference/typescript-api/common/id#id'>ID</a>[]; applyToChangedVariantsOnly?: boolean }) => `}  since="3.1.3"  />
+
+Triggers the creation of an `apply-collection-filters` job which will cause the contents
+of the specified collections to be re-evaluated against their filters.
+
+If no `collectionIds` option is passed, then all collections will be re-evaluated.
 ### getCollectionProductVariantIds
 
 <MemberInfo kind="method" type={`(collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/common/id#id'>ID</a>[]&#62;`}   />

@@ -6,7 +6,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
 import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
@@ -976,7 +976,7 @@ describe('ListQueryBuilder', () => {
                                 description: { contains: 'e' },
                             },
                             {
-                                _or: [{ active: { eq: false } }, { ownerId: { eq: '10' } }],
+                                _or: [{ active: { eq: false } }, { ownerId: { eq: 'T_10' } }],
                             },
                         ],
                     },
@@ -1115,6 +1115,23 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
         });
 
+        it('filter by calculated property with boolean expression', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                descriptionLength: {
+                                    lt: 12,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
         it('filter by calculated property with join', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -1122,6 +1139,23 @@ describe('ListQueryBuilder', () => {
                         price: {
                             lt: 14,
                         },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
+        it('filter by calculated property with join and boolean expression', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                price: {
+                                    lt: 14,
+                                },
+                            },
+                        ],
                     },
                 },
             });

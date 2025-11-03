@@ -36,6 +36,7 @@ interface Option {
     styleUrls: ['./option-value-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
     providers: [OPTION_VALUE_INPUT_VALUE_ACCESSOR],
+    standalone: false
 })
 export class OptionValueInputComponent implements ControlValueAccessor {
     @Input() groupName = '';

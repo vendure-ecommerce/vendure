@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
 
+import { Instrument } from '../common';
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
 
 import { loggerCtx } from './constants';
@@ -46,6 +47,7 @@ import { CreateQueueOptions, JobData } from './types';
  * @docsCategory JobQueue
  */
 @Injectable()
+@Instrument()
 export class JobQueueService implements OnModuleDestroy {
     private queues: Array<JobQueue<any>> = [];
     private hasStarted = false;
@@ -54,7 +56,10 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private jobBufferService: JobBufferService) {}
+    constructor(
+        private configService: ConfigService,
+        private jobBufferService: JobBufferService,
+    ) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -74,11 +79,13 @@ export class JobQueueService implements OnModuleDestroy {
         }
         const wrappedProcessFn = this.createWrappedProcessFn(options.process);
         options = { ...options, process: wrappedProcessFn };
+
         const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
         }
         this.queues.push(queue);
+
         return queue;
     }
 

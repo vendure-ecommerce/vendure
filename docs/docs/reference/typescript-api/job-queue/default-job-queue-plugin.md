@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="183" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="127" packageName="@vendure/core" />
 
 A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>. If you add this
 plugin to an existing Vendure installation, you'll need to run a [database migration](/guides/developer-guide/migrations), since this
@@ -101,6 +101,29 @@ export const config: VendureConfig = {
 };
 ```
 
+### Removing old jobs
+Since v3.3, the job queue will automatically remove old jobs from the database. This is done by a scheduled task
+which runs every 2 hours by default. The number of jobs to keep in the database can be configured using the
+`keepJobsCount` option. The default is 1000.
+
+*Example*
+
+```ts
+export const config: VendureConfig = {
+  plugins: [
+    DefaultJobQueuePlugin.init({
+      // The number of completed/failed/cancelled
+      // jobs to keep in the database. The default is 1000.
+      keepJobsCount: 100,
+      // The interval at which to run the clean-up task.
+      // This can be a standard cron expression or a function
+      // that returns a cron expression. The default is every 2 hours.
+      cleanJobsSchedule: cron => cron.every(5).hours(),
+    }),
+  ],
+};
+```
+
 ```ts title="Signature"
 class DefaultJobQueuePlugin {
     init(options: DefaultJobQueueOptions) => Type<DefaultJobQueuePlugin>;
@@ -119,9 +142,18 @@ class DefaultJobQueuePlugin {
 </div>
 
 
+## cleanJobsTask
+
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/clean-jobs-task.ts" sourceLine="18" packageName="@vendure/core" since="3.3.0" />
+
+A <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a> that cleans up old jobs from the database when using the DefaultJobQueuePlugin.
+You can configure the settings & schedule of the task via the <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a> options.
+
+
+
 ## DefaultJobQueueOptions
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/types.ts" sourceLine="12" packageName="@vendure/core" />
 
 Configuration options for the DefaultJobQueuePlugin. These values get passed into the
 <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>.
@@ -134,6 +166,8 @@ interface DefaultJobQueueOptions {
     setRetries?: (queueName: string, job: Job) => number;
     useDatabaseForBuffer?: boolean;
     gracefulShutdownTimeout?: number;
+    keepJobsCount?: number;
+    cleanJobsSchedule?: ScheduledTaskConfig['schedule'];
 }
 ```
 
@@ -196,6 +230,20 @@ That means when the server is shut down but a job is running, the job queue will
 wait for the job to complete before allowing the server to shut down. If the job
 does not complete within this timeout window, the job will be forced to stop
 and the server will shut down anyway.
+### keepJobsCount
+
+<MemberInfo kind="property" type={`number`} default={`1000`}  since="3.3.0"  />
+
+The number of completed/failed jobs to keep in the database. This is useful for
+debugging and auditing purposes, but if you have a lot of jobs, it may be
+desirable to limit the number of records in the database.
+### cleanJobsSchedule
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtaskconfig'>ScheduledTaskConfig</a>['schedule']`} default={`cron =&#62; cron.every(2).hours()`}  since="3.3.0"  />
+
+The schedule for the "clean-jobs" task. This task will run periodically to clean up
+old jobs from the database. The schedule can be a cron expression or a function
+that returns a cron expression.
 
 
 </div>

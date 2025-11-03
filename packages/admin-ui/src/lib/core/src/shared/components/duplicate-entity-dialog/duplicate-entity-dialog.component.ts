@@ -26,6 +26,7 @@ type EntityDuplicatorDef = GetEntityDuplicatorsQuery['entityDuplicators'][0];
     templateUrl: './duplicate-entity-dialog.component.html',
     styleUrls: ['./duplicate-entity-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DuplicateEntityDialogComponent<T extends { id: string }> implements OnInit, Dialog<boolean> {
     resolveWith: (result?: boolean | undefined) => void;

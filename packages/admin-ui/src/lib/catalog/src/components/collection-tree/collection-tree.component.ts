@@ -20,6 +20,7 @@ import { CollectionPartial, RearrangeEvent } from './collection-tree.types';
     styleUrls: ['./collection-tree.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [CollectionTreeService],
+    standalone: false
 })
 export class CollectionTreeComponent implements OnInit, OnChanges {
     @Input() collections: CollectionPartial[];

@@ -57,6 +57,7 @@ interface OptionGroupUiModel {
     templateUrl: './product-variants-editor.component.html',
     styleUrls: ['./product-variants-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     formValueChanged = false;

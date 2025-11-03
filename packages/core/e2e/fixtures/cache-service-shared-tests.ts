@@ -59,12 +59,33 @@ export async function setsAKeyWithTtl(cacheService: CacheService, ttlProvider: T
     expect(result2).toBeUndefined();
 }
 
+export async function setsAKeyWithSubSecondTtl(
+    cacheService: CacheService,
+    ttlProvider: TestingCacheTtlProvider,
+) {
+    ttlProvider.setTime(new Date().getTime());
+    await cacheService.set('test-key', 'test-value', { ttl: 900 });
+    const result = await cacheService.get('test-key');
+    expect(result).toBe('test-value');
+
+    ttlProvider.incrementTime(2000);
+
+    const result2 = await cacheService.get('test-key');
+
+    expect(result2).toBeUndefined();
+}
+
 export async function evictsTheOldestKeyWhenCacheIsFull(cacheService: CacheService) {
     await cacheService.set('key1', 'value1');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key2', 'value2');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key3', 'value3');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key4', 'value4');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key5', 'value5');
+    await new Promise(resolve => setTimeout(resolve, 1));
 
     const result1 = await cacheService.get('key1');
     expect(result1).toBe('value1');
@@ -126,4 +147,11 @@ export async function invalidatesALargeNumberOfKeysByTag(cacheService: CacheServ
     for (let i = 0; i < 100; i++) {
         expect(await cacheService.get(`taggedKey${i}`)).toBeUndefined();
     }
+}
+
+export async function invalidTTLsShouldNotSetKey(cacheService: CacheService) {
+    await cacheService.set('test-key', 'test-value', { ttl: -1500 });
+    const result = await cacheService.get('test-key');
+
+    expect(result).toBeUndefined();
 }

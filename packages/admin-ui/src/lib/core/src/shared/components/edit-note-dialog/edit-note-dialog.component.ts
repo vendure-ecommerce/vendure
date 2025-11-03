@@ -7,6 +7,7 @@ import { Dialog } from '../../../providers/modal/modal.types';
     templateUrl: './edit-note-dialog.component.html',
     styleUrls: ['./edit-note-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class EditNoteDialogComponent implements Dialog<{ note: string; isPrivate?: boolean }> {
     displayPrivacyControls = true;

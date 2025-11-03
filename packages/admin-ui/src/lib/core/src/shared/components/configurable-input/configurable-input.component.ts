@@ -52,6 +52,7 @@ import { CurrencyService } from '../../../providers/currency/currency.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class ConfigurableInputComponent
     implements OnInit, OnChanges, OnDestroy, ControlValueAccessor, Validator

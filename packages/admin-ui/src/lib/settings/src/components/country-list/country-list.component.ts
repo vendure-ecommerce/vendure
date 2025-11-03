@@ -28,6 +28,7 @@ export const GET_COUNTRY_LIST = gql`
     templateUrl: './country-list.component.html',
     styleUrls: ['./country-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CountryListComponent extends TypedBaseListComponent<typeof GetCountryListDocument, 'countries'> {
     dataTableListId = 'country-list';

@@ -25,6 +25,7 @@ import {
     templateUrl: './bulk-action-menu.component.html',
     styleUrls: ['./bulk-action-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     @Input() locationId: BulkActionLocationId;

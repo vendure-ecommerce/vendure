@@ -16,6 +16,7 @@ import { DataService } from '../../../data/providers/data.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class TagSelectorComponent implements OnInit, ControlValueAccessor {
     @Input() placeholder: string | undefined;

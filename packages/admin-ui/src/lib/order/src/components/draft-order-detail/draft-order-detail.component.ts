@@ -28,6 +28,7 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     templateUrl: './draft-order-detail.component.html',
     styleUrls: ['./draft-order-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DraftOrderDetailComponent
     extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>

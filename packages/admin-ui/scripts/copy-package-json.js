@@ -4,7 +4,7 @@ const fs = require('fs');
 // ng-packagr can use it when generating the library bundle
 console.log('Copying main package.json to library...');
 const packageJson = require('../package.json');
-const { name, version, license, dependencies } = packageJson;
-const subset = { name, version, license, dependencies };
+const { name, version, license, dependencies, repository } = packageJson;
+const subset = { name, version, license, dependencies, repository };
 
 fs.writeFileSync(path.join(__dirname, '/../src/lib/package.json'), JSON.stringify(subset, null, 2), 'utf8');

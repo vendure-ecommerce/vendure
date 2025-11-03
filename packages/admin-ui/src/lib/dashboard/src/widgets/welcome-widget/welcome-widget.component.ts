@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
     templateUrl: './welcome-widget.component.html',
     styleUrls: ['./welcome-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class WelcomeWidgetComponent implements OnInit {
     version = ADMIN_UI_VERSION;

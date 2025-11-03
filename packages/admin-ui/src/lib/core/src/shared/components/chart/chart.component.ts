@@ -30,6 +30,7 @@ export interface ChartEntry {
     templateUrl: './chart.component.html',
     styleUrls: ['./chart.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() entries: ChartEntry[] = [];
@@ -85,13 +86,14 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
         // Create the gradient definition on created event (always after chart re-render)
         this.chart.on('created', ctx => {
             const defs = ctx.svg.elem('defs');
-            defs.elem('linearGradient', {
-                id: 'gradient',
-                x1: 0,
-                y1: 1,
-                x2: 0,
-                y2: 0,
-            })
+            defs
+                .elem('linearGradient', {
+                    id: 'gradient',
+                    x1: 0,
+                    y1: 1,
+                    x2: 0,
+                    y2: 0,
+                })
                 .elem('stop', {
                     offset: 0,
                     'stop-color': 'var(--color-primary-400)',

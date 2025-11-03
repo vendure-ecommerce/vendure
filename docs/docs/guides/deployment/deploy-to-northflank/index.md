@@ -2,7 +2,7 @@
 title: "Deploying to Northflank"
 showtoc: true
 images: 
-    - "/docs/deployment/deploy-to-northflank/deploy-to-northflank.webp"
+  - "/docs/deployment/deploy-to-northflank/deploy-to-northflank.webp"
 ---
 
 import Tabs from '@theme/Tabs';
@@ -47,26 +47,29 @@ If you want to use the free plan, use the "Lite Template".
 
 ```json
 {
-  "apiVersion": "v1",
-  "name": "Vendure Template",
-  "description": "Vendure is a modern, open-source composable commerce platform",
-  "project": {
-    "spec": {
-      "name": "Vendure",
-      "region": "europe-west",
-      "description": "Vendure is a modern, open-source composable commerce platform",
-      "color": "#57637A"
-    }
-  },
+  "apiVersion": "v1.2",
   "spec": {
     "kind": "Workflow",
     "spec": {
       "type": "sequential",
       "steps": [
         {
+          "kind": "Project",
+          "ref": "project",
+          "spec": {
+            "name": "Vendure",
+            "region": "europe-west",
+            "description": "Vendure is a modern, open-source composable commerce platform",
+            "color": "#17b9ff"
+          }
+        },
+        {
           "kind": "Workflow",
           "spec": {
             "type": "parallel",
+            "context": {
+              "projectId": "${refs.project.id}"
+            },
             "steps": [
               {
                 "kind": "Addon",
@@ -114,6 +117,7 @@ If you want to use the free plan, use the "Lite Template".
         {
           "kind": "SecretGroup",
           "spec": {
+            "projectId": "${refs.project.id}",
             "secretType": "environment-arguments",
             "priority": 10,
             "name": "secrets",
@@ -199,6 +203,7 @@ If you want to use the free plan, use the "Lite Template".
           "ref": "builder",
           "spec": {
             "name": "builder",
+            "projectId": "${refs.project.id}",
             "billing": {
               "deploymentPlan": "nf-compute-20"
             },
@@ -222,6 +227,7 @@ If you want to use the free plan, use the "Lite Template".
           "kind": "Build",
           "spec": {
             "id": "${refs.builder.id}",
+            "projectId": "${refs.project.id}",
             "type": "service",
             "branch": "master",
             "buildOverrides": {
@@ -236,18 +242,28 @@ If you want to use the free plan, use the "Lite Template".
           "kind": "Workflow",
           "spec": {
             "type": "parallel",
+            "context": {
+              "projectId": "${refs.project.id}"
+            },
             "steps": [
               {
                 "kind": "DeploymentService",
                 "spec": {
                   "deployment": {
                     "instances": 1,
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      },
+                      "shmSize": 64
+                    },
                     "docker": {
                       "configType": "customCommand",
                       "customCommand": "node ./dist/index.js"
                     },
                     "internal": {
-                      "buildId": "${refs.build.id}",
+                      "id": "${refs.builder.id}",
+                      "branch": "master",
                       "buildSHA": "latest"
                     }
                   },
@@ -271,29 +287,39 @@ If you want to use the free plan, use the "Lite Template".
                   ],
                   "runtimeEnvironment": {},
                   "runtimeFiles": {}
-                }
+                },
+                "ref": "server"
               },
               {
                 "kind": "DeploymentService",
                 "spec": {
-                  "name": "worker",
-                  "billing": {
-                    "deploymentPlan": "nf-compute-10"
-                  },
                   "deployment": {
                     "instances": 1,
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      },
+                      "shmSize": 64
+                    },
                     "docker": {
                       "configType": "customCommand",
                       "customCommand": "node ./dist/index-worker.js"
                     },
                     "internal": {
-                      "buildId": "${refs.build.id}",
+                      "id": "${refs.builder.id}",
+                      "branch": "master",
                       "buildSHA": "latest"
                     }
                   },
+                  "name": "worker",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-10"
+                  },
                   "ports": [],
-                  "runtimeEnvironment": {}
-                }
+                  "runtimeEnvironment": {},
+                  "runtimeFiles": {}
+                },
+                "ref": "worker"
               }
             ]
           }
@@ -324,22 +350,22 @@ This setup is suitable for testing purposes, but is not recommended for producti
 
 ```json
 {
-  "apiVersion": "v1",
-  "name": "Vendure Lite Template",
-  "description": "Vendure is a modern, open-source composable commerce platform",
-  "project": {
-    "spec": {
-      "name": "Vendure Lite",
-      "region": "europe-west",
-      "description": "Vendure is a modern, open-source composable commerce platform",
-      "color": "#17b9ff"
-    }
-  },
+  "apiVersion": "v1.2",
   "spec": {
     "kind": "Workflow",
     "spec": {
       "type": "sequential",
       "steps": [
+        {
+          "kind": "Project",
+          "ref": "project", 
+          "spec": {
+            "name": "Vendure Lite",
+            "region": "europe-west",
+            "description": "Vendure is a modern, open-source composable commerce platform",
+            "color": "#17b9ff"
+          }
+        },
         {
           "kind": "Addon",
           "spec": {
@@ -361,6 +387,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
         {
           "kind": "SecretGroup",
           "spec": {
+            "projectId": "${refs.project.id}",
             "name": "secrets",
             "secretType": "environment-arguments",
             "priority": 10,
@@ -423,6 +450,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
           "kind": "BuildService",
           "spec": {
             "name": "builder",
+            "projectId": "${refs.project.id}",
             "billing": {
               "deploymentPlan": "nf-compute-10"
             },
@@ -446,7 +474,8 @@ This setup is suitable for testing purposes, but is not recommended for producti
           "kind": "Build",
           "ref": "build",
           "spec": {
-            "id": "builder",
+            "id": "${refs.builder.id}",
+            "projectId": "${refs.project.id}",
             "type": "service",
             "branch": "master",
             "reuseExistingBuilds": true
@@ -463,12 +492,19 @@ This setup is suitable for testing purposes, but is not recommended for producti
             },
             "deployment": {
               "instances": 1,
+              "storage": {
+                "ephemeralStorage": {
+                  "storageSize": 1024
+                },
+                "shmSize": 64
+              },
               "docker": {
                 "configType": "customCommand",
                 "customCommand": "yarn start:server"
               },
               "internal": {
-                "buildId": "${refs.build.id}",
+                "id": "${refs.builder.id}",
+                "branch": "master",
                 "buildSHA": "latest"
               }
             },

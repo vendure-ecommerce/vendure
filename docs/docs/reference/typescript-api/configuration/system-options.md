@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SystemOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1054" packageName="@vendure/core" since="1.6.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1134" packageName="@vendure/core" since="1.6.0" />
 
 Options relating to system functions.
 
@@ -20,6 +20,7 @@ interface SystemOptions {
     healthChecks?: HealthCheckStrategy[];
     errorHandlers?: ErrorHandlerStrategy[];
     cacheStrategy?: CacheStrategy;
+    instrumentationStrategy?: InstrumentationStrategy;
 }
 ```
 
@@ -43,6 +44,11 @@ when an error occurs, either on the server or the worker.
 
 Defines the underlying method used to store cache key-value pairs which powers the
 <a href='/reference/typescript-api/cache/cache-service#cacheservice'>CacheService</a>.
+### instrumentationStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/telemetry/instrumentation-strategy#instrumentationstrategy'>InstrumentationStrategy</a>`}   />
+
+
 
 
 </div>

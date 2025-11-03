@@ -11,6 +11,7 @@ import { SingleSearchSelectionModelFactory } from '../../../common/single-search
     styleUrls: ['./asset-search-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
+    standalone: false,
 })
 export class AssetSearchInputComponent {
     @Input() tags: TagFragment[];

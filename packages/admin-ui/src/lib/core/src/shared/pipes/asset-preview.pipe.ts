@@ -18,6 +18,7 @@ import { AssetFragment } from '../../common/generated-types';
  */
 @Pipe({
     name: 'assetPreview',
+    standalone: false,
 })
 export class AssetPreviewPipe implements PipeTransform {
     transform(asset?: AssetFragment, preset: string | number = 'thumb'): string {

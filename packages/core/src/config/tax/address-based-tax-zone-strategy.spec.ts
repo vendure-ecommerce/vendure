@@ -1,7 +1,6 @@
-import { RequestContext, Zone, Channel, Order } from '@vendure/core';
 import { describe, it, expect } from 'vitest';
 
-import { Logger } from '../logger/vendure-logger';
+import { RequestContext, Zone, Channel, Order } from '../../';
 
 import { AddressBasedTaxZoneStrategy } from './address-based-tax-zone-strategy';
 
@@ -18,17 +17,11 @@ describe('AddressBasedTaxZoneStrategy', () => {
         { name: 'DE Zone', members: [{ code: 'DE' }] } as Zone,
     ];
 
-    it('Determines zone based on billing address country', () => {
+    it('Determines zone based on shipping address country', () => {
         const order = {
             billingAddress: { countryCode: 'US' },
             shippingAddress: { countryCode: 'DE' },
         } as Order;
-        const result = strategy.determineTaxZone(ctx, zones, channel, order);
-        expect(result.name).toBe('US Zone');
-    });
-
-    it('Determines zone based on shipping address if no billing address set', () => {
-        const order = { shippingAddress: { countryCode: 'DE' } } as Order;
         const result = strategy.determineTaxZone(ctx, zones, channel, order);
         expect(result.name).toBe('DE Zone');
     });

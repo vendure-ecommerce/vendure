@@ -41,8 +41,11 @@ type Mutation {
 
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
+        
+    "Update an existing ProductVariant"
+    updateProductVariant(input: UpdateProductVariantInput!): ProductVariant! 
 
-    "Delete a ProductVariant"
+    "Delete a ProductVariant" 
     deleteProductVariant(id: ID!): DeletionResponse!
 
     "Delete multiple ProductVariants"
@@ -130,11 +133,17 @@ input StockLevelInput {
     stockOnHand: Int!
 }
 
+
+input CreateProductVariantPriceInput {
+    currencyCode: CurrencyCode!
+    price: Money!
+}
+
 """
 Used to set up update the price of a ProductVariant in a particular Channel.
 If the `delete` flag is `true`, the price will be deleted for the given Channel.
 """
-input ProductVariantPriceInput {
+input UpdateProductVariantPriceInput {
     currencyCode: CurrencyCode!
     price: Money!
     delete: Boolean
@@ -142,10 +151,12 @@ input ProductVariantPriceInput {
 
 input CreateProductVariantInput {
     productId: ID!
+    enabled: Boolean
     translations: [ProductVariantTranslationInput!]!
     facetValueIds: [ID!]
     sku: String!
     price: Money
+    prices: [CreateProductVariantPriceInput]
     taxCategoryId: ID
     optionIds: [ID!]
     featuredAssetId: ID
@@ -172,7 +183,7 @@ input UpdateProductVariantInput {
     """
     Allows multiple prices to be set for the ProductVariant in different currencies.
     """
-    prices: [ProductVariantPriceInput!]
+    prices: [UpdateProductVariantPriceInput!]
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int

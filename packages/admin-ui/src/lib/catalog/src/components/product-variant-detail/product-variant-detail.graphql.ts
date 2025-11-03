@@ -1,4 +1,8 @@
-import { ASSET_FRAGMENT, PRODUCT_OPTION_FRAGMENT } from '@vendure/admin-ui/core';
+import {
+    ASSET_FRAGMENT,
+    PRODUCT_OPTION_FRAGMENT,
+    PRODUCT_VARIANT_PRICE_FRAGMENT,
+} from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
@@ -12,8 +16,7 @@ export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
         price
         currencyCode
         prices {
-            price
-            currencyCode
+            ...ProductVariantPrice
         }
         priceWithTax
         stockOnHand
@@ -87,6 +90,7 @@ export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
             }
         }
     }
+    ${PRODUCT_VARIANT_PRICE_FRAGMENT}
 `;
 
 export const PRODUCT_VARIANT_DETAIL_QUERY = gql`

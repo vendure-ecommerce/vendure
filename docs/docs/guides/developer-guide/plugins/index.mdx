@@ -149,7 +149,7 @@ This is the recommended way of creating a new plugin.
 Although the [Vendure CLI](/guides/developer-guide/cli/) is the recommended way to create a new plugin, it can be useful to understand the process of creating
 a plugin manually.
 
-In Vendure **plugins** are used to extend the core functionality of the server. Plugins can be pre-made functionality that you can install via npm, or they can be custom plugins that you write yourself.
+Vendure **plugins** are used to extend the core functionality of the server. Plugins can be pre-made functionality that you can install via npm, or they can be custom plugins that you write yourself.
 
 For any unit of functionality that you need to add to your project, you'll be creating a Vendure plugin. By convention, plugins are stored in the `plugins` directory of your project. However, this is not a requirement, and you are free to arrange your plugin files in any way you like.
 
@@ -216,7 +216,7 @@ By convention, we'll store the entity definitions in the `entities` directory of
 
 ```ts title="src/plugins/wishlist-plugin/entities/wishlist-item.entity.ts"
 import { DeepPartial, ID, ProductVariant, VendureEntity, EntityId } from '@vendure/core';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class WishlistItem extends VendureEntity {
@@ -307,6 +307,10 @@ We can then import this types file in our plugin's main file:
 // highlight-next-line
 import './types';
 ```
+
+:::note
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. This way other plugins would be able to extend our example `WishlistItem`. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields) 
+:::
 
 ### Step 4: Create a service
 
@@ -519,7 +523,6 @@ Now that we have defined the GraphQL schema extensions, we need to create a reso
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Allow, Ctx, Permission, RequestContext, Transaction } from '@vendure/core';
 
-import { WishlistItem } from '../entities/wishlist-item.entity';
 import { WishlistService } from '../services/wishlist.service';
 
 @Resolver()
@@ -621,13 +624,27 @@ export const config: VendureConfig = {
 };
 ```
 
-### Test the plugin
+### Test the Plugin
 
-Now that the plugin is installed, we can test it out. Since we have defined a custom field, we'll need to generate and run a migration to add the new column to the database:
+Now that the plugin is installed, we can test it out. Since we have defined a custom field, we'll need to generate and run a migration to add the new column to the database.
 
-```bash
-npm run migration:generate wishlist-plugin
-```
+1. **Generate the Migration File**
+
+   Run the following command to generate a migration file for the `wishlist-plugin`:
+
+   ```bash
+   npx vendure migrate wishlist-plugin
+   ```
+
+When prompted, select the "Generate a new migration" option. This will create a new migration file in the `src/migrations` folder.
+
+2. **Run the Migration**
+
+After generating the migration file, apply the changes to the database by running the same command again:
+
+   ```bash
+   npx vendure migrate wishlist-plugin
+   ```
 
 Then start the server:
 
@@ -714,7 +731,7 @@ We can then query the wishlist items:
 
 
 <Tabs>
-<TabItem value="GetWishlist mutation" label="GetWishlist mutation" default>
+<TabItem value="GetWishlist query" label="GetWishlist query" default>
 
 ```graphql
 query GetWishlist {

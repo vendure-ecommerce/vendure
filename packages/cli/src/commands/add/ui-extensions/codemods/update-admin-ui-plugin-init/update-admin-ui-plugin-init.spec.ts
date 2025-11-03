@@ -9,12 +9,12 @@ import { expectSourceFileContentToMatch } from '../../../../../utilities/testing
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
 
 describe('updateAdminUiPluginInit', () => {
-    it('adds app prop', () => {
+    it('adds app prop', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });
         project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'no-app-prop.fixture.ts'));
-        const vendureConfig = new VendureConfigRef(project, { checkFileName: false });
+        const vendureConfig = new VendureConfigRef(project);
         updateAdminUiPluginInit(vendureConfig, {
             pluginClassName: 'TestPlugin',
             pluginPath: './plugins/test-plugin/test.plugin',
@@ -32,7 +32,7 @@ describe('updateAdminUiPluginInit', () => {
             manipulationSettings: defaultManipulationSettings,
         });
         project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'existing-app-prop.fixture.ts'));
-        const vendureConfig = new VendureConfigRef(project, { checkFileName: false });
+        const vendureConfig = new VendureConfigRef(project);
         updateAdminUiPluginInit(vendureConfig, {
             pluginClassName: 'TestPlugin',
             pluginPath: './plugins/test-plugin/test.plugin',

@@ -19,6 +19,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './currency-form-input.component.html',
     styleUrls: ['./currency-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CurrencyFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'currency-form-input';

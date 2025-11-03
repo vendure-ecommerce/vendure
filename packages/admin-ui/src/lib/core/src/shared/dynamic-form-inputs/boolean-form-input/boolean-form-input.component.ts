@@ -16,6 +16,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     templateUrl: './boolean-form-input.component.html',
     styleUrls: ['./boolean-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BooleanFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'boolean-form-input';

@@ -11,10 +11,12 @@ import {
 
 @Directive({
     selector: '[vdrRelationCardPreview]',
+    standalone: false,
 })
 export class RelationCardPreviewDirective {}
 @Directive({
     selector: '[vdrRelationCardDetail]',
+    standalone: false,
 })
 export class RelationCardDetailDirective {}
 
@@ -23,6 +25,7 @@ export class RelationCardDetailDirective {}
     templateUrl: './relation-card.component.html',
     styleUrls: ['./relation-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationCardComponent {
     @Input() entity: any;

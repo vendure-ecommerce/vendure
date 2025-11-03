@@ -21,6 +21,7 @@ import { CustomDetailComponentService } from '../../../providers/custom-detail-c
     templateUrl: './custom-detail-component-host.component.html',
     styleUrls: ['./custom-detail-component-host.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomDetailComponentHostComponent implements OnInit, OnDestroy {
     @Input() locationId: CustomDetailComponentLocationId;

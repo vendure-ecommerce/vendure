@@ -18,6 +18,7 @@ export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
     inStock?: boolean;
+    groupBySKU?: boolean;
     [extendedInputField: string]: any;
 };
 

@@ -14,6 +14,7 @@ const labelPipe = new CustomFieldLabelPipe();
     templateUrl: './data-table-custom-field-column.component.html',
     styleUrls: ['./data-table-custom-field-column.component.scss'],
     exportAs: 'row',
+    standalone: false,
 })
 export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComponent<T> implements OnInit {
     @Input() customField: CustomFieldConfig;
@@ -31,8 +32,8 @@ export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComp
         this.uiLanguage$.subscribe(uiLanguage => {
             this.heading =
                 Array.isArray(this.customField.label) && this.customField.label.length > 0
-                    ? this.customField.label.find(l => l.languageCode === uiLanguage)?.value ??
-                      this.customField.name
+                    ? (this.customField.label.find(l => l.languageCode === uiLanguage)?.value ??
+                      this.customField.name)
                     : this.customField.name;
         });
         this.hiddenByDefault = true;

@@ -74,6 +74,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -84,10 +85,10 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Order } from '../../entity/order/order.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
+import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
@@ -116,6 +117,7 @@ import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { isForeignKeyViolationError } from '../helpers/utils/db-errors';
 import { getOrdersFromLines, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -137,6 +139,7 @@ import { StockLevelService } from './stock-level.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class OrderService {
     constructor(
         private connection: TransactionalConnection,
@@ -235,22 +238,45 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
-        qb.setFindOptions({ relations: effectiveRelations })
+
+        // Split relations into two groups for different loading strategies:
+        // Main order relations - loaded with 'query' strategy for performance
+        const orderRelations = effectiveRelations.filter(r => !r.startsWith('lines'));
+
+        // Lines relations - loaded with 'join' strategy to enable multi-column sorting
+        const lineRelations = effectiveRelations
+            .filter(r => r.startsWith('lines.'))
+            .map(r => r.replace('lines.', ''));
+
+        qb.setFindOptions({
+            relations: orderRelations,
+            relationLoadStrategy: 'query',
+        })
             .leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
-        if (effectiveRelations.includes('lines')) {
-            qb.addOrderBy(`order__order_lines.${qb.escape('createdAt')}`, 'ASC').addOrderBy(
-                `order__order_lines.${qb.escape('productVariantId')}`,
-                'ASC',
-            );
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
+
         if (order) {
+            const hasLinesRelations = effectiveRelations.some(r => r.startsWith('lines'));
+            if (hasLinesRelations) {
+                const linesQb = this.connection.getRepository(ctx, OrderLine).createQueryBuilder('line');
+                linesQb
+                    .setFindOptions({
+                        relations: lineRelations,
+                    })
+                    .where('line.orderId = :orderId', { orderId })
+                    .addOrderBy('line.createdAt', 'ASC')
+                    .addOrderBy('line.productVariantId', 'ASC');
+
+                const lines = await linesQb.getMany();
+                order.lines = lines;
+            }
+
             if (effectiveRelations.includes('lines.productVariant')) {
                 for (const line of order.lines) {
                     line.productVariant = this.translator.translate(
@@ -479,7 +505,7 @@ export class OrderService {
         order = patchEntity(order, { customFields });
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, updatedOrder);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', { customFields }));
         return updatedOrder;
     }
 
@@ -513,7 +539,7 @@ export class OrderService {
         }
 
         const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', targetCustomer));
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId,
@@ -756,11 +782,24 @@ export class OrderService {
                 }
             }
             if (customFields != null) {
-                orderLine.customFields = customFields;
+                // Merge custom fields instead of replacing them entirely
+                // This preserves existing values while allowing updates and null-based unsetting
+                const existingCustomFields = orderLine.customFields || {};
+                const mergedCustomFields = { ...existingCustomFields } as any;
+
+                for (const [key, value] of Object.entries(customFields)) {
+                    if (value !== undefined) {
+                        // Update with the new value (including explicit null to unset)
+                        mergedCustomFields[key] = value;
+                    }
+                    // If value is undefined, preserve the existing value (don't set it)
+                }
+
+                orderLine.customFields = mergedCustomFields;
                 await this.customFieldRelationService.updateRelations(
                     ctx,
                     OrderLine,
-                    { customFields },
+                    { customFields: mergedCustomFields },
                     orderLine,
                 );
             }
@@ -889,6 +928,19 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
+
+        const { orderInterceptors } = this.configService.orderOptions;
+        for (const orderLine of order.lines) {
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
+        }
+
         await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
@@ -1293,20 +1345,14 @@ export class OrderService {
 
     /**
      * @description
-     * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
-     * covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
-     * or `PaymentAuthorized`.
+     * Transitions the given {@link Payment} to a new state.
      */
     async transitionPaymentToState(
         ctx: RequestContext,
         paymentId: ID,
         state: PaymentState,
     ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
-        const result = await this.paymentService.transitionToState(ctx, paymentId, state);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        return result;
+        return this.paymentService.transitionToState(ctx, paymentId, state);
     }
 
     /**
@@ -1523,12 +1569,13 @@ export class OrderService {
             .getMany();
 
         for (const inputLine of input.lines) {
-            const existingFulfillmentLine = existingFulfillmentLines.find(l =>
+            const fulfillmentLinesForOrderLine = existingFulfillmentLines.filter(l =>
                 idsAreEqual(l.orderLineId, inputLine.orderLineId),
             );
-            if (existingFulfillmentLine) {
+            if (fulfillmentLinesForOrderLine.length) {
+                const fulfilledQuantity = summate(fulfillmentLinesForOrderLine, 'quantity');
                 const unfulfilledQuantity =
-                    existingFulfillmentLine.orderLine.quantity - existingFulfillmentLine.quantity;
+                    fulfillmentLinesForOrderLine[0].orderLine.quantity - fulfilledQuantity;
                 if (unfulfilledQuantity < inputLine.quantity) {
                     return true;
                 }
@@ -1600,6 +1647,7 @@ export class OrderService {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             channelId: ctx.channelId,
             relations: ['surcharges'],
+            relationLoadStrategy: 'query',
         });
         return order.surcharges || [];
     }
@@ -1842,7 +1890,38 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            await this.deleteOrder(ctx, orderToDelete);
+            try {
+                // Separate transaction to isolate foreign key failure, so it doesn't roll back the entire outer transaction
+                await this.connection.withTransaction(ctx, async innerCtx => {
+                    await this.deleteOrder(innerCtx, orderToDelete);
+                });
+            } catch (e: any) {
+                if (!isForeignKeyViolationError(e)) throw e;
+                if (!order)
+                    throw new Error(
+                        `Cannot complete order merge: active order not found, while cancelling order ${orderToDelete.id}`,
+                    );
+
+                // If the order has a foreign key violation (e.g. with cancelled payments),
+                // instead of deleting it we cancel the order and leave a note with an explanation.
+                // This way the previous order and all its information are preserved.
+                await this.cancelOrder(ctx, { orderId: orderToDelete.id });
+
+                const note = [
+                    'This order was cancelled during user sign-in because merging with the active order was not possible.',
+                    `The active order is ${order.code}. This order has been preserved for reference.`,
+                ].join(' ');
+
+                await this.historyService.createHistoryEntryForOrder(
+                    {
+                        ctx,
+                        orderId: orderToDelete.id,
+                        type: HistoryEntryType.ORDER_NOTE,
+                        data: { note },
+                    },
+                    false,
+                );
+            }
         }
         if (order && linesToDelete) {
             const orderId = order.id;
@@ -2045,6 +2124,7 @@ export class OrderService {
                     'sellerOrders',
                     'customer',
                     'modifications',
+                    'customFields',
                 ]),
                 {
                     reload: false,

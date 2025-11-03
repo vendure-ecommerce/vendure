@@ -1,11 +1,12 @@
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap, JobQueueService, runMigrations } from '@vendure/core';
 
 import { devConfig } from './dev-config';
 
 /**
  * This bootstraps the dev server, used for testing Vendure during development.
  */
-bootstrap(devConfig)
+runMigrations(devConfig)
+    .then(() => bootstrap(devConfig))
     .then(app => {
         if (process.env.RUN_JOB_QUEUE === '1') {
             return app.get(JobQueueService).start();

@@ -20,6 +20,7 @@ export const GET_TAX_RATE_LIST = gql`
     templateUrl: './tax-rate-list.component.html',
     styleUrls: ['./tax-rate-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TaxRateListComponent extends TypedBaseListComponent<typeof GetTaxRateListDocument, 'taxRates'> {
     dataTableListId = 'tax-rate-list';

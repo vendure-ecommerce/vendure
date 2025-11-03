@@ -229,6 +229,12 @@ export const CREATE_STRIPE_PAYMENT_INTENT = gql`
     }
 `;
 
+export const CREATE_CUSTOM_STRIPE_PAYMENT_INTENT = gql`
+    mutation createCustomStripePaymentIntent {
+        createCustomStripePaymentIntent
+    }
+`;
+
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
         molliePaymentMethods(input: $input) {

@@ -9,13 +9,13 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { idsAreEqual } from '../../common/utils';
-import { ConfigService } from '../../config/config.service';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
@@ -39,6 +39,7 @@ import { StockLocationService } from './stock-location.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class StockMovementService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
     shippingCalculators: ShippingCalculator[];
@@ -51,7 +52,6 @@ export class StockMovementService {
         private stockLevelService: StockLevelService,
         private eventBus: EventBus,
         private stockLocationService: StockLocationService,
-        private configService: ConfigService,
     ) {}
 
     /**
@@ -61,19 +61,21 @@ export class StockMovementService {
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
         productVariantId: ID,
-        options: StockMovementListOptions,
+        options?: StockMovementListOptions,
     ): Promise<PaginatedList<StockMovement>> {
-        return this.listQueryBuilder
+        const qb = this.listQueryBuilder
             .build<StockMovement>(StockMovement as any, options, { ctx })
             .leftJoin('stockmovement.productVariant', 'productVariant')
-            .andWhere('productVariant.id = :productVariantId', { productVariantId })
-            .getManyAndCount()
-            .then(async ([items, totalItems]) => {
-                return {
-                    items,
-                    totalItems,
-                };
-            });
+            .andWhere('productVariant.id = :productVariantId', { productVariantId });
+
+        if (options?.type) {
+            qb.andWhere('stockmovement.type = :type', { type: options.type });
+        }
+
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items,
+            totalItems,
+        }));
     }
 
     /**

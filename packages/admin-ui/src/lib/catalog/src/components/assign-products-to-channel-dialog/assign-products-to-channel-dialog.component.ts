@@ -19,6 +19,7 @@ type Channel = ItemOf<GetChannelsQuery, 'channels'>;
     templateUrl: './assign-products-to-channel-dialog.component.html',
     styleUrls: ['./assign-products-to-channel-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<any> {
     selectedChannel: Channel | null | undefined;

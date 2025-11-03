@@ -29,6 +29,7 @@ export type CollectionOrderEvent = {
         './collection-data-table.component.scss',
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CollectionDataTableComponent
     extends DataTable2Component<CollectionTableItem>

@@ -16,8 +16,8 @@ import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
-import { Product } from '../../../entity/product/product.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../job-queue/job';
 import { EntityHydrator } from '../../../service/helpers/entity-hydrator/entity-hydrator.service';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
@@ -214,7 +214,6 @@ export class IndexerController {
         const variant = await this.connection
             .getRepository(ctx, ProductVariant)
             .findOne({ where: { id: data.productVariantId } });
-        const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
         await this.removeSearchIndexItems(ctx, [data.productVariantId], [data.channelId]);
         return true;
     }

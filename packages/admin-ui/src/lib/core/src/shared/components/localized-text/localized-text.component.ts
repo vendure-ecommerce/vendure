@@ -8,6 +8,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './localized-text.component.html',
     styleUrls: ['./localized-text.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LocalizedTextComponent {
     @Input() text: LocalizedString[] | string;

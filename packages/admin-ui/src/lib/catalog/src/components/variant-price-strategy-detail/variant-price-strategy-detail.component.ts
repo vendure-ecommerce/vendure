@@ -9,6 +9,7 @@ import {
     templateUrl: './variant-price-strategy-detail.component.html',
     styleUrls: ['./variant-price-strategy-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VariantPriceStrategyDetailComponent {
     @Input() channelPriceIncludesTax: boolean;

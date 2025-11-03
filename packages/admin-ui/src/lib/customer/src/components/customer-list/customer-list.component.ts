@@ -32,6 +32,7 @@ export const CUSTOMER_LIST_QUERY = gql`
     selector: 'vdr-customer-list',
     templateUrl: './customer-list.component.html',
     styleUrls: ['./customer-list.component.scss'],
+    standalone: false,
 })
 export class CustomerListComponent
     extends TypedBaseListComponent<typeof CustomerListQueryDocument, 'customers'>

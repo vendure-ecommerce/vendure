@@ -73,8 +73,17 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
 
     private toJobConfig(job: Job<any>): JobConfig<any> {
         return {
-            ...job,
+            queueName: job.queueName,
             data: job.data,
+            retries: job.retries,
+            attempts: job.attempts,
+            state: job.state,
+            progress: job.progress,
+            result: job.result,
+            error: job.error,
+            createdAt: job.createdAt,
+            startedAt: job.startedAt,
+            settledAt: job.settledAt,
             id: job.id ?? undefined,
         };
     }

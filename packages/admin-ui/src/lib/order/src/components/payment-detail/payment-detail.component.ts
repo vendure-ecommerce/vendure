@@ -6,6 +6,7 @@ import { CurrencyCode, OrderDetailFragment } from '@vendure/admin-ui/core';
     templateUrl: './payment-detail.component.html',
     styleUrls: ['./payment-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PaymentDetailComponent {
     @Input() payment: NonNullable<OrderDetailFragment['payments']>[number];
