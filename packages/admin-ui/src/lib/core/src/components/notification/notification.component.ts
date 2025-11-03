@@ -11,6 +11,7 @@ import {
     selector: 'vdr-notification',
     templateUrl: './notification.component.html',
     styleUrls: ['./notification.component.scss'],
+    standalone: false,
 })
 export class NotificationComponent implements OnInit {
     direction$: LocalizationDirectionType;

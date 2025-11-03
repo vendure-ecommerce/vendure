@@ -25,7 +25,6 @@ export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<AngularRouteComponentO
         </vdr-page-header>
         <vdr-page-body><ng-content /></vdr-page-body>
     `,
-    standalone: true,
     imports: [SharedModule],
     providers: [PageMetadataService],
 })

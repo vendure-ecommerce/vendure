@@ -32,7 +32,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function addActionBarDropdownMenuItem(config: ActionBarDropdownMenuItem): Provider
+function addActionBarDropdownMenuItem(config: ActionBarDropdownMenuItem): void
 ```
 Parameters
 

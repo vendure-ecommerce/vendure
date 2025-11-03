@@ -11,7 +11,11 @@ export const hasFacetValues = new PromotionCondition({
         { languageCode: LanguageCode.en, value: 'Buy at least { minimum } products with the given facets' },
     ],
     args: {
-        minimum: { type: 'int', defaultValue: 1 },
+        minimum: {
+            type: 'int',
+            defaultValue: 1,
+            ui: { component: '', min: 0 },
+        },
         facets: { type: 'ID', list: true, ui: { component: 'facet-value-form-input' } },
     },
     init(injector) {

@@ -9,6 +9,8 @@ import { DataSourceOptions } from 'typeorm';
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
 import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
+import { ScheduledTask } from '../scheduler/scheduled-task';
+import { SchedulerStrategy } from '../scheduler/scheduler-strategy';
 
 import { AssetImportStrategy } from './asset-import-strategy/asset-import-strategy';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -17,6 +19,7 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
+import { VerificationTokenStrategy } from './auth/verification-token-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
@@ -24,10 +27,11 @@ import { ProductVariantPriceUpdateStrategy } from './catalog/product-variant-pri
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
-import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
+import { SlugStrategy } from './entity/slug-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -51,12 +55,14 @@ import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { RefundProcess } from './refund/refund-process';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
 import { CacheStrategy } from './system/cache-strategy';
 import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
+import { InstrumentationStrategy } from './system/instrumentation-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
@@ -101,6 +107,7 @@ export interface ApiOptions {
      * The playground config to the admin GraphQL API
      * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
+     * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
     adminApiPlayground?: boolean | RenderPageOptions;
@@ -109,6 +116,7 @@ export interface ApiOptions {
      * The playground config to the shop GraphQL API
      * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
+     * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
     shopApiPlayground?: boolean | RenderPageOptions;
@@ -185,6 +193,14 @@ export interface ApiOptions {
     middleware?: Middleware[];
     /**
      * @description
+     * Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
+     *
+     * @default false
+     * @since 3.4.0
+     */
+    trustProxy?: TrustProxyOptions;
+    /**
+     * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
      * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
      *
@@ -215,6 +231,18 @@ export interface ApiOptions {
      */
     introspection?: boolean;
 }
+
+/**
+ * @description
+ * Configures Express trust proxy settings when running behind a reverse proxy (usually the case with most hosting services).
+ * Setting `trustProxy` allows you to retrieve the original IP address from the `X-Forwarded-For` header.
+ *
+ * See the [express documentation](https://expressjs.com/en/guide/behind-proxies.html) for more details.
+ *
+ * @docsCategory configuration
+ * @since 3.4.0
+ */
+export type TrustProxyOptions = boolean | number | string | string[] | ((ip: string) => boolean);
 
 /**
  * @description
@@ -476,6 +504,14 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @description
+     * Allows you to customize the way verification tokens are generated.
+     *
+     * @default DefaultVerificationTokenStrategy
+     * @since 3.2.0
+     */
+    verificationTokenStrategy?: VerificationTokenStrategy;
 }
 
 /**
@@ -955,6 +991,41 @@ export interface JobQueueOptions {
 
 /**
  * @description
+ * Options related to scheduled tasks..
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ */
+export interface SchedulerOptions {
+    /**
+     * @description
+     * The strategy used to execute scheduled tasks. If you are using the
+     * {@link DefaultSchedulerPlugin} (which is recommended) then this will be set to the
+     * {@link DefaultSchedulerStrategy}.
+     */
+    schedulerStrategy?: SchedulerStrategy;
+
+    /**
+     * @description
+     * The tasks to be executed.
+     */
+    tasks?: ScheduledTask[];
+
+    /**
+     * @description
+     * Whether to run tasks only in the worker process. Generally this should
+     * be left as true, since tasks may involve expensive operations that should
+     * not be allowed to interfere with the server responsiveness.
+     *
+     * This option mainly exists for testing purposes.
+     *
+     * @default true
+     */
+    runTasksInWorkerOnly?: boolean;
+}
+
+/**
+ * @description
  * Options relating to the internal handling of entities.
  *
  * @since 1.3.0
@@ -1042,6 +1113,15 @@ export interface EntityOptions {
      * @default []
      */
     metadataModifiers?: EntityMetadataModifier[];
+    /**
+     * @description
+     * Defines the strategy for generating slugs from input strings.
+     * Slugs are URL-friendly versions of text commonly used for entity identifiers in URLs.
+     *
+     * @since 3.5.0
+     * @default DefaultSlugStrategy
+     */
+    slugStrategy?: SlugStrategy;
 }
 
 /**
@@ -1079,6 +1159,7 @@ export interface SystemOptions {
      * @default InMemoryCacheStrategy
      */
     cacheStrategy?: CacheStrategy;
+    instrumentationStrategy?: InstrumentationStrategy;
 }
 
 /**
@@ -1117,6 +1198,16 @@ export interface VendureConfig {
      * @default {}
      */
     customFields?: CustomFields;
+    /**
+     * @description
+     * Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
+     * and via the {@link SettingsStoreService}. These differ from custom fields in that they are not associated
+     * with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
+     * require any changes to the database schema.
+     *
+     * @since 3.4.0
+     */
+    settingsStoreFields?: SettingsStoreFields;
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.
@@ -1204,6 +1295,13 @@ export interface VendureConfig {
     jobQueueOptions?: JobQueueOptions;
     /**
      * @description
+     * Configures the scheduler mechanism and tasks.
+     *
+     * @since 3.3.0
+     */
+    schedulerOptions?: SchedulerOptions;
+    /**
+     * @description
      * Configures system options
      *
      * @since 1.6.0
@@ -1227,6 +1325,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    schedulerOptions: Required<SchedulerOptions>;
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;

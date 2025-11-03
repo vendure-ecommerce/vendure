@@ -1,10 +1,11 @@
-import { Json } from '@vendure/common/lib/shared-types';
-
 import { Logger } from '../config/logger/vendure-logger';
 
 /**
  * @description
  * A cache which automatically refreshes itself if the value is found to be stale.
+ *
+ * @docsCategory cache
+ * @docsPage SelfRefreshingCache
  */
 export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
     /**
@@ -35,9 +36,31 @@ export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
     refresh(...args: RefreshArgs): Promise<V>;
 }
 
+/**
+ * @description
+ * Configuration options for creating a {@link SelfRefreshingCache}.
+ *
+ * @docsCategory cache
+ * @docsPage SelfRefreshingCache
+ */
 export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
+    /**
+     * @description
+     * The name of the cache, used for logging purposes.
+     * e.g. `'MyService.cachedValue'`.
+     */
     name: string;
+    /**
+     * @description
+     * The time-to-live (ttl) in milliseconds for the cache. After this time, the value will be considered stale
+     * and will be refreshed the next time it is accessed.
+     */
     ttl: number;
+    /**
+     * @description
+     * The function which is used to refresh the value of the cache.
+     * This function should return a Promise which resolves to the new value.
+     */
     refresh: {
         fn: (...args: RefreshArgs) => Promise<V>;
         /**
@@ -46,6 +69,7 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
         defaultArgs: RefreshArgs;
     };
     /**
+     * @description
      * Intended for unit testing the SelfRefreshingCache only.
      * By default uses `() => new Date().getTime()`
      */
@@ -61,6 +85,31 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
  * From there, when the `.value` property is accessed, it will return a value from the cache, and if the
  * value has expired, it will automatically run the `refreshFn` to update the value and then return the
  * fresh value.
+ *
+ * @example
+ * ```ts title="Example of creating a SelfRefreshingCache"
+ * import { createSelfRefreshingCache } from '@vendure/core';
+ *
+ * \@Injectable()
+ * export class PublicChannelService {
+ *   private publicChannel: SelfRefreshingCache<Channel, [RequestContext]>;
+ *
+ *   async init() {
+ *     this.publicChannel = await createSelfRefreshingCache<Channel, [RequestContext]>({
+ *      name: 'PublicChannelService.publicChannel',
+ *      ttl: 1000 * 60 * 60, // 1 hour
+ *      refresh: {
+ *        fn: async (ctx: RequestContext) => {
+ *         return this.channelService.getPublicChannel(ctx);
+ *       },
+ *      defaultArgs: [RequestContext.empty()],
+ *     },
+ *   });
+ * }
+ * ```
+ *
+ * @docsCategory cache
+ * @docsPage SelfRefreshingCache
  */
 export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
     config: SelfRefreshingCacheConfig<V, RefreshArgs>,

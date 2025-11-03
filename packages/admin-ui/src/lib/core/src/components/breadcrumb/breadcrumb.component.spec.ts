@@ -447,13 +447,17 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
         <vdr-breadcrumb></vdr-breadcrumb>
         <router-outlet></router-outlet>
     `,
+    standalone: false,
 })
 class TestParentComponent {}
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
+    template: `
+        <vdr-breadcrumb></vdr-breadcrumb>
+    `,
+    standalone: false,
 })
 class TestChildComponent {}
 

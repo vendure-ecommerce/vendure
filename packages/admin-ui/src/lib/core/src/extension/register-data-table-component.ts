@@ -1,4 +1,4 @@
-import { APP_INITIALIZER } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 import {
     DataTableComponentConfig,
     DataTableCustomComponentService,
@@ -43,12 +43,10 @@ import {
  * @docsCategory custom-table-components
  */
 export function registerDataTableComponent(config: DataTableComponentConfig) {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (dataTableCustomComponentService: DataTableCustomComponentService) => () => {
+    return provideAppInitializer(() => {
+        const initializerFn = ((dataTableCustomComponentService: DataTableCustomComponentService) => () => {
             dataTableCustomComponentService.registerCustomComponent(config);
-        },
-        deps: [DataTableCustomComponentService],
-    };
+        })(inject(DataTableCustomComponentService));
+        return initializerFn();
+    });
 }

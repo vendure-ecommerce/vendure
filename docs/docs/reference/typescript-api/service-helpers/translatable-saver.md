@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TranslatableSaver
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/translatable-saver/translatable-saver.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/translatable-saver/translatable-saver.ts" sourceLine="55" packageName="@vendure/core" />
 
 A helper which contains methods for creating and updating entities which implement the <a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a> interface.
 

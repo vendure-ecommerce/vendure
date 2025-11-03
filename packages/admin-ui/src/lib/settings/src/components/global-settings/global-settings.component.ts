@@ -35,6 +35,7 @@ export const GET_GLOBAL_SETTINGS_DETAIL = gql`
     templateUrl: './global-settings.component.html',
     styleUrls: ['./global-settings.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GlobalSettingsComponent
     extends TypedBaseDetailComponent<typeof GetGlobalSettingsDetailDocument, 'globalSettings'>

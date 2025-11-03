@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EventBus
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="97" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="98" packageName="@vendure/core" />
 
 The EventBus is used to globally publish events which can then be subscribed to.
 

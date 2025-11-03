@@ -1,12 +1,16 @@
 {
     "name": "@vendure/payments-plugin",
-    "version": "3.1.1",
+    "version": "3.4.4",
     "license": "GPL-3.0-or-later",
     "main": "package/index.js",
     "types": "package/index.d.ts",
     "files": [
         "package/**/*"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
     "private": false,
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -24,7 +28,7 @@
         "access": "public"
     },
     "peerDependencies": {
-        "@mollie/api-client": "3.x",
+        "@mollie/api-client": "4.x",
         "braintree": "3.x",
         "stripe": "13.x"
     },
@@ -43,17 +47,17 @@
         }
     },
     "devDependencies": {
-        "@mollie/api-client": "^3.7.0",
+        "@mollie/api-client": "^4.3.3",
         "@types/braintree": "^3.3.11",
         "@types/localtunnel": "2.0.4",
-        "@vendure/common": "^3.1.1",
-        "@vendure/core": "^3.1.1",
-        "@vendure/testing": "^3.1.1",
+        "@vendure/common": "3.4.4",
+        "@vendure/core": "3.4.4",
+        "@vendure/testing": "3.4.4",
         "braintree": "^3.22.0",
         "localtunnel": "2.0.2",
         "nock": "^13.1.4",
         "rimraf": "^5.0.5",
         "stripe": "^13.3.0",
-        "typescript": "5.1.6"
+        "typescript": "5.8.2"
     }
 }

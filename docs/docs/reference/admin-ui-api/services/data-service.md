@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DataService
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/providers/data.service.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/providers/data.service.ts" sourceLine="34" packageName="@vendure/admin-ui" />
 
 Used to interact with the Admin API via GraphQL queries. Internally this service uses the
 Apollo Client, which means it maintains a normalized entity cache. For this reason, it is
@@ -21,7 +21,7 @@ to be effectively cached.
 ```ts title="Signature"
 class DataService {
     query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network', options: ExtendedQueryOptions = {}) => QueryResult<T, V>;
-    mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFn<T>, options: ExtendedQueryOptions = {}) => Observable<T>;
+    mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFunction<T, V, any, any>, options: ExtendedQueryOptions = {}) => Observable<T>;
 }
 ```
 
@@ -50,7 +50,7 @@ const result$ = this.dataService.query(gql`
 ```
 ### mutate
 
-<MemberInfo kind="method" type={`(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFn&#60;T&#62;, options: ExtendedQueryOptions = {}) => Observable&#60;T&#62;`}   />
+<MemberInfo kind="method" type={`(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFunction&#60;T, V, any, any&#62;, options: ExtendedQueryOptions = {}) => Observable&#60;T&#62;`}   />
 
 Perform a GraphQL mutation.
 

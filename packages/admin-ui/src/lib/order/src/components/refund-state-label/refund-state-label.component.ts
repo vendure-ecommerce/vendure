@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './refund-state-label.component.html',
     styleUrls: ['./refund-state-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RefundStateLabelComponent {
     @Input() state: string;

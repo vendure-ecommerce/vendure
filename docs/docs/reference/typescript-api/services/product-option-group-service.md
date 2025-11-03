@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductOptionGroupService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/product-option-group.service.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/product-option-group.service.ts" sourceLine="35" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> entities.
 
@@ -19,7 +19,7 @@ Contains methods relating to <a href='/reference/typescript-api/entities/product
 class ProductOptionGroupService {
     constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, productOptionService: ProductOptionService, eventBus: EventBus, translator: TranslatorService)
     findAll(ctx: RequestContext, filterTerm?: string, relations?: RelationPaths<ProductOptionGroup>) => Promise<Array<Translated<ProductOptionGroup>>>;
-    findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<ProductOptionGroup>) => Promise<Translated<ProductOptionGroup> | undefined>;
+    findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<ProductOptionGroup>, findOneOptions?: { includeSoftDeleted: boolean }) => Promise<Translated<ProductOptionGroup> | undefined>;
     getOptionGroupsByProductId(ctx: RequestContext, id: ID) => Promise<Array<Translated<ProductOptionGroup>>>;
     create(ctx: RequestContext, input: Omit<CreateProductOptionGroupInput, 'options'>) => Promise<Translated<ProductOptionGroup>>;
     update(ctx: RequestContext, input: UpdateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
@@ -41,7 +41,7 @@ class ProductOptionGroupService {
 
 ### findOne
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62; | undefined&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;, findOneOptions?: { includeSoftDeleted: boolean }) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62; | undefined&#62;`}   />
 
 
 ### getOptionGroupsByProductId

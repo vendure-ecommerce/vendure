@@ -11,10 +11,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RedisCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/plugin/redis-cache-plugin/redis-cache-strategy.ts" sourceLine="17" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/redis-cache-plugin/redis-cache-strategy.ts" sourceLine="23" packageName="@vendure/core" since="3.1.0" />
 
 A <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> which stores cached items in a Redis instance.
 This is a high-performance cache strategy which is suitable for production use.
+
+Note: To use this strategy, you need to manually install the `ioredis` package:
+
+```shell
+npm install ioredis@^5.3.2
+```
 
 ```ts title="Signature"
 class RedisCacheStrategy implements CacheStrategy {

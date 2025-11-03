@@ -26,6 +26,7 @@ import { CustomFilterComponentDirective } from './custom-filter-component.direct
     templateUrl: './data-table-filters.component.html',
     styleUrls: ['./data-table-filters.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataTableFiltersComponent implements AfterViewInit {
     @Input() filters: DataTableFilterCollection;

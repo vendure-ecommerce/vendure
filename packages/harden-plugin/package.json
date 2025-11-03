@@ -1,12 +1,16 @@
 {
     "name": "@vendure/harden-plugin",
-    "version": "3.1.1",
+    "version": "3.4.4",
     "license": "GPL-3.0-or-later",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
         "lib/**/*"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "build": "rimraf lib && tsc -p ./tsconfig.build.json",
@@ -20,8 +24,11 @@
     "dependencies": {
         "graphql-query-complexity": "^0.12.0"
     },
+    "peerDependencies": {
+      "@apollo/server": "^4.12.2"
+    },
     "devDependencies": {
-        "@vendure/common": "^3.1.1",
-        "@vendure/core": "^3.1.1"
+        "@vendure/common": "3.4.4",
+        "@vendure/core": "3.4.4"
     }
 }

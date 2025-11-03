@@ -33,8 +33,6 @@ export function useRouteParams() {
         return () => subscription.unsubscribe();
     }, []);
 
-    activatedRoute;
-
     return {
         params,
         queryParams,

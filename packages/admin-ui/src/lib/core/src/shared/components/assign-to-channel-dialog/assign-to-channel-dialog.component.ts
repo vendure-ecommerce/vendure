@@ -14,6 +14,7 @@ type Channel = ItemOf<GetChannelsQuery, 'channels'>;
     templateUrl: './assign-to-channel-dialog.component.html',
     styleUrls: ['./assign-to-channel-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel[]> {
     selectedChannels: Channel[] = [];
@@ -26,7 +27,10 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel[]>
     itemNames: string;
     nMore: number;
 
-    constructor(private dataService: DataService, private notificationService: NotificationService) {}
+    constructor(
+        private dataService: DataService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         const activeChannelId$ = this.dataService.client

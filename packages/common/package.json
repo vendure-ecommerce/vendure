@@ -1,8 +1,12 @@
 {
     "name": "@vendure/common",
-    "version": "3.1.1",
+    "version": "3.4.4",
     "main": "index.js",
     "license": "GPL-3.0-or-later",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json -w",
         "build": "rimraf lib && tsc -p ./tsconfig.build.json",
@@ -10,7 +14,7 @@
         "test": "vitest --run",
         "ci": "npm run build"
     },
-    "homepage": "https://www.vendure.io/",
+    "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
         "access": "public"
@@ -18,8 +22,12 @@
     "files": [
         "lib/**/*"
     ],
+    "exports": {
+        ".": "./lib/index.js",
+        "./lib/*": "./lib/*.js"
+    },
     "devDependencies": {
         "rimraf": "^5.0.5",
-        "typescript": "5.3.3"
+        "typescript": "5.8.2"
     }
 }

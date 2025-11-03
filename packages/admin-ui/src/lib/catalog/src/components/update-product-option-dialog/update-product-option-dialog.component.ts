@@ -16,6 +16,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
     templateUrl: './update-product-option-dialog.component.html',
     styleUrls: ['./update-product-option-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class UpdateProductOptionDialogComponent
     implements Dialog<UpdateProductOptionInput & { autoUpdate: boolean }>, OnInit

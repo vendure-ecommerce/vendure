@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TagService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/tag.service.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/tag.service.ts" sourceLine="25" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/tag#tag'>Tag</a> entities.
 

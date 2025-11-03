@@ -28,6 +28,11 @@ export type Scalars = {
 
 export type ActiveOrderResult = NoActiveOrderError | Order;
 
+export type AddItemInput = {
+    productVariantId: Scalars['ID']['input'];
+    quantity: Scalars['Int']['input'];
+};
+
 export type AddPaymentToOrderResult =
     | IneligiblePaymentMethodError
     | NoActiveOrderError
@@ -123,6 +128,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -732,6 +739,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -854,6 +863,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1096,6 +1107,8 @@ export type FacetValueTranslation = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1281,6 +1294,8 @@ export type InsufficientStockError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1642,6 +1657,8 @@ export enum LanguageCode {
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1657,6 +1674,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1700,6 +1719,18 @@ export type MolliePaymentIntentError = ErrorResult & {
 };
 
 export type MolliePaymentIntentInput = {
+    /**
+     * By default, pay later methods like Klarna will be immediately captured.
+     * Set this to false when you expect that order fulfillment takes longer than 24 hours.
+     * If set to false, you will need to settle the "Authorized" payment in Vendure manually!
+     * If you fail to do so, the Authorized payment will expire after 28 days.
+     */
+    immediateCapture?: InputMaybe<Scalars['Boolean']['input']>;
+    /**
+     * Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
+     * The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
+     */
+    locale?: InputMaybe<Scalars['String']['input']>;
     /**
      * Optional preselected Mollie payment method. When this is passed
      * the payment selection step will be skipped.
@@ -1748,6 +1779,8 @@ export type MolliePaymentMethodsInput = {
 export type Mutation = {
     /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
     addItemToOrder: UpdateOrderItemsResult;
+    /** Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items. */
+    addItemsToOrder: UpdateMultipleOrderItemsResult;
     /** Add a Payment to the Order */
     addPaymentToOrder: AddPaymentToOrderResult;
     /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
@@ -1850,6 +1883,10 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID']['input'];
     quantity: Scalars['Int']['input'];
+};
+
+export type MutationAddItemsToOrderArgs = {
+    inputs: Array<AddItemInput>;
 };
 
 export type MutationAddPaymentToOrderArgs = {
@@ -2862,6 +2899,24 @@ export type ProvinceList = PaginatedList & {
     totalItems: Scalars['Int']['output'];
 };
 
+export type PublicPaymentMethod = {
+    code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    name: Scalars['String']['output'];
+    translations: Array<PaymentMethodTranslation>;
+};
+
+export type PublicShippingMethod = {
+    code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    name: Scalars['String']['output'];
+    translations: Array<ShippingMethodTranslation>;
+};
+
 export type Query = {
     /** The active Channel */
     activeChannel: Channel;
@@ -2873,6 +2928,10 @@ export type Query = {
      * query will once again return `null`.
      */
     activeOrder?: Maybe<Order>;
+    /** Get active payment methods */
+    activePaymentMethods: Array<Maybe<PublicPaymentMethod>>;
+    /** Get active shipping methods */
+    activeShippingMethods: Array<Maybe<PublicShippingMethod>>;
     /** An array of supported Countries */
     availableCountries: Array<Country>;
     /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
@@ -3020,6 +3079,8 @@ export type RegisterCustomerInput = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -3212,6 +3273,8 @@ export enum SortOrder {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -3262,6 +3325,8 @@ export type StringStructFieldConfig = StructField & {
 };
 
 export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     fields: Array<StructFieldConfig>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -3354,6 +3419,8 @@ export type TaxRateList = PaginatedList & {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -3420,9 +3487,26 @@ export type UpdateCustomerPasswordResult =
     | PasswordValidationError
     | Success;
 
+/**
+ * Returned when multiple items are added to an Order.
+ * The errorResults array contains the errors that occurred for each item, if any.
+ */
+export type UpdateMultipleOrderItemsResult = {
+    errorResults: Array<UpdateOrderItemErrorResult>;
+    order: Order;
+};
+
 export type UpdateOrderInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
 };
+
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult =
+    | InsufficientStockError
+    | NegativeQuantityError
+    | OrderInterceptorError
+    | OrderLimitError
+    | OrderModificationError;
 
 export type UpdateOrderItemsResult =
     | InsufficientStockError

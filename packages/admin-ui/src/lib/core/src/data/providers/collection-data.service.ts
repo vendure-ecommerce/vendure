@@ -48,6 +48,7 @@ export class CollectionDataService {
                 'inheritFilters',
                 'filters',
                 'customFields',
+                'isPrivate',
             ]),
         });
     }

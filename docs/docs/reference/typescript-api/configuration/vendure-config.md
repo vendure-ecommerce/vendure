@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1091" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1172" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
 [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
@@ -23,6 +23,7 @@ interface VendureConfig {
     authOptions: AuthOptions;
     catalogOptions?: CatalogOptions;
     customFields?: CustomFields;
+    settingsStoreFields?: SettingsStoreFields;
     dbConnectionOptions: DataSourceOptions;
     defaultChannelToken?: string | null;
     defaultLanguageCode?: LanguageCode;
@@ -37,6 +38,7 @@ interface VendureConfig {
     logger?: VendureLogger;
     taxOptions?: TaxOptions;
     jobQueueOptions?: JobQueueOptions;
+    schedulerOptions?: SchedulerOptions;
     systemOptions?: SystemOptions;
 }
 ```
@@ -69,6 +71,14 @@ Configuration for Products and Collections.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>`} default={`{}`}   />
 
 Defines custom fields which can be used to extend the built-in entities.
+### settingsStoreFields
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/settings-store-fields#settingsstorefields'>SettingsStoreFields</a>`}  since="3.4.0"  />
+
+Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
+and via the <a href='/reference/typescript-api/services/settings-store-service#settingsstoreservice'>SettingsStoreService</a>. These differ from custom fields in that they are not associated
+with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
+require any changes to the database schema.
 ### dbConnectionOptions
 
 <MemberInfo kind="property" type={`DataSourceOptions`}   />
@@ -147,6 +157,11 @@ Configures how taxes are calculated on products.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>`}   />
 
 Configures how the job queue is persisted and processed.
+### schedulerOptions
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/scheduled-tasks/scheduler-options#scheduleroptions'>SchedulerOptions</a>`}  since="3.3.0"  />
+
+Configures the scheduler mechanism and tasks.
 ### systemOptions
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>`}  since="1.6.0"  />

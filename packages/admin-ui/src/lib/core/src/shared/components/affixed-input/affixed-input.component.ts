@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './affixed-input.component.html',
     styleUrls: ['./affixed-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AffixedInputComponent {
     @Input() prefix: string;

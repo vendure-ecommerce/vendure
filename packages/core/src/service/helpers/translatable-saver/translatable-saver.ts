@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { FindOneOptions } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { patchEntity } from '../utils/patch-entity';
 
 import { TranslationDiffer } from './translation-differ';
@@ -67,6 +65,7 @@ export class TranslatableSaver {
         const { ctx, entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
 
         const entity = new entityType(input);
+
         const translations: Array<Translation<T>> = [];
 
         if (input.translations) {
@@ -96,7 +95,7 @@ export class TranslatableSaver {
         const existingTranslations = await this.connection.getRepository(ctx, translationType).find({
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
-            where: { base: { id: input.id } },
+            where: { base: { id: input.id } } as Translation<T>,
             relations: ['base'],
         } as FindManyOptions<Translation<T>>);
 

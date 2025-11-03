@@ -11,7 +11,6 @@ import {
     CreateCustomerInput,
     CreateCustomerResult,
     CustomerFilterParameter,
-    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
@@ -38,6 +37,7 @@ import {
     PasswordResetTokenInvalidError,
     PasswordValidationError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
@@ -46,8 +46,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Address } from '../../entity/address/address.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { Channel } from '../../entity/channel/channel.entity';
-import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
+import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { Order } from '../../entity/order/order.entity';
 import { User } from '../../entity/user/user.entity';
@@ -78,6 +78,7 @@ import { UserService } from './user.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CustomerService {
     constructor(
         private connection: TransactionalConnection,

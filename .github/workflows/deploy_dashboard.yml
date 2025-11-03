@@ -1,0 +1,80 @@
+name: '🚀 Deploy Dashboard'
+
+on:
+    push:
+        branches:
+            - minor
+            - major
+            - master
+        paths:
+            - 'packages/dashboard/**'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'packages/core/**'
+            - 'packages/common/**'
+
+env:
+    NEXT_TELEMETRY_DISABLED: 1
+    NODE_OPTIONS: '--max_old_space_size=4096'
+    VERCEL_PROJECT: admin-dashboard
+    VERCEL_SCOPE: vendure
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        env:
+            # VERCEL_ENV: ${{ github.ref_name == 'minor' && 'development' || github.ref_name == 'major' && 'major' || 'production' }}
+            VERCEL_ENV: production
+            VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Install Vercel CLI
+              run: npm i -g vercel@latest
+
+            - name: Build common and core packages
+              run: npm run build:core-common
+
+            - name: Create Vercel rewrites in root
+              run: |
+                  echo '{"rewrites": [{"source": "/(.*)","destination": "/index.html"}]}' > ./vercel.json
+
+            - name: Link folder to project
+              run: vercel link --yes --scope ${{ env.VERCEL_SCOPE }} --project=${{ env.VERCEL_PROJECT }} --token=$VERCEL_TOKEN
+
+            - name: Pull Vercel Project Information
+              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN
+
+            - name: Pull Vercel Environment Variables
+              run: |
+                  vercel env pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN
+                  cp .env.local packages/dashboard/.env.local
+
+            - name: Build Project Artifacts
+              run: vercel build --scope ${{ env.VERCEL_SCOPE }} --token=$VERCEL_TOKEN ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
+
+            - name: Deploy Project Artifacts to Vercel
+              id: deploy_vercel
+              run: vercel deploy --archive=tgz --prebuilt --scope ${{ env.VERCEL_SCOPE }}  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=$VERCEL_TOKEN | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
+
+            - name: Print Vercel URL
+              shell: bash
+              run: |
+                  echo "Vercel URL: ${{ steps.deploy_vercel.outputs.URL }}"
+                  echo "Vercel Environment: ${{ env.VERCEL_ENV }}"

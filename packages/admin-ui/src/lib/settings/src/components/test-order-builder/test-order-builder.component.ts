@@ -22,6 +22,7 @@ export interface TestOrderLine {
     templateUrl: './test-order-builder.component.html',
     styleUrls: ['./test-order-builder.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TestOrderBuilderComponent implements OnInit {
     @Output() orderLinesChange = new EventEmitter<TestOrderLine[]>();

@@ -53,6 +53,7 @@ export const COLLECTION_DETAIL_QUERY = gql`
     templateUrl: './collection-detail.component.html',
     styleUrls: ['./collection-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CollectionDetailComponent
     extends TypedBaseDetailComponent<typeof CollectionDetailQueryDocument, 'collection'>
@@ -61,7 +62,7 @@ export class CollectionDetailComponent
     customFields = this.getCustomFieldConfig('Collection');
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
-        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9._-]+$/)],
+        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9._-]+$/u)],
         description: '',
         visible: false,
         inheritFilters: true,

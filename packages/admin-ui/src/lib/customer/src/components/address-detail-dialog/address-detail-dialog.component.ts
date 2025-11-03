@@ -7,6 +7,7 @@ import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@vendure/
     templateUrl: './address-detail-dialog.component.html',
     styleUrls: ['./address-detail-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddressDetailDialogComponent implements Dialog<UntypedFormGroup>, OnInit {
     addressForm: UntypedFormGroup;

@@ -17,6 +17,7 @@ import { DialogButtonsDirective } from './dialog-buttons.directive';
     selector: 'vdr-modal-dialog',
     templateUrl: './modal-dialog.component.html',
     styleUrls: ['./modal-dialog.component.scss'],
+    standalone: false,
 })
 export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
     direction$: LocalizationDirectionType;

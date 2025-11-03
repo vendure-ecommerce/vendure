@@ -7,6 +7,7 @@ import { CurrencyCode, TestShippingMethodResult } from '@vendure/admin-ui/core';
     templateUrl: './shipping-method-test-result.component.html',
     styleUrls: ['./shipping-method-test-result.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ShippingMethodTestResultComponent {
     @Input() testResult: TestShippingMethodResult;

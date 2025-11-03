@@ -21,7 +21,6 @@ import { ROUTE_COMPONENT_OPTIONS, RouteComponent } from './route.component';
 @Component({
     selector: 'vdr-dynamic-component-loader',
     template: ``,
-    standalone: true,
     imports: [SharedModule],
 })
 export class DynamicComponentLoaderComponent implements OnInit {
@@ -42,7 +41,6 @@ export class DynamicComponentLoaderComponent implements OnInit {
             <vdr-dynamic-component-loader [componentType]="component" (loaded)="componentLoaded($event)" />
         </vdr-route-component>
     `,
-    standalone: true,
     imports: [SharedModule, RouteComponent, DynamicComponentLoaderComponent],
 })
 export class AngularRouteComponent {

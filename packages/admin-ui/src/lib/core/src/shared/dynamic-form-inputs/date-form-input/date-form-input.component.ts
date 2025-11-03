@@ -16,6 +16,7 @@ import { FormInputComponent } from '../../../common/component-registry-types';
     templateUrl: './date-form-input.component.html',
     styleUrls: ['./date-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DateFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'date-form-input';

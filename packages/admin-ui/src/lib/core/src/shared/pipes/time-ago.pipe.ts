@@ -18,6 +18,7 @@ import { I18nService } from '../../providers/i18n/i18n.service';
 @Pipe({
     name: 'timeAgo',
     pure: false,
+    standalone: false,
 })
 export class TimeAgoPipe implements PipeTransform {
     constructor(private i18nService: I18nService) {}

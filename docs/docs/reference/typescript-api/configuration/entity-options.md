@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="965" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1036" packageName="@vendure/core" since="1.3.0" />
 
 Options relating to the internal handling of entities.
 
@@ -24,6 +24,7 @@ interface EntityOptions {
     zoneCacheTtl?: number;
     taxRateCacheTtl?: number;
     metadataModifiers?: EntityMetadataModifier[];
+    slugStrategy?: SlugStrategy;
 }
 ```
 
@@ -87,6 +88,12 @@ Allows the metadata of the built-in TypeORM entities to be manipulated. This all
 to do things like altering data types, adding indices etc. This is an advanced feature
 which should be used with some caution as it will result in DB schema changes. For examples
 see <a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>.
+### slugStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/slug-strategy#slugstrategy'>SlugStrategy</a>`} default={`<a href='/reference/typescript-api/configuration/default-slug-strategy#defaultslugstrategy'>DefaultSlugStrategy</a>`}  since="3.5.0"  />
+
+Defines the strategy for generating slugs from input strings.
+Slugs are URL-friendly versions of text commonly used for entity identifiers in URLs.
 
 
 </div>

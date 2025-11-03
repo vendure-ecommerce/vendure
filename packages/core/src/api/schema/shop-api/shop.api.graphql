@@ -45,11 +45,33 @@ type Query {
     products(options: ProductListOptions): ProductList!
     "Search Products based on the criteria set by the `SearchInput`"
     search(input: SearchInput!): SearchResponse!
+    "Get active payment methods"
+    activePaymentMethods: [PublicPaymentMethod]!
+    "Get active shipping methods"
+    activeShippingMethods: [PublicShippingMethod]!
+}
+
+type PublicPaymentMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [PaymentMethodTranslation!]!
+}
+
+type PublicShippingMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [ShippingMethodTranslation!]!
 }
 
 type Mutation {
     "Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
+    "Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items."
+    addItemsToOrder(inputs: [AddItemInput!]!): UpdateMultipleOrderItemsResult!
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
     "Remove all OrderLine from the Order"
@@ -265,3 +287,17 @@ union NativeAuthenticationResult =
     | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError
 union ActiveOrderResult = Order | NoActiveOrderError
+
+"""
+Returned when multiple items are added to an Order.
+The errorResults array contains the errors that occurred for each item, if any.
+"""
+type UpdateMultipleOrderItemsResult  {
+    order: Order!
+    errorResults: [UpdateOrderItemErrorResult!]!
+}
+
+input AddItemInput {
+    productVariantId: ID!
+    quantity: Int!
+}

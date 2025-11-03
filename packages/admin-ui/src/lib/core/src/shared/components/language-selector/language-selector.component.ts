@@ -6,6 +6,7 @@ import { LanguageCode } from '../../../common/generated-types';
     selector: 'vdr-language-selector',
     templateUrl: './language-selector.component.html',
     styleUrls: ['./language-selector.component.scss'],
+    standalone: false,
 })
 export class LanguageSelectorComponent {
     @Input() currentLanguageCode: LanguageCode;

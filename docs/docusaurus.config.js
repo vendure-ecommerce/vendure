@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/nightOwlLight');
 const darkCodeTheme = require('prism-react-renderer/themes/nightOwl');
+const llmTxtPlugin = require('./src/plugins/llm-txt-plugin');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -33,7 +34,7 @@ const config = {
 
     presets: [
         [
-            '@docusaurus/preset-classic',
+            'classic',
             /** @type {import('@docusaurus/preset-classic').Options} */
             ({
                 docs: {
@@ -49,17 +50,18 @@ const config = {
                 },
                 blog: false,
                 theme: {
-                    customCss: [
-                        require.resolve('./src/css/custom.css'),
-                        require.resolve('./src/css/layout.css'),
-                        require.resolve('./src/css/overrides.css'),
-                        require.resolve('./src/css/code-blocks.css'),
-                    ],
+                    customCss: [require.resolve('./src/css/custom.css')],
                 },
             }),
         ],
     ],
-    themes: ['docusaurus-theme-search-typesense'],
+    themes: ['docusaurus-theme-search-typesense', '@docusaurus/theme-mermaid'],
+
+    markdown: {
+        mermaid: true,
+    },
+
+    plugins: [llmTxtPlugin],
 
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */

@@ -15,7 +15,7 @@ export default function Playground(props: {
                 minHeight: props.minHeight ?? '500px',
                 borderRadius: '8px',
             }}
-            src={`https://${props.server ?? 'readonlydemo'}.vendure.io/${props.api}-api?query=${urlEncoded}`}
+            src={`https://${props.server ?? 'readonlydemo'}.vendure.io/graphiql/${props.api}?embeddedMode=true&query=${urlEncoded}`}
         />
     );
 }

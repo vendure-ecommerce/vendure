@@ -6,6 +6,7 @@ import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
+import { SettingsStoreFields } from './settings-store/settings-store-types';
 import {
     ApiOptions,
     AssetOptions,
@@ -18,6 +19,7 @@ import {
     PaymentOptions,
     PromotionOptions,
     RuntimeVendureConfig,
+    SchedulerOptions,
     ShippingOptions,
     SystemOptions,
     TaxOptions,
@@ -116,13 +118,22 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.jobQueueOptions;
     }
 
+    get schedulerOptions(): Required<SchedulerOptions> {
+        return this.activeConfig.schedulerOptions;
+    }
+
     get systemOptions(): Required<SystemOptions> {
         return this.activeConfig.systemOptions;
+    }
+
+    get settingsStoreFields(): SettingsStoreFields {
+        return this.activeConfig.settingsStoreFields ?? {};
     }
 
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
         const definedCustomFields = this.activeConfig.customFields;
         const metadataArgsStorage = getMetadataArgsStorage();
+
         // We need to check for any entities which have a "customFields" property but which are not
         // explicitly defined in the customFields config. This is because the customFields object
         // only includes the built-in entities. Any custom entities which have a "customFields"

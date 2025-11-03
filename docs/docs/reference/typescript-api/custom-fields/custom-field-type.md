@@ -29,7 +29,7 @@ datetime     | datetime (m,s), timestamp (p)         | DateTime
 struct       | json (m), jsonb (p), text (s)         | JSON
 relation     | many-to-one / many-to-many relation   | As specified in config
 
-Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#custom-field-config-properties)
+Additionally, the CustomFieldType also dictates which [configuration options](/guides/developer-guide/custom-fields/#custom-field-config-properties)
 are available for that custom field.
 
 ```ts title="Signature"

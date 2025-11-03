@@ -106,12 +106,12 @@ async function processPayment(
         },
     });
     const extractMetadataFn = pluginOptions.extractMetadata ?? defaultExtractMetadataFn;
-    const metadata = extractMetadataFn(response.transaction);
+    const metadata = response.transaction && extractMetadataFn(response.transaction);
     if (!response.success) {
         return {
             amount,
             state: 'Declined' as const,
-            transactionId: response.transaction.id,
+            transactionId: response.transaction?.id,
             errorMessage: response.message,
             metadata,
         };

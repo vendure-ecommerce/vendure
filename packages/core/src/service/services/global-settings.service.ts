@@ -5,6 +5,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { CacheKey } from '../../common/constants';
 import { InternalServerError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
@@ -20,6 +21,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class GlobalSettingsService {
     constructor(
         private connection: TransactionalConnection,

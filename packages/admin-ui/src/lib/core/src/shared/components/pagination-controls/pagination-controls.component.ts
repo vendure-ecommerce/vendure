@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
     templateUrl: './pagination-controls.component.html',
     styleUrls: ['./pagination-controls.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PaginationControlsComponent {
     @Input() id?: number;

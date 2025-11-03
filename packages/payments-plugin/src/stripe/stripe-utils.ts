@@ -1,4 +1,4 @@
-import { CurrencyCode, Order } from '@vendure/core';
+import { CurrencyCode, Order, LanguageCode } from '@vendure/core';
 import Stripe from 'stripe';
 
 /**
@@ -34,7 +34,7 @@ function currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
         currencyDisplay: 'symbol',
     }).formatToParts(123.45);
 
-    return !!parts.find(p => p.type === 'fraction');
+    return parts.some(p => p.type === 'fraction');
 }
 
 /**
@@ -46,6 +46,7 @@ export function isExpectedVendureStripeEventMetadata(metadata: Stripe.Metadata):
     channelToken: string;
     orderCode: string;
     orderId: string;
+    languageCode: LanguageCode;
 } {
     return !!metadata.channelToken && !!metadata.orderCode && !!metadata.orderId;
 }

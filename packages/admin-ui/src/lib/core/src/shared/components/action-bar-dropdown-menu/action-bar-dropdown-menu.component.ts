@@ -33,6 +33,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
             deps: [[new Self(), ActionBarDropdownMenuComponent]],
         },
     ],
+    standalone: false,
 })
 export class ActionBarDropdownMenuComponent
     extends ActionBarBaseComponent<ActionBarDropdownMenuItem>

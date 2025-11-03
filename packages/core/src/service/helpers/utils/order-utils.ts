@@ -8,9 +8,9 @@ import { RequestContext } from '../../../api/common/request-context';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { Order } from '../../../entity/order/order.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { FulfillmentState } from '../fulfillment-state-machine/fulfillment-state';
 import { PaymentState } from '../payment-state-machine/payment-state';
 
@@ -35,8 +35,9 @@ export function totalCoveredByPayments(order: Order, state?: PaymentState | Paym
           );
     let total = 0;
     for (const payment of payments) {
-        const refundTotal = summate(payment.refunds, 'total');
-        total += payment.amount - Math.abs(refundTotal);
+        const settledRefunds = payment.refunds?.filter(refund => refund.state === 'Settled') ?? [];
+        const settledRefundTotal = summate(settledRefunds, 'total');
+        total += payment.amount - Math.abs(settledRefundTotal);
     }
     return total;
 }
@@ -126,10 +127,13 @@ function getOrderFulfillmentLines(order: Order): FulfillmentLine[] {
  */
 function isOrderPartiallyFulfilled(order: Order) {
     const fulfillmentLines = getOrderFulfillmentLines(order);
-    const lines = fulfillmentLines.reduce((acc, item) => {
-        acc[item.orderLineId] = (acc[item.orderLineId] || 0) + item.quantity;
-        return acc;
-    }, {} as { [orderLineId: string]: number });
+    const lines = fulfillmentLines.reduce(
+        (acc, item) => {
+            acc[item.orderLineId] = (acc[item.orderLineId] || 0) + item.quantity;
+            return acc;
+        },
+        {} as { [orderLineId: string]: number },
+    );
     return order.lines.some(line => line.quantity > lines[line.id]);
 }
 

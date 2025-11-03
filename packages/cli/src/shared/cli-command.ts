@@ -5,6 +5,7 @@ import { VendurePluginRef } from './vendure-plugin-ref';
 export type CommandCategory =
     | `Plugin`
     | `Plugin: UI`
+    | `Plugin: Dashboard`
     | `Plugin: Entity`
     | `Plugin: Service`
     | `Plugin: API`

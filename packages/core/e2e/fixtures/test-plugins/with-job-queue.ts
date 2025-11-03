@@ -1,5 +1,5 @@
 import { Controller, Get, OnModuleInit } from '@nestjs/common';
-import { JobQueue, JobQueueService, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { JobQueue, JobQueueService, Logger, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -17,12 +17,20 @@ class TestController implements OnModuleInit {
                     await new Promise(resolve => setTimeout(resolve, 50));
                     return job.data.returnValue;
                 } else {
+                    const interval = setInterval(() => {
+                        Logger.info(`Job is running...`);
+                        if (job.state === 'CANCELLED') {
+                            clearInterval(interval);
+                            PluginWithJobQueue.jobSubject.next();
+                        }
+                    }, 500);
                     return PluginWithJobQueue.jobSubject
                         .pipe(take(1))
                         .toPromise()
                         .then(() => {
                             PluginWithJobQueue.jobHasDoneWork = true;
-                            return job.data.returnValue;
+                            clearInterval(interval);
+                            return 'job result';
                         });
                 }
             },
@@ -42,6 +50,16 @@ class TestController implements OnModuleInit {
             .updates()
             .toPromise()
             .then(update => update?.result);
+    }
+
+    @Get('subscribe-timeout')
+    async runJobAndSubscribeTimeout() {
+        const job = await this.queue.add({});
+        const result = await job
+            .updates({ timeoutMs: 100 })
+            .toPromise()
+            .then(update => update?.result);
+        return result;
     }
 }
 

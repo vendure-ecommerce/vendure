@@ -27,6 +27,7 @@ interface PaginationConfig {
     templateUrl: './product-variants-table.component.html',
     styleUrls: ['./product-variants-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: UntypedFormArray;

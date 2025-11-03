@@ -55,6 +55,7 @@ type ValueItem =
     templateUrl: './facet-detail.component.html',
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FacetDetailComponent
     extends TypedBaseDetailComponent<typeof GetFacetDetailDocument, 'facet'>

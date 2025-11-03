@@ -59,6 +59,7 @@ type InputListItem = {
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class DynamicFormInputComponent
     implements OnInit, OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor

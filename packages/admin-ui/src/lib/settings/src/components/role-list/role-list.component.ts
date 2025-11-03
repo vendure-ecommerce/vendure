@@ -28,6 +28,7 @@ export const GET_ROLE_LIST = gql`
     templateUrl: './role-list.component.html',
     styleUrls: ['./role-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RoleListComponent
     extends TypedBaseListComponent<typeof GetRoleListDocument, 'roles'>

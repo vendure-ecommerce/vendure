@@ -32,6 +32,7 @@ export const ASSET_DETAIL_QUERY = gql`
     templateUrl: './asset-detail.component.html',
     styleUrls: ['./asset-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AssetDetailComponent
     extends TypedBaseDetailComponent<typeof AssetDetailQueryDocument, 'asset'>

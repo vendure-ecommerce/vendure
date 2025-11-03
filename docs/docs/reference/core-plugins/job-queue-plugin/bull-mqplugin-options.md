@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQPluginOptions
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/types.ts" sourceLine="14" packageName="@vendure/job-queue-plugin" since="1.2.0" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/types.ts" sourceLine="21" packageName="@vendure/job-queue-plugin" since="1.2.0" />
 
 Configuration options for the <a href='/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin#bullmqjobqueueplugin'>BullMQJobQueuePlugin</a>.
 
@@ -22,6 +22,7 @@ interface BullMQPluginOptions {
     workerOptions?: Omit<WorkerOptions, 'connection'>;
     setRetries?: (queueName: string, job: Job) => number;
     setBackoff?: (queueName: string, job: Job) => BackoffOptions | undefined;
+    setJobOptions?: (queueName: string, job: Job) => BullJobsOptions;
 }
 ```
 
@@ -90,6 +91,26 @@ setBackoff: (queueName, job) => {
   };
 }
 ```
+### setJobOptions
+
+<MemberInfo kind="property" type={`(queueName: string, job: Job) =&#62; BullJobsOptions`}  since="3.2.0"  />
+
+This allows you to specify additional options for a job when it is added to the queue.
+The object returned is the BullMQ [JobsOptions](https://api.docs.bullmq.io/types/v5.JobsOptions.html)
+type, which includes control over settings such as `delay`, `attempts`, `priority` and much more.
+
+This function is called every time a job is added to the queue, so you can return different options
+based on the job being added.
+
+*Example*
+
+```ts
+// Here we want to assign a higher priority to jobs in the 'critical' queue
+setJobOptions: (queueName, job) => {
+  const priority = queueName === 'critical' ? 1 : 5;
+  return { priority };
+}
+```
 
 
 </div>
@@ -97,7 +118,7 @@ setBackoff: (queueName, job) => {
 
 ## BackoffOptions
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/types.ts" sourceLine="91" packageName="@vendure/job-queue-plugin" since="1.3.0" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/types.ts" sourceLine="122" packageName="@vendure/job-queue-plugin" since="1.3.0" />
 
 Configuration for the backoff function when retrying failed jobs.
 

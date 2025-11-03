@@ -24,6 +24,7 @@ interface VendurePluginMetadata extends ModuleMetadata {
     shopApiExtensions?: APIExtensionDefinition;
     adminApiExtensions?: APIExtensionDefinition;
     entities?: Array<Type<any>> | (() => Array<Type<any>>);
+    dashboard?: DashboardExtension;
     compatibility?: string;
 }
 ```
@@ -55,6 +56,11 @@ schema definitions and any required resolvers.
 <MemberInfo kind="property" type={`Array&#60;Type&#60;any&#62;&#62; | (() =&#62; Array&#60;Type&#60;any&#62;&#62;)`}   />
 
 The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
+### dashboard
+
+<MemberInfo kind="property" type={`DashboardExtension`}   />
+
+
 ### compatibility
 
 <MemberInfo kind="property" type={`string`}  since="2.0.0"  />
@@ -85,13 +91,13 @@ compatibility: '^3.0.0'
 
 ## APIExtensionDefinition
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="79" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="80" packageName="@vendure/core" />
 
 An object which allows a plugin to extend the Vendure GraphQL API.
 
 ```ts title="Signature"
 interface APIExtensionDefinition {
-    schema?: DocumentNode | (() => DocumentNode | undefined);
+    schema?: DocumentNode | ((schema?: GraphQLSchema) => DocumentNode | undefined);
     resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
     scalars?: Record<string, GraphQLScalarType> | (() => Record<string, GraphQLScalarType>);
 }
@@ -101,9 +107,10 @@ interface APIExtensionDefinition {
 
 ### schema
 
-<MemberInfo kind="property" type={`DocumentNode | (() =&#62; DocumentNode | undefined)`}   />
+<MemberInfo kind="property" type={`DocumentNode | ((schema?: GraphQLSchema) =&#62; DocumentNode | undefined)`}   />
 
 Extensions to the schema.
+Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
 
 *Example*
 
@@ -133,7 +140,7 @@ Read more about defining custom scalars in the
 
 ## PluginConfigurationFn
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="117" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="119" packageName="@vendure/core" />
 
 This method is called before the app bootstraps and should be used to perform any needed modifications to the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 

@@ -43,6 +43,7 @@ import { ProsemirrorService } from './prosemirror/prosemirror.service';
         ProsemirrorService,
         ContextMenuService,
     ],
+    standalone: false,
 })
 export class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
     @Input() label: string;

@@ -15,6 +15,7 @@ import { DashboardWidgetConfig } from '@vendure/admin-ui/core';
     templateUrl: './dashboard-widget.component.html',
     styleUrls: ['./dashboard-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DashboardWidgetComponent implements AfterViewInit, OnDestroy {
     @Input() widgetConfig: DashboardWidgetConfig;

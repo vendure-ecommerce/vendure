@@ -28,6 +28,7 @@ export const RELATION_ASSET_INPUT_QUERY = gql`
     templateUrl: './relation-asset-input.component.html',
     styleUrls: ['./relation-asset-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationAssetInputComponent implements OnInit {
     @Input() readonly: boolean;
@@ -35,7 +36,10 @@ export class RelationAssetInputComponent implements OnInit {
     @Input() config: RelationCustomFieldConfig;
     asset$: Observable<GetAssetQuery['asset'] | undefined>;
 
-    constructor(private modalService: ModalService, private dataService: DataService) {}
+    constructor(
+        private modalService: ModalService,
+        private dataService: DataService,
+    ) {}
 
     ngOnInit() {
         this.asset$ = this.formControl.valueChanges.pipe(

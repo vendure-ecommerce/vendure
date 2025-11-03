@@ -37,7 +37,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function addNavMenuSection(config: NavMenuSection, before?: string): Provider
+function addNavMenuSection(config: NavMenuSection, before?: string): void
 ```
 Parameters
 

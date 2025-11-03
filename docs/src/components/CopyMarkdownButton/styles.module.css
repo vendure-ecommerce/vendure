@@ -1,0 +1,60 @@
+.copyButton {
+    background: var(--ifm-color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    font-family: var(--ifm-font-family-base);
+    white-space: nowrap;
+}
+
+.copyButton:hover {
+    background: var(--ifm-color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.copyButton:active {
+    transform: translateY(0);
+}
+
+.tooltip {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Dark mode adjustments */
+html[data-theme='dark'] .copyButton {
+    background: var(--ifm-color-primary);
+    color: var(--ifm-color-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .copyButton:hover {
+    background: var(--ifm-color-primary-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .copyButton {
+        top: 70px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}

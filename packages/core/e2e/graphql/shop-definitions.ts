@@ -129,6 +129,25 @@ export const ADD_ITEM_TO_ORDER = gql`
     }
     ${UPDATED_ORDER_FRAGMENT}
 `;
+
+export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
+    mutation AddItemsToOrder($inputs: [AddItemInput!]!) {
+        addItemsToOrder(inputs: $inputs) {
+            order {
+                ...UpdatedOrder
+            }
+            errorResults {
+                ...on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+            
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
 export const SEARCH_PRODUCTS_SHOP = gql`
     query SearchProductsShop($input: SearchInput!) {
         search(input: $input) {
@@ -830,6 +849,38 @@ export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE = gql`
                         }
                     }
                 }
+            }
+        }
+    }
+`;
+
+export const ACTIVE_PAYMENT_METHODS_QUERY = gql`
+    query ActivePaymentMethods {
+        activePaymentMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
+            }
+        }
+    }
+`;
+
+export const GET_ACTIVE_SHIPPING_METHODS = gql`
+    query GetActiveShippingMethods {
+        activeShippingMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
             }
         }
     }

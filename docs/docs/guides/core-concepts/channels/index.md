@@ -31,7 +31,7 @@ Many entities are channel-aware, meaning that they can be associated with a mult
 
 - [`Asset`](/reference/typescript-api/entities/asset/)
 - [`Collection`](/reference/typescript-api/entities/collection/)
-- [`Customer`](/reference/typescript-api/entities/customer-group/)
+- [`Customer`](/reference/typescript-api/entities/customer/)
 - [`Facet`](/reference/typescript-api/entities/facet/)
 - [`FacetValue`](/reference/typescript-api/entities/facet-value/)
 - [`Order`](/reference/typescript-api/entities/order/)

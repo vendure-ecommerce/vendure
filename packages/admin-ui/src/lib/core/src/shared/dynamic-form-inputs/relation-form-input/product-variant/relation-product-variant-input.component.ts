@@ -15,6 +15,7 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
     templateUrl: './relation-product-variant-input.component.html',
     styleUrls: ['./relation-product-variant-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationProductVariantInputComponent implements OnInit {
     @Input() readonly: boolean;
@@ -28,7 +29,10 @@ export class RelationProductVariantInputComponent implements OnInit {
     results$: Observable<Codegen.GetProductVariantListSimpleQuery['productVariants']['items']>;
     productVariant$: Observable<Codegen.GetProductVariantQuery['productVariant'] | undefined>;
 
-    constructor(private modalService: ModalService, private dataService: DataService) {}
+    constructor(
+        private modalService: ModalService,
+        private dataService: DataService,
+    ) {}
 
     ngOnInit() {
         this.productVariant$ = this.parentFormControl.valueChanges.pipe(

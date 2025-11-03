@@ -87,8 +87,7 @@ Receives the ProductVariant to be added to the Order as well as any OrderLine cu
 the price for a single unit.
 
 Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
-passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>
-to join the missing relations.
+passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>to join the missing relations.
 
 Note: the `quantity` argument was added in v2.0.0
 

@@ -23,7 +23,6 @@ import { ExtensionHostService } from './extension-host.service';
     templateUrl: './extension-host.component.html',
     styleUrls: ['./extension-host.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
-    standalone: true,
     imports: [SharedModule],
     providers: [ExtensionHostService],
 })

@@ -64,6 +64,7 @@ type T1 = T['stockLevels'];
     templateUrl: './product-variant-detail.component.html',
     styleUrls: ['./product-variant-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductVariantDetailComponent
     extends TypedBaseDetailComponent<typeof GetProductVariantDetailDocument, 'productVariant'>
@@ -71,6 +72,7 @@ export class ProductVariantDetailComponent
 {
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
+    readonly customPriceFields = this.getCustomFieldConfig('ProductVariantPrice');
     readonly customOptionFields = this.getCustomFieldConfig('ProductOption');
     stockLevels$: Observable<NonNullable<GetProductVariantDetailQuery['productVariant']>['stockLevels']>;
     detailForm = this.formBuilder.group<VariantFormValue>({
@@ -99,6 +101,7 @@ export class ProductVariantDetailComponent
             price: FormControl<number | null>;
             currencyCode: FormControl<CurrencyCode | null>;
             delete: FormControl<boolean | null>;
+            customFields: FormGroup<any>; //TODO: Add type
         }>
     >([]);
     assetChanges: SelectedAssets = {};
@@ -181,6 +184,7 @@ export class ProductVariantDetailComponent
                 currencyCode,
                 price: 0,
                 delete: false as boolean,
+                customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customPriceFields)),
             }),
         );
     }
@@ -246,6 +250,7 @@ export class ProductVariantDetailComponent
                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                 currencyCode: control.value.currencyCode!,
                                 delete: control.value.delete === true,
+                                customFields: control.get('customFields')?.value,
                             }));
                     }
                     return this.dataService.mutate(ProductVariantUpdateMutationDocument, {
@@ -353,13 +358,16 @@ export class ProductVariantDetailComponent
         }
         this.pricesForm.clear();
         for (const price of variant.prices) {
-            this.pricesForm.push(
-                this.formBuilder.group({
-                    price: price.price,
-                    currencyCode: price.currencyCode,
-                    delete: false as boolean,
-                }),
-            );
+            const priceForm = this.formBuilder.group({
+                price: price.price,
+                currencyCode: price.currencyCode,
+                delete: false as boolean,
+                customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customPriceFields)),
+            });
+            if (this.customPriceFields.length) {
+                this.setCustomFieldFormValues(this.customPriceFields, priceForm.get(['customFields']), price);
+            }
+            this.pricesForm.push(priceForm);
         }
         if (this.customFields.length) {
             this.setCustomFieldFormValues(

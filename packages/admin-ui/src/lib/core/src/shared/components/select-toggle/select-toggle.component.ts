@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
     templateUrl: './select-toggle.component.html',
     styleUrls: ['./select-toggle.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SelectToggleComponent {
     @Input() size: 'small' | 'large' = 'large';

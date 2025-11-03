@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import { Logger, RuntimeVendureConfig, VendureConfig } from '../config';
+import { Logger } from '../config';
 
 /**
  * @description
@@ -39,28 +39,26 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
     const proxyHostname = options.hostname || 'localhost';
     const middleware = createProxyMiddleware({
         // TODO: how do we detect https?
-        target: `http://${proxyHostname}:${options.port}`,
+        target: `http://${proxyHostname}:${options.port}/${options.basePath ?? ''}`,
         pathRewrite: {
             [`^${route}`]: '/' + (options.basePath || ''),
         },
-        logProvider(provider) {
-            return {
-                log(message: string) {
-                    Logger.debug(message, options.label);
-                },
-                debug(message: string) {
-                    Logger.debug(message, options.label);
-                },
-                info(message: string) {
-                    Logger.debug(message, options.label);
-                },
-                warn(message: string) {
-                    Logger.warn(message, options.label);
-                },
-                error(message: string) {
-                    Logger.error(message, options.label);
-                },
-            };
+        logger: {
+            log(message: string) {
+                Logger.debug(message, options.label);
+            },
+            debug(message: string) {
+                Logger.debug(message, options.label);
+            },
+            info(message: string) {
+                Logger.debug(message, options.label);
+            },
+            warn(message: string) {
+                Logger.warn(message, options.label);
+            },
+            error(message: string) {
+                Logger.error(message, options.label);
+            },
         },
     });
     return middleware;

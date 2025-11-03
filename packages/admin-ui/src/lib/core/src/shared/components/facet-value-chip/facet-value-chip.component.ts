@@ -7,6 +7,7 @@ import { FacetValueFragment } from '../../../common/generated-types';
     templateUrl: './facet-value-chip.component.html',
     styleUrls: ['./facet-value-chip.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FacetValueChipComponent implements OnInit {
     @Input() facetValue: FacetValueFragment;

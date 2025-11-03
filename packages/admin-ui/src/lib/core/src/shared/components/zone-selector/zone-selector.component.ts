@@ -49,6 +49,7 @@ type Zone = ItemOf<GetZoneSelectorListQuery, 'zones'>;
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class ZoneSelectorComponent implements ControlValueAccessor {
     @Output() selectedValuesChange = new EventEmitter<Zone>();

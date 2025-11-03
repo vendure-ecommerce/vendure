@@ -8,6 +8,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -16,7 +17,6 @@ import { EventBus, SellerEvent } from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-
 /**
  * @description
  * Contains methods relating to {@link Seller} entities.
@@ -24,6 +24,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class SellerService {
     constructor(
         private connection: TransactionalConnection,

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -13,8 +14,19 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules", "migration.ts", "src/plugins/**/ui/*", "admin-ui"],
+  "exclude": [
+    "node_modules",
+    "migration.ts",
+    "src/plugins/**/ui/*",
+    "admin-ui",
+    "src/plugins/**/dashboard/*",
+    "src/gql/*",
+    "vite.*.*ts"
+  ],
   "ts-node": {
     "files": true
-  }
+  },
+  "references": [{
+    "path": "./tsconfig.dashboard.json"
+  }]
 }

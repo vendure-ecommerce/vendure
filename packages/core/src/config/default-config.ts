@@ -1,15 +1,17 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
+    DEFAULT_CHANNEL_TOKEN_KEY,
     SUPER_ADMIN_USER_IDENTIFIER,
     SUPER_ADMIN_USER_PASSWORD,
-    DEFAULT_CHANNEL_TOKEN_KEY,
 } from '@vendure/common/lib/shared-constants';
 import { randomBytes } from 'crypto';
 
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
+import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
+import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -17,16 +19,17 @@ import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-previe
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { DefaultPasswordValidationStrategy } from './auth/default-password-validation-strategy';
+import { DefaultVerificationTokenStrategy } from './auth/default-verification-token-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
 import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultProductVariantPriceUpdateStrategy } from './catalog/default-product-variant-price-update-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
-import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
+import { DefaultSlugStrategy } from './entity/default-slug-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
@@ -47,10 +50,12 @@ import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
 import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
+import { cleanOrphanedSettingsStoreTask } from './settings-store/clean-orphaned-settings-store-task';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
 import { InMemoryCacheStrategy } from './system/in-memory-cache-strategy';
+import { NoopInstrumentationStrategy } from './system/noop-instrumentation-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -83,6 +88,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             origin: true,
             credentials: true,
         },
+        trustProxy: false,
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
@@ -110,7 +116,8 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
-        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
+        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
+        verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -141,6 +148,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,
         metadataModifiers: [],
+        slugStrategy: new DefaultSlugStrategy(),
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
@@ -192,6 +200,11 @@ export const defaultConfig: RuntimeVendureConfig = {
         activeQueues: [],
         prefix: '',
     },
+    schedulerOptions: {
+        schedulerStrategy: new NoopSchedulerStrategy(),
+        tasks: [cleanSessionsTask, cleanOrphanedSettingsStoreTask],
+        runTasksInWorkerOnly: true,
+    },
     customFields: {
         Address: [],
         Administrator: [],
@@ -229,10 +242,12 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
         Zone: [],
     },
+    settingsStoreFields: {},
     plugins: [],
     systemOptions: {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),
         healthChecks: [new TypeORMHealthCheckStrategy()],
         errorHandlers: [],
+        instrumentationStrategy: new NoopInstrumentationStrategy(),
     },
 };

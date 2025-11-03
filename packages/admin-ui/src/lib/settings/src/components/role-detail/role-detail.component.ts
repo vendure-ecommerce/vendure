@@ -32,6 +32,7 @@ export const GET_ROLE_DETAIL = gql`
     templateUrl: './role-detail.component.html',
     styleUrls: ['./role-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RoleDetailComponent
     extends TypedBaseDetailComponent<typeof GetRoleDetailDocument, 'role'>

@@ -82,6 +82,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() emptyStateLabel: string;
     @Input() filters: DataTableFilterCollection;
     @Input() activeIndex = -1;
+    @Input() trackByPath = 'id';
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @Output() visibleColumnsChange = new EventEmitter<Array<DataTable2ColumnComponent<T>>>();
@@ -163,6 +164,11 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 
 
 ### activeIndex
+
+<MemberInfo kind="property" type={``}   />
+
+
+### trackByPath
 
 <MemberInfo kind="property" type={``}   />
 

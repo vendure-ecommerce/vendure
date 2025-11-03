@@ -6,6 +6,7 @@ import { Dialog, GetProductVariantOptionsQuery } from '@vendure/admin-ui/core';
     templateUrl: './confirm-variant-deletion-dialog.component.html',
     styleUrls: ['./confirm-variant-deletion-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ConfirmVariantDeletionDialogComponent implements Dialog<boolean> {
     resolveWith: (result?: boolean) => void;

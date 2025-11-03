@@ -16,6 +16,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     templateUrl: './text-form-input.component.html',
     styleUrls: ['./text-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TextFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'text-form-input';

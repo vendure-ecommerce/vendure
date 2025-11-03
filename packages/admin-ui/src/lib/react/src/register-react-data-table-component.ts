@@ -1,4 +1,4 @@
-import { APP_INITIALIZER } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 import {
     DataTableColumnId,
     DataTableCustomComponentService,
@@ -88,10 +88,8 @@ export interface ReactDataTableComponentProps<T = any> {
  * @docsCategory react-extensions
  */
 export function registerReactDataTableComponent(config: ReactDataTableComponentConfig) {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (dataTableCustomComponentService: DataTableCustomComponentService) => () => {
+    return provideAppInitializer(() => {
+        const initializerFn = ((dataTableCustomComponentService: DataTableCustomComponentService) => () => {
             dataTableCustomComponentService.registerCustomComponent({
                 ...config,
                 component: ReactCustomColumnComponent,
@@ -105,7 +103,7 @@ export function registerReactDataTableComponent(config: ReactDataTableComponentC
                     },
                 ],
             });
-        },
-        deps: [DataTableCustomComponentService],
-    };
+        })(inject(DataTableCustomComponentService));
+        return initializerFn();
+      });
 }

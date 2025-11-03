@@ -10,6 +10,7 @@ import { HtmlEditorFormInputComponent } from '../../../dynamic-form-inputs/code-
     templateUrl: './raw-html-dialog.component.html',
     styleUrls: ['./raw-html-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RawHtmlDialogComponent implements OnInit, Dialog<string> {
     html: string;

@@ -42,5 +42,5 @@ Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`PropsWithChildren&#60;{         for?: string;         label?: string;         tooltip?: string;         invalid?: boolean;         errorMessage?: string;     }&#62;`} />
+<MemberInfo kind="parameter" type={`PropsWithChildren&#60;{         for?: string;         label?: string;         tooltip?: string;         invalid?: boolean;         errorMessage?: string;     }&#62;`} />
 

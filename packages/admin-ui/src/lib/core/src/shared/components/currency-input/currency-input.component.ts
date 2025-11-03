@@ -41,6 +41,7 @@ import { CurrencyService } from '../../../providers/currency/currency.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges, OnDestroy {
     @Input() disabled = false;
@@ -59,7 +60,10 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     readonly precision: number;
     readonly precisionFactor: number;
 
-    constructor(private dataService: DataService, private currencyService: CurrencyService) {
+    constructor(
+        private dataService: DataService,
+        private currencyService: CurrencyService,
+    ) {
         this.precision = currencyService.precision;
         this.precisionFactor = currencyService.precisionFactor;
     }

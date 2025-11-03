@@ -66,7 +66,7 @@ export class AssetServer {
     createAssetServer(serverConfig: {
         presets: ImageTransformPreset[];
         imageTransformStrategies: ImageTransformStrategy[];
-    }) {
+    }): express.Router {
         this.presets = serverConfig.presets;
         this.imageTransformStrategies = serverConfig.imageTransformStrategies;
         const assetServer = express.Router();
@@ -258,13 +258,21 @@ export class AssetServer {
             Logger.error((e.message as string) + ': ' + filePath, loggerCtx);
             return '';
         }
-        if (!(this.assetStorageStrategy instanceof S3AssetStorageStrategy)) {
+        if (this.assetStorageStrategy instanceof S3AssetStorageStrategy) {
             // For S3 storage, we don't need to sanitize the path because
             // directory traversal attacks are not possible, and modifying the
-            // path in this way can s3 files to be not found.
-            return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
-        } else {
+            // path in this way can cause S3 files to be not found.
             return decodedPath;
+        } else {
+            // For local storage, we make sure to sanitize the path to prevent directory traversal attacks.
+            const normalizedPath = path.normalize(decodedPath);
+            let sanitizedPath = normalizedPath;
+            let previousPath;
+            do {
+                previousPath = sanitizedPath;
+                sanitizedPath = previousPath.replace(/(\.\.[\\/\\])+/g, '');
+            } while (sanitizedPath !== previousPath);
+            return sanitizedPath;
         }
     }
 

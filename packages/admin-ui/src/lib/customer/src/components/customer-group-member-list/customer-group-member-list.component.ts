@@ -36,6 +36,7 @@ export type CustomerGroupMember = Pick<
     templateUrl: './customer-group-member-list.component.html',
     styleUrls: ['./customer-group-member-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
     @Input() locationId: BulkActionLocationId;
@@ -58,7 +59,10 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
     private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 
-    constructor(private router: Router, private dataService: DataService) {}
+    constructor(
+        private router: Router,
+        private dataService: DataService,
+    ) {}
 
     ngOnInit() {
         this.membersCurrentPage$ = this.route.paramMap.pipe(

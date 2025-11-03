@@ -9,6 +9,7 @@ import {
 
 @Directive({
     selector: '[vdrCardControls]',
+    standalone: false,
 })
 export class CardControlsDirective {}
 
@@ -17,6 +18,7 @@ export class CardControlsDirective {}
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CardComponent {
     @Input() title: string;

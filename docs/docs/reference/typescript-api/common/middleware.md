@@ -33,7 +33,7 @@ export const config: VendureConfig = {
   apiOptions: {
     middleware: [{
       handler: json({ limit: '10mb' }),
-      route: '*',
+      route: '*splat',
       beforeListen: true,
     }],
   },
