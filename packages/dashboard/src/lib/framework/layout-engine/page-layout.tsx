@@ -294,19 +294,19 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                         if(isPageBlock(child)) {
                             if (isOfType(child, FullWidthPageBlock)) {
                                 return (
-                                    <div className="@md/layout:col-span-5 space-y-4">{child}</div>
+                                    <div key={child.key} className="@md/layout:col-span-5 space-y-4">{child}</div>
                                 );
                             }
 
                             if (child.props.column === 'main') {
                                 return (
-                                    <div className="@3xl/layout:col-span-3 space-y-4">{child}</div>
+                                    <div key={child.key} className="@3xl/layout:col-span-3 space-y-4">{child}</div>
                                 )
                             }
 
                             if (child.props.column === 'side') {
                                 return (
-                                    <div className="@3xl/layout:col-span-1 space-y-4">{child}</div>
+                                    <div key={child.key} className="@3xl/layout:col-span-1 space-y-4">{child}</div>
                                 )
                             }
                         }
