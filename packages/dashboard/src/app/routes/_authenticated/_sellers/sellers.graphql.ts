@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const sellerItemFragment = graphql(`
     fragment SellerItem on Seller {
@@ -11,8 +11,8 @@ export const sellerItemFragment = graphql(`
 
 export const sellerListQuery = graphql(
     `
-        query SellerList {
-            sellers {
+        query SellerList($options: SellerListOptions) {
+            sellers(options: $options) {
                 items {
                     ...SellerItem
                 }
@@ -54,6 +54,15 @@ export const createSellerDocument = graphql(`
 export const deleteSellerDocument = graphql(`
     mutation DeleteSeller($id: ID!) {
         deleteSeller(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteSellersDocument = graphql(`
+    mutation DeleteSellers($ids: [ID!]!) {
+        deleteSellers(ids: $ids) {
             result
             message
         }

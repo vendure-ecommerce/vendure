@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { AssetFragment } from '@/graphql/fragments.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { AssetFragment } from '@/vdb/graphql/fragments.js';
 import {
     closestCenter,
     DndContext,
@@ -56,11 +56,11 @@ interface FeaturedAssetProps {
 }
 
 function FeaturedAsset({
-                           featuredAsset,
-                           compact = false,
-                           onSelectAssets,
-                           onPreviewAsset,
-                       }: FeaturedAssetProps) {
+    featuredAsset,
+    compact = false,
+    onSelectAssets,
+    onPreviewAsset,
+}: FeaturedAssetProps) {
     return (
         <div
             className={`flex items-center justify-center ${compact ? 'h-40' : 'h-64'} border border-dashed rounded-md`}
@@ -90,14 +90,14 @@ function FeaturedAsset({
 
 // Sortable asset item component
 function SortableAsset({
-                           asset,
-                           compact,
-                           isFeatured,
-                           updatePermissions,
-                           onPreview,
-                           onSetAsFeatured,
-                           onRemove,
-                       }: {
+    asset,
+    compact,
+    isFeatured,
+    updatePermissions,
+    onPreview,
+    onSetAsFeatured,
+    onRemove,
+}: {
     asset: Asset;
     compact: boolean;
     isFeatured: boolean;
@@ -163,13 +163,13 @@ function SortableAsset({
 }
 
 export function EntityAssets({
-                                 assets: initialAssets = [],
-                                 featuredAsset: initialFeaturedAsset,
-                                 compact = false,
-                                 updatePermissions = true,
-                                 multiSelect = true,
-                                 onChange,
-                             }: EntityAssetsProps) {
+    assets: initialAssets = [],
+    featuredAsset: initialFeaturedAsset,
+    compact = false,
+    updatePermissions = true,
+    multiSelect = true,
+    onChange,
+}: EntityAssetsProps) {
     const [assets, setAssets] = useState<Asset[]>([...initialAssets]);
     const [featuredAsset, setFeaturedAsset] = useState<Asset | undefined | null>(initialFeaturedAsset);
     const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -372,18 +372,17 @@ interface AssetListProps {
     onDragEnd: (event: DragEndEvent) => void;
 }
 
-
 function AssetList({
-                       assets,
-                       compact,
-                       sensors,
-                       updatePermissions,
-                       isFeatured,
-                       onPreview,
-                       onSetAsFeatured,
-                       onRemove,
-                       onDragEnd,
-                   }: AssetListProps) {
+    assets,
+    compact,
+    sensors,
+    updatePermissions,
+    isFeatured,
+    onPreview,
+    onSetAsFeatured,
+    onRemove,
+    onDragEnd,
+}: AssetListProps) {
     return (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <div className={`${compact ? 'max-h-32' : ''} overflow-auto p-1`}>

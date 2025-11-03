@@ -258,3 +258,70 @@ which internally just uses whatever the current `CacheStrategy` is to store the 
 This means that in most cases you don't need to worry about the session cache, but if you have specific
 requirements, you can create a custom session cache strategy and set it via the `authOptions.sessionCacheStrategy`
 config property.
+
+## SelfRefreshingCache
+The [SelfRefreshingCache](/reference/typescript-api/cache/self-refreshing-cache) is a specialized in-memory cache which automatically
+refreshes itself if the value is found to be stale. This is useful to cache a single frequently-accessed value, that don't change often.
+
+It is created using the [createSelfRefreshingCache](/reference/typescript-api/cache/self-refreshing-cache#createselfrefreshingcache) function, which takes a configuration object that specifies the
+name of the cache, the time-to-live (TTL) for the cache entries, and a refresh function that will be called to update the value when it is stale.
+
+```ts title="SelfRefreshingCache Example"
+import {
+  Channel,
+  createSelfRefreshingCache,
+  EventBus,
+  InitializerEvent,
+  InternalServerError,
+  Logger,
+  RequestContext
+  SelfRefreshingCache,
+  TransactionalConnection,
+} from '@vendure/core';
+
+@Injectable()
+export class PublicChannelService {
+// highlight-start
+  private publicChannel: SelfRefreshingCache<Channel, [RequestContext]>;
+// highlight-end
+  private readonly logCtx = 'PublicChannelService';
+
+  constructor(
+    private connection: TransactionalConnection,
+    private eventBus: EventBus,
+  ) {
+    this.eventBus.ofType(InitializerEvent).subscribe(async () => {
+      // highlight-start
+      this.publicChannel = await createSelfRefreshingCache({
+        name: 'PublicChannelService.publicChannel',
+        ttl: 1000 * 60 * 5, // 5min
+        refresh: { fn: ctx => this.findPublicChannel(ctx), defaultArgs: [RequestContext.empty()] },
+      });
+      // highlight-end
+    });
+  }
+
+  async getPublicChannel(): Promise<Channel> {
+    // highlight-start
+    const publicChannel = await this.publicChannel.value();
+    // highlight-end
+    if (!publicChannel) {
+      throw new InternalServerError(`error.public-channel-not-found`);
+    }
+    return publicChannel;
+  }
+
+  private async findPublicChannel(ctx: RequestContext): Promise<Channel> {
+    const publicChannel = await this.connection.getRepository(ctx, Channel).findOne({
+      where: { code: DEFAULT_PUBLIC_CHANNEL_CODE },
+      relations: ['defaultShippingZone', 'defaultTaxZone'],
+    });
+
+    if (!publicChannel) {
+      Logger.error('Could not find public channel!', this.logCtx);
+      throw new InternalServerError(`error.public-channel-not-found`);
+    }
+    return publicChannel;
+  }
+}
+```

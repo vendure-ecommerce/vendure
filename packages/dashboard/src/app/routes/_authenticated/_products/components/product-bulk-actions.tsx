@@ -1,137 +1,73 @@
-import { useMutation } from '@tanstack/react-query';
-import { CopyIcon, LayersIcon, TagIcon, TrashIcon } from 'lucide-react';
+import { TagIcon } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
-import { api } from '@/graphql/api.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { useChannel, usePaginatedList } from '@/index.js';
-import { Trans, useLingui } from '@/lib/trans.js';
-
-import { Permission } from '@vendure/common/lib/generated-types';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
+import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans } from '@lingui/react/macro';
+import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
+import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
+    assignProductsToChannelDocument,
     deleteProductsDocument,
-    duplicateEntityDocument,
+    getProductsWithFacetValuesByIdsDocument,
+    productDetailDocument,
     removeProductsFromChannelDocument,
+    updateProductsDocument,
 } from '../products.graphql.js';
 import { AssignFacetValuesDialog } from './assign-facet-values-dialog.js';
-import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
 
 export const DeleteProductsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate } = useMutation({
-        mutationFn: api.mutate(deleteProductsDocument),
-        onSuccess: (result: ResultOf<typeof deleteProductsDocument>) => {
-            let deleted = 0;
-            const errors: string[] = [];
-            for (const item of result.deleteProducts) {
-                if (item.result === 'DELETED') {
-                    deleted++;
-                } else if (item.message) {
-                    errors.push(item.message);
-                }
-            }
-            if (0 < deleted) {
-                toast.success(i18n.t(`Deleted ${deleted} products`));
-            }
-            if (0 < errors.length) {
-                toast.error(i18n.t(`Failed to delete ${errors.length} products`));
-            }
-            refetchPaginatedList();
-            table.resetRowSelection();
-        },
-        onError: () => {
-            toast.error(`Failed to delete ${selection.length} products`);
-        },
-    });
     return (
-        <DataTableBulkActionItem
-            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteProduct]}
-            onClick={() => mutate({ ids: selection.map(s => s.id) })}
-            label={<Trans>Delete</Trans>}
-            confirmationText={<Trans>Are you sure you want to delete {selection.length} products?</Trans>}
-            icon={TrashIcon}
-            className="text-destructive"
+        <DeleteBulkAction
+            mutationDocument={deleteProductsDocument}
+            entityName="products"
+            requiredPermissions={['DeleteCatalog', 'DeleteProduct']}
+            selection={selection}
+            table={table}
         />
     );
 };
 
 export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { channels } = useChannel();
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    if (channels.length < 2) {
-        return null;
-    }
-
-    const handleSuccess = () => {
-        refetchPaginatedList();
-        table.resetRowSelection();
-    };
+    const { priceFactor, priceFactorField } = usePriceFactor();
 
     return (
-        <>
-            <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
-                onClick={() => setDialogOpen(true)}
-                label={<Trans>Assign to channel</Trans>}
-                icon={LayersIcon}
-            />
-            <AssignToChannelDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                productIds={selection.map(s => s.id)}
-                onSuccess={handleSuccess}
-            />
-        </>
+        <AssignToChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="products"
+            mutationFn={api.mutate(assignProductsToChannelDocument)}
+            requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
+            buildInput={(channelId: string) => ({
+                productIds: selection.map(s => s.id),
+                channelId,
+                priceFactor,
+            })}
+            additionalFields={priceFactorField}
+        />
     );
 };
 
 export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { selectedChannel } = useChannel();
-    const { i18n } = useLingui();
-    const { mutate } = useMutation({
-        mutationFn: api.mutate(removeProductsFromChannelDocument),
-        onSuccess: () => {
-            toast.success(i18n.t(`Successfully removed ${selection.length} products from channel`));
-            refetchPaginatedList();
-            table.resetRowSelection();
-        },
-        onError: error => {
-            toast.error(`Failed to remove ${selection.length} products from channel: ${error.message}`);
-        },
-    });
-
-    if (!selectedChannel) {
-        return null;
-    }
-
-    const handleRemove = () => {
-        mutate({
-            input: {
-                productIds: selection.map(s => s.id),
-                channelId: selectedChannel.id,
-            },
-        });
-    };
+    const { activeChannel } = useChannel();
 
     return (
-        <DataTableBulkActionItem
-            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
-            onClick={handleRemove}
-            label={<Trans>Remove from current channel</Trans>}
-            confirmationText={
-                <Trans>
-                    Are you sure you want to remove {selection.length} products from the current channel?
-                </Trans>
-            }
-            icon={LayersIcon}
-            className="text-warning"
+        <RemoveFromChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="products"
+            mutationFn={api.mutate(removeProductsFromChannelDocument)}
+            requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
+            buildInput={() => ({
+                productIds: selection.map(s => s.id),
+                channelId: activeChannel?.id,
+            })}
         />
     );
 };
@@ -148,7 +84,7 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Edit facet values</Trans>}
                 icon={TagIcon}
@@ -156,7 +92,11 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
             <AssignFacetValuesDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                productIds={selection.map(s => s.id)}
+                entityIds={selection.map(s => s.id)}
+                entityType="products"
+                queryFn={variables => api.query(getProductsWithFacetValuesByIdsDocument, variables)}
+                mutationFn={api.mutate(updateProductsDocument)}
+                detailDocument={productDetailDocument}
                 onSuccess={handleSuccess}
             />
         </>
@@ -164,105 +104,14 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
 };
 
 export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const [isDuplicating, setIsDuplicating] = useState(false);
-    const [progress, setProgress] = useState({ completed: 0, total: 0 });
-
-    const { mutateAsync } = useMutation({
-        mutationFn: api.mutate(duplicateEntityDocument),
-    });
-
-    const handleDuplicate = async () => {
-        if (isDuplicating) return;
-
-        setIsDuplicating(true);
-        setProgress({ completed: 0, total: selection.length });
-
-        const results = {
-            success: 0,
-            failed: 0,
-            errors: [] as string[],
-        };
-
-        try {
-            // Process products sequentially to avoid overwhelming the server
-            for (let i = 0; i < selection.length; i++) {
-                const product = selection[i];
-
-                try {
-                    const result = await mutateAsync({
-                        input: {
-                            entityName: 'Product',
-                            entityId: product.id,
-                            duplicatorInput: {
-                                code: 'product-duplicator',
-                                arguments: [
-                                    {
-                                        name: 'includeVariants',
-                                        value: 'true',
-                                    },
-                                ],
-                            },
-                        },
-                    });
-
-                    if ('newEntityId' in result.duplicateEntity) {
-                        results.success++;
-                    } else {
-                        results.failed++;
-                        const errorMsg =
-                            result.duplicateEntity.message ||
-                            result.duplicateEntity.duplicationError ||
-                            'Unknown error';
-                        results.errors.push(`Product ${product.name || product.id}: ${errorMsg}`);
-                    }
-                } catch (error) {
-                    results.failed++;
-                    results.errors.push(
-                        `Product ${product.name || product.id}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                    );
-                }
-
-                setProgress({ completed: i + 1, total: selection.length });
-            }
-
-            // Show results
-            if (results.success > 0) {
-                toast.success(i18n.t(`Successfully duplicated ${results.success} products`));
-            }
-            if (results.failed > 0) {
-                const errorMessage =
-                    results.errors.length > 3
-                        ? `${results.errors.slice(0, 3).join(', ')}... and ${results.errors.length - 3} more`
-                        : results.errors.join(', ');
-                toast.error(`Failed to duplicate ${results.failed} products: ${errorMessage}`);
-            }
-
-            if (results.success > 0) {
-                refetchPaginatedList();
-                table.resetRowSelection();
-            }
-        } finally {
-            setIsDuplicating(false);
-            setProgress({ completed: 0, total: 0 });
-        }
-    };
-
     return (
-        <DataTableBulkActionItem
-            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
-            onClick={handleDuplicate}
-            label={
-                isDuplicating ? (
-                    <Trans>
-                        Duplicating... ({progress.completed}/{progress.total})
-                    </Trans>
-                ) : (
-                    <Trans>Duplicate</Trans>
-                )
-            }
-            icon={CopyIcon}
+        <DuplicateBulkAction
+            entityType="Product"
+            duplicatorCode="product-duplicator"
+            requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
+            entityName="Product"
+            selection={selection}
+            table={table}
         />
     );
 };

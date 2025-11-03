@@ -1,5 +1,5 @@
+import { UserSettingsContext } from '@/vdb/providers/user-settings.js';
 import { useContext } from 'react';
-import { UserSettingsContext } from '../providers/user-settings.js';
 
 // Hook to use the user settings
 

@@ -1,17 +1,21 @@
-import { DataTable } from '@/components/data-table/data-table.js';
-import { api } from '@/graphql/api.js';
+import { DataTable } from '@/vdb/components/data-table/data-table.js';
+import { CountrySelector } from '@/vdb/components/shared/country-selector.js';
+import { api } from '@/vdb/graphql/api.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
-import { addCountryToZoneMutation, removeCountryFromZoneMutation, zoneMembersQuery } from '../zones.graphql.js';
-import { CountrySelector } from '@/components/shared/country-selector.js';
+import {
+    addCountryToZoneMutation,
+    removeCountryFromZoneMutation,
+    zoneMembersQuery,
+} from '../zones.graphql.js';
 
 interface ZoneCountriesTableProps {
     zoneId: string;
     canAddCountries?: boolean;
 }
 
-export function ZoneCountriesTable({ zoneId, canAddCountries = false }: ZoneCountriesTableProps) {
+export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly<ZoneCountriesTableProps>) {
     const { data, refetch } = useQuery({
         queryKey: ['zone', zoneId],
         queryFn: () => api.query(zoneMembersQuery, { zoneId }),
@@ -19,13 +23,6 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: ZoneCoun
 
     const { mutate: addCountryToZone } = useMutation({
         mutationFn: api.mutate(addCountryToZoneMutation),
-        onSuccess: () => {
-            refetch();
-        },
-    });
-
-    const { mutate: removeCountryFromZone } = useMutation({
-        mutationFn: api.mutate(removeCountryFromZoneMutation),
         onSuccess: () => {
             refetch();
         },
@@ -59,9 +56,9 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: ZoneCoun
                 columns={columns}
                 data={paginatedItems ?? []}
                 onPageChange={(table, page, itemsPerPage) => {
-                setPage(page);
-                setPageSize(itemsPerPage);
-            }}
+                    setPage(page);
+                    setPageSize(itemsPerPage);
+                }}
                 totalItems={data?.zone?.members?.length ?? 0}
             />
             {canAddCountries && (

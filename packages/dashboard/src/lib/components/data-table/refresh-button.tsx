@@ -1,4 +1,6 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { Trans } from '@lingui/react/macro';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -22,7 +24,10 @@ function useDelayedLoading(isLoading: boolean, delayMs: number = 100) {
     return delayedLoading;
 }
 
-export function RefreshButton({ onRefresh, isLoading }: { onRefresh: () => void; isLoading: boolean }) {
+export function RefreshButton({
+    onRefresh,
+    isLoading,
+}: Readonly<{ onRefresh: () => void; isLoading: boolean }>) {
     const delayedLoading = useDelayedLoading(isLoading, 100);
 
     const handleClick = () => {
@@ -30,8 +35,15 @@ export function RefreshButton({ onRefresh, isLoading }: { onRefresh: () => void;
     };
 
     return (
-        <Button variant="ghost" size="sm" onClick={handleClick} disabled={delayedLoading}>
-            <RefreshCw className={delayedLoading ? 'animate-rotate' : ''} />
-        </Button>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={handleClick} disabled={delayedLoading}>
+                    <RefreshCw className={delayedLoading ? 'animate-rotate' : ''} />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+                <Trans>Refresh data</Trans>
+            </TooltipContent>
+        </Tooltip>
     );
 }

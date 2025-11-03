@@ -1,19 +1,20 @@
 'use client';
 
-import { MouseEvent } from 'react';
-import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva, VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
+import * as React from 'react';
+import { MouseEvent } from 'react';
 
-import { useIsMobile } from '@/hooks/use-mobile.js';
-import { cn } from '@/lib/utils.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Separator } from '@/components/ui/separator.js';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet.js';
-import { Skeleton } from '@/components/ui/skeleton.js';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/vdb/components/ui/sheet.js';
+import { SidebarContext } from '@/vdb/components/ui/sidebar-context.js';
+import { Skeleton } from '@/vdb/components/ui/skeleton.js';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { useIsMobile } from '@/vdb/hooks/use-mobile.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -21,18 +22,6 @@ const SIDEBAR_WIDTH = '16rem';
 const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
-
-type SidebarContext = {
-    state: 'expanded' | 'collapsed';
-    open: boolean;
-    setOpen: (open: boolean) => void;
-    openMobile: boolean;
-    setOpenMobile: (open: boolean) => void;
-    isMobile: boolean;
-    toggleSidebar: () => void;
-};
-
-const SidebarContext = React.createContext<SidebarContext | null>(null);
 
 function useSidebar() {
     const context = React.useContext(SidebarContext);

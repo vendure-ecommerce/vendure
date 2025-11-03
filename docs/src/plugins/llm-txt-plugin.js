@@ -60,7 +60,7 @@ module.exports = function (context) {
             const docsRecords = Object.entries(currentVersionDocsRoutes)
                 .filter(([path, record]) => record.id !== 'TODO')
                 .map(([path, record]) => {
-                    return `- [${record.title}](${DOCS_BASE_URL}/${path}): ${record.description}`;
+                    return `- [${record.title}](${DOCS_BASE_URL}/${path.replace(/\/index\/?$/, '')}): ${record.description}`;
                 });
 
             // Build up llms.txt file

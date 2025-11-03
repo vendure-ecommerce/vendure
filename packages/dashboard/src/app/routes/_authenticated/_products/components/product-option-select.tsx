@@ -1,21 +1,17 @@
-import { useState } from 'react';
-import { Plus, Check, ChevronsUpDown } from 'lucide-react';
-import { Button } from '@/components/ui/button.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Command,
     CommandEmpty,
     CommandGroup,
     CommandInput,
     CommandItem,
-} from '@/components/ui/command.js';
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover.js';
-import { cn } from '@/lib/utils.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { cn } from '@/vdb/lib/utils.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 interface ProductOption {
     id: string;
@@ -37,10 +33,15 @@ interface ProductOptionSelectProps {
     onCreateOption: (name: string) => void;
 }
 
-export function ProductOptionSelect({ group, value, onChange, onCreateOption }: ProductOptionSelectProps) {
+export function ProductOptionSelect({
+    group,
+    value,
+    onChange,
+    onCreateOption,
+}: Readonly<ProductOptionSelectProps>) {
     const [open, setOpen] = useState(false);
     const [newOptionInput, setNewOptionInput] = useState('');
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     return (
         <FormFieldWrapper
@@ -48,31 +49,24 @@ export function ProductOptionSelect({ group, value, onChange, onCreateOption }: 
             name={`options.${group.id}`}
             label={group.name}
             render={() => (
-                <Popover
-                    open={open}
-                    onOpenChange={setOpen}
-                >
+                <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            role="combobox"
-                            className="w-full justify-between"
-                        >
-                            {value
-                                ? group.options.find(
-                                    (option) => option.id === value,
-                                )?.name
-                                : <Trans>Select {group.name}</Trans>}
+                        <Button variant="outline" role="combobox" className="w-full justify-between">
+                            {value ? (
+                                group.options.find(option => option.id === value)?.name
+                            ) : (
+                                <Trans>Select {group.name}</Trans>
+                            )}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                         <Command>
-                            <CommandInput 
-                                placeholder={i18n.t('Search {name}...').replace('{name}', group.name)} 
+                            <CommandInput
+                                placeholder={t`Search {name}...`.replace('{name}', group.name)}
                                 onValueChange={setNewOptionInput}
                             />
-                            <CommandEmpty className='py-2'>
+                            <CommandEmpty className="py-2">
                                 <div className="p-2">
                                     <Button
                                         variant="outline"
@@ -89,7 +83,7 @@ export function ProductOptionSelect({ group, value, onChange, onCreateOption }: 
                                 </div>
                             </CommandEmpty>
                             <CommandGroup>
-                                {group.options.map((option) => (
+                                {group.options.map(option => (
                                     <CommandItem
                                         key={option.id}
                                         value={option.name}
@@ -100,8 +94,8 @@ export function ProductOptionSelect({ group, value, onChange, onCreateOption }: 
                                     >
                                         <Check
                                             className={cn(
-                                                "mr-2 h-4 w-4",
-                                                value === option.id ? "opacity-100" : "opacity-0"
+                                                'mr-2 h-4 w-4',
+                                                value === option.id ? 'opacity-100' : 'opacity-0',
                                             )}
                                         />
                                         {option.name}
@@ -114,4 +108,4 @@ export function ProductOptionSelect({ group, value, onChange, onCreateOption }: 
             )}
         />
     );
-} 
+}

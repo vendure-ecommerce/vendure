@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const taxCategoryItemFragment = graphql(`
     fragment TaxCategoryItem on TaxCategory {
@@ -12,8 +12,8 @@ export const taxCategoryItemFragment = graphql(`
 
 export const taxCategoryListQuery = graphql(
     `
-        query TaxCategoryList {
-            taxCategories {
+        query TaxCategoryList($options: TaxCategoryListOptions) {
+            taxCategories(options: $options) {
                 items {
                     ...TaxCategoryItem
                 }
@@ -24,7 +24,7 @@ export const taxCategoryListQuery = graphql(
     [taxCategoryItemFragment],
 );
 
-export const taxCategoryDetailQuery = graphql(`
+export const taxCategoryDetailDocument = graphql(`
     query TaxCategoryDetail($id: ID!) {
         taxCategory(id: $id) {
             id
@@ -56,6 +56,15 @@ export const updateTaxCategoryDocument = graphql(`
 export const deleteTaxCategoryDocument = graphql(`
     mutation DeleteTaxCategory($id: ID!) {
         deleteTaxCategory(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteTaxCategoriesDocument = graphql(`
+    mutation DeleteTaxCategories($ids: [ID!]!) {
+        deleteTaxCategories(ids: $ids) {
             result
             message
         }

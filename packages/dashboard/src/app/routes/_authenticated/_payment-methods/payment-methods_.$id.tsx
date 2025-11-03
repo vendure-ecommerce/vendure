@@ -1,12 +1,12 @@
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -16,10 +16,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PaymentEligibilityCheckerSelector } from './components/payment-eligibility-checker-selector.js';
@@ -30,12 +30,18 @@ import {
     updatePaymentMethodDocument,
 } from './payment-methods.graphql.js';
 
+const pageId = 'payment-method-detail';
+
 export const Route = createFileRoute('/_authenticated/_payment-methods/payment-methods_/$id')({
     component: PaymentMethodDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: paymentMethodDetailDocument,
         breadcrumb(_isNew, entity) {
-            return [{ path: '/payment-methods', label: 'Payment methods' }, entity?.name];
+            return [
+                { path: '/payment-methods', label: <Trans>Payment Methods</Trans> },
+                _isNew ? <Trans>New payment method</Trans> : entity?.name,
+            ];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -45,9 +51,10 @@ function PaymentMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: paymentMethodDetailDocument,
         createDocument: createPaymentMethodDocument,
         updateDocument: updatePaymentMethodDocument,
@@ -88,21 +95,28 @@ function PaymentMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated payment method'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created payment method`
+                    : t`Successfully updated payment method`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update payment method'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create payment method` : t`Failed to update payment method`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
     return (
-        <Page pageId="payment-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New payment method</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -113,7 +127,7 @@ function PaymentMethodDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

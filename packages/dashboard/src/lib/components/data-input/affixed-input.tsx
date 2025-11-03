@@ -1,13 +1,35 @@
-import { cn } from '@/lib/utils.js';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input.js';
-import { ReactNode, useRef, useEffect, useState } from 'react';
 
-interface AffixedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
-    prefix?: ReactNode;
-    suffix?: ReactNode;
-}
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
 
-export function AffixedInput({ prefix, suffix, className = '', ...props }: AffixedInputProps) {
+export type AffixedInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> &
+    DashboardFormComponentProps & {
+        prefix?: ReactNode;
+        suffix?: ReactNode;
+    };
+
+/**
+ * @description
+ * A component for displaying an input with a prefix and/or a suffix.
+ *
+ * @example
+ * ```tsx
+ * <AffixedInput
+ *     {...field}
+ *     type="number"
+ *     suffix="%"
+ *     value={field.value}
+ *     onChange={e => field.onChange(e.target.valueAsNumber)}
+ * />
+ * ```
+ *
+ * @docsCategory form-components
+ * @docsPage AffixedInput
+ */
+export function AffixedInput({ prefix, suffix, className = '', ...props }: Readonly<AffixedInputProps>) {
+    const readOnly = props.disabled || isReadonlyField(props.fieldDef);
     const prefixRef = useRef<HTMLSpanElement>(null);
     const suffixRef = useRef<HTMLSpanElement>(null);
     const [prefixWidth, setPrefixWidth] = useState(0);
@@ -35,9 +57,17 @@ export function AffixedInput({ prefix, suffix, className = '', ...props }: Affix
                 </span>
             )}
             <Input
-                {...props}
+                value={props.value}
+                onChange={props.onChange}
+                onBlur={props.onBlur}
+                type={props.type}
+                ref={props.ref}
                 className={className}
                 style={style}
+                disabled={readOnly}
+                min={props.min}
+                max={props.max}
+                step={props.step}
             />
             {suffix && (
                 <span ref={suffixRef} className="absolute right-3 text-muted-foreground whitespace-nowrap">

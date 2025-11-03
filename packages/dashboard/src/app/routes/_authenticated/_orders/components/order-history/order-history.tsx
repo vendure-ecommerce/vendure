@@ -1,96 +1,104 @@
-import { Badge } from '@/components/ui/badge.js';
-import { Trans } from '@/lib/trans.js';
-import { ArrowRightToLine, CheckIcon, CreditCardIcon, SquarePen } from 'lucide-react';
-import { HistoryEntry, HistoryEntryItem } from '@/components/shared/history-timeline/history-entry.js';
-import { HistoryNoteInput } from '@/components/shared/history-timeline/history-note-input.js';
-import { HistoryTimeline } from '@/components/shared/history-timeline/history-timeline.js';
+import { HistoryNoteEditor } from '@/vdb/components/shared/history-timeline/history-note-editor.js';
+import { HistoryNoteEntry } from '@/vdb/components/shared/history-timeline/history-note-entry.js';
+import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
+import { HistoryTimelineWithGrouping } from '@/vdb/components/shared/history-timeline/history-timeline-with-grouping.js';
+import { useHistoryNoteEditor } from '@/vdb/components/shared/history-timeline/use-history-note-editor.js';
+import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
+import { HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
+import {
+    OrderCancellationComponent,
+    OrderCustomerUpdatedComponent,
+    OrderFulfillmentComponent,
+    OrderFulfillmentTransitionComponent,
+    OrderModifiedComponent,
+    OrderPaymentTransitionComponent,
+    OrderRefundTransitionComponent,
+    OrderStateTransitionComponent,
+} from './default-order-history-components.js';
+import { OrderHistoryOrderDetail } from './order-history-types.js';
+import { orderHistoryUtils } from './order-history-utils.js';
 
 interface OrderHistoryProps {
-    order: {
-        id: string;
-        createdAt: string;
-        currencyCode: string;
-    };
+    order: OrderHistoryOrderDetail;
     historyEntries: Array<HistoryEntryItem>;
     onAddNote: (note: string, isPrivate: boolean) => void;
     onUpdateNote?: (entryId: string, note: string, isPrivate: boolean) => void;
     onDeleteNote?: (entryId: string) => void;
 }
 
-export function OrderHistory({ historyEntries, onAddNote, onUpdateNote, onDeleteNote }: OrderHistoryProps) {
-    const getTimelineIcon = (entry: OrderHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'ORDER_PAYMENT_TRANSITION':
-                return <CreditCardIcon className="h-4 w-4" />;
-            case 'ORDER_NOTE':
-                return <SquarePen className="h-4 w-4" />;
-            case 'ORDER_STATE_TRANSITION':
-                return <ArrowRightToLine className="h-4 w-4" />;
-            default:
-                return <CheckIcon className="h-4 w-4" />;
-        }
+export function OrderHistory({
+    order,
+    historyEntries,
+    onAddNote,
+    onUpdateNote,
+    onDeleteNote,
+}: Readonly<OrderHistoryProps>) {
+    const { noteState, noteEditorOpen, handleEditNote, setNoteEditorOpen } = useHistoryNoteEditor();
+
+    const handleDeleteNote = (noteId: string) => {
+        onDeleteNote?.(noteId);
     };
 
-    const getTitle = (entry: OrderHistoryProps['historyEntries'][0]) => {
-        switch (entry.type) {
-            case 'ORDER_PAYMENT_TRANSITION':
-                return <Trans>Payment settled</Trans>;
-            case 'ORDER_NOTE':
-                return <Trans>Note added</Trans>;
-            case 'ORDER_STATE_TRANSITION': {
-                if (entry.data.from === 'Created') {
-                    return <Trans>Order created</Trans>;
-                }
-                if (entry.data.to === 'Delivered') {
-                    return <Trans>Order fulfilled</Trans>;
-                }
-                if (entry.data.to === 'Cancelled') {
-                    return <Trans>Order cancelled</Trans>;
-                }
-                return <Trans>Order transitioned</Trans>;
-            }
-            default:
-                return <Trans>{entry.type.replace(/_/g, ' ').toLowerCase()}</Trans>;
+    const handleNoteEditorSave = (noteId: string, note: string, isPrivate: boolean) => {
+        onUpdateNote?.(noteId, note, isPrivate);
+    };
+
+    const { getTimelineIcon, getTitle, getIconColor, getActorName, isPrimaryEvent } =
+        orderHistoryUtils(order);
+
+    const renderEntryContent = (entry: HistoryEntryItem) => {
+        const props: HistoryEntryProps = {
+            entry,
+            title: getTitle(entry),
+            actorName: getActorName(entry),
+            timelineIcon: getTimelineIcon(entry),
+            timelineIconClassName: getIconColor(entry),
+            isPrimary: isPrimaryEvent(entry),
+            children: null,
+        };
+        if (entry.type === 'ORDER_NOTE') {
+            return (
+                <HistoryNoteEntry {...props} onEditNote={handleEditNote} onDeleteNote={handleDeleteNote} />
+            );
+        } else if (entry.type === 'ORDER_STATE_TRANSITION') {
+            return <OrderStateTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_PAYMENT_TRANSITION') {
+            return <OrderPaymentTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_REFUND_TRANSITION') {
+            return <OrderRefundTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_FULFILLMENT_TRANSITION') {
+            return <OrderFulfillmentTransitionComponent {...props} />;
+        } else if (entry.type === 'ORDER_FULFILLMENT') {
+            return <OrderFulfillmentComponent {...props} />;
+        } else if (entry.type === 'ORDER_MODIFIED') {
+            return <OrderModifiedComponent {...props} />;
+        } else if (entry.type === 'ORDER_CUSTOMER_UPDATED') {
+            return <OrderCustomerUpdatedComponent {...props} />;
+        } else if (entry.type === 'ORDER_CANCELLATION') {
+            return <OrderCancellationComponent {...props} />;
         }
+        return null;
     };
 
     return (
-        <div className="">
-            <div className="mb-4">
+        <>
+            <HistoryTimelineWithGrouping
+                historyEntries={historyEntries}
+                isPrimaryEvent={isPrimaryEvent}
+                renderEntryContent={renderEntryContent}
+                entity={order}
+            >
                 <HistoryNoteInput onAddNote={onAddNote} />
-            </div>
-            <HistoryTimeline onEditNote={onUpdateNote} onDeleteNote={onDeleteNote}>
-                {historyEntries.map(entry => (
-                    <HistoryEntry
-                        key={entry.id}
-                        entry={entry}
-                        isNoteEntry={entry.type === 'ORDER_NOTE'}
-                        timelineIcon={getTimelineIcon(entry)}
-                        title={getTitle(entry)}
-                    >
-                        {entry.type === 'ORDER_NOTE' && (
-                            <div className="flex items-center space-x-2">
-                                <Badge variant={entry.isPublic ? 'outline' : 'secondary'} className="text-xs">
-                                    {entry.isPublic ? 'Public' : 'Private'}
-                                </Badge>
-                                <span>{entry.data.note}</span>
-                            </div>
-                        )}
-                        <div className="text-sm text-muted-foreground">
-                            {entry.type === 'ORDER_STATE_TRANSITION' && entry.data.from !== 'Created' && (
-                                <Trans>
-                                    From {entry.data.from} to {entry.data.to}
-                                </Trans>
-                            )}
-                            {entry.type === 'ORDER_PAYMENT_TRANSITION' && (
-                                <Trans>
-                                    Payment #{entry.data.paymentId} transitioned to {entry.data.to}
-                                </Trans>
-                            )}
-                        </div>
-                    </HistoryEntry>
-                ))}
-            </HistoryTimeline>
-        </div>
+            </HistoryTimelineWithGrouping>
+            <HistoryNoteEditor
+                key={noteState.noteId}
+                note={noteState.note}
+                onNoteChange={handleNoteEditorSave}
+                open={noteEditorOpen}
+                onOpenChange={setNoteEditorOpen}
+                noteId={noteState.noteId}
+                isPrivate={noteState.isPrivate}
+            />
+        </>
     );
 }

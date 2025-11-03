@@ -64,7 +64,7 @@ export class RequestService {
     }
 }
 ```
-For [Translatable entities](/guides/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslateableSave](/reference/typescript-api/service-helpers/translatable-saver/) helper class.
+For [Translatable entities](/guides/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslatableSaver](/reference/typescript-api/service-helpers/translatable-saver/) helper class.
 
 
 ## Querying channel-aware entities

@@ -1,13 +1,14 @@
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { deleteTaxCategoryDocument, taxCategoryListQuery } from './tax-categories.graphql.js';
+import { DeleteTaxCategoriesBulkAction } from './components/tax-category-bulk-actions.js';
+import { taxCategoryListQuery } from './tax-categories.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-categories/tax-categories')({
     component: TaxCategoryListPage,
@@ -19,9 +20,8 @@ function TaxCategoryListPage() {
         <ListPage
             pageId="tax-category-list"
             listQuery={taxCategoryListQuery}
-            deleteMutation={deleteTaxCategoryDocument}
             route={Route}
-            title="Tax Categories"
+            title={<Trans>Tax Categories</Trans>}
             defaultVisibility={{
                 name: true,
                 isDefault: true,
@@ -37,11 +37,9 @@ function TaxCategoryListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 isDefault: {
-                    header: 'Default',
                     cell: ({ row }) => (
                         <Badge variant={row.original.isDefault ? 'success' : 'destructive'}>
                             <Trans>{row.original.isDefault ? 'Yes' : 'No'}</Trans>
@@ -49,6 +47,12 @@ function TaxCategoryListPage() {
                     ),
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteTaxCategoriesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateTaxCategory']}>

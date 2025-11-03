@@ -1,9 +1,7 @@
-import { Trans } from "@/lib/trans.js";
-import { Select, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select.js";
-import { SelectContent } from "@/components/ui/select.js";
-import { useEffect, useState } from "react";
-import { DateTimeInput } from "@/components/data-input/datetime-input.js";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableDateTimeFilterProps {
     value: Record<string, any> | undefined;
@@ -12,45 +10,111 @@ export interface DataTableDateTimeFilterProps {
 
 export const DATETIME_OPERATORS = ['eq', 'before', 'after', 'between', 'isNull'] as const;
 
-export function DataTableDateTimeFilter({ value: incomingValue, onChange }: DataTableDateTimeFilterProps) {
-    const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
-    const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
-    const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');
-    const [value, setValue] = useState<Date | undefined>(initialValue ? new Date(initialValue) : undefined);
-    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+export interface DateTimeFilterResult {
+    filter: Record<string, any>;
+    error?: string;
+}
+
+export interface ParsedDateTimeFilter {
+    operator: string;
+    value?: Date;
+    startDate?: Date;
+    endDate?: Date;
+}
+
+export function parseDateTimeFilter(incomingValue: Record<string, any> | undefined): ParsedDateTimeFilter {
+    if (!incomingValue || Object.keys(incomingValue).length === 0) {
+        return { operator: 'eq' };
+    }
+
+    const operator = Object.keys(incomingValue)[0];
+    const value = Object.values(incomingValue)[0];
+
+    if (operator === 'isNull') {
+        return { operator };
+    }
+
+    if (operator === 'between' && typeof value === 'object' && value !== null) {
+        return {
+            operator,
+            startDate: value.start ? new Date(value.start) : undefined,
+            endDate: value.end ? new Date(value.end) : undefined,
+        };
+    }
+
+    // For eq, before, after operators
+    return {
+        operator,
+        value: typeof value === 'string' ? new Date(value) : undefined,
+    };
+}
+
+export function buildDateTimeFilter(
+    operator: string,
+    value?: Date,
+    startDate?: Date,
+    endDate?: Date,
+): DateTimeFilterResult {
+    if (operator === 'isNull') {
+        return { filter: { [operator]: true } };
+    }
+
+    if (operator === 'between') {
+        if (!startDate && !endDate) {
+            return { filter: {} };
+        }
+        if (!startDate || !endDate) {
+            return { filter: {}, error: 'Please enter both start and end dates' };
+        }
+        if (startDate > endDate) {
+            return { filter: {}, error: 'Start date must be before end date' };
+        }
+        return {
+            filter: { [operator]: { start: startDate.toISOString(), end: endDate.toISOString() } },
+        };
+    } else {
+        if (!value) {
+            return { filter: {} };
+        }
+        return { filter: { [operator]: value.toISOString() } };
+    }
+}
+
+export function DataTableDateTimeFilter({
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableDateTimeFilterProps>) {
+    const parsed = parseDateTimeFilter(incomingValue);
+    const [operator, setOperator] = useState<string>(parsed.operator);
+    const [value, setValue] = useState<Date | undefined>(parsed.value);
+    const [startDate, setStartDate] = useState<Date | undefined>(parsed.startDate);
+    const [endDate, setEndDate] = useState<Date | undefined>(parsed.endDate);
     const [error, setError] = useState<string>('');
 
-    useEffect(() => {
-        if (operator === 'isNull') {
-            onChange({ [operator]: true });
-            return;
-        }
 
-        if (operator === 'between') {
-            if (!startDate && !endDate) {
-                onChange({});
-                return;
-            }
-            if (!startDate || !endDate) {
-                setError('Please enter both start and end dates');
-                return;
-            }
-            if (startDate > endDate) {
-                setError('Start date must be before end date');
-                return;
-            }
-            setError('');
-            onChange({ [operator]: { start: startDate.toISOString(), end: endDate.toISOString() } });
-        } else {
-            if (!value) {
-                onChange({});
-                return;
-            }
-            setError('');
-            onChange({ [operator]: value.toISOString() });
-        }
+    useEffect(() => {
+        const result = buildDateTimeFilter(operator, value, startDate, endDate);
+        onChange(result.filter);
+        setError(result.error ?? '');
     }, [operator, value, startDate, endDate]);
+
+    const parseToDate = (input: unknown): Date | undefined => {
+        if (input instanceof Date) {
+            return input;
+        }
+        if (typeof input === 'string' && input !== '') {
+            return new Date(input);
+        }
+        return;
+    };
+
+    const dashboardComponentProps = {
+        name: 'date',
+        onBlur: () => {
+            /* */
+        },
+        ref: () => null,
+    };
 
     return (
         <div className="flex flex-col gap-2">
@@ -67,25 +131,27 @@ export function DataTableDateTimeFilter({ value: incomingValue, onChange }: Data
                         ))}
                     </SelectContent>
                 </Select>
-                {operator !== 'isNull' && (
-                    operator === 'between' ? (
+                {operator !== 'isNull' &&
+                    (operator === 'between' ? (
                         <div className="space-y-2">
                             <DateTimeInput
+                                {...dashboardComponentProps}
                                 value={startDate}
-                                onChange={setStartDate}
+                                onChange={val => setStartDate(parseToDate(val))}
                             />
                             <DateTimeInput
+                                {...dashboardComponentProps}
                                 value={endDate}
-                                onChange={setEndDate}
+                                onChange={val => setEndDate(parseToDate(val))}
                             />
                         </div>
                     ) : (
                         <DateTimeInput
+                            {...dashboardComponentProps}
                             value={value}
-                            onChange={setValue}
+                            onChange={val => setValue(parseToDate(val))}
                         />
-                    )
-                )}
+                    ))}
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

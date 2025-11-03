@@ -1,5 +1,5 @@
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -7,13 +7,13 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { ScrollArea } from '@/components/ui/scroll-area.js';
+} from '@/vdb/components/ui/dialog.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
 import { roleItemFragment } from '../roles.graphql.js';
 
-export function ExpandablePermissions({ role }: { role: ResultOf<typeof roleItemFragment> }) {
+export function ExpandablePermissions({ role }: Readonly<{ role: ResultOf<typeof roleItemFragment> }>) {
     const permissionsToPreview = role.permissions.slice(0, 3);
 
     return (

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Controller, Res, Get } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Response } from 'express';
 

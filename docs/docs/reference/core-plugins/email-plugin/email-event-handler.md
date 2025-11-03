@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventHandler
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="136" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="150" packageName="@vendure/email-plugin" />
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
@@ -40,21 +40,35 @@ also to locate the directory of the email template files. So in the example abov
 ## Handling other languages
 
 By default, the handler will respond to all events on all channels and use the same subject ("Order confirmation for #12345" above)
-and body template. Where the server is intended to support multiple languages, the `.addTemplate()` method may be used
-to define the subject and body template for specific language and channel combinations.
+and body template.
 
-The language is determined by looking at the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object.
+Since v2.0 the `.addTemplate()` method has been **deprecated**. To serve different templates — for example, based on the current
+`languageCode` — implement a custom <a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a> and pass it to `EmailPlugin.init({ templateLoader: new MyTemplateLoader() })`.
+
+The language is typically determined by the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object, so the
+`loadTemplate()` method can use that to locate the correct template file.
 
 *Example*
 
 ```ts
-const extendedConfirmationHandler = confirmationHandler
-  .addTemplate({
-    channelCode: 'default',
-    languageCode: LanguageCode.de,
-    templateFile: 'body.de.hbs',
-    subject: 'Bestellbestätigung für #{{ order.code }}',
-  })
+import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+import { readFileSync } from 'fs';
+import path from 'path';
+
+class CustomLanguageAwareTemplateLoader implements TemplateLoader {
+  constructor(private templateDir: string) {}
+
+  async loadTemplate(_injector, ctx, { type, templateName }) {
+    // e.g. returns the content of "body.de.hbs" or "body.en.hbs" depending on ctx.languageCode
+    const filePath = path.join(this.templateDir, type, `${templateName}.${ctx.languageCode}.hbs`);
+    return readFileSync(filePath, 'utf-8');
+  }
+}
+
+EmailPlugin.init({
+  templateLoader: new CustomLanguageAwareTemplateLoader(path.join(__dirname, '../static/email/templates')),
+  handlers: defaultEmailHandlers,
+});
 ```
 
 ## Defining a custom handler
@@ -96,7 +110,7 @@ The template would look something like this:
             of the quote you recently requested:
         </mj-text>
 
-        <--! your custom email layout goes here -->
+        <!-- your custom email layout goes here -->
     </mj-column>
 </mj-section>
 

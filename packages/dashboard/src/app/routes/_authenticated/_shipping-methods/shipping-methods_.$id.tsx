@@ -1,11 +1,11 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Textarea } from '@/components/ui/textarea.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Textarea } from '@/vdb/components/ui/textarea.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -15,28 +15,32 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { FulfillmentHandlerSelector } from './components/fulfillment-handler-selector.js';
 import { ShippingCalculatorSelector } from './components/shipping-calculator-selector.js';
 import { ShippingEligibilityCheckerSelector } from './components/shipping-eligibility-checker-selector.js';
+import { TestSingleShippingMethodSheet } from './components/test-single-shipping-method-sheet.js';
 import {
     createShippingMethodDocument,
     shippingMethodDetailDocument,
     updateShippingMethodDocument,
 } from './shipping-methods.graphql.js';
 
+const pageId = 'shipping-method-detail';
+
 export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping-methods_/$id')({
     component: ShippingMethodDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: shippingMethodDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/shipping-methods', label: 'Shipping methods' },
+                { path: '/shipping-methods', label: <Trans>Shipping Methods</Trans> },
                 isNew ? <Trans>New shipping method</Trans> : entity?.name,
             ];
         },
@@ -48,9 +52,10 @@ function ShippingMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: shippingMethodDetailDocument,
         createDocument: createShippingMethodDocument,
         updateDocument: updateShippingMethodDocument,
@@ -80,32 +85,51 @@ function ShippingMethodDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated shipping method'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created shipping method`
+                    : t`Successfully updated shipping method`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update shipping method'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create shipping method` : t`Failed to update shipping method`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
+    const checker = form.watch('checker');
+    const calculator = form.watch('calculator');
+
     return (
-        <Page pageId="shipping-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
+                    {!creatingNewEntity && entity && (
+                        <TestSingleShippingMethodSheet checker={checker} calculator={calculator} />
+                    )}
                     <PermissionGuard requires={['UpdateShippingMethod']}>
                         <Button
                             type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            disabled={
+                                !form.formState.isDirty ||
+                                !form.formState.isValid ||
+                                isPending ||
+                                !checker?.code ||
+                                !calculator?.code
+                            }
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -126,12 +150,14 @@ function ShippingMethodDetailPage() {
                             render={({ field }) => <Input {...field} />}
                         />
                     </DetailFormGrid>
-                    <TranslatableFormFieldWrapper
-                        control={form.control}
-                        name="description"
-                        label={<Trans>Description</Trans>}
-                        render={({ field }) => <Textarea {...field} />}
-                    />
+                    <div className="mb-6">
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <Textarea {...field} />}
+                        />
+                    </div>
                     <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}
@@ -143,7 +169,7 @@ function ShippingMethodDetailPage() {
                         />
                     </DetailFormGrid>
                 </PageBlock>
-                <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                <CustomFieldsPageBlock column="main" entityType="ShippingMethod" control={form.control} />
                 <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
                     <FormFieldWrapper
                         control={form.control}

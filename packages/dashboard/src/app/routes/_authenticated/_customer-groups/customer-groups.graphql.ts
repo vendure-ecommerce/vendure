@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const customerGroupListDocument = graphql(`
     query CustomerGroupList($options: CustomerGroupListOptions) {
@@ -33,7 +33,7 @@ export const removeCustomersFromGroupDocument = graphql(`
     }
 `);
 
-export const customerGroupDocument = graphql(`
+export const customerGroupDetailDocument = graphql(`
     query CustomerGroup($id: ID!) {
         customerGroup(id: $id) {
             id
@@ -64,6 +64,15 @@ export const updateCustomerGroupDocument = graphql(`
 export const deleteCustomerGroupDocument = graphql(`
     mutation DeleteCustomerGroup($id: ID!) {
         deleteCustomerGroup(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteCustomerGroupsDocument = graphql(`
+    mutation DeleteCustomerGroups($ids: [ID!]!) {
+        deleteCustomerGroups(ids: $ids) {
             result
             message
         }

@@ -58,6 +58,7 @@ export const adminApiExtensions = gql`
         summary: String
         body: String
         response: String
+        state: String
         translations: [ProductReviewTranslationInput!]!
     }
 

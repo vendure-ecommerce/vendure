@@ -1,9 +1,9 @@
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { assetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const productVariantListDocument = graphql(
     `
-        query ProductVariantLis($options: ProductVariantListOptions) {
+        query ProductVariantList($options: ProductVariantListOptions) {
             productVariants(options: $options) {
                 items {
                     id
@@ -14,6 +14,7 @@ export const productVariantListDocument = graphql(
                     }
                     name
                     sku
+                    enabled
                     currencyCode
                     price
                     priceWithTax
@@ -57,6 +58,16 @@ export const productVariantDetailDocument = graphql(
                         id
                         code
                         name
+                    }
+                }
+                options {
+                    id
+                    name
+                    code
+                    group {
+                        id
+                        name
+                        code
                     }
                 }
                 translations {
@@ -118,6 +129,79 @@ export const deleteProductVariantDocument = graphql(`
         deleteProductVariant(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const deleteProductVariantsDocument = graphql(`
+    mutation DeleteProductVariants($ids: [ID!]!) {
+        deleteProductVariants(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignProductVariantsToChannelDocument = graphql(`
+    mutation AssignProductVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeProductVariantsFromChannelDocument = graphql(`
+    mutation RemoveProductVariantsFromChannel($input: RemoveProductVariantsFromChannelInput!) {
+        removeProductVariantsFromChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const getProductVariantsWithFacetValuesByIdsDocument = graphql(`
+    query GetProductVariantsWithFacetValuesByIds($ids: [String!]!) {
+        productVariants(options: { filter: { id: { in: $ids } } }) {
+            items {
+                id
+                name
+                sku
+                facetValues {
+                    id
+                    name
+                    code
+                    facet {
+                        id
+                        name
+                        code
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const updateProductVariantsDocument = graphql(`
+    mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+        updateProductVariants(input: $input) {
+            id
+            name
+            facetValues {
+                id
+                name
+                code
+            }
+        }
+    }
+`);
+
+export const stockLocationsQueryDocument = graphql(`
+    query StockLocations {
+        stockLocations(options: { take: 100 }) {
+            items {
+                id
+                name
+                description
+            }
         }
     }
 `);

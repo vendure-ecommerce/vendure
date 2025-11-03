@@ -1,11 +1,11 @@
-import { usePaginatedList } from '@/components/shared/paginated-list-data-table.js';
-import { Button } from '@/components/ui/button.js';
-import { Form, FormControl, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Form, FormControl, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
@@ -40,7 +40,7 @@ export interface EditFacetValueProps {
     onSuccess?: () => void;
 }
 
-export function EditFacetValue({ facetValueId, onSuccess }: EditFacetValueProps) {
+export function EditFacetValue({ facetValueId, onSuccess }: Readonly<EditFacetValueProps>) {
     const {
         settings: { contentLanguage },
     } = useUserSettings();

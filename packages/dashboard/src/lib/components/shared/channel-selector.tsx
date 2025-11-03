@@ -1,9 +1,9 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useLingui } from '@/lib/trans.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
-import { MultiSelect } from './multi-select.js';
 import { ChannelCodeLabel } from './channel-code-label.js';
+import { MultiSelect } from './multi-select.js';
 
 const channelsDocument = graphql(`
     query channels($options: ChannelListOptions) {
@@ -16,7 +16,7 @@ const channelsDocument = graphql(`
     }
 `);
 
-export interface ChannelSelectorProps<T extends boolean> {    
+export interface ChannelSelectorProps<T extends boolean> {
     value: T extends true ? string[] : string;
     onChange: (value: T extends true ? string[] : string) => void;
     multiple?: T;
@@ -24,7 +24,7 @@ export interface ChannelSelectorProps<T extends boolean> {
 
 export function ChannelSelector<T extends boolean>(props: ChannelSelectorProps<T>) {
     const { value, onChange, multiple } = props;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { data: channelsData } = useQuery({
         queryKey: ['channels'],
@@ -35,7 +35,7 @@ export function ChannelSelector<T extends boolean>(props: ChannelSelectorProps<T
     const items = (channelsData?.channels.items ?? []).map(channel => ({
         value: channel.id,
         label: channel.code,
-        display: <ChannelCodeLabel code={channel.code} />
+        display: <ChannelCodeLabel code={channel.code} />,
     }));
 
     return (
@@ -44,8 +44,8 @@ export function ChannelSelector<T extends boolean>(props: ChannelSelectorProps<T
             onChange={onChange}
             multiple={multiple}
             items={items}
-            placeholder={i18n.t('Select a channel')}
-            searchPlaceholder={i18n.t('Search channels...')}
+            placeholder={t`Select a channel`}
+            searchPlaceholder={t`Search channels...`}
         />
     );
 }

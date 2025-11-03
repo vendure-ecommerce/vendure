@@ -1,35 +1,59 @@
-import { ResultOf } from "@/graphql/graphql.js";
-import { orderDetailDocument } from "../orders.graphql.js";
-import { TableRow, TableCell } from "@/components/ui/table.js";
-import { MoneyGrossNet } from "./money-gross-net.js";
-import { Trans } from "@/lib/trans.js";
-
-type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
+import { TableCell, TableRow } from '@/vdb/components/ui/table.js';
+import { Trans } from '@lingui/react/macro';
+import { Order } from '../utils/order-types.js';
+import { MoneyGrossNet } from './money-gross-net.js';
 
 export interface OrderTableTotalsProps {
-    order: OrderFragment;
+    order: Order;
     columnCount: number;
 }
 
-export function OrderTableTotals({ order, columnCount }: OrderTableTotalsProps) {
+export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTotalsProps>) {
     const currencyCode = order.currencyCode;
-
     return (
         <>
-            {order.discounts?.length > 0 ? order.discounts.map(discount => <TableRow>
-                <TableCell colSpan={columnCount - 1} className="h-12">
-                    <Trans>Discount</Trans>: {discount.description}
-                </TableCell>
-                <TableCell colSpan={1} className="h-12">
-                    <MoneyGrossNet priceWithTax={discount.amountWithTax} price={discount.amount} currencyCode={currencyCode} />
-                </TableCell>
-            </TableRow>) : null}
+            {order.surcharges?.length > 0
+                ? order.surcharges.map((surcharge, index) => (
+                      <TableRow key={`${surcharge.description}-${index}`}>
+                          <TableCell colSpan={columnCount - 1} className="h-12">
+                              <Trans>Surcharge</Trans>: {surcharge.description}
+                          </TableCell>
+                          <TableCell colSpan={1} className="h-12">
+                              <MoneyGrossNet
+                                  priceWithTax={surcharge.priceWithTax}
+                                  price={surcharge.price}
+                                  currencyCode={currencyCode}
+                              />
+                          </TableCell>
+                      </TableRow>
+                  ))
+                : null}
+            {order.discounts?.length > 0
+                ? order.discounts.map((discount, index) => (
+                      <TableRow key={`${discount.description}-${index}`}>
+                          <TableCell colSpan={columnCount - 1} className="h-12">
+                              <Trans>Discount</Trans>: {discount.description}
+                          </TableCell>
+                          <TableCell colSpan={1} className="h-12">
+                              <MoneyGrossNet
+                                  priceWithTax={discount.amountWithTax}
+                                  price={discount.amount}
+                                  currencyCode={currencyCode}
+                              />
+                          </TableCell>
+                      </TableRow>
+                  ))
+                : null}
             <TableRow>
                 <TableCell colSpan={columnCount - 1} className="h-12">
                     <Trans>Sub total</Trans>
                 </TableCell>
                 <TableCell colSpan={1} className="h-12">
-                    <MoneyGrossNet priceWithTax={order.subTotalWithTax} price={order.subTotal} currencyCode={currencyCode} />
+                    <MoneyGrossNet
+                        priceWithTax={order.subTotalWithTax}
+                        price={order.subTotal}
+                        currencyCode={currencyCode}
+                    />
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -37,7 +61,11 @@ export function OrderTableTotals({ order, columnCount }: OrderTableTotalsProps) 
                     <Trans>Shipping</Trans>
                 </TableCell>
                 <TableCell colSpan={1} className="h-12">
-                    <MoneyGrossNet priceWithTax={order.shippingWithTax} price={order.shipping} currencyCode={currencyCode} />
+                    <MoneyGrossNet
+                        priceWithTax={order.shippingWithTax}
+                        price={order.shipping}
+                        currencyCode={currencyCode}
+                    />
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -45,9 +73,13 @@ export function OrderTableTotals({ order, columnCount }: OrderTableTotalsProps) 
                     <Trans>Total</Trans>
                 </TableCell>
                 <TableCell colSpan={1} className="h-12 font-bold">
-                    <MoneyGrossNet priceWithTax={order.totalWithTax} price={order.total} currencyCode={currencyCode} />
+                    <MoneyGrossNet
+                        priceWithTax={order.totalWithTax}
+                        price={order.total}
+                        currencyCode={currencyCode}
+                    />
                 </TableCell>
             </TableRow>
         </>
-    )
+    );
 }

@@ -1,7 +1,7 @@
 import path from 'path';
 import { Plugin } from 'vite';
 
-import { LoadVendureConfigResult } from './utils/config-loader.js';
+import { CompileResult } from './utils/compiler.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 /**
@@ -11,7 +11,7 @@ import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader
  */
 export function dashboardTailwindSourcePlugin(): Plugin {
     let configLoaderApi: ConfigLoaderApi;
-    let loadVendureConfigResult: LoadVendureConfigResult;
+    let loadVendureConfigResult: CompileResult;
     return {
         name: 'vendure:dashboard-tailwind-source',
         // Ensure this plugin runs before Tailwind CSS processing
@@ -27,10 +27,26 @@ export function dashboardTailwindSourcePlugin(): Plugin {
                 const { pluginInfo } = loadVendureConfigResult;
                 const dashboardExtensionDirs =
                     pluginInfo
-                        ?.map(
-                            ({ dashboardEntryPath, pluginPath }) =>
-                                dashboardEntryPath && path.join(pluginPath, path.dirname(dashboardEntryPath)),
-                        )
+                        ?.flatMap(({ dashboardEntryPath, sourcePluginPath, pluginPath }) => {
+                            if (!dashboardEntryPath) {
+                                return [];
+                            }
+                            const sourcePaths = [];
+                            if (sourcePluginPath) {
+                                sourcePaths.push(
+                                    path.join(
+                                        path.dirname(sourcePluginPath),
+                                        path.dirname(dashboardEntryPath),
+                                    ),
+                                );
+                            }
+                            if (pluginPath) {
+                                sourcePaths.push(
+                                    path.join(path.dirname(pluginPath), path.dirname(dashboardEntryPath)),
+                                );
+                            }
+                            return sourcePaths;
+                        })
                         .filter(x => x != null) ?? [];
                 const sources = dashboardExtensionDirs
                     .map(extension => {

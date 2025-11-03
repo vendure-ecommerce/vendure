@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { cn } from '@/lib/utils.js';
-import { Trans } from '@/lib/trans.js';
-import { PropsWithChildren, useRef, useEffect, useState, createContext, useContext } from 'react';
-import type React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { DashboardBaseWidgetProps } from '@/vdb/framework/extension-api/types/index.js';
+import { cn } from '@/vdb/lib/utils.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 type WidgetDimensions = {
     width: number;
@@ -12,21 +12,24 @@ type WidgetDimensions = {
 export const WidgetContentContext = createContext<WidgetDimensions>({ width: 0, height: 0 });
 
 export const useWidgetDimensions = () => {
+    const { t } = useLingui();
     const context = useContext(WidgetContentContext);
     if (!context) {
-        throw new Error('useWidgetDimensions must be used within a DashboardBaseWidget');
+        throw new Error(t`useWidgetDimensions must be used within a DashboardBaseWidget`);
     }
     return context;
 };
 
-export type DashboardBaseWidgetProps = PropsWithChildren<{
-    id: string;
-    title?: string;
-    description?: string;
-    config?: Record<string, unknown>;
-    actions?: React.ReactNode;
-}>;
-
+/**
+ * @description
+ * A wrapper component that should be used for any custom Insights page widgets.
+ * This ensures that your custom widget has all the basic functionality needed to be
+ * correctly rendered on the Insights page.
+ *
+ * @docsCategory extensions-api
+ * @docsPage widgets
+ * @since 3.3.0
+ */
 export function DashboardBaseWidget({
     id,
     config,
@@ -77,7 +80,7 @@ export function DashboardBaseWidget({
                 <CardHeader
                     ref={headerRef}
                     className={cn(
-                        'flex flex-row items-center',
+                        'flex flex-col lg:flex-row  items-start lg:items-center',
                         actions ? 'justify-between' : 'justify-start',
                     )}
                 >

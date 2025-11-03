@@ -7,6 +7,30 @@ declare module 'virtual:dashboard-extensions' {
 }
 
 declare module 'virtual:vendure-ui-config' {
-    import { AdminUiConfig } from '@vendure/core';
-    export const uiConfig: AdminUiConfig;
+    import { LanguageCode } from '@vendure/core';
+
+    // TODO: Find a better way to share types between vite plugin and virtual module declaration
+    // Currently we have duplicated type definitions here and in vite-plugin-ui-config.ts
+    interface ResolvedApiConfig {
+        host: string | 'auto';
+        port: number | 'auto';
+        adminApiPath: string;
+        tokenMethod: 'cookie' | 'bearer';
+        authTokenHeaderKey: string;
+        channelTokenKey: string;
+    }
+
+    interface ResolvedI18nConfig {
+        defaultLanguage: LanguageCode;
+        defaultLocale: string | undefined;
+        availableLanguages: LanguageCode[];
+        availableLocales: string[];
+    }
+
+    interface ResolvedUiConfig {
+        api: ResolvedApiConfig;
+        i18n: ResolvedI18nConfig;
+    }
+
+    export const uiConfig: ResolvedUiConfig;
 }

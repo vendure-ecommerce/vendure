@@ -1,6 +1,6 @@
-import { Badge } from '@/components/ui/badge.js';
-import { BadgeX, BadgeCheck } from 'lucide-react';
-import { Trans } from '@/lib/trans.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Trans } from '@lingui/react/macro';
+import { BadgeCheck, BadgeX } from 'lucide-react';
 
 export type CustomerStatus = 'guest' | 'registered' | 'verified';
 
@@ -8,7 +8,7 @@ export interface CustomerStatusBadgeProps {
     user?: { verified: boolean } | null;
 }
 
-export function CustomerStatusBadge({ user }: CustomerStatusBadgeProps) {
+export function CustomerStatusBadge({ user }: Readonly<CustomerStatusBadgeProps>) {
     const status = user ? (user.verified ? 'verified' : 'registered') : 'guest';
     return (
         <Badge variant="outline">

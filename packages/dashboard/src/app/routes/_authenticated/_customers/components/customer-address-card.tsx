@@ -1,24 +1,27 @@
-import { ResultOf } from '@/graphql/graphql.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
 
-import { addressFragment, deleteCustomerAddressDocument, updateCustomerAddressDocument } from '../customers.graphql.js';
+import { ConfirmationDialog } from '@/vdb/components/shared/confirmation-dialog.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import {
-    DialogContent,
     Dialog,
-    DialogTrigger,
+    DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
-import { useLingui } from '@/lib/trans.js';
-import { AddressFormValues, CustomerAddressForm } from './customer-address-form.js';
+    DialogTrigger,
+} from '@/vdb/components/ui/dialog.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useMutation } from '@tanstack/react-query';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge.js';
-import { api } from '@/graphql/api.js';
-import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ConfirmationDialog } from '@/components/shared/confirmation-dialog.js';
+import {
+    addressFragment,
+    deleteCustomerAddressDocument,
+    updateCustomerAddressDocument,
+} from '../customers.graphql.js';
+import { AddressFormValues, CustomerAddressForm } from './customer-address-form.js';
 
 export function CustomerAddressCard({
     address,
@@ -34,27 +37,27 @@ export function CustomerAddressCard({
     onDelete?: () => void;
 }) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { mutate: deleteAddress } = useMutation({
         mutationFn: api.mutate(deleteCustomerAddressDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Address deleted successfully'));
+            toast.success(t`Address deleted successfully`);
             onDelete?.();
         },
         onError: () => {
-            toast.error(i18n.t('Failed to delete address'));
+            toast.error(t`Failed to delete address`);
         },
-    }); 
-    
+    });
+
     // Set up mutation for updating address
     const { mutate: updateAddress } = useMutation({
         mutationFn: api.mutate(updateCustomerAddressDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Address updated successfully'));
+            toast.success(t`Address updated successfully`);
             onUpdate?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to update address'));
+            toast.error(t`Failed to update address`);
             console.error('Error updating address:', error);
         },
     });
@@ -129,17 +132,14 @@ export function CustomerAddressCard({
                                         <Trans>Edit the address details below.</Trans>
                                     </DialogDescription>
                                 </DialogHeader>
-                                <CustomerAddressForm
-                                    address={address}
-                                    onSubmit={onSubmit}
-                                />
+                                <CustomerAddressForm address={address} onSubmit={onSubmit} />
                             </DialogContent>
                         </Dialog>
                     )}
                     {deletable && (
                         <ConfirmationDialog
-                            title={i18n.t('Delete Address')}
-                            description={i18n.t('Are you sure you want to delete this address?')}
+                            title={t`Delete Address`}
+                            description={t`Are you sure you want to delete this address?`}
                             onConfirm={() => {
                                 deleteAddress({ id: address.id });
                                 onDelete?.();

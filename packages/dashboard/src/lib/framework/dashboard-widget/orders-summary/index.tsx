@@ -1,21 +1,15 @@
+import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
+import { differenceInDays, subDays } from 'date-fns';
+import { useMemo } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { orderSummaryQuery } from './order-summary-widget.graphql.js';
-import { api } from '@/graphql/api.js';
-import { useMemo, useState } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
-import { useChannel, useLocalFormat } from '@/index.js';
-import { startOfDay, endOfDay, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { AnimatedCurrency, AnimatedNumber } from '@/components/shared/animated-number.js';
 
 const WIDGET_ID = 'orders-summary-widget';
-
-enum Range {
-    Today = 'today',
-    Yesterday = 'yesterday',
-    ThisWeek = 'thisWeek',
-    ThisMonth = 'thisMonth',
-}
 
 interface PercentageChangeProps {
     value: number;
@@ -35,65 +29,25 @@ function PercentageChange({ value }: PercentageChangeProps) {
 }
 
 export function OrdersSummaryWidget() {
-    const [range, setRange] = useState<Range>(Range.Today);
-    const { formatCurrency } = useLocalFormat();
-    const { activeChannel } = useChannel();
+    const { t } = useLingui();
+    const { dateRange } = useWidgetFilters();
 
     const variables = useMemo(() => {
-        const now = new Date();
+        const rangeLength = differenceInDays(dateRange.to, dateRange.from) + 1;
+        // For the previous period, we go back by the same range length
+        const previousStart = subDays(dateRange.from, rangeLength);
+        const previousEnd = subDays(dateRange.to, rangeLength);
 
-        switch (range) {
-            case Range.Today: {
-                const today = now;
-                const yesterday = subDays(now, 1);
-
-                return {
-                    start: startOfDay(today).toISOString(),
-                    end: endOfDay(today).toISOString(),
-                    previousStart: startOfDay(yesterday).toISOString(),
-                    previousEnd: endOfDay(yesterday).toISOString(),
-                };
-            }
-            case Range.Yesterday: {
-                const yesterday = subDays(now, 1);
-                const dayBeforeYesterday = subDays(now, 2);
-
-                return {
-                    start: startOfDay(yesterday).toISOString(),
-                    end: endOfDay(yesterday).toISOString(),
-                    previousStart: startOfDay(dayBeforeYesterday).toISOString(),
-                    previousEnd: endOfDay(dayBeforeYesterday).toISOString(),
-                };
-            }
-            case Range.ThisWeek: {
-                const today = now;
-                const sixDaysAgo = subDays(now, 6);
-                const sevenDaysAgo = subDays(now, 7);
-                const thirteenDaysAgo = subDays(now, 13);
-
-                return {
-                    start: startOfDay(sixDaysAgo).toISOString(),
-                    end: endOfDay(today).toISOString(),
-                    previousStart: startOfDay(thirteenDaysAgo).toISOString(),
-                    previousEnd: endOfDay(sevenDaysAgo).toISOString(),
-                };
-            }
-            case Range.ThisMonth: {
-                const lastMonth = subMonths(now, 1);
-                const twoMonthsAgo = subMonths(now, 2);
-
-                return {
-                    start: startOfMonth(lastMonth).toISOString(),
-                    end: endOfMonth(lastMonth).toISOString(),
-                    previousStart: startOfMonth(twoMonthsAgo).toISOString(),
-                    previousEnd: endOfMonth(twoMonthsAgo).toISOString(),
-                };
-            }
-        }
-    }, [range]);
+        return {
+            start: dateRange.from.toISOString(),
+            end: dateRange.to.toISOString(),
+            previousStart: previousStart.toISOString(),
+            previousEnd: previousEnd.toISOString(),
+        };
+    }, [dateRange]);
 
     const { data } = useQuery({
-        queryKey: ['orders-summary', range],
+        queryKey: ['orders-summary', dateRange],
         queryFn: () =>
             api.query(orderSummaryQuery, {
                 start: variables.start,
@@ -102,7 +56,7 @@ export function OrdersSummaryWidget() {
     });
 
     const { data: previousData } = useQuery({
-        queryKey: ['orders-summary', 'previous', range],
+        queryKey: ['orders-summary', 'previous', dateRange],
         queryFn: () =>
             api.query(orderSummaryQuery, {
                 start: variables.previousStart,
@@ -127,39 +81,31 @@ export function OrdersSummaryWidget() {
     return (
         <DashboardBaseWidget
             id={WIDGET_ID}
-            title="Orders Summary"
-            description="Your orders summary"
-            actions={
-                <Tabs defaultValue={range} onValueChange={value => setRange(value as Range)}>
-                    <TabsList>
-                        <TabsTrigger value={Range.Today}>Today</TabsTrigger>
-                        <TabsTrigger value={Range.Yesterday}>Yesterday</TabsTrigger>
-                        <TabsTrigger value={Range.ThisWeek}>This Week</TabsTrigger>
-                        <TabsTrigger value={Range.ThisMonth}>This Month</TabsTrigger>
-                    </TabsList>
-                </Tabs>
-            }
+            title={t`Orders Summary`}
+            description={t`Your orders summary`}
         >
-            <div className="flex flex-col gap-4 items-center justify-center text-center">
-                <div className="flex flex-col gap-2">
-                    <p className="text-lg text-muted-foreground">Total Orders</p>
-                    <p className="text-3xl font-semibold">
-                        <AnimatedNumber
-                            animationConfig={{ mass: 0.5, stiffness: 90, damping: 10 }}
-                            value={currentTotalOrders}
-                        />
-                    </p>
-                    <PercentageChange value={orderChange} />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <p className="text-lg text-muted-foreground">Total Revenue</p>
-                    <p className="text-3xl font-semibold">
-                        <AnimatedCurrency
-                            animationConfig={{ mass: 0.2, stiffness: 90, damping: 10 }}
-                            value={currentRevenue}
-                        />
-                    </p>
-                    <PercentageChange value={revenueChange} />
+            <div className="@container h-full">
+                <div className="flex flex-col h-full @md:flex-row gap-8 items-center justify-center @md:justify-evenly text-center tabular-nums">
+                    <div className="flex flex-col lg:gap-2">
+                        <p className="lg:text-lg text-muted-foreground"><Trans>Total Orders</Trans></p>
+                        <p className="text-xl @md:text-3xl font-semibold">
+                            <AnimatedNumber
+                                animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}
+                                value={currentTotalOrders}
+                            />
+                        </p>
+                        <PercentageChange value={orderChange} />
+                    </div>
+                    <div className="flex flex-col lg:gap-2">
+                        <p className="lg:text-lg text-muted-foreground"><Trans>Total Revenue</Trans></p>
+                        <p className="text-xl @md:text-3xl font-semibold">
+                            <AnimatedCurrency
+                                animationConfig={{ mass: 0.01, stiffness: 90, damping: 3 }}
+                                value={currentRevenue}
+                            />
+                        </p>
+                        <PercentageChange value={revenueChange} />
+                    </div>
                 </div>
             </div>
         </DashboardBaseWidget>

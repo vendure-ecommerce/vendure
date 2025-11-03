@@ -1,7 +1,7 @@
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
-import { useLingui } from '@/lib/trans.js';
-import { useMutation, useInfiniteQuery } from '@tanstack/react-query';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { useLingui } from '@lingui/react/macro';
+import { QueryKey, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -55,6 +55,10 @@ export interface UseOrderHistoryResult {
     hasNextPage: boolean;
 }
 
+export function orderHistoryQueryKey(orderId: string): QueryKey {
+    return ['OrderHistory', orderId];
+}
+
 export function useOrderHistory({
     orderId,
     pageSize = 10,
@@ -83,7 +87,7 @@ export function useOrderHistory({
                     take: pageSize,
                 },
             }),
-        queryKey: ['OrderHistory', orderId],
+        queryKey: orderHistoryQueryKey(orderId),
         initialPageParam: 0,
         getNextPageParam: (lastPage, _pages, lastPageParam) => {
             const totalItems = lastPage.order?.history?.totalItems ?? 0;

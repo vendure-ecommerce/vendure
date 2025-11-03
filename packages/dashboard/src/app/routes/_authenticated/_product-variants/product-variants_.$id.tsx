@@ -1,17 +1,19 @@
-import { MoneyInput } from '@/components/data-input/money-input.js';
-import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TaxCategorySelector } from '@/components/shared/tax-category-selector.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
+import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TaxCategorySelector } from '@/vdb/components/shared/tax-category-selector.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -21,47 +23,64 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Fragment } from 'react/jsx-runtime';
+import { VariablesOf } from 'gql.tada';
+import { Trash } from 'lucide-react';
 import { toast } from 'sonner';
+import { AddCurrencyDropdown } from './components/add-currency-dropdown.js';
+import { AddStockLocationDropdown } from './components/add-stock-location-dropdown.js';
 import { VariantPriceDetail } from './components/variant-price-detail.js';
 import {
     createProductVariantDocument,
     productVariantDetailDocument,
+    stockLocationsQueryDocument,
     updateProductVariantDocument,
 } from './product-variants.graphql.js';
+
+const pageId = 'product-variant-detail';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants_/$id')({
     component: ProductVariantDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: productVariantDetailDocument,
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: 'Products' },
+                    { path: '/product', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];
             }
-            return [{ path: '/product-variants', label: 'Product Variants' }, entity?.name];
+            return [{ path: '/product-variants', label: <Trans>Product Variants</Trans> }, entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
+type PriceInput = NonNullable<VariablesOf<typeof updateProductVariantDocument>['input']['prices']>[number];
+
 function ProductVariantDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { activeChannel } = useChannel();
 
+    const { data: stockLocationsData } = useQuery({
+        queryKey: ['stockLocations'],
+        queryFn: () => api.query(stockLocationsQueryDocument, {}),
+    });
+
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: productVariantDetailDocument,
         createDocument: createProductVariantDocument,
         updateDocument: updateProductVariantDocument,
@@ -75,7 +94,7 @@ function ProductVariantDetailPage() {
                 facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
                 taxCategoryId: entity.taxCategory.id,
                 price: entity.price,
-                prices: [],
+                prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
@@ -93,23 +112,97 @@ function ProductVariantDetailPage() {
         },
         params: { id: params.id },
         onSuccess: data => {
-            toast.success(i18n.t('Successfully updated product'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created product variant`
+                    : t`Successfully updated product variant`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update product'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create product variant` : t`Failed to update product variant`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
-    const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
+    const availableCurrencies = activeChannel?.availableCurrencyCodes ?? [];
+    const [prices, taxCategoryId, stockLevels] = form.watch(['prices', 'taxCategoryId', 'stockLevels']);
+
+    // Filter out deleted prices for display
+    const activePrices = prices?.filter(p => !p.delete) ?? [];
+
+    // Get currencies that are currently active (not deleted)
+    const usedCurrencies = activePrices.map(p => p.currencyCode);
+    const unusedCurrencies = availableCurrencies.filter(c => !usedCurrencies.includes(c));
+
+    // Get used stock location IDs
+    const usedStockLocationIds = stockLevels?.map(sl => sl.stockLocationId) ?? [];
+
+    const handleAddCurrency = (currencyCode: string) => {
+        const currentPrices = form.getValues('prices') || [];
+
+        // Check if this currency already exists (including deleted ones)
+        const existingPriceIndex = currentPrices.findIndex(p => p.currencyCode === currencyCode);
+
+        if (existingPriceIndex !== -1) {
+            // Currency exists, mark it as not deleted
+            const updatedPrices = [...currentPrices];
+            updatedPrices[existingPriceIndex] = {
+                ...updatedPrices[existingPriceIndex],
+                delete: false,
+            };
+            form.setValue('prices', updatedPrices, {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        } else {
+            // Add new currency
+            const newPrice = {
+                currencyCode,
+                price: 0,
+                delete: false,
+            } as PriceInput;
+            form.setValue('prices', [...currentPrices, newPrice], {
+                shouldDirty: true,
+                shouldValidate: true,
+            });
+        }
+    };
+
+    const handleRemoveCurrency = (indexToRemove: number) => {
+        const currentPrices = form.getValues('prices') || [];
+        const updatedPrices = [...currentPrices];
+        updatedPrices[indexToRemove] = {
+            ...updatedPrices[indexToRemove],
+            delete: true,
+        };
+        form.setValue('prices', updatedPrices, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
+
+    const handleAddStockLocation = (stockLocationId: string, stockLocationName: string) => {
+        const currentStockLevels = form.getValues('stockLevels') || [];
+        const newStockLevel = {
+            stockLocationId,
+            stockOnHand: 0,
+        };
+        form.setValue('stockLevels', [...currentStockLevels, newStockLevel], {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
 
     return (
-        <Page pageId="product-variant-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -120,7 +213,7 @@ function ProductVariantDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -142,7 +235,7 @@ function ProductVariantDetailPage() {
                         <TranslatableFormFieldWrapper
                             control={form.control}
                             name="name"
-                            label={<Trans>Product name</Trans>}
+                            label={<Trans>Variant name</Trans>}
                             render={({ field }) => <Input {...field} />}
                         />
 
@@ -157,7 +250,7 @@ function ProductVariantDetailPage() {
                 <CustomFieldsPageBlock column="main" entityType="ProductVariant" control={form.control} />
 
                 <PageBlock column="main" blockId="price-and-tax" title={<Trans>Price and tax</Trans>}>
-                    <div className="grid grid-cols-2 gap-4 items-start">
+                    <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}
                             name="taxCategoryId"
@@ -166,56 +259,62 @@ function ProductVariantDetailPage() {
                                 <TaxCategorySelector value={field.value} onChange={field.onChange} />
                             )}
                         />
+                    </DetailFormGrid>
+                    {activePrices.map((price, displayIndex) => {
+                        // Find the actual index in the full prices array
+                        const actualIndex = prices?.findIndex(p => p === price) ?? displayIndex;
 
-                        <div>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="price"
-                                label={<Trans>Price</Trans>}
-                                render={({ field }) => (
-                                    <MoneyInput {...field} currency={entity?.currencyCode} />
-                                )}
-                            />
-                            <VariantPriceDetail
-                                priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
-                                price={price}
-                                currencyCode={
-                                    entity?.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
-                                }
-                                taxCategoryId={taxCategoryId}
-                            />
-                        </div>
-                    </div>
+                        const currencyCodeLabel = (
+                            <div className="uppercase text-muted-foreground">{price.currencyCode}</div>
+                        );
+                        const priceLabel = (
+                            <div className="flex gap-1 items-center justify-between">
+                                <Trans>Price</Trans> {activePrices.length > 1 ? currencyCodeLabel : null}
+                            </div>
+                        );
+                        return (
+                            <DetailFormGrid key={price.currencyCode}>
+                                <div className="flex gap-1 items-end">
+                                    <FormFieldWrapper
+                                        control={form.control}
+                                        name={`prices.${actualIndex}.price`}
+                                        label={priceLabel}
+                                        render={({ field }) => (
+                                            <MoneyInput {...field} currency={price.currencyCode} />
+                                        )}
+                                    />
+                                    {activePrices.length > 1 && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveCurrency(actualIndex)}
+                                            className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
+                                        >
+                                            <Trash className="size-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                                <VariantPriceDetail
+                                    priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
+                                    price={price.price}
+                                    currencyCode={
+                                        price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
+                                    }
+                                    taxCategoryId={taxCategoryId}
+                                />
+                            </DetailFormGrid>
+                        );
+                    })}
+                    {unusedCurrencies.length ? (
+                        <AddCurrencyDropdown
+                            onCurrencySelect={handleAddCurrency}
+                            unusedCurrencies={unusedCurrencies}
+                        />
+                    ) : null}
                 </PageBlock>
                 <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
                     <DetailFormGrid>
-                        {entity?.stockLevels.map((stockLevel, index) => (
-                            <Fragment key={stockLevel.id}>
-                                <FormFieldWrapper
-                                    control={form.control}
-                                    name={`stockLevels.${index}.stockOnHand`}
-                                    label={<Trans>Stock level</Trans>}
-                                    render={({ field }) => (
-                                        <Input
-                                            type="number"
-                                            value={field.value}
-                                            onChange={e => {
-                                                field.onChange(e.target.valueAsNumber);
-                                            }}
-                                        />
-                                    )}
-                                />
-                                <div>
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Allocated</Trans>
-                                        </FormLabel>
-                                        <div className="text-sm pt-1.5">{stockLevel.stockAllocated}</div>
-                                    </FormItem>
-                                </div>
-                            </Fragment>
-                        ))}
-
                         <FormFieldWrapper
                             control={form.control}
                             name="trackInventory"
@@ -281,23 +380,68 @@ function ProductVariantDetailPage() {
                             )}
                         />
                     </DetailFormGrid>
+                    {stockLevels?.map((stockLevel, index) => {
+                        const stockAllocated =
+                            entity?.stockLevels.find(sl => sl.stockLocation.id === stockLevel.stockLocationId)
+                                ?.stockAllocated ?? 0;
+                        const stockLocationName = stockLocationsData?.stockLocations.items?.find(
+                            sl => sl.id === stockLevel.stockLocationId,
+                        )?.name;
+                        const stockLocationNameLabel =
+                            stockLevels.length > 1 ? (
+                                <div className="text-muted-foreground">{stockLocationName}</div>
+                            ) : null;
+                        const stockLabel = (
+                            <>
+                                <Trans>Stock level</Trans>
+                                {stockLocationNameLabel}
+                            </>
+                        );
+                        return (
+                            <DetailFormGrid key={stockLevel.stockLocationId}>
+                                <FormFieldWrapper
+                                    control={form.control}
+                                    name={`stockLevels.${index}.stockOnHand`}
+                                    label={stockLabel}
+                                    render={({ field }) => <NumberInput {...field} value={field.value} />}
+                                />
+                                <div>
+                                    <FormItem>
+                                        <FormLabel>
+                                            <Trans>Allocated</Trans>
+                                        </FormLabel>
+                                        <div className="text-sm pt-1.5">{stockAllocated}</div>
+                                    </FormItem>
+                                </div>
+                            </DetailFormGrid>
+                        );
+                    })}
+                    <AddStockLocationDropdown
+                        availableStockLocations={stockLocationsData?.stockLocations.items ?? []}
+                        usedStockLocationIds={usedStockLocationIds}
+                        onStockLocationSelect={handleAddStockLocation}
+                    />
                 </PageBlock>
 
-                <PageBlock column="side" blockId="facet-values">
+                <PageBlock column="side" blockId="facet-values" title={<Trans>Facet Values</Trans>}>
                     <FormFieldWrapper
                         control={form.control}
                         name="facetValueIds"
-                        label={<Trans>Facet values</Trans>}
                         render={({ field }) => (
                             <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
                         )}
                     />
                 </PageBlock>
-                <PageBlock column="side" blockId="assets">
+
+                <PageBlock column="side" blockId="parent-product" title={<Trans>Parent product</Trans>}>
+                    <DetailPageButton
+                        label={entity?.product.name}
+                        href={`/products/${entity?.product.id}`}
+                        className="border"
+                    />
+                </PageBlock>
+                <PageBlock column="side" blockId="assets" title={<Trans>Assets</Trans>}>
                     <FormItem>
-                        <FormLabel>
-                            <Trans>Assets</Trans>
-                        </FormLabel>
                         <FormControl>
                             <EntityAssets
                                 assets={entity?.assets}

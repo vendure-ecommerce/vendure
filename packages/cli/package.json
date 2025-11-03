@@ -1,6 +1,6 @@
 {
     "name": "@vendure/cli",
-    "version": "3.3.5",
+    "version": "3.4.4",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -22,7 +22,9 @@
         "build": "rimraf dist && tsc -p ./tsconfig.cli.json && ts-node ./build.ts",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
         "ci": "npm run build",
-        "test": "vitest --config vitest.config.mts --run"
+        "test": "vitest --config vitest.config.mts --run",
+        "e2e": "cross-env PACKAGE=cli vitest --config ../../e2e-common/vitest.config.mts --run --pool=forks",
+        "e2e:watch": "cross-env PACKAGE=cli vitest --config ../../e2e-common/vitest.config.mts"
     },
     "publishConfig": {
         "access": "public"
@@ -35,18 +37,21 @@
     ],
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "3.3.5",
+        "@vendure/common": "3.4.4",
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
         "dotenv": "^16.4.5",
         "fs-extra": "^11.2.0",
         "picocolors": "^1.0.0",
+        "strip-json-comments": "^5.0.3",
         "ts-morph": "^21.0.1",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
-        "@vendure/core": "3.3.5",
+        "@vendure/core": "3.4.4",
+        "@vendure/testing": "3.4.4",
+        "cross-env": "^7.0.3",
         "typescript": "5.8.2"
     }
 }

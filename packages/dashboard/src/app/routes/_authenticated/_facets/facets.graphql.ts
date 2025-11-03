@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const facetValueFragment = graphql(`
     fragment FacetValue on FacetValue {
@@ -31,7 +31,6 @@ export const facetWithValuesFragment = graphql(
             updatedAt
             name
             code
-            languageCode
             isPrivate
             valueList(options: $facetValueListOptions) {
                 totalItems
@@ -99,6 +98,85 @@ export const deleteFacetDocument = graphql(`
         deleteFacet(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const assignFacetsToChannelDocument = graphql(`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeFacetsFromChannelDocument = graphql(`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+            }
+            ... on ErrorResult {
+                message
+            }
+        }
+    }
+`);
+
+export const deleteFacetsDocument = graphql(`
+    mutation DeleteFacets($ids: [ID!]!) {
+        deleteFacets(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteFacetValuesDocument = graphql(`
+    mutation DeleteFacetValues($ids: [ID!]!) {
+        deleteFacetValues(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const facetValueDetailDocument = graphql(`
+    query FacetValueDetail($id: ID!) {
+        facetValue(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            code
+            languageCode
+            translations {
+                id
+                languageCode
+                name
+            }
+            facet {
+                id
+                name
+                code
+            }
+            customFields
+        }
+    }
+`);
+
+export const createFacetValueDocument = graphql(`
+    mutation CreateFacetValue($input: CreateFacetValueInput!) {
+        createFacetValue(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateFacetValueDocument = graphql(`
+    mutation UpdateFacetValue($input: UpdateFacetValueInput!) {
+        updateFacetValue(input: $input) {
+            id
         }
     }
 `);

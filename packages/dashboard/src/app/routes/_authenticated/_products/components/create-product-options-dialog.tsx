@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -6,20 +7,20 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { Form } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { addOptionGroupToProductDocument, createProductOptionGroupDocument } from '../products.graphql.js';
 
 const getProductDocument = graphql(`
     query GetProduct($productId: ID!) {
@@ -51,39 +52,6 @@ const getProductDocument = graphql(`
     }
 `);
 
-const createProductOptionGroupDocument = graphql(`
-    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-        createProductOptionGroup(input: $input) {
-            id
-            code
-            name
-            options {
-                id
-                code
-                name
-            }
-        }
-    }
-`);
-
-const addOptionGroupToProductDocument = graphql(`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
-            optionGroups {
-                id
-                code
-                name
-                options {
-                    id
-                    code
-                    name
-                }
-            }
-        }
-    }
-`);
-
 const updateProductVariantDocument = graphql(`
     mutation UpdateProductVariant($input: UpdateProductVariantInput!) {
         updateProductVariant(input: $input) {
@@ -99,10 +67,16 @@ const updateProductVariantDocument = graphql(`
 `);
 
 const formSchema = z.object({
-    optionGroups: z.array(z.object({
-        name: z.string().min(1, 'Option group name is required'),
-        options: z.array(z.string().min(1, 'Option name is required')).min(1, 'At least one option is required'),
-    })).min(1, 'At least one option group is required'),
+    optionGroups: z
+        .array(
+            z.object({
+                name: z.string().min(1, 'Option group name is required'),
+                options: z
+                    .array(z.string().min(1, 'Option name is required'))
+                    .min(1, 'At least one option is required'),
+            }),
+        )
+        .min(1, 'At least one option group is required'),
     existingVariantOptionIds: z.array(z.string()).min(1, 'Must select an option for the existing variant'),
 });
 
@@ -116,7 +90,7 @@ export function CreateProductOptionsDialog({
     onSuccess?: () => void;
 }) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { data: productData } = useQuery({
         queryKey: ['product', productId],
@@ -142,15 +116,15 @@ export function CreateProductOptionsDialog({
     const updateProductVariantMutation = useMutation({
         mutationFn: api.mutate(updateProductVariantDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Successfully created product options'));
+            toast.success(t`Successfully created product options`);
             setOpen(false);
             onSuccess?.();
         },
-        onError: (error) => {
-            toast.error(i18n.t('Failed to create product options'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+        onError: error => {
+            toast.error(t`Failed to create product options`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
-        }
+        },
     });
 
     const onSubmit = async (values: FormValues) => {
@@ -159,13 +133,13 @@ export function CreateProductOptionsDialog({
         try {
             // Create all option groups and their options
             const createdOptionGroups = await Promise.all(
-                values.optionGroups.map(async (group) => {
+                values.optionGroups.map(async group => {
                     const result = await createProductOptionGroupMutation.mutateAsync({
                         input: {
                             code: group.name.toLowerCase().replace(/\s+/g, '-'),
                             translations: [
                                 {
-                                    languageCode: "en",
+                                    languageCode: 'en',
                                     name: group.name,
                                 },
                             ],
@@ -173,7 +147,7 @@ export function CreateProductOptionsDialog({
                                 code: option.toLowerCase().replace(/\s+/g, '-'),
                                 translations: [
                                     {
-                                        languageCode: "en",
+                                        languageCode: 'en',
                                         name: option,
                                     },
                                 ],
@@ -188,14 +162,11 @@ export function CreateProductOptionsDialog({
                     });
 
                     return result.createProductOptionGroup;
-                })
+                }),
             );
 
             // Combine existing and newly created option groups
-            const allOptionGroups = [
-                ...(productData.product.optionGroups || []),
-                ...createdOptionGroups,
-            ];
+            const allOptionGroups = [...(productData.product.optionGroups || []), ...createdOptionGroups];
 
             // Map the selected option names to their IDs
             const selectedOptionIds = values.existingVariantOptionIds.map((optionName, index) => {
@@ -227,7 +198,7 @@ export function CreateProductOptionsDialog({
                         optionIds: selectedOptionIds,
                         translations: [
                             {
-                                languageCode: "en",
+                                languageCode: 'en',
                                 name: newVariantName,
                             },
                         ],
@@ -235,8 +206,8 @@ export function CreateProductOptionsDialog({
                 });
             }
         } catch (error) {
-            toast.error(i18n.t('Failed to create product options'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create product options`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         }
     };
@@ -248,7 +219,10 @@ export function CreateProductOptionsDialog({
 
     const removeOptionGroup = (index: number) => {
         const currentGroups = form.getValues('optionGroups');
-        form.setValue('optionGroups', currentGroups.filter((_, i) => i !== index));
+        form.setValue(
+            'optionGroups',
+            currentGroups.filter((_, i) => i !== index),
+        );
     };
 
     const addOption = (groupIndex: number) => {
@@ -261,7 +235,9 @@ export function CreateProductOptionsDialog({
     const removeOption = (groupIndex: number, optionIndex: number) => {
         const currentGroups = form.getValues('optionGroups');
         const updatedGroups = [...currentGroups];
-        updatedGroups[groupIndex].options = updatedGroups[groupIndex].options.filter((_, i) => i !== optionIndex);
+        updatedGroups[groupIndex].options = updatedGroups[groupIndex].options.filter(
+            (_, i) => i !== optionIndex,
+        );
         form.setValue('optionGroups', updatedGroups);
     };
 
@@ -290,7 +266,7 @@ export function CreateProductOptionsDialog({
                                             name={`optionGroups.${groupIndex}.name`}
                                             label={<Trans>Option group name</Trans>}
                                             render={({ field }) => (
-                                                <Input {...field} placeholder={i18n.t('e.g. Size')} />
+                                                <Input {...field} placeholder={t`e.g. Size`} />
                                             )}
                                         />
                                         {groupIndex > 0 && (
@@ -311,7 +287,7 @@ export function CreateProductOptionsDialog({
                                                     name={`optionGroups.${groupIndex}.options.${optionIndex}`}
                                                     label={<Trans>Option name</Trans>}
                                                     render={({ field }) => (
-                                                        <Input {...field} placeholder={i18n.t('e.g. Small')} />
+                                                        <Input {...field} placeholder={t`e.g. Small`} />
                                                     )}
                                                 />
                                                 {optionIndex > 0 && (
@@ -337,12 +313,7 @@ export function CreateProductOptionsDialog({
                                     </div>
                                 </div>
                             ))}
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={addOptionGroup}
-                            >
+                            <Button type="button" variant="outline" size="sm" onClick={addOptionGroup}>
                                 <Plus className="mr-2 h-4 w-4" />
                                 <Trans>Add another option group</Trans>
                             </Button>
@@ -354,7 +325,10 @@ export function CreateProductOptionsDialog({
                                     <Trans>Assign options to existing variant</Trans>
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                    <Trans>Select which options should apply to the existing variant "{productData.product.variants[0].name}"</Trans>
+                                    <Trans>
+                                        Select which options should apply to the existing variant "
+                                        {productData.product.variants[0].name}"
+                                    </Trans>
                                 </p>
                                 {/* Show existing option groups first */}
                                 {productData.product.optionGroups?.map((group, groupIndex) => (
@@ -367,14 +341,16 @@ export function CreateProductOptionsDialog({
                                             <select
                                                 className="w-full p-2 border rounded-md"
                                                 value={field.value}
-                                                onChange={(e) => {
-                                                    const newValues = [...form.getValues('existingVariantOptionIds')];
+                                                onChange={e => {
+                                                    const newValues = [
+                                                        ...form.getValues('existingVariantOptionIds'),
+                                                    ];
                                                     newValues[groupIndex] = e.target.value;
                                                     form.setValue('existingVariantOptionIds', newValues);
                                                 }}
                                             >
                                                 <option value="">Select an option</option>
-                                                {group.options.map((option) => (
+                                                {group.options.map(option => (
                                                     <option key={option.id} value={option.name}>
                                                         {option.name}
                                                     </option>
@@ -394,9 +370,14 @@ export function CreateProductOptionsDialog({
                                             <select
                                                 className="w-full p-2 border rounded-md"
                                                 value={field.value}
-                                                onChange={(e) => {
-                                                    const newValues = [...form.getValues('existingVariantOptionIds')];
-                                                    newValues[(productData?.product?.optionGroups?.length || 0) + groupIndex] = e.target.value;
+                                                onChange={e => {
+                                                    const newValues = [
+                                                        ...form.getValues('existingVariantOptionIds'),
+                                                    ];
+                                                    newValues[
+                                                        (productData?.product?.optionGroups?.length || 0) +
+                                                            groupIndex
+                                                    ] = e.target.value;
                                                     form.setValue('existingVariantOptionIds', newValues);
                                                 }}
                                             >
@@ -420,7 +401,7 @@ export function CreateProductOptionsDialog({
                                     createProductOptionGroupMutation.isPending ||
                                     addOptionGroupToProductMutation.isPending ||
                                     updateProductVariantMutation.isPending ||
-                                    (productData?.product?.variants[0] && 
+                                    (productData?.product?.variants[0] &&
                                         form.watch('existingVariantOptionIds').some(value => !value))
                                 }
                             >
@@ -432,4 +413,4 @@ export function CreateProductOptionsDialog({
             </DialogContent>
         </Dialog>
     );
-} 
+}

@@ -1,16 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
-import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
-import { DashboardBaseWidget } from '../base-widget.js';
-import { PaginatedListDataTable, addCustomFields, useLocalFormat } from '@/index.js';
-import { ColumnFiltersState } from '@tanstack/react-table';
-import { useState } from 'react';
-import { SortingState } from '@tanstack/react-table';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import {
+    CustomerCell,
+    OrderMoneyCell,
+    OrderStateCell,
+} from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
-import { Button } from '@/components/ui/button.js';
+import { useEffect, useState } from 'react';
+import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
+import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
+
 export const WIDGET_ID = 'latest-orders-widget';
 
 export function LatestOrdersWidget() {
+    const { t } = useLingui();
+    const { dateRange } = useWidgetFilters();
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: 'orderPlacedAt',
@@ -19,13 +27,36 @@ export function LatestOrdersWidget() {
     ]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const { formatCurrency } = useLocalFormat();
+    const [filters, setFilters] = useState<ColumnFiltersState>([
+        {
+            id: 'orderPlacedAt',
+            value: {
+                between: {
+                    start: dateRange.from.toISOString(),
+                    end: dateRange.to.toISOString(),
+                },
+            },
+        },
+    ]);
+
+    // Update filters when date range changes
+    useEffect(() => {
+        setFilters([
+            {
+                id: 'orderPlacedAt',
+                value: {
+                    between: {
+                        start: dateRange.from.toISOString(),
+                        end: dateRange.to.toISOString(),
+                    },
+                },
+            },
+        ]);
+    }, [dateRange]);
 
     return (
-        <DashboardBaseWidget id={WIDGET_ID} title="Latest Orders" description="Your latest orders">
+        <DashboardBaseWidget id={WIDGET_ID} title={t`Latest Orders`} description={t`Your latest orders`}>
             <PaginatedListDataTable
-                disableViewOptions
                 page={page}
                 transformVariables={variables => ({
                     ...variables,
@@ -38,12 +69,13 @@ export function LatestOrdersWidget() {
                             state: {
                                 notIn: ['Cancelled', 'Draft'],
                             },
+                            ...(variables.options?.filter ?? {}),
                         },
                     },
                 })}
                 customizeColumns={{
                     code: {
-                        header: 'Code',
+                        header: t`Code`,
                         cell: ({ row }) => {
                             return (
                                 <Button variant="ghost" asChild>
@@ -53,23 +85,22 @@ export function LatestOrdersWidget() {
                         },
                     },
                     orderPlacedAt: {
-                        header: 'Placed At',
+                        header: t`Placed At`,
                         cell: ({ row }) => {
                             return (
-                                <span>
+                                <span className="capitalize">
                                     {formatRelative(row.original.orderPlacedAt ?? new Date(), new Date())}
                                 </span>
                             );
                         },
                     },
                     total: {
-                        header: 'Total',
-                        cell: ({ row }) => {
-                            return (
-                                <span>{formatCurrency(row.original.total, row.original.currencyCode)}</span>
-                            );
-                        },
+                        header: t`Total`,
+                        cell: OrderMoneyCell,
                     },
+                    totalWithTax: { cell: OrderMoneyCell },
+                    state: { cell: OrderStateCell },
+                    customer: { cell: CustomerCell },
                 }}
                 itemsPerPage={pageSize}
                 sorting={sorting}

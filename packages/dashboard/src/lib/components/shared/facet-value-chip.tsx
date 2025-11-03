@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { X } from 'lucide-react';
 
 // Interface for facet value type
@@ -20,15 +20,29 @@ interface FacetValueChipProps {
     onRemove?: (id: string) => void;
 }
 
-export function FacetValueChip({ facetValue, removable = true, onRemove, displayFacetName = true }: FacetValueChipProps) {
+/**
+ * @description
+ * A component for displaying a facet value as a chip.
+ *
+ * @docsCategory components
+ * @since 3.4.0
+ */
+export function FacetValueChip({
+    facetValue,
+    removable = true,
+    onRemove,
+    displayFacetName = true,
+}: FacetValueChipProps) {
     return (
-        <Badge 
+        <Badge
             variant="secondary"
             className="flex items-center gap-2 py-0.5 pl-2 pr-1 h-6 hover:bg-secondary/80"
         >
             <div className="flex items-center gap-1.5">
                 <span className="font-medium">{facetValue.name}</span>
-                {displayFacetName && <span className="text-muted-foreground text-xs">in {facetValue.facet.name}</span>}
+                {displayFacetName && (
+                    <span className="text-muted-foreground text-xs">in {facetValue.facet.name}</span>
+                )}
             </div>
             {removable && (
                 <button
@@ -42,4 +56,4 @@ export function FacetValueChip({ facetValue, removable = true, onRemove, display
             )}
         </Badge>
     );
-} 
+}

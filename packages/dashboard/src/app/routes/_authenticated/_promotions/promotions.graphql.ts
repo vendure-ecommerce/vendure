@@ -1,9 +1,9 @@
-import { configurableOperationFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const promotionListDocument = graphql(`
-    query PromotionList {
-        promotions {
+    query PromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
             items {
                 id
                 createdAt
@@ -89,6 +89,31 @@ export const updatePromotionDocument = graphql(`
 export const deletePromotionDocument = graphql(`
     mutation DeletePromotion($id: ID!) {
         deletePromotion(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignPromotionsToChannelDocument = graphql(`
+    mutation AssignPromotionsToChannel($input: AssignPromotionsToChannelInput!) {
+        assignPromotionsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removePromotionsFromChannelDocument = graphql(`
+    mutation RemovePromotionsFromChannel($input: RemovePromotionsFromChannelInput!) {
+        removePromotionsFromChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const deletePromotionsDocument = graphql(`
+    mutation DeletePromotions($ids: [ID!]!) {
+        deletePromotions(ids: $ids) {
             result
             message
         }

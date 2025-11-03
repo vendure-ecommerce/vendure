@@ -1,50 +1,21 @@
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
-import { DataTable, FacetedFilter } from '@/components/data-table/data-table.js';
-import {
-    FieldInfo,
-    getObjectPathToPaginatedList,
-    getTypeFieldInfo,
-} from '@/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
-import { api } from '@/graphql/api.js';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { DataTable, FacetedFilter } from '@/vdb/components/data-table/data-table.js';
+import { getObjectPathToPaginatedList } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
+import { api } from '@/vdb/graphql/api.js';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog.js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { includeOnlySelectedListFields } from '@/vdb/framework/document-introspection/include-only-selected-list-fields.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import {
-    ColumnFiltersState,
-    ColumnSort,
-    createColumnHelper,
-    SortingState,
-    Table,
-} from '@tanstack/react-table';
-import { AccessorKeyColumnDef, ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
-import { EllipsisIcon, TrashIcon } from 'lucide-react';
-import React, { useMemo } from 'react';
-import { toast } from 'sonner';
-import { Button } from '../ui/button.js';
-import { Checkbox } from '../ui/checkbox.js';
+import { ColumnFiltersState, ColumnSort, SortingState, Table } from '@tanstack/react-table';
+import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
+import React from 'react';
+import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
+import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -118,8 +89,23 @@ export type AllItemFieldKeys<T extends TypedDocumentNode<any, any>> =
     | keyof PaginatedListItemFields<T>
     | CustomFieldKeysOfItem<PaginatedListItemFields<T>>;
 
+export type ColumnDefWithMetaDependencies<T extends TypedDocumentNode<any, any>> = Partial<
+    ColumnDef<T, any>
+> & {
+    meta?: {
+        /**
+         * @description
+         * Columns that rely on _other_ columns in order to correctly render,
+         * can declare those other columns as dependencies in order to ensure that
+         * those columns are always fetched, even when those columns are not explicitly
+         * included in the visible table columns.
+         */
+        dependencies?: Array<AllItemFieldKeys<T>>;
+    };
+};
+
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>>;
+    [Key in AllItemFieldKeys<T>]?: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -163,7 +149,7 @@ export type ListQueryOptionsShape = {
 };
 
 export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
-    [key: string]: ColumnDef<PaginatedListItemFields<T>>;
+    [key: string]: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export interface PaginatedListContext {
@@ -187,6 +173,8 @@ export const PaginatedListContext = React.createContext<PaginatedListContext | u
  *     },
  * });
  * ```
+ * @docsCategory hooks
+ * @since 3.4.0
  */
 export function usePaginatedList() {
     const context = React.useContext(PaginatedListContext);
@@ -203,6 +191,14 @@ export interface RowAction<T> {
 
 export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
 
+/**
+ * @description
+ * Props to configure the {@link PaginatedListDataTable} component.
+ *
+ * @docsCategory list-views
+ * @docsPage PaginatedListDataTable
+ * @since 3.4.0
+ */
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
@@ -242,6 +238,116 @@ export interface PaginatedListDataTableProps<
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
 
+/**
+ * @description
+ * A wrapper around the {@link DataTable} component, which automatically configures functionality common to
+ * list queries that implement the `PaginatedList` interface, which is the common way of representing lists
+ * of data in Vendure.
+ *
+ * Given a GraphQL query document node, the component will automatically configure the required columns
+ * with sorting & filtering functionality.
+ *
+ * The automatic features can be further customized and enhanced using the many options available in the props.
+ *
+ * @example
+ * ```tsx
+ * import { Money } from '\@/vdb/components/data-display/money.js';
+ * import { PaginatedListDataTable } from '\@/vdb/components/shared/paginated-list-data-table.js';
+ * import { Badge } from '\@/vdb/components/ui/badge.js';
+ * import { Button } from '\@/vdb/components/ui/button.js';
+ * import { Link } from '\@tanstack/react-router';
+ * import { ColumnFiltersState, SortingState } from '\@tanstack/react-table';
+ * import { useState } from 'react';
+ * import { customerOrderListDocument } from '../customers.graphql.js';
+ *
+ * interface CustomerOrderTableProps {
+ *     customerId: string;
+ * }
+ *
+ * export function CustomerOrderTable({ customerId }: Readonly<CustomerOrderTableProps>) {
+ *     const [page, setPage] = useState(1);
+ *     const [pageSize, setPageSize] = useState(10);
+ *     const [sorting, setSorting] = useState<SortingState>([{ id: 'orderPlacedAt', desc: true }]);
+ *     const [filters, setFilters] = useState<ColumnFiltersState>([]);
+ *
+ *     return (
+ *         <PaginatedListDataTable
+ *             listQuery={customerOrderListDocument}
+ *             transformVariables={variables => {
+ *                 return {
+ *                     ...variables,
+ *                     customerId,
+ *                 };
+ *             }}
+ *             defaultVisibility={{
+ *                 id: false,
+ *                 createdAt: false,
+ *                 updatedAt: false,
+ *                 type: false,
+ *                 currencyCode: false,
+ *                 total: false,
+ *             }}
+ *             customizeColumns={{
+ *                 total: {
+ *                     header: 'Total',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue();
+ *                         const currencyCode = row.original.currencyCode;
+ *                         return <Money value={value} currency={currencyCode} />;
+ *                     },
+ *                 },
+ *                 totalWithTax: {
+ *                     header: 'Total with Tax',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue();
+ *                         const currencyCode = row.original.currencyCode;
+ *                         return <Money value={value} currency={currencyCode} />;
+ *                     },
+ *                 },
+ *                 state: {
+ *                     header: 'State',
+ *                     cell: ({ cell }) => {
+ *                         const value = cell.getValue() as string;
+ *                         return <Badge variant="outline">{value}</Badge>;
+ *                     },
+ *                 },
+ *                 code: {
+ *                     header: 'Code',
+ *                     cell: ({ cell, row }) => {
+ *                         const value = cell.getValue() as string;
+ *                         const id = row.original.id;
+ *                         return (
+ *                             <Button asChild variant="ghost">
+ *                                 <Link to={`/orders/${id}`}>{value}</Link>
+ *                             </Button>
+ *                         );
+ *                     },
+ *                 },
+ *             }}
+ *             page={page}
+ *             itemsPerPage={pageSize}
+ *             sorting={sorting}
+ *             columnFilters={filters}
+ *             onPageChange={(_, page, perPage) => {
+ *                 setPage(page);
+ *                 setPageSize(perPage);
+ *             }}
+ *             onSortChange={(_, sorting) => {
+ *                 setSorting(sorting);
+ *             }}
+ *             onFilterChange={(_, filters) => {
+ *                 setFilters(filters);
+ *             }}
+ *         />
+ *     );
+ * }
+ * ```
+ *
+ * @docsCategory list-views
+ * @docsPage PaginatedListDataTable
+ * @since 3.4.0
+ * @docsWeight 0
+ */
 export function PaginatedListDataTable<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
@@ -272,10 +378,11 @@ export function PaginatedListDataTable<
     setTableOptions,
     transformData,
     registerRefresher,
-}: PaginatedListDataTableProps<T, U, V, AC>) {
+}: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
+    const extendedListQuery = useExtendedListQuery(addCustomFields(listQuery));
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -286,6 +393,39 @@ export function PaginatedListDataTable<
         }
         return { ...acc, [field]: direction };
     }, {});
+
+    function refetchPaginatedList() {
+        queryClient.invalidateQueries({ queryKey });
+    }
+
+    registerRefresher?.(refetchPaginatedList);
+
+    // First we get info on _all_ the fields, including all custom fields, for the
+    // purpose of configuring the table columns.
+    const fields = useListQueryFields(extendedListQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
+
+    const { columns, customFieldColumnNames } = useGeneratedColumns({
+        fields,
+        customizeColumns,
+        rowActions,
+        bulkActions,
+        deleteMutation,
+        additionalColumns,
+        defaultColumnOrder: getStandardizedDefaultColumnOrder(defaultColumnOrder),
+    });
+    const columnVisibility = getColumnVisibility(columns, defaultVisibility, customFieldColumnNames);
+    // Get the actual visible columns and only fetch those
+    const visibleColumns = columns
+        // Filter out invisible columns, but _always_ select "id"
+        // because it is usually needed.
+        .filter(c => columnVisibility[c.id as string] !== false || c.id === 'id')
+        .map(c => ({
+            name: c.id as string,
+            isCustomField: (c.meta as any)?.isCustomField ?? false,
+            dependencies: (c.meta as any)?.dependencies ?? [],
+        }));
+    const minimalListQuery = includeOnlySelectedListFields(extendedListQuery, visibleColumns);
 
     const filter = columnFilters?.length
         ? {
@@ -300,7 +440,8 @@ export function PaginatedListDataTable<
 
     const defaultQueryKey = [
         PaginatedListDataTableKey,
-        listQuery,
+        minimalListQuery,
+        visibleColumns,
         page,
         itemsPerPage,
         sorting,
@@ -309,19 +450,13 @@ export function PaginatedListDataTable<
     ];
     const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
-    function refetchPaginatedList() {
-        queryClient.invalidateQueries({ queryKey });
-    }
-
-    registerRefresher?.(refetchPaginatedList);
-
     const { data, isFetching } = useQuery({
         queryFn: () => {
             const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
             const mergedFilter = { ...filter, ...searchFilter };
             const variables = {
                 options: {
-                    take: itemsPerPage,
+                    take: Math.min(itemsPerPage, 100),
                     skip: (page - 1) * itemsPerPage,
                     sort,
                     filter: mergedFilter,
@@ -329,155 +464,16 @@ export function PaginatedListDataTable<
             } as V;
 
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
-            return api.query(listQuery, transformedVariables);
+            return api.query(minimalListQuery, transformedVariables);
         },
         queryKey,
         placeholderData: keepPreviousData,
     });
-
-    const fields = useListQueryFields(listQuery);
-    const paginatedListObjectPath = getObjectPathToPaginatedList(listQuery);
-
     let listData = data as any;
     for (const path of paginatedListObjectPath) {
         listData = listData?.[path];
     }
 
-    const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
-
-    const { columns, customFieldColumnNames } = useMemo(() => {
-        const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
-        const customFieldColumnNames: string[] = [];
-
-        columnConfigs.push(
-            ...fields // Filter out custom fields
-                .filter(field => field.name !== 'customFields' && !field.type.endsWith('CustomFields'))
-                .map(field => ({ fieldInfo: field, isCustomField: false })),
-        );
-
-        const customFieldColumn = fields.find(field => field.name === 'customFields');
-        if (customFieldColumn && customFieldColumn.type !== 'JSON') {
-            const customFieldFields = getTypeFieldInfo(customFieldColumn.type);
-            columnConfigs.push(
-                ...customFieldFields.map(field => ({ fieldInfo: field, isCustomField: true })),
-            );
-            customFieldColumnNames.push(...customFieldFields.map(field => field.name));
-        }
-
-        const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
-            const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
-            const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
-
-            return columnHelper.accessor(fieldInfo.name as any, {
-                id: fieldInfo.name,
-                meta: { fieldInfo, isCustomField },
-                enableColumnFilter,
-                enableSorting: fieldInfo.isScalar,
-                // Filtering is done on the server side, but we set this to 'equalsString' because
-                // otherwise the TanStack Table with apply an "auto" function which somehow
-                // prevents certain filters from working.
-                filterFn: 'equalsString',
-                cell: ({ cell, row }) => {
-                    const cellValue = cell.getValue();
-                    const value =
-                        cellValue ??
-                        (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
-
-                    if (fieldInfo.list && Array.isArray(value)) {
-                        return value.join(', ');
-                    }
-                    if (
-                        (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
-                        value instanceof Date
-                    ) {
-                        return <DisplayComponent id="vendure:dateTime" value={value} />;
-                    }
-                    if (fieldInfo.type === 'Boolean') {
-                        if (cell.column.id === 'enabled') {
-                            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
-                        } else {
-                            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
-                        }
-                    }
-                    if (fieldInfo.type === 'Asset') {
-                        return <DisplayComponent id="vendure:asset" value={value} />;
-                    }
-                    if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
-                    }
-                    return value;
-                },
-                header: headerContext => {
-                    return (
-                        <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />
-                    );
-                },
-                ...customConfigRest,
-            });
-        });
-
-        let finalColumns = [...queryBasedColumns];
-
-        for (const [id, column] of Object.entries(additionalColumns ?? {})) {
-            if (!id) {
-                throw new Error('Column id is required');
-            }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
-        }
-
-        if (defaultColumnOrder) {
-            // ensure the columns with ids matching the items in defaultColumnOrder
-            // appear as the first columns in sequence, and leave the remainder in the
-            // existing order
-            const orderedColumns = finalColumns
-                .filter(column => column.id && defaultColumnOrder.includes(column.id as any))
-                .sort(
-                    (a, b) =>
-                        defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any),
-                );
-            const remainingColumns = finalColumns.filter(
-                column => !column.id || !defaultColumnOrder.includes(column.id as any),
-            );
-            finalColumns = [...orderedColumns, ...remainingColumns];
-        }
-
-        if (rowActions || deleteMutation) {
-            const rowActionColumn = getRowActions(rowActions, deleteMutation);
-            if (rowActionColumn) {
-                finalColumns.push(rowActionColumn);
-            }
-        }
-
-        // Add the row selection column
-        finalColumns.unshift({
-            id: 'selection',
-            accessorKey: 'selection',
-            header: ({ table }) => (
-                <Checkbox
-                    className="mx-1"
-                    checked={table.getIsAllRowsSelected()}
-                    onCheckedChange={checked =>
-                        table.toggleAllRowsSelected(checked === 'indeterminate' ? undefined : checked)
-                    }
-                />
-            ),
-            enableColumnFilter: false,
-            cell: ({ row }) => {
-                return (
-                    <Checkbox
-                        className="mx-1"
-                        checked={row.getIsSelected()}
-                        onCheckedChange={row.getToggleSelectedHandler()}
-                    />
-                );
-            },
-        });
-
-        return { columns: finalColumns, customFieldColumnNames };
-    }, [fields, customizeColumns, rowActions]);
-
-    const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     const transformedData =
         typeof transformData === 'function' ? transformData(listData?.items ?? []) : (listData?.items ?? []);
     return (
@@ -505,126 +501,4 @@ export function PaginatedListDataTable<
             />
         </PaginatedListContext.Provider>
     );
-}
-
-function getRowActions(
-    rowActions?: RowAction<any>[],
-    deleteMutation?: TypedDocumentNode<any, any>,
-): AccessorKeyColumnDef<any> | undefined {
-    return {
-        id: 'actions',
-        accessorKey: 'actions',
-        header: 'Actions',
-        enableColumnFilter: false,
-        cell: ({ row }) => {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <EllipsisIcon />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {rowActions?.map((action, index) => (
-                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={index}>
-                                {action.label}
-                            </DropdownMenuItem>
-                        ))}
-                        {deleteMutation && (
-                            <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    };
-}
-
-function DeleteMutationRowAction({
-    deleteMutation,
-    row,
-}: {
-    deleteMutation: TypedDocumentNode<any, any>;
-    row: Row<{ id: string }>;
-}) {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate: deleteMutationFn } = useMutation({
-        mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } }) => {
-            const unwrappedResult = Object.values(result)[0];
-            if (unwrappedResult.result === 'DELETED') {
-                refetchPaginatedList();
-                toast.success(i18n.t('Deleted successfully'));
-            } else {
-                toast.error(i18n.t('Failed to delete'), {
-                    description: unwrappedResult.message,
-                });
-            }
-        },
-        onError: (err: Error) => {
-            toast.error(i18n.t('Failed to delete'), {
-                description: err.message,
-            });
-        },
-    });
-    return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <DropdownMenuItem onSelect={e => e.preventDefault()}>
-                    <div className="flex items-center gap-2 text-destructive">
-                        <TrashIcon className="w-4 h-4 text-destructive" />
-                        <Trans>Delete</Trans>
-                    </div>
-                </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        <Trans>Confirm deletion</Trans>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        <Trans>
-                            Are you sure you want to delete this item? This action cannot be undone.
-                        </Trans>
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Trans>Cancel</Trans>
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                        onClick={() => deleteMutationFn({ id: row.original.id })}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                        <Trans>Delete</Trans>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
-}
-
-/**
- * Returns the default column visibility configuration.
- */
-function getColumnVisibility(
-    fields: FieldInfo[],
-    defaultVisibility?: Record<string, boolean | undefined>,
-    customFieldColumnNames?: string[],
-): Record<string, boolean> {
-    const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
-    const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);
-    return {
-        id: false,
-        createdAt: false,
-        updatedAt: false,
-        ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
-        ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
-        // Make custom fields hidden by default unless overridden
-        ...(customFieldColumnNames
-            ? { ...Object.fromEntries(customFieldColumnNames.map(f => [f, false])) }
-            : {}),
-        ...defaultVisibility,
-    };
 }

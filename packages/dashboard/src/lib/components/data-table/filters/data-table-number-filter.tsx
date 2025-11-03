@@ -1,11 +1,9 @@
-import { Trans } from "@/lib/trans.js";
-import { Select, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select.js";
-import { SelectContent } from "@/components/ui/select.js";
-import { Input } from "@/components/ui/input.js";
-import { MoneyInput } from "@/components/data-input/money-input.js";
-import { useEffect, useState } from "react";
-import { useChannel } from "@/hooks/use-channel.js";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableNumberFilterProps {
     mode: 'number' | 'money';
@@ -15,7 +13,11 @@ export interface DataTableNumberFilterProps {
 
 export const NUMBER_OPERATORS = ['eq', 'gt', 'gte', 'lt', 'lte', 'isNull', 'between'] as const;
 
-export function DataTableNumberFilter({ mode, value: incomingValue, onChange }: DataTableNumberFilterProps) {
+export function DataTableNumberFilter({
+    mode,
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableNumberFilterProps>) {
     const { activeChannel } = useChannel();
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : 0;
@@ -71,8 +73,11 @@ export function DataTableNumberFilter({ mode, value: incomingValue, onChange }: 
         if (mode === 'money') {
             return (
                 <MoneyInput
+                    ref={() => {}}
+                    onBlur={() => {}}
+                    name="amount"
                     value={parseFloat(value) || 0}
-                    onChange={(newValue) => onChange(newValue.toString())}
+                    onChange={newValue => onChange(newValue.toString())}
                     currency={activeChannel?.defaultCurrencyCode ?? 'USD'}
                 />
             );
@@ -102,16 +107,15 @@ export function DataTableNumberFilter({ mode, value: incomingValue, onChange }: 
                         ))}
                     </SelectContent>
                 </Select>
-                {operator !== 'isNull' && (
-                    operator === 'between' ? (
+                {operator !== 'isNull' &&
+                    (operator === 'between' ? (
                         <div className="flex gap-2">
-                            {renderInput(minValue, setMinValue, "Min")}
-                            {renderInput(maxValue, setMaxValue, "Max")}
+                            {renderInput(minValue, setMinValue, 'Min')}
+                            {renderInput(maxValue, setMaxValue, 'Max')}
                         </div>
                     ) : (
-                        renderInput(value, setValue, "Enter value...")
-                    )
-                )}
+                        renderInput(value, setValue, 'Enter value...')
+                    ))}
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

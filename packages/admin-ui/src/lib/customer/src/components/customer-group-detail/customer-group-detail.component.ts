@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { ResultOf } from '@graphql-typed-document-node/core';
 import {
@@ -107,7 +107,6 @@ export class CustomerGroupDetailComponent
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['customFields']) as UntypedFormGroup;
             this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
         }
     }

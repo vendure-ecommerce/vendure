@@ -1,12 +1,18 @@
-import { Button } from '@/components/ui/button.js';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    Command,
+    CommandEmpty,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 const customersDocument = graphql(`
@@ -47,11 +53,13 @@ export function CustomerSelector(props: CustomerSelectorProps) {
             api.query(customersDocument, {
                 options: {
                     sort: { lastName: 'ASC' },
-                    filter: debouncedSearchTerm ? {
-                        firstName: { contains: debouncedSearchTerm },
-                        lastName: { contains: debouncedSearchTerm },
-                        emailAddress: { contains: debouncedSearchTerm },
-                    } : undefined,
+                    filter: debouncedSearchTerm
+                        ? {
+                              firstName: { contains: debouncedSearchTerm },
+                              lastName: { contains: debouncedSearchTerm },
+                              emailAddress: { contains: debouncedSearchTerm },
+                          }
+                        : undefined,
                     filterOperator: debouncedSearchTerm ? 'OR' : undefined,
                 },
             }),
@@ -79,11 +87,7 @@ export function CustomerSelector(props: CustomerSelectorProps) {
                     />
                     <CommandList>
                         <CommandEmpty>
-                            {isLoading ? (
-                                <Trans>Loading...</Trans>
-                            ) : (
-                                <Trans>No customers found</Trans>
-                            )}
+                            {isLoading ? <Trans>Loading...</Trans> : <Trans>No customers found</Trans>}
                         </CommandEmpty>
                         {data?.customers.items.map(customer => (
                             <CommandItem
@@ -94,7 +98,9 @@ export function CustomerSelector(props: CustomerSelectorProps) {
                                 }}
                                 className="flex flex-col items-start"
                             >
-                                <div className="font-medium">{customer.firstName} {customer.lastName}</div>
+                                <div className="font-medium">
+                                    {customer.firstName} {customer.lastName}
+                                </div>
                                 <div className="text-sm text-muted-foreground">{customer.emailAddress}</div>
                             </CommandItem>
                         ))}

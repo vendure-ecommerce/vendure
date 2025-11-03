@@ -1,5 +1,9 @@
-import { assetFragment, errorResultFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import {
+    assetFragment,
+    configurableOperationDefFragment,
+    errorResultFragment,
+} from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderListDocument = graphql(`
     query GetOrders($options: OrderListOptions) {
@@ -20,7 +24,6 @@ export const orderListDocument = graphql(`
                 total
                 totalWithTax
                 currencyCode
-
                 shippingLines {
                     shippingMethod {
                         name
@@ -162,7 +165,6 @@ export const orderLineFragment = graphql(
             linePriceWithTax
             discountedLinePrice
             discountedLinePriceWithTax
-            customFields
         }
     `,
     [assetFragment],
@@ -185,6 +187,13 @@ export const orderDetailFragment = graphql(
                 channels {
                     id
                     code
+                }
+            }
+            channels {
+                id
+                code
+                seller {
+                    name
                 }
             }
             code
@@ -275,6 +284,7 @@ export const orderDetailFragment = graphql(
                     id
                 }
             }
+            customFields
         }
     `,
     [
@@ -291,7 +301,6 @@ export const orderDetailDocument = graphql(
         query GetOrder($id: ID!) {
             order(id: $id) {
                 ...OrderDetail
-                customFields
             }
         }
     `,
@@ -306,6 +315,10 @@ export const orderHistoryDocument = graphql(`
             updatedAt
             code
             currencyCode
+            customer {
+                firstName
+                lastName
+            }
             history(options: $options) {
                 totalItems
                 items {
@@ -503,8 +516,260 @@ export const transitionOrderToStateDocument = graphql(
                     id
                 }
                 ...ErrorResult
+                ... on OrderStateTransitionError {
+                    transitionError
+                }
             }
         }
     `,
     [errorResultFragment],
 );
+
+export const paymentMethodsDocument = graphql(`
+    query GetPaymentMethods($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`);
+
+export const addManualPaymentToOrderDocument = graphql(
+    `
+        mutation AddManualPaymentToOrder($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                __typename
+                ... on Order {
+                    id
+                    state
+                    payments {
+                        id
+                        amount
+                        method
+                        state
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const fulfillmentHandlersDocument = graphql(
+    `
+        query GetFulfillmentHandlers {
+            fulfillmentHandlers {
+                ...ConfigurableOperationDef
+            }
+        }
+    `,
+    [configurableOperationDefFragment],
+);
+
+export const fulfillOrderDocument = graphql(
+    `
+        mutation FulfillOrder($input: FulfillOrderInput!) {
+            addFulfillmentToOrder(input: $input) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionFulfillmentToStateDocument = graphql(
+    `
+        mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+            transitionFulfillmentToState(id: $id, state: $state) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    nextStates
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const couponCodeSelectorPromotionListDocument = graphql(`
+    query CouponCodeSelectorPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                id
+                name
+                couponCode
+            }
+            totalItems
+        }
+    }
+`);
+
+export const modifyOrderDocument = graphql(
+    `
+        mutation ModifyOrder($input: ModifyOrderInput!) {
+            modifyOrder(input: $input) {
+                __typename
+                ...ErrorResult
+                ... on Order {
+                    lines {
+                        productVariant {
+                            featuredAsset {
+                                id
+                                preview
+                            }
+                            product {
+                                featuredAsset {
+                                    id
+                                    preview
+                                }
+                            }
+                        }
+                    }
+                }
+                ...OrderDetail
+            }
+        }
+    `,
+    [orderDetailFragment, errorResultFragment],
+);
+
+export const settlePaymentDocument = graphql(
+    `
+        mutation SettlePayment($id: ID!) {
+            settlePayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionPaymentToStateDocument = graphql(
+    `
+        mutation TransitionPaymentToState($id: ID!, $state: String!) {
+            transitionPaymentToState(id: $id, state: $state) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const cancelPaymentDocument = graphql(
+    `
+        mutation CancelPayment($id: ID!) {
+            cancelPayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const settleRefundDocument = graphql(
+    `
+        mutation SettleRefund($input: SettleRefundInput!) {
+            settleRefund(input: $input) {
+                __typename
+                ... on Refund {
+                    id
+                    state
+                    total
+                    items
+                    adjustment
+                    reason
+                    transactionId
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const setOrderCustomFieldsDocument = graphql(`
+    mutation SetOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            id
+        }
+    }
+`);
+
+export const sellerOrdersDocument = graphql(`
+    query GetSellerOrders($orderId: ID!) {
+        order(id: $orderId) {
+            id
+            sellerOrders {
+                id
+                code
+                state
+                orderPlacedAt
+                currencyCode
+                totalWithTax
+                channels {
+                    id
+                    code
+                    seller {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    }
+`);

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SuperadminCredentials
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="829" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="851" packageName="@vendure/core" />
 
 These credentials will be used to create the Superadmin user & administrator
 when Vendure first bootstraps.

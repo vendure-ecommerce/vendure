@@ -1,14 +1,15 @@
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { SlugInput } from '@/vdb/components/data-input/index.js';
+import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -18,10 +19,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -33,12 +34,15 @@ import { CollectionContentsPreviewTable } from './components/collection-contents
 import { CollectionContentsTable } from './components/collection-contents-table.js';
 import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
 
+const pageId = 'collection-detail';
+
 export const Route = createFileRoute('/_authenticated/_collections/collections_/$id')({
     component: CollectionDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: collectionDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/collections', label: 'Collections' },
+            { path: '/collections', label: <Trans>Collections</Trans> },
             isNew ? <Trans>New collection</Trans> : entity?.name,
         ],
     }),
@@ -49,9 +53,10 @@ function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: collectionDetailDocument,
         createDocument: createCollectionDocument,
         transformCreateInput: values => {
@@ -85,14 +90,16 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated collection'));
+            toast(
+                creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update collection'), {
+            toast(creatingNewEntity ? t`Failed to create collection` : t`Failed to update collection`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -105,7 +112,7 @@ function CollectionDetailPage() {
     const currentInheritFiltersValue = form.watch('inheritFilters');
 
     return (
-        <Page pageId="collection-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New collection</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -114,7 +121,7 @@ function CollectionDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -143,7 +150,15 @@ function CollectionDetailPage() {
                             control={form.control}
                             name="slug"
                             label={<Trans>Slug</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="slug"
+                                    watchFieldName="name"
+                                    entityName="Collection"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                     <TranslatableFormFieldWrapper
@@ -204,7 +219,7 @@ function CollectionDetailPage() {
                         <FormMessage />
                     </FormItem>
                 </PageBlock>
-                <PageBlock column="main" blockId="contents" title={<Trans>Facet values</Trans>}>
+                <PageBlock column="main" blockId="contents" title={<Trans>Contents</Trans>}>
                     {shouldPreviewContents || creatingNewEntity ? (
                         <CollectionContentsPreviewTable
                             parentId={entity?.parent?.id}

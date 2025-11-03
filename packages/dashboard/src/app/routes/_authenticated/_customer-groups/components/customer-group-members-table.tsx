@@ -1,17 +1,19 @@
-import { CustomerSelector } from '@/components/shared/customer-selector.js';
-import { PaginatedListDataTable, PaginatedListDataTableKey } from '@/components/shared/paginated-list-data-table.js';
-import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { CustomerSelector } from '@/vdb/components/shared/customer-selector.js';
+import {
+    PaginatedListDataTable,
+    PaginatedListDataTableKey,
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addCustomerToGroupDocument } from '../../_customers/customers.graphql.js';
 import { toast } from 'sonner';
-import { useLingui } from '@/lib/trans.js';
+import { addCustomerToGroupDocument } from '../../_customers/customers.graphql.js';
 
 export const customerGroupMemberListDocument = graphql(`
     query CustomerGroupMemberList($id: ID!, $options: CustomerListOptions) {
@@ -36,24 +38,27 @@ export interface CustomerGroupMembersTableProps {
     canAddCustomers?: boolean;
 }
 
-export function CustomerGroupMembersTable({ customerGroupId, canAddCustomers = true }: CustomerGroupMembersTableProps) {
+export function CustomerGroupMembersTable({
+    customerGroupId,
+    canAddCustomers = true,
+}: CustomerGroupMembersTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const queryClient = useQueryClient();
 
     const { mutate: addCustomerToGroup } = useMutation({
         mutationFn: api.mutate(addCustomerToGroupDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Customer added to group'));
-            queryClient.invalidateQueries({ 
-                queryKey: [PaginatedListDataTableKey, customerGroupMemberListDocument] 
+            toast.success(t`Customer added to group`);
+            queryClient.invalidateQueries({
+                queryKey: [PaginatedListDataTableKey, customerGroupMemberListDocument],
             });
         },
         onError: () => {
-            toast.error(i18n.t('Failed to add customer to group'));
+            toast.error(t`Failed to add customer to group`);
         },
     });
 
@@ -117,10 +122,10 @@ export function CustomerGroupMembersTable({ customerGroupId, canAddCustomers = t
                 <CustomerSelector
                     onSelect={customer => {
                         addCustomerToGroup({
-                        customerId: customer.id,
-                        groupId: customerGroupId,
-                    });
-                }}
+                            customerId: customer.id,
+                            groupId: customerGroupId,
+                        });
+                    }}
                     label={<Trans>Add customer</Trans>}
                 />
             )}

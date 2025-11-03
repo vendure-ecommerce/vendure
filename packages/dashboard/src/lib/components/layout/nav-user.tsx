@@ -1,8 +1,7 @@
-import { useAuth } from '@/hooks/use-auth.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,19 +16,21 @@ import {
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
-import { Theme } from '@/providers/theme-provider.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Theme } from '@/vdb/providers/theme-provider.js';
+import { Trans } from '@lingui/react/macro';
 import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
 
 export function NavUser() {
-    const { isMobile } = useSidebar();
+    const { isMobile, state } = useSidebar();
     const router = useRouter();
     const navigate = useNavigate();
+    const { humanReadableLanguage } = useDisplayLocale();
     const { user, ...auth } = useAuth();
     const { settings, setTheme, setDevMode } = useUserSettings();
 
@@ -61,22 +62,18 @@ export function NavUser() {
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
-                                {/* Avatar component temporarily disabled due to https://github.com/radix-ui/primitives/issues/3489
-                                    error in published package version */}
-                                {/*<Avatar className="h-8 w-8 rounded-lg">*/}
-                                {/*    <AvatarImage src={user.id} alt={user.firstName} />*/}
-                                {/*    <AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>*/}
-                                {/*</Avatar>*/}
                                 <div className="relative flex rounded-lg border justify-center items-center w-8 h-8">
                                     {avatarFallback}
                                 </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">
-                                        {user.firstName} {user.lastName}
-                                    </span>
-                                    <span className="truncate text-xs">{user.emailAddress}</span>
-                                </div>
-                                <ChevronsUpDown className="ml-auto size-4" />
+                                {state === 'expanded' ? (
+                                    <div className="grid flex-1 text-left text-sm leading-tight">
+                                        <span className="truncate font-semibold">
+                                            {user.firstName} {user.lastName}
+                                        </span>
+                                        <span className="truncate text-xs">{user.emailAddress}</span>
+                                    </div>
+                                ) : null}
+                                {state === 'expanded' ? <ChevronsUpDown className="ml-auto size-4" /> : null}
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -87,12 +84,6 @@ export function NavUser() {
                         >
                             <DropdownMenuLabel className="p-0 font-normal">
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    {/*<Avatar className="h-8 w-8 rounded-lg">*/}
-                                    {/*    <AvatarImage src={user.id} alt={user.firstName} />*/}
-                                    {/*    <AvatarFallback className="rounded-lg">*/}
-                                    {/*        {avatarFallback}*/}
-                                    {/*    </AvatarFallback>*/}
-                                    {/*</Avatar>*/}
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-semibold">
                                             {user.firstName} {user.lastName}
@@ -106,20 +97,29 @@ export function NavUser() {
                                 <DropdownMenuItem asChild>
                                     <a href="https://vendure.io/pricing" target="_blank">
                                         <Sparkles />
-                                        Explore Enterprise Edition
+                                        <Trans>Explore Enterprise Edition</Trans>
                                     </a>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
                                 <DropdownMenuItem asChild>
-                                    <Link to="/profile">Profile</Link>
+                                    <Link to="/profile">
+                                        <Trans>Profile</Trans>
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DialogTrigger asChild>
-                                    <DropdownMenuItem>Language</DropdownMenuItem>
+                                    <DropdownMenuItem className="flex gap-2">
+                                        <div>
+                                            <Trans>Language</Trans>
+                                        </div>
+                                        <div className="text-muted-foreground">{humanReadableLanguage}</div>
+                                    </DropdownMenuItem>
                                 </DialogTrigger>
                                 <DropdownMenuSub>
-                                    <DropdownMenuSubTrigger>Theme</DropdownMenuSubTrigger>
+                                    <DropdownMenuSubTrigger>
+                                        <Trans>Theme</Trans>
+                                    </DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
@@ -128,15 +128,15 @@ export function NavUser() {
                                             >
                                                 <DropdownMenuRadioItem value="light">
                                                     <Sun />
-                                                    Light
+                                                    <Trans context="theme">Light</Trans>
                                                 </DropdownMenuRadioItem>
                                                 <DropdownMenuRadioItem value="dark">
                                                     <Moon />
-                                                    Dark
+                                                    <Trans context="theme">Dark</Trans>
                                                 </DropdownMenuRadioItem>
                                                 <DropdownMenuRadioItem value="system">
                                                     <Monitor />
-                                                    System
+                                                    <Trans context="theme">System</Trans>
                                                 </DropdownMenuRadioItem>
                                             </DropdownMenuRadioGroup>
                                         </DropdownMenuSubContent>
@@ -145,7 +145,9 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             {isDevMode && (
                                 <DropdownMenuSub>
-                                    <DropdownMenuSubTrigger>Dev Mode</DropdownMenuSubTrigger>
+                                    <DropdownMenuSubTrigger>
+                                        <Trans>Dev Mode</Trans>
+                                    </DropdownMenuSubTrigger>
                                     <DropdownMenuPortal>
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
@@ -166,7 +168,7 @@ export function NavUser() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout}>
                                 <LogOut />
-                                Log out
+                                <Trans>Log out</Trans>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

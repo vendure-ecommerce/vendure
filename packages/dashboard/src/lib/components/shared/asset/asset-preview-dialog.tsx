@@ -4,8 +4,8 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { AssetWithTags, AssetPreview } from './asset-preview.js';
+} from '@/vdb/components/ui/dialog.js';
+import { AssetPreview, AssetWithTags } from './asset-preview.js';
 
 interface AssetPreviewDialogProps {
     open: boolean;
@@ -30,11 +30,7 @@ export function AssetPreviewDialog({
                     <DialogDescription>Preview of {asset.name}</DialogDescription>
                 </DialogHeader>
                 <div className="h-full p-6">
-                    <AssetPreview
-                        asset={asset}
-                        assets={assets}
-                        customFields={customFields}
-                    />
+                    <AssetPreview asset={asset} assets={assets} customFields={customFields} />
                 </div>
             </DialogContent>
         </Dialog>

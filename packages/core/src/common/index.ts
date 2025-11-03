@@ -5,6 +5,7 @@ export * from './error/errors';
 export * from './error/generated-graphql-admin-errors';
 export * from './finite-state-machine/finite-state-machine';
 export * from './finite-state-machine/types';
+export * from './generate-public-id';
 export * from './injector';
 export * from './instrument-decorator';
 export * from './permission-definition';

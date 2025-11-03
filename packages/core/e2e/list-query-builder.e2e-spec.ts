@@ -976,7 +976,7 @@ describe('ListQueryBuilder', () => {
                                 description: { contains: 'e' },
                             },
                             {
-                                _or: [{ active: { eq: false } }, { ownerId: { eq: '10' } }],
+                                _or: [{ active: { eq: false } }, { ownerId: { eq: 'T_10' } }],
                             },
                         ],
                     },

@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const zoneItemFragment = graphql(`
     fragment ZoneItem on Zone {
@@ -11,8 +11,8 @@ export const zoneItemFragment = graphql(`
 
 export const zoneListQuery = graphql(
     `
-        query ZoneList {
-            zones {
+        query ZoneList($options: ZoneListOptions) {
+            zones(options: $options) {
                 items {
                     ...ZoneItem
                 }
@@ -42,7 +42,7 @@ export const zoneMembersQuery = graphql(`
     }
 `);
 
-export const zoneDetailQuery = graphql(
+export const zoneDetailDocument = graphql(
     `
         query ZoneDetail($id: ID!) {
             zone(id: $id) {
@@ -89,6 +89,15 @@ export const removeCountryFromZoneMutation = graphql(`
 export const deleteZoneDocument = graphql(`
     mutation DeleteZone($id: ID!) {
         deleteZone(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteZonesDocument = graphql(`
+    mutation DeleteZones($ids: [ID!]!) {
+        deleteZones(ids: $ids) {
             result
             message
         }

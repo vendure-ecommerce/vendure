@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -6,9 +6,9 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Textarea } from '@/components/ui/textarea.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Textarea } from '@/vdb/components/ui/textarea.js';
+import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 import { HistoryNoteCheckbox } from './history-note-checkbox.js';
 

@@ -1,12 +1,12 @@
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Trans } from '@/lib/trans.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Trans } from '@lingui/react/macro';
 
 interface HistoryNoteCheckboxProps {
     value: boolean;
     onChange: (value: boolean) => void;
 }
 
-export function HistoryNoteCheckbox({ value, onChange }: HistoryNoteCheckboxProps) {
+export function HistoryNoteCheckbox({ value, onChange }: Readonly<HistoryNoteCheckboxProps>) {
     return (
         <div className="flex items-center space-x-2">
             <Checkbox

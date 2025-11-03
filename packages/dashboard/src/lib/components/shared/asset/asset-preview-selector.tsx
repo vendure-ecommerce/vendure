@@ -1,7 +1,5 @@
-
-
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select.js";
-import { PreviewPreset } from "./asset-preview.js";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { PreviewPreset } from './asset-preview.js';
 
 export interface AssetPreviewSelectorProps {
     size: PreviewPreset;
@@ -10,7 +8,7 @@ export interface AssetPreviewSelectorProps {
     height: number;
 }
 
-export function AssetPreviewSelector({ size, setSize, width, height }: AssetPreviewSelectorProps) {
+export function AssetPreviewSelector({ size, setSize, width, height }: Readonly<AssetPreviewSelectorProps>) {
     return (
         <div className="flex items-center gap-2">
             <Select value={size} onValueChange={value => setSize(value as PreviewPreset)}>

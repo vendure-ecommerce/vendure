@@ -1,15 +1,14 @@
-import { Button } from '@/components/ui/button.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Card } from '@/vdb/components/ui/card.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { cn } from '@/vdb/lib/utils.js';
 import { useQuery } from '@tanstack/react-query';
-import { Trans } from '@/lib/trans.js';
-import { useLingui } from '@/lib/trans.js';
-import { addressFragment } from '../../_customers/customers.graphql.js';
-import { Card } from '@/components/ui/card.js';
-import { cn } from '@/lib/utils.js';
-import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import { addressFragment } from '../../_customers/customers.graphql.js';
 
 const getCustomerAddressesDocument = graphql(
     `
@@ -32,8 +31,7 @@ interface CustomerAddressSelectorProps {
     onSelect: (address: ResultOf<typeof addressFragment>) => void;
 }
 
-export function CustomerAddressSelector({ customerId, onSelect }: CustomerAddressSelectorProps) {
-    const { i18n } = useLingui();
+export function CustomerAddressSelector({ customerId, onSelect }: Readonly<CustomerAddressSelectorProps>) {
     const [open, setOpen] = useState(false);
 
     const { data, isLoading } = useQuery<CustomerAddressesQuery>({
@@ -72,9 +70,7 @@ export function CustomerAddressSelector({ customerId, onSelect }: CustomerAddres
                             addresses.map(address => (
                                 <Card
                                     key={address.id}
-                                    className={cn(
-                                        'p-4 cursor-pointer hover:bg-accent transition-colors',
-                                    )}
+                                    className={cn('p-4 cursor-pointer hover:bg-accent transition-colors')}
                                     onClick={() => {
                                         onSelect(address);
                                         setOpen(false);

@@ -1,15 +1,14 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DialogClose,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Trans } from '@lingui/react/macro';
 import { Column } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataTableBooleanFilter } from './filters/data-table-boolean-filter.js';
 import { DataTableDateTimeFilter } from './filters/data-table-datetime-filter.js';
 import { DataTableIdFilter } from './filters/data-table-id-filter.js';
@@ -19,21 +18,38 @@ import { ColumnDataType } from './types.js';
 
 export interface DataTableFilterDialogProps {
     column: Column<any>;
+    onEnter?: () => void;
 }
 
-export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
+export function DataTableFilterDialog({ column, onEnter }: Readonly<DataTableFilterDialogProps>) {
     const columnFilter = column.getFilterValue() as Record<string, string> | undefined;
     const [filter, setFilter] = useState(columnFilter);
 
+    useEffect(() => {
+        setFilter(columnFilter);
+    }, [columnFilter]);
+
     const columnDataType = (column.columnDef.meta as any)?.fieldInfo?.type as ColumnDataType;
     const columnId = column.id;
+    const isEmpty = !filter || Object.keys(filter).length === 0;
+    const setFilterOnColumn = () => {
+        column.setFilterValue(filter);
+        setFilter(undefined);
+    };
+    const handleEnter = (e: React.KeyboardEvent<any>) => {
+        if (e.key === 'Enter') {
+            if (!isEmpty) {
+                setFilterOnColumn();
+                onEnter?.();
+            }
+        }
+    };
     return (
-        <DialogContent>
+        <DialogContent onKeyDown={handleEnter}>
             <DialogHeader>
                 <DialogTitle>
                     <Trans>Filter by {columnId}</Trans>
                 </DialogTitle>
-                <DialogDescription></DialogDescription>
             </DialogHeader>
             {columnDataType === 'String' ? (
                 <DataTableStringFilter value={filter} onChange={e => setFilter(e)} />
@@ -50,7 +66,11 @@ export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
             ) : null}
             <DialogFooter className="sm:justify-end">
                 {columnFilter && (
-                    <Button type="button" variant="secondary" onClick={e => column.setFilterValue(undefined)}>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => column.setFilterValue(undefined)}
+                    >
                         <Trans>Clear filter</Trans>
                     </Button>
                 )}
@@ -58,9 +78,9 @@ export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
                     <Button
                         type="button"
                         variant="secondary"
+                        disabled={isEmpty}
                         onClick={() => {
-                            column.setFilterValue(filter);
-                            setFilter(undefined);
+                            setFilterOnColumn();
                         }}
                     >
                         <Trans>Apply filter</Trans>

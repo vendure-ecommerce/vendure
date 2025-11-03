@@ -5,10 +5,10 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '../ui/skeleton.js';
 
@@ -28,7 +28,7 @@ export interface ZoneSelectorProps {
     onChange: (value: string) => void;
 }
 
-export function ZoneSelector({ value, onChange }: ZoneSelectorProps) {
+export function ZoneSelector({ value, onChange }: Readonly<ZoneSelectorProps>) {
     const { data, isLoading, isPending } = useQuery({
         queryKey: ['zones'],
         staleTime: 1000 * 60 * 5,
@@ -63,4 +63,3 @@ export function ZoneSelector({ value, onChange }: ZoneSelectorProps) {
         </Select>
     );
 }
-

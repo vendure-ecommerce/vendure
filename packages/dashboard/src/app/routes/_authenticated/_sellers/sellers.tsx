@@ -1,12 +1,13 @@
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { deleteSellerDocument, sellerListQuery } from './sellers.graphql.js';
+import { DeleteSellersBulkAction } from './components/seller-bulk-actions.js';
+import { sellerListQuery } from './sellers.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers')({
     component: SellerListPage,
@@ -18,9 +19,8 @@ function SellerListPage() {
         <ListPage
             pageId="seller-list"
             listQuery={sellerListQuery}
-            deleteMutation={deleteSellerDocument}
             route={Route}
-            title="Sellers"
+            title={<Trans>Sellers</Trans>}
             defaultVisibility={{
                 name: true,
             }}
@@ -31,17 +31,22 @@ function SellerListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteSellersBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateSeller']}>
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Seller
+                            <Trans>New Seller</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

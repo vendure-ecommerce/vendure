@@ -187,12 +187,33 @@ export class GraphqlValueTransformer {
     private getChildrenTreeNodes(
         inputType: GraphQLInputObjectType,
         parent: TypeTreeNode,
+        depth = 0,
     ): { [name: string]: TypeTreeNode } {
+        if (depth > 3) return {};
+
         return Object.entries(inputType.getFields()).reduce(
             (result, [key, field]) => {
                 const namedType = getNamedType(field.type);
                 if (namedType === parent.type) {
-                    // prevent recursion-induced stack overflow
+                    // Allow _and/_or self-references in filter types, but limit depth to prevent infinite loops
+                    if (key === '_and' || key === '_or') {
+                        const selfRefChild: TypeTreeNode = {
+                            type: namedType,
+                            isList: this.isList(field.type),
+                            parent,
+                            fragmentRefs: [],
+                            children: {},
+                        };
+                        if (isInputObjectType(namedType)) {
+                            selfRefChild.children = this.getChildrenTreeNodes(
+                                namedType,
+                                selfRefChild,
+                                depth + 1,
+                            );
+                        }
+                        result[key] = selfRefChild;
+                        return result;
+                    }
                     return result;
                 }
                 const child: TypeTreeNode = {
@@ -229,6 +250,14 @@ export class GraphqlValueTransformer {
                             merged[key].children,
                             source[key].children,
                         );
+                    }
+                    // Merge fragmentRefs from both nodes, avoiding duplicates
+                    if (source[key].fragmentRefs && source[key].fragmentRefs.length > 0) {
+                        const existingRefs = new Set(merged[key].fragmentRefs);
+                        const newRefs = source[key].fragmentRefs.filter(ref => !existingRefs.has(ref));
+                        if (newRefs.length > 0) {
+                            merged[key].fragmentRefs = [...merged[key].fragmentRefs, ...newRefs];
+                        }
                     }
                 } else {
                     merged[key] = source[key];

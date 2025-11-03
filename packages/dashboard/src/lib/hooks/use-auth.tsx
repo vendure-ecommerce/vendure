@@ -1,11 +1,9 @@
+import { AuthContext } from '@/vdb/providers/auth.js';
 import * as React from 'react';
-import { AuthContext } from '../providers/auth.js';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
- * Provides access to the {@link ChannelContext} which contains information
+ * Provides access to the {@link AuthContext} which contains information
  * about the active channel.
  *
  *

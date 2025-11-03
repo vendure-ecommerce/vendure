@@ -1,16 +1,17 @@
-import { addBulkAction } from '@/framework/data-table/data-table-extensions.js';
-
-import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
-import { addCustomFormComponent } from '../form-engine/custom-form-component-extensions.js';
-import {
-    registerDashboardActionBarItem,
-    registerDashboardPageBlock,
-} from '../layout-engine/layout-extensions.js';
-import { addNavMenuItem, addNavMenuSection, NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
-import { registerRoute } from '../page/page-api.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
 import { DashboardExtension } from './extension-api-types.js';
+import {
+    registerAlertExtensions,
+    registerDataTableExtensions,
+    registerDetailFormExtensions,
+    registerFormComponentExtensions,
+    registerHistoryEntryComponents,
+    registerLayoutExtensions,
+    registerLoginExtensions,
+    registerNavigationExtensions,
+    registerWidgetExtensions,
+} from './logic/index.js';
 
 globalRegistry.register('extensionSourceChangeCallbacks', new Set<() => void>());
 globalRegistry.register('registerDashboardExtensionCallbacks', new Set<() => void>());
@@ -27,72 +28,67 @@ export function executeDashboardExtensionCallbacks() {
 
 /**
  * @description
- * **Status: Developer Preview**
+ * The main entry point for extensions to the React-based dashboard. Every dashboard extension
+ * must contain a call to this function, usually in the entry point file that is referenced by
+ * the `dashboard` property of the plugin decorator.
  *
- * The main entry point for extensions to the React-based dashboard.
+ * Every type of customisation of the dashboard can be defined here, including:
+ *
+ * - Navigation (nav sections and routes)
+ * - Layout (action bar items and page blocks)
+ * - Widgets
+ * - Form components (custom form components, input components, and display components)
+ * - Data tables
+ * - Detail forms
+ * - Login
+ * - Custom history entries
+ *
+ * @example
+ * ```tsx
+ * defineDashboardExtension({
+ *  navSections: [],
+ *  routes: [],
+ *  pageBlocks: [],
+ *  actionBarItems: [],
+ * });
+ * ```
  *
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage defineDashboardExtension
+ * @docsWeight 0
  * @since 3.3.0
  */
 export function defineDashboardExtension(extension: DashboardExtension) {
     globalRegistry.get('registerDashboardExtensionCallbacks').add(() => {
-        if (extension.navSections) {
-            for (const section of extension.navSections) {
-                addNavMenuSection({
-                    ...section,
-                    placement: 'top',
-                    order: section.order ?? 999,
-                    items: [],
-                });
-            }
-        }
-        if (extension.routes) {
-            for (const route of extension.routes) {
-                if (route.navMenuItem) {
-                    // Add the nav menu item
-                    const item: NavMenuItem = {
-                        url: route.navMenuItem.url ?? route.path,
-                        id: route.navMenuItem.id ?? route.path,
-                        title: route.navMenuItem.title ?? route.path,
-                    };
-                    addNavMenuItem(item, route.navMenuItem.sectionId);
-                }
-                if (route.path) {
-                    // Configure a list page
-                    registerRoute(route);
-                }
-            }
-        }
-        if (extension.actionBarItems) {
-            for (const item of extension.actionBarItems) {
-                registerDashboardActionBarItem(item);
-            }
-        }
-        if (extension.pageBlocks) {
-            for (const block of extension.pageBlocks) {
-                registerDashboardPageBlock(block);
-            }
-        }
-        if (extension.widgets) {
-            for (const widget of extension.widgets) {
-                registerDashboardWidget(widget);
-            }
-        }
-        if (extension.customFormComponents) {
-            for (const component of extension.customFormComponents) {
-                addCustomFormComponent(component);
-            }
-        }
-        if (extension.dataTables) {
-            for (const dataTable of extension.dataTables) {
-                if (dataTable.bulkActions?.length) {
-                    for (const action of dataTable.bulkActions) {
-                        addBulkAction(dataTable.pageId, dataTable.blockId, action);
-                    }
-                }
-            }
-        }
+        // Register navigation extensions (nav sections and routes)
+        registerNavigationExtensions(extension.navSections, extension.routes);
+
+        // Register layout extensions (action bar items and page blocks)
+        registerLayoutExtensions(extension.actionBarItems, extension.pageBlocks);
+
+        // Register widget extensions
+        registerWidgetExtensions(extension.widgets);
+
+        // Register form component extensions (custom form components, input components, and display components)
+        registerFormComponentExtensions(extension.customFormComponents);
+
+        // Register data table extensions
+        registerDataTableExtensions(extension.dataTables);
+
+        // Register detail form extensions
+        registerDetailFormExtensions(extension.detailForms);
+
+        // Register alert extensions
+        registerAlertExtensions(extension.alerts);
+
+        // Register login extensions
+        registerLoginExtensions(extension.login);
+
+        // Register custom history entry components
+        registerHistoryEntryComponents(extension.historyEntries);
+
+        // Execute extension source change callbacks
         const callbacks = globalRegistry.get('extensionSourceChangeCallbacks');
         if (callbacks.size) {
             for (const callback of callbacks) {

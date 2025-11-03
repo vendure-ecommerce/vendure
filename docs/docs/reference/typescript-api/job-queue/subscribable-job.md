@@ -40,7 +40,7 @@ class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
 <MemberInfo kind="method" type={`(options?: <a href='/reference/typescript-api/job-queue/types#jobupdateoptions'>JobUpdateOptions</a>) => Observable&#60;<a href='/reference/typescript-api/job-queue/types#jobupdate'>JobUpdate</a>&#60;T&#62;&#62;`}   />
 
 Returns an Observable stream of updates to the Job. Works by polling the current JobQueueStrategy's `findOne()` method
-to obtain updates. If this updates are not subscribed to, then no polling occurs.
+to obtain updates. If the updates are not subscribed to, then no polling occurs.
 
 Polling interval, timeout and other options may be configured with an options arguments <a href='/reference/typescript-api/job-queue/types#jobupdateoptions'>JobUpdateOptions</a>.
 

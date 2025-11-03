@@ -1,6 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Inter:wght@100..900&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+html[dir="rtl"] * {
+    direction: rtl;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -94,7 +98,3 @@
     }
 }
 
-/* Overrides for the react-grid-layout library */
-.react-grid-item {
-    transition: none !important;
-}

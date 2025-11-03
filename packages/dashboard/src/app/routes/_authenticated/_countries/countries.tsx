@@ -1,12 +1,13 @@
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { countriesListQuery, deleteCountryDocument } from './countries.graphql.js';
+import { DeleteCountriesBulkAction } from './components/country-bulk-actions.js';
+import { countriesListQuery } from './countries.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries')({
     component: CountryListPage,
@@ -18,9 +19,8 @@ function CountryListPage() {
         <ListPage
             pageId="country-list"
             listQuery={countriesListQuery}
-            deleteMutation={deleteCountryDocument}
             route={Route}
-            title="Countries"
+            title={<Trans>Countries</Trans>}
             defaultVisibility={{
                 name: true,
                 code: true,
@@ -47,10 +47,15 @@ function CountryListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteCountriesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCountry']}>

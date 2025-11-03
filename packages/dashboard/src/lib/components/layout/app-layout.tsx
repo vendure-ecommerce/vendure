@@ -1,11 +1,9 @@
-import { AppSidebar } from '@/components/layout/app-sidebar.js';
-import { GeneratedBreadcrumbs } from '@/components/layout/generated-breadcrumbs.js';
-import { PrereleasePopup } from '@/components/layout/prerelease-popup.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Separator } from '@/components/ui/separator.js';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
+import { AppSidebar } from '@/vdb/components/layout/app-sidebar.js';
+import { DevModeIndicator } from '@/vdb/components/layout/dev-mode-indicator.js';
+import { GeneratedBreadcrumbs } from '@/vdb/components/layout/generated-breadcrumbs.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/vdb/components/ui/sidebar.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Outlet } from '@tanstack/react-router';
 import { Alerts } from '../shared/alerts.js';
 
@@ -24,11 +22,7 @@ export function AppLayout() {
                                 <GeneratedBreadcrumbs />
                             </div>
                             <div className="flex items-center justify-end gap-2">
-                                {settings.devMode && (
-                                    <Badge variant="destructive">
-                                        <Trans>Dev Mode</Trans>
-                                    </Badge>
-                                )}
+                                {settings.devMode && <DevModeIndicator />}
                                 <Alerts />
                             </div>
                         </div>
@@ -36,7 +30,6 @@ export function AppLayout() {
                     <Outlet />
                 </div>
             </SidebarInset>
-            <PrereleasePopup />
         </SidebarProvider>
     );
 }

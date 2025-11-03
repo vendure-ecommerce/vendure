@@ -1,6 +1,6 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useQuery } from '@tanstack/react-query';
 import { ResultOf } from 'gql.tada';
 import React from 'react';
@@ -124,6 +124,7 @@ export const structCustomFieldFragment = graphql(
             ...CustomFieldConfig
             fields {
                 ... on StructField {
+                    __typename
                     name
                     type
                     list
@@ -249,6 +250,7 @@ export const getServerConfigDocument = graphql(
 );
 
 type QueryResult = ResultOf<typeof getServerConfigDocument>['globalSettings']['serverConfig'];
+export type CustomFieldConfig = QueryResult['entityCustomFields'][number]['customFields'][number];
 
 export interface ServerConfig {
     availableLanguages: string[];
@@ -270,14 +272,16 @@ export const ServerConfigProvider = ({ children }: { children: React.ReactNode }
         enabled: !!user?.id,
         staleTime: 1000,
     });
-    const value: ServerConfig | null = data?.globalSettings ? {
-        availableLanguages: data?.globalSettings.availableLanguages ?? [],
-        moneyStrategyPrecision: data?.globalSettings.serverConfig.moneyStrategyPrecision ?? 2,
-        orderProcess: data?.globalSettings.serverConfig.orderProcess ?? [],
-        permittedAssetTypes: data?.globalSettings.serverConfig.permittedAssetTypes ?? [],
-        permissions: data?.globalSettings.serverConfig.permissions ?? [],
-        entityCustomFields: data?.globalSettings.serverConfig.entityCustomFields ?? [],
-    } : null;
+    const value: ServerConfig | null = data?.globalSettings
+        ? {
+              availableLanguages: data?.globalSettings.availableLanguages ?? [],
+              moneyStrategyPrecision: data?.globalSettings.serverConfig.moneyStrategyPrecision ?? 2,
+              orderProcess: data?.globalSettings.serverConfig.orderProcess ?? [],
+              permittedAssetTypes: data?.globalSettings.serverConfig.permittedAssetTypes ?? [],
+              permissions: data?.globalSettings.serverConfig.permissions ?? [],
+              entityCustomFields: data?.globalSettings.serverConfig.entityCustomFields ?? [],
+          }
+        : null;
 
     return <ServerConfigContext.Provider value={value}>{children}</ServerConfigContext.Provider>;
 };

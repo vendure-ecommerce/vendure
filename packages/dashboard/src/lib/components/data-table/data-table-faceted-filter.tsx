@@ -1,10 +1,9 @@
-import * as React from 'react';
 import { Column } from '@tanstack/react-table';
-import { Check, FilterIcon, PlusCircle } from 'lucide-react';
+import { Check, FilterIcon } from 'lucide-react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Command,
     CommandEmpty,
@@ -13,9 +12,11 @@ import {
     CommandItem,
     CommandList,
     CommandSeparator,
-} from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { Separator } from '@/components/ui/separator.js';
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 
 export interface DataTableFacetedFilterOption {
     label: string;
@@ -68,6 +69,7 @@ export function DataTableFacetedFilter<TData, TValue>({
             setResolvedOptions(options);
         }
     }, [optionsFn]);
+    const isBoolean = (column?.columnDef?.meta as any)?.fieldInfo.type === 'Boolean';
 
     return (
         <Popover>
@@ -107,7 +109,7 @@ export function DataTableFacetedFilter<TData, TValue>({
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0" align="start">
                 <Command>
-                    <CommandInput placeholder={title} />
+                    {resolvedOptions.length > 2 ? <CommandInput placeholder={title} /> : null}
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup>
@@ -117,26 +119,47 @@ export function DataTableFacetedFilter<TData, TValue>({
                                     <CommandItem
                                         key={option.value}
                                         onSelect={() => {
-                                            if (isSelected) {
-                                                selectedValues.delete(option.value);
+                                            if (isBoolean) {
+                                                // Radio button behavior: single selection only
+                                                if (isSelected) {
+                                                    // Deselect if clicking the same option
+                                                    column?.setFilterValue(undefined);
+                                                } else {
+                                                    // Select only this option
+                                                    column?.setFilterValue({ eq: option.value });
+                                                }
                                             } else {
-                                                selectedValues.add(option.value);
+                                                // Checkbox behavior: multi-selection
+                                                if (isSelected) {
+                                                    selectedValues.delete(option.value);
+                                                } else {
+                                                    selectedValues.add(option.value);
+                                                }
+                                                const filterValues = Array.from(selectedValues);
+                                                column?.setFilterValue(
+                                                    filterValues.length ? filterValues : undefined,
+                                                );
                                             }
-                                            const filterValues = Array.from(selectedValues);
-                                            column?.setFilterValue(
-                                                filterValues.length ? filterValues : undefined,
-                                            );
                                         }}
                                     >
                                         <div
                                             className={cn(
-                                                'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                                                'mr-2 flex h-4 w-4 items-center justify-center border border-primary',
+                                                isBoolean ? 'rounded-full' : 'rounded-sm',
                                                 isSelected
                                                     ? 'bg-primary text-primary-foreground'
-                                                    : 'opacity-50 [&_svg]:invisible',
+                                                    : isBoolean
+                                                      ? '' // Empty circle for unselected radio buttons
+                                                      : 'opacity-50 [&_svg]:invisible', // Grey checkbox for unselected checkboxes
                                             )}
                                         >
-                                            <Check />
+                                            {isBoolean ? (
+                                                isSelected && (
+                                                    <div className="h-2 w-2 rounded-full bg-primary-foreground" />
+                                                )
+                                            ) : (
+                                                <Check />
+                                            )}
                                         </div>
                                         {option.icon && (
                                             <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -159,7 +182,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                                         onSelect={() => column?.setFilterValue(undefined)}
                                         className="justify-center text-center"
                                     >
-                                        Clear filters
+                                        <Trans>Clear filters</Trans>
                                     </CommandItem>
                                 </CommandGroup>
                             </>

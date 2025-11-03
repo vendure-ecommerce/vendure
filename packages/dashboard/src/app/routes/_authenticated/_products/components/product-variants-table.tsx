@@ -1,24 +1,20 @@
-import { Money } from '@/components/data-display/money.js';
+import { Money } from '@/vdb/components/data-display/money.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import {
     PaginatedListDataTable,
     PaginatedListRefresherRegisterFn,
-} from '@/components/shared/paginated-list-data-table.js';
-import { StockLevelLabel } from '@/components/shared/stock-level-label.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { DetailPageButton } from '@/index.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
+import {
+    AssignFacetValuesToProductVariantsBulkAction,
+    AssignProductVariantsToChannelBulkAction,
+    DeleteProductVariantsBulkAction,
+    RemoveProductVariantsFromChannelBulkAction,
+} from '../../_product-variants/components/product-variant-bulk-actions.js';
 import { productVariantListDocument } from '../products.graphql.js';
-
-export const deleteProductVariantDocument = graphql(`
-    mutation DeleteProductVariant($id: ID!) {
-        deleteProductVariant(id: $id) {
-            result
-            message
-        }
-    }
-`);
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -41,15 +37,36 @@ export function ProductVariantsTable({
         <PaginatedListDataTable
             registerRefresher={registerRefresher}
             listQuery={productVariantListDocument}
-            deleteMutation={deleteProductVariantDocument}
             transformVariables={variables => ({
                 ...variables,
                 productId,
             })}
             defaultVisibility={{
-                id: false,
-                currencyCode: false,
+                featuredAsset: true,
+                name: true,
+                enabled: true,
+                price: true,
+                priceWithTax: true,
+                stockLevels: true,
             }}
+            bulkActions={[
+                {
+                    component: AssignProductVariantsToChannelBulkAction,
+                    order: 100,
+                },
+                {
+                    component: RemoveProductVariantsFromChannelBulkAction,
+                    order: 200,
+                },
+                {
+                    component: AssignFacetValuesToProductVariantsBulkAction,
+                    order: 300,
+                },
+                {
+                    component: DeleteProductVariantsBulkAction,
+                    order: 400,
+                },
+            ]}
             customizeColumns={{
                 name: {
                     header: 'Variant name',

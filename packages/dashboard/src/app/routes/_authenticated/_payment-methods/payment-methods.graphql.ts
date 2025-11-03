@@ -1,5 +1,5 @@
-import { configurableOperationFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const paymentMethodItemFragment = graphql(`
     fragment PaymentMethodItem on PaymentMethod {
@@ -15,8 +15,8 @@ export const paymentMethodItemFragment = graphql(`
 
 export const paymentMethodListQuery = graphql(
     `
-        query PaymentMethodList {
-            paymentMethods {
+        query PaymentMethodList($options: PaymentMethodListOptions) {
+            paymentMethods(options: $options) {
                 items {
                     ...PaymentMethodItem
                 }
@@ -78,6 +78,33 @@ export const deletePaymentMethodDocument = graphql(`
         deletePaymentMethod(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const deletePaymentMethodsDocument = graphql(`
+    mutation DeletePaymentMethods($ids: [ID!]!) {
+        deletePaymentMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignPaymentMethodsToChannelDocument = graphql(`
+    mutation AssignPaymentMethodsToChannel($input: AssignPaymentMethodsToChannelInput!) {
+        assignPaymentMethodsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removePaymentMethodsFromChannelDocument = graphql(`
+    mutation RemovePaymentMethodsFromChannel($input: RemovePaymentMethodsFromChannelInput!) {
+        removePaymentMethodsFromChannel(input: $input) {
+            id
+            name
         }
     }
 `);

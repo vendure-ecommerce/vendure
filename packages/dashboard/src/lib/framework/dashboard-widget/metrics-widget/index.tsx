@@ -1,13 +1,17 @@
-import { api } from '@/graphql/api.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { api } from '@/vdb/graphql/api.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@lingui/react/macro';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
+import { RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import { DashboardBaseWidget, useWidgetDimensions } from '../base-widget.js';
-import { orderChartDataQuery } from './metrics-widget.graphql.js';
+import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { MetricsChart } from './chart.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
+import { orderChartDataQuery } from './metrics-widget.graphql.js';
 
 enum DATA_TYPES {
     OrderCount = 'OrderCount',
@@ -16,53 +20,63 @@ enum DATA_TYPES {
 }
 
 export function MetricsWidget() {
+    const { t } = useLingui();
     const { formatDate, formatCurrency } = useLocalFormat();
     const { activeChannel } = useChannel();
+    const { dateRange } = useWidgetFilters();
     const [dataType, setDataType] = useState<DATA_TYPES>(DATA_TYPES.OrderTotal);
 
-    const { data, error } = useQuery({
-        queryKey: ['dashboard-order-metrics', dataType],
+    const { data, refetch, isRefetching } = useQuery({
+        queryKey: ['dashboard-order-metrics', dataType, dateRange],
         queryFn: () => {
             return api.query(orderChartDataQuery, {
                 types: [dataType],
                 refresh: true,
+                startDate: dateRange.from.toISOString(),
+                endDate: dateRange.to.toISOString(),
             });
         },
     });
 
     const chartData = useMemo(() => {
-        const entry = data?.metricSummary.at(0);
+        const entry = data?.dashboardMetricSummary.at(0);
         if (!entry) {
             return undefined;
         }
 
-        const { interval, type, entries } = entry;
+        const { type, entries } = entry;
 
-        const values = entries.map(({ label, value }) => ({
+        const values = entries.map(({ label, value }: { label: string; value: number }) => ({
             name: formatDate(label, { month: 'short', day: 'numeric' }),
             sales: value,
         }));
 
         return {
             values,
-            interval,
             type,
         };
-    }, [data]);
+    }, [data, formatDate]);
 
     return (
         <DashboardBaseWidget
             id="metrics-widget"
-            title="Metrics"
-            description="Metrics widget"
+            title={t`Metrics`}
+            description={t`Order metrics`}
             actions={
-                <Tabs defaultValue={dataType} onValueChange={value => setDataType(value as DATA_TYPES)}>
-                    <TabsList>
-                        <TabsTrigger value={DATA_TYPES.OrderCount}>Order Count</TabsTrigger>
-                        <TabsTrigger value={DATA_TYPES.OrderTotal}>Order Total</TabsTrigger>
-                        <TabsTrigger value={DATA_TYPES.AverageOrderValue}>Average Order Value</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <div className="flex gap-1">
+                    <Tabs defaultValue={dataType} onValueChange={value => setDataType(value as DATA_TYPES)}>
+                        <TabsList>
+                            <TabsTrigger value={DATA_TYPES.OrderCount}><Trans>Order Count</Trans></TabsTrigger>
+                            <TabsTrigger value={DATA_TYPES.OrderTotal}><Trans>Order Total</Trans></TabsTrigger>
+                            <TabsTrigger value={DATA_TYPES.AverageOrderValue}>
+                                <Trans>Average Order Value</Trans>
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Button variant={'ghost'} onClick={() => refetch()}>
+                        <RefreshCw className={isRefetching ? 'animate-rotate' : ''} />
+                    </Button>
+                </div>
             }
         >
             {chartData && (

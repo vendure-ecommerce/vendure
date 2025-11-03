@@ -1,11 +1,11 @@
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useGroupedPermissions } from '@/hooks/use-grouped-permissions.js';
-import { useLingui } from '@/lib/trans.js';
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useGroupedPermissions } from '@/vdb/hooks/use-grouped-permissions.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 
 const rolesByIdDocument = graphql(`
@@ -28,7 +28,7 @@ interface RolePermissionsDisplayProps {
     value: string[];
 }
 
-export function RolePermissionsDisplay({ value = [] }: RolePermissionsDisplayProps) {
+export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsDisplayProps>) {
     const { i18n } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 
@@ -46,9 +46,9 @@ export function RolePermissionsDisplay({ value = [] }: RolePermissionsDisplayPro
 
     const roles = data?.roles.items ?? [];
 
-    const allChannels = roles.flatMap(role => role.channels).filter((channel, index, self) =>
-        index === self.findIndex((t) => t.code === channel.code),
-    );
+    const allChannels = roles
+        .flatMap(role => role.channels)
+        .filter((channel, index, self) => index === self.findIndex(t => t.code === channel.code));
 
     const isPermissionEnabled = (permissionName: string, channelCode: string) => {
         // Check if any role has this permission for this channel
@@ -87,7 +87,9 @@ export function RolePermissionsDisplay({ value = [] }: RolePermissionsDisplayPro
                                 {groupedPermissions.map((group, idx) => (
                                     <tr
                                         key={group.label}
-                                        className={idx !== groupedPermissions.length - 1 ? 'border-b' : undefined}
+                                        className={
+                                            idx !== groupedPermissions.length - 1 ? 'border-b' : undefined
+                                        }
                                     >
                                         <td className="p-4">
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -106,9 +108,7 @@ export function RolePermissionsDisplay({ value = [] }: RolePermissionsDisplayPro
                                                         <TooltipProvider>
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
-                                                                    <label
-                                                                        className="text-sm cursor-default"
-                                                                    >
+                                                                    <label className="text-sm cursor-default">
                                                                         {i18n.t(permission.name)}
                                                                     </label>
                                                                 </TooltipTrigger>

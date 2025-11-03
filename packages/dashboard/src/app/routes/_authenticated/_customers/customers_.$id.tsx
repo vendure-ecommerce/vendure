@@ -1,9 +1,9 @@
-import { CustomerGroupChip } from '@/components/shared/customer-group-chip.js';
-import { CustomerGroupSelector } from '@/components/shared/customer-group-selector.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
+import { CustomerGroupChip } from '@/vdb/components/shared/customer-group-chip.js';
+import { CustomerGroupSelector } from '@/vdb/components/shared/customer-group-selector.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -11,9 +11,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { Input } from '@/components/ui/input.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -23,11 +23,11 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { api } from '@/graphql/api.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
@@ -47,12 +47,15 @@ import {
     updateCustomerDocument,
 } from './customers.graphql.js';
 
+const pageId = 'customer-detail';
+
 export const Route = createFileRoute('/_authenticated/_customers/customers_/$id')({
     component: CustomerDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: customerDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/customers', label: 'Customers' },
+            { path: '/customers', label: <Trans>Customers</Trans> },
             isNew ? <Trans>New customer</Trans> : `${entity?.firstName} ${entity?.lastName}`,
         ],
     }),
@@ -63,10 +66,11 @@ function CustomerDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [newAddressOpen, setNewAddressOpen] = useState(false);
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        pageId,
         queryDocument: customerDetailDocument,
         createDocument: createCustomerDocument,
         updateDocument: updateCustomerDocument,
@@ -85,19 +89,21 @@ function CustomerDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
-                toast.success(i18n.t('Successfully updated customer'));
+                toast.success(
+                    creatingNewEntity ? t`Successfully created customer` : t`Successfully updated customer`,
+                );
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t('Failed to update customer'), {
+                toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update customer'), {
+            toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -110,7 +116,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast.error(i18n.t('Failed to create address'));
+            toast.error(t`Failed to create address`);
         },
     });
 
@@ -120,7 +126,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to add customer to group'));
+            toast(t`Failed to add customer to group`);
         },
     });
 
@@ -130,14 +136,14 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to remove customer from group'));
+            toast(t`Failed to remove customer from group`);
         },
     });
 
     const customerName = entity ? `${entity.firstName} ${entity.lastName}` : '';
 
     return (
-        <Page pageId="customer-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New customer</Trans> : customerName}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -146,7 +152,7 @@ function CustomerDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

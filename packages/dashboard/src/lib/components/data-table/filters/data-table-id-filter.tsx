@@ -1,11 +1,9 @@
-import { Trans } from "@/lib/trans.js";
+import { Select, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 
-import { Select, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select.js";
-
-import { SelectContent } from "@/components/ui/select.js";
-import { Input } from "@/components/ui/input.js";
-import { useEffect, useState } from "react";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { Input } from '@/vdb/components/ui/input.js';
+import { SelectContent } from '@/vdb/components/ui/select.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableIdFilterProps {
     value: Record<string, any> | undefined;
@@ -14,7 +12,7 @@ export interface DataTableIdFilterProps {
 
 export const ID_OPERATORS = ['eq', 'notEq', 'in', 'notIn', 'isNull'] as const;
 
-export function DataTableIdFilter({ value: incomingValue, onChange }: DataTableIdFilterProps) {
+export function DataTableIdFilter({ value: incomingValue, onChange }: Readonly<DataTableIdFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');
@@ -25,7 +23,10 @@ export function DataTableIdFilter({ value: incomingValue, onChange }: DataTableI
             onChange({ [operator]: true });
         } else if (operator === 'in' || operator === 'notIn') {
             // Split by comma and trim whitespace
-            const values = value.split(',').map(v => v.trim()).filter(v => v);
+            const values = value
+                .split(',')
+                .map(v => v.trim())
+                .filter(v => v);
             onChange({ [operator]: values });
         } else {
             onChange({ [operator]: value });
@@ -48,7 +49,11 @@ export function DataTableIdFilter({ value: incomingValue, onChange }: DataTableI
             </Select>
             {operator !== 'isNull' && (
                 <Input
-                    placeholder={operator === 'in' || operator === 'notIn' ? "Enter comma-separated IDs..." : "Enter ID..."}
+                    placeholder={
+                        operator === 'in' || operator === 'notIn'
+                            ? 'Enter comma-separated IDs...'
+                            : 'Enter ID...'
+                    }
                     value={value}
                     onChange={e => setValue(e.target.value)}
                 />

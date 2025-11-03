@@ -1,3 +1,4 @@
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Sheet,
     SheetContent,
@@ -5,11 +6,10 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from '@/components/ui/sheet.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/sheet.js';
+import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { CustomerGroupMembersTable } from './customer-group-members-table.js';
-import { Button } from '@/components/ui/button.js';
 
 export interface CustomerGroupMembersSheetProps {
     customerGroupName: string;
@@ -17,7 +17,11 @@ export interface CustomerGroupMembersSheetProps {
     children?: React.ReactNode;
 }
 
-export function CustomerGroupMembersSheet({ customerGroupName, customerGroupId, children }: CustomerGroupMembersSheetProps) {
+export function CustomerGroupMembersSheet({
+    customerGroupName,
+    customerGroupId,
+    children,
+}: CustomerGroupMembersSheetProps) {
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -32,7 +36,10 @@ export function CustomerGroupMembersSheet({ customerGroupName, customerGroupId, 
                         <Trans>Customer group members for {customerGroupName}</Trans>
                     </SheetTitle>
                     <SheetDescription>
-                        <Trans>These are the customers in the <strong>{customerGroupName}</strong> customer group.</Trans>
+                        <Trans>
+                            These are the customers in the <strong>{customerGroupName}</strong> customer
+                            group.
+                        </Trans>
                     </SheetDescription>
                 </SheetHeader>
                 <div className="px-4">

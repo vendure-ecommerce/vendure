@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button.js";
-import { cn } from "@/lib/utils.js";
-import { Crosshair, X } from "lucide-react";
-import { useRef, useState } from "react";
-import { DndContext, useDraggable } from "@dnd-kit/core";
-import { restrictToParentElement } from "@dnd-kit/modifiers";
-import { CSS } from "@dnd-kit/utilities";
-import { Trans } from "@/lib/trans.js";
+import { Button } from '@/vdb/components/ui/button.js';
+import { Trans } from '@lingui/react/macro';
+import { cn } from '@/vdb/lib/utils.js';
+import { DndContext, useDraggable } from '@dnd-kit/core';
+import { restrictToParentElement } from '@dnd-kit/modifiers';
+import { CSS } from '@dnd-kit/utilities';
+import { Crosshair, X } from 'lucide-react';
+import { useState } from 'react';
 
 export interface AssetFocalPointEditorProps {
     settingFocalPoint: boolean;
@@ -17,19 +17,21 @@ export interface AssetFocalPointEditorProps {
     children?: React.ReactNode;
 }
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }
 
 function DraggableFocalPoint({ point }: { point: Point }) {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-        id: "focal-point",
+        id: 'focal-point',
     });
     const style = {
         left: `${point.x * 100}%`,
         top: `${point.y * 100}%`,
-        transform: isDragging ? `translate(-50%, -50%) ${CSS.Translate.toString(transform)}` : `translate(-50%, -50%)`,
+        transform: isDragging
+            ? `translate(-50%, -50%) ${CSS.Translate.toString(transform)}`
+            : `translate(-50%, -50%)`,
     };
 
     return (
@@ -43,8 +45,15 @@ function DraggableFocalPoint({ point }: { point: Point }) {
     );
 }
 
-export function AssetFocalPointEditor({ settingFocalPoint, focalPoint, width, height, onFocalPointChange, onCancel, children }: AssetFocalPointEditorProps) {
-
+export function AssetFocalPointEditor({
+    settingFocalPoint,
+    focalPoint,
+    width,
+    height,
+    onFocalPointChange,
+    onCancel,
+    children,
+}: AssetFocalPointEditorProps) {
     const [focalPointCurrent, setFocalPointCurrent] = useState<Point>(focalPoint ?? { x: 0.5, y: 0.5 });
 
     const handleDragEnd = (event: any) => {
@@ -67,9 +76,7 @@ export function AssetFocalPointEditor({ settingFocalPoint, focalPoint, width, he
                 {children}
                 {settingFocalPoint && (
                     <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
-                        <DraggableFocalPoint
-                            point={focalPointCurrent}
-                        />
+                        <DraggableFocalPoint point={focalPointCurrent} />
                     </DndContext>
                 )}
             </div>
@@ -80,9 +87,12 @@ export function AssetFocalPointEditor({ settingFocalPoint, focalPoint, width, he
                         <X className="mr-2 h-4 w-4" />
                         <Trans>Cancel</Trans>
                     </Button>
-                    <Button type="button" onClick={() => {
-                        onFocalPointChange(focalPointCurrent);
-                    }}>
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            onFocalPointChange(focalPointCurrent);
+                        }}
+                    >
                         <Crosshair className="mr-2 h-4 w-4" />
                         <Trans>Set Focal Point</Trans>
                     </Button>

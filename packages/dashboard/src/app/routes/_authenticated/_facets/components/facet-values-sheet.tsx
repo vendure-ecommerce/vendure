@@ -1,3 +1,4 @@
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Sheet,
     SheetContent,
@@ -5,11 +6,10 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from '@/components/ui/sheet.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/sheet.js';
+import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { FacetValuesTable } from './facet-values-table.js';
-import { Button } from '@/components/ui/button.js';
 
 export interface FacetValuesSheetProps {
     facetName: string;
@@ -17,7 +17,7 @@ export interface FacetValuesSheetProps {
     children?: React.ReactNode;
 }
 
-export function FacetValuesSheet({ facetName, facetId, children }: FacetValuesSheetProps) {
+export function FacetValuesSheet({ facetName, facetId, children }: Readonly<FacetValuesSheetProps>) {
     return (
         <Sheet>
             <SheetTrigger asChild>

@@ -1,11 +1,17 @@
-import { Button } from '@/components/ui/button.js';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    Command,
+    CommandEmpty,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 const sellerListDocument = graphql(`
@@ -42,9 +48,11 @@ export function SellerSelector(props: SellerSelectorProps) {
             api.query(sellerListDocument, {
                 options: {
                     sort: { name: 'ASC' },
-                    filter: searchTerm ? {
-                        name: { contains: searchTerm },
-                    } : undefined,  
+                    filter: searchTerm
+                        ? {
+                              name: { contains: searchTerm },
+                          }
+                        : undefined,
                 },
             }),
         staleTime: 1000 * 60, // 1 minute
@@ -73,19 +81,15 @@ export function SellerSelector(props: SellerSelectorProps) {
             <PopoverContent className="p-0 w-[350px]" align="start">
                 <Command shouldFilter={false}>
                     <div className="flex items-center border-b px-3">
-                        <CommandInput 
-                            placeholder="Search sellers..." 
+                        <CommandInput
+                            placeholder="Search sellers..."
                             onValueChange={handleSearch}
                             className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
                         />
                     </div>
                     <CommandList>
                         <CommandEmpty>
-                            {isLoading ? (
-                                <Trans>Loading...</Trans>
-                            ) : (
-                                <Trans>No sellers found</Trans>
-                            )}
+                            {isLoading ? <Trans>Loading...</Trans> : <Trans>No sellers found</Trans>}
                         </CommandEmpty>
                         {data?.sellers.items.map(seller => (
                             <CommandItem

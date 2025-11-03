@@ -1,4 +1,7 @@
-import { FieldInfo, getListQueryFields } from '@/framework/document-introspection/get-document-structure.js';
+import {
+    FieldInfo,
+    getListQueryFields,
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { DocumentNode } from 'graphql';
 import { useMemo } from 'react';
 

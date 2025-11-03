@@ -1,6 +1,7 @@
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 
-import { PageBreadcrumb } from '@/components/layout/generated-breadcrumbs.js';
+import { PageBreadcrumb } from '@/vdb/components/layout/generated-breadcrumbs.js';
+import { extendDetailFormQuery } from '@/vdb/framework/document-extension/extend-detail-form-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { FileBaseRouteOptions, ParsedLocation } from '@tanstack/react-router';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
@@ -9,6 +10,12 @@ import { DetailEntity } from './page-types.js';
 import { getDetailQueryOptions } from './use-detail-page.js';
 
 export interface DetailPageRouteLoaderConfig<T extends TypedDocumentNode<any, any>> {
+    /**
+     * @description
+     * The pageId is used to ensure any detail form extensions (such as extensions to
+     * the detail query document) get correctly applied at the route loader level.
+     */
+    pageId?: string;
     queryDocument: T;
     breadcrumb: (
         isNew: boolean,
@@ -18,6 +25,7 @@ export interface DetailPageRouteLoaderConfig<T extends TypedDocumentNode<any, an
 }
 
 export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
+    pageId,
     queryDocument,
     breadcrumb,
 }: DetailPageRouteLoaderConfig<T>) {
@@ -34,10 +42,14 @@ export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
             throw new Error('ID param is required');
         }
         const isNew = params.id === NEW_ENTITY_PATH;
+        const { extendedQuery: extendedQueryDocument } = extendDetailFormQuery(
+            addCustomFields(queryDocument),
+            pageId,
+        );
         const result = isNew
             ? null
             : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(queryDocument), { id: params.id }),
+                  getDetailQueryOptions(extendedQueryDocument, { id: params.id }),
                   { id: params.id },
               );
 

@@ -2,9 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
-import { FacetValue, FacetValueSelector } from '@/components/shared/facet-value-selector.js';
-import { Button } from '@/components/ui/button.js';
+import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
+import { FacetValue, FacetValueSelector } from '@/vdb/components/shared/facet-value-selector.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -12,21 +12,16 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { api } from '@/graphql/api.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
-import { getDetailQueryOptions } from '@/framework/page/use-detail-page.js';
-import {
-    getProductsWithFacetValuesByIdsDocument,
-    productDetailDocument,
-    updateProductsDocument,
-} from '../products.graphql.js';
+import { getDetailQueryOptions } from '@/vdb/framework/page/use-detail-page.js';
 
-interface ProductWithFacetValues {
+interface EntityWithFacetValues {
     id: string;
     name: string;
+    sku?: string;
     facetValues: Array<{
         id: string;
         name: string;
@@ -42,46 +37,55 @@ interface ProductWithFacetValues {
 interface AssignFacetValuesDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    productIds: string[];
+    entityIds: string[];
+    entityType: 'products' | 'variants';
+    queryFn: (variables: any) => Promise<ResultOf<any>>;
+    mutationFn: (variables: any) => Promise<ResultOf<any>>;
+    detailDocument: any;
     onSuccess?: () => void;
 }
 
 export function AssignFacetValuesDialog({
     open,
     onOpenChange,
-    productIds,
+    entityIds,
+    entityType,
+    queryFn,
+    mutationFn,
+    detailDocument,
     onSuccess,
 }: AssignFacetValuesDialogProps) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [selectedValues, setSelectedValues] = useState<FacetValue[]>([]);
     const [facetValuesRemoved, setFacetValuesRemoved] = useState(false);
     const [removedFacetValues, setRemovedFacetValues] = useState<Set<string>>(new Set());
     const queryClient = useQueryClient();
+    const entityIdsLength = entityIds.length;
 
-    // Fetch existing facet values for the products
-    const { data: productsData, isLoading } = useQuery({
-        queryKey: ['productsWithFacetValues', productIds],
-        queryFn: () => api.query(getProductsWithFacetValuesByIdsDocument, { ids: productIds }),
-        enabled: open && productIds.length > 0,
+    // Fetch existing facet values for the entities
+    const { data: entitiesData, isLoading } = useQuery({
+        queryKey: [`${entityType}WithFacetValues`, entityIds],
+        queryFn: () => queryFn({ ids: entityIds }),
+        enabled: open && entityIds.length > 0,
     });
 
     const { mutate, isPending } = useMutation({
-        mutationFn: api.mutate(updateProductsDocument),
-        onSuccess: (result: ResultOf<typeof updateProductsDocument>) => {
-            toast.success(i18n.t(`Successfully updated facet values for ${productIds.length} products`));
+        mutationFn,
+        onSuccess: () => {
+            toast.success(t`Successfully updated facet values for ${entityIdsLength} ${entityType}`);
             onSuccess?.();
             onOpenChange(false);
             // Reset state
             setSelectedValues([]);
             setFacetValuesRemoved(false);
             setRemovedFacetValues(new Set());
-            productIds.forEach(id => {
-                const { queryKey } = getDetailQueryOptions(productDetailDocument, { id });
+            entityIds.forEach(id => {
+                const { queryKey } = getDetailQueryOptions(detailDocument, { id });
                 queryClient.removeQueries({ queryKey });
             });
         },
         onError: () => {
-            toast.error(`Failed to update facet values for ${productIds.length} products`);
+            toast.error(`Failed to update facet values for ${entityIdsLength} ${entityType}`);
         },
     });
 
@@ -91,18 +95,25 @@ export function AssignFacetValuesDialog({
             return;
         }
 
-        if (!productsData?.products.items) {
+        const items =
+            entityType === 'products'
+                ? (entitiesData as any)?.products?.items
+                : (entitiesData as any)?.productVariants?.items;
+
+        if (!items) {
             return;
         }
 
         const selectedFacetValueIds = selectedValues.map(sv => sv.id);
 
         mutate({
-            input: productsData.products.items.map(product => ({
-                id: product.id,
+            input: items.map((entity: EntityWithFacetValues) => ({
+                id: entity.id,
                 facetValueIds: [
                     ...new Set([
-                        ...product.facetValues.filter(fv => !removedFacetValues.has(fv.id)).map(fv => fv.id),
+                        ...entity.facetValues
+                            .filter((fv: any) => !removedFacetValues.has(fv.id))
+                            .map((fv: any) => fv.id),
                         ...selectedFacetValueIds,
                     ]),
                 ],
@@ -114,7 +125,7 @@ export function AssignFacetValuesDialog({
         setSelectedValues(prev => [...prev, facetValue]);
     };
 
-    const removeFacetValue = (productId: string, facetValueId: string) => {
+    const removeFacetValue = (entityId: string, facetValueId: string) => {
         setRemovedFacetValues(prev => new Set([...prev, facetValueId]));
         setFacetValuesRemoved(true);
     };
@@ -128,9 +139,14 @@ export function AssignFacetValuesDialog({
     };
 
     // Filter out removed facet values for display
-    const getDisplayFacetValues = (product: ProductWithFacetValues) => {
-        return product.facetValues.filter(fv => !removedFacetValues.has(fv.id));
+    const getDisplayFacetValues = (entity: EntityWithFacetValues) => {
+        return entity.facetValues.filter(fv => !removedFacetValues.has(fv.id));
     };
+
+    const items =
+        entityType === 'products'
+            ? (entitiesData as any)?.products?.items
+            : (entitiesData as any)?.productVariants?.items;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -140,7 +156,9 @@ export function AssignFacetValuesDialog({
                         <Trans>Edit facet values</Trans>
                     </DialogTitle>
                     <DialogDescription>
-                        <Trans>Add or remove facet values for {productIds.length} products</Trans>
+                        <Trans>
+                            Add or remove facet values for {entityIds.length} {entityType}
+                        </Trans>
                     </DialogDescription>
                 </DialogHeader>
 
@@ -156,33 +174,47 @@ export function AssignFacetValuesDialog({
                         />
                     </div>
 
-                    {/* Products table */}
+                    {/* Entities table */}
                     <div className="flex-1 overflow-auto">
                         {isLoading ? (
                             <div className="flex items-center justify-center py-8">
                                 <div className="text-sm text-muted-foreground">Loading...</div>
                             </div>
-                        ) : productsData?.products.items ? (
+                        ) : items ? (
                             <div className="border rounded-md">
                                 <table className="w-full">
                                     <thead className="bg-muted/50">
                                         <tr>
                                             <th className="text-left p-3 text-sm font-medium">
-                                                <Trans>Product</Trans>
+                                                <Trans>
+                                                    {entityType === 'products' ? 'Product' : 'Variant'}
+                                                </Trans>
                                             </th>
+                                            {entityType === 'variants' && (
+                                                <th className="text-left p-3 text-sm font-medium">
+                                                    <Trans>SKU</Trans>
+                                                </th>
+                                            )}
                                             <th className="text-left p-3 text-sm font-medium">
                                                 <Trans>Current facet values</Trans>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {productsData.products.items.map(product => {
-                                            const displayFacetValues = getDisplayFacetValues(product);
+                                        {items.map((entity: EntityWithFacetValues) => {
+                                            const displayFacetValues = getDisplayFacetValues(entity);
                                             return (
-                                                <tr key={product.id} className="border-t">
+                                                <tr key={entity.id} className="border-t">
                                                     <td className="p-3 align-top">
-                                                        <div className="font-medium">{product.name}</div>
+                                                        <div className="font-medium">{entity.name}</div>
                                                     </td>
+                                                    {entityType === 'variants' && (
+                                                        <td className="p-3 align-top">
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {entity.sku}
+                                                            </div>
+                                                        </td>
+                                                    )}
                                                     <td className="p-3">
                                                         <div className="flex flex-wrap gap-2">
                                                             {displayFacetValues.map(facetValue => (
@@ -192,7 +224,7 @@ export function AssignFacetValuesDialog({
                                                                     removable={true}
                                                                     onRemove={() =>
                                                                         removeFacetValue(
-                                                                            product.id,
+                                                                            entity.id,
                                                                             facetValue.id,
                                                                         )
                                                                     }

@@ -1,5 +1,5 @@
-import { configurableOperationFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const shippingMethodItemFragment = graphql(`
     fragment ShippingMethodItem on ShippingMethod {
@@ -15,8 +15,8 @@ export const shippingMethodItemFragment = graphql(`
 
 export const shippingMethodListQuery = graphql(
     `
-        query ShippingMethodList {
-            shippingMethods {
+        query ShippingMethodList($options: ShippingMethodListOptions) {
+            shippingMethods(options: $options) {
                 items {
                     ...ShippingMethodItem
                 }
@@ -78,6 +78,60 @@ export const deleteShippingMethodDocument = graphql(`
         deleteShippingMethod(id: $id) {
             result
             message
+        }
+    }
+`);
+
+export const deleteShippingMethodsDocument = graphql(`
+    mutation DeleteShippingMethods($ids: [ID!]!) {
+        deleteShippingMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignShippingMethodsToChannelDocument = graphql(`
+    mutation AssignShippingMethodsToChannel($input: AssignShippingMethodsToChannelInput!) {
+        assignShippingMethodsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removeShippingMethodsFromChannelDocument = graphql(`
+    mutation RemoveShippingMethodsFromChannel($input: RemoveShippingMethodsFromChannelInput!) {
+        removeShippingMethodsFromChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const testEligibleShippingMethodsDocument = graphql(`
+    query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
+        testEligibleShippingMethods(input: $input) {
+            id
+            name
+            code
+            description
+            price
+            priceWithTax
+            metadata
+        }
+    }
+`);
+
+export const testShippingMethodDocument = graphql(`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            quote {
+                price
+                priceWithTax
+                metadata
+            }
         }
     }
 `);

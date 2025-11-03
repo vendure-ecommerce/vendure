@@ -1,15 +1,15 @@
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Sheet,
     SheetContent,
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger
-} from '@/components/ui/sheet.js';
-import { Trans } from '@/lib/trans.js';
+    SheetTrigger,
+} from '@/vdb/components/ui/sheet.js';
+import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { CollectionContentsTable } from './collection-contents-table.js';
-import { Button } from '@/components/ui/button.js';
 
 export interface CollectionContentsSheetProps {
     collectionId: string;
@@ -17,7 +17,11 @@ export interface CollectionContentsSheetProps {
     children?: React.ReactNode;
 }
 
-export function CollectionContentsSheet({ collectionId, collectionName, children }: CollectionContentsSheetProps) {
+export function CollectionContentsSheet({
+    collectionId,
+    collectionName,
+    children,
+}: CollectionContentsSheetProps) {
     return (
         <Sheet>
             <SheetTrigger asChild>

@@ -1,10 +1,9 @@
-import { useFieldArray } from "react-hook-form";
-import { useFormContext } from "react-hook-form";
-import { useState } from "react";
-import { Input } from "@/components/ui/input.js";
-import { Button } from "@/components/ui/button.js";
-import { Badge } from "@/components/ui/badge.js";
-import { Plus, X } from "lucide-react";
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Plus, X } from 'lucide-react';
+import { useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
 interface OptionValue {
     value: string;
@@ -16,12 +15,15 @@ interface FormValues {
         name: string;
         values: OptionValue[];
     }[];
-    variants: Record<string, {
-        enabled: boolean;
-        sku: string;
-        price: string;
-        stock: string;
-    }>;
+    variants: Record<
+        string,
+        {
+            enabled: boolean;
+            sku: string;
+            price: string;
+            stock: string;
+        }
+    >;
 }
 
 interface OptionValueInputProps {
@@ -29,8 +31,8 @@ interface OptionValueInputProps {
     disabled?: boolean;
 }
 
-export function OptionValueInput({ groupIndex, disabled = false }: OptionValueInputProps) {
-    const { control, watch } = useFormContext<FormValues>();
+export function OptionValueInput({ groupIndex, disabled = false }: Readonly<OptionValueInputProps>) {
+    const { control } = useFormContext<FormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `optionGroups.${groupIndex}.values`,

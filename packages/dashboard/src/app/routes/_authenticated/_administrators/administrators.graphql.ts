@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const administratorItemFragment = graphql(`
     fragment AdministratorItem on Administrator {
@@ -29,8 +29,8 @@ export const administratorItemFragment = graphql(`
 
 export const administratorListDocument = graphql(
     `
-        query AdministratorList {
-            administrators {
+        query AdministratorList($options: AdministratorListOptions) {
+            administrators(options: $options) {
                 items {
                     ...AdministratorItem
                 }
@@ -72,6 +72,15 @@ export const updateAdministratorDocument = graphql(`
 export const deleteAdministratorDocument = graphql(`
     mutation DeleteAdministrator($id: ID!) {
         deleteAdministrator(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteAdministratorsDocument = graphql(`
+    mutation DeleteAdministrators($ids: [ID!]!) {
+        deleteAdministrators(ids: $ids) {
             result
             message
         }

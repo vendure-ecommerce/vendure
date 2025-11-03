@@ -1,11 +1,11 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -15,20 +15,23 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { countryDetailQuery, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
+import { countryDetailDocument, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
+
+const pageId = 'country-detail';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries_/$id')({
     component: CountryDetailPage,
     loader: detailPageRouteLoader({
-        queryDocument: countryDetailQuery,
+        pageId,
+        queryDocument: countryDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/countries', label: 'Countries' },
+            { path: '/countries', label: <Trans>Countries</Trans> },
             isNew ? <Trans>New country</Trans> : entity?.name,
         ],
     }),
@@ -39,10 +42,11 @@ function CountryDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: countryDetailQuery,
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
+        queryDocument: countryDetailDocument,
         createDocument: createCountryDocument,
         updateDocument: updateCountryDocument,
         setValuesForUpdate: entity => {
@@ -57,21 +61,21 @@ function CountryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated country'));
+            toast(creatingNewEntity ? t`Successfully created country` : t`Successfully updated country`);
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update country'), {
+            toast(creatingNewEntity ? t`Failed to create country` : t`Failed to update country`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
     });
 
     return (
-        <Page pageId="country-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -80,7 +84,7 @@ function CountryDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

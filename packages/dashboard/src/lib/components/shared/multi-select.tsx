@@ -1,8 +1,8 @@
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { Badge } from '@/components/ui/badge.js';
-import { X, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils.js';
-import { Button } from '@/components/ui/button.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { cn } from '@/vdb/lib/utils.js';
+import { ChevronDown, X } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '../ui/input.js';
 
@@ -63,7 +63,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
 
     const renderTrigger = () => {
         if (multiple) {
-            const selectedValues = value as string[];
+            const selectedValues: string[] = typeof value === 'string' ? [value] : value;
             return (
                 <Button
                     variant="outline"
@@ -71,7 +71,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
                     className={cn(
                         'w-full justify-between',
                         'min-h-[2.5rem] h-auto',
-                        'flex flex-wrap gap-1 p-1',
+                        'flex flex-wrap gap-1 p-1 shadow-xs',
                         className,
                     )}
                 >

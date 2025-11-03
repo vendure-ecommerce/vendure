@@ -2,8 +2,6 @@ import { PluginFunction } from '@graphql-codegen/plugin-helpers';
 import { buildScalars } from '@graphql-codegen/visitor-plugin-common';
 import {
     ASTNode,
-    ASTVisitor,
-    FieldDefinitionNode,
     getNamedType,
     GraphQLFieldMap,
     GraphQLNamedType,
@@ -11,18 +9,13 @@ import {
     GraphQLSchema,
     GraphQLType,
     GraphQLUnionType,
-    InterfaceTypeDefinitionNode,
-    isNamedType,
     isObjectType,
     isTypeDefinitionNode,
     isUnionType,
     Kind,
-    ListTypeNode,
-    NonNullTypeNode,
     ObjectTypeDefinitionNode,
     parse,
     printSchema,
-    UnionTypeDefinitionNode,
     visit,
 } from 'graphql';
 import { ASTVisitFn } from 'graphql/language/visitor';
@@ -44,8 +37,8 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
             return node.type.kind === 'NamedType'
                 ? node.type.name.value
                 : node.type.kind === 'ListType'
-                ? node.type
-                : '';
+                  ? node.type
+                  : '';
         }
         case Kind.FIELD_DEFINITION: {
             const type = (node.type.kind === 'ListType' ? node.type.type : node.type) as unknown as string;
@@ -177,11 +170,17 @@ function generateTypeResolvers(schema: GraphQLSchema) {
         if (!typesHandled.has(returnType.name)) {
             typesHandled.add(returnType.name);
             const nonErrorResult = returnType.getTypes().find(t => !inheritsFromErrorResult(t));
+            if (!nonErrorResult) {
+                throw new Error(
+                    `The type "${returnType.name}" seems to be a union of only ErrorResult types. ` +
+                        `This is not a valid union in Vendure, as it should also contain a non-error result type.`,
+                );
+            }
             result.push(
                 `  ${returnType.name}: {`,
                 `    __resolveType(value: any) {`,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                `      return isGraphQLError(value) ? (value as any).__typename : '${nonErrorResult!.name}';`,
+                `      return isGraphQLError(value) ? (value as any).__typename : '${nonErrorResult.name}';`,
                 `    },`,
                 `  },`,
             );
@@ -201,7 +200,7 @@ function getOperationsThatReturnErrorUnions(schema: GraphQLSchema, fields: Graph
     });
 }
 
-function isUnionOfResultAndErrors(schema: GraphQLSchema, types: ReadonlyArray<GraphQLObjectType>) {
+function isUnionOfResultAndErrors(schema: GraphQLSchema, types: readonly GraphQLObjectType[]) {
     const errorResultTypes = types.filter(type => {
         if (isObjectType(type)) {
             if (inheritsFromErrorResult(type)) {
@@ -210,7 +209,7 @@ function isUnionOfResultAndErrors(schema: GraphQLSchema, types: ReadonlyArray<Gr
         }
         return false;
     });
-    return (errorResultTypes.length = types.length - 1);
+    return errorResultTypes.length === types.length - 1;
 }
 
 function isObjectTypeDefinition(node: any): node is ObjectTypeDefinitionNode {

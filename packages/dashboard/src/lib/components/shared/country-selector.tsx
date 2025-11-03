@@ -1,9 +1,15 @@
-import { Button } from '@/components/ui/button.js';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    Command,
+    CommandEmpty,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
@@ -43,10 +49,12 @@ export function CountrySelector(props: CountrySelectorProps) {
             api.query(countryListDocument, {
                 options: {
                     sort: { name: 'ASC' },
-                    filter: searchTerm ? {
-                        name: { contains: searchTerm },
-                        code: { contains: searchTerm },
-                    } : undefined,
+                    filter: searchTerm
+                        ? {
+                              name: { contains: searchTerm },
+                              code: { contains: searchTerm },
+                          }
+                        : undefined,
                     filterOperator: searchTerm ? 'OR' : undefined,
                 },
             }),
@@ -69,19 +77,15 @@ export function CountrySelector(props: CountrySelectorProps) {
                 <Command shouldFilter={false}>
                     <div className="flex items-center border-b px-3">
                         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                        <CommandInput 
-                            placeholder="Search countries..." 
+                        <CommandInput
+                            placeholder="Search countries..."
                             onValueChange={handleSearch}
                             className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
                         />
                     </div>
                     <CommandList>
                         <CommandEmpty>
-                            {isLoading ? (
-                                <Trans>Loading...</Trans>
-                            ) : (
-                                <Trans>No countries found</Trans>
-                            )}
+                            {isLoading ? <Trans>Loading...</Trans> : <Trans>No countries found</Trans>}
                         </CommandEmpty>
                         {data?.countries.items.map(country => (
                             <CommandItem
@@ -102,4 +106,3 @@ export function CountrySelector(props: CountrySelectorProps) {
         </Popover>
     );
 }
-

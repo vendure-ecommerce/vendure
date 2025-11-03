@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
     return (
@@ -44,4 +44,4 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
     return <div data-slot="card-footer" className={cn('flex items-center p-6 pt-0', className)} {...props} />;
 }
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };

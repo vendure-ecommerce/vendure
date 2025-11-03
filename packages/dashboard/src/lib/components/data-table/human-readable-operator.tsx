@@ -1,4 +1,4 @@
-import { Trans } from '@/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { BOOLEAN_OPERATORS } from './filters/data-table-boolean-filter.js';
 import { DATETIME_OPERATORS } from './filters/data-table-datetime-filter.js';
 import { ID_OPERATORS } from './filters/data-table-id-filter.js';

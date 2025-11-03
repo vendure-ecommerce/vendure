@@ -61,19 +61,21 @@ export class StockMovementService {
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
         productVariantId: ID,
-        options: StockMovementListOptions,
+        options?: StockMovementListOptions,
     ): Promise<PaginatedList<StockMovement>> {
-        return this.listQueryBuilder
+        const qb = this.listQueryBuilder
             .build<StockMovement>(StockMovement as any, options, { ctx })
             .leftJoin('stockmovement.productVariant', 'productVariant')
-            .andWhere('productVariant.id = :productVariantId', { productVariantId })
-            .getManyAndCount()
-            .then(async ([items, totalItems]) => {
-                return {
-                    items,
-                    totalItems,
-                };
-            });
+            .andWhere('productVariant.id = :productVariantId', { productVariantId });
+
+        if (options?.type) {
+            qb.andWhere('stockmovement.type = :type', { type: options.type });
+        }
+
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items,
+            totalItems,
+        }));
     }
 
     /**

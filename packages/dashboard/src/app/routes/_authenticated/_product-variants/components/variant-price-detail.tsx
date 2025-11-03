@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { Money } from '@/vdb/components/data-display/money.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
-import { Trans } from '@/lib/trans.js';
-import { graphql } from '@/graphql/graphql.js';
-import { api } from '@/graphql/api.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { Money } from '@/components/data-display/money.js';
+import { useEffect, useState } from 'react';
 
 const taxRatesDocument = graphql(`
     query TaxRates($options: TaxRateListOptions) {
@@ -22,6 +22,7 @@ const taxRatesDocument = graphql(`
         }
     }
 `);
+
 interface VariantPriceDetailProps {
     priceIncludesTax: boolean;
     price: number | undefined;

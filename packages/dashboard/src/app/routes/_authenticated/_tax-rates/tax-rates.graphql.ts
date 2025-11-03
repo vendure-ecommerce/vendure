@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const taxRateItemFragment = graphql(`
     fragment TaxRateItem on TaxRate {
@@ -37,7 +37,7 @@ export const taxRateListQuery = graphql(
     [taxRateItemFragment],
 );
 
-export const taxRateDetailQuery = graphql(
+export const taxRateDetailDocument = graphql(
     `
         query TaxRateDetail($id: ID!) {
             taxRate(id: $id) {
@@ -68,6 +68,15 @@ export const updateTaxRateDocument = graphql(`
 export const deleteTaxRateDocument = graphql(`
     mutation DeleteTaxRate($id: ID!) {
         deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteTaxRatesDocument = graphql(`
+    mutation DeleteTaxRates($ids: [ID!]!) {
+        deleteTaxRates(ids: $ids) {
             result
             message
         }

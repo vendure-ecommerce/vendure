@@ -1,5 +1,7 @@
 import { isObject } from '@vendure/common/lib/shared-utils';
 
+import { safeAssign } from '../../../common/safe-assign';
+
 /**
  * Merges properties into a target entity. This is needed for the cases in which a
  * property already exists on the target, but the hydrated version also contains that
@@ -28,8 +30,8 @@ export function mergeDeep<T extends { [key: string]: any }>(
             // If the array contains entities, we can use the id to match them up
             // so that we ensure that we don't merge properties from different entities
             // with the same index.
-            const aIds = a.map((e) => e.id);
-            const bIds = b.map((e) => e.id);
+            const aIds = a.map(e => e.id);
+            const bIds = b.map(e => e.id);
             if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
                 // The entities in the arrays are not in the same order, so we can't
                 // safely merge them. We need to sort the `b` array so that the entities
@@ -46,15 +48,29 @@ export function mergeDeep<T extends { [key: string]: any }>(
     }
 
     for (const [key, value] of Object.entries(b)) {
+        // Guard against prototype pollution - block dangerous property names
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            continue;
+        }
+
         if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
             if (Array.isArray(value) || isObject(value)) {
                 // Skip if we detect a circular reference
                 if (isObject(value) && visited.has(value)) {
                     continue;
                 }
-                (a as any)[key] = mergeDeep(a?.[key], b[key], visited);
+                // Only merge recursively if the property exists as an own property in the destination object
+                if (
+                    Object.prototype.hasOwnProperty.call(a, key) &&
+                    (Array.isArray(a[key]) || isObject(a[key]))
+                ) {
+                    const mergedValue = mergeDeep(a[key], b[key], visited);
+                    safeAssign(a, key, mergedValue);
+                } else {
+                    safeAssign(a, key, value);
+                }
             } else {
-                (a as any)[key] = b[key];
+                safeAssign(a, key, value);
             }
         }
     }

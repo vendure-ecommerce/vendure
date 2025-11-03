@@ -5,10 +5,10 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '../ui/skeleton.js';
 
@@ -29,7 +29,7 @@ export interface TaxCategorySelectorProps {
     onChange: (value: string) => void;
 }
 
-export function TaxCategorySelector({ value, onChange }: TaxCategorySelectorProps) {
+export function TaxCategorySelector({ value, onChange }: Readonly<TaxCategorySelectorProps>) {
     const { data, isLoading, isPending, status } = useQuery({
         queryKey: ['taxCategories'],
         staleTime: 1000 * 60 * 5,

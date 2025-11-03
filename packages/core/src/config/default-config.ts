@@ -29,6 +29,7 @@ import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-str
 import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
+import { DefaultSlugStrategy } from './entity/default-slug-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
@@ -49,6 +50,7 @@ import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
 import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
+import { cleanOrphanedSettingsStoreTask } from './settings-store/clean-orphaned-settings-store-task';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
@@ -86,6 +88,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             origin: true,
             credentials: true,
         },
+        trustProxy: false,
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
@@ -145,6 +148,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,
         metadataModifiers: [],
+        slugStrategy: new DefaultSlugStrategy(),
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
@@ -198,7 +202,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
-        tasks: [cleanSessionsTask],
+        tasks: [cleanSessionsTask, cleanOrphanedSettingsStoreTask],
         runTasksInWorkerOnly: true,
     },
     customFields: {
@@ -238,6 +242,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
         Zone: [],
     },
+    settingsStoreFields: {},
     plugins: [],
     systemOptions: {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),

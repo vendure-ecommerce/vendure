@@ -1,5 +1,5 @@
 ---
-description: Dashboard package 
+description: Dashboard package
 globs: packages/dashboard/**/*
 alwaysApply: false
 ---
@@ -82,7 +82,7 @@ export function MyComponent() {
     });
 
 
-   // ... 
+   // ...
 
    function handleClick() {
         // variables are passed here
@@ -112,7 +112,12 @@ are CRUD list/detail pages.
 - A representative list page is [administrators.tsx](mdc:packages/dashboard/src/app/routes/_authenticated/_administrators/administrators.tsx)
 - A representative detail page is [administrators_.$id.tsx](mdc:packages/dashboard/src/app/routes/_authenticated/_administrators/administrators_.$id.tsx)
 
-These examples show the common components, hooks and patterns that should be used across the app.
+These examples show the common components, hooks and patterns that should be used across the app
+
+**Important** All the files in the /src/app/routes/ dir are interpreted as routes by Tanstack
+Router. The exception is any file in a `/components`, `/hooks` dir, or any file ending `.graphql.ts`. So
+don't just create new directories and files that do not fit this pattern otherwise Tanstack router
+will break.
 
 In the "lib" context, we try to re-use components from the /src/lib/components dir, including preferring the Shadcn components
 as much as possible from the /src/lib/components/ui dir.
@@ -140,7 +145,7 @@ Please prefer this form over the raw Shadcn components where possible.
 Any labels or user-facing messages should use localization following this example:
 
 ```tsx
-import { Trans, useLingui } from '@/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 
 export function MyComponent() {
@@ -154,5 +159,15 @@ export function MyComponent() {
             <Trans>This is a localized string in the markup</Trans>
         </div>
     )
+}
+```
+
+## Typing React Components
+
+React components should have their props objects set to `Readonly<>`, for instance:
+
+```ts
+export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetailsProps>) {
+  //...
 }
 ```

@@ -1,6 +1,7 @@
-import { onExtensionSourceChange } from '@/framework/extension-api/define-dashboard-extension.js';
 import { useEffect, useState } from 'react';
 import { runDashboardExtensions } from 'virtual:dashboard-extensions';
+
+import { onExtensionSourceChange } from './define-dashboard-extension.js';
 
 /**
  * @description

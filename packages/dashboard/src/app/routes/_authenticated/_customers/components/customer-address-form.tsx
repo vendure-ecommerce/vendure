@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import {
     Form,
     FormControl,
@@ -8,15 +8,15 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
+} from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
-import { ControllerRenderProps, FieldPath, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { addressFragment } from '../customers.graphql.js';
 
@@ -58,8 +58,8 @@ interface CustomerAddressFormProps {
     onCancel?: () => void;
 }
 
-export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAddressFormProps) {
-    const { i18n } = useLingui();
+export function CustomerAddressForm({ address, onSubmit, onCancel }: Readonly<CustomerAddressFormProps>) {
+    const { t } = useLingui();
 
     // Fetch available countries
     const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
@@ -246,7 +246,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={i18n.t('Select a country')} />
+                                            <SelectValue placeholder={t`Select a country`} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>

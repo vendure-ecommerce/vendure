@@ -1,13 +1,14 @@
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
+import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -17,10 +18,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PromotionActionsSelector } from './components/promotion-actions-selector.js';
@@ -31,13 +32,16 @@ import {
     updatePromotionDocument,
 } from './promotions.graphql.js';
 
+const pageId = 'promotion-detail';
+
 export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$id')({
     component: PromotionDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: promotionDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/promotions', label: 'Promotions' },
+                { path: '/promotions', label: <Trans>Promotions</Trans> },
                 isNew ? <Trans>New promotion</Trans> : entity?.name,
             ];
         },
@@ -49,9 +53,10 @@ function PromotionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: promotionDetailDocument,
         createDocument: createPromotionDocument,
         transformCreateInput: values => {
@@ -95,26 +100,31 @@ function PromotionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Promotion') {
-                toast.success(i18n.t('Successfully updated promotion'));
+                toast.success(
+                    creatingNewEntity ? t`Successfully created promotion` : t`Successfully updated promotion`,
+                );
                 resetForm();
                 if (creatingNewEntity) {
-                    await navigate({ to: `../${data.id}`, from: Route.id });
+                    await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t('Failed to update promotion'), {
-                    description: data.message,
-                });
+                toast.error(
+                    creatingNewEntity ? t`Failed to create promotion` : t`Failed to update promotion`,
+                    {
+                        description: data.message,
+                    },
+                );
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update promotion'), {
+            toast.error(creatingNewEntity ? t`Failed to create promotion` : t`Failed to update promotion`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
     });
 
     return (
-        <Page pageId="promotion-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -123,7 +133,7 @@ function PromotionDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -165,8 +175,9 @@ function PromotionDetailPage() {
                             label={<Trans>Starts at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
@@ -176,8 +187,9 @@ function PromotionDetailPage() {
                             label={<Trans>Ends at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
@@ -192,11 +204,7 @@ function PromotionDetailPage() {
                             name="perCustomerUsageLimit"
                             label={<Trans>Per customer usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                         <FormFieldWrapper
@@ -204,11 +212,7 @@ function PromotionDetailPage() {
                             name="usageLimit"
                             label={<Trans>Usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                     </DetailFormGrid>

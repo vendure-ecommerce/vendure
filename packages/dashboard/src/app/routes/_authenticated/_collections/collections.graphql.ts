@@ -1,10 +1,10 @@
-import { api } from '@/graphql/api.js';
+import { api } from '@/vdb/graphql/api.js';
 import {
     assetFragment,
     configurableOperationDefFragment,
     configurableOperationFragment,
-} from '@/graphql/fragments.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
+} from '@/vdb/graphql/fragments.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { DefinedInitialDataOptions, queryOptions } from '@tanstack/react-query';
 
 export const collectionListDocument = graphql(
@@ -20,6 +20,7 @@ export const collectionListDocument = graphql(
                     }
                     name
                     slug
+                    description
                     breadcrumbs {
                         id
                         name
@@ -27,6 +28,7 @@ export const collectionListDocument = graphql(
                     }
                     children {
                         id
+                        name
                     }
                     position
                     isPrivate
@@ -131,3 +133,60 @@ export const getCollectionFiltersQueryOptions = queryOptions({
     queryKey: ['getCollectionFilters'],
     queryFn: () => api.query(getCollectionFiltersDocument),
 }) as DefinedInitialDataOptions<ResultOf<typeof getCollectionFiltersDocument>>;
+
+export const assignCollectionToChannelDocument = graphql(`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeCollectionFromChannelDocument = graphql(`
+    mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
+        removeCollectionsFromChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const deleteCollectionsDocument = graphql(`
+    mutation DeleteCollections($ids: [ID!]!) {
+        deleteCollections(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const moveCollectionDocument = graphql(`
+    mutation MoveCollection($input: MoveCollectionInput!) {
+        moveCollection(input: $input) {
+            id
+        }
+    }
+`);
+
+export const collectionListForMoveDocument = graphql(`
+    query CollectionListForMove($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                name
+                slug
+                breadcrumbs {
+                    id
+                    name
+                    slug
+                }
+                children {
+                    id
+                }
+                position
+                isPrivate
+                parentId
+            }
+            totalItems
+        }
+    }
+`);

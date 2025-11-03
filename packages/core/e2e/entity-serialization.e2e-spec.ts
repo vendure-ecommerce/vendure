@@ -218,7 +218,7 @@ describe('Entity serialization', () => {
         const ctx = await createCtx();
         const order = await server.app
             .get(OrderService)
-            .findOne(ctx, 1, ['lines', 'shippingLines.shippingMethod']);
+            .findOne(ctx, 1, ['lines', 'surcharges', 'shippingLines.shippingMethod']);
 
         expect(order).not.toBeNull();
         expect(order instanceof Order).toBe(true);

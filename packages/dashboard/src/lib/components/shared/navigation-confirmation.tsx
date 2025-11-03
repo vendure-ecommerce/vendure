@@ -1,9 +1,16 @@
-import { Trans } from '@/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useBlocker } from '@tanstack/react-router';
 import { UseFormReturn } from 'react-hook-form';
 
 import { Button } from '../ui/button.js';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog.js';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '../ui/dialog.js';
 
 export interface NavigationConfirmationProps {
     form: UseFormReturn<any>;
@@ -14,11 +21,13 @@ export interface NavigationConfirmationProps {
  */
 export function NavigationConfirmation(props: Readonly<NavigationConfirmationProps>) {
     const { proceed, reset, status } = useBlocker({
-        shouldBlockFn: (args) => {
+        shouldBlockFn: args => {
             // When a new entity is being created, we don't want to block navigation
             // to the newly-created entity page.
-            const isNavigatingToNewlyCreatedEntity = args.current.fullPath === args.next.fullPath
-                && args.current.params.id === 'new' && args.next.params.id !== 'new'
+            const isNavigatingToNewlyCreatedEntity =
+                args.current.fullPath === args.next.fullPath &&
+                args.current.params.id === 'new' &&
+                args.next.params.id !== 'new';
             if (isNavigatingToNewlyCreatedEntity) {
                 return false;
             }
@@ -31,14 +40,20 @@ export function NavigationConfirmation(props: Readonly<NavigationConfirmationPro
         <Dialog open={status === 'blocked'} onOpenChange={reset}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle><Trans>Confirm navigation</Trans></DialogTitle>
+                    <DialogTitle>
+                        <Trans>Confirm navigation</Trans>
+                    </DialogTitle>
                     <DialogDescription>
-                        <Trans>Are you sure you want to navigate away from this page? Any unsaved changes will be
-                            lost.</Trans>
+                        <Trans>
+                            Are you sure you want to navigate away from this page? Any unsaved changes will be
+                            lost.
+                        </Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline" onClick={reset}><Trans>Cancel</Trans></Button>
+                    <Button variant="outline" onClick={reset}>
+                        <Trans>Cancel</Trans>
+                    </Button>
                     <Button type="button" onClick={proceed}>
                         <Trans>Confirm</Trans>
                     </Button>

@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { FormBuilder, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -78,7 +78,6 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const { focalPoint } = this.asset;
         if (this.assets?.length) {
             this.showSlideButtons = true;
             this.previewAssetIndex = this.assets.findIndex(asset => asset.id === this.asset.id) || 0;

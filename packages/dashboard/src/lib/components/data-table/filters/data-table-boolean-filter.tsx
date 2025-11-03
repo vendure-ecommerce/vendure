@@ -1,10 +1,10 @@
-import { Trans } from "@/lib/trans.js";
+import { Trans } from '@lingui/react/macro';
 
-import { Select, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.js";
+import { Select, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 
-import { SelectContent } from "@/components/ui/select.js";
-import { useEffect, useState } from "react";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { SelectContent } from '@/vdb/components/ui/select.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableBooleanFilterProps {
     value: Record<string, any> | undefined;
@@ -13,11 +13,14 @@ export interface DataTableBooleanFilterProps {
 
 export const BOOLEAN_OPERATORS = ['eq', 'isNull'] as const;
 
-export function DataTableBooleanFilter({ value: incomingValue, onChange }: DataTableBooleanFilterProps) {
-    const initialOperator = incomingValue ? Object.keys(incomingValue)[0] ?? 'eq' : 'eq';
+export function DataTableBooleanFilter({
+                                           value: incomingValue,
+                                           onChange,
+                                       }: Readonly<DataTableBooleanFilterProps>) {
+    const initialOperator = incomingValue ? (Object.keys(incomingValue)[0] ?? 'eq') : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : true;
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');
-    const [value, setValue] = useState<boolean>(initialValue as boolean ?? true);
+    const [value, setValue] = useState<boolean>((initialValue as boolean) ?? true);
 
     useEffect(() => {
         onChange({ [operator]: value });

@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const roleItemFragment = graphql(`
     fragment RoleItem on Role {
@@ -60,6 +60,15 @@ export const updateRoleDocument = graphql(`
 export const deleteRoleDocument = graphql(`
     mutation DeleteRole($id: ID!) {
         deleteRole(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteRolesDocument = graphql(`
+    mutation DeleteRoles($ids: [ID!]!) {
+        deleteRoles(ids: $ids) {
             result
             message
         }

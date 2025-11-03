@@ -1,20 +1,30 @@
-import { Trans } from "@/lib/trans.js";
+import { Select, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 
-import { Select, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select.js";
-
-import { SelectContent } from "@/components/ui/select.js";
-import { Input } from "@/components/ui/input.js";
-import { useEffect, useState } from "react";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { Input } from '@/vdb/components/ui/input.js';
+import { SelectContent } from '@/vdb/components/ui/select.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableStringFilterProps {
     value: Record<string, any> | undefined;
     onChange: (filter: Record<string, any>) => void;
 }
 
-export const STRING_OPERATORS = ['eq', 'notEq', 'contains', 'notContains', 'in', 'notIn', 'regex', 'isNull'] as const;
+export const STRING_OPERATORS = [
+    'eq',
+    'notEq',
+    'contains',
+    'notContains',
+    'in',
+    'notIn',
+    'regex',
+    'isNull',
+] as const;
 
-export function DataTableStringFilter({ value: incomingValue, onChange }: DataTableStringFilterProps) {
+export function DataTableStringFilter({
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableStringFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'contains';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'contains');
@@ -26,7 +36,10 @@ export function DataTableStringFilter({ value: incomingValue, onChange }: DataTa
         } else if (operator === 'in' || operator === 'notIn') {
             // Split by comma and trim whitespace
             if (typeof value === 'string') {
-                const values = value.split(',').map(v => v.trim()).filter(v => v);
+                const values = value
+                    .split(',')
+                    .map(v => v.trim())
+                    .filter(v => v);
                 onChange({ [operator]: values });
             } else {
                 onChange({ [operator]: [] });
@@ -52,11 +65,15 @@ export function DataTableStringFilter({ value: incomingValue, onChange }: DataTa
             </Select>
             {operator !== 'isNull' && (
                 <Input
-                    placeholder={operator === 'in' || operator === 'notIn' ? "Enter comma-separated values..." : "Enter filter value..."}
+                    placeholder={
+                        operator === 'in' || operator === 'notIn'
+                            ? 'Enter comma-separated values...'
+                            : 'Enter filter value...'
+                    }
                     value={value}
                     onChange={e => setValue(e.target.value)}
                 />
             )}
         </div>
-    )
+    );
 }

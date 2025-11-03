@@ -27,9 +27,6 @@ const getReviewList = graphql(`
                 state
                 response
                 responseCreatedAt
-                customFields {
-                    reviewerName
-                }
             }
         }
     }

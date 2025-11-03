@@ -1,9 +1,8 @@
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { CopyIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon } from 'lucide-react';
 import { useState } from 'react';
-import { CheckIcon } from 'lucide-react';
 
-export function CopyableText({ text }: { text: string }) {
+export function CopyableText({ text }: Readonly<{ text: string }>) {
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [, copy] = useCopyToClipboard();
 
@@ -15,7 +14,7 @@ export function CopyableText({ text }: { text: string }) {
 
     return (
         <div className="flex items-center gap-2">
-            <div className="font-mono text-sm">{text}</div>
+            <div className="font-mono">{text}</div>
             <button
                 onClick={() => handleCopy(text, 'page')}
                 className="p-1 hover:bg-muted rounded-md transition-colors"

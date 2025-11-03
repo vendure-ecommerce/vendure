@@ -1,16 +1,16 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { CustomerGroupChip } from '../shared/customer-group-chip.js';
 import { CustomerGroupSelector } from '../shared/customer-group-selector.js';
 
-const customerGroupsDocument = graphql(`
-    query GetCustomerGroups($options: CustomerGroupListOptions) {
-        customerGroups(options: $options) {
-            items {
-                id
-                name
-            }
+import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+
+const customerGroupDocument = graphql(`
+    query GetCustomerGroup($id: ID!) {
+        customerGroup(id: $id) {
+            id
+            name
         }
     }
 `);
@@ -20,53 +20,42 @@ export interface CustomerGroup {
     name: string;
 }
 
-export interface CustomerGroupInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    readOnly?: boolean;
-}
-
-export function CustomerGroupInput(props: CustomerGroupInputProps) {
-    const ids = decodeIds(props.value);
-    const { data: groups } = useQuery({
-        queryKey: ['customerGroups', ids],
+export function CustomerGroupInput({
+    value,
+    onChange,
+    disabled,
+    fieldDef,
+}: Readonly<DashboardFormComponentProps>) {
+    const { data } = useQuery({
+        queryKey: ['customerGroups', value],
         queryFn: () =>
-            api.query(customerGroupsDocument, {
-                options: {
-                    filter: {
-                        id: { in: ids },
-                    },
-                },
+            api.query(customerGroupDocument, {
+                id: value,
             }),
+        enabled: !!value,
     });
 
     const onValueSelectHandler = (value: CustomerGroup) => {
-        const newIds = new Set([...ids, value.id]);
-        props.onChange(JSON.stringify(Array.from(newIds)));
+        onChange(value.id);
     };
 
-    const onValueRemoveHandler = (id: string) => {
-        const newIds = new Set(ids.filter(existingId => existingId !== id));
-        props.onChange(JSON.stringify(Array.from(newIds)));
+    const onValueRemoveHandler = () => {
+        onChange(null);
     };
 
     return (
         <div>
             <div className="flex flex-wrap gap-2 mb-2">
-                {groups?.customerGroups.items.map(group => (
-                    <CustomerGroupChip key={group.id} group={group} onRemove={onValueRemoveHandler} />
-                ))}
+                {data?.customerGroup ? (
+                    <CustomerGroupChip
+                        key={data.customerGroup.id}
+                        group={data.customerGroup}
+                        onRemove={onValueRemoveHandler}
+                    />
+                ) : null}
             </div>
 
-            <CustomerGroupSelector onSelect={onValueSelectHandler} readOnly={props.readOnly} />
+            <CustomerGroupSelector onSelect={onValueSelectHandler} readOnly={disabled} />
         </div>
     );
-}
-
-function decodeIds(idsString: string): string[] {
-    try {
-        return JSON.parse(idsString);
-    } catch (error) {
-        return [];
-    }
 }
