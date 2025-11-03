@@ -40,6 +40,11 @@ jobs:
                 node: [20.x, 22.x, 24.x]
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Fetch base branch
+              if: github.event_name == 'pull_request'
+              run: git fetch origin ${{ github.base_ref }}
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@v4
               with:
@@ -49,7 +54,12 @@ jobs:
                   npm install
                   npm install --os=linux --cpu=x64 sharp
             - name: Build
-              run: npm run build
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run build --since=origin/${{ github.base_ref }}
+                  else
+                    npm run build
+                  fi
     unit-tests:
         name: unit tests
         runs-on: ubuntu-latest
@@ -60,6 +70,11 @@ jobs:
                 node: [20.x, 22.x, 24.x]
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Fetch base branch
+              if: github.event_name == 'pull_request'
+              run: git fetch origin ${{ github.base_ref }}
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@v4
               with:
@@ -69,9 +84,19 @@ jobs:
                   npm install
                   npm install --os=linux --cpu=x64 sharp
             - name: Build
-              run: npx lerna run ci
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run ci --since=origin/${{ github.base_ref }}
+                  else
+                    npx lerna run ci
+                  fi
             - name: Unit tests
-              run: npm run test
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run test --stream --no-bail --since=origin/${{ github.base_ref }}
+                  else
+                    npm run test
+                  fi
     e2e-tests:
         name: e2e tests
         runs-on: ubuntu-latest
@@ -129,6 +154,11 @@ jobs:
                 db: [sqljs, mariadb, mysql, postgres]
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Fetch base branch
+              if: github.event_name == 'pull_request'
+              run: git fetch origin ${{ github.base_ref }}
             - name: Use Node.js ${{ matrix.node }}
               uses: actions/setup-node@v4
               with:
@@ -138,7 +168,12 @@ jobs:
                   npm install
                   npm install --os=linux --cpu=x64 sharp
             - name: Build
-              run: npx lerna run ci
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run ci --since=origin/${{ github.base_ref }}
+                  else
+                    npx lerna run ci
+                  fi
             - name: e2e tests
               env:
                   E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
@@ -147,4 +182,9 @@ jobs:
                   E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
                   E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
                   DB: ${{ matrix.db }}
-              run: npm run e2e
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run e2e --stream --no-bail --since=origin/${{ github.base_ref }}
+                  else
+                    npm run e2e
+                  fi
