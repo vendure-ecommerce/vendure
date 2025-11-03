@@ -56,12 +56,10 @@ export function StringListInput({
 
     return (
         <div
-            role="list"
             className={cn(
                 'flex min-h-10 w-full flex-wrap gap-2',
                 isDisabled && 'cursor-not-allowed opacity-50',
             )}
-            onClick={() => inputRef.current?.focus()}
         >
             {!isDisabled && (
                 <Input
@@ -78,7 +76,7 @@ export function StringListInput({
             )}
             <div className="flex flex-wrap gap-1 items-start justify-start">
                 {items.map((item, index) => (
-                    <Badge key={id + index} variant="secondary" role="listitem">
+                    <Badge key={id + index} variant="secondary">
                         <span>{item}</span>
                         {!isDisabled && (
                             <button
