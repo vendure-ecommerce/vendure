@@ -1,0 +1,104 @@
+name: E2E Test Database
+
+on:
+    workflow_call:
+        inputs:
+            db-type:
+                required: true
+                type: string
+                description: 'Database type to test (sqljs, postgres, mysql, mariadb)'
+            node-version:
+                required: true
+                type: string
+                description: 'Node.js version to use'
+
+env:
+    CI: true
+
+jobs:
+    e2e-test:
+        name: e2e (${{ inputs.db-type }}, node ${{ inputs.node-version }})
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        services:
+            mariadb:
+                # With v11.6.2+, a default was changed, (https://mariadb.com/kb/en/innodb-system-variables/#innodb_snapshot_isolation)
+                # which causes e2e test failures currently
+                image: ${{ inputs.db-type == 'mariadb' && 'mariadb:11.5' || '' }}
+                env:
+                    MARIADB_ROOT_PASSWORD: password
+                ports:
+                    - 3306
+                options: --health-cmd="mariadb-admin ping -h localhost -u vendure -ppassword" --health-interval=10s --health-timeout=5s --health-retries=3
+            mysql:
+                image: ${{ inputs.db-type == 'mysql' && 'vendure/mysql-8-native-auth:latest' || '' }}
+                env:
+                    MYSQL_ROOT_PASSWORD: password
+                ports:
+                    - 3306
+                options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
+            postgres:
+                image: ${{ inputs.db-type == 'postgres' && 'postgres:16' || '' }}
+                env:
+                    POSTGRES_USER: vendure
+                    POSTGRES_PASSWORD: password
+                ports:
+                    - 5432
+                options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+            elastic:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+                env:
+                    discovery.type: single-node
+                    bootstrap.memory_lock: true
+                    ES_JAVA_OPTS: -Xms512m -Xmx512m
+                    # Elasticsearch will force read-only mode when total available disk space is less than 5%. Since we will
+                    # be running on a shared Azure instance with 84GB SSD, we easily go below 5% available even when there are still
+                    # > 3GB free. So we set this value to an absolute one rather than a percentage to prevent all the Elasticsearch
+                    # e2e tests from failing.
+                    cluster.routing.allocation.disk.watermark.low: 500mb
+                    cluster.routing.allocation.disk.watermark.high: 200mb
+                    cluster.routing.allocation.disk.watermark.flood_stage: 100mb
+                ports:
+                    - 9200
+                options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+            redis:
+                image: redis:7.4.1
+                ports:
+                    - 6379
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Fetch base branch
+              if: github.event_name == 'pull_request'
+              run: git fetch origin ${{ github.base_ref }}
+            - name: Use Node.js ${{ inputs.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ inputs.node-version }}
+            - name: npm install
+              run: |
+                  npm install
+                  npm install --os=linux --cpu=x64 sharp
+            - name: Build
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run ci --since=origin/${{ github.base_ref }}
+                  else
+                    npx lerna run ci
+                  fi
+            - name: e2e tests
+              env:
+                  E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+                  E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+                  E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+                  E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+                  E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+                  DB: ${{ inputs.db-type }}
+              run: |
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    npx lerna run e2e --stream --no-bail --since=origin/${{ github.base_ref }}
+                  else
+                    npm run e2e
+                  fi
