@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { KeyboardEvent, useRef, useState } from 'react';
+import { KeyboardEvent, useId, useRef, useState } from 'react';
 
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Input } from '@/vdb/components/ui/input.js';
@@ -20,6 +20,7 @@ export function StringListInput({
     const inputRef = useRef<HTMLInputElement>(null);
     const { i18n } = useLingui();
     const isDisabled = isReadonlyField(fieldDef) || disabled;
+    const id = useId();
 
     const items = Array.isArray(value) ? value : [];
 
@@ -55,6 +56,7 @@ export function StringListInput({
 
     return (
         <div
+            role="listbox"
             className={cn(
                 'flex min-h-10 w-full flex-wrap gap-2',
                 isDisabled && 'cursor-not-allowed opacity-50',
@@ -76,7 +78,7 @@ export function StringListInput({
             )}
             <div className="flex flex-wrap gap-1 items-start justify-start">
                 {items.map((item, index) => (
-                    <Badge key={index} variant="secondary">
+                    <Badge key={id + index} variant="secondary">
                         <span>{item}</span>
                         {!isDisabled && (
                             <button
