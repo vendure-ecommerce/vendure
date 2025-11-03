@@ -28,6 +28,35 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    capture-affected-packages:
+        name: Capture affected packages
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Fetch base branch
+              run: git fetch origin ${{ github.base_ref }}
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            - name: npm install
+              run: npm install
+            - name: Get affected packages
+              run: |
+                  npx lerna list --since=origin/${{ github.base_ref }} --json > affected-packages.json
+                  echo "Affected packages:"
+                  cat affected-packages.json
+            - name: Upload affected packages list
+              uses: actions/upload-artifact@v4
+              with:
+                  name: affected-packages
+                  path: affected-packages.json
+                  retention-days: 1
     codegen:
         uses: ./.github/workflows/codegen.yml
     build:
@@ -137,3 +166,216 @@ jobs:
         with:
             db-type: mariadb
             node-version: ${{ matrix.node }}
+
+    update-pr-comment-initial:
+        name: Post initial PR comment
+        if: github.event_name == 'pull_request'
+        needs: [capture-affected-packages]
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+            contents: read
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            - name: Download affected packages
+              uses: actions/download-artifact@v4
+              with:
+                  name: affected-packages
+                  path: artifacts/affected-packages
+            - name: Create initial job statuses
+              run: |
+                  cat > job-statuses.json << 'EOF'
+                  {
+                    "build": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    },
+                    "unit-tests": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    },
+                    "e2e-tests-sqljs": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    },
+                    "e2e-tests-postgres": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    },
+                    "e2e-tests-mysql": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    },
+                    "e2e-tests-mariadb": {
+                      "20.x": "pending",
+                      "22.x": "pending",
+                      "24.x": "pending"
+                    }
+                  }
+                  EOF
+            - name: Generate test summary
+              run: node scripts/aggregate-test-results.js
+            - name: Create or update PR comment
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const summary = fs.readFileSync('test-summary.md', 'utf8');
+
+                      // Find existing comment
+                      const { data: comments } = await github.rest.issues.listComments({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                      });
+
+                      const botComment = comments.find(comment =>
+                        comment.user.type === 'Bot' &&
+                        comment.body.includes('Test Results Summary')
+                      );
+
+                      if (botComment) {
+                        await github.rest.issues.updateComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          comment_id: botComment.id,
+                          body: summary
+                        });
+                      } else {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body: summary
+                        });
+                      }
+
+    update-pr-comment-final:
+        name: Update PR comment (final)
+        if: github.event_name == 'pull_request' && always()
+        needs: [capture-affected-packages, build, unit-tests, e2e-tests-sqljs, e2e-tests-postgres, e2e-tests-mysql, e2e-tests-mariadb]
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+            contents: read
+            actions: read
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            - name: Download affected packages
+              uses: actions/download-artifact@v4
+              with:
+                  name: affected-packages
+                  path: artifacts/affected-packages
+            - name: Fetch and aggregate job statuses
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+
+                      // Get all jobs for this workflow run
+                      const { data: { jobs } } = await github.rest.actions.listJobsForWorkflowRun({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        run_id: context.runId,
+                      });
+
+                      console.log('All jobs:', JSON.stringify(jobs.map(j => ({ name: j.name, conclusion: j.conclusion, status: j.status })), null, 2));
+
+                      // Initialize status structure
+                      const jobStatuses = {
+                        "build": { "20.x": "pending", "22.x": "pending", "24.x": "pending" },
+                        "unit-tests": { "20.x": "pending", "22.x": "pending", "24.x": "pending" },
+                        "e2e-tests-sqljs": { "20.x": "pending", "22.x": "pending", "24.x": "pending" },
+                        "e2e-tests-postgres": { "20.x": "pending", "22.x": "pending", "24.x": "pending" },
+                        "e2e-tests-mysql": { "20.x": "pending", "22.x": "pending", "24.x": "pending" },
+                        "e2e-tests-mariadb": { "20.x": "pending", "22.x": "pending", "24.x": "pending" }
+                      };
+
+                      // Map job names to our structure
+                      const jobMapping = {
+                        'build (20.x)': ['build', '20.x'],
+                        'build (22.x)': ['build', '22.x'],
+                        'build (24.x)': ['build', '24.x'],
+                        'unit tests (20.x)': ['unit-tests', '20.x'],
+                        'unit tests (22.x)': ['unit-tests', '22.x'],
+                        'unit tests (24.x)': ['unit-tests', '24.x'],
+                        'e2e (sqljs, node 20.x)': ['e2e-tests-sqljs', '20.x'],
+                        'e2e (sqljs, node 22.x)': ['e2e-tests-sqljs', '22.x'],
+                        'e2e (sqljs, node 24.x)': ['e2e-tests-sqljs', '24.x'],
+                        'e2e (postgres, node 20.x)': ['e2e-tests-postgres', '20.x'],
+                        'e2e (postgres, node 22.x)': ['e2e-tests-postgres', '22.x'],
+                        'e2e (postgres, node 24.x)': ['e2e-tests-postgres', '24.x'],
+                        'e2e (mysql, node 20.x)': ['e2e-tests-mysql', '20.x'],
+                        'e2e (mysql, node 22.x)': ['e2e-tests-mysql', '22.x'],
+                        'e2e (mysql, node 24.x)': ['e2e-tests-mysql', '24.x'],
+                        'e2e (mariadb, node 20.x)': ['e2e-tests-mariadb', '20.x'],
+                        'e2e (mariadb, node 22.x)': ['e2e-tests-mariadb', '22.x'],
+                        'e2e (mariadb, node 24.x)': ['e2e-tests-mariadb', '24.x'],
+                      };
+
+                      // Process each job
+                      for (const job of jobs) {
+                        const mapping = jobMapping[job.name];
+                        if (!mapping) continue;
+
+                        let status = job.conclusion || job.status;
+                        if (status === 'completed') status = 'success';
+                        if (status === 'in_progress' || status === 'queued') status = 'running';
+
+                        if (Array.isArray(mapping)) {
+                          const [jobType, nodeVersion] = mapping;
+                          jobStatuses[jobType][nodeVersion] = status;
+                        }
+                      }
+
+                      // Write to file
+                      fs.writeFileSync('job-statuses.json', JSON.stringify(jobStatuses, null, 2));
+                      console.log('Job statuses:', JSON.stringify(jobStatuses, null, 2));
+            - name: Generate test summary
+              run: node scripts/aggregate-test-results.js
+            - name: Update PR comment
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const summary = fs.readFileSync('test-summary.md', 'utf8');
+
+                      const { data: comments } = await github.rest.issues.listComments({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                      });
+
+                      const botComment = comments.find(comment =>
+                        comment.user.type === 'Bot' &&
+                        comment.body.includes('Test Results Summary')
+                      );
+
+                      if (botComment) {
+                        await github.rest.issues.updateComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          comment_id: botComment.id,
+                          body: summary
+                        });
+                      } else {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body: summary
+                        });
+                      }
