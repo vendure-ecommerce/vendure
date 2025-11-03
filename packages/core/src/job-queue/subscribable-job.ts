@@ -2,10 +2,11 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import ms from 'ms';
-import { interval, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap, takeWhile, tap } from 'rxjs/operators';
+import { interval, merge, Observable, timer } from 'rxjs';
+import { distinctUntilChanged, filter, map, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 
 import { InternalServerError } from '../common/error/errors';
+import { Logger } from '../config/index';
 import { isInspectableJobQueueStrategy } from '../config/job-queue/inspectable-job-queue-strategy';
 import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
 
@@ -72,7 +73,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
     /**
      * @description
      * Returns an Observable stream of updates to the Job. Works by polling the current JobQueueStrategy's `findOne()` method
-     * to obtain updates. If this updates are not subscribed to, then no polling occurs.
+     * to obtain updates. If the updates are not subscribed to, then no polling occurs.
      *
      * Polling interval, timeout and other options may be configured with an options arguments {@link JobUpdateOptions}.
      *
@@ -87,16 +88,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
             );
         } else {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return interval(pollInterval).pipe(
-                tap(i => {
-                    if (timeoutMs < i * pollInterval) {
-                        throw new Error(
-                            `Job ${
-                                this.id ?? ''
-                            } SubscribableJob update polling timed out after ${timeoutMs}ms. The job may still be running.`,
-                        );
-                    }
-                }),
+            const updates$ = interval(pollInterval).pipe(
                 switchMap(() => {
                     const id = this.id;
                     if (!id) {
@@ -120,6 +112,30 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
                 }),
                 map(job => pick(job, ['id', 'state', 'progress', 'result', 'error', 'data'])),
             );
+            const timeout$ = timer(timeoutMs).pipe(
+                tap(i => {
+                    Logger.error(
+                        `Job ${
+                            this.id ?? ''
+                        } SubscribableJob update polling timed out after ${timeoutMs}ms. The job may still be running.`,
+                    );
+                }),
+                map(
+                    () =>
+                        ({
+                            id: this.id,
+                            state: JobState.RUNNING,
+                            data: this.data,
+                            error: this.error,
+                            progress: this.progress,
+                            result: 'Job subscription timed out. The job may still be running',
+                        }) satisfies JobUpdate<any>,
+                ),
+            );
+
+            // Use merge + take(1) instead of race() to handle immediate timer emissions more reliably
+            // This prevents race conditions where the timer might fire before race() can capture it
+            return merge(updates$, timeout$).pipe(take(1));
         }
     }
 }

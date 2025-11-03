@@ -10,7 +10,7 @@ import { expectSourceFileContentToMatch } from '../../../../../utilities/testing
 import { addUiExtensionStaticProp } from './add-ui-extension-static-prop';
 
 describe('addUiExtensionStaticProp', () => {
-    it('add ui prop and imports', () => {
+    it('add ui prop and imports', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });

@@ -437,6 +437,29 @@ This resolver is then passed in to your plugin metadata like any other resolver:
 export class MyPlugin {}
 ```
 
+Sticking to this example of `myCustomMutation`, you'll also want to use the [ErrorResultUnion](/reference/typescript-api/errors/error-result-union) in your `MyCustomMutationResolver` and corresponding service like so:
+
+```ts
+import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Ctx, ErrorResultUnion, ID, Order, RequestContext, Transaction } from "@vendure/core";
+
+@Resolver()
+export class MyCustomMutationResolver {
+  constructor(private myCustomService: MyCustomService) {}
+
+  @Mutation()
+  @Transaction()
+  async myCustomMutation(
+    @Ctx() ctx: RequestContext,
+    @Args() args: { orderId: ID }
+  ): Promise<ErrorResultUnion<MyCustomMutationResult, Order>> {
+    return this.myCustomService.doMyCustomMutation(ctx, args.orderId);
+  }
+}
+```
+
+This is because Typescript entities do not correspond 1-to-1 with their GraphQL type counterparts, which results in an error when you're returning the `Order`-Object because it is not assignable to `MyCustomMutationResult`.
+
 ## Defining custom scalars
 
 By default, Vendure bundles `DateTime` and a `JSON` custom scalars (from the [graphql-scalars library](https://github.com/Urigo/graphql-scalars)). From v1.7.0, you can also define your own custom scalars for use in your schema extensions:

@@ -9,6 +9,7 @@ import { IfDirectiveBase } from './if-directive-base';
 
 @Directive({
     selector: '[vdrIfDefaultChannelActive]',
+    standalone: false,
 })
 export class IfDefaultChannelActiveDirective extends IfDirectiveBase<[]> {
     constructor(

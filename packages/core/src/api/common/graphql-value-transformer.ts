@@ -187,29 +187,84 @@ export class GraphqlValueTransformer {
     private getChildrenTreeNodes(
         inputType: GraphQLInputObjectType,
         parent: TypeTreeNode,
+        depth = 0,
     ): { [name: string]: TypeTreeNode } {
-        return Object.entries(inputType.getFields()).reduce((result, [key, field]) => {
-            const namedType = getNamedType(field.type);
-            if (namedType === parent.type) {
-                // prevent recursion-induced stack overflow
-                return result;
-            }
-            const child: TypeTreeNode = {
-                type: namedType,
-                isList: this.isList(field.type),
-                parent,
-                fragmentRefs: [],
-                children: {},
-            };
-            if (isInputObjectType(namedType)) {
-                child.children = this.getChildrenTreeNodes(namedType, child);
-            }
-            return { ...result, [key]: child };
-        }, {} as { [name: string]: TypeTreeNode });
+        if (depth > 3) return {};
+
+        return Object.entries(inputType.getFields()).reduce(
+            (result, [key, field]) => {
+                const namedType = getNamedType(field.type);
+                if (namedType === parent.type) {
+                    // Allow _and/_or self-references in filter types, but limit depth to prevent infinite loops
+                    if (key === '_and' || key === '_or') {
+                        const selfRefChild: TypeTreeNode = {
+                            type: namedType,
+                            isList: this.isList(field.type),
+                            parent,
+                            fragmentRefs: [],
+                            children: {},
+                        };
+                        if (isInputObjectType(namedType)) {
+                            selfRefChild.children = this.getChildrenTreeNodes(
+                                namedType,
+                                selfRefChild,
+                                depth + 1,
+                            );
+                        }
+                        result[key] = selfRefChild;
+                        return result;
+                    }
+                    return result;
+                }
+                const child: TypeTreeNode = {
+                    type: namedType,
+                    isList: this.isList(field.type),
+                    parent,
+                    fragmentRefs: [],
+                    children: {},
+                };
+                if (isInputObjectType(namedType)) {
+                    child.children = this.getChildrenTreeNodes(namedType, child);
+                }
+                return { ...result, [key]: child };
+            },
+            {} as { [name: string]: TypeTreeNode },
+        );
     }
 
     private isList(t: any): boolean {
         return isListType(t) || (isNonNullType(t) && isListType(t.ofType));
+    }
+
+    private deepMergeChildren(
+        target: { [name: string]: TypeTreeNode },
+        source: { [name: string]: TypeTreeNode },
+    ): { [name: string]: TypeTreeNode } {
+        const merged = { ...target };
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (merged[key]) {
+                    // If the key already exists, merge recursively
+                    if (source[key].children && Object.keys(source[key].children).length > 0) {
+                        merged[key].children = this.deepMergeChildren(
+                            merged[key].children,
+                            source[key].children,
+                        );
+                    }
+                    // Merge fragmentRefs from both nodes, avoiding duplicates
+                    if (source[key].fragmentRefs && source[key].fragmentRefs.length > 0) {
+                        const existingRefs = new Set(merged[key].fragmentRefs);
+                        const newRefs = source[key].fragmentRefs.filter(ref => !existingRefs.has(ref));
+                        if (newRefs.length > 0) {
+                            merged[key].fragmentRefs = [...merged[key].fragmentRefs, ...newRefs];
+                        }
+                    }
+                } else {
+                    merged[key] = source[key];
+                }
+            }
+        }
+        return merged;
     }
 
     private getTypeNodeByPath(typeTree: TypeTree, path: Array<string | number>): TypeTreeNode | undefined {
@@ -224,9 +279,12 @@ export class GraphqlValueTransformer {
                             const ref = fragmentRefs.pop();
                             if (ref) {
                                 const fragment = typeTree.fragments[ref];
-                                children = { ...children, ...fragment.children };
-                                if (fragment.fragmentRefs) {
-                                    fragmentRefs.push(...fragment.fragmentRefs);
+                                if (fragment) {
+                                    // Deeply merge the children
+                                    children = this.deepMergeChildren(children, fragment.children);
+                                    if (fragment.fragmentRefs) {
+                                        fragmentRefs.push(...fragment.fragmentRefs);
+                                    }
                                 }
                             }
                         }

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## bootstrap
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="106" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="160" packageName="@vendure/core" />
 
 Bootstraps the Vendure server. This is the entry point to the application.
 
@@ -49,6 +49,27 @@ bootstrap(config, {
 });
 ```
 
+### Ignoring compatibility errors for plugins
+
+Since v3.1.0, you can ignore compatibility errors for specific plugins by passing the `ignoreCompatibilityErrorsForPlugins` option.
+
+This should be used with caution, only if you are sure that the plugin will still work as expected with the current version of Vendure.
+
+*Example*
+
+```ts
+import { bootstrap } from '@vendure/core';
+import { config } from './vendure-config';
+import { MyPlugin } from './plugins/my-plugin';
+
+bootstrap(config, {
+  // Let's say that `MyPlugin` is not yet compatible with the current version of Vendure
+  // but we know that it will still work as expected, and we are not able to publish
+  // a new version of the plugin right now.
+  ignoreCompatibilityErrorsForPlugins: [MyPlugin],
+});
+```
+
 ```ts title="Signature"
 function bootstrap(userConfig: Partial<VendureConfig>, options?: BootstrapOptions): Promise<INestApplication>
 ```
@@ -66,14 +87,15 @@ Parameters
 
 ## BootstrapOptions
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="41" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="42" packageName="@vendure/core" since="2.2.0" />
 
 Additional options that can be used to configure the bootstrap process of the
 Vendure server.
 
 ```ts title="Signature"
 interface BootstrapOptions {
-    nestApplicationOptions: NestApplicationOptions;
+    nestApplicationOptions?: NestApplicationOptions;
+    ignoreCompatibilityErrorsForPlugins?: Array<DynamicModule | Type<any>>;
 }
 ```
 
@@ -84,6 +106,28 @@ interface BootstrapOptions {
 <MemberInfo kind="property" type={`NestApplicationOptions`}   />
 
 These options get passed directly to the `NestFactory.create()` method.
+### ignoreCompatibilityErrorsForPlugins
+
+<MemberInfo kind="property" type={`Array&#60;DynamicModule | Type&#60;any&#62;&#62;`} default={`[]`}  since="3.1.0"  />
+
+By default, if a plugin specifies a compatibility range which does not include the current
+Vendure version, the bootstrap process will fail. This option allows you to ignore compatibility
+errors for specific plugins.
+
+This setting should be used with caution, only if you are sure that the plugin will still
+work as expected with the current version of Vendure.
+
+*Example*
+
+```ts
+import { bootstrap } from '@vendure/core';
+import { config } from './vendure-config';
+import { MyPlugin } from './plugins/my-plugin';
+
+bootstrap(config, {
+ ignoreCompatibilityErrorsForPlugins: [MyPlugin],
+});
+```
 
 
 </div>

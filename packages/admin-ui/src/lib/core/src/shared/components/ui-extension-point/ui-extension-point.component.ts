@@ -23,6 +23,7 @@ type UiExtensionType = 'actionBar' | 'actionBarDropdown' | 'navMenu' | 'detailCo
     templateUrl: './ui-extension-point.component.html',
     styleUrls: ['./ui-extension-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class UiExtensionPointComponent implements OnInit {
     @Input() locationId: UIExtensionLocationId;

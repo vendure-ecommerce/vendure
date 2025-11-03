@@ -30,7 +30,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function addActionBarItem(config: ActionBarItem): Provider
+function addActionBarItem(config: ActionBarItem): void
 ```
 Parameters
 

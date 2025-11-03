@@ -140,8 +140,8 @@ describe('Multiple shipping orders', () => {
             },
         });
 
-        expect(result1.createShippingMethod.id).toBe('T_3');
-        expect(result2.createShippingMethod.id).toBe('T_4');
+        expect(result1.createShippingMethod.id).toBe('T_4');
+        expect(result2.createShippingMethod.id).toBe('T_5');
         lessThan100MethodId = result1.createShippingMethod.id;
         greaterThan100MethodId = result2.createShippingMethod.id;
     });

@@ -10,8 +10,8 @@ import {
 import {
     CustomFieldConfig,
     CustomFields,
-    EntityCustomFields,
     RelationCustomFieldFragment,
+    StructCustomFieldFragment,
 } from '../../common/generated-types';
 
 /**
@@ -72,6 +72,19 @@ export function addCustomFields(
                                               kind: Kind.FIELD,
                                               name: { kind: Kind.NAME, value: f },
                                           })),
+                                      },
+                                  }
+                                : {}),
+                            ...(customField.type === 'struct'
+                                ? {
+                                      selectionSet: {
+                                          kind: Kind.SELECTION_SET,
+                                          selections: (customField as StructCustomFieldFragment).fields.map(
+                                              f => ({
+                                                  kind: Kind.FIELD,
+                                                  name: { kind: Kind.NAME, value: f.name },
+                                              }),
+                                          ),
                                       },
                                   }
                                 : {}),

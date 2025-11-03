@@ -122,10 +122,32 @@ export const ADD_ITEM_TO_ORDER = gql`
                     ...UpdatedOrder
                 }
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${UPDATED_ORDER_FRAGMENT}
 `;
+
+export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
+    mutation AddItemsToOrder($inputs: [AddItemInput!]!) {
+        addItemsToOrder(inputs: $inputs) {
+            order {
+                ...UpdatedOrder
+            }
+            errorResults {
+                ...on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+            
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
 export const SEARCH_PRODUCTS_SHOP = gql`
     query SearchProductsShop($input: SearchInput!) {
         search(input: $input) {
@@ -372,6 +394,9 @@ export const ADJUST_ITEM_QUANTITY = gql`
                 errorCode
                 message
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
@@ -384,6 +409,9 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on OrderInterceptorError {
+                interceptorError
             }
         }
     }
@@ -502,52 +530,85 @@ export const TRANSITION_TO_STATE = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const ORDER_WITH_ADDRESSES_FRAGMENT = gql`
+    fragment OrderWithAddresses on Order {
+        lines {
+            id
+        }
+        shippingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+        billingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+    }
+`;
+
 export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
-            ... on Order {
-                shippingAddress {
-                    fullName
-                    company
-                    streetLine1
-                    streetLine2
-                    city
-                    province
-                    postalCode
-                    country
-                    phoneNumber
-                }
-            }
+            ...OrderWithAddresses
             ... on ErrorResult {
                 errorCode
                 message
             }
         }
     }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
 `;
 
 export const SET_BILLING_ADDRESS = gql`
     mutation SetBillingAddress($input: CreateAddressInput!) {
         setOrderBillingAddress(input: $input) {
-            ... on Order {
-                billingAddress {
-                    fullName
-                    company
-                    streetLine1
-                    streetLine2
-                    city
-                    province
-                    postalCode
-                    country
-                    phoneNumber
-                }
-            }
+            ...OrderWithAddresses
             ... on ErrorResult {
                 errorCode
                 message
             }
         }
     }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
+`;
+
+export const UNSET_SHIPPING_ADDRESS = gql`
+    mutation UnsetShippingAddress {
+        unsetOrderShippingAddress {
+            ...OrderWithAddresses
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
+`;
+export const UNSET_BILLING_ADDRESS = gql`
+    mutation UnsetBillingAddress {
+        unsetOrderBillingAddress {
+            ...OrderWithAddresses
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
 `;
 
 export const TEST_ORDER_WITH_PAYMENTS_FRAGMENT = gql`
@@ -788,6 +849,38 @@ export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE = gql`
                         }
                     }
                 }
+            }
+        }
+    }
+`;
+
+export const ACTIVE_PAYMENT_METHODS_QUERY = gql`
+    query ActivePaymentMethods {
+        activePaymentMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
+            }
+        }
+    }
+`;
+
+export const GET_ACTIVE_SHIPPING_METHODS = gql`
+    query GetActiveShippingMethods {
+        activeShippingMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
             }
         }
     }

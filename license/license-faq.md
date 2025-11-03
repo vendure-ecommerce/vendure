@@ -26,7 +26,8 @@ All Vendure contributors retain copyright on their code, but agree to release it
 If you are unable or unwilling to contribute a patch under the GPL version 3 and the Vendure Commercial License, do not submit a patch.
 
 ## I want to release my work under a different license than GPLv3, is that possible?
-No. You can only release your work under any GPL version 3 or later compatible license.
+Yes. There is a special exception described in the file `plugin-exception.txt` that allows you to distribute Vendure plugins under a different license.
+If you modify the Vendure core code, you must still release your changes under the GPLv3.
 
 ## The GPL requires that I distribute the "source code" of my files. What does that mean for a web application?
 The "source code" of a file means the format that is intended for people to edit.
@@ -35,34 +36,11 @@ For TypeScript, CSS, and HTML code, the file itself, without any compression or 
 The "source code" is whichever version is intended to be edited by people.
 
 ## If I write a plugin for my Vendure application, do I have to license it under the GPL?
-Yes. Vendure plugins for your application are a derivative work of Vendure.
-If you distribute them, you must do so under the terms of the GPL version 3 or later.
-
-You are not required to distribute them at all, however.
-
-However, when distributing your own Vendure-based work, it is important to keep in mind what the GPLv3 applies to.
-The GPLv3 on code applies to code that interacts with that code, but not to data.
-That is, Vendure's TypeScript code is under the GPLv3, and so all TypeScript code that interacts with it must also be
-under the GPLv3 or GPLv3 compatible. Images and JSON files that TypeScript sends to the browser are not
-affected by the GPL because they are data
-
-When distributing your own plugin, therefore,
-the GPLv3 applies to any pieces that directly interact with parts of Vendure that are under the GPLv3.
-Images and other asset files you create yourself are not affected.
-
-## If I write a plugin for my application, do I have to give it away to everyone?
-No. The GPL requires that if you make a derivative work of Vendure and distribute it to someone else,
-you must provide that person with the source code under the terms of the GPLv3 so that they may modify and redistribute
-it under the terms of the GPLv3 as well. However, you are under no obligation to distribute the code to anyone else.
-If you do not distribute the code but use it only within your organization,
-then you are not required to distribute it to anyone at all.
-
-However, if your plugin is of general use then it is often a good idea to contribute it back to the community anyway.
-You can get feedback, bug reports, and new feature patches from others who find it useful.
+No. There is a special exception described in the file `plugin-exception.txt` that allows you to 
+distribute Vendure plugins under a different license.
 
 ## Is it permitted for me to sell Vendure or a Vendure plugin?
-Yes. However, you must distribute it under the GPL version 3 or later,
-so those you sell it to must be allowed to modify and redistribute it as well. See questions above.
+Yes. However, any modifications to Vendure Core must be made available under the terms of the GPL version 3.
 
 ## Do I have to give the code for my web site to anyone who visits it?
 

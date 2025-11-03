@@ -7,6 +7,7 @@ import { CurrencyCode, ShippingMethodQuote } from '@vendure/admin-ui/core';
     templateUrl: './shipping-eligibility-test-result.component.html',
     styleUrls: ['./shipping-eligibility-test-result.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ShippingEligibilityTestResultComponent {
     @Input() testResult: ShippingMethodQuote[];

@@ -53,6 +53,7 @@ import { AssetSearchInputComponent } from '../asset-search-input/asset-search-in
     templateUrl: './asset-picker-dialog.component.html',
     styleUrls: ['./asset-picker-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Dialog<Asset[]> {
     assets$: Observable<AssetLike[]>;

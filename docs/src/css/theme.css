@@ -1,0 +1,67 @@
+/**
+ * Theme and color styles
+ * Light and dark mode color schemes
+ */
+
+:root {
+    /* Primary colors */
+    --ifm-color-primary: #17c1ff;
+    --ifm-color-primary-dark: #008ece;
+    --ifm-color-primary-darker: #0072a7;
+    --ifm-color-primary-darkest: #084f72;
+    --ifm-color-primary-light: #78daff;
+    --ifm-color-primary-lighter: #b8eaff;
+    --ifm-color-primary-lightest: #dff3ff;
+
+    /* Background colors */
+    --ifm-navbar-background-color: #ffffff11;
+    --navbar-background-color-mobile: #ffffffee;
+    --body-background: white;
+    --ifm-footer-background-color: #edf2f5;
+
+    /* Text colors */
+    --ifm-heading-color: #000212;
+    --ifm-color-content: var(--ifm-color-emphasis-800);
+
+    /* Code colors */
+    --docusaurus-highlighted-code-line-bg: #e0f1ff;
+    --color-graphql-comment: #47954d;
+    --color-graphql-identifier: rgb(227, 17, 108);
+
+    /* UI colors */
+    --color-members-border: var(--ifm-color-secondary);
+    --color-docsearch-border: #b7b7c3;
+    --border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode theme */
+html[data-theme='dark'] {
+    --ifm-background-color: #09090b;
+    --ifm-heading-color: oklch(98.5% 0 0);
+    --ifm-navbar-background-color: transparent;
+    --border-color: oklch(26.9% 0 0);
+    --navbar-background-color-mobile: var(--ifm-background-color);
+    --ifm-card-background-color: transparent;
+    --ifm-color-content: oklch(91.97% 0.004 286.32);
+    --ifm-toc-border-color: var(--border-color);
+
+    /* Code colors in dark mode */
+    --docusaurus-highlighted-code-line-bg: rgba(15, 71, 117, 0.5);
+    --color-graphql-comment: #6ea372;
+    --color-graphql-identifier: rgb(255, 121, 198);
+
+    /* UI colors in dark mode */
+    --color-members-border: #333;
+    --body-background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 208, 255, 0.3), transparent);
+    --ifm-footer-background-color: var(--ifm-background-color);
+    --color-docsearch-border: #232347;
+    --ifm-footer-title-color: #ffffff;
+
+    /* Adjust primary color variants for dark mode */
+    --ifm-color-primary-lightest: rgba(23, 193, 255, 0.1);
+}
+
+/* Light mode specific */
+html[data-theme='light'] {
+    --ifm-background-color: #ffffff;
+}

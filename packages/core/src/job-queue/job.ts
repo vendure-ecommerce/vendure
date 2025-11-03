@@ -231,27 +231,55 @@ export class Job<T extends JobData<T> = any> {
      * already be serializable per the TS type, in practice data can slip through due to loss of
      * type safety.
      */
-    private ensureDataIsSerializable(data: any, depth = 0): any {
+    private ensureDataIsSerializable(
+        data: any,
+        depth = 0,
+        seen = new WeakMap<any, string[]>(),
+        path: string[] = [],
+    ): any {
         if (10 < depth) {
             return '[max depth reached]';
         }
-        depth++;
-        let output: any;
+        if (data === null || data === undefined) {
+            return data;
+        }
+        // Handle Date objects
         if (data instanceof Date) {
             return data.toISOString();
-        } else if (isObject(data)) {
-            if (!output) {
-                output = {};
+        }
+
+        if (typeof data === 'object' && data !== null) {
+            const seenData = seen.get(data);
+            if (seenData && seenData.length < path.length) {
+                return `[circular *${path.join('.')}]`;
             }
-            for (const key of Object.keys(data)) {
-                output[key] = this.ensureDataIsSerializable((data as any)[key], depth);
-            }
-            if (isClassInstance(data)) {
-                const descriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(data));
-                for (const name of Object.keys(descriptors)) {
-                    const descriptor = descriptors[name];
-                    if (typeof descriptor.get === 'function') {
-                        output[name] = (data as any)[name];
+            seen.set(data, path);
+        }
+
+        depth++;
+        let output: any;
+        if (isObject(data)) {
+            output = {};
+            // If the object has a `.toJSON()` function defined, then
+            // prefer it to any other type of serialization.
+            if (this.hasToJSONFunction(data)) {
+                output = data.toJSON();
+            } else {
+                for (const key of Object.keys(data)) {
+                    output[key] = this.ensureDataIsSerializable(
+                        (data as any)[key],
+                        depth,
+                        seen,
+                        path.concat(key),
+                    );
+                }
+                if (isClassInstance(data)) {
+                    const descriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(data));
+                    for (const name of Object.keys(descriptors)) {
+                        const descriptor = descriptors[name];
+                        if (typeof descriptor.get === 'function') {
+                            output[name] = (data as any)[name];
+                        }
                     }
                 }
             }
@@ -260,11 +288,15 @@ export class Job<T extends JobData<T> = any> {
                 output = [];
             }
             data.forEach((item, i) => {
-                output[i] = this.ensureDataIsSerializable(item, depth);
+                output[i] = this.ensureDataIsSerializable(item, depth, seen, path.concat(i.toString()));
             });
         } else {
             return data;
         }
         return output;
+    }
+
+    private hasToJSONFunction(obj: any): obj is { toJSON(): any } {
+        return typeof obj?.toJSON === 'function';
     }
 }

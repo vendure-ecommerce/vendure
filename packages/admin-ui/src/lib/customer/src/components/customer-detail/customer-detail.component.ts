@@ -75,6 +75,7 @@ export const CUSTOMER_DETAIL_QUERY = gql`
     templateUrl: './customer-detail.component.html',
     styleUrls: ['./customer-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerDetailComponent
     extends TypedBaseDetailComponent<typeof CustomerDetailQueryDocument, 'customer'>

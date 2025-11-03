@@ -19,6 +19,7 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
+import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { stockStatusExtension } from './api/api-extensions';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './api/fulltext-search.resolver';
 import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
@@ -164,6 +165,13 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicatio
                     event.channelId,
                 );
             }
+        });
+
+        this.eventBus.ofType(StockMovementEvent).subscribe(event => {
+            return this.searchIndexService.updateVariants(
+                event.ctx,
+                event.stockMovements.map(m => m.productVariant),
+            );
         });
 
         // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137

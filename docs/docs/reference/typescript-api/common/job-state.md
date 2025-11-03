@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobState
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2174" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2256" packageName="@vendure/common" />
 
 The state of a Job in the JobQueue
 

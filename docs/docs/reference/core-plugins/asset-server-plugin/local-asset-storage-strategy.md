@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LocalAssetStorageStrategy
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/local-asset-storage-strategy.ts" sourceLine="15" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/config/local-asset-storage-strategy.ts" sourceLine="15" packageName="@vendure/asset-server-plugin" />
 
 A persistence strategy which saves files to the local file system.
 

@@ -2,8 +2,8 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { RequestContext } from '../../common/request-context';
@@ -37,7 +37,9 @@ export class ProductOptionGroupEntityResolver {
         if (optionGroup.options) {
             options = optionGroup.options;
         } else {
-            const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id);
+            const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id, undefined, {
+                includeSoftDeleted: true,
+            });
             options = group?.options ?? [];
         }
         return options.filter(o => !o.deletedAt);

@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Payment
 
-<GenerationInfo sourceFile="packages/core/src/entity/payment/payment.entity.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/payment/payment.entity.ts" sourceLine="20" packageName="@vendure/core" />
 
 A Payment represents a single payment transaction and exists in a well-defined state
 defined by the <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> type.
 
 ```ts title="Signature"
-class Payment extends VendureEntity {
+class Payment extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Payment>)
     @Column() method: string;
     @Money() amount: number;
@@ -32,9 +32,14 @@ class Payment extends VendureEntity {
     order: Order;
     @OneToMany(type => Refund, refund => refund.payment)
     refunds: Refund[];
+    @Column(type => CustomPaymentFields)
+    customFields: CustomPaymentFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -83,6 +88,11 @@ class Payment extends VendureEntity {
 ### refunds
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>[]`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomPaymentFields`}   />
 
 
 

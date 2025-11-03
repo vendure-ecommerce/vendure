@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HardenPluginOptions
 
-<GenerationInfo sourceFile="packages/harden-plugin/src/types.ts" sourceLine="9" packageName="@vendure/harden-plugin" />
+<GenerationInfo sourceFile="packages/harden-plugin/src/types.ts" sourceLine="10" packageName="@vendure/harden-plugin" />
 
 Options that can be passed to the `.init()` static method of the HardenPlugin.
 
@@ -25,6 +25,7 @@ interface HardenPluginOptions {
     };
     hideFieldSuggestions?: boolean;
     apiMode?: 'dev' | 'prod';
+    skip?: (context: GraphQLRequestContext<any>) => Promise<boolean> | boolean;
 }
 ```
 
@@ -56,7 +57,7 @@ log level, and a breakdown of the calculation for each field will be logged at t
 This is very useful for tuning your complexity scores.
 ### customComplexityFactors
 
-<MemberInfo kind="property" type={`{         [path: string]: number;     }`}   />
+<MemberInfo kind="property" type={`{         [path: string]: number;     }`}   />
 
 This object allows you to tune the complexity weight of specific fields. For example,
 if you have a custom `stockLocations` field defined on the `ProductVariant` type, and
@@ -91,6 +92,19 @@ When set to `'prod'`, the plugin will disable dev-mode features of the GraphQL A
 
 - introspection
 - GraphQL playground
+### skip
+
+<MemberInfo kind="property" type={`(context: GraphQLRequestContext&#60;any&#62;) =&#62; Promise&#60;boolean&#62; | boolean`}   />
+
+Allows you to skip the complexity check for certain requests.
+
+*Example*
+
+```ts
+HardenPlugin.init({
+  skip: (context) => context.request.http.headers['x-storefront-ssr-auth'] === 'some-secret-token'
+}),
+```
 
 
 </div>

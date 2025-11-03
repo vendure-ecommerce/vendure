@@ -19,6 +19,7 @@ import { map, tap } from 'rxjs/operators';
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DashboardComponent implements OnInit {
     widgetLayout: WidgetLayout | undefined;

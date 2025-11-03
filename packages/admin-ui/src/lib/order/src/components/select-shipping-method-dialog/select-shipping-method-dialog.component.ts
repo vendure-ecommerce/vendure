@@ -14,6 +14,7 @@ type ShippingMethodQuote =
     templateUrl: './select-shipping-method-dialog.component.html',
     styleUrls: ['./select-shipping-method-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SelectShippingMethodDialogComponent implements OnInit, Dialog<string> {
     resolveWith: (result?: string) => void;

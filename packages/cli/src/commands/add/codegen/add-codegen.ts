@@ -1,9 +1,10 @@
-import { cancel, log, note, outro, spinner } from '@clack/prompts';
+import { cancel, log, note, spinner } from '@clack/prompts';
 import path from 'path';
 import { StructureKind } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
+import { resolvePluginFromOptions } from '../../../shared/plugin-resolution';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { getRelativeImportPath } from '../../../utilities/ast-utils';
@@ -13,6 +14,9 @@ import { CodegenConfigRef } from './codegen-config-ref';
 
 export interface AddCodegenOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addCodegenCommand = new CliCommand({
@@ -22,14 +26,22 @@ export const addCodegenCommand = new CliCommand({
     run: addCodegen,
 });
 
-async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
+export async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({
         providedVendurePlugin,
         cancelledMessage: 'Add codegen cancelled',
+        config: options?.config,
     });
-    const plugins = providedVendurePlugin
-        ? [providedVendurePlugin]
+
+    const { plugin: resolvedPlugin } = resolvePluginFromOptions(project, {
+        providedPlugin: providedVendurePlugin,
+        pluginName: options?.pluginName,
+        isNonInteractive: options?.isNonInteractive === true,
+    });
+
+    const plugins = resolvedPlugin
+        ? [resolvedPlugin]
         : await selectMultiplePluginClasses(project, 'Add codegen cancelled');
 
     const packageJson = new PackageJson(project);
@@ -76,10 +88,10 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
     if (!rootDir) {
         throw new Error('Could not find the root directory of the project');
     }
-    for (const plugin of plugins) {
+    for (const pluginRef of plugins) {
         const relativePluginPath = getRelativeImportPath({
             from: rootDir,
-            to: plugin.classDeclaration.getSourceFile(),
+            to: pluginRef.classDeclaration.getSourceFile(),
         });
         const generatedTypesPath = `${path.dirname(relativePluginPath)}/gql/generated.ts`;
         codegenFile.addEntryToGeneratesObject({
@@ -88,7 +100,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
             initializer: `{ plugins: ['typescript'] }`,
         });
 
-        if (plugin.hasUiExtensions()) {
+        if (pluginRef.hasUiExtensions()) {
             const uiExtensionsPath = `${path.dirname(relativePluginPath)}/ui`;
             codegenFile.addEntryToGeneratesObject({
                 name: `'${uiExtensionsPath}/gql/'`,
@@ -104,7 +116,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
         }
     }
 
-    packageJson.addScript('codegen', 'graphql-codegen --config codegen.ts');
+    packageJson.addScriptToRootPackageJson('codegen', 'graphql-codegen --config codegen.ts');
 
     configSpinner.stop('Configured codegen file');
 
@@ -112,7 +124,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
 
     const nextSteps = [
         `You can run codegen by doing the following:`,
-        `1. Ensure your dev server is running`,
+        `1. Run "npx vendure schema" to generate a schema file`,
         `2. Run "npm run codegen"`,
     ];
     note(nextSteps.join('\n'));

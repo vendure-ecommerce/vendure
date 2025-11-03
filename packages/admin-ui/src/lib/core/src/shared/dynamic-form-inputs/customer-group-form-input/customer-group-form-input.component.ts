@@ -22,6 +22,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './customer-group-form-input.component.html',
     styleUrls: ['./customer-group-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'customer-group-form-input';

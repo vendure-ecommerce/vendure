@@ -5,6 +5,7 @@ import {
     CreateProductMutationVariables,
     CreateProductVariantsMutation,
     CreateProductVariantsMutationVariables,
+    TestCreateStockLocationDocument,
 } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
@@ -16,7 +17,7 @@ import { Stripe } from 'stripe';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
@@ -174,6 +175,7 @@ describe('Stripe payments', () => {
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
+            'metadata[languageCode]': 'en',
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
     });
@@ -206,6 +208,7 @@ describe('Stripe payments', () => {
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
+            'metadata[languageCode]': 'en',
             'metadata[customerEmail]': customers[0].emailAddress,
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
@@ -239,9 +242,51 @@ describe('Stripe payments', () => {
             description: `Order #${activeOrder!.code} for ${activeOrder!.customer!.emailAddress}`,
             'automatic_payment_methods[enabled]': 'true',
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[languageCode]': 'en',
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
         });
+        expect(createStripePaymentIntent).toEqual('test-client-secret');
+        StripePlugin.options.paymentIntentCreateParams = undefined;
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/3183
+    it('should attach additional options to payment intent using requestOptions', async () => {
+        StripePlugin.options.requestOptions = (injector, ctx, currentOrder) => {
+            return {
+                stripeAccount: 'acct_connected',
+            };
+        };
+        let connectedAccountHeader: any;
+        let createPaymentIntentPayload: any;
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        nock('https://api.stripe.com/', {
+            reqheaders: {
+                'Stripe-Account': headerValue => {
+                    connectedAccountHeader = headerValue;
+                    return true;
+                },
+            },
+        })
+            .post('/v1/payment_intents', body => {
+                createPaymentIntentPayload = body;
+                return true;
+            })
+            .reply(200, {
+                client_secret: 'test-client-secret',
+            });
+        const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createPaymentIntentPayload).toEqual({
+            amount: activeOrder?.totalWithTax.toString(),
+            currency: activeOrder?.currencyCode?.toLowerCase(),
+            customer: 'new-customer-id',
+            'automatic_payment_methods[enabled]': 'true',
+            'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[orderId]': '1',
+            'metadata[languageCode]': 'en',
+            'metadata[orderCode]': activeOrder?.code,
+        });
+        expect(connectedAccountHeader).toEqual('acct_connected');
         expect(createStripePaymentIntent).toEqual('test-client-secret');
         StripePlugin.options.paymentIntentCreateParams = undefined;
     });
@@ -390,6 +435,50 @@ describe('Stripe payments', () => {
         expect(result.status).toEqual(200);
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/3249
+    it('Should skip events without expected metadata, when the plugin option is set', async () => {
+        StripePlugin.options.skipPaymentIntentsWithoutExpectedMetadata = true;
+
+        const MOCKED_WEBHOOK_PAYLOAD = {
+            id: 'evt_0',
+            object: 'event',
+            api_version: '2022-11-15',
+            data: {
+                object: {
+                    id: 'pi_0',
+                    currency: 'usd',
+                    metadata: {
+                        dummy: 'not a vendure payload',
+                    },
+                    amount_received: 10000,
+                    status: 'succeeded',
+                },
+            },
+            livemode: false,
+            pending_webhooks: 1,
+            request: {
+                id: 'req_0',
+                idempotency_key: '00000000-0000-0000-0000-000000000000',
+            },
+            type: 'payment_intent.succeeded',
+        };
+
+        const payloadString = JSON.stringify(MOCKED_WEBHOOK_PAYLOAD, null, 2);
+        const stripeWebhooks = new Stripe('test-api-secret', { apiVersion: '2023-08-16' }).webhooks;
+        const header = stripeWebhooks.generateTestHeaderString({
+            payload: payloadString,
+            secret: 'test-signing-secret',
+        });
+
+        const result = await fetch(`http://localhost:${serverPort}/payments/stripe`, {
+            method: 'post',
+            body: payloadString,
+            headers: { 'Content-Type': 'application/json', 'Stripe-Signature': header },
+        });
+
+        expect(result.status).toEqual(200);
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/1630
     describe('currencies with no fractional units', () => {
         let japanProductId: string;
@@ -412,6 +501,12 @@ describe('Stripe payments', () => {
 
             adminClient.setChannelToken(JAPAN_CHANNEL_TOKEN);
             shopClient.setChannelToken(JAPAN_CHANNEL_TOKEN);
+
+            const { createStockLocation } = await adminClient.query(TestCreateStockLocationDocument, {
+                input: {
+                    name: 'Japan warehouse',
+                },
+            });
 
             const { createProduct } = await adminClient.query<
                 CreateProductMutation,
@@ -438,7 +533,12 @@ describe('Stripe payments', () => {
                         sku: 'PV1',
                         optionIds: [],
                         price: 5000,
-                        stockOnHand: 100,
+                        stockLevels: [
+                            {
+                                stockLocationId: createStockLocation.id,
+                                stockOnHand: 100,
+                            },
+                        ],
                         translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
                     },
                 ],

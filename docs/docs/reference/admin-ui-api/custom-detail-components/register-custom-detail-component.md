@@ -63,7 +63,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function registerCustomDetailComponent(config: CustomDetailComponentConfig): Provider
+function registerCustomDetailComponent(config: CustomDetailComponentConfig): void
 ```
 Parameters
 

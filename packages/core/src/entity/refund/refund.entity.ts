@@ -2,8 +2,10 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 
 import { PaymentMetadata } from '../../common/types/common-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 import { VendureEntity } from '../base/base.entity';
+import { CustomRefundFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { Money } from '../money.decorator';
 import { RefundLine } from '../order-line-reference/refund-line.entity';
@@ -15,7 +17,7 @@ import { Payment } from '../payment/payment.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Refund extends VendureEntity {
+export class Refund extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Refund>) {
         super(input);
     }
@@ -61,4 +63,7 @@ export class Refund extends VendureEntity {
     paymentId: ID;
 
     @Column('simple-json') metadata: PaymentMetadata;
+
+    @Column(type => CustomRefundFields)
+    customFields: CustomRefundFields;
 }

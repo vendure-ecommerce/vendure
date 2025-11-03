@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiAppConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="349" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="355" packageName="@vendure/common" />
 
 Configures the path to a custom-build of the Admin UI app.
 

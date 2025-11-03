@@ -15,6 +15,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -22,6 +23,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { StockLevel } from '../../entity/stock-level/stock-level.entity';
 import { StockLocation } from '../../entity/stock-location/stock-location.entity';
+import { EventBus, StockLocationEvent } from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
@@ -31,6 +33,7 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 
 @Injectable()
+@Instrument()
 export class StockLocationService {
     constructor(
         private requestContextService: RequestContextService,
@@ -41,6 +44,7 @@ export class StockLocationService {
         private configService: ConfigService,
         private requestContextCache: RequestContextCacheService,
         private customFieldRelationService: CustomFieldRelationService,
+        private eventBus: EventBus,
     ) {}
 
     async initStockLocations() {
@@ -81,6 +85,7 @@ export class StockLocationService {
         );
         await this.channelService.assignToCurrentChannel(stockLocation, ctx);
         await this.connection.getRepository(ctx, StockLocation).save(stockLocation);
+        await this.eventBus.publish(new StockLocationEvent(ctx, stockLocation, 'created', input));
         return stockLocation;
     }
 
@@ -94,6 +99,7 @@ export class StockLocationService {
             input,
             updatedStockLocation,
         );
+        await this.eventBus.publish(new StockLocationEvent(ctx, updatedStockLocation, 'updated', input));
         return assertFound(this.findOne(ctx, updatedStockLocation.id));
     }
 
@@ -147,7 +153,11 @@ export class StockLocationService {
             }
         }
         try {
+            const deletedStockLocation = new StockLocation(stockLocation);
             await this.connection.getRepository(ctx, StockLocation).remove(stockLocation);
+            await this.eventBus.publish(
+                new StockLocationEvent(ctx, deletedStockLocation, 'deleted', input.id),
+            );
         } catch (e: any) {
             return {
                 result: DeletionResult.NOT_DELETED,

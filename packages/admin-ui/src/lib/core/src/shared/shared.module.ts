@@ -146,6 +146,7 @@ import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 import { RichTextFormInputComponent } from './dynamic-form-inputs/rich-text-form-input/rich-text-form-input.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
+import { StructFormInputComponent } from './dynamic-form-inputs/struct-form-input/struct-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
@@ -351,6 +352,7 @@ const DYNAMIC_FORM_INPUTS = [
     HtmlEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
+    StructFormInputComponent,
 ];
 
 @NgModule({

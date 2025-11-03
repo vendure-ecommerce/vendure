@@ -19,7 +19,9 @@ const specFileToIgnore = [
     'shop-definitions',
     'custom-fields.e2e-spec',
     'custom-field-relations.e2e-spec',
+    'custom-field-struct.e2e-spec',
     'custom-field-permissions.e2e-spec',
+    'custom-field-default-values.e2e-spec',
     'order-item-price-calculation-strategy.e2e-spec',
     'list-query-builder.e2e-spec',
     'shop-order.e2e-spec',
@@ -33,6 +35,7 @@ const specFileToIgnore = [
     'error-handler-strategy.e2e-spec',
     'order-multi-vendor.e2e-spec',
     'auth.e2e-spec',
+    'order-line-custom-fields.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,

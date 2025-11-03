@@ -33,6 +33,7 @@ export const GET_COUNTRY_DETAIL = gql`
     templateUrl: './country-detail.component.html',
     styleUrls: ['./country-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CountryDetailComponent
     extends TypedBaseDetailComponent<typeof GetCountryDetailDocument, 'country'>

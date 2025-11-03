@@ -1,10 +1,10 @@
-import { Module, Provider, Type as NestType } from '@nestjs/common';
+import { Module, Type as NestType, Provider } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
-import { DocumentNode, GraphQLScalarType } from 'graphql';
+import { DocumentNode, GraphQLScalarType, GraphQLSchema } from 'graphql';
 
 import { RuntimeVendureConfig } from '../config/vendure-config';
 
@@ -43,6 +43,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
      */
     entities?: Array<Type<any>> | (() => Array<Type<any>>);
+    dashboard?: DashboardExtension;
     /**
      * @description
      * The plugin should define a valid [semver version string](https://www.npmjs.com/package/semver) to indicate which versions of
@@ -53,6 +54,11 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * guaranteed to be compatible with the current version of Vendure.
      *
      * To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
+     *
+     * :::note
+     * Since Vendure v3.1.0, it is possible to ignore compatibility errors for specific plugins by
+     * passing the `ignoreCompatibilityErrorsForPlugins` option to the {@link bootstrap} function.
+     * :::
      *
      * @example
      * ```ts
@@ -75,6 +81,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
      *
      * @example
      * ```ts
@@ -84,7 +91,7 @@ export interface APIExtensionDefinition {
      * }`;
      * ```
      */
-    schema?: DocumentNode | (() => DocumentNode | undefined);
+    schema?: DocumentNode | ((schema?: GraphQLSchema) => DocumentNode | undefined);
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
@@ -112,6 +119,12 @@ export interface APIExtensionDefinition {
 export type PluginConfigurationFn = (
     config: RuntimeVendureConfig,
 ) => RuntimeVendureConfig | Promise<RuntimeVendureConfig>;
+
+export type DashboardExtension =
+    | string
+    | {
+          location: string;
+      };
 
 /**
  * @description

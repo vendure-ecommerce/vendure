@@ -7,13 +7,16 @@ import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { createFile, getRelativeImportPath } from '../../../utilities/ast-utils';
+import { createFile, getPluginClasses, getRelativeImportPath } from '../../../utilities/ast-utils';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
 
 export interface AddUiExtensionsOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
@@ -23,11 +26,38 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
     run: options => addUiExtensions(options),
 });
 
-async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
+export async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin });
-    const vendurePlugin =
-        providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
+    const { project } = await analyzeProject({ providedVendurePlugin, config: options?.config });
+
+    // Detect non-interactive mode
+    const isNonInteractive = options?.isNonInteractive === true;
+
+    let vendurePlugin: VendurePluginRef | undefined = providedVendurePlugin;
+
+    // If a plugin name was provided, try to find it
+    if (!vendurePlugin && options?.pluginName) {
+        const pluginClasses = getPluginClasses(project);
+        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
+
+        if (!foundPlugin) {
+            // List available plugins if the specified one wasn't found
+            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
+                    availablePlugins.map(name => `  - ${name as string}`).join('\n'),
+            );
+        }
+
+        vendurePlugin = new VendurePluginRef(foundPlugin);
+    }
+
+    // In non-interactive mode, we need a plugin specified
+    if (isNonInteractive && !vendurePlugin) {
+        throw new Error('Plugin must be specified when running in non-interactive mode');
+    }
+
+    vendurePlugin = vendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
     const packageJson = new PackageJson(project);
 
     if (vendurePlugin.hasUiExtensions()) {
@@ -78,7 +108,7 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
 
     log.success('Created UI extension scaffold');
 
-    const vendureConfig = new VendureConfigRef(project);
+    const vendureConfig = new VendureConfigRef(project, options?.config);
     if (!vendureConfig) {
         log.warning(
             `Could not find the VendureConfig declaration in your project. You will need to manually set up the compileUiExtensions function.`,

@@ -35,6 +35,7 @@ export function jsonValidator(): ValidatorFn {
     templateUrl: './json-editor-form-input.component.html',
     styleUrls: ['./json-editor-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class JsonEditorFormInputComponent
     extends BaseCodeEditorFormInputComponent

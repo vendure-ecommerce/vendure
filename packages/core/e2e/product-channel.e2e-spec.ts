@@ -626,4 +626,55 @@ describe('ChannelAware Products and ProductVariants', () => {
             ]);
         });
     });
+
+    describe('querying products', () => {
+        // https://github.com/vendure-ecommerce/vendure/issues/2924
+        it('find by slug with multiple channels', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const { createProduct: secondChannelProduct } = await adminClient.query(CreateProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel 2 Product',
+                            slug: 'unique-slug',
+                            description: 'Channel 2 product',
+                        },
+                    ],
+                },
+            });
+
+            expect(secondChannelProduct.slug).toBe('unique-slug');
+
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+
+            const { createProduct: thirdChannelProduct } = await adminClient.query(CreateProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel 3 Product',
+                            slug: 'unique-slug',
+                            description: 'Channel 3 product',
+                        },
+                    ],
+                },
+            });
+
+            expect(thirdChannelProduct.slug).toBe('unique-slug');
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { product: result1 } = await adminClient.query(GetProductWithVariantsDocument, {
+                slug: 'unique-slug',
+            });
+            expect(result1?.name).toBe('Channel 2 Product');
+
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+            const { product: result2 } = await adminClient.query(GetProductWithVariantsDocument, {
+                slug: 'unique-slug',
+            });
+            expect(result2?.name).toBe('Channel 3 Product');
+        });
+    });
 });

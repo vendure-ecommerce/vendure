@@ -23,6 +23,7 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -44,7 +45,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
-
 /**
  * @description
  * Contains methods relating to {@link Channel} entities.
@@ -52,6 +52,7 @@ import { GlobalSettingsService } from './global-settings.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ChannelService {
     private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;
 
@@ -111,7 +112,8 @@ export class ChannelService {
     /**
      * @description
      * Assigns a ChannelAware entity to the default Channel as well as any channel
-     * specified in the RequestContext.
+     * specified in the RequestContext. This method will not save the entity to the database, but
+     * assigns the `channels` property of the entity.
      */
     async assignToCurrentChannel<T extends ChannelAware & VendureEntity>(
         entity: T,
@@ -171,7 +173,7 @@ export class ChannelService {
 
     /**
      * @description
-     * Assigns the entity to the given Channels and saves.
+     * Assigns the entity to the given Channels and saves all changes to the database.
      */
     async assignToChannels<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
@@ -185,7 +187,7 @@ export class ChannelService {
         // so that this join could be done prior to invoking this method.
         // TODO: overload the assignToChannels method to allow it to take an entity instance
         if (entityType === (Order as any)) {
-            relations.push('lines', 'shippingLines');
+            relations.push('lines', 'shippingLines', 'surcharges');
         }
         const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
             loadEagerRelations: false,
@@ -457,6 +459,12 @@ export class ChannelService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
+        if (channel.code === DEFAULT_CHANNEL_CODE)
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('error.cannot-delete-default-channel'),
+            };
+
         const deletedChannel = new Channel(channel);
         await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);

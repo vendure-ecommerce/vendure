@@ -25,6 +25,7 @@ import {
     InternalServerError,
     UserInputError,
 } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -50,6 +51,7 @@ import { ChannelService } from './channel.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class RoleService {
     constructor(
         private connection: TransactionalConnection,
@@ -267,7 +269,7 @@ export class RoleService {
                 input.permissions,
             );
         }
-        const updatedRole = patchEntity(role, {
+        patchEntity(role, {
             code: input.code,
             description: input.description,
             permissions: input.permissions
@@ -275,11 +277,12 @@ export class RoleService {
                 : undefined,
         });
         if (targetChannels) {
-            updatedRole.channels = targetChannels;
+            role.channels = targetChannels;
         }
-        await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
-        await this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
-        return await assertFound(this.findOne(ctx, role.id));
+        await this.connection.getRepository(ctx, Role).save(role, { reload: false });
+        const updatedRole = await assertFound(this.findOne(ctx, role.id));
+        await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
+        return updatedRole;
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {

@@ -1,16 +1,18 @@
-import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
+import { Adjustment, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
-import { OrderLine } from '..';
 import { Calculated } from '../../common/calculated-decorator';
 import { roundMoney } from '../../common/round-money';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { CustomShippingLineFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { Money } from '../money.decorator';
 import { Order } from '../order/order.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
 /**
@@ -22,7 +24,7 @@ import { ShippingMethod } from '../shipping-method/shipping-method.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ShippingLine extends VendureEntity {
+export class ShippingLine extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<ShippingLine>) {
         super(input);
     }
@@ -52,6 +54,9 @@ export class ShippingLine extends VendureEntity {
 
     @OneToMany(type => OrderLine, orderLine => orderLine.shippingLine)
     orderLines: OrderLine[];
+
+    @Column(type => CustomShippingLineFields)
+    customFields: CustomShippingLineFields;
 
     @Calculated()
     get price(): number {

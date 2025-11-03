@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './fulfillment-state-label.component.html',
     styleUrls: ['./fulfillment-state-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FulfillmentStateLabelComponent {
     @Input() state: string;

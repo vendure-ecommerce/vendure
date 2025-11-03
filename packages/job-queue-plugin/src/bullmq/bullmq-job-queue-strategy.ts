@@ -11,31 +11,42 @@ import {
     PaginatedList,
 } from '@vendure/core';
 import Bull, {
+    Job as BullJob,
     ConnectionOptions,
     JobType,
     Processor,
     Queue,
     Worker,
     WorkerOptions,
-    Job as BullJob,
 } from 'bullmq';
 import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
-import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
+import {
+    ALL_JOB_TYPES,
+    BULLMQ_PLUGIN_OPTIONS,
+    DEFAULT_CONCURRENCY,
+    loggerCtx,
+    QUEUE_NAME,
+} from './constants';
+import { JobListIndexService } from './job-list-index.service';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { getJobsByType } from './scripts/get-jobs-by-type';
 import { BullMQPluginOptions, CustomScriptDefinition } from './types';
-
-const QUEUE_NAME = 'vendure-job-queue';
-const DEFAULT_CONCURRENCY = 3;
+import { getPrefix } from './utils';
 
 /**
  * @description
  * This JobQueueStrategy uses [BullMQ](https://docs.bullmq.io/) to implement a push-based job queue
  * on top of Redis. It should not be used alone, but as part of the {@link BullMQJobQueuePlugin}.
+ *
+ * Note: To use this strategy, you need to manually install the `bullmq` package:
+ *
+ * ```shell
+ * npm install bullmq@^5.4.2
+ * ```
  *
  * @docsCategory core plugins/JobQueuePlugin
  */
@@ -46,34 +57,30 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private worker: Worker;
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
-    private queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
+    private jobListIndexService: JobListIndexService;
+    private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
     private cancellationSub: Redis;
-    private cancelRunningJob$ = new Subject<string>();
+    private readonly cancelRunningJob$ = new Subject<string>();
     private readonly CANCEL_JOB_CHANNEL = 'cancel-job';
     private readonly CANCELLED_JOB_LIST_NAME = 'vendure:cancelled-jobs';
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
+        this.jobListIndexService = injector.get(JobListIndexService);
         this.options = {
             ...options,
             workerOptions: {
+                ...options.workerOptions,
                 removeOnComplete: options.workerOptions?.removeOnComplete ?? {
                     age: 60 * 60 * 24 * 30,
                     count: 5000,
                 },
-                removeOnFail: options.workerOptions?.removeOnFail ?? {
-                    age: 60 * 60 * 24 * 30,
-                    count: 5000,
-                },
+                removeOnFail: options.workerOptions?.removeOnFail ?? { age: 60 * 60 * 24 * 30, count: 5000 },
             },
         };
         this.connectionOptions =
             options.connection ??
-            ({
-                host: 'localhost',
-                port: 6379,
-                maxRetriesPerRequest: null,
-            } as RedisOptions);
+            ({ host: 'localhost', port: 6379, maxRetriesPerRequest: null } as RedisOptions);
 
         this.redisConnection =
             this.connectionOptions instanceof EventEmitter
@@ -91,10 +98,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             Logger.info('Connected to Redis ✔', loggerCtx);
         }
 
-        this.queue = new Queue(QUEUE_NAME, {
-            ...options.queueOptions,
-            connection: this.redisConnection,
-        })
+        this.queue = new Queue(QUEUE_NAME, { ...options.queueOptions, connection: this.redisConnection })
             .on('error', (e: any) =>
                 Logger.error(`BullMQ Queue error: ${JSON.stringify(e.message)}`, loggerCtx, e.stack),
             )
@@ -147,6 +151,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         };
         // Subscription-mode Redis connection for the cancellation messages
         this.cancellationSub = new Redis(this.connectionOptions as RedisOptions);
+        this.jobListIndexService.register(this.redisConnection, this.queue);
     }
 
     async destroy() {
@@ -159,9 +164,11 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             delay: 1000,
             type: 'exponential',
         };
+        const customJobOptions = this.options.setJobOptions?.(job.queueName, job) ?? {};
         const bullJob = await this.queue.add(job.queueName, job.data, {
-            attempts: retries + 1,
-            backoff,
+            attempts: typeof retries === 'number' ? retries + 1 : 1,
+            backoff: typeof backoff === 'number' || 'type' in backoff ? backoff : undefined,
+            ...customJobOptions,
         });
         return this.createVendureJob(bullJob);
     }
@@ -194,7 +201,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         if (stateFilter?.eq) {
             switch (stateFilter.eq) {
                 case 'PENDING':
-                    jobTypes = ['wait'];
+                    jobTypes = ['wait', 'waiting-children', 'prioritized'];
                     break;
                 case 'RUNNING':
                     jobTypes = ['active'];
@@ -218,7 +225,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             jobTypes =
                 settledFilter.eq === true
                     ? ['completed', 'failed']
-                    : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused'];
+                    : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused', 'prioritized'];
         }
 
         let items: Bull.Job[] = [];
@@ -243,10 +250,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             throw new InternalServerError(e.message);
         }
 
-        return {
-            items: await Promise.all(items.map(bullJob => this.createVendureJob(bullJob))),
-            totalItems,
-        };
+        return { items: await Promise.all(items.map(bullJob => this.createVendureJob(bullJob))), totalItems };
     }
 
     async findManyById(ids: ID[]): Promise<Job[]> {
@@ -309,7 +313,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
-    private subscribeToCancellationEvents = (channel: string, jobId: string) => {
+    private readonly subscribeToCancellationEvents = (channel: string, jobId: string) => {
         if (channel === this.CANCEL_JOB_CHANNEL && jobId) {
             this.cancelRunningJob$.next(jobId);
         }
@@ -337,10 +341,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                             } (${activeJobs.map(j => j.id).join(', ')})...`,
                             loggerCtx,
                         );
-                        timer = setTimeout(checkActive, 2000);
+                        timer = setTimeout(() => {
+                            void checkActive();
+                        }, 2000);
                     }
                 };
-                timer = setTimeout(checkActive, 2000);
+                timer = setTimeout(() => {
+                    void checkActive();
+                }, 2000);
 
                 await this.worker.close();
                 Logger.info(`Worker closed`, loggerCtx);
@@ -382,30 +390,33 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     private async getState(bullJob: Bull.Job): Promise<JobState> {
         const jobId = bullJob.id?.toString();
-
-        if ((await bullJob.isWaiting()) || (await bullJob.isWaitingChildren())) {
-            return JobState.PENDING;
-        }
-        if (await bullJob.isActive()) {
-            const isCancelled =
-                jobId && (await this.redisConnection.sismember(this.CANCELLED_JOB_LIST_NAME, jobId));
-            if (isCancelled) {
-                return JobState.CANCELLED;
-            } else {
-                return JobState.RUNNING;
+        const state = await bullJob.getState();
+        switch (state) {
+            case 'completed':
+                return JobState.COMPLETED;
+            case 'failed':
+                return JobState.FAILED;
+            case 'waiting':
+            case 'waiting-children':
+            case 'prioritized':
+                return JobState.PENDING;
+            case 'delayed':
+                return JobState.RETRYING;
+            case 'active': {
+                const isCancelled =
+                    jobId && (await this.redisConnection.sismember(this.CANCELLED_JOB_LIST_NAME, jobId));
+                return isCancelled ? JobState.CANCELLED : JobState.RUNNING;
+            }
+            case 'unknown':
+            default: {
+                Logger.error(
+                    `Could not determine job state for job ${jobId ?? '(unknown ID)'}: ${state}`,
+                    loggerCtx,
+                );
+                // We need to return a valid state, so we default to FAILED.
+                return JobState.FAILED;
             }
         }
-        if (await bullJob.isDelayed()) {
-            return JobState.RETRYING;
-        }
-        if (await bullJob.isFailed()) {
-            return JobState.FAILED;
-        }
-        if (await bullJob.isCompleted()) {
-            return JobState.COMPLETED;
-        }
-        throw new InternalServerError('Could not determine job state');
-        // TODO: how to handle "cancelled" state? Currently when we cancel a job, we simply remove all record of it.
     }
 
     private callCustomScript<T, Args extends any[]>(
@@ -413,8 +424,9 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         args: Args,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const prefix = getPrefix(this.options);
             (this.redisConnection as any)[scriptDef.name](
-                `bull:${this.queue.name}:`,
+                `${prefix}:${this.queue.name}:`,
                 ...args,
                 (err: any, result: any) => {
                     if (err) {

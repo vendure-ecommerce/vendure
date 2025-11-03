@@ -72,6 +72,35 @@ export const config: VendureConfig = {
 For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs](/reference/core-plugins/harden-plugin/).
 :::
 
+### Harden the AssetServerPlugin
+
+If you are using the [AssetServerPlugin](/reference/core-plugins/asset-server-plugin/), it is possible by default to use the dynamic
+image transform feature to overload the server with requests for new image sizes & formats. To prevent this, you can
+configure the plugin to only allow transformations for the preset sizes, and limited quality levels and formats.
+Since v3.1 we ship the [PresetOnlyStrategy](/reference/core-plugins/asset-server-plugin/preset-only-strategy/) for this purpose, and
+you can also create your own strategies.
+
+```ts
+import { VendureConfig } from '@vendure/core';
+import { AssetServerPlugin, PresetOnlyStrategy } from '@vendure/asset-server-plugin';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    AssetServerPlugin.init({
+      // ...
+      // highlight-start  
+      imageTransformStrategy: new PresetOnlyStrategy({
+        defaultPreset: 'large',
+        permittedQuality: [0, 50, 75, 85, 95],
+        permittedFormats: ['jpg', 'webp', 'avif'],
+        allowFocalPoint: false,
+      }),
+      // highlight-end
+    }),
+  ]
+};
+```
 
 ## OWASP Top Ten Security Assessment
 

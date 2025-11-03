@@ -30,10 +30,10 @@ class OrderModification extends VendureEntity {
     surcharges: Surcharge[];
     @Money()
     priceChange: number;
-    @OneToOne(type => Payment)
+    @ManyToOne(type => Payment)
     @JoinColumn()
     payment?: Payment;
-    @OneToOne(type => Refund)
+    @ManyToOne(type => Refund)
     @JoinColumn()
     refund?: Refund;
     @Column('simple-json', { nullable: true }) shippingAddressChange: OrderAddress;

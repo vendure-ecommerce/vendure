@@ -21,6 +21,7 @@ import { AddressDetailDialogComponent } from '../address-detail-dialog/address-d
     templateUrl: './address-card.component.html',
     styleUrls: ['./address-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddressCardComponent implements OnInit, OnChanges {
     @Input() addressForm: UntypedFormGroup;
@@ -34,7 +35,10 @@ export class AddressCardComponent implements OnInit, OnChanges {
     @Output() deleteAddress = new EventEmitter<string>();
     private dataDependenciesPopulated = new BehaviorSubject<boolean>(false);
 
-    constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private modalService: ModalService,
+        private changeDetector: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         const streetLine1 = this.addressForm.get('streetLine1') as UntypedFormControl;

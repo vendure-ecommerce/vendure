@@ -43,6 +43,7 @@ import { DataService } from '../../../data/providers/data.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
     @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();

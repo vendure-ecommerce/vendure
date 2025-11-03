@@ -271,6 +271,48 @@ describe('Draft Orders resolver', () => {
         });
     });
 
+    it('unsetDraftOrderShippingAddress', async () => {
+        const { unsetDraftOrderShippingAddress } = await adminClient.query<
+            Codegen.UnsetDraftOrderShippingAddressMutation,
+            Codegen.UnsetDraftOrderShippingAddressMutationVariables
+        >(UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER, {
+            orderId: draftOrder.id,
+        });
+
+        expect(unsetDraftOrderShippingAddress.shippingAddress).toEqual({
+            company: null,
+            fullName: null,
+            phoneNumber: null,
+            streetLine2: null,
+            province: null,
+            city: null,
+            country: null,
+            postalCode: null,
+            streetLine1: null,
+        });
+    });
+
+    it('unsetDraftOrderBillingAddress', async () => {
+        const { unsetDraftOrderBillingAddress } = await adminClient.query<
+            Codegen.UnsetDraftOrderBillingAddressMutation,
+            Codegen.UnsetDraftOrderBillingAddressMutationVariables
+        >(UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER, {
+            orderId: draftOrder.id,
+        });
+
+        expect(unsetDraftOrderBillingAddress.billingAddress).toEqual({
+            company: null,
+            fullName: null,
+            phoneNumber: null,
+            streetLine2: null,
+            province: null,
+            city: null,
+            country: null,
+            postalCode: null,
+            streetLine1: null,
+        });
+    });
+
     it('applyCouponCodeToDraftOrder', async () => {
         const { addItemToDraftOrder } = await adminClient.query<
             Codegen.AddItemToDraftOrderMutation,
@@ -339,6 +381,15 @@ describe('Draft Orders resolver', () => {
                 name: 'Express Shipping',
                 price: 1000,
                 priceWithTax: 1000,
+            },
+            {
+                code: 'express-shipping-taxed',
+                description: '',
+                id: 'T_3',
+                metadata: null,
+                name: 'Express Shipping (Taxed)',
+                price: 1000,
+                priceWithTax: 1200,
             },
         ]);
     });
@@ -466,6 +517,30 @@ export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
 export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
     mutation SetDraftOrderBillingAddress($orderId: ID!, $input: CreateAddressInput!) {
         setDraftOrderBillingAddress(orderId: $orderId, input: $input) {
+            ...OrderWithLines
+            billingAddress {
+                ...ShippingAddress
+            }
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderShippingAddress($orderId: ID!) {
+        unsetDraftOrderShippingAddress(orderId: $orderId) {
+            ...OrderWithLines
+            shippingAddress {
+                ...ShippingAddress
+            }
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderBillingAddress($orderId: ID!) {
+        unsetDraftOrderBillingAddress(orderId: $orderId) {
             ...OrderWithLines
             billingAddress {
                 ...ShippingAddress

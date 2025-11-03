@@ -27,7 +27,7 @@ In addition to the library, there is also a full application located at [./src/a
 
 ## Localization
 
-Localization of UI strings is handled by [ngx-translate](http://www.ngx-translate.com/). The translation strings should use the [ICU MessageFormat](http://userguide.icu-project.org/formatparse/messages).
+Localization of UI strings is handled by [ngx-translate](https://ngx-translate.org). The translation strings should use the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages).
 
 Translation keys are automatically extracted by running:
 ```

@@ -231,16 +231,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-grid" *ngIf="addItemSelectedVariant">
-                        <ng-container *ngFor="let customField of orderLineCustomFields">
-                            <vdr-custom-field-control
-                                [readonly]="!addItemSelectedVariant"
-                                [customField]="customField"
-                                [customFieldsFormGroup]="addItemCustomFieldsForm"
-                                entityName="OrderLine"
-                                [compact]="true"
-                            ></vdr-custom-field-control>
-                        </ng-container>
+                    <div *ngIf="addItemSelectedVariant">
+                        <vdr-tabbed-custom-fields
+                            entityName="Order"
+                            [customFields]="orderLineCustomFields"
+                            [customFieldsFormGroup]="addItemCustomFieldsForm"
+                        ></vdr-tabbed-custom-fields>
                     </div>
                 </div>
                 <div class="flex-spacer"></div>

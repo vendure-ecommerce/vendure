@@ -5,11 +5,12 @@ import {
     DeletionResult,
     UpdateCountryInput,
 } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -17,7 +18,6 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Address } from '../../entity';
 import { Country } from '../../entity/region/country.entity';
 import { RegionTranslation } from '../../entity/region/region-translation.entity';
-import { Region } from '../../entity/region/region.entity';
 import { EventBus } from '../../event-bus';
 import { CountryEvent } from '../../event-bus/events/country-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -31,6 +31,7 @@ import { TranslatorService } from '../helpers/translator/translator.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CountryService {
     constructor(
         private connection: TransactionalConnection,

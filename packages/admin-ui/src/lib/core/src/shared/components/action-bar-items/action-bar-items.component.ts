@@ -10,6 +10,7 @@ import { ActionBarBaseComponent } from './action-bar-base.component';
     templateUrl: './action-bar-items.component.html',
     styleUrls: ['./action-bar-items.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ActionBarItemsComponent extends ActionBarBaseComponent<ActionBarItem> implements OnInit {
     ngOnInit() {

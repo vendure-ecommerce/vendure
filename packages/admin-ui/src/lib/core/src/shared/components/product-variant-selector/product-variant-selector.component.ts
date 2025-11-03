@@ -13,7 +13,7 @@ import { DataService } from '../../../data/providers/data.service';
  * @example
  * ```HTML
  * <vdr-product-variant-selector
- *   (productSelected)="selectResult($event)"></vdr-product-selector>
+ *   (productSelected)="selectResult($event)"></vdr-product-variant-selector>
  * ```
  *
  * @docsCategory components
@@ -23,6 +23,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './product-variant-selector.component.html',
     styleUrls: ['./product-variant-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ProductVariantSelectorComponent implements OnInit {
     searchInput$ = new Subject<string>();

@@ -88,14 +88,15 @@ export type ID = string | number;
  * string       | varchar                               | String
  * localeString | varchar                               | String
  * text         | longtext(m), text(p,s)                | String
- * localeText    | longtext(m), text(p,s)                | String
+ * localeText   | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * struct       | json (m), jsonb (p), text (s)         | JSON
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
- * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#custom-field-config-properties)
+ * Additionally, the CustomFieldType also dictates which [configuration options](/guides/developer-guide/custom-fields/#custom-field-config-properties)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
@@ -109,7 +110,10 @@ export type CustomFieldType =
     | 'datetime'
     | 'relation'
     | 'text'
-    | 'localeText';
+    | 'localeText'
+    | 'struct';
+
+export type StructFieldType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'text';
 
 /**
  * @description
@@ -149,7 +153,8 @@ export type DefaultFormComponentId =
     | 'text-form-input'
     | 'textarea-form-input'
     | 'product-multi-form-input'
-    | 'combination-mode-form-input';
+    | 'combination-mode-form-input'
+    | 'struct-form-input';
 
 /**
  * @description
@@ -181,6 +186,7 @@ type DefaultFormConfigHash = {
         selectionMode?: 'product' | 'variant';
     };
     'combination-mode-form-input': Record<string, never>;
+    'struct-form-input': Record<string, never>;
 };
 
 export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =

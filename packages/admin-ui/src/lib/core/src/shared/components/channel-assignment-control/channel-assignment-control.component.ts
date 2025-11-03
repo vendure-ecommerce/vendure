@@ -20,6 +20,7 @@ import { DataService } from '../../../data/providers/data.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class ChannelAssignmentControlComponent implements OnInit, ControlValueAccessor {
     @Input() multiple = true;

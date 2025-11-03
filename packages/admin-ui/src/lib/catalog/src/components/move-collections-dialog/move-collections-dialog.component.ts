@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } fr
     templateUrl: './move-collections-dialog.component.html',
     styleUrls: ['./move-collections-dialog.component.scss', '../collection-list/collection-list-common.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MoveCollectionsDialogComponent
     implements OnInit, Dialog<ItemOf<GetCollectionListQuery, 'collections'>>

@@ -5,6 +5,15 @@ title: 'Getting Started'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::warning Angular Admin UI Deprecation
+The Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/). The Angular Admin UI will not be maintained after **July 2026**. 
+Until then, we will continue patching critical bugs and security issues. Community contributions will always be merged and released.
+
+**For new projects, use the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
+
+If you want to use the Admin UI and the Dashboard together please change the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) to true.
+:::
+
 When creating a plugin, you may wish to extend the Admin UI in order to expose a graphical interface to the plugin's functionality, or to add new functionality to the Admin UI itself. The UI can be extended with custom components written in [Angular](https://angular.io/) or [React](https://react.dev/).
 
 :::note
@@ -13,29 +22,10 @@ The APIs described in this section were introduced in Vendure v2.1.0. For the le
 
 UI extensions fall into two categories:
 
--   **Providers**: these are used to add new functionality to the Admin UI, such as adding buttons to pages, adding new nav menu items, or defining custom form inputs. They would typically be defined in a file named `providers.ts`.
--   **Routes**: these are used to define new pages in the Admin UI, such as a new page for managing a custom entity. They would typically be defined in a file named `routes.ts`.
+- **Providers**: these are used to add new functionality to the Admin UI, such as adding buttons to pages, adding new nav menu items, or defining custom form inputs. They would typically be defined in a file named `providers.ts`.
+- **Routes**: these are used to define new pages in the Admin UI, such as a new page for managing a custom entity. They would typically be defined in a file named `routes.ts`.
 
 ## Setup
-
-:::cli
-Use `npx vendure add` and select "Set up Admin UI extensions".
-
-If you don't already have any plugins in your project, first create a plugin to house your
-UI extensions. Then select:
-
-```sh
-[Plugin: UI] Set up Admin UI extensions
-```
-
-Then follow the prompts, which will guide you through the process of 
-setting up the necessary files and folders for your UI extensions.
-:::
-
-### Manual setup
-
-It is recommended to use the `vendure add` command as described above, but if you prefer to set up the 
-Admin UI extensions manually, or just want to get a better understanding of what the CLI is doing, follow these steps:
 
 First, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
@@ -59,7 +49,6 @@ yarn add --dev @vendure/ui-devkit
 :::info
 If you plan to use React components in your UI extensions, you should also install the `@types/react` package:
 
-
 <Tabs>
 <TabItem value="npm" label="npm" default>
 
@@ -78,7 +67,6 @@ yarn add --dev @types/react
 </Tabs>
 
 :::
-
 
 You can then create the following folder structure to hold your UI extensions:
 
@@ -106,7 +94,7 @@ export default [
 ];
 ```
 
-Now we can configure the paths to your UI extension files. By convention, we will add this config object as a 
+Now we can configure the paths to your UI extension files. By convention, we will add this config object as a
 static property on your plugin class:
 
 ```ts title="src/plugins/my-plugin/my.plugin.ts"
@@ -120,7 +108,6 @@ import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
     compatibility: '^3.0.0',
 })
 export class MyPlugin {
-
     // highlight-start
     static ui: AdminUiExtension = {
         id: 'my-plugin-ui',
@@ -139,7 +126,7 @@ import { VendureConfig } from '@vendure/core';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 // highlight-next-line
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import { MyPlugin } from './plugins/greeter/my.plugin'
+import { MyPlugin } from './plugins/greeter/my.plugin';
 
 export const config: VendureConfig = {
     // ...
@@ -149,9 +136,7 @@ export const config: VendureConfig = {
             // highlight-start
             app: compileUiExtensions({
                 outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [
-                    MyPlugin.ui,
-                ],
+                extensions: [MyPlugin.ui],
                 devMode: true,
             }),
             // highlight-end
@@ -163,15 +148,13 @@ export const config: VendureConfig = {
 };
 ```
 
-Everything above will be automatically done for you when you use the CLI.
-
 Now when you start the server, the following will happen:
 
 1. A new folder called `admin-ui` will be created in the root of your project (as specified by the `outputPath` option). This is a temporary directory (it should not be added to version control) which will contain the source files of your custom Admin UI app.
 2. During bootstrap, the `compileUiExtensions` function will be called, which will compile the Admin UI app and serve it in development mode. The dev server will be listening on port `4200` but this port will also be proxied to port `3000` (as specified by `apiOptions.port`). This step can take up to a minute or two, depending on the speed of your machine.
 
 :::caution
-**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. 
+**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task.
 This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`.
 
 You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array (this is already defined on a default Vendure project):
@@ -201,16 +184,16 @@ Your `providers.ts` file exports an array of objects known as "providers" in Ang
 
 With providers you can:
 
--   Add new buttons to the action bar of existing pages (the top bar containing the primary actions for a page) using [`addActionBarItem`](/reference/admin-ui-api/action-bar/add-action-bar-item).
--   Add new menu items to the left-hand navigation menu using [`addNavMenuItem`](/reference/admin-ui-api/nav-menu/add-nav-menu-item) and [`addNavMenuSection`](/reference/admin-ui-api/nav-menu/add-nav-menu-section).
--   Define bulk actions for list views using [`registerBulkAction`](/reference/admin-ui-api/bulk-actions/register-bulk-action).
--   Define arbitrary components to be rendered in a detail view page using [`registerCustomDetailComponent`](/reference/admin-ui-api/custom-detail-components/register-custom-detail-component) or [`registerReactCustomDetailComponent`](/reference/admin-ui-api/react-extensions/register-react-custom-detail-component)
--   Add custom widgets to the dashboard using [`registerDashboardWidget`](/reference/admin-ui-api/dashboard-widgets/register-dashboard-widget)
--   Define custom components for rendering data table cells using [`registerDataTableComponent`](/reference/admin-ui-api/custom-table-components/register-data-table-component) or [`registerReactDataTableComponent`](/reference/admin-ui-api/react-extensions/register-react-data-table-component)
--   Define custom form input components for custom fields and configurable operation arguments using [`registerFormInputComponent`](/reference/admin-ui-api/custom-input-components/register-form-input-component) or [`registerReactFormInputComponent`](/reference/admin-ui-api/react-extensions/register-react-form-input-component)
--   Define custom components to render customer/order history timeline entries using [`registerHistoryEntryComponent`](/reference/admin-ui-api/custom-history-entry-components/register-history-entry-component)
+- Add new buttons to the action bar of existing pages (the top bar containing the primary actions for a page) using [`addActionBarItem`](/reference/admin-ui-api/action-bar/add-action-bar-item).
+- Add new menu items to the left-hand navigation menu using [`addNavMenuItem`](/reference/admin-ui-api/nav-menu/add-nav-menu-item) and [`addNavMenuSection`](/reference/admin-ui-api/nav-menu/add-nav-menu-section).
+- Define bulk actions for list views using [`registerBulkAction`](/reference/admin-ui-api/bulk-actions/register-bulk-action).
+- Define arbitrary components to be rendered in a detail view page using [`registerCustomDetailComponent`](/reference/admin-ui-api/custom-detail-components/register-custom-detail-component) or [`registerReactCustomDetailComponent`](/reference/admin-ui-api/react-extensions/register-react-custom-detail-component)
+- Add custom widgets to the dashboard using [`registerDashboardWidget`](/reference/admin-ui-api/dashboard-widgets/register-dashboard-widget)
+- Define custom components for rendering data table cells using [`registerDataTableComponent`](/reference/admin-ui-api/custom-table-components/register-data-table-component) or [`registerReactDataTableComponent`](/reference/admin-ui-api/react-extensions/register-react-data-table-component)
+- Define custom form input components for custom fields and configurable operation arguments using [`registerFormInputComponent`](/reference/admin-ui-api/custom-input-components/register-form-input-component) or [`registerReactFormInputComponent`](/reference/admin-ui-api/react-extensions/register-react-form-input-component)
+- Define custom components to render customer/order history timeline entries using [`registerHistoryEntryComponent`](/reference/admin-ui-api/custom-history-entry-components/register-history-entry-component)
 
-### Providers format 
+### Providers format
 
 A providers file should have a **default export** which is an array of providers:
 
@@ -228,7 +211,7 @@ export default [
 
 ### Specifying providers
 
-When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file. 
+When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file.
 This is done by passing an array of file paths, where each file path is relative to the directory specified by the `extensionPath` option.
 
 ```ts title="src/vendure-config.ts"
@@ -240,7 +223,7 @@ import * as path from 'path';
 compileUiExtensions({
     outputPath: path.join(__dirname, '../admin-ui'),
     extensions: [
-        // Note: this object will usually be 
+        // Note: this object will usually be
         // found in the `ui` static property
         // of a plugin like `MyPlugin.ui`.
         {
@@ -271,9 +254,11 @@ import { addActionBarItem } from '@vendure/admin-ui/core';
 // highlight-start
 @Injectable()
 class MyService {
-    greet() { return 'Hello!'; }
+    greet() {
+        return 'Hello!';
+    }
 }
-// highlight-end 
+// highlight-end
 
 export default [
     MyService,
@@ -292,7 +277,6 @@ export default [
 ];
 ```
 
-
 ## Routes
 
 Routes allow you to define completely custom views in the Admin UI.
@@ -302,7 +286,6 @@ Routes allow you to define completely custom views in the Admin UI.
 Your `routes.ts` file exports an array of objects which define new routes in the Admin UI. For example, imagine you have created a plugin which implements a simple content management system. You can define a route for the list of articles, and another for the detail view of an article.
 
 For a detailed instructions, see the [Defining Routes guide](/guides/extending-the-admin-ui/defining-routes/).
-
 
 ## Dev vs Prod mode
 
@@ -359,20 +342,20 @@ This can then be run from the command line:
 <TabItem value="npm" label="npm" default>
 
 ```bash
-npm run ts-node compile-admin-ui.ts
+npx ts-node src/compile-admin-ui.ts
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn ts-node compile-admin-ui.ts
+yarn ts-node src/compile-admin-ui.ts
 ```
 
 </TabItem>
 </Tabs>
 
-Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
+Once complete, the production-ready app bundle will be output to `admin-ui/dist/browser`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
@@ -385,7 +368,7 @@ export const config: VendureConfig = {
         AdminUiPlugin.init({
             port: 3002,
             app: {
-                path: path.join(__dirname, '../admin-ui/dist'),
+                path: path.join(__dirname, '../admin-ui/dist/browser'),
             },
         }),
     ],
@@ -466,12 +449,12 @@ add an empty `tsconfig.json` file to the `/src/plugins/<my-plugin>/ui` directory
 {}
 ```
 
-This works around the fact that your main `tsconfig.json` file excludes the `src/plugins/**/ui` directory, 
+This works around the fact that your main `tsconfig.json` file excludes the `src/plugins/**/ui` directory,
 which would otherwise prevent the Angular Language Service from working correctly.
 
 ## Legacy API < v2.1.0
 
-Prior to Vendure v2.1.0, the API for extending the Admin UI was more verbose and less flexible (React components were not supported at all, for instance). This API is still supported, but from v2.1 is marked as deprecated and will be removed in a future major version. 
+Prior to Vendure v2.1.0, the API for extending the Admin UI was more verbose and less flexible (React components were not supported at all, for instance). This API is still supported, but from v2.1 is marked as deprecated and will be removed in a future major version.
 
 This section describes the legacy API.
 
@@ -497,7 +480,9 @@ import { Component } from '@angular/core';
 
 @Component({
     selector: 'greeter',
-    template: `<vdr-page-block><h1>{{ greeting }}</h1></vdr-page-block>`,
+    template: `<vdr-page-block
+        ><h1>{{ greeting }}</h1></vdr-page-block
+    >`,
 })
 export class GreeterComponent {
     greeting = 'Hello!';
@@ -515,12 +500,14 @@ import { GreeterComponent } from './greeter.component';
 @NgModule({
     imports: [
         SharedModule,
-        RouterModule.forChild([{
-            path: '',
-            pathMatch: 'full',
-            component: GreeterComponent,
-            data: { breadcrumb: 'Greeter' },
-        }]),
+        RouterModule.forChild([
+            {
+                path: '',
+                pathMatch: 'full',
+                component: GreeterComponent,
+                data: { breadcrumb: 'Greeter' },
+            },
+        ]),
     ],
     declarations: [GreeterComponent],
 })
@@ -547,17 +534,21 @@ export const config: VendureConfig = {
             port: 3002,
             app: compileUiExtensions({
                 outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [{
-                    extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
-                    // highlight-start
-                    ngModules: [{
-                        type: 'lazy',
-                        route: 'greet',
-                        ngModuleFileName: 'greeter.module.ts',
-                        ngModuleName: 'GreeterModule',
-                    }],
-                    // highlight-end
-                }],
+                extensions: [
+                    {
+                        extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
+                        // highlight-start
+                        ngModules: [
+                            {
+                                type: 'lazy',
+                                route: 'greet',
+                                ngModuleFileName: 'greeter.module.ts',
+                                ngModuleName: 'GreeterModule',
+                            },
+                        ],
+                        // highlight-end
+                    },
+                ],
             }),
         }),
     ],
@@ -603,16 +594,20 @@ export const config: VendureConfig = {
             port: 3002,
             app: compileUiExtensions({
                 outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [{
-                    extensionPath: path.join(__dirname, 'plugins/invoices/ui'),
-                    // highlight-start
-                    ngModules: [{
-                        type: 'shared',
-                        ngModuleFileName: 'invoice-shared.module.ts',
-                        ngModuleName: 'InvoiceSharedModule',
-                    }],
-                    // highlight-end
-                }],
+                extensions: [
+                    {
+                        extensionPath: path.join(__dirname, 'plugins/invoices/ui'),
+                        // highlight-start
+                        ngModules: [
+                            {
+                                type: 'shared',
+                                ngModuleFileName: 'invoice-shared.module.ts',
+                                ngModuleName: 'InvoiceSharedModule',
+                            },
+                        ],
+                        // highlight-end
+                    },
+                ],
             }),
         }),
     ],
@@ -624,35 +619,38 @@ export const config: VendureConfig = {
 If you have existing UI extensions written using the legacy API, you can migrate them to the new API as follows:
 
 1. Convert all components to be [standalone components](https://angular.io/guide/standalone-components). Standalone components were introduced in recent versions of Angular and allow components to be defined without the need for a module. To convert an existing component, you need to set `standalone: true` and add an `imports` array containing any components, directives or pipes you are using in that component. Typically, you can import `SharedModule` to get access to all the common Angular directives and pipes, as well as the shared Admin UI components.
-  ```ts
-  import { Component } from '@angular/core';
-  // highlight-next-line
-  import { SharedModule } from '@vendure/admin-ui/core';
-  
-  @Component({
-      selector: 'greeter',
-      template: `<vdr-page-block><h1>{{ greeting }}</h1></vdr-page-block>`,
-      // highlight-start
-      standalone: true,
-      imports: [SharedModule],
-      // highlight-end
-  })
-  export class GreeterComponent {
-      greeting = 'Hello!';
-  }
-  ```
-2. In templates for page components, remove the `<vdr-page-header>` and `<vdr-page-body>` components, as they are included by default now when using
-the `registeRouteComponent()` function:
-   ```html
-   // highlight-start
-   <vdr-page-header>
-       <vdr-page-title></vdr-page-title>
-   </vdr-page-header>
-   <vdr-page-body>
-   // highlight-end
-       <vdr-page-block>This content should remain</vdr-page-block>
-   // highlight-next-line
-   </vdr-page-body>
-   ```
-3. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).
 
+```ts
+import { Component } from '@angular/core';
+// highlight-next-line
+import { SharedModule } from '@vendure/admin-ui/core';
+
+@Component({
+    selector: 'greeter',
+    template: `<vdr-page-block
+        ><h1>{{ greeting }}</h1></vdr-page-block
+    >`,
+    // highlight-start
+    standalone: true,
+    imports: [SharedModule],
+    // highlight-end
+})
+export class GreeterComponent {
+    greeting = 'Hello!';
+}
+```
+
+2. In templates for page components, remove the `<vdr-page-header>` and `<vdr-page-body>` components, as they are included by default now when using
+   the `registeRouteComponent()` function:
+    ```html
+    // highlight-start
+    <vdr-page-header>
+        <vdr-page-title></vdr-page-title>
+    </vdr-page-header>
+    <vdr-page-body>
+        // highlight-end
+        <vdr-page-block>This content should remain</vdr-page-block>
+        // highlight-next-line
+    </vdr-page-body>
+    ```
+3. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).

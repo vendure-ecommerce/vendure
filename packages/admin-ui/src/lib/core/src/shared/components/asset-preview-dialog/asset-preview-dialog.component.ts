@@ -27,9 +27,10 @@ export const ASSET_PREVIEW_QUERY = gql`
     templateUrl: './asset-preview-dialog.component.html',
     styleUrls: ['./asset-preview-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService) {}
     asset: AssetLike;
     assets?: AssetLike[];
     assetChanges?: UpdateAssetInput;

@@ -1,5 +1,5 @@
 import { LanguageCode, LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired } from '@vendure/core';
+import { Channel, DeepRequired, RequestContext } from '@vendure/core';
 import { describe, expect, it } from 'vitest';
 
 import { buildElasticBody } from './build-elastic-body';
@@ -10,9 +10,23 @@ describe('buildElasticBody()', () => {
     const CHANNEL_ID = 42;
     const CHANNEL_ID_TERM = { term: { channelId: CHANNEL_ID } };
     const LANGUAGE_CODE_TERM = { term: { languageCode: LanguageCode.en } };
+    const ctx = new RequestContext({
+        apiType: 'admin',
+        isAuthorized: true,
+        authorizedAsOwnerOnly: false,
+        channel: new Channel({ id: CHANNEL_ID }),
+        languageCode: LanguageCode.en,
+    });
 
     it('search term', () => {
-        const result = buildElasticBody({ term: 'test' }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { term: 'test' },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
@@ -21,7 +35,8 @@ describe('buildElasticBody()', () => {
                         multi_match: {
                             query: 'test',
                             type: 'best_fields',
-                            fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
+                            fuzziness: 'AUTO',
+                            fields: ['productName^5', 'productVariantName^5', 'description^1', 'sku^1'],
                         },
                     },
                 ],
@@ -35,6 +50,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -57,6 +74,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -79,6 +98,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -102,6 +123,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -121,6 +144,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -147,6 +172,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -179,6 +206,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -202,7 +231,14 @@ describe('buildElasticBody()', () => {
     });
 
     it('collectionId', () => {
-        const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { collectionId: '1' },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { collectionIds: '1' } }],
@@ -225,6 +261,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -248,7 +286,14 @@ describe('buildElasticBody()', () => {
     });
 
     it('paging', () => {
-        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { skip: 20, take: 10 },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result).toEqual({
             from: 20,
             size: 10,
@@ -264,6 +309,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -278,6 +325,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -287,7 +336,14 @@ describe('buildElasticBody()', () => {
     });
 
     it('inStock is undefined and groupByProduct', () => {
-        const result = buildElasticBody({ groupByProduct: true }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
@@ -301,6 +357,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -315,6 +373,8 @@ describe('buildElasticBody()', () => {
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -324,7 +384,14 @@ describe('buildElasticBody()', () => {
     });
 
     it('inStock is undefined and not groupByProduct', () => {
-        const result = buildElasticBody({ groupByProduct: false }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
@@ -339,6 +406,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.sort).toEqual([{ 'productName.keyword': { order: 'desc' } }]);
         });
@@ -349,6 +418,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
@@ -359,13 +430,15 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
     });
 
     it('enabledOnly true', () => {
-        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, true);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, true, ctx);
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { enabled: true } }],
@@ -374,7 +447,7 @@ describe('buildElasticBody()', () => {
     });
 
     it('enabledOnly false', () => {
-        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, false);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, false, ctx);
         expect(result.query).toEqual({
             bool: { filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM] },
         });
@@ -397,6 +470,7 @@ describe('buildElasticBody()', () => {
             CHANNEL_ID,
             LanguageCode.en,
             true,
+            ctx,
         );
 
         expect(result).toEqual({
@@ -412,7 +486,8 @@ describe('buildElasticBody()', () => {
                             multi_match: {
                                 query: 'test',
                                 type: 'best_fields',
-                                fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
+                                fuzziness: 'AUTO',
+                                fields: ['productName^5', 'productVariantName^5', 'description^1', 'sku^1'],
                             },
                         },
                     ],
@@ -441,6 +516,8 @@ describe('buildElasticBody()', () => {
             { ...searchConfig, multiMatchType: 'phrase' },
             CHANNEL_ID,
             LanguageCode.en,
+            undefined,
+            ctx,
         );
         expect(result.query).toEqual({
             bool: {
@@ -450,7 +527,8 @@ describe('buildElasticBody()', () => {
                         multi_match: {
                             query: 'test',
                             type: 'phrase',
-                            fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
+                            fuzziness: 'AUTO',
+                            fields: ['productName^5', 'productVariantName^5', 'description^1', 'sku^1'],
                         },
                     },
                 ],
@@ -470,7 +548,14 @@ describe('buildElasticBody()', () => {
                 },
             },
         };
-        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { term: 'test' },
+            config,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
@@ -479,6 +564,7 @@ describe('buildElasticBody()', () => {
                         multi_match: {
                             query: 'test',
                             type: 'best_fields',
+                            fuzziness: 'AUTO',
                             fields: ['productName^3', 'productVariantName^4', 'description^2', 'sku^5'],
                         },
                     },
@@ -502,10 +588,17 @@ describe('buildElasticBody()', () => {
                 },
             },
         };
-        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
+        const result = buildElasticBody(
+            { term: 'test' },
+            config,
+            CHANNEL_ID,
+            LanguageCode.en,
+            undefined,
+            ctx,
+        );
         expect(result.script_fields).toEqual({
             test: {
-                script: 'doc[\'property\'].dummyScript(test)',
+                script: "doc['property'].dummyScript(test)",
             },
         });
     });
@@ -517,6 +610,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.query).toEqual({
                 bool: {
@@ -542,6 +637,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.query).toEqual({
                 bool: {
@@ -567,6 +664,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.query).toEqual({
                 bool: {
@@ -592,6 +691,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.query).toEqual({
                 bool: {
@@ -622,6 +723,8 @@ describe('buildElasticBody()', () => {
                 searchConfig,
                 CHANNEL_ID,
                 LanguageCode.en,
+                undefined,
+                ctx,
             );
             expect(result.query).toEqual({
                 bool: {

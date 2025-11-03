@@ -13,6 +13,7 @@ export interface HeaderTab {
     templateUrl: './page-header-tabs.component.html',
     styleUrls: ['./page-header-tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PageHeaderTabsComponent {
     @Input() tabs: HeaderTab[] = [];

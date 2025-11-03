@@ -22,6 +22,7 @@ import { DataService } from '../../../data/providers/data.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class LanguageCodeSelectorComponent implements ControlValueAccessor, OnDestroy {
     @Input() languageCodes: string[];

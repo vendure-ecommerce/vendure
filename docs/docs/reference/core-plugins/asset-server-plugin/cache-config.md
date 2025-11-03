@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CacheConfig
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="52" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="54" packageName="@vendure/asset-server-plugin" />
 
 A configuration option for the Cache-Control header in the AssetServerPlugin asset response.
 

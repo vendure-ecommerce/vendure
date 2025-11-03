@@ -36,6 +36,7 @@ export const GET_CHANNEL_DETAIL = gql`
     templateUrl: './channel-detail.component.html',
     styleUrls: ['./channel-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelDetailComponent
     extends TypedBaseDetailComponent<typeof GetChannelDetailDocument, 'channel'>

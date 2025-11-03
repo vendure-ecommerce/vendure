@@ -7,7 +7,6 @@ export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: '',
         component: PageComponent,
-        pathMatch: 'full',
         data: {
             locationId: 'order-list',
             breadcrumb: _('breadcrumb.orders'),

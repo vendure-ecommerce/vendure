@@ -7,6 +7,7 @@ import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure
     templateUrl: './order-table.component.html',
     styleUrls: ['./order-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderTableComponent implements OnInit {
     @Input() order: OrderDetailFragment;
@@ -59,7 +60,7 @@ export class OrderTableComponent implements OnInit {
                         value,
                     };
                 })
-                .filter(field => this.orderLineCustomFieldsVisible ? true : field.value != null);
+                .filter(field => (this.orderLineCustomFieldsVisible ? true : field.value != null));
             this.customFieldsForLine[line.id] = result;
         }
     }

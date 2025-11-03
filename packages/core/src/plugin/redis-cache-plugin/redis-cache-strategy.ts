@@ -11,6 +11,12 @@ import { RedisCachePluginInitOptions } from './types';
  * A {@link CacheStrategy} which stores cached items in a Redis instance.
  * This is a high-performance cache strategy which is suitable for production use.
  *
+ * Note: To use this strategy, you need to manually install the `ioredis` package:
+ *
+ * ```shell
+ * npm install ioredis@^5.3.2
+ * ```
+ *
  * @docsCategory cache
  * @since 3.1.0
  */
@@ -63,13 +69,24 @@ export class RedisCacheStrategy implements CacheStrategy {
                     return;
                 }
             }
-            multi.set(namedspacedKey, JSON.stringify(value), 'EX', ttl);
+            if (Math.round(ttl) <= 0) {
+                Logger.error(
+                    `Could not set cache item ${key}: TTL must be greater than 0 seconds`,
+                    loggerCtx,
+                );
+                return;
+            }
+            multi.set(namedspacedKey, JSON.stringify(value), 'EX', Math.round(ttl));
             if (options?.tags) {
                 for (const tag of options.tags) {
                     multi.sadd(this.tagNamespace(tag), namedspacedKey);
                 }
             }
-            await multi.exec();
+            const results = await multi.exec();
+            const resultWithError = results?.find(([err, _]) => err);
+            if (resultWithError) {
+                throw resultWithError[0];
+            }
         } catch (e: any) {
             Logger.error(`Could not set cache item ${key}: ${e.message as string}`, loggerCtx);
         }

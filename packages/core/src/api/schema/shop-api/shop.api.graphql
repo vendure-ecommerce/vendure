@@ -45,11 +45,33 @@ type Query {
     products(options: ProductListOptions): ProductList!
     "Search Products based on the criteria set by the `SearchInput`"
     search(input: SearchInput!): SearchResponse!
+    "Get active payment methods"
+    activePaymentMethods: [PublicPaymentMethod]!
+    "Get active shipping methods"
+    activeShippingMethods: [PublicShippingMethod]!
+}
+
+type PublicPaymentMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [PaymentMethodTranslation!]!
+}
+
+type PublicShippingMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [ShippingMethodTranslation!]!
 }
 
 type Mutation {
-    "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
+    "Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
+    "Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items."
+    addItemsToOrder(inputs: [AddItemInput!]!): UpdateMultipleOrderItemsResult!
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
     "Remove all OrderLine from the Order"
@@ -62,11 +84,15 @@ type Mutation {
     removeCouponCode(couponCode: String!): Order
     "Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`"
     transitionOrderToState(state: String!): TransitionOrderToStateResult
-    "Sets the shipping address for this order"
+    "Sets the shipping address for the active Order"
     setOrderShippingAddress(input: CreateAddressInput!): ActiveOrderResult!
-    "Sets the billing address for this order"
+    "Sets the billing address for the active Order"
     setOrderBillingAddress(input: CreateAddressInput!): ActiveOrderResult!
-    "Allows any custom fields to be set for the active order"
+    "Unsets the shipping address for the active Order. Available since version 3.1.0"
+    unsetOrderShippingAddress: ActiveOrderResult!
+    "Unsets the billing address for the active Order. Available since version 3.1.0"
+    unsetOrderBillingAddress: ActiveOrderResult!
+    "Allows any custom fields to be set for the active Order"
     setOrderCustomFields(input: UpdateOrderInput!): ActiveOrderResult!
     """
     Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
@@ -203,7 +229,7 @@ input ProductListOptions
 input ProductVariantListOptions
 
 union AddPaymentToOrderResult =
-      Order
+    | Order
     | OrderPaymentStateError
     | IneligiblePaymentMethodError
     | PaymentFailedError
@@ -211,40 +237,67 @@ union AddPaymentToOrderResult =
     | OrderStateTransitionError
     | NoActiveOrderError
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
-union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError | GuestCheckoutError
-union RegisterCustomerAccountResult = Success | MissingPasswordError | PasswordValidationError | NativeAuthStrategyError
+union SetCustomerForOrderResult =
+    | Order
+    | AlreadyLoggedInError
+    | EmailAddressConflictError
+    | NoActiveOrderError
+    | GuestCheckoutError
+union RegisterCustomerAccountResult =
+    | Success
+    | MissingPasswordError
+    | PasswordValidationError
+    | NativeAuthStrategyError
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
 union VerifyCustomerAccountResult =
-      CurrentUser
+    | CurrentUser
     | VerificationTokenInvalidError
     | VerificationTokenExpiredError
     | MissingPasswordError
     | PasswordValidationError
     | PasswordAlreadySetError
     | NativeAuthStrategyError
-union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError
+union UpdateCustomerPasswordResult =
+    | Success
+    | InvalidCredentialsError
+    | PasswordValidationError
+    | NativeAuthStrategyError
 union RequestUpdateCustomerEmailAddressResult =
-      Success
+    | Success
     | InvalidCredentialsError
     | EmailAddressConflictError
     | NativeAuthStrategyError
 union UpdateCustomerEmailAddressResult =
-      Success
+    | Success
     | IdentifierChangeTokenInvalidError
     | IdentifierChangeTokenExpiredError
     | NativeAuthStrategyError
 union RequestPasswordResetResult = Success | NativeAuthStrategyError
 union ResetPasswordResult =
-      CurrentUser
+    | CurrentUser
     | PasswordResetTokenInvalidError
     | PasswordResetTokenExpiredError
     | PasswordValidationError
     | NativeAuthStrategyError
     | NotVerifiedError
 union NativeAuthenticationResult =
-      CurrentUser
+    | CurrentUser
     | InvalidCredentialsError
     | NotVerifiedError
     | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError
 union ActiveOrderResult = Order | NoActiveOrderError
+
+"""
+Returned when multiple items are added to an Order.
+The errorResults array contains the errors that occurred for each item, if any.
+"""
+type UpdateMultipleOrderItemsResult  {
+    order: Order!
+    errorResults: [UpdateOrderItemErrorResult!]!
+}
+
+input AddItemInput {
+    productVariantId: ID!
+    quantity: Int!
+}

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventHandlerWithAsyncData
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="492" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="506" packageName="@vendure/email-plugin" />
 
 Identical to the <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> but with a `data` property added to the `event` based on the result
 of the `.loadData()` function.

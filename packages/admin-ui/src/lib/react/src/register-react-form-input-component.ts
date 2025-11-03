@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 import { ComponentRegistryService } from '@vendure/admin-ui/core';
 import { ElementType } from 'react';
 import {
@@ -12,11 +12,9 @@ import {
  *
  * @docsCategory react-extensions
  */
-export function registerReactFormInputComponent(id: string, component: ElementType): FactoryProvider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (registry: ComponentRegistryService) => () => {
+export function registerReactFormInputComponent(id: string, component: ElementType) {
+    return provideAppInitializer(() => {
+        const initializerFn = ((registry: ComponentRegistryService) => () => {
             registry.registerInputComponent(id, ReactFormInputComponent, [
                 {
                     provide: REACT_INPUT_COMPONENT_OPTIONS,
@@ -25,7 +23,7 @@ export function registerReactFormInputComponent(id: string, component: ElementTy
                     },
                 },
             ]);
-        },
-        deps: [ComponentRegistryService],
-    };
+        })(inject(ComponentRegistryService));
+        return initializerFn();
+    });
 }

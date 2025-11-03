@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PromotionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/promotion.service.ts" sourceLine="58" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/promotion.service.ts" sourceLine="57" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a> entities.
 

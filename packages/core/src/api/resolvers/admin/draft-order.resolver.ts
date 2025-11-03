@@ -17,8 +17,11 @@ import {
     MutationRemoveDraftOrderLineArgs,
     MutationSetCustomerForDraftOrderArgs,
     MutationSetDraftOrderBillingAddressArgs,
+    MutationSetDraftOrderCustomFieldsArgs,
     MutationSetDraftOrderShippingAddressArgs,
     MutationSetDraftOrderShippingMethodArgs,
+    MutationUnsetDraftOrderBillingAddressArgs,
+    MutationUnsetDraftOrderShippingAddressArgs,
     Permission,
     QueryEligibleShippingMethodsForDraftOrderArgs,
     ShippingMethodQuote,
@@ -126,6 +129,16 @@ export class DraftOrderResolver {
     @Transaction()
     @Mutation()
     @Allow(Permission.CreateOrder)
+    async setDraftOrderCustomFields(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSetDraftOrderCustomFieldsArgs,
+    ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
+        return this.orderService.updateCustomFields(ctx, args.orderId, args.input.customFields ?? {});
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
     async setCustomerForDraftOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetCustomerForDraftOrderArgs,
@@ -172,6 +185,26 @@ export class DraftOrderResolver {
         @Args() args: MutationSetDraftOrderBillingAddressArgs,
     ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         return this.orderService.setBillingAddress(ctx, args.orderId, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
+    async unsetDraftOrderShippingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUnsetDraftOrderShippingAddressArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        return this.orderService.unsetShippingAddress(ctx, args.orderId);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
+    async unsetDraftOrderBillingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUnsetDraftOrderBillingAddressArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        return this.orderService.unsetBillingAddress(ctx, args.orderId);
     }
 
     @Transaction()

@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
     templateUrl: './select-customer-group-dialog.component.html',
     styleUrls: ['./select-customer-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SelectCustomerGroupDialogComponent implements Dialog<string[]>, OnInit {
     resolveWith: (result?: string[]) => void;

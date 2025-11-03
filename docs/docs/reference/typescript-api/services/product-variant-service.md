@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/product-variant.service.ts" sourceLine="68" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/product-variant.service.ts" sourceLine="70" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> entities.
 
@@ -34,7 +34,7 @@ class ProductVariantService {
     getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
     create(ctx: RequestContext, input: CreateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
     update(ctx: RequestContext, input: UpdateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
-    createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode) => Promise<ProductVariantPrice>;
+    createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode, customFields?: CustomFieldsObject) => Promise<ProductVariantPrice>;
     deleteProductVariantPrice(ctx: RequestContext, variantId: ID, channelId: ID, currencyCode: CurrencyCode) => ;
     softDelete(ctx: RequestContext, id: ID | ID[]) => Promise<DeletionResponse>;
     hydratePriceFields(ctx: RequestContext, variant: ProductVariant, priceField: F) => Promise<ProductVariant[F]>;
@@ -139,7 +139,7 @@ for those variants which are tracking inventory.
 
 ### createOrUpdateProductVariantPrice
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, price: number, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, currencyCode?: <a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, price: number, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, currencyCode?: <a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>, customFields?: CustomFieldsObject) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;`}   />
 
 Creates a <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> for the given ProductVariant/Channel combination.
 If the `currencyCode` is not specified, the default currency of the Channel will be used.

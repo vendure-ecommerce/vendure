@@ -1,7 +1,19 @@
-import { Request } from 'express';
 import { Stream } from 'stream';
 
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+
+// This is a workaround for a type mismatch between express v5 (Vendure core)
+// and express v4 (several transitive dependencies). Can be replaced with the
+// actual Request type once the ecosystem has more significantly shifted to v5.
+type Request = {
+    headers: Record<string, string>;
+    url: string;
+    method: string;
+    body: any;
+    query: any;
+    params: any;
+    ip: string;
+} & any;
 
 /**
  * @description

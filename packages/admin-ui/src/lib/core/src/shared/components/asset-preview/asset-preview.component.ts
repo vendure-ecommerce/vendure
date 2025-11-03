@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { FormBuilder, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -30,6 +30,7 @@ export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | ''
     templateUrl: './asset-preview.component.html',
     styleUrls: ['./asset-preview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
@@ -66,7 +67,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         private notificationService: NotificationService,
         private changeDetector: ChangeDetectorRef,
         private modalService: ModalService,
-    ) { }
+    ) {}
 
     get fpx(): number | null {
         return this.asset.focalPoint ? this.asset.focalPoint.x : null;
@@ -77,7 +78,6 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const { focalPoint } = this.asset;
         if (this.assets?.length) {
             this.showSlideButtons = true;
             this.previewAssetIndex = this.assets.findIndex(asset => asset.id === this.asset.id) || 0;
@@ -240,5 +240,4 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         this.disableNextButton = this.assets?.[this.previewAssetIndex + 1]?.id ? false : true;
         this.disablePreviousButton = this.assets?.[this.previewAssetIndex - 1]?.id ? false : true;
     }
-
 }

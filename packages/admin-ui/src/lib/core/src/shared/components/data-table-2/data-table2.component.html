@@ -106,7 +106,7 @@
                                   totalItems: totalItems
                               };
                     index as i;
-                    trackBy: trackByFn
+                    trackBy: trackByFn.bind(this)
                 "
             >
                 <td *ngIf="selectionManager" class="selection-col" [class.active]="activeIndex === i">

@@ -11,32 +11,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultStockLocationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-stock-location-strategy.ts" sourceLine="22" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-stock-location-strategy.ts" sourceLine="105" packageName="@vendure/core" since="2.0.0" />
 
-The DefaultStockLocationStrategy is the default implementation of the <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
-It assumes only a single StockLocation and that all stock is allocated from that location.
+The DefaultStockLocationStrategy was the default implementation of the <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>
+prior to the introduction of the <a href='/reference/typescript-api/products-stock/multi-channel-stock-location-strategy#multichannelstocklocationstrategy'>MultiChannelStockLocationStrategy</a>.
+It assumes only a single StockLocation and that all stock is allocated from that location. When
+more than one StockLocation or Channel is used, it will not behave as expected.
 
 ```ts title="Signature"
-class DefaultStockLocationStrategy implements StockLocationStrategy {
-    protected connection: TransactionalConnection;
+class DefaultStockLocationStrategy extends BaseStockLocationStrategy {
     init(injector: Injector) => ;
     getAvailableStock(ctx: RequestContext, productVariantId: ID, stockLevels: StockLevel[]) => AvailableStock;
     forAllocation(ctx: RequestContext, stockLocations: StockLocation[], orderLine: OrderLine, quantity: number) => LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
-    forCancellation(ctx: RequestContext, stockLocations: StockLocation[], orderLine: OrderLine, quantity: number) => Promise<LocationWithQuantity[]>;
-    forRelease(ctx: RequestContext, stockLocations: StockLocation[], orderLine: OrderLine, quantity: number) => Promise<LocationWithQuantity[]>;
-    forSale(ctx: RequestContext, stockLocations: StockLocation[], orderLine: OrderLine, quantity: number) => Promise<LocationWithQuantity[]>;
 }
 ```
-* Implements: <code><a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a></code>
+* Extends: <code>BaseStockLocationStrategy</code>
 
 
 
 <div className="members-wrapper">
-
-### connection
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>`}   />
-
 
 ### init
 
@@ -51,21 +44,6 @@ class DefaultStockLocationStrategy implements StockLocationStrategy {
 ### forAllocation
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;`}   />
-
-
-### forCancellation
-
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => Promise&#60;<a href='/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;`}   />
-
-
-### forRelease
-
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => Promise&#60;<a href='/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;`}   />
-
-
-### forSale
-
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => Promise&#60;<a href='/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;`}   />
 
 
 

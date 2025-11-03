@@ -16,7 +16,9 @@ import {
     invalidatesByMultipleTags,
     invalidatesBySingleTag,
     invalidatesManyByMultipleTags,
+    invalidTTLsShouldNotSetKey,
     setsAKey,
+    setsAKeyWithSubSecondTtl,
     setsAKeyWithTtl,
     setsArrayOfObjects,
     setsArrayValue,
@@ -67,6 +69,8 @@ describe('CacheService in-memory', () => {
 
     it('sets a key with ttl', () => setsAKeyWithTtl(cacheService, ttlProvider));
 
+    it('sets a key with sub-second ttl', () => setsAKeyWithSubSecondTtl(cacheService, ttlProvider));
+
     it('evicts the oldest key when cache is full', () => evictsTheOldestKeyWhenCacheIsFull(cacheService));
 
     it('invalidates by single tag', () => invalidatesBySingleTag(cacheService));
@@ -76,4 +80,6 @@ describe('CacheService in-memory', () => {
     it('invalidates many by multiple tags', () => invalidatesManyByMultipleTags(cacheService));
 
     it('invalidates a large number of keys by tag', () => invalidatesALargeNumberOfKeysByTag(cacheService));
+
+    it('invalid ttls should not set key', () => invalidTTLsShouldNotSetKey(cacheService));
 });

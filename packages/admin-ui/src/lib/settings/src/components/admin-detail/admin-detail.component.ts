@@ -42,6 +42,7 @@ export const GET_ADMINISTRATOR_DETAIL = gql`
     templateUrl: './admin-detail.component.html',
     styleUrls: ['./admin-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AdminDetailComponent
     extends TypedBaseDetailComponent<typeof GetAdministratorDetailDocument, 'administrator'>

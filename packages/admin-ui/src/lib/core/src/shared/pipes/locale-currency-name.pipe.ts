@@ -18,6 +18,7 @@ import { LocaleBasePipe } from './locale-base.pipe';
 @Pipe({
     name: 'localeCurrencyName',
     pure: false,
+    standalone: false,
 })
 export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
     constructor(@Optional() dataService?: DataService, @Optional() changeDetectorRef?: ChangeDetectorRef) {

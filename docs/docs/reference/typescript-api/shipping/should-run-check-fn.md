@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShouldRunCheckFn
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="165" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="173" packageName="@vendure/core" />
 
 An optional method which is used to decide whether to run the `check()` function.
 Returns a JSON-compatible object which is cached and compared between calls.

@@ -7,6 +7,7 @@ import { RefundablePayment } from '../../common/get-refundable-payments';
     templateUrl: './payment-for-refund-selector.component.html',
     styleUrls: ['./payment-for-refund-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class PaymentForRefundSelectorComponent {
     @Input() refundablePayments: RefundablePayment[];

@@ -50,6 +50,7 @@ import {
     doAdminSearchQuery,
     dropElasticIndices,
     testGroupByProduct,
+    testGroupBySKU,
     testMatchCollectionId,
     testMatchCollectionSlug,
     testMatchFacetIdsAnd,
@@ -188,6 +189,9 @@ describe('Elasticsearch plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        // We have extra time here because a lot of jobs are
+        // triggered from all the product updates
+        await awaitRunningJobs(adminClient, 10_000, 1000);
         await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
@@ -199,6 +203,8 @@ describe('Elasticsearch plugin', () => {
 
     describe('shop api', () => {
         it('group by product', () => testGroupByProduct(shopClient));
+
+        it('group by SKU', () => testGroupBySKU(shopClient));
 
         it('no grouping', () => testNoGrouping(shopClient));
 
@@ -242,8 +248,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 10, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -261,8 +267,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -309,8 +315,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -324,7 +330,7 @@ describe('Elasticsearch plugin', () => {
                 },
             });
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
             ]);
         });
 
@@ -338,7 +344,7 @@ describe('Elasticsearch plugin', () => {
                 },
             });
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
             ]);
         });
 
@@ -404,7 +410,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(2);
+            expect(result.search.totalItems).toBe(3);
         });
 
         it('inStock is false and grouped by product', async () => {
@@ -417,7 +423,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(1);
+            expect(result.search.totalItems).toBe(2);
         });
 
         it('inStock is true and not grouped by product', async () => {
@@ -456,7 +462,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(33);
+            expect(result.search.totalItems).toBe(34);
         });
 
         it('inStock is undefined and grouped by product', async () => {
@@ -469,12 +475,14 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(20);
+            expect(result.search.totalItems).toBe(21);
         });
     });
 
     describe('admin api', () => {
         it('group by product', () => testGroupByProduct(adminClient));
+
+        it('group by SKU', () => testGroupBySKU(adminClient));
 
         it('no grouping', () => testNoGrouping(adminClient));
 
@@ -910,9 +918,8 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: true,
                     term: 'gaming',
                 });
-                expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_3', enabled: false },
-                ]);
+                const t3 = result.search.items.find(i => i.productId === 'T_3');
+                expect(t3?.enabled).toEqual(false);
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/295

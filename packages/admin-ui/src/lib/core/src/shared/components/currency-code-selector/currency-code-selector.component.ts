@@ -16,6 +16,7 @@ import { DataService } from '../../../data/providers/data.service';
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class CurrencyCodeSelectorComponent implements ControlValueAccessor, OnDestroy {
     currencyCodes = Object.values(CurrencyCode);

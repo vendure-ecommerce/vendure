@@ -96,3 +96,22 @@ type NoActiveOrderError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }
+
+"""
+Returned when an order operation is rejected by an OrderInterceptor method.
+"""
+type OrderInterceptorError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    interceptorError: String!
+}
+
+"""
+Union type of all possible errors that can occur when adding or removing items from an Order.
+"""
+union UpdateOrderItemErrorResult =
+      OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
+    | OrderInterceptorError

@@ -23,15 +23,15 @@ import { rateLimit } from 'express-rate-limit';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { adminApiExtensions } from './api/api-extensions';
+import { getApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
+    DEFAULT_APP_PATH,
     defaultAvailableLanguages,
+    defaultAvailableLocales,
     defaultLanguage,
     defaultLocale,
-    DEFAULT_APP_PATH,
     loggerCtx,
-    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 
@@ -77,10 +77,26 @@ export interface AdminUiPluginOptions {
      * for specifying the Vendure GraphQL API host, available UI languages, etc.
      */
     adminUiConfig?: Partial<AdminUiConfig>;
+    /**
+     * @description
+     * If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
+     * set this to `true` in order to avoid a conflict caused by both plugins defining the same
+     * schema extensions.
+     *
+     * @since 3.4.0
+     */
+    compatibilityMode?: boolean;
 }
 
 /**
  * @description
+ *
+ * :::warning Deprecated
+ * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).
+ * The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues.
+ * Community contributions will always be merged and released.
+ * :::
+ *
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
  *
  * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by
@@ -130,8 +146,14 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     adminApiExtensions: {
-        schema: adminApiExtensions,
-        resolvers: [MetricsResolver],
+        schema: () => {
+            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
+            return getApiExtensions(compatibilityMode);
+        },
+        resolvers: () => {
+            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
+            return compatibilityMode ? [] : [MetricsResolver];
+        },
     },
     providers: [MetricsService],
     compatibility: '^3.0.0',
@@ -253,10 +275,13 @@ export class AdminUiPlugin implements NestModule {
         });
 
         const adminUiServer = express.Router();
-        adminUiServer.use(limiter);
+        // This is a workaround for a type mismatch between express v5 (Vendure core)
+        // and express v4 (several transitive dependencies). Can be removed once the
+        // ecosystem has more significantly shifted to v5.
+        adminUiServer.use(limiter as any);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
-            res.sendFile(path.join(adminUiAppPath, 'index.html'));
+            res.sendFile('index.html', { root: adminUiAppPath });
         });
 
         return adminUiServer;

@@ -40,6 +40,7 @@ export const GET_ZONE_LIST = gql`
     templateUrl: './zone-list.component.html',
     styleUrls: ['./zone-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZoneListComponent
     extends TypedBaseListComponent<typeof GetZoneListDocument, 'zones'>

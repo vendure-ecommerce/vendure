@@ -33,16 +33,17 @@ import {
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../../common/instrument-decorator';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { Order } from '../../../entity/order/order.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
@@ -65,6 +66,7 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
+import { OrderEvent } from '../../../event-bus';
 
 /**
  * @description
@@ -80,6 +82,7 @@ import { patchEntity } from '../utils/patch-entity';
  * @docsCategory service-helpers
  */
 @Injectable()
+@Instrument()
 export class OrderModifier {
     constructor(
         private connection: TransactionalConnection,
@@ -346,7 +349,7 @@ export class OrderModifier {
                     adjustmentSource: 'CANCEL_ORDER',
                     type: AdjustmentType.OTHER,
                     description: 'shipping cancellation',
-                    amount: -shippingLine.discountedPriceWithTax,
+                    amount: -shippingLine.discountedPrice,
                     data: {},
                 });
                 await this.connection.getRepository(ctx, ShippingLine).save(shippingLine, { reload: false });
@@ -491,7 +494,7 @@ export class OrderModifier {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
 
                     refundInputs.forEach(ri => {
-                        ri.lines.push({
+                        ri.lines?.push({
                             orderLineId: orderLine.id,
                             quantity: qtyDelta,
                         });
@@ -524,7 +527,11 @@ export class OrderModifier {
             order.surcharges.push(surcharge);
             modification.surcharges.push(surcharge);
             if (surcharge.priceWithTax < 0) {
-                refundInputs.forEach(ri => (ri.adjustment += Math.abs(surcharge.priceWithTax)));
+                refundInputs.forEach(ri => {
+                    if (ri.adjustment != null) {
+                        ri.adjustment += Math.abs(surcharge.priceWithTax);
+                    }
+                });
             }
         }
         if (input.surcharges?.length) {
@@ -659,7 +666,9 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 primaryRefund.shipping = shippingDelta * -1;
             }
-            primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            if (primaryRefund.adjustment != null) {
+                primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            }
             // end
 
             for (const refundInput of refundInputs) {
@@ -684,6 +693,7 @@ export class OrderModifier {
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'updated', input));
         return { order, modification: createdModification };
     }
 
@@ -777,14 +787,14 @@ export class OrderModifier {
         delta: number,
         refundInput: RefundOrderInput,
     ): Promise<number> {
-        const existingAdjustment = refundInput.adjustment;
+        const existingAdjustment = refundInput.adjustment ?? 0;
 
         let itemAmount = 0; // TODO: figure out what this should be
-        for (const lineInput of refundInput.lines) {
+        for (const lineInput of refundInput.lines ?? []) {
             const orderLine = await this.connection.getEntityOrThrow(ctx, OrderLine, lineInput.orderLineId);
             itemAmount += orderLine.proratedUnitPriceWithTax * lineInput.quantity;
         }
-        const calculatedDelta = itemAmount + refundInput.shipping + existingAdjustment;
+        const calculatedDelta = itemAmount + (refundInput.shipping ?? 0) + existingAdjustment;
         const absDelta = Math.abs(delta);
         return absDelta !== calculatedDelta ? absDelta - calculatedDelta : 0;
     }

@@ -324,10 +324,11 @@ export class ProductVideoPlugin {}
 
 ### Passing the RequestContext
 
-It is common to need to pass the [RequestContext object](/reference/typescript-api/request/request-context) to the `process` function of a job, since `ctx` is required by many Vendure
+Sometimes you need to pass the [RequestContext object](/reference/typescript-api/request/request-context) to the `process` function of a job, since `ctx` is required by many Vendure
 service methods that you may be using inside your `process` function. However, the `RequestContext` object itself is not serializable,
-so it cannot be passed directly to the `JobQueue.add()` method. Instead, you can serialize the `RequestContext` using the [`RequestContext.serialize()`
-method](/reference/typescript-api/request/request-context/#serialize), and then deserialize it in the `process` function using the static `deserialize` method:
+so it cannot be passed directly to the `JobQueue.add()` method. Instead, you can serialize the `RequestContext` using the [`ctx.serialize()` method](/reference/typescript-api/request/request-context/#serialize),
+ and then deserialize it in the `process` function using the static `deserialize` method.
+
 
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -358,7 +359,60 @@ class ProductExportService implements OnModuleInit {
 
     exportAllProducts(ctx: RequestContext) {
         // highlight-next-line
-        return this.jobQueue.add({ ctx: RequestContext.serialize(ctx) });
+        return this.jobQueue.add({ ctx: ctx.serialize() });
+    }
+}
+```
+
+:::warning
+Serializing the RequestContext should be done with caution, since it is a relatively large object and will significantly increase the size of the job data.
+
+In cases where the job is created in large quantities (hundreds or thousands of jobs per day), this can lead to performance issues. Especially
+when using the [BullMQJobQueuePlugin](/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin/), which stores the job data in Redis, the
+size of the job data can lead to too much memory usage which can cause the Redis server to crash.
+:::
+
+Instead of serializing the entire RequestContext, consider passing only the necessary data you need and then reconstructing the RequestContext in the `process` function:
+
+```ts
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { JobQueue, JobQueueService,
+    RequestContext, ID, LanguageCode, RequestContextService } from '@vendure/core';
+
+@Injectable()
+class ProductExportService implements OnModuleInit {
+
+    // highlight-next-line
+    private jobQueue: JobQueue<{ channelToken: string; languageCode: LanguageCode; }>;
+
+    constructor(private jobQueueService: JobQueueService,
+                private requestContextService: RequestContextService) {
+    }
+
+    async onModuleInit() {
+        this.jobQueue = await this.jobQueueService.createQueue({
+            name: 'export-products',
+            process: async job => {
+                // highlight-start
+                // Reconstruct the RequestContext from the passed data
+                const ctx = await this.requestContextService.create({
+                    channelOrToken: job.data.channelToken,
+                    languageCode: job.data.languageCode,
+                })
+                // highlight-end
+                // ... logic to export the product omitted for brevity
+            },
+        });
+    }
+
+    exportAllProducts(ctx: RequestContext) {
+        // highlight-start
+        // Pass only the necessary data
+        return this.jobQueue.add({
+            channelId: ctx.channel.token,
+            languageCode: ctx.languageCode
+        });
+        // highlight-end
     }
 }
 ```
@@ -376,7 +430,8 @@ by early cancellation:
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, Product, TransactionalConnection,
-    SerializedRequestContext, RequestContext, Job, JobState } from '@vendure/core';
+    SerializedRequestContext, RequestContext } from '@vendure/core';
+import { JobState } from '@vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
 @Injectable()
@@ -415,7 +470,7 @@ class ProductExportService implements OnModuleInit {
     }
 
     exportAllProducts(ctx: RequestContext) {
-        return this.jobQueue.add({ ctx: RequestContext.serialize(ctx) });
+        return this.jobQueue.add({ ctx: ctx.serialize() });
     }
 }
 ```

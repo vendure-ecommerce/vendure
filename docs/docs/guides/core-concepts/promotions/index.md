@@ -264,9 +264,11 @@ It is possible to establish dependency relationships between a PromotionAction a
 For example, if we want to set up a "buy 1, get 1 free" offer, we need to:
 
 1. Establish whether the Order contains the particular ProductVariant under offer (done in the PromotionCondition)
-2. Apply a discount to the qualifying OrderItem (done in the PromotionAction)
+2. Apply a discount to the qualifying OrderLine (done in the PromotionAction)
 
 In this scenario, we would have to repeat the logic for checking the Order contents in _both_ the PromotionCondition _and_ the PromotionAction. Not only is this duplicated work for the server, it also means that setting up the promotion relies on the same parameters being input into the PromotionCondition and the PromotionAction.
+
+Note the use of `PromotionItemAction` to get a reference to the `OrderLine` as opposed to the `Order`.
 
 Instead, we can say that the PromotionAction _depends_ on the PromotionCondition:
 
@@ -280,10 +282,10 @@ export const buy1Get1FreeAction = new PromotionItemAction({
     args: {},
     // highlight-next-line
     conditions: [buyXGetYFreeCondition],
-    execute(ctx, orderItem, orderLine, args, state) {
+    execute(ctx, orderLine, args, state) {
         // highlight-next-line
         const freeItemIds = state.buy_x_get_y_free.freeItemIds;
-        if (idsContainsItem(freeItemIds, orderItem)) {
+        if (idsContainsItem(freeItemIds, orderLine)) {
             const unitPrice = ctx.channel.pricesIncludeTax ? orderLine.unitPriceWithTax : orderLine.unitPrice;
             return -unitPrice;
         }

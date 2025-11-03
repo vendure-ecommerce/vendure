@@ -1,9 +1,10 @@
 import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
-    CustomFields as GraphQLCustomFields,
-    CustomFieldConfig as GraphQLCustomFieldConfig,
-    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     EntityCustomFields,
+    CustomFieldConfig as GraphQLCustomFieldConfig,
+    CustomFields as GraphQLCustomFields,
+    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
+    StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
     MutationUpdateGlobalSettingsArgs,
     Permission,
     ServerConfig,
@@ -29,6 +30,7 @@ import {
     CustomFieldConfig,
     CustomFields,
     RelationCustomFieldConfig,
+    StructCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -112,6 +114,9 @@ export class GlobalSettingsResolver {
                         c.entity = c.entity.name;
                         c.scalarFields = this.getScalarFieldsOfType(info, c.graphQLType || c.entity);
                     }
+                    if (c.type === 'struct') {
+                        c.fields = c.fields.map((f: any) => ({ ...f, list: !!f.list }));
+                    }
                     return c;
                 });
         }
@@ -130,24 +135,38 @@ export class GlobalSettingsResolver {
                     .filter(c => !c.internal)
                     .map(c => ({ ...c, list: !!c.list as any }))
                     .map(c => {
-                        const { requiresPermission } = c;
-                        c.requiresPermission = Array.isArray(requiresPermission)
+                        const { requiresPermission, deprecated } = c;
+                        const result: any = { ...c };
+                        result.requiresPermission = Array.isArray(requiresPermission)
                             ? requiresPermission
                             : !!requiresPermission
-                            ? [requiresPermission]
-                            : [];
-                        return c;
+                              ? [requiresPermission]
+                              : [];
+
+                        // Handle deprecation
+                        if (deprecated !== undefined) {
+                            result.deprecated = !!deprecated;
+                            result.deprecationReason =
+                                typeof deprecated === 'string' ? deprecated : undefined;
+                        } else {
+                            result.deprecated = false;
+                            result.deprecationReason = undefined;
+                        }
+                        return result;
                     })
                     .map(c => {
                         // In the VendureConfig, the relation entity is specified
                         // as the class, but the GraphQL API exposes it as a string.
-                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c } as any;
+                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c };
                         if (this.isRelationGraphQLType(customFieldConfig) && this.isRelationConfigType(c)) {
                             customFieldConfig.entity = c.entity.name;
                             customFieldConfig.scalarFields = this.getScalarFieldsOfType(
                                 info,
                                 c.graphQLType || c.entity.name,
                             );
+                        }
+                        if (this.isStructGraphQLType(customFieldConfig) && this.isStructConfigType(c)) {
+                            customFieldConfig.fields = c.fields.map(f => ({ ...f, list: !!f.list as any }));
                         }
                         return customFieldConfig;
                     });
@@ -162,8 +181,16 @@ export class GlobalSettingsResolver {
         return config.type === 'relation';
     }
 
+    private isStructGraphQLType(config: GraphQLCustomFieldConfig): config is GraphQLStructCustomFieldConfig {
+        return config.type === 'struct';
+    }
+
     private isRelationConfigType(config: CustomFieldConfig): config is RelationCustomFieldConfig {
         return config.type === 'relation';
+    }
+
+    private isStructConfigType(config: CustomFieldConfig): config is StructCustomFieldConfig {
+        return config.type === 'struct';
     }
 
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {

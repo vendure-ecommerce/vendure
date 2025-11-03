@@ -78,6 +78,7 @@ export type PageLocationId =
     | 'product-detail'
     | 'product-list'
     | 'product-variant-detail'
+    | 'product-variant-list'
     | 'profile'
     | 'promotion-detail'
     | 'promotion-list'

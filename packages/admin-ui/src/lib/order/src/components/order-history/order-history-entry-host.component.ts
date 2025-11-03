@@ -19,18 +19,21 @@ import {
 
 @Component({
     selector: 'vdr-order-history-entry-host',
-    template: `<vdr-timeline-entry
-        [displayType]="instance.getDisplayType(entry)"
-        [iconShape]="instance.getIconShape && instance.getIconShape(entry)"
-        [createdAt]="entry.createdAt"
-        [name]="instance.getName && instance.getName(entry)"
-        [featured]="instance.isFeatured(entry)"
-        [collapsed]="!expanded && !instance.isFeatured(entry)"
-        (expandClick)="expandClick.emit()"
-    >
-        <div #portal></div>
-    </vdr-timeline-entry>`,
+    template: `
+        <vdr-timeline-entry
+            [displayType]="instance.getDisplayType(entry)"
+            [iconShape]="instance.getIconShape && instance.getIconShape(entry)"
+            [createdAt]="entry.createdAt"
+            [name]="instance.getName && instance.getName(entry)"
+            [featured]="instance.isFeatured(entry)"
+            [collapsed]="!expanded && !instance.isFeatured(entry)"
+            (expandClick)="expandClick.emit()"
+        >
+            <div #portal></div>
+        </vdr-timeline-entry>
+    `,
     exportAs: 'historyEntry',
+    standalone: false,
 })
 export class OrderHistoryEntryHostComponent implements OnInit, OnDestroy {
     @Input() entry: TimelineHistoryEntry;

@@ -12,6 +12,7 @@ export type GroupedCustomFields = Array<{ tabName: string; customFields: CustomF
     templateUrl: './tabbed-custom-fields.component.html',
     styleUrls: ['./tabbed-custom-fields.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TabbedCustomFieldsComponent implements OnInit {
     @Input() entityName: CustomFieldEntityName;
@@ -46,6 +47,7 @@ export class TabbedCustomFieldsComponent implements OnInit {
             customField.type === 'text' ||
             customField.type === 'localeText' ||
             customField.type === 'relation' ||
+            customField.type === 'struct' ||
             (customField.ui?.component && !smallComponents.includes(customField.ui?.component))
         );
     }

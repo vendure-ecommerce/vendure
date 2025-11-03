@@ -13,10 +13,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## addItemToOrder
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available.</div>
+<div class="graphql-code-line top-level comment">Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available.</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">addItemToOrder(productVariantId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## addItemsToOrder
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">addItemsToOrder(inputs: [<a href="/reference/graphql-api/shop/input-types#additeminput">AddItemInput</a>!]!): <a href="/reference/graphql-api/shop/object-types#updatemultipleorderitemsresult">UpdateMultipleOrderItemsResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -267,7 +279,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## setOrderBillingAddress
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Sets the billing address for this order</div>
+<div class="graphql-code-line top-level comment">Sets the billing address for the active Order</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">setOrderBillingAddress(input: <a href="/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
@@ -279,7 +291,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## setOrderCustomFields
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Allows any custom fields to be set for the active order</div>
+<div class="graphql-code-line top-level comment">Allows any custom fields to be set for the active Order</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">setOrderCustomFields(input: <a href="/reference/graphql-api/shop/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
@@ -291,7 +303,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## setOrderShippingAddress
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Sets the shipping address for this order</div>
+<div class="graphql-code-line top-level comment">Sets the shipping address for the active Order</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">setOrderShippingAddress(input: <a href="/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
@@ -325,6 +337,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">transitionOrderToState(state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#transitionordertostateresult">TransitionOrderToStateResult</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## unsetOrderBillingAddress
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Unsets the billing address for the active Order. Available since version 3.1.0</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">unsetOrderBillingAddress: <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## unsetOrderShippingAddress
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Unsets the shipping address for the active Order. Available since version 3.1.0</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">unsetOrderShippingAddress: <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

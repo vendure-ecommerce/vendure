@@ -11,10 +11,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RedisCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/plugin/redis-cache-plugin/redis-cache-strategy.ts" sourceLine="17" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/redis-cache-plugin/redis-cache-strategy.ts" sourceLine="23" packageName="@vendure/core" since="3.1.0" />
 
 A <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> which stores cached items in a Redis instance.
 This is a high-performance cache strategy which is suitable for production use.
+
+Note: To use this strategy, you need to manually install the `ioredis` package:
+
+```shell
+npm install ioredis@^5.3.2
+```
 
 ```ts title="Signature"
 class RedisCacheStrategy implements CacheStrategy {
@@ -35,7 +41,7 @@ class RedisCacheStrategy implements CacheStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options: RedisCachePluginInitOptions) => RedisCacheStrategy`}   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/cache/redis-cache-plugin#rediscacheplugininitoptions'>RedisCachePluginInitOptions</a>) => RedisCacheStrategy`}   />
 
 
 ### init
@@ -55,7 +61,7 @@ class RedisCacheStrategy implements CacheStrategy {
 
 ### set
 
-<MemberInfo kind="method" type={`(key: string, value: T, options?: SetCacheKeyOptions) => Promise&#60;void&#62;`}   />
+<MemberInfo kind="method" type={`(key: string, value: T, options?: <a href='/reference/typescript-api/cache/cache-strategy#setcachekeyoptions'>SetCacheKeyOptions</a>) => Promise&#60;void&#62;`}   />
 
 
 ### delete

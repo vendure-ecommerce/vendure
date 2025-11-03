@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BlockingEventHandlerOptions
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="22" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="23" packageName="@vendure/core" since="2.2.0" />
 
 Options for registering a blocking event handler.
 

@@ -137,6 +137,10 @@ export const ORDER_LINE_FRAGMENT = gql`
             sku
             trackInventory
             stockOnHand
+            product {
+                id
+                name
+            }
         }
         discounts {
             ...Discount
@@ -581,6 +585,24 @@ export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
 export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
     mutation SetDraftOrderBillingAddress($orderId: ID!, $input: CreateAddressInput!) {
         setDraftOrderBillingAddress(orderId: $orderId, input: $input) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderShippingAddress($orderId: ID!) {
+        unsetDraftOrderShippingAddress(orderId: $orderId) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderBillingAddress($orderId: ID!) {
+        unsetDraftOrderBillingAddress(orderId: $orderId) {
             ...OrderDetail
         }
     }

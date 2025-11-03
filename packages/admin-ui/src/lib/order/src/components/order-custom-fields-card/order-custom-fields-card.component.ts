@@ -8,6 +8,7 @@ import { CustomFieldConfig, ModalService } from '@vendure/admin-ui/core';
     templateUrl: './order-custom-fields-card.component.html',
     styleUrls: ['./order-custom-fields-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderCustomFieldsCardComponent implements OnInit {
     @Input() customFieldsConfig: CustomFieldConfig[] = [];
@@ -15,7 +16,10 @@ export class OrderCustomFieldsCardComponent implements OnInit {
     @Output() updateClick = new EventEmitter<any>();
     customFieldForm: UntypedFormGroup;
     editable = false;
-    constructor(private formBuilder: UntypedFormBuilder, private modalService: ModalService) {}
+    constructor(
+        private formBuilder: UntypedFormBuilder,
+        private modalService: ModalService,
+    ) {}
 
     ngOnInit() {
         this.customFieldForm = this.formBuilder.group({});

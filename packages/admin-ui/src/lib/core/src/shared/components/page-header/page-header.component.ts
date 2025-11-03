@@ -5,5 +5,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     templateUrl: './page-header.component.html',
     styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PageHeaderComponent {}

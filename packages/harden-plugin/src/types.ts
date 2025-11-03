@@ -1,3 +1,4 @@
+import { GraphQLRequestContext } from '@apollo/server';
 import { ComplexityEstimator } from 'graphql-query-complexity';
 
 /**
@@ -79,4 +80,16 @@ export interface HardenPluginOptions {
      * @default 'prod'
      */
     apiMode?: 'dev' | 'prod';
+    /**
+     * @description
+     * Allows you to skip the complexity check for certain requests.
+     *
+     * @example
+     * ```ts
+     * HardenPlugin.init({
+     *   skip: (context) => context.request.http.headers['x-storefront-ssr-auth'] === 'some-secret-token'
+     * }),
+     * ```
+     */
+    skip?: (context: GraphQLRequestContext<any>) => Promise<boolean> | boolean;
 }

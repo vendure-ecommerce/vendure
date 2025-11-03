@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post, Req } from '@nestjs/common';
-import { Ctx, Logger, RequestContext, Transaction, ChannelService, LanguageCode } from '@vendure/core';
+import { ChannelService, LanguageCode, Logger, RequestContext, Transaction } from '@vendure/core';
 import { Request } from 'express';
 
 import { loggerCtx } from './constants';
@@ -29,7 +29,7 @@ export class MollieController {
             const ctx = await this.createContext(channelToken, req);
             await this.mollieService.handleMollieStatusUpdate(ctx, {
                 paymentMethodId,
-                orderId: body.id,
+                paymentId: body.id,
             });
         } catch (error: any) {
             Logger.error(
@@ -48,7 +48,10 @@ export class MollieController {
             isAuthorized: true,
             authorizedAsOwnerOnly: false,
             channel,
-            req,
+            // This is a workaround for a type mismatch between express v5 (Vendure core)
+            // and express v4 (several transitive dependencies). Can be removed once the
+            // ecosystem has more significantly shifted to v5.
+            req: req as any,
             languageCode: LanguageCode.en,
         });
     }

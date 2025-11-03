@@ -7,6 +7,7 @@ import { EntityManager } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
+import { Instrument } from '../common/instrument-decorator';
 import { Logger } from '../config/logger/vendure-logger';
 import { TransactionSubscriber, TransactionSubscriberError } from '../connection/transaction-subscriber';
 
@@ -95,6 +96,7 @@ export type BlockingEventHandlerOptions<T extends VendureEvent> = {
  * @docsCategory events
  * */
 @Injectable()
+@Instrument()
 export class EventBus implements OnModuleDestroy {
     private eventStream = new Subject<VendureEvent>();
     private destroy$ = new Subject<void>();

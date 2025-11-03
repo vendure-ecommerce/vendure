@@ -43,6 +43,9 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        // We have extra time here because a lot of jobs are
+        // triggered from all the product updates
+        await awaitRunningJobs(adminClient, 10_000, 1000);
         await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
@@ -60,7 +63,19 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
                 },
             },
         );
-        expect(search.totalItems).toBe(20);
+        expect(search.totalItems).toBe(21);
+    });
+
+    it('no term or filters grouped by SKU', async () => {
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupBySKU: true,
+                },
+            },
+        );
+        expect(search.totalItems).toBe(34);
     });
 
     it('with search term', async () => {
@@ -70,6 +85,19 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
                 input: {
                     groupByProduct: true,
                     term: 'laptop',
+                },
+            },
+        );
+        expect(search.totalItems).toBe(1);
+    });
+
+        it('with search term grouped by SKU', async () => {
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupBySKU: true,
+                    term: 'bonsai',
                 },
             },
         );

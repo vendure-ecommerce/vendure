@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetStorageStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-storage-strategy/asset-storage-strategy.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-storage-strategy/asset-storage-strategy.ts" sourceLine="32" packageName="@vendure/core" />
 
 The AssetPersistenceStrategy determines how Asset files are physically stored
 and retrieved.

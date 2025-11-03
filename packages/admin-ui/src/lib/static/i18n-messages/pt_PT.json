@@ -5,8 +5,8 @@
   "asset": {
     "add-asset": "Adicionar imagens",
     "add-asset-with-count": "Adiciona {count, plural, =0 {assets} one {1 asset} other {{count} assets}}",
-    "change-asset": "Mudar imagem",
     "assets-selected-count": "{ count } imagens selecionadas",
+    "change-asset": "Mudar imagem",
     "dimensions": "Dimensões",
     "focal-point": "Ponto central",
     "notify-create-assets-success": "Criado {count, plural, one {new Asset} other {{count} new Assets}}",
@@ -17,6 +17,7 @@
     "select-assets": "Seleccione as imagens",
     "set-as-featured-asset": "Definir como imagem em destaque",
     "set-focal-point": "Definir ponto central",
+    "size": "Tamanho",
     "source-file": "Ficheiro original",
     "unset-focal-point": "Desactivar",
     "update-focal-point": "Actualizar ponto central",
@@ -46,6 +47,7 @@
     "profile": "Perfil",
     "promotions": "Promoções",
     "roles": "Regras",
+    "scheduled-tasks": "Tarefas agendadas",
     "seller-orders": "Encomendas de vendedores",
     "sellers": "Vendedores",
     "shipping-methods": "Métodos de envio",
@@ -238,13 +240,15 @@
     "delete": "Eliminar",
     "description": "Descrição",
     "details": "Detalhes",
-    "disabled": "Inactivo",
+    "disable": "Desativar",
+    "disabled": "Inativo",
     "discard-changes": "Descartar modificações",
     "duplicate": "Duplicar",
     "edit": "Editar",
     "edit-field": "Editar campo",
     "edit-note": "Editar nota",
-    "enabled": "Activo",
+    "enable": "Ativar",
+    "enabled": "Ativo",
     "end-date": "Data de fim",
     "expand-entries": "Expandir entradas",
     "extension-running-in-separate-window": "A extensão está a ser executada em uma janela separada",
@@ -476,6 +480,7 @@
     "year": "ano"
   },
   "editor": {
+    "height": "Altura",
     "image-alt": "Descrição (alt)",
     "image-src": "Código",
     "image-title": "Título",
@@ -484,7 +489,8 @@
     "link-target": "Escolha onde abrir o link",
     "link-title": "Título do link",
     "remove-link": "Remover",
-    "set-link": "Atribuir link"
+    "set-link": "Atribuir link",
+    "width": "Largura"
   },
   "error": {
     "403-forbidden": "No momento, você não está autorizado a aceder \"{ path }\". Você não tem permissão ou a sua sessão expirou.",
@@ -529,6 +535,7 @@
     "promotions": "Promoções",
     "roles": "Gerir permissões",
     "sales": "Vendas",
+    "scheduled-tasks": "Tarefas agendadas",
     "sellers": "Vendedores",
     "settings": "Configurações",
     "shipping-methods": "Métodos de envio",
@@ -644,6 +651,7 @@
     "previous-customer": "Cliente anterior",
     "product-name": "Nome do produto",
     "product-sku": "SKU",
+    "product-variant": "Variante de produto",
     "promotions-applied": "Promoções aplicadas",
     "prorated-unit-price": "Diferença de preço",
     "quantity": "Quantidade",
@@ -791,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "Todas as filas de trabalhos",
+    "could-not-trigger-task": "Não foi possível ativar a tarefa",
     "health-all-systems-up": "Todos os sistemas activos",
     "health-error": "Erro: um ou mais sistemas estão inoperantes!",
     "health-last-checked": "Última verificação",
@@ -810,6 +819,13 @@
     "job-state-completed": "Concluído",
     "job-state-failed": "Falhou",
     "job-state-pending": "Pendente",
-    "job-state-running": "Em execução"
+    "job-state-running": "Em execução",
+    "last-executed-at": "Última execução",
+    "last-result": "Último resultado",
+    "next-execution-at": "Próxima execução",
+    "run-task": "Executar tarefa",
+    "schedule": "Agendamento",
+    "task-id": "ID da tarefa",
+    "task-will-be-triggered": "A tarefa será executada"
   }
 }

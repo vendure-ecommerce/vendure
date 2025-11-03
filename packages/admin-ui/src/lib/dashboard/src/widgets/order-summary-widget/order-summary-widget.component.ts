@@ -25,6 +25,7 @@ export const GET_ORDER_SUMMARY = gql`
     templateUrl: './order-summary-widget.component.html',
     styleUrls: ['./order-summary-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderSummaryWidgetComponent implements OnInit {
     today = new Date();

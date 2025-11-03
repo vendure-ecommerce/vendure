@@ -10,6 +10,7 @@ import {
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { CustomerHistoryEntry } from '../../entity/history-entry/customer-history-entry.entity';
@@ -24,7 +25,6 @@ import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
 
 import { AdministratorService } from './administrator.service';
-
 export interface CustomerHistoryEntryData {
     [HistoryEntryType.CUSTOMER_REGISTERED]: {
         strategy: string;
@@ -246,6 +246,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class HistoryService {
     constructor(
         private connection: TransactionalConnection,

@@ -18,6 +18,7 @@ type SellerOrder = NonNullable<NonNullable<GetSellerOrdersQuery['order']>['selle
     templateUrl: './seller-orders-card.component.html',
     styleUrls: ['./seller-orders-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SellerOrdersCardComponent implements OnInit {
     @Input() orderId: string;

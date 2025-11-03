@@ -12,18 +12,18 @@ import {
     RefundStateTransitionError,
 } from '../../common/error/generated-graphql-admin-errors';
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
-import { Order } from '../../entity/order/order.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
-import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
 import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
-import { Payment } from '../../entity/payment/payment.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
@@ -41,6 +41,7 @@ import { PaymentMethodService } from './payment-method.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class PaymentService {
     constructor(
         private connection: TransactionalConnection,
@@ -370,7 +371,7 @@ export class PaymentService {
             }
             refund = await this.connection.getRepository(ctx, Refund).save(refund);
             const refundLines: RefundLine[] = [];
-            for (const { orderLineId, quantity } of input.lines) {
+            for (const { orderLineId, quantity } of input.lines || []) {
                 const refundLine = await this.connection.getRepository(ctx, RefundLine).save(
                     new RefundLine({
                         refund,
@@ -447,16 +448,17 @@ export class PaymentService {
         // are involved.
         // It is deprecated and will be removed in a future version.
         let refundOrderLinesTotal = 0;
+        const inputLines = input.lines || [];
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
-        for (const line of input.lines) {
+            .find({ where: { id: In(inputLines.map(l => l.orderLineId)) } });
+        for (const line of inputLines) {
             const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
             if (orderLine && 0 < orderLine.orderPlacedQuantity) {
                 refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
             }
         }
-        const total = refundOrderLinesTotal + input.shipping + input.adjustment;
+        const total = refundOrderLinesTotal + (input.shipping ?? 0) + (input.adjustment ?? 0);
         return { orderLinesTotal: refundOrderLinesTotal, total };
     }
 

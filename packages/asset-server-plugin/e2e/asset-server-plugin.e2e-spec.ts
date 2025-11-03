@@ -11,6 +11,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import {
+    GetImageTransformParametersArgs,
+    ImageTransformParameters,
+    ImageTransformStrategy,
+} from '../src/config/image-transform-strategy';
 import { AssetServerPlugin } from '../src/plugin';
 
 import {
@@ -23,18 +28,28 @@ import {
 const TEST_ASSET_DIR = 'test-assets';
 const IMAGE_BASENAME = 'derick-david-409858-unsplash';
 
+class TestImageTransformStrategy implements ImageTransformStrategy {
+    getImageTransformParameters(args: GetImageTransformParametersArgs): ImageTransformParameters {
+        if (args.input.preset === 'test') {
+            throw new Error('Test error');
+        }
+        return args.input;
+    }
+}
+
 describe('AssetServerPlugin', () => {
     let asset: AssetFragment;
     const sourceFilePath = path.join(__dirname, TEST_ASSET_DIR, `source/b6/${IMAGE_BASENAME}.jpg`);
     const previewFilePath = path.join(__dirname, TEST_ASSET_DIR, `preview/71/${IMAGE_BASENAME}__preview.jpg`);
 
-    const { server, adminClient, shopClient } = createTestEnvironment(
+    const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             // logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 AssetServerPlugin.init({
                     assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
                     route: 'assets',
+                    imageTransformStrategy: new TestImageTransformStrategy(),
                 }),
             ],
         }),
@@ -228,6 +243,8 @@ describe('AssetServerPlugin', () => {
             it('blocks path traversal 7', testPathTraversalOnUrl(`/.%2F.%2F.%2Fpackage.json`));
             it('blocks path traversal 8', testPathTraversalOnUrl(`/..\\\\..\\\\package.json`));
             it('blocks path traversal 9', testPathTraversalOnUrl(`/\\\\\\..\\\\\\..\\\\\\package.json`));
+            it('blocks path traversal 10', testPathTraversalOnUrl(`/./../././.././package.json`));
+            it('blocks path traversal 11', testPathTraversalOnUrl(`/\\.\\..\\.\\.\\..\\.\\package.json`));
         });
     });
 
@@ -314,6 +331,13 @@ describe('AssetServerPlugin', () => {
 
         expect(createAssets.length).toBe(1);
         expect(createAssets[0].name).toBe('bad-image.jpg');
+    });
+
+    it('ImageTransformStrategy can throw to prevent transform', async () => {
+        const res = await fetch(`${asset.preview}?preset=test`);
+        expect(res.status).toBe(400);
+        const text = await res.text();
+        expect(text).toContain('Invalid parameters');
     });
 });
 

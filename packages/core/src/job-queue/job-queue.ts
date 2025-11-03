@@ -1,14 +1,10 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { Subject, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
-
+import { Instrument } from '../common';
 import { JobQueueStrategy } from '../config';
-import { Logger } from '../config/logger/vendure-logger';
 
 import { Job } from './job';
 import { JobBufferService } from './job-buffer/job-buffer.service';
 import { SubscribableJob } from './subscribable-job';
-import { CreateQueueOptions, JobConfig, JobData, JobOptions } from './types';
+import { CreateQueueOptions, JobData, JobOptions } from './types';
 
 /**
  * @description
@@ -22,6 +18,7 @@ import { CreateQueueOptions, JobConfig, JobData, JobOptions } from './types';
  *
  * @docsCategory JobQueue
  */
+@Instrument()
 export class JobQueue<Data extends JobData<Data> = object> {
     private running = false;
 

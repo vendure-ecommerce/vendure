@@ -159,6 +159,21 @@ describe('JobQueue', () => {
         const jobs = await getJobsInTestQueue(JobState.RUNNING);
         expect(jobs.items.length).toBe(0);
     });
+
+    it('subscribable that times out', async () => {
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/run-job/subscribe-timeout`;
+        const result = await adminClient.fetch(restControllerUrl);
+
+        expect(result.status).toBe(200);
+        expect(await result.text()).toBe('Job subscription timed out. The job may still be running');
+        const jobs = await getJobsInTestQueue(JobState.RUNNING);
+        expect(jobs.items.length).toBe(1);
+    });
+
+    it('server still running after timeout', async () => {
+        const jobs = await getJobsInTestQueue(JobState.RUNNING);
+        expect(jobs.items.length).toBe(1);
+    });
 });
 
 function sleep(ms: number): Promise<void> {

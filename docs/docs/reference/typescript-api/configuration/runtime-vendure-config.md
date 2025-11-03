@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RuntimeVendureConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1211" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1319" packageName="@vendure/core" />
 
 This interface represents the VendureConfig object available at run-time, i.e. the user-supplied
 config values have been merged with the <a href='/reference/typescript-api/configuration/default-config#defaultconfig'>defaultConfig</a> values.
@@ -26,6 +26,7 @@ interface RuntimeVendureConfig extends Required<VendureConfig> {
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    schedulerOptions: Required<SchedulerOptions>;
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;
@@ -77,6 +78,11 @@ interface RuntimeVendureConfig extends Required<VendureConfig> {
 ### jobQueueOptions
 
 <MemberInfo kind="property" type={`Required&#60;<a href='/reference/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>&#62;`}   />
+
+
+### schedulerOptions
+
+<MemberInfo kind="property" type={`Required&#60;<a href='/reference/typescript-api/scheduled-tasks/scheduler-options#scheduleroptions'>SchedulerOptions</a>&#62;`}   />
 
 
 ### orderOptions

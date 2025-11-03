@@ -5,6 +5,10 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
 /**
  * @description
  * Options available when setting the value in the cache.
+ *
+ * @since 3.1.0
+ * @docsCategory cache
+ * @docsPage CacheStrategy
  */
 export interface SetCacheKeyOptions {
     /**
@@ -30,8 +34,21 @@ export interface SetCacheKeyOptions {
  * It is used by the {@link CacheService} to take care of storage and retrieval of items
  * from the cache.
  *
+ * If you are using the `DefaultCachePlugin` or the `RedisCachePlugin`, you will not need to
+ * manually specify a CacheStrategy, as these plugins will automatically configure the
+ * appropriate strategy.
+ *
+ * :::info
+ *
+ * This is configured via the `systemOptions.cacheStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 3.1.0
  * @docsCategory cache
+ * @docsPage CacheStrategy
+ * @docsWeight 0
  */
 export interface CacheStrategy extends InjectableStrategy {
     /**

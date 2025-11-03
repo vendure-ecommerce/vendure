@@ -24,6 +24,11 @@ export type Scalars = {
 
 export type ActiveOrderResult = NoActiveOrderError | Order;
 
+export type AddItemInput = {
+    productVariantId: Scalars['ID']['input'];
+    quantity: Scalars['Int']['input'];
+};
+
 export type AddPaymentToOrderResult =
     | IneligiblePaymentMethodError
     | NoActiveOrderError
@@ -119,6 +124,8 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
 export type BooleanCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -140,6 +147,15 @@ export type BooleanListOperators = {
 export type BooleanOperators = {
     eq?: InputMaybe<Scalars['Boolean']['input']>;
     isNull?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type BooleanStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type Channel = Node & {
@@ -719,6 +735,8 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -740,6 +758,7 @@ export type CustomFieldConfig =
     | LocaleTextCustomFieldConfig
     | RelationCustomFieldConfig
     | StringCustomFieldConfig
+    | StructCustomFieldConfig
     | TextCustomFieldConfig;
 
 export type Customer = Node & {
@@ -840,6 +859,8 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -850,6 +871,22 @@ export type DateTimeCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']['output']>;
     readonly?: Maybe<Scalars['Boolean']['output']>;
     requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+/**
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['String']['output']>;
+    min?: Maybe<Scalars['String']['output']>;
+    name: Scalars['String']['output'];
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -899,6 +936,7 @@ export enum ErrorCode {
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
+    ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
@@ -1065,6 +1103,8 @@ export type FacetValueTranslation = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1075,6 +1115,18 @@ export type FloatCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']['output']>;
     readonly?: Maybe<Scalars['Boolean']['output']>;
     requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Float']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type FloatStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Float']['output']>;
+    min?: Maybe<Scalars['Float']['output']>;
+    name: Scalars['String']['output'];
     step?: Maybe<Scalars['Float']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -1116,6 +1168,7 @@ export type GuestCheckoutError = ErrorResult & {
 
 export type HistoryEntry = Node & {
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     data: Scalars['JSON']['output'];
     id: Scalars['ID']['output'];
     type: HistoryEntryType;
@@ -1237,6 +1290,8 @@ export type InsufficientStockError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1247,6 +1302,18 @@ export type IntCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']['output']>;
     readonly?: Maybe<Scalars['Boolean']['output']>;
     requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type IntStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Int']['output']>;
+    min?: Maybe<Scalars['Int']['output']>;
+    name: Scalars['String']['output'];
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -1586,6 +1653,8 @@ export enum LanguageCode {
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1601,6 +1670,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -1630,8 +1701,10 @@ export type MissingPasswordError = ErrorResult & {
 };
 
 export type Mutation = {
-    /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
+    /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
     addItemToOrder: UpdateOrderItemsResult;
+    /** Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items. */
+    addItemsToOrder: UpdateMultipleOrderItemsResult;
     /** Add a Payment to the Order */
     addPaymentToOrder: AddPaymentToOrderResult;
     /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
@@ -1691,11 +1764,11 @@ export type Mutation = {
     resetPassword: ResetPasswordResult;
     /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
     setCustomerForOrder: SetCustomerForOrderResult;
-    /** Sets the billing address for this order */
+    /** Sets the billing address for the active Order */
     setOrderBillingAddress: ActiveOrderResult;
-    /** Allows any custom fields to be set for the active order */
+    /** Allows any custom fields to be set for the active Order */
     setOrderCustomFields: ActiveOrderResult;
-    /** Sets the shipping address for this order */
+    /** Sets the shipping address for the active Order */
     setOrderShippingAddress: ActiveOrderResult;
     /**
      * Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
@@ -1706,6 +1779,10 @@ export type Mutation = {
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+    /** Unsets the billing address for the active Order. Available since version 3.1.0 */
+    unsetOrderBillingAddress: ActiveOrderResult;
+    /** Unsets the shipping address for the active Order. Available since version 3.1.0 */
+    unsetOrderShippingAddress: ActiveOrderResult;
     /** Update an existing Customer */
     updateCustomer: Customer;
     /** Update an existing Address */
@@ -1729,6 +1806,10 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID']['input'];
     quantity: Scalars['Int']['input'];
+};
+
+export type MutationAddItemsToOrderArgs = {
+    inputs: Array<AddItemInput>;
 };
 
 export type MutationAddPaymentToOrderArgs = {
@@ -2001,6 +2082,13 @@ export type OrderFilterParameter = {
     updatedAt?: InputMaybe<DateOperators>;
 };
 
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+    errorCode: ErrorCode;
+    interceptorError: Scalars['String']['output'];
+    message: Scalars['String']['output'];
+};
+
 /** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
@@ -2186,6 +2274,7 @@ export type PasswordValidationError = ErrorResult & {
 export type Payment = Node & {
     amount: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     errorMessage?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     metadata?: Maybe<Scalars['JSON']['output']>;
@@ -2729,6 +2818,24 @@ export type ProvinceList = PaginatedList & {
     totalItems: Scalars['Int']['output'];
 };
 
+export type PublicPaymentMethod = {
+    code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    name: Scalars['String']['output'];
+    translations: Array<PaymentMethodTranslation>;
+};
+
+export type PublicShippingMethod = {
+    code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    name: Scalars['String']['output'];
+    translations: Array<ShippingMethodTranslation>;
+};
+
 export type Query = {
     /** The active Channel */
     activeChannel: Channel;
@@ -2740,6 +2847,10 @@ export type Query = {
      * query will once again return `null`.
      */
     activeOrder?: Maybe<Order>;
+    /** Get active payment methods */
+    activePaymentMethods: Array<Maybe<PublicPaymentMethod>>;
+    /** Get active shipping methods */
+    activeShippingMethods: Array<Maybe<PublicShippingMethod>>;
     /** An array of supported Countries */
     availableCountries: Array<Country>;
     /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
@@ -2821,6 +2932,7 @@ export type RefreshCustomerVerificationResult = NativeAuthStrategyError | Succes
 export type Refund = Node & {
     adjustment: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     items: Scalars['Money']['output'];
     lines: Array<RefundLine>;
@@ -2881,6 +2993,8 @@ export type RegisterCustomerInput = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     entity: Scalars['String']['output'];
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -2895,7 +3009,7 @@ export type RelationCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RequestPasswordResetResult = NativeAuthStrategyError | Success;
 
@@ -3011,6 +3125,7 @@ export type SetOrderShippingMethodResult =
     | OrderModificationError;
 
 export type ShippingLine = {
+    customFields?: Maybe<Scalars['JSON']['output']>;
     discountedPrice: Scalars['Money']['output'];
     discountedPriceWithTax: Scalars['Money']['output'];
     discounts: Array<Discount>;
@@ -3072,6 +3187,8 @@ export enum SortOrder {
 }
 
 export type StringCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -3108,6 +3225,51 @@ export type StringOperators = {
     notIn?: InputMaybe<Array<Scalars['String']['input']>>;
     regex?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type StringStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    length?: Maybe<Scalars['Int']['output']>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    options?: Maybe<Array<StringFieldOption>>;
+    pattern?: Maybe<Scalars['String']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
+    description?: Maybe<Array<LocalizedString>>;
+    fields: Array<StructFieldConfig>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructField = {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list?: Maybe<Scalars['Boolean']['output']>;
+    name: Scalars['String']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructFieldConfig =
+    | BooleanStructFieldConfig
+    | DateTimeStructFieldConfig
+    | FloatStructFieldConfig
+    | IntStructFieldConfig
+    | StringStructFieldConfig
+    | TextStructFieldConfig;
 
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
@@ -3171,6 +3333,8 @@ export type TaxRateList = PaginatedList & {
 };
 
 export type TextCustomFieldConfig = CustomField & {
+    deprecated?: Maybe<Scalars['Boolean']['output']>;
+    deprecationReason?: Maybe<Scalars['String']['output']>;
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
     label?: Maybe<Array<LocalizedString>>;
@@ -3179,6 +3343,15 @@ export type TextCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']['output']>;
     readonly?: Maybe<Scalars['Boolean']['output']>;
     requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type TextStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -3228,14 +3401,32 @@ export type UpdateCustomerPasswordResult =
     | PasswordValidationError
     | Success;
 
+/**
+ * Returned when multiple items are added to an Order.
+ * The errorResults array contains the errors that occurred for each item, if any.
+ */
+export type UpdateMultipleOrderItemsResult = {
+    errorResults: Array<UpdateOrderItemErrorResult>;
+    order: Order;
+};
+
 export type UpdateOrderInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
 };
+
+/** Union type of all possible errors that can occur when adding or removing items from an Order. */
+export type UpdateOrderItemErrorResult =
+    | InsufficientStockError
+    | NegativeQuantityError
+    | OrderInterceptorError
+    | OrderLimitError
+    | OrderModificationError;
 
 export type UpdateOrderItemsResult =
     | InsufficientStockError
     | NegativeQuantityError
     | Order
+    | OrderInterceptorError
     | OrderLimitError
     | OrderModificationError;
 
@@ -3448,8 +3639,58 @@ export type AddItemToOrderMutation = {
                   type: AdjustmentType;
               }>;
           }
+        | { errorCode: ErrorCode; message: string; interceptorError: string }
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
+};
+
+export type AddItemsToOrderMutationVariables = Exact<{
+    inputs: Array<AddItemInput> | AddItemInput;
+}>;
+
+export type AddItemsToOrderMutation = {
+    addItemsToOrder: {
+        order: {
+            id: string;
+            code: string;
+            state: string;
+            active: boolean;
+            total: number;
+            totalWithTax: number;
+            currencyCode: CurrencyCode;
+            lines: Array<{
+                id: string;
+                quantity: number;
+                unitPrice: number;
+                unitPriceWithTax: number;
+                linePrice: number;
+                linePriceWithTax: number;
+                productVariant: { id: string };
+                featuredAsset?: { id: string } | null;
+                discounts: Array<{
+                    adjustmentSource: string;
+                    amount: number;
+                    amountWithTax: number;
+                    description: string;
+                    type: AdjustmentType;
+                }>;
+            }>;
+            discounts: Array<{
+                adjustmentSource: string;
+                amount: number;
+                amountWithTax: number;
+                description: string;
+                type: AdjustmentType;
+            }>;
+        };
+        errorResults: Array<
+            | { errorCode: ErrorCode; message: string }
+            | { errorCode: ErrorCode; message: string }
+            | { errorCode: ErrorCode; message: string }
+            | { errorCode: ErrorCode; message: string }
+            | { errorCode: ErrorCode; message: string }
+        >;
+    };
 };
 
 export type SearchProductsShopQueryVariables = Exact<{
@@ -3745,6 +3986,7 @@ export type AdjustItemQuantityMutation = {
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
+        | { errorCode: ErrorCode; message: string; interceptorError: string }
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
@@ -3802,6 +4044,7 @@ export type RemoveItemFromOrderMutation = {
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
+        | { errorCode: ErrorCode; message: string; interceptorError: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -4128,6 +4371,32 @@ export type TransitionToStateMutation = {
         | null;
 };
 
+export type OrderWithAddressesFragment = {
+    lines: Array<{ id: string }>;
+    shippingAddress?: {
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    } | null;
+    billingAddress?: {
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    } | null;
+};
+
 export type SetShippingAddressMutationVariables = Exact<{
     input: CreateAddressInput;
 }>;
@@ -4136,7 +4405,19 @@ export type SetShippingAddressMutation = {
     setOrderShippingAddress:
         | { errorCode: ErrorCode; message: string }
         | {
+              lines: Array<{ id: string }>;
               shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
                   fullName?: string | null;
                   company?: string | null;
                   streetLine1?: string | null;
@@ -4158,6 +4439,82 @@ export type SetBillingAddressMutation = {
     setOrderBillingAddress:
         | { errorCode: ErrorCode; message: string }
         | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+          };
+};
+
+export type UnsetShippingAddressMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UnsetShippingAddressMutation = {
+    unsetOrderShippingAddress:
+        | { errorCode: ErrorCode; message: string }
+        | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+          };
+};
+
+export type UnsetBillingAddressMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UnsetBillingAddressMutation = {
+    unsetOrderBillingAddress:
+        | { errorCode: ErrorCode; message: string }
+        | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               billingAddress?: {
                   fullName?: string | null;
                   company?: string | null;
@@ -4648,6 +5005,7 @@ export type RemoveAllOrderLinesMutation = {
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
+        | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -4695,6 +5053,30 @@ export type GetActiveCustomerWithOrdersProductPriceQuery = {
             }>;
         };
     } | null;
+};
+
+export type ActivePaymentMethodsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ActivePaymentMethodsQuery = {
+    activePaymentMethods: Array<{
+        id: string;
+        code: string;
+        name: string;
+        description?: string | null;
+        translations: Array<{ languageCode: LanguageCode; name: string; description: string }>;
+    } | null>;
+};
+
+export type GetActiveShippingMethodsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetActiveShippingMethodsQuery = {
+    activeShippingMethods: Array<{
+        id: string;
+        code: string;
+        name: string;
+        description?: string | null;
+        translations: Array<{ languageCode: LanguageCode; name: string; description: string }>;
+    } | null>;
 };
 
 export const UpdatedOrderFragmentDoc = {
@@ -4847,6 +5229,65 @@ export const ActiveOrderCustomerFragmentDoc = {
         },
     ],
 } as unknown as DocumentNode<ActiveOrderCustomerFragment, unknown>;
+export const OrderWithAddressesFragmentDoc = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OrderWithAddressesFragment, unknown>;
 export const TestOrderFragmentFragmentDoc = {
     kind: 'Document',
     definitions: [
@@ -5276,6 +5717,22 @@ export const AddItemToOrderDocument = {
                                         ],
                                     },
                                 },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'OrderInterceptorError' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'interceptorError' },
+                                            },
+                                        ],
+                                    },
+                                },
                             ],
                         },
                     },
@@ -5363,6 +5820,174 @@ export const AddItemToOrderDocument = {
         },
     ],
 } as unknown as DocumentNode<AddItemToOrderMutation, AddItemToOrderMutationVariables>;
+export const AddItemsToOrderDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'AddItemsToOrder' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'ListType',
+                            type: {
+                                kind: 'NonNullType',
+                                type: { kind: 'NamedType', name: { kind: 'Name', value: 'AddItemInput' } },
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'addItemsToOrder' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'inputs' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'inputs' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'order' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'UpdatedOrder' },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'errorResults' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'InlineFragment',
+                                                typeCondition: {
+                                                    kind: 'NamedType',
+                                                    name: { kind: 'Name', value: 'ErrorResult' },
+                                                },
+                                                selectionSet: {
+                                                    kind: 'SelectionSet',
+                                                    selections: [
+                                                        {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'errorCode' },
+                                                        },
+                                                        {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'message' },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'UpdatedOrder' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'productVariant' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'discounts' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'adjustmentSource' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discounts' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'adjustmentSource' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<AddItemsToOrderMutation, AddItemsToOrderMutationVariables>;
 export const SearchProductsShopDocument = {
     kind: 'Document',
     definitions: [
@@ -6678,6 +7303,22 @@ export const AdjustItemQuantityDocument = {
                                         ],
                                     },
                                 },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'OrderInterceptorError' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'interceptorError' },
+                                            },
+                                        ],
+                                    },
+                                },
                             ],
                         },
                     },
@@ -6884,6 +7525,22 @@ export const RemoveItemFromOrderDocument = {
                                         selections: [
                                             { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
                                             { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'OrderInterceptorError' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'interceptorError' },
+                                            },
                                         ],
                                     },
                                 },
@@ -8264,61 +8921,8 @@ export const SetShippingAddressDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 {
-                                    kind: 'InlineFragment',
-                                    typeCondition: {
-                                        kind: 'NamedType',
-                                        name: { kind: 'Name', value: 'Order' },
-                                    },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'shippingAddress' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'fullName' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'company' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine1' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine2' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'city' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'province' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'postalCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'country' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'phoneNumber' },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
                                 },
                                 {
                                     kind: 'InlineFragment',
@@ -8334,6 +8938,60 @@ export const SetShippingAddressDocument = {
                                         ],
                                     },
                                 },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
                             ],
                         },
                     },
@@ -8376,61 +9034,8 @@ export const SetBillingAddressDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 {
-                                    kind: 'InlineFragment',
-                                    typeCondition: {
-                                        kind: 'NamedType',
-                                        name: { kind: 'Name', value: 'Order' },
-                                    },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'billingAddress' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'fullName' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'company' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine1' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine2' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'city' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'province' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'postalCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'country' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'phoneNumber' },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
                                 },
                                 {
                                     kind: 'InlineFragment',
@@ -8452,8 +9057,254 @@ export const SetBillingAddressDocument = {
                 ],
             },
         },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
     ],
 } as unknown as DocumentNode<SetBillingAddressMutation, SetBillingAddressMutationVariables>;
+export const UnsetShippingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetShippingAddress' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetOrderShippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UnsetShippingAddressMutation, UnsetShippingAddressMutationVariables>;
+export const UnsetBillingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetBillingAddress' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetOrderBillingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UnsetBillingAddressMutation, UnsetBillingAddressMutationVariables>;
 export const GetActiveOrderWithPaymentsDocument = {
     kind: 'Document',
     definitions: [
@@ -10455,3 +11306,83 @@ export const GetActiveCustomerWithOrdersProductPriceDocument = {
     GetActiveCustomerWithOrdersProductPriceQuery,
     GetActiveCustomerWithOrdersProductPriceQueryVariables
 >;
+export const ActivePaymentMethodsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'ActivePaymentMethods' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'activePaymentMethods' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'translations' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ActivePaymentMethodsQuery, ActivePaymentMethodsQueryVariables>;
+export const GetActiveShippingMethodsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetActiveShippingMethods' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'activeShippingMethods' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'translations' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetActiveShippingMethodsQuery, GetActiveShippingMethodsQueryVariables>;

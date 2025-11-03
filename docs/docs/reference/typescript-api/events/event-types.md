@@ -781,17 +781,18 @@ class LogoutEvent extends VendureEvent {
 
 ## OrderEvent
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/events/order-event.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/order-event.ts" sourceLine="17" packageName="@vendure/core" />
 
 This event is fired whenever an <a href='/reference/typescript-api/entities/order#order'>Order</a> is added, updated
 or deleted.
 
 ```ts title="Signature"
-class OrderEvent extends VendureEvent {
-    constructor(ctx: RequestContext, order: Order, type: 'created' | 'updated' | 'deleted')
+class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
+    constructor(ctx: RequestContext, order: Order, type: 'created' | 'updated' | 'deleted', input?: OrderInputTypes)
+    order: Order
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>, OrderInputTypes&#62;</code>
 
 
 
@@ -799,7 +800,12 @@ class OrderEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, type: 'created' | 'updated' | 'deleted') => OrderEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, type: 'created' | 'updated' | 'deleted', input?: OrderInputTypes) => OrderEvent`}   />
+
+
+### order
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}  since="3.4.0"  />
 
 
 
@@ -1133,7 +1139,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;</code>
 
 
 
@@ -1224,7 +1230,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
 
 
 
@@ -1479,6 +1485,34 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
 ### constructor
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes) => ShippingMethodEvent`}   />
+
+
+
+
+</div>
+
+
+## StockLocationEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-location-event.ts" sourceLine="18" packageName="@vendure/core" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a> is added, updated
+or deleted.
+
+```ts title="Signature"
+class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocationInputTypes> {
+    constructor(ctx: RequestContext, entity: StockLocation, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes)
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, StockLocationInputTypes&#62;</code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes) => StockLocationEvent`}   />
 
 
 

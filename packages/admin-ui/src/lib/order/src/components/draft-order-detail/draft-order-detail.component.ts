@@ -2,9 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    AddressFragment,
+    CreateAddressInput,
     DataService,
     DeletionResult,
     DraftOrderEligibleShippingMethodsQuery,
+    GetCustomerAddressesDocument,
     ModalService,
     NotificationService,
     Order,
@@ -12,7 +15,7 @@ import {
     OrderDetailQueryDocument,
     TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
-import { combineLatest, Observable, Subject } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
@@ -25,6 +28,7 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     templateUrl: './draft-order-detail.component.html',
     styleUrls: ['./draft-order-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DraftOrderDetailComponent
     extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
@@ -108,12 +112,58 @@ export class DraftOrderDetailComponent
             if (this.hasId(result)) {
                 this.dataService.order
                     .setCustomerForDraftOrder(this.id, { customerId: result.id })
+                    .pipe(
+                        switchMap(() => {
+                            return this.dataService.query(GetCustomerAddressesDocument, {
+                                customerId: result.id,
+                            }).single$;
+                        }),
+                        switchMap(({ customer }) => {
+                            const defaultShippingAddress = customer?.addresses?.find(
+                                addr => addr.defaultShippingAddress,
+                            );
+                            const defaultBillingAddress = customer?.addresses?.find(
+                                addr => addr.defaultBillingAddress,
+                            );
+
+                            return forkJoin([
+                                defaultShippingAddress
+                                    ? this.dataService.order.setDraftOrderShippingAddress(
+                                          this.id,
+                                          this.mapToAddressInput(defaultShippingAddress),
+                                      )
+                                    : this.dataService.order.unsetDraftOrderShippingAddress(this.id),
+                                defaultBillingAddress
+                                    ? this.dataService.order.setDraftOrderBillingAddress(
+                                          this.id,
+                                          this.mapToAddressInput(defaultBillingAddress),
+                                      )
+                                    : this.dataService.order.unsetDraftOrderBillingAddress(this.id),
+                            ]);
+                        }),
+                    )
                     .subscribe();
             } else if (result) {
                 const { note, ...input } = result;
                 this.dataService.order.setCustomerForDraftOrder(this.id, { input }).subscribe();
             }
         });
+    }
+
+    private mapToAddressInput(address: AddressFragment): CreateAddressInput {
+        return {
+            fullName: address.fullName,
+            company: address.company,
+            streetLine1: address.streetLine1,
+            streetLine2: address.streetLine2,
+            city: address.city,
+            province: address.province,
+            postalCode: address.postalCode,
+            countryCode: address.country.code,
+            phoneNumber: address.phoneNumber,
+            defaultShippingAddress: address.defaultShippingAddress,
+            defaultBillingAddress: address.defaultBillingAddress,
+        };
     }
 
     setShippingAddress() {

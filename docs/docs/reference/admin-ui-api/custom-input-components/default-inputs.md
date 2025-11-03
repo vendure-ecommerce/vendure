@@ -846,6 +846,90 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 </div>
 
 
+## StructFormInputComponent
+
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/dynamic-form-inputs/struct-form-input/struct-form-input.component.ts" sourceLine="18" packageName="@vendure/admin-ui" />
+
+A checkbox input. The default input component for `boolean` fields.
+
+```ts title="Signature"
+class StructFormInputComponent implements FormInputComponent, OnInit, OnDestroy {
+    static readonly id: DefaultFormComponentId = 'struct-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'struct-form-input'>;
+    uiLanguage$: Observable<LanguageCode>;
+    protected structFormGroup = new FormGroup({});
+    protected fields: Array<{
+        def: StructCustomFieldFragment['fields'][number];
+        formControl: FormControl;
+    }>;
+    constructor(dataService: DataService)
+    ngOnInit() => ;
+    ngOnDestroy() => ;
+}
+```
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>, <code>OnDestroy</code>
+
+
+
+<div className="members-wrapper">
+
+### id
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>`}   />
+
+
+### readonly
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+
+### formControl
+
+<MemberInfo kind="property" type={`UntypedFormControl`}   />
+
+
+### config
+
+<MemberInfo kind="property" type={`DefaultFormComponentConfig&#60;'struct-form-input'&#62;`}   />
+
+
+### uiLanguage$
+
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
+
+
+### structFormGroup
+
+<MemberInfo kind="property" type={``}   />
+
+
+### fields
+
+<MemberInfo kind="property" type={`Array&#60;{         def: StructCustomFieldFragment['fields'][number];         formControl: FormControl;     }&#62;`}   />
+
+
+### constructor
+
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => StructFormInputComponent`}   />
+
+
+### ngOnInit
+
+<MemberInfo kind="method" type={`() => `}   />
+
+
+### ngOnDestroy
+
+<MemberInfo kind="method" type={`() => `}   />
+
+
+
+
+</div>
+
+
 ## TextFormInputComponent
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/dynamic-form-inputs/text-form-input/text-form-input.component.ts" sourceLine="14" packageName="@vendure/admin-ui" />

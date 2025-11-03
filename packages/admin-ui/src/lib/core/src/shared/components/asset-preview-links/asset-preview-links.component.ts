@@ -9,6 +9,7 @@ export const ASSET_SIZES = ['tiny', 'thumb', 'small', 'medium', 'large', 'full']
     templateUrl: './asset-preview-links.component.html',
     styleUrls: ['./asset-preview-links.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetPreviewLinksComponent {
     @Input() asset: AssetLike;

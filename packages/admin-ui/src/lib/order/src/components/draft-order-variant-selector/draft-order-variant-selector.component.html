@@ -39,14 +39,11 @@
             </button>
         </div>
         <ng-container *ngIf="orderLineCustomFields.length">
-            <div class="custom-field" *ngFor="let field of orderLineCustomFields">
-                <vdr-custom-field-control
-                    [compact]="true"
-                    [readonly]="false"
-                    [customField]="field"
-                    [customFieldsFormGroup]="customFieldsFormGroup"
-                ></vdr-custom-field-control>
-            </div>
+            <vdr-tabbed-custom-fields
+                entityName="Order"
+                [customFields]="orderLineCustomFields"
+                [customFieldsFormGroup]="customFieldsFormGroup"
+            ></vdr-tabbed-custom-fields>
         </ng-container>
     </div>
 </div>

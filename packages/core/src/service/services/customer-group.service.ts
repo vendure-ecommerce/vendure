@@ -15,10 +15,11 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
+import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CustomerGroupChangeEvent } from '../../event-bus/events/customer-group-change-event';
 import { CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
@@ -35,6 +36,7 @@ import { HistoryService } from './history.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CustomerGroupService {
     constructor(
         private connection: TransactionalConnection,

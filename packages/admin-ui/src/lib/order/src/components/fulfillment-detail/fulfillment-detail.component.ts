@@ -8,6 +8,7 @@ import { isObject } from '@vendure/common/lib/shared-utils';
     templateUrl: './fulfillment-detail.component.html',
     styleUrls: ['./fulfillment-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FulfillmentDetailComponent implements OnInit, OnChanges {
     @Input() fulfillmentId: string;

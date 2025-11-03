@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TypedCustomSingleFieldConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="66" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="84" packageName="@vendure/core" />
 
 Configures a custom field on an entity in the <a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a> config object.
 

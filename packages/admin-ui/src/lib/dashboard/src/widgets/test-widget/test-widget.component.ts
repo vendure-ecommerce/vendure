@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, NgModule } from '@angular/core';
     templateUrl: './test-widget.component.html',
     styleUrls: ['./test-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TestWidgetComponent {}
 

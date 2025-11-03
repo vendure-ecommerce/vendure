@@ -17,6 +17,10 @@ Some use-cases for custom fields include:
 * Storing an external identifier (e.g. from a payment provider) on the `Customer` entity.
 * Adding a longitude and latitude to the `StockLocation` for use in selecting the closest location to a customer.
 
+:::note
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields)
+:::
+
 ## Defining custom fields
 
 Custom fields are specified in the VendureConfig:
@@ -57,15 +61,15 @@ mutation {
         id: 1
         // highlight-start
         customFields: {
-            infoUrl: "https://some-url.com",
-            downloadable: true,
+        infoUrl: "https://some-url.com",
+        downloadable: true,
         }
         // highlight-end
         translations: [
-            // highlight-next-line
-            { languageCode: en, customFields: { shortName: "foo" } }
+        // highlight-next-line
+        { languageCode: en, customFields: { shortName: "foo" } }
         ]
-    }) {
+        }) {
         id
         name
         // highlight-start
@@ -84,17 +88,17 @@ mutation {
 
 ```json
 {
-  "data": {
-    "product": {
-      "id": "1",
-      "name": "Laptop",
-      "customFields": {
-          "infoUrl": "https://some-url.com",
-          "downloadable": true,
-          "shortName": "foo"
-      }
+    "data": {
+        "product": {
+            "id": "1",
+            "name": "Laptop",
+            "customFields": {
+                "infoUrl": "https://some-url.com",
+                "downloadable": true,
+                "shortName": "foo"
+            }
+        }
     }
-  }
 }
 ```
 
@@ -107,15 +111,15 @@ The custom fields will also extend the filter and sort options available to the 
 query {
     products(options: {
         // highlight-start
-        filter: {
-            infoUrl: { contains: "new" },
-            downloadable: { eq: true }
+    filter: {
+        infoUrl: { contains: "new" },
+        downloadable: { eq: true }
         },
         sort: {
             infoUrl: ASC
         }
         // highlight-end
-    }) {
+        }) {
         items {
             id
             name
@@ -131,7 +135,6 @@ query {
 }
 ```
 
-
 ## Available custom field types
 
 The following types are available for custom fields:
@@ -146,6 +149,7 @@ The following types are available for custom fields:
 | `float`        | Floating point number        | product review rating                                    |
 | `boolean`      | Boolean                      | isDownloadable flag on product                           |
 | `datetime`     | A datetime                   | date that variant is back in stock                       |
+| `struct`       | Structured json-like data    | Key-value attributes with additional data for products   |
 | `relation`     | A relation to another entity | Asset used as a customer avatar, related Products        |
 
 To see the underlying DB data type and GraphQL type used for each, see the [CustomFieldType doc](/reference/typescript-api/custom-fields/custom-field-type).
@@ -274,6 +278,7 @@ All custom fields share some common properties:
 - [`unique`](#unique)
 - [`validate`](#validate)
 - [`requiresPermission`](#requirespermission)
+- [`deprecated`](#deprecated)
 
 #### name
 
@@ -348,9 +353,9 @@ const config = {
                 type: 'string',
                 // highlight-start
                 label: [
-                    {languageCode: LanguageCode.en, value: 'Info URL'},
-                    {languageCode: LanguageCode.de, value: 'Info-URL'},
-                    {languageCode: LanguageCode.es, value: 'URL de información'},
+                    { languageCode: LanguageCode.en, value: 'Info URL' },
+                    { languageCode: LanguageCode.de, value: 'Info-URL' },
+                    { languageCode: LanguageCode.es, value: 'URL de información' },
                 ],
                 // highlight-end
             },
@@ -377,9 +382,9 @@ const config = {
                 type: 'string',
                 // highlight-start
                 description: [
-                    {languageCode: LanguageCode.en, value: 'A URL to more information about the product'},
-                    {languageCode: LanguageCode.de, value: 'Eine URL zu weiteren Informationen über das Produkt'},
-                    {languageCode: LanguageCode.es, value: 'Una URL con más información sobre el producto'},
+                    { languageCode: LanguageCode.en, value: 'A URL to more information about the product' },
+                    { languageCode: LanguageCode.de, value: 'Eine URL zu weiteren Informationen über das Produkt' },
+                    { languageCode: LanguageCode.es, value: 'Una URL con más información sobre el producto' },
                 ],
                 // highlight-end
             },
@@ -553,9 +558,9 @@ const config = {
 
                         // If a localized error message is required, return an array of LocalizedString objects.
                         return [
-                            {languageCode: LanguageCode.en, value: 'The URL must start with "http"'},
-                            {languageCode: LanguageCode.de, value: 'Die URL muss mit "http" beginnen'},
-                            {languageCode: LanguageCode.es, value: 'La URL debe comenzar con "http"'},
+                            { languageCode: LanguageCode.en, value: 'The URL must start with "http"' },
+                            { languageCode: LanguageCode.de, value: 'Die URL muss mit "http" beginnen' },
+                            { languageCode: LanguageCode.es, value: 'La URL debe comenzar con "http"' },
                         ];
                     }
                 },
@@ -601,7 +606,7 @@ to view or update the field.
 
 In the Admin UI, the custom field will not be displayed if the current administrator lacks the required permission.
 
-In the GraphQL API, if the current user does not have the required permission, then the field will always return `null`. 
+In the GraphQL API, if the current user does not have the required permission, then the field will always return `null`.
 Attempting to set the value of a field for which the user does not have the required permission will cause the mutation to fail
 with an error.
 
@@ -627,7 +632,7 @@ const config = {
                 // and the user must have at least one of the permissions
                 // to access the field.
                 requiresPermission: [
-                    Permission.SuperAdmin, 
+                    Permission.SuperAdmin,
                     Permission.ReadShippingMethod,
                 ],
                 // highlight-end
@@ -646,6 +651,46 @@ a custom [field resolver](/guides/developer-guide/extend-graphql-api/#add-fields
 the entity's custom field value if the current customer meets the requirements.
 
 :::
+
+#### deprecated
+
+<CustomFieldProperty required={false} type="boolean | string" />
+
+Marks the custom field as deprecated in the GraphQL schema. When set to `true`, the field will be marked with the `@deprecated` directive. When set to a string, that string will be used as the deprecation reason.
+
+This is useful for API evolution - you can mark fields as deprecated to signal to API consumers that they should migrate to newer alternatives, while still maintaining backward compatibility.
+
+```ts title="src/vendure-config.ts"
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'oldField',
+                type: 'string',
+                // highlight-next-line
+                deprecated: true,
+            },
+            {
+                name: 'legacyUrl',
+                type: 'string',
+                // highlight-next-line
+                deprecated: 'Use the new infoUrl field instead',
+            },
+        ]
+    }
+};
+```
+
+When querying the GraphQL schema, deprecated fields will be marked accordingly:
+
+```graphql
+type ProductCustomFields {
+    oldField: String @deprecated
+    legacyUrl: String @deprecated(reason: "Use the new infoUrl field instead")
+    infoUrl: String
+}
+```
 
 ### Properties for `string` fields
 
@@ -695,8 +740,8 @@ const config = {
                 type: 'string',
                 // highlight-start
                 options: [
-                    {value: 'new', label: [{languageCode: LanguageCode.en, value: 'New'}]},
-                    {value: 'used', label: [{languageCode: LanguageCode.en, value: 'Used'}]},
+                    { value: 'new', label: [{ languageCode: LanguageCode.en, value: 'New' }] },
+                    { value: 'used', label: [{ languageCode: LanguageCode.en, value: 'Used' }] },
                 ],
                 // highlight-end
             },
@@ -881,6 +926,111 @@ const config = {
 <CustomFieldProperty required={false} type="string" />
 
 The step value. See [the MDN datetime-local docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#step) to understand how this is used.
+
+### Properties for `struct` fields
+
+:::info
+The `struct` custom field type is available from Vendure v3.1.0.
+:::
+
+In addition to the common properties, the `struct` custom fields have some type-specific properties:
+
+- [`fields`](#fields)
+
+#### fields
+
+<CustomFieldProperty required={true} type="StructFieldConfig[]" typeLink="/reference/typescript-api/custom-fields/struct-field-config" />
+
+A `struct` is a data structure comprising a set of named fields, each with its own type. The `fields` property is an array of `StructFieldConfig` objects, each of which defines a field within the struct.
+
+```ts title="src/vendure-config.ts"
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'dimensions',
+                type: 'struct',
+                // highlight-start
+                fields: [
+                    { name: 'length', type: 'int' },
+                    { name: 'width', type: 'int' },
+                    { name: 'height', type: 'int' },
+                ],
+                // highlight-end
+            },
+        ]
+    }
+};
+```
+
+When querying the `Product` entity, the `dimensions` field will be an object with the fields `length`, `width` and `height`:
+
+```graphql
+query {
+    product(id: 1) {
+        customFields {
+            dimensions {
+                length
+                width
+                height
+            }
+        }
+    }
+}
+```
+
+Struct fields support many of the same properties as other custom fields, such as `list`, `label`, `description`, `validate`, `ui` and
+type-specific properties such as `options` and `pattern` for string types.
+
+:::note
+The following properties are **not** supported for `struct` fields: `public`, `readonly`, `internal`, `defaultValue`, `nullable`, `unique`, `requiresPermission`.
+:::
+
+```ts title="src/vendure-config.ts"
+import { LanguageCode } from '@vendure/core';
+
+const config = {
+    // ...
+    customFields: {
+        OrderLine: [
+            {
+                name: 'customizationOptions',
+                type: 'struct',
+                fields: [
+                    {
+                        name: 'color',
+                        type: 'string',
+                        // highlight-start
+                        options: [
+                            { value: 'red', label: [{ languageCode: LanguageCode.en, value: 'Red' }] },
+                            { value: 'blue', label: [{ languageCode: LanguageCode.en, value: 'Blue' }] },
+                        ],
+                        // highlight-end
+                    },
+                    {
+                        name: 'engraving',
+                        type: 'string',
+                        // highlight-start
+                        validate: (value: any) => {
+                            if (value.length > 20) {
+                                return 'Engraving text must be 20 characters or fewer';
+                            }
+                        },
+                    },
+                    {
+                        name: 'notifyEmailAddresses',
+                        type: 'string',
+                        // highlight-start
+                        list: true,
+                        // highlight-end
+                    }
+                ],
+            },
+        ]
+    }
+};
+```
 
 ### Properties for `relation` fields
 
@@ -1082,20 +1232,20 @@ const config: VendureConfig = {
     customFields: {
         Product: [
             // Rich text editor
-            {name: 'additionalInfo', type: 'text', ui: {component: 'rich-text-form-input'}},
+            { name: 'additionalInfo', type: 'text', ui: { component: 'rich-text-form-input' } },
             // JSON editor
-            {name: 'specs', type: 'text', ui: {component: 'json-editor-form-input'}},
+            { name: 'specs', type: 'text', ui: { component: 'json-editor-form-input' } },
             // Numeric with suffix
             {
                 name: 'weight',
                 type: 'int',
-                ui: {component: 'number-form-input', suffix: 'g'},
+                ui: { component: 'number-form-input', suffix: 'g' },
             },
             // Currency input
             {
                 name: 'RRP',
                 type: 'int',
-                ui: {component: 'currency-form-input'},
+                ui: { component: 'currency-form-input' },
             },
             // Select with options
             {
@@ -1104,8 +1254,8 @@ const config: VendureConfig = {
                 ui: {
                     component: 'select-form-input',
                     options: [
-                        {value: 'static', label: [{languageCode: LanguageCode.en, value: 'Static'}]},
-                        {value: 'dynamic', label: [{languageCode: LanguageCode.en, value: 'Dynamic'}]},
+                        { value: 'static', label: [{ languageCode: LanguageCode.en, value: 'Static' }] },
+                        { value: 'dynamic', label: [{ languageCode: LanguageCode.en, value: 'Dynamic' }] },
                     ],
                 },
             },
@@ -1137,7 +1287,6 @@ The various configuration options for each of the built-in form input  (e.g. `su
 
 If none of the built-in form input components are suitable, you can create your own. This is a more advanced topic which is covered in detail in the [Custom Form Input Components](/guides/extending-the-admin-ui/custom-form-inputs/) guide.
 
-
 ## Tabbed custom fields
 
 With a large, complex project, it's common for lots of custom fields to be required. This can get visually noisy in the UI, so Vendure supports tabbed custom fields. Just specify the tab name in the `ui` object, and those fields with the same tab name will be grouped in the UI! The tab name can also be a translation token if you need to support multiple languages.
@@ -1153,18 +1302,16 @@ const config = {
     // ...
     customFields: {
         Product: [
-            { name: 'additionalInfo', type: 'text', ui: {component: 'rich-text-form-input'} },
-            { name: 'specs', type: 'text', ui: {component: 'json-editor-form-input'} },
-            { name: 'width', type: 'int', ui: {tab: 'Shipping'} },
-            { name: 'height', type: 'int', ui: {tab: 'Shipping'} },
-            { name: 'depth', type: 'int', ui: {tab: 'Shipping'} },
-            { name: 'weight', type: 'int', ui: {tab: 'Shipping'} },
+            { name: 'additionalInfo', type: 'text', ui: { component: 'rich-text-form-input' } },
+            { name: 'specs', type: 'text', ui: { component: 'json-editor-form-input' } },
+            { name: 'width', type: 'int', ui: { tab: 'Shipping' } },
+            { name: 'height', type: 'int', ui: { tab: 'Shipping' } },
+            { name: 'depth', type: 'int', ui: { tab: 'Shipping' } },
+            { name: 'weight', type: 'int', ui: { tab: 'Shipping' } },
         ],
     },
 }
 ```
-
-
 
 ## TypeScript Typings
 
@@ -1232,4 +1379,45 @@ One way to ensure that your custom field typings always get imported first is to
 :::tip
 For a working example of this setup, see the [real-world-vendure repo](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/types.ts)
 :::
+
+## Special cases
+
+Beyond adding custom fields to the corresponding GraphQL types, and updating paginated list sort & filter options, there are a few special cases where adding custom fields to certain entities will result in further API changes.
+
+### OrderLine custom fields
+
+When you define custom fields on the `OrderLine` entity, the following API changes are also automatically provided by Vendure:
+
+- Shop API: [addItemToOrder](/reference/graphql-api/shop/mutations#additemtoorder) will have a 3rd input argument, `customFields`, which allows custom field values to be set when adding an item to the order.
+- Shop API: [adjustOrderLine](/reference/graphql-api/shop/mutations#additemtoorder) will have a 3rd input argument, `customFields`, which allows custom field values to be updated.
+- Admin API: the equivalent mutations for manipulating draft orders and for modifying and order will also have inputs to allow custom field values to be set.
+
+:::info
+To see an example of this in practice, see the [Configurable Product guide](/guides/how-to/configurable-products/)
+:::
+
+### Order custom fields
+
+When you define custom fields on the `Order` entity, the following API changes are also automatically provided by Vendure:
+
+- Admin API: [modifyOrder](/reference/graphql-api/admin/mutations#modifyorder) will have a `customFields` field on the input object.
+
+### ShippingMethod custom fields
+
+When you define custom fields on the `ShippingMethod` entity, the following API changes are also automatically provided by Vendure:
+
+- Shop API: [eligibleShippingMethods](/reference/graphql-api/shop/queries#eligibleshippingmethods) will have public custom fields available on the result.
+
+### PaymentMethod custom fields
+
+When you define custom fields on the `PaymentMethod` entity, the following API changes are also automatically provided by Vendure:
+
+- Shop API: [eligiblePaymentMethods](/reference/graphql-api/shop/queries#eligiblepaymentmethods) will have public custom fields available on the result.
+
+### Customer custom fields
+
+When you define custom fields on the `Customer` entity, the following API changes are also automatically provided by Vendure:
+
+- Shop API: [registerCustomerAccount](/reference/graphql-api/shop/mutations#registercustomeraccount) will have have a `customFields` field on the input
+  object.
 

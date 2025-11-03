@@ -5,6 +5,8 @@ import {
     RequestContext,
 } from '@vendure/core';
 
+import { ImageTransformStrategy } from './config/image-transform-strategy';
+
 export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
 
 /**
@@ -112,6 +114,20 @@ export interface AssetServerOptions {
      * An array of additional {@link ImageTransformPreset} objects.
      */
     presets?: ImageTransformPreset[];
+    /**
+     * @description
+     * The strategy or strategies to use to determine the parameters for transforming an image.
+     * This can be used to implement custom image transformation logic, for example to
+     * limit transform parameters to a known set of presets.
+     *
+     * If multiple strategies are provided, they will be executed in the order in which they are defined.
+     * If a strategy throws an error, the image transformation will be aborted and the error
+     * will be logged, with an HTTP 400 response sent to the client.
+     *
+     * @since 3.1.0
+     * @default []
+     */
+    imageTransformStrategy?: ImageTransformStrategy | ImageTransformStrategy[];
     /**
      * @description
      * Defines how asset files and preview images are named before being saved.

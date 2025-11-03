@@ -1,195 +1,67 @@
-# Vendure
+<p align="center">
+  <a href="https://vendure.io">
+    <img alt="Vendure logo" height="60" width="auto" src="https://a.storyblok.com/f/328257/699x480/8dbb4c7a3c/logo-icon.png">
+  </a>
+</p>
 
-An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
+<h1 align="center">
+  Vendure
+</h1>
+<h3 align="center">
+    Own Your Commerce. Build Without Workarounds. Ship Faster.
+</h3>
+<h4 align="center">
+  <a href="https://docs.vendure.io">Documentation</a> |
+  <a href="https://vendure.io">Website</a>
+</h4>
 
-[![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions) 
-[![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
-[![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+<p align="center">
+  <a href="https://github.com/vendure-ecommerce/vendure/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/badge/license-GPL-blue.svg" alt="Vendure is released under the GPLv3 license." />
+  </a>
+  <a href="https://twitter.com/intent/follow?screen_name=vendure_io">
+    <img src="https://img.shields.io/twitter/follow/vendure_io" alt="Follow @vendure_io" />
+  </a>
+  <a href="https://vendure.io/community">
+    <img src="https://img.shields.io/badge/join-our%20discord-7289DA.svg" alt="Join our Discord" />
+  </a>
+  <a href="https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
+  </a>
+</p>
 
-![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
+## What is Vendure 
 
+Vendure is an open-source headless commerce platform built with _TypeScript_ and _Node.js_. It provides a robust foundation for building enterprise-grade digital commerce applications with exceptional scalability and maintainability.
 
-### [www.vendure.io](https://www.vendure.io/)
+- **Built for heavy customization**: Extensible plugin architecture allows you to tailor every aspect of your commerce solution
+- **Modern, AI-optimized tech stack**: Built on TypeScript, Node.js, NestJS, and GraphQL for outstanding performance and developer experience
+- **Headless architecture**: API-first design enables seamless multichannel commerce across any frontend
+- **Enterprise-ready**: Trusted by thousands of teams worldwide, from startups to Fortune 500 companies
+- **Rich feature set**: Comprehensive out-of-the-box functionality with customizable admin dashboard and commerce framework
 
-* [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
-* [Live Demo](https://demo.vendure.io/)
-* [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
+Whether you're building a B2B platform, multi-vendor marketplace, or D2C storefront, Vendure provides the flexible foundation to create unique commerce experiences tailored to your business needs.
 
-## Branches
+## Getting Started
 
-- `master` - The latest stable release, currently the 2.x series.
-- `minor` - The next patch release, including new features
-- `major` - The next major release (v3.0)
-- `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
+Visit our [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/) to get Vendure up and running locally in _less than 2 minutes_ with a single command.
 
-## Structure
+**Need Help?** Our community is here to help, join [our Discord](https://www.vendure.io/community) for support and discussions!
 
-This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna). Several npm packages are published from this repo, which can be found in the `packages/` directory.
+## Upgrades & Plugins 
 
-```
-vendure/
-├── docs/           # Documentation source
-├── e2e-common/     # Shared config for package e2e tests
-├── license/        # License information & CLA signature log
-├── packages/       # Source for the Vendure server, admin-ui & core plugin packages
-├── scripts/
-    ├── changelog/  # Scripts used to generate the changelog based on the git history
-    ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
-    ├── docs/       # Scripts used to generate documentation markdown from the source
-```
+New updates get released on a bi-weekly cadence, check out our [release notes](https://github.com/vendure-ecommerce/vendure/releases) to keep up-to-date with the latest releases.
 
-## Development
+Have a look at all of our [ready-made Vendure plugins](https://vendure.io/plugins?page=1).
 
-> [!IMPORTANT]
-> The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
+## Contribution
 
+Contributions to Vendure are welcome and highly appreciated! Whether you're fixing bugs, adding features, or improving documentation, your help makes Vendure better for everyone.
 
-### 1. Install top-level dependencies
+Our **[Contribution Guide](./CONTRIBUTING.md)** is covering everything from setting up your development environment to submitting your first pull request.
 
-`npm install`
-
-The root directory has a `package.json` which contains build-related dependencies for tasks including:
-
-* Building & deploying the docs 
-* Generating TypeScript types from the GraphQL schema
-* Linting, formatting & testing tasks to run on git commit & push
-
-### 2. Build all packages
-
-`npm run build`
-
-Packages must be built (i.e. TypeScript compiled, admin ui app built, certain assets copied etc.) before being used.
-
-Note that this can take a few minutes.
-
-### 3. Start the docker containers
-
-All the necessary infrastructure is defined in the root [docker-compose.yml](./docker-compose.yml) file. At a minimum,
-you will need to start a database, for example:
-
-```bash
-docker-compose up -d mariadb
-```
-
-MariaDB/MySQL is the default that will be used by the dev server if you don't explicitly set the `DB` environment variable.
-
-If for example you are doing development on the Elasticsearch plugin, you will also need to start the Elasticsearch container:
-
-```bash
-docker-compose up -d elasticsearch
-```
-
-### 4. Populate test data
-
-Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **MariaDB**, **PostgreSQL** and **SQLite**.
-
-The first step is to populate the dev server with some test data:
-
-```bash
-cd packages/dev-server
-
-[DB=mysql|postres|sqlite] npm run populate
- ```
-
-If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
-you need to run the `postgres_16` container and then run `DB=postgres npm run populate`. 
-
-### 5. Run the dev server
-
-```
-cd packages/dev-server
-[DB=mysql|postgres|sqlite] npm run dev
-```
-
-### Testing admin ui changes locally
-
-If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
-
-1. `cd packages/admin-ui`
-2. `npm run dev`
-3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
-
-This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
-to test backend changes.
-
-### Testing your changes locally
-This example shows how to test changes to the `payments-plugin` package locally, but it will also work for other packages.
-
-1. Open 2 terminal windows:
-
-- Terminal 1 for watching and compiling the changes of the package you are developing
-- Terminal 2 for running the dev-server
-
-```shell
-# Terminal 1
-cd packages/payments-plugin
-npm run watch
-```
-:warning: If you are developing changes for the `core`package, you also need to watch the `common` package:
-```shell
-# Terminal 1
-# Root of the project
-npm run watch:core-common
-```
-
-2. After the changes in your package are compiled you have to stop and restart the dev-server:
-
-```shell
-# Terminal 2
-cd packages/dev-server
-DB=sqlite npm run dev
-```
-
-3. The dev-server will now have your local changes from the changed package.
-
-### Code generation
-
-[graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
-
-Running `npm run codegen` will generate the following files:
-
-* [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts): Types, Inputs & resolver args relating to the Admin API
-* [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts): Types, Inputs & resolver args relating to the Shop API
-* [`packages/admin-ui/src/lib/core/src/common/generated-types.ts`](./packages/admin-ui/src/lib/core/src/common/generated-types.ts): Types & operations relating to the admin-ui queries & mutations.
-* [`packages/admin-ui/src/lib/core/src/common/introspection-result.ts`](./packages/admin-ui/src/lib/core/src/common/introspection-result.ts): Used by the Apollo Client [`IntrospectionFragmentMatcher`](https://www.apollographql.com/docs/react/data/fragments/#fragments-on-unions-and-interfaces) to correctly handle fragments in the Admin UI.
-* Also generates types used in e2e tests in those packages which feature e2e tests (core, elasticsearch-plugin, asset-server-plugin etc).
-
-### Testing
-
-#### Server Unit Tests
-
-The core and several other packages have unit tests which are can be run all together by running `npm run test` from the root directory, or individually by running it from the package directory.
-
-Unit tests are co-located with the files which they test, and have the suffix `.spec.ts`.
-
-If you're getting `Error: Bindings not found.`, please run `npm rebuild @swc/core`.
-
-#### End-to-end Tests
-
-Certain packages have e2e tests, which are located at `/packages/<name>/e2e/`. All e2e tests can be run by running `npm run e2e` from the root directory, or individually by running it from the package directory.
-
-e2e tests use the `@vendure/testing` package. For details of how the setup works, see the [Testing docs](https://docs.vendure.io/guides/developer-guide/testing/).
-
-When **debugging e2e tests**, set an environment variable `E2E_DEBUG=true` which will increase the global Jest timeout and allow you to step through the e2e tests without the tests automatically failing due to timeout.
-
-### Release Process
-
-All packages in this repo are released at every version change (using [Lerna's fixed mode](https://lerna.js.org/docs/features/version-and-publish#fixedlocked-mode-default)). This simplifies both the development (tracking multiple disparate versions is tough) and also the developer experience for users of the framework (it is simple to see that all packages are up-to-date and compatible).
-
-To make a release:
-
-##### 1. `npm run publish-release`
-
-It will run `lerna publish` which will prompt for which version to update to. Although we are using [conventional commits](https://www.conventionalcommits.org), the version is not automatically being calculated from the commit messages. Therefore the next version should be manually selected. 
-
-Next it will build all packages to ensure the distributed files are up to date.
-
-Finally, the command will create changelog entries for this release.
-
-##### 2. `git push origin master --follow-tags`
-
-The reason we do not rely on Lerna to push the release to Git is that this repo has a lengthy pre-push hook which runs all tests and builds the admin ui. This long wait then invalidates the npm OTP and the publish will fail. So the solution is to publish first and then push.
+**Ready to get started?** Check out [these issues](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22%F0%9F%91%8B%20contributions%20welcome%22) for a good first task to start!
 
 ## License
 
-See [LICENSE.md](./LICENSE.md).
+Licensed under the [GPLv3 license](./LICENSE.md). Commercial license (VCL) [available](https://vendure.io/pricing).

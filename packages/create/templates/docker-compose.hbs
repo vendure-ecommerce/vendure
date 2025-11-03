@@ -63,7 +63,7 @@ services:
     # Checkout our advanced search plugin: https://vendure.io/hub/vendure-plus-advanced-search-plugin
     # To run the typesense container run "docker compose up -d typesense"
     typesense:
-        image: typesense/typesense:27
+        image: typesense/typesense:27.0
         command: [ '--data-dir', '/data', '--api-key', 'SuperSecret' ]
         ports:
             - "8208:8108"

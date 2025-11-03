@@ -1,12 +1,14 @@
 import {
     dummyPaymentHandler,
     DefaultJobQueuePlugin,
+    DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { DashboardPlugin } from '@vendure/dashboard/plugin';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
 import path from 'path';
 
@@ -18,17 +20,12 @@ export const config: VendureConfig = {
         port: serverPort,
         adminApiPath: 'admin-api',
         shopApiPath: 'shop-api',
+        trustProxy: IS_DEV ? false : 1,
         // The following options are useful in development mode,
         // but are best turned off for production for security
         // reasons.
         ...(IS_DEV ? {
-            adminApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
             adminApiDebug: true,
-            shopApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
             shopApiDebug: true,
         } : {}),
     },
@@ -74,6 +71,7 @@ export const config: VendureConfig = {
     // need to be updated. See the "Migrations" section in README.md.
     customFields: {},
     plugins: [
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
@@ -82,6 +80,7 @@ export const config: VendureConfig = {
             // to be set manually to match your production url.
             assetUrlPrefix: IS_DEV ? undefined : 'https://www.my-shop.com/assets/',
         }),
+        DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
         EmailPlugin.init({
@@ -99,12 +98,11 @@ export const config: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
-        AdminUiPlugin.init({
-            route: 'admin',
-            port: serverPort + 2,
-            adminUiConfig: {
-                apiPort: serverPort,
-            },
+        DashboardPlugin.init({
+            route: 'dashboard',
+            appDir: IS_DEV
+                ? path.join(__dirname, 'dist/dashboard')
+                : path.join(__dirname, 'dashboard'),
         }),
     ],
 };

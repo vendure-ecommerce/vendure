@@ -53,7 +53,7 @@ Parameters
 
 ## ProxyOptions
 
-<GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="76" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="74" packageName="@vendure/core" />
 
 Options to configure proxy middleware via <a href='/reference/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
 

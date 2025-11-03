@@ -59,6 +59,7 @@ type InputListItem = {
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class DynamicFormInputComponent
     implements OnInit, OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor
@@ -187,6 +188,12 @@ export class DynamicFormInputComponent
         if (this.listItems) {
             for (const item of this.listItems) {
                 if (item.componentRef) {
+                    const { value } = item.control;
+                    const { type } = item.componentRef.instance.config || {};
+                    // fix a bug where the list item of string turns into number which lead to unexpected behavior
+                    if (typeof value === 'number' && type === 'string') {
+                        item.control.setValue(item.control.value.toString(), { emitEvent: false });
+                    }
                     this.updateBindings(changes, item.componentRef);
                 }
             }
@@ -280,7 +287,7 @@ export class DynamicFormInputComponent
                         ({
                             id: this.listId++,
                             control: new UntypedFormControl(getConfigArgValue(value)),
-                        } as InputListItem),
+                        }) as InputListItem,
                 );
                 this.renderList$.next();
             }
@@ -325,6 +332,8 @@ export class DynamicFormInputComponent
                 return { component: 'text-form-input' };
             case 'relation':
                 return { component: 'relation-form-input' };
+            case 'struct':
+                return { component: 'struct-form-input' };
             default:
                 assertNever(type);
         }

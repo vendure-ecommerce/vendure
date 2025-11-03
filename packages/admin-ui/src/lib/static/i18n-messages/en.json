@@ -5,8 +5,8 @@
   "asset": {
     "add-asset": "Add asset",
     "add-asset-with-count": "Add {count, plural, =0 {assets} one {1 asset} other {{count} assets}}",
-    "change-asset": "Change asset",
     "assets-selected-count": "{ count } assets selected",
+    "change-asset": "Change asset",
     "dimensions": "Dimensions",
     "focal-point": "Focal point",
     "notify-create-assets-success": "Created {count, plural, one {new Asset} other {{count} new Assets}}",
@@ -17,14 +17,14 @@
     "select-assets": "Select assets",
     "set-as-featured-asset": "Set as featured asset",
     "set-focal-point": "Set focal point",
+    "size": "Size",
     "source-file": "Source file",
     "unset-focal-point": "Unset",
     "update-focal-point": "Update point",
     "update-focal-point-error": "Could not update focal point",
     "update-focal-point-success": "Updated focal point",
     "upload-assets": "Upload assets",
-    "uploading": "Uploading...",
-    "size": "Size"
+    "uploading": "Uploading..."
   },
   "breadcrumb": {
     "administrators": "Administrators",
@@ -47,6 +47,7 @@
     "profile": "Profile",
     "promotions": "Promotions",
     "roles": "Roles",
+    "scheduled-tasks": "Scheduled tasks",
     "seller-orders": "Seller orders",
     "sellers": "Sellers",
     "shipping-methods": "Shipping methods",
@@ -239,12 +240,14 @@
     "delete": "Delete",
     "description": "Description",
     "details": "Details",
+    "disable": "Disable",
     "disabled": "Disabled",
     "discard-changes": "Discard changes",
     "duplicate": "Duplicate",
     "edit": "Edit",
     "edit-field": "Edit field",
     "edit-note": "Edit note",
+    "enable": "Enable",
     "enabled": "Enabled",
     "end-date": "End date",
     "expand-entries": "Expand entries",
@@ -276,7 +279,7 @@
     "name": "Name",
     "no-alerts": "No alerts",
     "no-bulk-actions-available": "No bulk actions available",
-    "no-channel-selected": "",
+    "no-channel-selected": "No channel selected",
     "no-results": "No results",
     "not-applicable": "Not applicable",
     "not-set": "Not set",
@@ -477,6 +480,7 @@
     "year": "year"
   },
   "editor": {
+    "height": "Height",
     "image-alt": "Description (alt)",
     "image-src": "Source",
     "image-title": "Title",
@@ -486,8 +490,7 @@
     "link-title": "Link title",
     "remove-link": "Remove",
     "set-link": "Set link",
-    "width": "Width",
-    "height": "Height"
+    "width": "Width"
   },
   "error": {
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
@@ -532,6 +535,7 @@
     "promotions": "Promotions",
     "roles": "Roles",
     "sales": "Sales",
+    "scheduled-tasks": "Scheduled tasks",
     "sellers": "Sellers",
     "settings": "Settings",
     "shipping-methods": "Shipping methods",
@@ -647,6 +651,7 @@
     "previous-customer": "Previous customer",
     "product-name": "Product name",
     "product-sku": "SKU",
+    "product-variant": "Product variant",
     "promotions-applied": "Promotions applied",
     "prorated-unit-price": "Prorated unit price",
     "quantity": "Quantity",
@@ -794,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "All job queues",
+    "could-not-trigger-task": "Could not trigger task",
     "health-all-systems-up": "All systems up",
     "health-error": "Error: one or more systems are down!",
     "health-last-checked": "Last checked",
@@ -813,6 +819,13 @@
     "job-state-completed": "Completed",
     "job-state-failed": "Failed",
     "job-state-pending": "Pending",
-    "job-state-running": "Running"
+    "job-state-running": "Running",
+    "last-executed-at": "Last executed",
+    "last-result": "Last result",
+    "next-execution-at": "Next execution",
+    "run-task": "Run task",
+    "schedule": "Schedule",
+    "task-id": "Task ID",
+    "task-will-be-triggered": "Task will be triggered"
   }
 }

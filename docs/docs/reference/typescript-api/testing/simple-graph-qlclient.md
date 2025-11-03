@@ -96,7 +96,32 @@ Logs out so that the client is then treated as an anonymous user.
 Perform a file upload mutation.
 
 Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
+
 Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
+
+*Example*
+
+```ts
+// Testing a custom mutation:
+const result = await client.fileUploadMutation({
+  mutation: gql`
+    mutation AddSellerImages($input: AddSellerImagesInput!) {
+      addSellerImages(input: $input) {
+        id
+        name
+      }
+    }
+  `,
+  filePaths: ['./images/profile-picture.jpg', './images/logo.png'],
+  mapVariables: () => ({
+    name: "George's Pans",
+    profilePicture: null,  // corresponds to filePaths[0]
+    branding: {
+      logo: null  // corresponds to filePaths[1]
+    }
+  })
+});
+```
 
 
 </div>

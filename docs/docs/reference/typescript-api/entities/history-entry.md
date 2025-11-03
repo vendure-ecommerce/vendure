@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HistoryEntry
 
-<GenerationInfo sourceFile="packages/core/src/entity/history-entry/history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/history-entry/history-entry.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 An abstract entity representing an entry in the history of an Order (<a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>)
 or a Customer (<a href='/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>).
 
 ```ts title="Signature"
-class HistoryEntry extends VendureEntity {
+class HistoryEntry extends VendureEntity implements HasCustomFields {
     @Index()
     @ManyToOne(type => Administrator)
     administrator?: Administrator;
@@ -27,9 +27,14 @@ class HistoryEntry extends VendureEntity {
     isPublic: boolean;
     @Column('simple-json')
     data: any;
+    @Column(type => CustomHistoryEntryFields)
+    customFields: CustomHistoryEntryFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -53,6 +58,11 @@ class HistoryEntry extends VendureEntity {
 ### data
 
 <MemberInfo kind="property" type={`any`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomHistoryEntryFields`}   />
 
 
 

@@ -2,7 +2,9 @@ import { ID } from '@vendure/common/lib/shared-types';
 import {
     ChannelService,
     ErrorResult,
+    LanguageCode,
     OrderService,
+    PaymentMethodEligibilityChecker,
     PaymentService,
     RequestContext,
     assertFound,
@@ -189,6 +191,24 @@ export async function createFreeShippingCoupon(
     }
 }
 
+/**
+ * Test payment eligibility checker that doesn't allow orders with quantity 9 on an order line,
+ * just so that we can easily mock non-eligibility
+ */
+export const testPaymentEligibilityChecker = new PaymentMethodEligibilityChecker({
+    code: 'test-payment-eligibility-checker',
+    description: [{ languageCode: LanguageCode.en, value: 'Do not allow 9 items' }],
+    args: {},
+    check: (ctx, order, args) => {
+        const hasLineWithQuantity9 = order.lines.find(line => line.quantity === 9);
+        if (hasLineWithQuantity9) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+});
+
 export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
     mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
         createMolliePaymentIntent(input: $input) {
@@ -206,6 +226,12 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
 export const CREATE_STRIPE_PAYMENT_INTENT = gql`
     mutation createStripePaymentIntent {
         createStripePaymentIntent
+    }
+`;
+
+export const CREATE_CUSTOM_STRIPE_PAYMENT_INTENT = gql`
+    mutation createCustomStripePaymentIntent {
+        createCustomStripePaymentIntent
     }
 `;
 

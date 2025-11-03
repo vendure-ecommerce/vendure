@@ -1,5 +1,5 @@
 import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired, ID, UserInputError } from '@vendure/core';
+import { DeepRequired, ID, RequestContext, UserInputError } from '@vendure/core';
 
 import { SearchConfig } from './options';
 import { CustomScriptMapping, ElasticSearchInput, ElasticSearchSortInput, SearchRequestBody } from './types';
@@ -13,6 +13,7 @@ export function buildElasticBody(
     channelId: ID,
     languageCode: LanguageCode,
     enabledOnly: boolean = false,
+    ctx: RequestContext,
 ): SearchRequestBody {
     const {
         term,
@@ -23,6 +24,7 @@ export function buildElasticBody(
         collectionSlug,
         collectionSlugs,
         groupByProduct,
+        groupBySKU,
         skip,
         take,
         sort,
@@ -43,6 +45,7 @@ export function buildElasticBody(
             {
                 multi_match: {
                     query: term,
+                    fuzziness: 'AUTO',
                     type: searchConfig.multiMatchType,
                     fields: [
                         `productName^${searchConfig.boostFields.productName}`,
@@ -139,7 +142,7 @@ export function buildElasticBody(
 
     const body: SearchRequestBody = {
         query: searchConfig.mapQuery
-            ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
+            ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly, ctx)
             : query,
         sort: searchConfig.mapSort ? searchConfig.mapSort(sortArray, input) : sortArray,
         from: skip || 0,
@@ -154,6 +157,9 @@ export function buildElasticBody(
     };
     if (groupByProduct) {
         body.collapse = { field: 'productId' };
+    }
+    if (groupBySKU) {
+        body.collapse = { field: 'sku.keyword' };
     }
     return body;
 }
@@ -176,13 +182,13 @@ function createScriptFields(
             for (const name of fields) {
                 const scriptField = scriptFields[name];
                 if (scriptField.context === 'product' && groupByProduct === true) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'variant' && groupByProduct === false) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'both' || scriptField.context === undefined) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
             }
             return result;

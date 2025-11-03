@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="484" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="521" packageName="@vendure/core" />
 
 
 
@@ -31,6 +31,7 @@ interface OrderOptions {
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
     orderSellerStrategy?: OrderSellerStrategy;
     guestCheckoutStrategy?: GuestCheckoutStrategy;
+    orderInterceptors?: OrderInterceptor[];
 }
 ```
 
@@ -135,9 +136,14 @@ returns an Order will be used.
 Defines how Orders will be split amongst multiple Channels in a multivendor scenario.
 ### guestCheckoutStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>`} default={`<a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>`}  since="2.0.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>`} default={`<a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>`}   />
 
 Defines how we deal with guest checkouts.
+### orderInterceptors
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-interceptor#orderinterceptor'>OrderInterceptor</a>[]`} default={`[]`}  since="3.1.0"  />
+
+An array of <a href='/reference/typescript-api/orders/order-interceptor#orderinterceptor'>OrderInterceptor</a>s which can be used to modify the behavior of the Order process.
 
 
 </div>

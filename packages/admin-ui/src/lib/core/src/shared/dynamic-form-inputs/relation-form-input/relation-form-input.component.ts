@@ -19,6 +19,7 @@ import { RelationCustomFieldConfig } from '../../../common/generated-types';
     templateUrl: './relation-form-input.component.html',
     styleUrls: ['./relation-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'relation-form-input';

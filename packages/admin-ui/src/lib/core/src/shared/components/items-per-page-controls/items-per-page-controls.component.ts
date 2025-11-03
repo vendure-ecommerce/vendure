@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
     templateUrl: './items-per-page-controls.component.html',
     styleUrls: ['./items-per-page-controls.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ItemsPerPageControlsComponent {
     @Input() itemsPerPage = 10;

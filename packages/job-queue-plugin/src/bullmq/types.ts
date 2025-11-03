@@ -1,6 +1,13 @@
 import { Job } from '@vendure/core';
-import { ConnectionOptions, WorkerOptions } from 'bullmq';
+import { ConnectionOptions, WorkerOptions, Queue } from 'bullmq';
 import { QueueOptions } from 'bullmq';
+
+/**
+ * @description
+ * This type is the third parameter to the `Queue.add()` method,
+ * which allows additional options to be specified for the job.
+ */
+export type BullJobsOptions = Parameters<Queue['add']>[2];
 
 /**
  * @description
@@ -54,6 +61,7 @@ export interface BullMQPluginOptions {
      * }
      *  ```
      *
+     * @deprecated Use `setJobOptions` instead.
      * @since 1.3.0
      */
     setRetries?: (queueName: string, job: Job) => number;
@@ -73,10 +81,33 @@ export interface BullMQPluginOptions {
      *   };
      * }
      * ```
+     *
+     * @deprecated Use `setJobOptions` instead.
      * @since 1.3.0
      * @default 'exponential', 1000
      */
     setBackoff?: (queueName: string, job: Job) => BackoffOptions | undefined;
+    /**
+     * @description
+     * This allows you to specify additional options for a job when it is added to the queue.
+     * The object returned is the BullMQ [JobsOptions](https://api.docs.bullmq.io/types/v5.JobsOptions.html)
+     * type, which includes control over settings such as `delay`, `attempts`, `priority` and much more.
+     *
+     * This function is called every time a job is added to the queue, so you can return different options
+     * based on the job being added.
+     *
+     * @example
+     * ```ts
+     * // Here we want to assign a higher priority to jobs in the 'critical' queue
+     * setJobOptions: (queueName, job) => {
+     *   const priority = queueName === 'critical' ? 1 : 5;
+     *   return { priority };
+     * }
+     * ```
+     *
+     * @since 3.2.0
+     */
+    setJobOptions?: (queueName: string, job: Job) => BullJobsOptions;
 }
 
 /**

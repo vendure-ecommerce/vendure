@@ -11,9 +11,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SqlCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-cache-plugin/sql-cache-strategy.ts" sourceLine="18" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-cache-plugin/sql-cache-strategy.ts" sourceLine="21" packageName="@vendure/core" since="3.1.0" />
 
-
+A <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> that stores cached items in the database. This
+is the strategy used by the <a href='/reference/typescript-api/cache/default-cache-plugin#defaultcacheplugin'>DefaultCachePlugin</a>.
 
 ```ts title="Signature"
 class SqlCacheStrategy implements CacheStrategy {
@@ -72,7 +73,7 @@ class SqlCacheStrategy implements CacheStrategy {
 
 ### set
 
-<MemberInfo kind="method" type={`(key: string, value: T, options?: SetCacheKeyOptions) => `}   />
+<MemberInfo kind="method" type={`(key: string, value: T, options?: <a href='/reference/typescript-api/cache/cache-strategy#setcachekeyoptions'>SetCacheKeyOptions</a>) => `}   />
 
 
 ### delete

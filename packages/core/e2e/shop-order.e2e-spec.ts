@@ -71,6 +71,8 @@ import {
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
+    UNSET_BILLING_ADDRESS,
+    UNSET_SHIPPING_ADDRESS,
     UPDATED_ORDER_FRAGMENT,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -115,7 +117,8 @@ describe('Shop orders', () => {
         | CodegenShop.UpdatedOrderFragment
         | CodegenShop.TestOrderFragmentFragment
         | CodegenShop.TestOrderWithPaymentsFragment
-        | CodegenShop.ActiveOrderCustomerFragment;
+        | CodegenShop.ActiveOrderCustomerFragment
+        | CodegenShop.OrderWithAddressesFragment;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
@@ -607,6 +610,7 @@ describe('Shop orders', () => {
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
             });
+
         });
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
@@ -1125,8 +1129,8 @@ describe('Shop orders', () => {
             expect(customer.id).toBe(createdCustomerId);
         });
 
-        it('setOrderShippingAddress sets shipping address', async () => {
-            const address: CreateAddressInput = {
+        describe('address handling', () => {
+            const shippingAddress: CreateAddressInput = {
                 fullName: 'name',
                 company: 'company',
                 streetLine1: '12 Shipping Street',
@@ -1137,28 +1141,8 @@ describe('Shop orders', () => {
                 countryCode: 'US',
                 phoneNumber: '4444444',
             };
-            const { setOrderShippingAddress } = await shopClient.query<
-                CodegenShop.SetShippingAddressMutation,
-                CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
-                input: address,
-            });
 
-            expect(setOrderShippingAddress.shippingAddress).toEqual({
-                fullName: 'name',
-                company: 'company',
-                streetLine1: '12 Shipping Street',
-                streetLine2: null,
-                city: 'foo',
-                province: 'bar',
-                postalCode: '123456',
-                country: 'United States of America',
-                phoneNumber: '4444444',
-            });
-        });
-
-        it('setOrderBillingAddress sets billing address', async () => {
-            const address: CreateAddressInput = {
+            const billingAddress: CreateAddressInput = {
                 fullName: 'name',
                 company: 'company',
                 streetLine1: '22 Billing Avenue',
@@ -1169,23 +1153,109 @@ describe('Shop orders', () => {
                 countryCode: 'US',
                 phoneNumber: '4444444',
             };
-            const { setOrderBillingAddress } = await shopClient.query<
-                Codegen.SetBillingAddressMutation,
-                Codegen.SetBillingAddressMutationVariables
-            >(SET_BILLING_ADDRESS, {
-                input: address,
+
+            it('setOrderShippingAddress sets shipping address', async () => {
+                const { setOrderShippingAddress } = await shopClient.query<
+                    CodegenShop.SetShippingAddressMutation,
+                    CodegenShop.SetShippingAddressMutationVariables
+                >(SET_SHIPPING_ADDRESS, {
+                    input: shippingAddress,
+                });
+
+                orderResultGuard.assertSuccess(setOrderShippingAddress);
+
+                expect(setOrderShippingAddress.shippingAddress).toEqual({
+                    fullName: 'name',
+                    company: 'company',
+                    streetLine1: '12 Shipping Street',
+                    streetLine2: null,
+                    city: 'foo',
+                    province: 'bar',
+                    postalCode: '123456',
+                    country: 'United States of America',
+                    phoneNumber: '4444444',
+                });
             });
 
-            expect(setOrderBillingAddress.billingAddress).toEqual({
-                fullName: 'name',
-                company: 'company',
-                streetLine1: '22 Billing Avenue',
-                streetLine2: null,
-                city: 'foo',
-                province: 'bar',
-                postalCode: '123456',
-                country: 'United States of America',
-                phoneNumber: '4444444',
+            it('setOrderBillingAddress sets billing address', async () => {
+                const { setOrderBillingAddress } = await shopClient.query<
+                    CodegenShop.SetBillingAddressMutation,
+                    CodegenShop.SetBillingAddressMutationVariables
+                >(SET_BILLING_ADDRESS, {
+                    input: billingAddress,
+                });
+
+                orderResultGuard.assertSuccess(setOrderBillingAddress);
+
+                expect(setOrderBillingAddress.billingAddress).toEqual({
+                    fullName: 'name',
+                    company: 'company',
+                    streetLine1: '22 Billing Avenue',
+                    streetLine2: null,
+                    city: 'foo',
+                    province: 'bar',
+                    postalCode: '123456',
+                    country: 'United States of America',
+                    phoneNumber: '4444444',
+                });
+            });
+
+            it('unsetOrderShippingAddress unsets shipping address', async () => {
+                const { unsetOrderShippingAddress } = await shopClient.query<
+                    CodegenShop.UnsetShippingAddressMutation,
+                    CodegenShop.UnsetShippingAddressMutationVariables
+                >(UNSET_SHIPPING_ADDRESS);
+
+                orderResultGuard.assertSuccess(unsetOrderShippingAddress);
+
+                expect(unsetOrderShippingAddress.shippingAddress).toEqual({
+                    fullName: null,
+                    company: null,
+                    streetLine1: null,
+                    streetLine2: null,
+                    city: null,
+                    province: null,
+                    postalCode: null,
+                    country: null,
+                    phoneNumber: null,
+                });
+
+                // Reset the shipping address for subsequent tests
+                await shopClient.query<
+                    CodegenShop.SetShippingAddressMutation,
+                    CodegenShop.SetShippingAddressMutationVariables
+                >(SET_SHIPPING_ADDRESS, {
+                    input: shippingAddress,
+                });
+            });
+
+            it('unsetOrderBillingAddress unsets billing address', async () => {
+                const { unsetOrderBillingAddress } = await shopClient.query<
+                    CodegenShop.UnsetBillingAddressMutation,
+                    CodegenShop.UnsetBillingAddressMutationVariables
+                >(UNSET_BILLING_ADDRESS);
+
+                orderResultGuard.assertSuccess(unsetOrderBillingAddress);
+
+                expect(unsetOrderBillingAddress.billingAddress).toEqual({
+                    fullName: null,
+                    company: null,
+                    streetLine1: null,
+                    streetLine2: null,
+                    city: null,
+                    province: null,
+                    postalCode: null,
+                    country: null,
+                    phoneNumber: null,
+                });
+
+                // Reset the billing address for subsequent tests
+                await shopClient.query<
+                    CodegenShop.SetBillingAddressMutation,
+                    CodegenShop.SetBillingAddressMutationVariables
+                >(SET_BILLING_ADDRESS, {
+                    input: billingAddress,
+                });
             });
         });
 
@@ -1336,6 +1406,44 @@ describe('Shop orders', () => {
             expect(addItemToOrder.lines.length).toBe(2);
             expect(addItemToOrder.lines[1].productVariant.id).toBe(variantWithoutFeaturedAsset?.id);
             expect(addItemToOrder.lines[1].featuredAsset?.id).toBe(product?.featuredAsset?.id);
+        });
+
+
+        it('adds multiple items to order with different custom fields', async () => {
+            await shopClient.asAnonymousUser(); // New order
+            const { addItemsToOrder } = await shopClient.query<CodegenShop.AddItemsToOrderMutation>(
+                ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    inputs: [
+                        {
+                            productVariantId: 'T_1',
+                            quantity: 1,
+                            customFields: {
+                                    notes: 'Variant 1 note',
+                            },
+                        },
+                        {
+                            productVariantId: 'T_2',
+                            quantity: 2,
+                            customFields: {
+                                    notes: 'Variant 2 note',
+                            },
+                        },
+                        {
+                            productVariantId: 'T_3',
+                            quantity: 3,
+                            // no custom field
+                        },
+                    ],
+                },
+            );
+            const order = addItemsToOrder.order as any;
+            expect(order.lines.length).toBe(3);
+            expect(order.lines[0].customFields.notes).toBe('Variant 1 note');
+            expect(order.lines[1].quantity).toBe(2);
+            expect(order.lines[1].customFields.notes).toBe('Variant 2 note');
+            expect(order.lines[2].quantity).toBe(3);
+            expect(order.lines[2].customFields.notes).toBeNull();
         });
     });
 
@@ -1552,6 +1660,13 @@ describe('Shop orders', () => {
                         price: 1000,
                         code: 'express-shipping',
                         name: 'Express Shipping',
+                        description: '',
+                    },
+                    {
+                        id: 'T_3',
+                        price: 1000,
+                        code: 'express-shipping-taxed',
+                        name: 'Express Shipping (Taxed)',
                         description: '',
                     },
                 ]);
@@ -2740,6 +2855,37 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
+export const ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
+    mutation AddMultipleItemsToOrderWithCustomFields(
+        $inputs: [AddItemInput!]!
+    ) {
+        addItemsToOrder(
+            inputs: $inputs
+        ) {
+            order {
+                ...UpdatedOrder
+                lines {
+                    id
+                    quantity
+                    productVariant {
+                        id
+                    }
+                    customFields {
+                        notes
+                    }
+                }   
+            }
+            errorResults {
+                ...on ErrorResult {
+                    errorCode
+                    message
+                }
             }
         }
     }

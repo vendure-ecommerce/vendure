@@ -6,6 +6,7 @@ import { ConnectionModule } from '../connection/connection.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
+import { SchedulerModule } from '../scheduler/scheduler.module';
 import { ServiceModule } from '../service/service.module';
 
 import { ConfigurableOperationCodec } from './common/configurable-operation-codec';
@@ -31,9 +32,12 @@ import { ProductOptionResolver } from './resolvers/admin/product-option.resolver
 import { ProductResolver } from './resolvers/admin/product.resolver';
 import { PromotionResolver } from './resolvers/admin/promotion.resolver';
 import { RoleResolver } from './resolvers/admin/role.resolver';
+import { ScheduledTaskResolver } from './resolvers/admin/scheduled-task.resolver';
 import { SearchResolver } from './resolvers/admin/search.resolver';
 import { SellerResolver } from './resolvers/admin/seller.resolver';
+import { SettingsStoreAdminResolver } from './resolvers/admin/settings-store.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
+import { SlugResolver } from './resolvers/admin/slug.resolver';
 import { StockLocationResolver } from './resolvers/admin/stock-location.resolver';
 import { TagResolver } from './resolvers/admin/tag.resolver';
 import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
@@ -86,7 +90,9 @@ import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
 import { ShopEnvironmentResolver } from './resolvers/shop/shop-environment.resolver';
 import { ShopOrderResolver } from './resolvers/shop/shop-order.resolver';
+import { ShopPaymentMethodsResolver } from './resolvers/shop/shop-payment-methods.resolver';
 import { ShopProductsResolver } from './resolvers/shop/shop-products.resolver';
+import { ShopShippingMethodsResolver } from './resolvers/shop/shop-shipping-methods.resolver';
 
 const adminResolvers = [
     AdministratorResolver,
@@ -103,6 +109,7 @@ const adminResolvers = [
     GlobalSettingsResolver,
     ImportResolver,
     JobResolver,
+    SettingsStoreAdminResolver,
     OrderResolver,
     PaymentMethodResolver,
     ProductOptionResolver,
@@ -110,7 +117,9 @@ const adminResolvers = [
     PromotionResolver,
     RoleResolver,
     SearchResolver,
+    ScheduledTaskResolver,
     ShippingMethodResolver,
+    SlugResolver,
     StockLocationResolver,
     TagResolver,
     TaxCategoryResolver,
@@ -125,6 +134,8 @@ const shopResolvers = [
     ShopOrderResolver,
     ShopProductsResolver,
     ShopEnvironmentResolver,
+    ShopPaymentMethodsResolver,
+    ShopShippingMethodsResolver,
 ];
 
 export const entityResolvers = [
@@ -193,6 +204,7 @@ export class ApiSharedModule {}
     imports: [
         ApiSharedModule,
         JobQueueModule,
+        SchedulerModule,
         DataImportModule,
         ...createDynamicGraphQlModulesForPlugins('admin'),
     ],

@@ -12,7 +12,6 @@ import {
     UpdatePromotionInput,
     UpdatePromotionResult,
 } from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { In, IsNull } from 'typeorm';
@@ -20,13 +19,14 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
-import { IllegalOperationError, UserInputError } from '../../common/error/errors';
+import { UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
     CouponCodeExpiredError,
     CouponCodeInvalidError,
     CouponCodeLimitError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -45,7 +45,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 
@@ -56,6 +55,7 @@ import { ChannelService } from './channel.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class PromotionService {
     availableConditions: PromotionCondition[] = [];
     availableActions: PromotionAction[] = [];

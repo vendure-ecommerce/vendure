@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addNavMenuItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-nav-menu-item.ts" sourceLine="68" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-nav-menu-item.ts" sourceLine="66" packageName="@vendure/admin-ui" />
 
 Add a menu item to an existing section specified by `sectionId`. The id of the section
 can be found by inspecting the DOM and finding the `data-section-id` attribute.
@@ -38,7 +38,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string): Provider
+function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string): void
 ```
 Parameters
 

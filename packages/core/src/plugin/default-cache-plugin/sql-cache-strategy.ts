@@ -2,6 +2,7 @@ import { JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { CacheTtlProvider, DefaultCacheTtlProvider } from '../../cache/cache-ttl-provider';
 import { Injector } from '../../common/injector';
+import { Instrument } from '../../common/instrument-decorator';
 import { ConfigService, Logger } from '../../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../../config/system/cache-strategy';
 import { TransactionalConnection } from '../../connection/index';
@@ -10,11 +11,14 @@ import { CacheItem } from './cache-item.entity';
 import { CacheTag } from './cache-tag.entity';
 
 /**
- * A {@link CacheStrategy} that stores cached items in the database.
+ * @description
+ * A {@link CacheStrategy} that stores cached items in the database. This
+ * is the strategy used by the {@link DefaultCachePlugin}.
  *
  * @since 3.1.0
  * @docsCategory cache
  */
+@Instrument()
 export class SqlCacheStrategy implements CacheStrategy {
     protected cacheSize = 10_000;
     protected ttlProvider: CacheTtlProvider;

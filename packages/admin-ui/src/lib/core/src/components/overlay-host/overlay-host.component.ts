@@ -9,6 +9,7 @@ import { OverlayHostService } from '../../providers/overlay-host/overlay-host.se
 @Component({
     selector: 'vdr-overlay-host',
     template: '<!-- -->',
+    standalone: false,
 })
 export class OverlayHostComponent {
     constructor(viewContainerRef: ViewContainerRef, overlayHostService: OverlayHostService) {

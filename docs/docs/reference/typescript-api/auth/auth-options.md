@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="331" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="360" packageName="@vendure/core" />
 
 The AuthOptions define how authentication and authorization is managed.
 
@@ -32,6 +32,7 @@ interface AuthOptions {
     customPermissions?: PermissionDefinition[];
     passwordHashingStrategy?: PasswordHashingStrategy;
     passwordValidationStrategy?: PasswordValidationStrategy;
+    verificationTokenStrategy?: VerificationTokenStrategy;
 }
 ```
 
@@ -158,6 +159,11 @@ policy, which you can do like this:
   }),
 }
 ```
+### verificationTokenStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/auth/verification-token-strategy#verificationtokenstrategy'>VerificationTokenStrategy</a>`} default={`<a href='/reference/typescript-api/auth/default-verification-token-strategy#defaultverificationtokenstrategy'>DefaultVerificationTokenStrategy</a>`}  since="3.2.0"  />
+
+Allows you to customize the way verification tokens are generated.
 
 
 </div>

@@ -20,6 +20,7 @@ import { RenameFilterPresetDialogComponent } from './rename-filter-preset-dialog
     templateUrl: './data-table-filter-presets.component.html',
     styleUrls: ['./data-table-filter-presets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
     @Input({ required: true }) dataTableId: string;
@@ -51,6 +52,28 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
         this.filterPresets$ = this.filterPresetService.presetChanges$.pipe(
             startWith(this.filterPresetService.getFilterPresets(this.dataTableId)),
         );
+        // When any query param changes, we want to trigger change detection
+        // so that the links for each preset are updated.
+        this.route.queryParamMap
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.changeDetectorRef.markForCheck());
+    }
+
+    getQueryParamsForPreset(preset: string, serializedActiveFilters: string): Record<string, string> {
+        // Clone the current query params to avoid mutating them directly
+        const currentParams = { ...this.route.snapshot.queryParams };
+
+        if (preset === serializedActiveFilters) {
+            // Toggling off: remove 'filters' and 'page' params
+            delete currentParams['filters'];
+            delete currentParams['page'];
+        } else {
+            // Toggling on: set 'filters' and 'page' params
+            currentParams['filters'] = preset;
+            currentParams['page'] = 1;
+        }
+
+        return currentParams;
     }
 
     ngOnDestroy() {

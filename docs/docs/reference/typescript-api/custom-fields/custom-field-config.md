@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomFieldConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="124" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="237" packageName="@vendure/core" />
 
 An object used to configure a custom field.
 
@@ -25,4 +25,5 @@ type CustomFieldConfig = | StringCustomFieldConfig
     | BooleanCustomFieldConfig
     | DateTimeCustomFieldConfig
     | RelationCustomFieldConfig
+    | StructCustomFieldConfig
 ```

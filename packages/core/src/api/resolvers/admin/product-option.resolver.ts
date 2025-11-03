@@ -1,20 +1,22 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
-    DeletionResult,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
+    QueryProductOptionArgs,
     QueryProductOptionGroupArgs,
     QueryProductOptionGroupsArgs,
+    QueryProductOptionsArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
@@ -47,7 +49,7 @@ export class ProductOptionResolver {
         @Args() args: QueryProductOptionGroupArgs,
         @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
-        return this.productOptionGroupService.findOne(ctx, args.id);
+        return this.productOptionGroupService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()
@@ -78,6 +80,26 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(ctx, input);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOption(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<Translated<ProductOption> | undefined> {
+        return this.productOptionService.findOne(ctx, args.id, relations);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionsArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.productOptionService.findAll(ctx, args.options, args.groupId, relations);
     }
 
     @Transaction()

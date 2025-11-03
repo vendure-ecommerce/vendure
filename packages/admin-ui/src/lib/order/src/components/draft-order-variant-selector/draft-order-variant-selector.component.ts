@@ -9,6 +9,7 @@ import { switchMap } from 'rxjs/operators';
     templateUrl: './draft-order-variant-selector.component.html',
     styleUrls: ['./draft-order-variant-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DraftOrderVariantSelectorComponent implements OnInit {
     @Input() currencyCode: CurrencyCode;

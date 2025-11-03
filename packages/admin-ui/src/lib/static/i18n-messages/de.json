@@ -6,6 +6,7 @@
     "add-asset": "Asset hinzufügen",
     "add-asset-with-count": "{count, plural, =0 {Assets} one {1 Asset} other {{count} Assets}} hinzufügen",
     "assets-selected-count": "{count, plural, =0 {Kein Asset} one {1 Asset} other {{count} Assets}} ausgewählt",
+    "change-asset": "Asset ändern",
     "dimensions": "Abmessungen",
     "focal-point": "Fokuspunkt",
     "notify-create-assets-success": "{count, plural, one {Neues Asset} other {{count} neue Assets}} erstellt",
@@ -16,6 +17,7 @@
     "select-assets": "Assets auswählen",
     "set-as-featured-asset": "Als \"Featured Asset\" festlegen",
     "set-focal-point": "Fokuspunkt setzen",
+    "size": "Größe",
     "source-file": "Quelldatei",
     "unset-focal-point": "Zurücksetzen",
     "update-focal-point": "Punkt aktualisieren",
@@ -45,6 +47,7 @@
     "profile": "Profil",
     "promotions": "Promotionen",
     "roles": "Rollen",
+    "scheduled-tasks": "Geplante Aufgaben",
     "seller-orders": "Verkäufer Bestellungen",
     "sellers": "Verkäufer",
     "shipping-methods": "Versandarten",
@@ -237,12 +240,14 @@
     "delete": "Löschen",
     "description": "Beschreibung",
     "details": "Details",
+    "disable": "Deaktivieren",
     "disabled": "Deaktiviert",
     "discard-changes": "Änderungen verwerfen",
     "duplicate": "Duplizieren",
     "edit": "Bearbeiten",
     "edit-field": "Feld bearbeiten",
     "edit-note": "Notiz bearbeiten",
+    "enable": "Aktivieren",
     "enabled": "Aktiviert",
     "end-date": "Enddatum",
     "expand-entries": "Einträge erweitern",
@@ -274,7 +279,7 @@
     "name": "Name",
     "no-alerts": "Keine Alarme",
     "no-bulk-actions-available": "Keine Sammelaktionen verfügbar",
-    "no-channel-selected": "",
+    "no-channel-selected": "Kein Kanal ausgewählt",
     "no-results": "Keine Ergebnisse",
     "not-applicable": "Nicht zutreffend",
     "not-set": "Nicht festgelegt",
@@ -475,6 +480,7 @@
     "year": "Jahr"
   },
   "editor": {
+    "height": "Höhe",
     "image-alt": "Beschreibung ('alt')",
     "image-src": "Quelle",
     "image-title": "Titel",
@@ -483,7 +489,8 @@
     "link-target": "Link 'target'",
     "link-title": "Link 'title'",
     "remove-link": "Entfernen",
-    "set-link": "Link setzen"
+    "set-link": "Link setzen",
+    "width": "Breite"
   },
   "error": {
     "403-forbidden": "Sie sind derzeit nicht berechtigt, auf \"{ path }\" zuzugreifen. Entweder fehlen Ihnen die Berechtigungen, oder Ihre Sitzung ist abgelaufen.",
@@ -528,6 +535,7 @@
     "promotions": "Werbeaktionen",
     "roles": "Rollen",
     "sales": "Verkäufe",
+    "scheduled-tasks": "Geplante Aufgaben",
     "sellers": "Verkäufer",
     "settings": "Einstellungen",
     "shipping-methods": "Versandarten",
@@ -643,6 +651,7 @@
     "previous-customer": "Vorheriger Kunde",
     "product-name": "Produktname",
     "product-sku": "Artikelnummer",
+    "product-variant": "Produktvariante",
     "promotions-applied": "Aktivierte Werbeaktionen",
     "prorated-unit-price": "Anteiliger Artikelpreis",
     "quantity": "Anzahl",
@@ -675,7 +684,7 @@
     "set-billing-address": "Rechnungsadresse festlegen",
     "set-coupon-codes": "Gutscheincodes festlegen",
     "set-customer-for-order": "Kunde der Bestellung zuordnen",
-    "set-customer-success": "",
+    "set-customer-success": "Kunde erfolgreich zugeordnet",
     "set-fulfillment-state": "Abwicklungsstatus wählen",
     "set-shipping-address": "Versandadresse festlegen",
     "set-shipping-method": "Versandart festlegen",
@@ -790,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "Alle Job-Warteschlangen",
+    "could-not-trigger-task": "Konnte Aufgabe nicht ausführen",
     "health-all-systems-up": "Alle Systeme betriebsbereit",
     "health-error": "Fehler: Ein oder mehrere Systeme sind ausgefallen!",
     "health-last-checked": "Zuletzt überprüft",
@@ -809,6 +819,13 @@
     "job-state-completed": "Abgeschlossen",
     "job-state-failed": "Fehlgeschlagen",
     "job-state-pending": "Ausstehend",
-    "job-state-running": "Wird ausgeführt"
+    "job-state-running": "Wird ausgeführt",
+    "last-executed-at": "Letzte Ausführung",
+    "last-result": "Letztes Ergebnis",
+    "next-execution-at": "Nächste Ausführung",
+    "run-task": "Aufgabe ausführen",
+    "schedule": "Plan",
+    "task-id": "Aufgaben-ID",
+    "task-will-be-triggered": "Aufgabe wird ausgeführt"
   }
 }

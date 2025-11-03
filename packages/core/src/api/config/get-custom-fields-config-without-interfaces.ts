@@ -6,24 +6,29 @@ import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custo
  * @description
  * Because the "Region" entity is an interface, it cannot be extended directly, so we need to
  * replace it if found in the custom field config with its concrete implementations.
+ *
+ * Same goes for the "StockMovement" entity.
  */
 export function getCustomFieldsConfigWithoutInterfaces(
     customFieldConfig: CustomFields,
     schema: GraphQLSchema,
 ): Array<[entityName: string, config: CustomFieldConfig[]]> {
     const entries = Object.entries(customFieldConfig);
-    const regionIndex = entries.findIndex(([name]) => name === 'Region');
-    if (regionIndex !== -1) {
-        // Region is an interface and cannot directly be extended. Instead, we will use the
-        // concrete types that implement it.
-        const regionType = schema.getType('Region');
-        if (isInterfaceType(regionType)) {
-            const implementations = schema.getImplementations(regionType);
-            // Remove "Region" from the list of entities to which custom fields can be added
-            entries.splice(regionIndex, 1);
+    const interfaceEntities = ['Region', 'StockMovement'];
+    for (const entityName of interfaceEntities) {
+        const index = entries.findIndex(([name]) => name === entityName);
+        if (index !== -1) {
+            // An interface type such as Region or StockMovement cannot directly be extended.
+            // Instead, we will use the concrete types that implement it.
+            const interfaceType = schema.getType(entityName);
+            if (isInterfaceType(interfaceType)) {
+                const implementations = schema.getImplementations(interfaceType);
+                // Remove the interface from the list of entities to which custom fields can be added
+                entries.splice(index, 1);
 
-            for (const implementation of implementations.objects) {
-                entries.push([implementation.name, customFieldConfig.Region ?? []]);
+                for (const implementation of implementations.objects) {
+                    entries.push([implementation.name, customFieldConfig[entityName] ?? []]);
+                }
             }
         }
     }

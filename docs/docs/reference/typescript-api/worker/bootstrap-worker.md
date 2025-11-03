@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## bootstrapWorker
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="170" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="225" packageName="@vendure/core" />
 
 Bootstraps a Vendure worker. Resolves to a <a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a> object containing a reference to the underlying
 NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
@@ -51,14 +51,15 @@ Parameters
 
 ## BootstrapWorkerOptions
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="58" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="83" packageName="@vendure/core" since="2.2.0" />
 
 Additional options that can be used to configure the bootstrap process of the
 Vendure worker.
 
 ```ts title="Signature"
 interface BootstrapWorkerOptions {
-    nestApplicationContextOptions: NestApplicationContextOptions;
+    nestApplicationContextOptions?: NestApplicationContextOptions;
+    ignoreCompatibilityErrorsForPlugins?: Array<DynamicModule | Type<any>>;
 }
 ```
 
@@ -69,6 +70,11 @@ interface BootstrapWorkerOptions {
 <MemberInfo kind="property" type={`NestApplicationContextOptions`}   />
 
 These options get passed directly to the `NestFactory.createApplicationContext` method.
+### ignoreCompatibilityErrorsForPlugins
+
+<MemberInfo kind="property" type={`Array&#60;DynamicModule | Type&#60;any&#62;&#62;`} default={`[]`}  since="3.1.0"  />
+
+See the `ignoreCompatibilityErrorsForPlugins` option in <a href='/reference/typescript-api/common/bootstrap#bootstrapoptions'>BootstrapOptions</a>.
 
 
 </div>

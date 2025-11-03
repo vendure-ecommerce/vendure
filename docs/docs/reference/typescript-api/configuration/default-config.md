@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defaultConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="63" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="69" packageName="@vendure/core" />
 
 The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
 

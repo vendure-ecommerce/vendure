@@ -24,7 +24,10 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Channel')
 export class ChannelResolver {
-    constructor(private channelService: ChannelService, private roleService: RoleService) {}
+    constructor(
+        private channelService: ChannelService,
+        private roleService: RoleService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadChannel)
@@ -72,11 +75,7 @@ export class ChannelResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateChannelArgs,
     ): Promise<ErrorResultUnion<UpdateChannelResult, Channel>> {
-        const result = await this.channelService.update(ctx, args.input);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        return result;
+        return this.channelService.update(ctx, args.input);
     }
 
     @Transaction()

@@ -11,6 +11,7 @@ type Fulfillment = NonNullable<OrderDetailFragment['fulfillments']>[number];
     templateUrl: './line-fulfillment.component.html',
     styleUrls: ['./line-fulfillment.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LineFulfillmentComponent implements OnChanges {
     @Input() line: OrderDetailFragment['lines'][number];

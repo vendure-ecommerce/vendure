@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxCategoryService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/tax-category.service.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/tax-category.service.ts" sourceLine="29" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a> entities.
 

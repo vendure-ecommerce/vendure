@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="134" packageName="@vendure/job-queue-plugin" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="190" packageName="@vendure/job-queue-plugin" />
 
 This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
 job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
@@ -32,11 +32,11 @@ in processing jobs.
 
 ## Installation
 
-`yarn add @vendure/job-queue-plugin bullmq`
+Note: To use this plugin, you need to manually install the `bullmq` package:
 
-or
-
-`npm install @vendure/job-queue-plugin bullmq`
+```shell
+npm install bullmq@^5.4.2
+```
 
 **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
 
@@ -68,11 +68,9 @@ which is a web-based UI for interacting with Redis:
 version: "3"
 services:
   redis:
-    image: bitnami/redis:6.2
+    image: redis:7.4
     hostname: redis
     container_name: redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
   redis-commander:
@@ -135,6 +133,63 @@ const config: VendureConfig = {
 The `count` option specifies the maximum number of jobs to keep in the set, while the `age` option specifies the
 maximum age of a job in seconds. If both options are specified, then the jobs kept will be the ones that satisfy
 both properties.
+
+## Job Priority
+Some jobs are more important than others. For example, sending out a timely email after a customer places an order
+is probably more important than a routine data import task. Sometimes you can get the situation where lower-priority
+jobs are blocking higher-priority jobs.
+
+Let's say you have a data import job that runs periodically and takes a long time to complete. If you have a high-priority
+job that needs to be processed quickly, it could be stuck behind the data import job in the queue. A customer might
+not get their confirmation email for 30 minutes while that data import job is processed!
+
+To solve this problem, you can set the `priority` option on a job. Jobs with a higher priority will be processed before
+jobs with a lower priority. By default, all jobs have a priority of 0 (which is the highest).
+
+Learn more about how priority works in BullMQ in their [documentation](https://docs.bullmq.io/guide/jobs/prioritized).
+
+You can set the priority by using the `setJobOptions` option (introduced in Vendure v3.2.0):
+
+*Example*
+
+```ts
+const config: VendureConfig = {
+  plugins: [
+    BullMQJobQueuePlugin.init({
+      setJobOptions: (queueName, job) => {
+        let priority = 10;
+        switch (queueName) {
+          case 'super-critical-task':
+            priority = 0;
+            break;
+          case 'send-email':
+            priority = 5;
+            break;
+          default:
+            priority = 10;
+        }
+        return { priority };
+      }
+    }),
+  ],
+};
+```
+
+## Setting Redis Prefix
+
+By default, the underlying BullMQ library will use the default Redis key prefix of `bull`. This can be changed by setting the `prefix` option
+in the `queueOptions` and `workerOptions` objects:
+
+```ts
+BullMQJobQueuePlugin.init({
+  workerOptions: {
+    prefix: 'my-prefix'
+  },
+  queueOptions: {
+    prefix: 'my-prefix'
+  }
+}),
+```
 
 ```ts title="Signature"
 class BullMQJobQueuePlugin {

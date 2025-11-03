@@ -11,10 +11,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomFields
 
-<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="159" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="273" packageName="@vendure/core" />
 
-Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>
-objects on against the corresponding key.
+Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>objects on against the corresponding key.
 
 *Example*
 
@@ -47,8 +46,10 @@ type CustomFields = {
     FacetValue?: CustomFieldConfig[];
     Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
+    HistoryEntry?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
+    Payment?: CustomFieldConfig[];
     PaymentMethod?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
@@ -56,10 +57,15 @@ type CustomFields = {
     ProductVariant?: CustomFieldConfig[];
     ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
+    Refund?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
+    Session?: CustomFieldConfig[];
+    ShippingLine?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    StockLevel?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];
+    StockMovement?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
