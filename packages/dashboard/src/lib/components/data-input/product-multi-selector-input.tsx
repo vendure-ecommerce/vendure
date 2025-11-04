@@ -374,9 +374,7 @@ function ProductMultiSelectorDialog({
 
 export const ProductMultiInput: DashboardFormComponent = ({ value, onChange, ...props }) => {
     const [open, setOpen] = useState(false);
-    // Parse the configuration from the field definition
     const mode = props.fieldDef?.ui?.selectionMode === 'variant' ? 'variant' : 'product';
-    // Parse the current value (JSON array of IDs) - default to empty array if undefined/null
     const selectedIds = value || [];
 
     const handleSelectionChange = useCallback(
