@@ -106,7 +106,7 @@ jobs:
                   Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" -Destination "./vite.config.mts"
                   Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/*" -Destination "src/plugins/test-plugin/" -Recurse -Force
                   Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" -Destination "./setup-test-plugin.js"
-            - name: Copy files (Unix)  
+            - name: Copy files (Unix)
               if: runner.os != 'Windows'
               run: |
                   cd ~/install/test-app
@@ -119,6 +119,11 @@ jobs:
               run: |
                   cd ~/install/test-app
                   node setup-test-plugin.js
+            - name: Check SWC version
+              shell: bash
+              run: |
+                  cd ~/install/test-app
+                  npm ls @swc/core
             - name: Install Playwright
               run: |
                   cd $GITHUB_WORKSPACE
