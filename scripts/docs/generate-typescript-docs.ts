@@ -66,12 +66,16 @@ const sections: DocsSectionConfig[] = [
         outputPath: '',
     },
     {
+        sourceDirs: ['packages/dashboard/plugin/'],
+        outputPath: '',
+    },
+    {
         sourceDirs: ['packages/admin-ui/src/lib/', 'packages/ui-devkit/src/'],
         exclude: [/generated-types/],
         outputPath: 'admin-ui-api',
     },
     {
-        sourceDirs: ['packages/dashboard/src/'],
+        sourceDirs: ['packages/dashboard/src/', 'packages/dashboard/vite/'],
         outputPath: 'dashboard',
     },
 ];

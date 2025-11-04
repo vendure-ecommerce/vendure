@@ -52,14 +52,14 @@ export const minimumOrderAmount = new PromotionCondition({
 
     /**
      * Arguments which can be specified when configuring the condition
-     * in the Admin UI. The values of these args are then available during
+     * in the Dashboard. The values of these args are then available during
      * the execution of the `check` function.
      */
     args: {
         amount: {
             type: 'int',
             // The optional `ui` object allows you to customize
-            // how this arg is rendered in the Admin UI.
+            // how this arg is rendered in the Dashboard.
             ui: {component: 'currency-form-input'},
         },
         taxInclusive: {type: 'boolean'},

@@ -57,6 +57,8 @@ class SettingsStoreService implements OnModuleInit {
     findOrphanedEntries(options: CleanupOrphanedSettingsStoreEntriesOptions = {}) => Promise<OrphanedSettingsStoreEntry[]>;
     cleanupOrphanedEntries(options: CleanupOrphanedSettingsStoreEntriesOptions = {}) => Promise<CleanupOrphanedSettingsStoreEntriesResult>;
     hasPermission(ctx: RequestContext, key: string) => boolean;
+    hasReadPermission(ctx: RequestContext, key: string) => boolean;
+    hasWritePermission(ctx: RequestContext, key: string) => boolean;
     isReadonly(key: string) => boolean;
 }
 ```
@@ -176,6 +178,16 @@ Check if the current user has permission to access a field.
 This is not called internally in the get and set methods, so should
 be used by any methods which are exposing these methods via the GraphQL
 APIs.
+### hasReadPermission
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, key: string) => boolean`}  since="3.5.0"  />
+
+Check if the current user has permission to read a field.
+### hasWritePermission
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, key: string) => boolean`}  since="3.5.0"  />
+
+Check if the current user has permission to write a field.
 ### isReadonly
 
 <MemberInfo kind="method" type={`(key: string) => boolean`}   />

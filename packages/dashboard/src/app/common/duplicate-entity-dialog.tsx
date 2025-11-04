@@ -9,7 +9,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { api } from '@/vdb/graphql/api.js';
 import { getEntityDuplicatorsDocument } from '@/vdb/graphql/common-operations.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 import React, { useState } from 'react';

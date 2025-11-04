@@ -1,6 +1,7 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/vdb/components/ui/sheet.js';
+import { FullWidthPageBlock } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ZoneCountriesTable } from './zone-countries-table.js';
 
 interface ZoneCountriesSheetProps {
@@ -23,7 +24,9 @@ export function ZoneCountriesSheet({ zoneId, zoneName, children }: Readonly<Zone
                 </SheetHeader>
                 <div className="flex items-center gap-2"></div>
                 <ScrollArea className="px-6 max-h-[600px]">
-                    <ZoneCountriesTable zoneId={zoneId} />
+                    <FullWidthPageBlock blockId="zone-countries">
+                        <ZoneCountriesTable zoneId={zoneId} />
+                    </FullWidthPageBlock>
                 </ScrollArea>
             </SheetContent>
         </Sheet>

@@ -43,7 +43,7 @@ And that's it! After a minute or two, you'll have a **fully-functional Vendure s
 
 Once the installation is done, your terminal will output a message indicating a successful installation with:
 
-- The URL to access the **Admin UI**
+- The URL to access the **Dashboard**
 - Your admin log-in credentials
 - The project file path
 
@@ -104,16 +104,25 @@ You should now be able to access:
 
 - The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
 - The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
-- The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-Congratulations! 🥳 You now have a fully-functional Vendure server running locally.
+In another terminal, run:
+
+```bash
+npx vite
+```
+
+This runs the Vendure Dashboard in dev mode
+
+- The Vendure Dashboard: [http://localhost:5173/dashboard/](http://localhost:5173/dashboard/)
+
+Congratulations! 🥳 You now have a fully functional Vendure server running locally.
 
 Now you can explore Vendure by following our [Try the API guide](/guides/getting-started/try-the-api/) to learn how to interact with the server.
 
 If you are new to GraphQL, you should also check out our [Introducing GraphQL guide](/guides/getting-started/graphql-intro/).
 
 :::tip
-Open the Admin UI at [http://localhost:3000/admin](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
+Open the Dashboard at [http://localhost:5173/dashboard](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
 
 - **username**: superadmin
 - **password**: superadmin

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SettingsStoreScopes
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="144" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="174" packageName="@vendure/core" since="3.4.0" />
 
 Pre-built scope functions for common scoping patterns.
 

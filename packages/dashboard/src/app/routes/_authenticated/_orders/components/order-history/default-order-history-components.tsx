@@ -1,5 +1,5 @@
 import { HistoryEntry, HistoryEntryProps } from '@/vdb/framework/history-entry/history-entry.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 export function OrderStateTransitionComponent(props: Readonly<HistoryEntryProps>) {
     const { entry } = props;

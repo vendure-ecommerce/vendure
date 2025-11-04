@@ -3,6 +3,8 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 export const countryItemFragment = graphql(`
     fragment CountryItem on Country {
         id
+        createdAt
+        updatedAt
         name
         code
         enabled

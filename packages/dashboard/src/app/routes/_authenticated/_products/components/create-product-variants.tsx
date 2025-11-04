@@ -5,13 +5,15 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { OptionGroupConfiguration, optionGroupSchema, OptionGroupsEditor } from './option-groups-editor.js';
+import { MoneyInput } from '@/vdb/components/data-input/index.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 const getStockLocationsDocument = graphql(`
     query GetStockLocations($options: StockLocationListOptions) {
@@ -83,13 +85,14 @@ interface CreateProductVariantsProps {
 }
 
 export function CreateProductVariants({
-    currencyCode = 'USD',
-    onChange,
-}: Readonly<CreateProductVariantsProps>) {
+                                          currencyCode = 'USD',
+                                          onChange,
+                                      }: Readonly<CreateProductVariantsProps>) {
     const { data: stockLocationsResult } = useQuery({
         queryKey: ['stockLocations'],
         queryFn: () => api.query(getStockLocationsDocument, { options: { take: 100 } }),
     });
+    const { activeChannel } = useChannel();
     const stockLocations = stockLocationsResult?.stockLocations.items ?? [];
 
     const [optionGroups, setOptionGroups] = useState<OptionGroupConfiguration['optionGroups']>([]);
@@ -262,16 +265,12 @@ export function CreateProductVariants({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <div className="relative">
-                                                                <span className="absolute left-3 top-2.5">
-                                                                    {currencyCode}
-                                                                </span>
-                                                                <Input
+                                                                <MoneyInput
                                                                     {...field}
-                                                                    className="pl-12"
-                                                                    placeholder="0.00"
+                                                                    value={Number(field.value) || 0}
+                                                                    onChange={value => field.onChange(value.toString())}
+                                                                    currency={activeChannel?.defaultCurrencyCode}
                                                                 />
-                                                            </div>
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>

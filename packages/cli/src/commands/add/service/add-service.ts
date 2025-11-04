@@ -39,7 +39,7 @@ export const addServiceCommand = new CliCommand({
     run: options => addService(options),
 });
 
-async function addService(
+export async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;

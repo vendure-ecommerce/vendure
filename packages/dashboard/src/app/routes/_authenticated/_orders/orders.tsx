@@ -10,7 +10,7 @@ import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
@@ -24,6 +24,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 function OrderListPage() {
     const serverConfig = useServerConfig();
     const navigate = useNavigate();
+    const { t } = useLingui();
     const { mutate: createDraftOrder } = useMutation({
         mutationFn: api.mutate(createDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof createDraftOrderDocument>) => {
@@ -33,7 +34,7 @@ function OrderListPage() {
     return (
         <ListPage
             pageId="order-list"
-            title="Orders"
+            title={<Trans>Orders</Trans>}
             onSearchTermChange={searchTerm => {
                 return {
                     _or: [
@@ -60,19 +61,17 @@ function OrderListPage() {
             route={Route}
             customizeColumns={{
                 total: {
-                    header: 'Total',
+                    meta: { dependencies: ['currencyCode'] },
                     cell: OrderMoneyCell,
                 },
                 totalWithTax: {
-                    header: 'Total with Tax',
+                    meta: { dependencies: ['currencyCode'] },
                     cell: OrderMoneyCell,
                 },
                 state: {
-                    header: 'State',
                     cell: OrderStateCell,
                 },
                 code: {
-                    header: 'Code',
                     cell: ({ cell, row }) => {
                         const value = cell.getValue() as string;
                         const id = row.original.id;
@@ -80,14 +79,13 @@ function OrderListPage() {
                     },
                 },
                 customer: {
-                    header: 'Customer',
                     cell: CustomerCell,
                 },
                 shippingLines: {
-                    header: 'Shipping',
+                    header: () => <Trans>Shipping</Trans>,
                     cell: ({ row }) => {
                         const value = row.original.shippingLines;
-                        return <div>{value.map(line => line.shippingMethod.name).join(', ')}</div>;
+                        return <div>{value?.map(line => line.shippingMethod.name).join(', ')}</div>;
                     },
                 },
             }}
@@ -100,7 +98,7 @@ function OrderListPage() {
             }}
             facetedFilters={{
                 state: {
-                    title: 'State',
+                    title: t`State`,
                     options:
                         serverConfig?.orderProcess.map(state => {
                             return {

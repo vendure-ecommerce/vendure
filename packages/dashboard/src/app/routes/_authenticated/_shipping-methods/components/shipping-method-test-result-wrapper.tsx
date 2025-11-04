@@ -1,7 +1,7 @@
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { PlayIcon } from 'lucide-react';
 import React from 'react';
 

@@ -70,7 +70,7 @@ import { sync } from './constants';
 export class InventorySyncPlugin {}
 ```
 
-On starting the Vendure server, this custom permission will now be visible in the Role detail view of the Admin UI, and can be assigned to Roles.
+On starting the Vendure server, this custom permission will now be visible in the Role detail view of the Dashboard, and can be assigned to Roles.
 
 ## Custom CRUD permissions
 

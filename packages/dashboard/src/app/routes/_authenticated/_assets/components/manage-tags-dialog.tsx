@@ -9,8 +9,8 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -108,10 +108,7 @@ export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: Readonly
             return (
                 <div
                     key={tag.id}
-                    className={cn(
-                        'flex items-center gap-2 p-2 rounded-md',
-                        isDeleted && 'opacity-50',
-                    )}
+                    className={cn('flex items-center gap-2 p-2 rounded-md', isDeleted && 'opacity-50')}
                 >
                     <Input
                         value={getDisplayValue(tag.id)}
@@ -199,9 +196,7 @@ export function ManageTagsDialog({ open, onOpenChange, onTagsUpdated }: Readonly
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="max-h-[400px] overflow-y-auto space-y-2 py-4">
-                    {renderTagsList()}
-                </div>
+                <div className="max-h-[400px] overflow-y-auto space-y-2 py-4">{renderTagsList()}</div>
 
                 <DialogFooter>
                     <Button variant="outline" onClick={handleCancel} disabled={isSaving}>

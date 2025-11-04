@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetGallery
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/asset/asset-gallery.tsx" sourceLine="155" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/asset/asset-gallery.tsx" sourceLine="160" packageName="@vendure/dashboard" />
 
 A component for displaying a gallery of assets.
 
@@ -19,12 +19,12 @@ A component for displaying a gallery of assets.
 
 ```tsx
  <AssetGallery
-onSelect={handleAssetSelect}
-multiSelect="manual"
-initialSelectedAssets={initialSelectedAssets}
-fixedHeight={false}
-displayBulkActions={false}
-/>
+  onSelect={handleAssetSelect}
+  multiSelect="manual"
+  initialSelectedAssets={initialSelectedAssets}
+  fixedHeight={false}
+  displayBulkActions={false}
+  />
 ```
 
 ```ts title="Signature"
@@ -57,6 +57,7 @@ interface AssetGalleryProps {
     onFilesDropped?: (files: File[]) => void;
     bulkActions?: AssetBulkAction[];
     displayBulkActions?: boolean;
+    onPageSizeChange?: (pageSize: number) => void;
 }
 ```
 
@@ -120,6 +121,11 @@ The bulk actions to display in the gallery.
 <MemberInfo kind="property" type={`boolean`}   />
 
 Whether the gallery should display bulk actions.
+### onPageSizeChange
+
+<MemberInfo kind="property" type={`(pageSize: number) =&#62; void`}   />
+
+The function to call when the page size changes.
 
 
 </div>

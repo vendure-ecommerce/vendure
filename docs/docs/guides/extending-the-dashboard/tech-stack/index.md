@@ -8,7 +8,7 @@ The Vendure Dashboard is built on a modern stack of technologies that provide a 
 
 ### React 19
 
-The dashboard is built with React 19, giving you access to all the latest React features including:
+The dashboard is built with [React 19](https://react.dev/), giving you access to all the latest React features including:
 
 - React Compiler optimizations
 - Improved concurrent features
@@ -48,7 +48,7 @@ function SubmitButton() {
 
 ### TypeScript
 
-Full TypeScript support throughout the dashboard provides:
+Full [TypeScript](https://www.typescriptlang.org/) support throughout the dashboard provides:
 
 - Type safety for your custom components
 - IntelliSense and autocomplete in your IDE
@@ -57,7 +57,7 @@ Full TypeScript support throughout the dashboard provides:
 
 ### Vite 6
 
-Vite 6 powers the development experience with:
+[Vite 6](https://vite.dev/) powers the development experience with:
 
 - Lightning-fast hot module replacement (HMR)
 - Optimized build process with Rollup 4
@@ -69,7 +69,7 @@ Vite 6 powers the development experience with:
 
 ### Tailwind CSS v4
 
-The dashboard uses Tailwind CSS v4 for styling:
+The dashboard uses [Tailwind CSS v4](https://tailwindcss.com/) for styling:
 
 - Utility-first CSS framework
 - Improved performance with Rust-based engine
@@ -91,7 +91,7 @@ function MyComponent() {
 
 ### Shadcn/ui
 
-Built on top of Radix UI primitives, Shadcn/ui provides:
+Built on top of [Radix UI](https://www.radix-ui.com/) primitives, [Shadcn/ui](https://ui.shadcn.com/) provides:
 
 - Accessible components out of the box
 - Consistent design system
@@ -111,11 +111,9 @@ function MyForm() {
 }
 ```
 
-## State Management
+## Data Layer: TanStack Query
 
-### TanStack Query v5
-
-TanStack Query v5 handles all server state management:
+[TanStack Query](https://tanstack.com/query) v5 handles all data fetching and server state management:
 
 - Automatic caching and synchronization
 - Background updates
@@ -157,11 +155,9 @@ function ProductList() {
 }
 ```
 
-## Routing
+## Routing: TanStack Router
 
-### TanStack Router v1
-
-Type-safe routing with:
+[TanStack Router](https://tanstack.com/router) provides type-safe routing with:
 
 - File-based routing
 - 100% type-safe navigation
@@ -185,11 +181,9 @@ function Navigation() {
 }
 ```
 
-## Forms
+## Forms: React Hook Form
 
-### React Hook Form
-
-Powerful form handling with:
+[React Hook Form](https://react-hook-form.com/) provides powerful form handling with:
 
 - Minimal re-renders
 - Built-in validation
@@ -232,11 +226,9 @@ function MyForm() {
 }
 ```
 
-## GraphQL Integration
+## GraphQL Integration: gql.tada
 
-### gql.tada
-
-Type-safe GraphQL with:
+[gql.tada](https://gql-tada.0no.co/) provides type-safe GraphQL with:
 
 - Generated TypeScript types
 - IntelliSense for queries and mutations
@@ -274,11 +266,9 @@ function CreateProductForm() {
 }
 ```
 
-## Notifications
+## Notifications: Sonner
 
-### Sonner
-
-Toast notifications with:
+[Sonner](https://sonner.emilkowal.ski/) provides toast notifications with:
 
 - Beautiful animations
 - Customizable appearance
@@ -318,11 +308,9 @@ function MyComponent() {
 }
 ```
 
-## Icons
+## Icons: Lucide React
 
-### Lucide React
-
-Beautiful, customizable icons:
+[Lucide React](https://lucide.dev/) provides beautiful, customizable icons:
 
 - Consistent design
 - Tree-shakeable
@@ -352,11 +340,9 @@ function Navigation() {
 }
 ```
 
-## Animations
+## Animations: Motion
 
-### Motion
-
-Smooth animations powered by Motion (successor to Framer Motion):
+Smooth animations powered by [Motion](https://motion.dev/) (successor to Framer Motion):
 
 - High-performance animations
 - Declarative API
@@ -381,11 +367,9 @@ function AnimatedCard({ children }) {
 }
 ```
 
-## Internationalization
+## Internationalization: Lingui
 
-### Lingui
-
-Powerful i18n solution for React:
+[Lingui](https://lingui.dev/) provides a powerful i18n solution for React:
 
 - ICU MessageFormat support
 - Automatic message extraction
@@ -394,7 +378,7 @@ Powerful i18n solution for React:
 - Compile-time optimization
 
 ```tsx
-import { Trans, useLingui } from '@/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 function MyComponent() {
     const { t } = useLingui();
@@ -409,91 +393,3 @@ function MyComponent() {
     );
 }
 ```
-
-## Development Tools
-
-### ESLint & Prettier
-
-Code quality and formatting:
-
-- Consistent code style
-- Error prevention
-- Automatic formatting
-- TypeScript support
-
-### Hot Module Replacement
-
-Development experience:
-
-- Instant updates without page refresh
-- Preserves component state
-- Error overlay
-- Fast development cycle
-
-## Best Practices
-
-### Component Composition
-
-Build reusable components:
-
-```tsx
-import { Card, Button } from '@vendure/dashboard';
-
-function ProductCard({ product, onEdit, onDelete }) {
-    return (
-        <Card className="p-4">
-            <h3 className="font-semibold">{product.name}</h3>
-            <p className="text-sm text-gray-600">{product.description}</p>
-            <div className="flex space-x-2 mt-4">
-                <Button variant="outline" onClick={() => onEdit(product)}>
-                    Edit
-                </Button>
-                <Button variant="destructive" onClick={() => onDelete(product)}>
-                    Delete
-                </Button>
-            </div>
-        </Card>
-    );
-}
-```
-
-### Custom Hooks
-
-Extract reusable logic:
-
-```tsx
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-
-function useProduct(productId: string) {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['product', productId],
-        queryFn: () => fetchProduct(productId),
-    });
-
-    return {
-        product: data,
-        isLoading,
-        error,
-    };
-}
-
-function ProductDetail({ productId }: { productId: string }) {
-    const { product, isLoading, error } = useProduct(productId);
-
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-
-    return <div>{product.name}</div>;
-}
-```
-
-## Performance Considerations
-
-1. **React.memo()** for expensive components
-2. **useMemo()** and **useCallback()** for expensive calculations
-3. **React Query caching** for server state
-4. **Code splitting** with dynamic imports
-5. **Image optimization** with proper formats and sizes
-
-The dashboard's modern tech stack provides a solid foundation for building powerful, maintainable extensions while ensuring a great developer experience.

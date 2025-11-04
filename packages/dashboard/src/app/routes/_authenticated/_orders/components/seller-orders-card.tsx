@@ -1,6 +1,7 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { api } from '@/vdb/graphql/api.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useQuery } from '@tanstack/react-query';
 import { sellerOrdersDocument } from '../orders.graphql.js';
@@ -12,6 +13,7 @@ export interface SellerOrdersCardProps {
 
 export function SellerOrdersCard({ orderId }: Readonly<SellerOrdersCardProps>) {
     const { formatCurrency } = useLocalFormat();
+    const { getTranslatedOrderState } = useDynamicTranslations();
     const { data, isLoading, error } = useQuery({
         queryKey: ['seller-orders', orderId],
         queryFn: () => api.query(sellerOrdersDocument, { orderId }),
@@ -51,7 +53,7 @@ export function SellerOrdersCard({ orderId }: Readonly<SellerOrdersCardProps>) {
                             <div className="flex gap-2">
                                 {seller && <Badge variant={'secondary'}>{seller.name}</Badge>}
                             </div>
-                            <Badge variant={'secondary'}>{sellerOrder.state}</Badge>
+                            <Badge variant={'secondary'}>{getTranslatedOrderState(sellerOrder.state)}</Badge>
                         </div>
                     </div>
                 );

@@ -5,7 +5,7 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { AssignToChannelDialog } from '@/vdb/components/shared/assign-to-channel-dialog.js';
 import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 interface AssignToChannelBulkActionProps {
     selection: any[];
@@ -23,16 +23,16 @@ interface AssignToChannelBulkActionProps {
 }
 
 export function AssignToChannelBulkAction({
-    selection,
-    table,
-    entityType,
-    mutationFn,
-    requiredPermissions,
-    buildInput,
-    additionalFields,
-    additionalData = {},
-    onSuccess,
-}: Readonly<AssignToChannelBulkActionProps>) {
+                                              selection,
+                                              table,
+                                              entityType,
+                                              mutationFn,
+                                              requiredPermissions,
+                                              buildInput,
+                                              additionalFields,
+                                              additionalData = {},
+                                              onSuccess,
+                                          }: Readonly<AssignToChannelBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { channels } = useChannel();
     const [dialogOpen, setDialogOpen] = useState(false);

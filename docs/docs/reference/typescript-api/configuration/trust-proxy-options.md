@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TrustProxyOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="244" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="245" packageName="@vendure/core" since="3.4.0" />
 
 Configures Express trust proxy settings when running behind a reverse proxy (usually the case with most hosting services).
 Setting `trustProxy` allows you to retrieve the original IP address from the `X-Forwarded-For` header.

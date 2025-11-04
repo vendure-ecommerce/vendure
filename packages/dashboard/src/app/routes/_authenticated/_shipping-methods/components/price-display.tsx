@@ -1,11 +1,11 @@
 import { Money } from '@/vdb/components/data-display/money.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 export function PriceDisplay({
-    price,
-    priceWithTax,
-    currencyCode,
-}: Readonly<{
+                                 price,
+                                 priceWithTax,
+                                 currencyCode,
+                             }: Readonly<{
     price: number;
     priceWithTax: number;
     currencyCode: string;

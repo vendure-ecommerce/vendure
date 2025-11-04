@@ -141,7 +141,7 @@ If your PaymentMethodHandler needs access to the database or other providers, se
 
 ## The PaymentMethod entity
 
-Once the PaymentMethodHandler is defined as above, you can use it to create a new [`PaymentMethod`](/reference/typescript-api/entities/payment-method/) via the Admin UI (_Settings_ -> _Payment methods_, then _Create new payment method_) or via the Admin API `createPaymentMethod` mutation.
+Once the PaymentMethodHandler is defined as above, you can use it to create a new [`PaymentMethod`](/reference/typescript-api/entities/payment-method/) via the Dashboard (_Settings_ -> _Payment methods_, then _Create new payment method_) or via the Admin API `createPaymentMethod` mutation.
 
 A payment method consists of an optional [`PaymentMethodEligibilityChecker`](/reference/typescript-api/payment/payment-method-eligibility-checker/), which is used to determine whether the payment method is available to the customer, and a [`PaymentMethodHandler`](/reference/typescript-api/payment/payment-method-handler).
 

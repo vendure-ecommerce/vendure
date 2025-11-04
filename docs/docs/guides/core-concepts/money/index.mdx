@@ -71,12 +71,19 @@ export function formatCurrency(value: number, currencyCode: string, locale?: str
 }
 ```
 
-If you are building an Admin UI extension, you can use the built-in [`LocaleCurrencyPipe`](/reference/admin-ui-api/pipes/locale-currency-pipe/):
+If you are building an Dashboard extension, you can use the built-in [`useLocalFormat` hook](/reference/dashboard/hooks/use-local-format):
 
-```html title="src/plugins/my-plugin/ui/components/my-component/my.component.html"
-<div>
-    Variant price: {{ variant.price | localeCurrency : variant.currencyCode }}
-</div>
+```tsx title="src/plugins/my-plugin/dashboard/components/my-component.tsx"
+import { useLocalFormat } from '@vendure/dashboard';
+
+export function MyComponent({ variant }: MyComponentProps) {
+    const { formatCurrency } = useLocalFormat();
+    return (
+        <div>
+            Variant price: { formatCurrency(variant.price, variant.currencyCode) }
+        </div>
+    )
+}
 ```
 
 ## Support for multiple currencies

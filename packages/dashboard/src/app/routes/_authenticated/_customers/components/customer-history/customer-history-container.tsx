@@ -1,7 +1,7 @@
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { TriangleAlert } from 'lucide-react';
 import { CustomerHistory } from './customer-history.js';
 import { useCustomerHistory } from './use-customer-history.js';

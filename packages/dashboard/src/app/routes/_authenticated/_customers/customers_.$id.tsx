@@ -27,7 +27,7 @@ import {
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
@@ -66,7 +66,7 @@ function CustomerDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [newAddressOpen, setNewAddressOpen] = useState(false);
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
@@ -89,19 +89,21 @@ function CustomerDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Customer') {
-                toast.success(i18n.t(creatingNewEntity ? 'Successfully created customer' : 'Successfully updated customer'));
+                toast.success(
+                    creatingNewEntity ? t`Successfully created customer` : t`Successfully updated customer`,
+                );
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
+                toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
                     description: data.message,
                 });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create customer' : 'Failed to update customer'), {
+            toast.error(creatingNewEntity ? t`Failed to create customer` : t`Failed to update customer`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -114,7 +116,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast.error(i18n.t('Failed to create address'));
+            toast.error(t`Failed to create address`);
         },
     });
 
@@ -124,7 +126,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to add customer to group'));
+            toast(t`Failed to add customer to group`);
         },
     });
 
@@ -134,7 +136,7 @@ function CustomerDetailPage() {
             refreshEntity();
         },
         onError: () => {
-            toast(i18n.t('Failed to remove customer from group'));
+            toast(t`Failed to remove customer from group`);
         },
     });
 

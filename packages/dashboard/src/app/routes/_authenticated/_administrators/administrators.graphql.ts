@@ -29,8 +29,8 @@ export const administratorItemFragment = graphql(`
 
 export const administratorListDocument = graphql(
     `
-        query AdministratorList {
-            administrators {
+        query AdministratorList($options: AdministratorListOptions) {
+            administrators(options: $options) {
                 items {
                     ...AdministratorItem
                 }

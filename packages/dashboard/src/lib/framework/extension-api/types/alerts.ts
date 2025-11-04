@@ -1,3 +1,5 @@
+export type AlertSeverity = 'info' | 'warning' | 'error';
+
 /**
  * @description
  * Allows you to define custom alerts that can be displayed in the dashboard.
@@ -26,7 +28,7 @@ export interface DashboardAlertDefinition<TResponse = any> {
      * @description
      * The severity level of the alert.
      */
-    severity: 'info' | 'warning' | 'error';
+    severity: AlertSeverity | ((data: TResponse) => AlertSeverity);
     /**
      * @description
      * A function that checks the condition and returns the response data.
@@ -34,20 +36,24 @@ export interface DashboardAlertDefinition<TResponse = any> {
     check: () => Promise<TResponse> | TResponse;
     /**
      * @description
+     * A function that determines whether the alert should be rendered based on the response data.
+     */
+    shouldShow: (data: TResponse) => boolean;
+    /**
+     * @description
      * The interval in milliseconds to recheck the condition.
      */
     recheckInterval?: number;
     /**
      * @description
-     * A function that determines whether the alert should be shown based on the response data.
-     */
-    shouldShow?: (data: TResponse) => boolean;
-    /**
-     * @description
      * Optional actions that can be performed when the alert is shown.
+     *
+     * The `onClick()` handler will receive the data returned by the `check` function,
+     * as well as a `dismiss()` function that can be used to immediately dismiss the
+     * current alert.
      */
     actions?: Array<{
         label: string;
-        onClick: (data: TResponse) => void;
+        onClick: (args: { data: TResponse; dismiss: () => void }) => void | Promise<any>;
     }>;
 }

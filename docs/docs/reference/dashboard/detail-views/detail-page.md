@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DetailPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="150" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="147" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a detail page with a form based on the provided query and mutation documents.
 
@@ -30,7 +30,7 @@ Parameters
 
 ## DetailPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="42" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="43" packageName="@vendure/dashboard" since="3.3.0" />
 
 Props to configure the <a href='/reference/dashboard/detail-views/detail-page#detailpage'>DetailPage</a> component.
 

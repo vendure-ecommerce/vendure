@@ -1,10 +1,11 @@
 import { BooleanDisplayBadge } from '@/vdb/components/data-display/boolean.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import {
@@ -20,12 +21,13 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
 });
 
 function PaymentMethodListPage() {
+    const { t } = useLingui();
     return (
         <ListPage
             pageId="payment-method-list"
             listQuery={paymentMethodListQuery}
             route={Route}
-            title="Payment Methods"
+            title={<Trans>Payment Methods</Trans>}
             defaultVisibility={{
                 name: true,
                 code: true,
@@ -38,7 +40,7 @@ function PaymentMethodListPage() {
             }}
             facetedFilters={{
                 enabled: {
-                    title: 'Enabled',
+                    title: t`Enabled`,
                     options: [
                         { label: 'Enabled', value: true },
                         { label: 'Disabled', value: false },
@@ -47,12 +49,13 @@ function PaymentMethodListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 enabled: {
-                    header: 'Enabled',
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
+                },
+                description: {
+                    cell: RichTextDescriptionCell,
                 },
             }}
             bulkActions={[
@@ -75,7 +78,7 @@ function PaymentMethodListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Payment Method
+                            <Trans>New Payment Method</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

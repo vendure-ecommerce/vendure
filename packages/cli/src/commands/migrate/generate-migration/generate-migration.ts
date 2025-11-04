@@ -4,23 +4,23 @@ import { generateMigration, VendureConfig } from '@vendure/core';
 import path from 'path';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
+import { loadVendureConfigFile } from '../../../shared/load-vendure-config-file';
 import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { withInteractiveTimeout } from '../../../utilities/utils';
-import { loadVendureConfigFile } from '../load-vendure-config-file';
 
 const cancelledMessage = 'Generate migration cancelled';
 
-export const generateMigrationCommand = new CliCommand({
+export const generateMigrationCommand = new CliCommand<{ configFile?: string }>({
     id: 'generate-migration',
     category: 'Other',
     description: 'Generate a new database migration',
-    run: () => runGenerateMigration(),
+    run: options => runGenerateMigration(options?.configFile),
 });
 
-async function runGenerateMigration(): Promise<CliCommandReturnVal> {
+async function runGenerateMigration(configFile?: string): Promise<CliCommandReturnVal> {
     const { project, tsConfigPath } = await analyzeProject({ cancelledMessage });
-    const vendureConfig = new VendureConfigRef(project);
+    const vendureConfig = new VendureConfigRef(project, configFile);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
 
     const name = await withInteractiveTimeout(async () => {

@@ -68,7 +68,7 @@ type TranslatableFormFieldProps<TFieldValues extends TranslatableEntity | Transl
     name: TFieldValues extends TranslatableEntity
         ? keyof Omit<NonNullable<TFieldValues['translations']>[number], 'languageCode'>
         : TFieldValues extends TranslatableEntity[]
-          ? keyof Omit<NonNullable<TFieldValues[number]['translations']>[number], 'languageCode'>
-          : never;
+            ? keyof Omit<NonNullable<TFieldValues[number]['translations']>[number], 'languageCode'>
+            : never;
 }
 ```

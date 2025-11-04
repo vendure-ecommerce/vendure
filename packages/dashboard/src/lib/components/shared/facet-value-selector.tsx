@@ -10,7 +10,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { ChevronRight, Loader2, Plus } from 'lucide-react';
@@ -41,9 +41,9 @@ interface FacetValueSelectorProps {
     /**
      * @description
      * The function to call when a facet value is selected.
-     * 
+     *
      * The `value` will have the following structure:
-     * 
+     *
      * ```ts
      * {
      *     id: string;
@@ -71,7 +71,7 @@ interface FacetValueSelectorProps {
     /**
      * @description
      * The number of facet values to display per page.
-     * 
+     *
      * @default 4
      */
     pageSize?: number;
@@ -129,7 +129,7 @@ const getFacetValuesForFacetDocument = graphql(`
 /**
  * @description
  * A component for selecting facet values.
- * 
+ *
  * @example
  * ```tsx
  * <FacetValueSelector onValueSelect={onValueSelectHandler} disabled={disabled} />
@@ -143,19 +143,22 @@ const getFacetValuesForFacetDocument = graphql(`
 export function FacetValueSelector({
     onValueSelect,
     disabled,
-    placeholder = 'Search facet values...',
-    pageSize = 4,
+    placeholder,
+    pageSize = 10,
 }: FacetValueSelectorProps) {
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedFacetId, setExpandedFacetId] = useState<string | null>(null);
+    const [browseMode, setBrowseMode] = useState(false);
     const debouncedSearch = useDebounce(searchTerm, 200);
+    const { t } = useLingui();
+    const minSearchLength = 1;
 
     // Query for facet values based on search
     const { data: facetValueData, isLoading: isLoadingFacetValues } = useQuery({
         queryKey: ['facetValues', debouncedSearch],
         queryFn: () => {
-            if (debouncedSearch.length < 2) {
+            if (debouncedSearch.length < minSearchLength) {
                 return { facetValues: { items: [], totalItems: 0 } };
             }
             return api.query(getFacetValueListDocument, {
@@ -167,14 +170,14 @@ export function FacetValueSelector({
                 },
             });
         },
-        enabled: debouncedSearch.length >= 2 && !expandedFacetId,
+        enabled: debouncedSearch.length >= minSearchLength && !expandedFacetId,
     });
 
-    // Query for facets based on search
-    const { data: facetData, isLoading: isLoadingFacets } = useQuery({
+    // Query for facets based on search (use regular query for search, infinite for browse)
+    const { data: facetSearchData, isLoading: isLoadingFacetSearch } = useQuery({
         queryKey: ['facets', debouncedSearch],
         queryFn: () => {
-            if (debouncedSearch.length < 2) {
+            if (debouncedSearch.length < minSearchLength) {
                 return { facets: { items: [], totalItems: 0 } };
             }
             return api.query(getFacetListDocument, {
@@ -186,7 +189,36 @@ export function FacetValueSelector({
                 },
             });
         },
-        enabled: debouncedSearch.length >= 2 && !expandedFacetId,
+        enabled: !browseMode && debouncedSearch.length >= minSearchLength && !expandedFacetId,
+    });
+
+    // Infinite query for browse mode
+    const {
+        data: facetBrowseData,
+        isLoading: isLoadingFacetBrowse,
+        fetchNextPage: fetchNextFacetsPage,
+        hasNextPage: hasNextFacetsPage,
+        isFetchingNextPage: isFetchingNextFacetsPage,
+    } = useInfiniteQuery({
+        queryKey: ['facets', 'browse'],
+        queryFn: async ({ pageParam = 0 }) => {
+            const response = await api.query(getFacetListDocument, {
+                options: {
+                    filter: {},
+                    sort: { name: 'ASC' },
+                    skip: pageParam * pageSize,
+                    take: pageSize,
+                },
+            });
+            return response.facets;
+        },
+        getNextPageParam: (lastPage, allPages) => {
+            if (!lastPage) return undefined;
+            const totalFetched = allPages.length * pageSize;
+            return totalFetched < lastPage.totalItems ? allPages.length : undefined;
+        },
+        enabled: browseMode && !expandedFacetId,
+        initialPageParam: 0,
     });
 
     // Query for paginated values of a specific facet when expanded
@@ -220,7 +252,9 @@ export function FacetValueSelector({
     });
 
     const facetValues = facetValueData?.facetValues.items ?? [];
-    const facets = facetData?.facets.items ?? [];
+    const facets = browseMode
+        ? (facetBrowseData?.pages.flatMap(page => page?.items ?? []) ?? [])
+        : (facetSearchData?.facets.items ?? []);
     const expandedFacetValues = expandedFacetData?.pages.flatMap(page => page?.items ?? []) ?? [];
     const expandedFacetName = expandedFacetValues[0]?.facet.name;
 
@@ -237,14 +271,22 @@ export function FacetValueSelector({
         {},
     );
 
-    const isLoading = isLoadingFacetValues || isLoadingFacets || isLoadingExpandedFacet;
+    const isLoading =
+        isLoadingFacetValues || isLoadingFacetSearch || isLoadingFacetBrowse || isLoadingExpandedFacet;
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const target = e.currentTarget;
         const scrolledToBottom = Math.abs(target.scrollHeight - target.clientHeight - target.scrollTop) < 1;
 
-        if (scrolledToBottom && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+        if (scrolledToBottom && !isFetchingNextPage) {
+            // For expanded facet values
+            if (expandedFacetId && hasNextPage) {
+                void fetchNextPage();
+            }
+            // For browse mode facets
+            if (browseMode && !expandedFacetId && hasNextFacetsPage) {
+                void fetchNextFacetsPage();
+            }
         }
     };
 
@@ -259,22 +301,59 @@ export function FacetValueSelector({
             <PopoverContent className="p-0 w-[400px]" align="start">
                 <Command shouldFilter={false}>
                     <CommandInput
-                        placeholder={placeholder}
+                        placeholder={placeholder ?? t`Search facet values...`}
                         value={searchTerm}
                         onValueChange={value => {
                             setSearchTerm(value);
                             setExpandedFacetId(null);
+                            setBrowseMode(false);
+                        }}
+                        onKeyDown={e => {
+                            if (
+                                e.key === 'ArrowDown' &&
+                                !browseMode &&
+                                debouncedSearch.length < minSearchLength
+                            ) {
+                                e.preventDefault();
+                                setBrowseMode(true);
+                            }
                         }}
                         disabled={disabled}
                     />
                     <CommandList className="h-[200px] overflow-y-auto" onScroll={handleScroll}>
                         <CommandEmpty>
-                            {debouncedSearch.length < 2 ? (
-                                <Trans>Type at least 2 characters to search...</Trans>
+                            {debouncedSearch.length < 2 && !browseMode ? (
+                                <div className="flex flex-col items-center gap-2 py-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        <Trans>Type at least 2 characters to search...</Trans>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setBrowseMode(true)}
+                                        type="button"
+                                    >
+                                        <Trans>Browse facets</Trans>
+                                    </Button>
+                                </div>
                             ) : isLoading ? (
                                 <Trans>Loading...</Trans>
                             ) : (
-                                <Trans>No results found</Trans>
+                                <div className="flex flex-col items-center gap-2 py-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        <Trans>No results found</Trans>
+                                    </div>
+                                    {!browseMode && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setBrowseMode(true)}
+                                            type="button"
+                                        >
+                                            <Trans>Browse facets</Trans>
+                                        </Button>
+                                    )}
+                                </div>
                             )}
                         </CommandEmpty>
 
@@ -282,7 +361,10 @@ export function FacetValueSelector({
                             <>
                                 <CommandGroup>
                                     <CommandItem
-                                        onSelect={() => setExpandedFacetId(null)}
+                                        onSelect={() => {
+                                            setExpandedFacetId(null);
+                                            setBrowseMode(false);
+                                        }}
                                         className="cursor-pointer"
                                     >
                                         ← <Trans>Back to search</Trans>
@@ -297,6 +379,7 @@ export function FacetValueSelector({
                                                 onValueSelect(facetValue);
                                                 setSearchTerm('');
                                                 setExpandedFacetId(null);
+                                                setBrowseMode(false);
                                                 setOpen(false);
                                             }}
                                         >
@@ -318,19 +401,31 @@ export function FacetValueSelector({
                         ) : (
                             <>
                                 {facets.length > 0 && (
-                                    <CommandGroup heading={<Trans>Facets</Trans>}>
-                                        {facets.map(facet => (
-                                            <CommandItem
-                                                key={facet.id}
-                                                value={`facet-${facet.id}`}
-                                                onSelect={() => setExpandedFacetId(facet.id)}
-                                                className="cursor-pointer"
-                                            >
-                                                <span className="flex-1">{facet.name}</span>
-                                                <ChevronRight className="h-4 w-4" />
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
+                                    <>
+                                        <CommandGroup heading={<Trans>Facets</Trans>}>
+                                            {facets.map(facet => (
+                                                <CommandItem
+                                                    key={facet.id}
+                                                    value={`facet-${facet.id}`}
+                                                    onSelect={() => setExpandedFacetId(facet.id)}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <span className="flex-1">{facet.name}</span>
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                        {browseMode && isFetchingNextFacetsPage && (
+                                            <div className="flex items-center justify-center py-2">
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            </div>
+                                        )}
+                                        {browseMode && !hasNextFacetsPage && facets.length > 0 && (
+                                            <div className="text-center py-2 text-sm text-muted-foreground">
+                                                <Trans>No more facets</Trans>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
 
                                 {Object.entries(facetGroups).map(
@@ -343,6 +438,7 @@ export function FacetValueSelector({
                                                     onSelect={() => {
                                                         onValueSelect(facetValue);
                                                         setSearchTerm('');
+                                                        setBrowseMode(false);
                                                         setOpen(false);
                                                     }}
                                                 >

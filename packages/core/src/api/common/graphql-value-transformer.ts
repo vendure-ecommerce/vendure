@@ -251,6 +251,14 @@ export class GraphqlValueTransformer {
                             source[key].children,
                         );
                     }
+                    // Merge fragmentRefs from both nodes, avoiding duplicates
+                    if (source[key].fragmentRefs && source[key].fragmentRefs.length > 0) {
+                        const existingRefs = new Set(merged[key].fragmentRefs);
+                        const newRefs = source[key].fragmentRefs.filter(ref => !existingRefs.has(ref));
+                        if (newRefs.length > 0) {
+                            merged[key].fragmentRefs = [...merged[key].fragmentRefs, ...newRefs];
+                        }
+                    }
                 } else {
                     merged[key] = source[key];
                 }

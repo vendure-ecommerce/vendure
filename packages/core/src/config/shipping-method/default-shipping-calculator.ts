@@ -45,7 +45,7 @@ export const defaultShippingCalculator = new ShippingCalculator({
         taxRate: {
             type: 'float',
             defaultValue: 0,
-            ui: { component: 'number-form-input', suffix: '%' },
+            ui: { component: 'number-form-input', suffix: '%', min: 0 },
             label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
         },
     },

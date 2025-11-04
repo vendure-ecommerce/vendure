@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from '@/vdb/components/ui/dialog.js';
 import { Textarea } from '@/vdb/components/ui/textarea.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 import { HistoryNoteCheckbox } from './history-note-checkbox.js';
 

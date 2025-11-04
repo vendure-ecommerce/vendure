@@ -17,8 +17,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Page, PageBlock, PageLayout, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Plus, Save, Trash2 } from 'lucide-react';
@@ -82,7 +82,7 @@ function AddOptionValueDialog({
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const form = useForm<AddOptionValueFormValues>({
         resolver: zodResolver(addOptionValueSchema),
@@ -94,14 +94,14 @@ function AddOptionValueDialog({
     const createOptionMutation = useMutation({
         mutationFn: api.mutate(createProductOptionDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Successfully added option value'));
+            toast.success(t`Successfully added option value`);
             setOpen(false);
             form.reset();
             onSuccess?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to add option value'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to add option value`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         },
     });
@@ -141,7 +141,7 @@ function AddOptionValueDialog({
                             name="name"
                             label={<Trans>Option value name</Trans>}
                             render={({ field }) => (
-                                <Input {...field} placeholder={i18n.t('e.g., Red, Large, Cotton')} />
+                                <Input {...field} placeholder={t`e.g., Red, Large, Cotton`} />
                             )}
                         />
                         <DialogFooter>
@@ -158,7 +158,7 @@ function AddOptionValueDialog({
 
 function ManageProductVariants() {
     const { id } = Route.useParams();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [optionsToAddToVariant, setOptionsToAddToVariant] = useState<
         Record<string, Record<string, string>>
     >({});
@@ -171,7 +171,7 @@ function ManageProductVariants() {
     const updateVariantMutation = useMutation({
         mutationFn: api.mutate(updateProductVariantDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Variant updated successfully'));
+            toast.success(t`Variant updated successfully`);
             refetch();
         },
     });
@@ -179,7 +179,7 @@ function ManageProductVariants() {
     const deleteVariantMutation = useMutation({
         mutationFn: api.mutate(deleteProductVariantDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Variant deleted successfully'));
+            toast.success(t`Variant deleted successfully`);
             refetch();
         },
     });
@@ -187,7 +187,7 @@ function ManageProductVariants() {
     const removeOptionGroupMutation = useMutation({
         mutationFn: api.mutate(removeOptionGroupFromProductDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Option group removed'));
+            toast.success(t`Option group removed`);
             refetch();
         },
     });
@@ -233,7 +233,7 @@ function ManageProductVariants() {
     };
 
     const deleteVariant = async (variant: Variant) => {
-        if (confirm(i18n.t('Are you sure you want to delete this variant?'))) {
+        if (confirm(t`Are you sure you want to delete this variant?`)) {
             await deleteVariantMutation.mutateAsync({ id: variant.id });
         }
     };

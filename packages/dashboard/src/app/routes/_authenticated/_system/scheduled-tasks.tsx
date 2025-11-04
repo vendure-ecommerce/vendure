@@ -16,7 +16,7 @@ import {
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -65,7 +65,7 @@ const runScheduledTaskDocument = graphql(`
 type ScheduledTask = ResultOf<typeof getScheduledTasksDocument>['scheduledTasks'][number];
 
 function ScheduledTasksPage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { data } = useQuery({
         queryKey: ['scheduledTasks'],
         queryFn: () => api.query(getScheduledTasksDocument),
@@ -84,10 +84,10 @@ function ScheduledTasksPage() {
         mutationFn: api.mutate(runScheduledTaskDocument),
         onSuccess: result => {
             if ((result as ResultOf<typeof runScheduledTaskDocument>).runScheduledTask.success) {
-                toast.success(i18n.t(`Scheduled task will be executed`));
+                toast.success(t`Scheduled task will be executed`);
                 queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
             } else {
-                toast.error(i18n.t(`Scheduled task could not be executed`));
+                toast.error(t`Scheduled task could not be executed`);
             }
         },
     });
@@ -104,13 +104,13 @@ function ScheduledTasksPage() {
     const columnHelper = createColumnHelper<ScheduledTask>();
     const columns = [
         columnHelper.accessor('id', {
-            header: 'ID',
+            header: t`ID`,
         }),
         columnHelper.accessor('description', {
-            header: 'Description',
+            header: t`Description`,
         }),
         columnHelper.accessor('enabled', {
-            header: 'Enabled',
+            header: t`Enabled`,
             cell: ({ row }) => {
                 return row.original.enabled ? (
                     <Badge variant="success">
@@ -124,13 +124,13 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('schedule', {
-            header: 'Schedule Pattern',
+            header: t`Schedule Pattern`,
         }),
         columnHelper.accessor('scheduleDescription', {
-            header: 'Schedule',
+            header: t`Schedule`,
         }),
         columnHelper.accessor('lastExecutedAt', {
-            header: 'Last Executed',
+            header: t`Last Executed`,
             cell: ({ row }) => {
                 return row.original.lastExecutedAt ? (
                     <div title={row.original.lastExecutedAt}>
@@ -142,7 +142,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('nextExecutionAt', {
-            header: 'Next Execution',
+            header: t`Next Execution`,
             cell: ({ row }) => {
                 return row.original.nextExecutionAt ? (
                     formatDate(row.original.nextExecutionAt, intlDateOptions)
@@ -152,7 +152,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('isRunning', {
-            header: 'Running',
+            header: t`Running`,
             cell: ({ row }) => {
                 return row.original.isRunning ? (
                     <Badge variant="success">
@@ -166,7 +166,7 @@ function ScheduledTasksPage() {
             },
         }),
         columnHelper.accessor('lastResult', {
-            header: 'Last Result',
+            header: t`Last Result`,
             cell: ({ row }) => {
                 return row.original.lastResult ? (
                     <PayloadDialog
@@ -175,7 +175,7 @@ function ScheduledTasksPage() {
                         description={<Trans>The result of the job</Trans>}
                         trigger={
                             <Button size="sm" variant="secondary">
-                                View result
+                                <Trans>View result</Trans>
                             </Button>
                         }
                     />
@@ -188,7 +188,7 @@ function ScheduledTasksPage() {
         }),
         columnHelper.display({
             id: 'actions',
-            header: 'Actions',
+            header: t`Actions`,
             cell: ({ row }) => {
                 return (
                     <DropdownMenu>
@@ -228,7 +228,9 @@ function ScheduledTasksPage() {
 
     return (
         <Page pageId="scheduled-tasks-list">
-            <PageTitle>Scheduled Tasks</PageTitle>
+            <PageTitle>
+                <Trans>Scheduled Tasks</Trans>
+            </PageTitle>
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
                     <DataTable

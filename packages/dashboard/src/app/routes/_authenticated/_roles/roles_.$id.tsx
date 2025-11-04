@@ -16,7 +16,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PermissionsTableGrid } from './components/permissions-table-grid.js';
@@ -43,7 +43,7 @@ function RoleDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,16 +61,14 @@ function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(
-                i18n.t(creatingNewEntity ? 'Successfully created role' : 'Successfully updated role'),
-            );
+            toast.success(creatingNewEntity ? t`Successfully created role` : t`Successfully updated role`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create role' : 'Failed to update role'), {
+            toast.error(creatingNewEntity ? t`Failed to create role` : t`Failed to update role`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

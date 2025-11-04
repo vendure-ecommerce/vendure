@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useBlocker } from '@tanstack/react-router';
 import { UseFormReturn } from 'react-hook-form';
 

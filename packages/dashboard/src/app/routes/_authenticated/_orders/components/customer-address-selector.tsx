@@ -3,7 +3,7 @@ import { Card } from '@/vdb/components/ui/card.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';

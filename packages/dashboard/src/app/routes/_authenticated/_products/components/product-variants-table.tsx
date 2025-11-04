@@ -5,7 +5,6 @@ import {
     PaginatedListRefresherRegisterFn,
 } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
-import { graphql } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -16,15 +15,6 @@ import {
     RemoveProductVariantsFromChannelBulkAction,
 } from '../../_product-variants/components/product-variant-bulk-actions.js';
 import { productVariantListDocument } from '../products.graphql.js';
-
-export const deleteProductVariantDocument = graphql(`
-    mutation DeleteProductVariant($id: ID!) {
-        deleteProductVariant(id: $id) {
-            result
-            message
-        }
-    }
-`);
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -47,7 +37,6 @@ export function ProductVariantsTable({
         <PaginatedListDataTable
             registerRefresher={registerRefresher}
             listQuery={productVariantListDocument}
-            deleteMutation={deleteProductVariantDocument}
             transformVariables={variables => ({
                 ...variables,
                 productId,
@@ -93,11 +82,17 @@ export function ProductVariantsTable({
                     cell: ({ row: { original } }) => formatCurrencyName(original.currencyCode, 'full'),
                 },
                 price: {
+                    meta: {
+                        dependencies: ['currencyCode']
+                    },
                     cell: ({ row: { original } }) => (
                         <Money value={original.price} currency={original.currencyCode} />
                     ),
                 },
                 priceWithTax: {
+                    meta: {
+                        dependencies: ['currencyCode']
+                    },
                     cell: ({ row: { original } }) => (
                         <Money value={original.priceWithTax} currency={original.currencyCode} />
                     ),
