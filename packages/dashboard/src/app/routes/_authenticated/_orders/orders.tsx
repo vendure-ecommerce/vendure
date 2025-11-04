@@ -85,7 +85,7 @@ function OrderListPage() {
                     header: () => <Trans>Shipping</Trans>,
                     cell: ({ row }) => {
                         const value = row.original.shippingLines;
-                        return <div>{value.map(line => line.shippingMethod.name).join(', ')}</div>;
+                        return <div>{value?.map(line => line.shippingMethod.name).join(', ')}</div>;
                     },
                 },
             }}

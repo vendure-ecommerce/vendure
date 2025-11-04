@@ -38,6 +38,7 @@ export const reviewList: DashboardRouteDefinition = {
         id: 'reviews',
         url: '/reviews',
         title: 'Product Reviews',
+        requiresPermission: ['ReadCatalog'],
     },
     path: '/reviews',
     loader: () => ({
