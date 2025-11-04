@@ -86,3 +86,62 @@ jobs:
                   cd $HOME/install/test-app
                   npm run dev &
                   node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
+                      - name: Copy files (Windows)
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                cd ~/install/test-app
+                New-Item -ItemType Directory -Force -Path src/plugins/test-plugin
+                Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" -Destination "./vite.config.mts"
+                Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/*" -Destination "src/plugins/test-plugin/" -Recurse -Force
+                Copy-Item "$env:GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" -Destination "./setup-test-plugin.js"
+            - name: Copy files (Unix)
+              if: runner.os != 'Windows'
+              run: |
+                cd ~/install/test-app
+                mkdir -p src/plugins/test-plugin
+                cp "$GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts" ./vite.config.mts
+                cp -r "$GITHUB_WORKSPACE/.github/workflows/scripts/test-plugin/." src/plugins/test-plugin/
+                cp "$GITHUB_WORKSPACE/.github/workflows/scripts/setup-test-plugin.js" ./setup-test-plugin.js
+            - name: Run setup script
+              shell: bash
+              run: |
+                cd ~/install/test-app
+                node setup-test-plugin.js
+            - name: Check SWC version
+              shell: bash
+              run: |
+                cd ~/install/test-app
+                npm ls @swc/core
+            - name: Install Playwright
+              run: |
+                cd $GITHUB_WORKSPACE
+                npm install playwright
+                npx playwright install-deps
+                npx playwright install chromium
+            - name: Start dashboard and run tests
+              run: |
+                cd ~/install/test-app
+                # start the dev server in the background
+                npm run dev &
+                DEV_PID=$!
+                # Wait a moment for it to start
+                sleep 5
+                # Start the dashboard in the background
+                npx vite --port 5173 &
+                DASHBOARD_PID=$!
+                # Wait a moment for it to start
+                sleep 5
+                # Run the dashboard tests
+                node $GITHUB_WORKSPACE/.github/workflows/scripts/dashboard-tests.js
+                # Clean up dashboard process
+                kill $DASHBOARD_PID 2>/dev/null || true
+                # Clean up dev server process
+                kill $DEV_PID 2>/dev/null || true
+            - name: Upload dashboard test screenshots
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                name: dashboard-test-screenshots-${{ matrix.os }}-${{ matrix.node-version }}
+                path: /tmp/dashboard-test-*.png
+                retention-days: 28
