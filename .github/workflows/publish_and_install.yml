@@ -87,6 +87,7 @@ jobs:
                   npm run dev &
                   node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
                       - name: Copy files (Windows)
+            - name: Copy files (Windows)
               if: runner.os == 'Windows'
               shell: pwsh
               run: |
