@@ -110,6 +110,7 @@ function createBaseEntityConfig(
         placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
+            [searchField]: { contains: term },
         }),
     } as const;
 }
@@ -611,7 +612,7 @@ export function DefaultRelationInput({
                 onBlur={onBlur}
                 name={name}
                 ref={ref}
-                value={value ?? null}
+                value={value}
                 onChange={onChange}
                 config={config}
                 disabled={disabled}
