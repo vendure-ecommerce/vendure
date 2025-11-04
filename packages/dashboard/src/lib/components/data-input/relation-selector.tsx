@@ -344,7 +344,7 @@ export function RelationSelector<T>({
         } else {
             // Clear cache for single select
             setSelectedItemsCache([]);
-            onChange('');
+            onChange(null);
         }
     };
 
