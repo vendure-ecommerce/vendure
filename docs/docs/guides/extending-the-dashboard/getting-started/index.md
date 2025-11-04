@@ -98,8 +98,8 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
 {
     "compilerOptions": {
         "composite": true,
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "jsx": "react-jsx",
         "paths": {
             // Import alias for the GraphQL types

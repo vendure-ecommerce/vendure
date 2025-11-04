@@ -18,3 +18,6 @@ export * from './relation-selector.js';
 
 // Slug input component
 export * from './slug-input.js';
+
+// String list input component
+export * from './string-list-input.js';

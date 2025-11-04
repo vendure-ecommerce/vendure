@@ -60,7 +60,7 @@ const awesomeClient = new AwesomeGraphQLClient({
             credentials: 'include',
             mode: 'cors',
         }).then(res => {
-            const authToken = res.headers.get('vendure-auth-token');
+            const authToken = res.headers.get(uiConfig.api.authTokenHeaderKey);
             if (authToken) {
                 localStorage.setItem(LS_KEY_SESSION_TOKEN, authToken);
             }

@@ -95,6 +95,7 @@ export function CreateProductVariantsDialog({
                     const name = variant.options.length
                         ? `${productName} ${variant.options.map(option => option.value).join(' ')}`
                         : productName;
+
                     return {
                         productId,
                         sku: variant.sku,

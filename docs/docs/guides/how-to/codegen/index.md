@@ -16,7 +16,7 @@ directory.
 :::
 
 :::note
-This guide is for adding codegen to your Vendure plugins & Admin UI extensions. For a guide on adding codegen to your storefront, see the [Storefront Codegen](/guides/storefront/codegen/) guide.
+This guide is for adding codegen to your Vendure plugins. For a guide on adding codegen to your storefront, see the [Storefront Codegen](/guides/storefront/codegen/) guide.
 :::
 
 ## Installation
@@ -152,6 +152,11 @@ export class OrganizationService {
 ```
 
 ## Codegen for Admin UI extensions
+
+:::warning Deprecated
+This section refers to the deprecated Angular-based Admin UI. The new React-based Dashboard has built-in graphql type safety
+and does not require additional setup.
+:::
 
 When you create Admin UI extensions, very often those UI components will be making API calls to the Admin API. In this case, you can use codegen to generate the types for those API calls.
 
