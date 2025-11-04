@@ -71,14 +71,15 @@ interface DataTableBulkActionItemProps {
 
 ## DataTableBulkActionItem
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table-bulk-action-item.tsx" sourceLine="66" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table-bulk-action-item.tsx" sourceLine="67" packageName="@vendure/dashboard" since="3.4.0" />
 
 A component that should be used to implement any bulk actions for list pages & data tables.
 
 *Example*
 
 ```tsx
-import { DataTableBulkActionItem, Trans } from '@vendure/dashboard';
+import { Trans } from '@lingui/react/macro';
+import { DataTableBulkActionItem, BulkActionComponent } from '@vendure/dashboard';
 import { Check } from 'lucide-react';
 
 export const MyBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
