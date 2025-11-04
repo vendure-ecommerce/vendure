@@ -302,23 +302,24 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
         <div className={cn('w-full space-y-4', className, '@container/layout')}>
             {isDesktop ? (
                 <div className="grid grid-cols-1 gap-4 @3xl/layout:grid-cols-4">
-                    {finalChildArray.map(child => {
-                        if(isPageBlock(child)) {
+                    {finalChildArray.map((child, index) => {
+                        const key = child.props?.blockId ?? `block-${index}`;
+                        if(isPageBlock(child )) {
                             if (isOfType(child, FullWidthPageBlock)) {
                                 return (
-                                    <div key={child.key} className="@md/layout:col-span-5 space-y-4">{child}</div>
+                                    <div key={key} className="@md/layout:col-span-5 space-y-4">{child}</div>
                                 );
                             }
 
                             if (child.props.column === 'main') {
                                 return (
-                                    <div key={child.key} className="@3xl/layout:col-span-3 space-y-4">{child}</div>
+                                    <div key={key} className="@3xl/layout:col-span-3 space-y-4">{child}</div>
                                 )
                             }
 
                             if (child.props.column === 'side') {
                                 return (
-                                    <div key={child.key} className="@3xl/layout:col-span-1 space-y-4">{child}</div>
+                                    <div key={key} className="@3xl/layout:col-span-1 space-y-4">{child}</div>
                                 )
                             }
                         }
