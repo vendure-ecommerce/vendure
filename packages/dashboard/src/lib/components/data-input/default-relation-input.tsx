@@ -110,7 +110,6 @@ function createBaseEntityConfig(
         placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
-            [searchField]: { contains: term },
         }),
     } as const;
 }
