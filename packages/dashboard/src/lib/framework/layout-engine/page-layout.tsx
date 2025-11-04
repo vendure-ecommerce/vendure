@@ -255,12 +255,21 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                 block => block.location.position.order === 'replace',
             )
 
+            let childBlockInserted = false;
             if (matchingExtensionBlocks.length > 0) {
-                arrangedExtensionBlocks.forEach((extensionBlock, index) => {
+                for (const extensionBlock of arrangedExtensionBlocks) {
+
                     let extensionBlockShouldRender = true;
                     if (typeof extensionBlock?.shouldRender === 'function') {
                         extensionBlockShouldRender = extensionBlock.shouldRender(page);
                     }
+
+                    // Insert child block before the first non-"before" block
+                    if (!childBlockInserted && !replacementBlockExists && extensionBlock.location.position.order !== 'before') {
+                        finalChildArray.push(childBlock)
+                        childBlockInserted = true
+                      }
+
                     const ExtensionBlock =
                         extensionBlock.component && extensionBlockShouldRender ? (
                             <PageBlock
@@ -274,12 +283,15 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                         ) : undefined;
 
                     if(extensionBlockShouldRender && ExtensionBlock) {
-                        if(!replacementBlockExists && index === beforeExtensionBlocksLength) {
-                            finalChildArray.push(childBlock)
-                        }
                         finalChildArray.push(ExtensionBlock)
                     }
-            })
+                }
+
+                // If all blocks were "before", insert child block at the end
+                if (!childBlockInserted && !replacementBlockExists) {
+                    finalChildArray.push(childBlock)
+                }
+
             } else {
                 finalChildArray.push(childBlock);
             }
