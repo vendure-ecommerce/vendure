@@ -4,6 +4,7 @@ showtoc: true
 ---
 
 
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -39,7 +40,7 @@ Settings fields share some similarities to custom fields, but the important diff
 
 - Custom fields are attached to particular Vendure entities. Settings fields are not.
 - Defining a custom field adds a new column in the database, whereas settings fields do not.
-- Custom fields are reflected in corresponding GraphQL APIs and in the Admin UI & Dashboard UIs.
+- Custom fields are reflected in corresponding GraphQL APIs and in the Dashboard UI.
 - Custom fields are statically typed, whereas settings fields store any kind of JSON-serializable data.
 
 Settings fields are best suited to storing config-like values that are global in scope, or which

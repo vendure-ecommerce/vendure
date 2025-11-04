@@ -13,7 +13,7 @@ These are the major parts of a Vendure application:
 
 * **Server**: The Vendure server is the part that handles requests coming in to the GraphQL APIs. It serves both the [Shop API](/reference/graphql-api/shop/queries) and [Admin API](/reference/graphql-api/admin/queries), and can send jobs to the Job Queue to be processed by the Worker.
 * **Worker**: The Worker runs in the background and deals with tasks such as updating the search index, sending emails, and other tasks which may be long-running, resource-intensive or require retries.
-* **Admin UI**: The Admin UI is how shop administrators manage orders, customers, products, settings and so on. It is not actually part of the Vendure core, but is provided as a plugin (the [AdminUiPlugin](/reference/core-plugins/admin-ui-plugin/)) which is installed for you in a standard Vendure installation. The Admin UI can be further extended to support custom functionality, as detailed in the [Extending the Admin UI](/guides/extending-the-admin-ui/getting-started/) section
+* **Dashboard**: The Dashboard is how shop administrators manage orders, customers, products, settings and so on. The Dashboard can be further extended to support custom functionality, as detailed in the [Extending the Dashboard](/guides/extending-the-dashboard/extending-overview/) section
 * **Storefront**: With headless commerce, you are free to implement your storefront exactly as you see fit, unconstrained by the back-end, using any technologies that you like. To make this process easier, we have created a number of [storefront starter kits](/guides/storefront/storefront-starters/), as well as [guides on building a storefront](/guides/storefront/connect-api/).
 
 ![./Vendure_docs-architecture.webp](./Vendure_docs-architecture.webp) 
@@ -26,7 +26,7 @@ Vendure is built on the following open-source technologies:
 - **TypeScript & Node.js**: Vendure is written in [TypeScript](https://www.typescriptlang.org/) and runs on [Node.js](https://nodejs.org).
 - **NestJS**: The underlying framework is [NestJS](https://nestjs.com/), which is a full-featured application development framework for Node.js. Building on NestJS means that Vendure benefits from the well-defined structure and rich feature-set and ecosystem that NestJS provides.
 - **GraphQL**: The Shop and Admin APIs use [GraphQL](https://graphql.org/), which is a modern API technology which allows you to specify the exact data that your client application needs in a convenient and type-safe way. Internally we use [Apollo Server](https://www.apollographql.com/docs/apollo-server/) to power our GraphQL APIs.
-- **Angular**: The Admin UI is built with [Angular](https://angular.io/), a popular, stable application framework from Google. Note that you do not need to know Angular to use Vendure, and UI extensions can even be written in the front-end framework of your choice, such as React or Vue.
+- **React**: The Dashboard is built with [React](https://react.dev/), as well as other popular front-end technologies such as TailwindCSS.
 
 ## Design principles
 

@@ -11,6 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
     stories: ['./stories/Intro.mdx', './stories/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+    staticDirs: ['./assets'],
     addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
     framework: {
         name: '@storybook/react-vite',

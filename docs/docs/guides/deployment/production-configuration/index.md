@@ -102,7 +102,7 @@ Another option, if you wish to stick with integer IDs, is to create a custom [En
 
 ## Database Timezone
 
-Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Admin UI as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
+Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Dashboard as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
 
 You can check the timezone in **MySQL/MariaDB** by executing:
 
