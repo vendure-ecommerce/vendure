@@ -76,8 +76,8 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Camera Lens', 'Instant Camera', 'SLR Camera'].sort(),
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Camera Lens', 'Instant Camera', 'SLR Camera'].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -148,8 +148,10 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort(),
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort((a, b) =>
+            a.localeCompare(b),
+        ),
     );
 }
 
@@ -167,7 +169,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Bonsai Tree',
             'Bonsai Tree (Ch2)',
@@ -183,7 +185,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             'Spiky Cactus',
             'Tripod',
             'USB Cable',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -197,7 +199,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -209,7 +211,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             'Camera Lens',
             'Tripod',
             'SLR Camera',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -225,7 +227,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -237,7 +239,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             'Camera Lens',
             'Tripod',
             'SLR Camera',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -253,8 +255,8 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -268,7 +270,7 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual([
         'Bonsai Tree',
         'Bonsai Tree (Ch2)',
         'Orchid',
@@ -286,7 +288,7 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual([
         'Bonsai Tree',
         'Bonsai Tree (Ch2)',
         'Orchid',
@@ -345,12 +347,9 @@ async function testCollectionEdgeCases(
         },
     });
     // Should still return Plants collection products, de-duplicated
-    expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Bonsai Tree (Ch2)',
-        'Orchid',
-        'Spiky Cactus',
-    ]);
+    expect(
+        resultWithDuplicates.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b)),
+    ).toEqual(['Bonsai Tree', 'Bonsai Tree (Ch2)', 'Orchid', 'Spiky Cactus']);
 
     // Test with non-existent collection - should return no results
     const resultNonExistent = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
