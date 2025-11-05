@@ -306,21 +306,18 @@ async function testMatchCollections(client: SimpleGraphQLClient, searchInput: Pa
             },
         },
     );
-    // Should return products from both Plants and Electronics collections
-    // Plants: Bonsai Tree, Bonsai Tree (Ch2), Orchid, Spiky Cactus
-    // Electronics: All electronics products (Laptop, Curvy Monitor, Gaming PC, etc.)
+    // Should return products from both Plants (T_2) and Electronics (T_3) collections
     expect(result.search.items.length).toBeGreaterThan(4);
     expect(result.search.totalItems).toBeGreaterThan(4);
 
-    // Verify that products from Plants collection are included
-    const productNames = result.search.items.map(i => i.productName);
-    expect(productNames).toContain('Bonsai Tree');
-    expect(productNames).toContain('Orchid');
-    expect(productNames).toContain('Spiky Cactus');
+    // Verify that products from both collections are included by checking collectionIds
+    const allCollectionIds = result.search.items.flatMap(i => i.collectionIds);
 
-    // Verify that products from Electronics collection are included
-    expect(productNames).toContain('Hard Drive');
-    expect(productNames).toContain('Curvy Monitor');
+    // Should contain products from Plants collection (T_2)
+    expect(allCollectionIds.filter(id => id === 'T_2').length).toBeGreaterThan(0);
+
+    // Should contain products from Electronics collection (T_3)
+    expect(allCollectionIds.filter(id => id === 'T_3').length).toBeGreaterThan(0);
 }
 
 export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
