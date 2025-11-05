@@ -294,17 +294,17 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
     ]);
 }
 
-export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
+async function testMatchCollections(client: SimpleGraphQLClient, searchInput: Partial<SearchInput>) {
     const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
-                collectionIds: ['T_2', 'T_3'],
                 groupByProduct: true,
+                ...searchInput,
             },
         },
     );
-    // Should return products from both Plants (T_2) and Electronics (T_3) collections
+    // Should return products from both Plants and Electronics collections
     // Plants: Bonsai Tree, Bonsai Tree (Ch2), Orchid, Spiky Cactus
     // Electronics: All electronics products (Laptop, Curvy Monitor, Gaming PC, etc.)
     expect(result.search.items.length).toBeGreaterThan(4);
@@ -312,7 +312,6 @@ export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
 
     // Verify that products from Plants collection are included
     const productNames = result.search.items.map(i => i.productName);
-
     expect(productNames).toContain('Bonsai Tree');
     expect(productNames).toContain('Orchid');
     expect(productNames).toContain('Spiky Cactus');
@@ -320,97 +319,67 @@ export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
     // Verify that products from Electronics collection are included
     expect(productNames).toContain('Hard Drive');
     expect(productNames).toContain('Curvy Monitor');
+}
+
+export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
+    return testMatchCollections(client, { collectionIds: ['T_2', 'T_3'] });
 }
 
 export async function testMatchCollectionSlugs(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    return testMatchCollections(client, { collectionSlugs: ['plants', 'electronics'] });
+}
+
+async function testCollectionEdgeCases(
+    client: SimpleGraphQLClient,
+    duplicateInput: Partial<SearchInput>,
+    nonExistentInput: Partial<SearchInput>,
+) {
+    // Test with duplicates - should handle gracefully
+    const resultWithDuplicates = await client.query<
+        SearchProductsShopQuery,
+        SearchProductsShopQueryVariables
+    >(SEARCH_PRODUCTS_SHOP, {
+        input: {
+            groupByProduct: true,
+            ...duplicateInput,
+        },
+    });
+    // Should still return Plants collection products, de-duplicated
+    expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
+        'Bonsai Tree',
+        'Bonsai Tree (Ch2)',
+        'Orchid',
+        'Spiky Cactus',
+    ]);
+
+    // Test with non-existent collection - should return no results
+    const resultNonExistent = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
-                collectionSlugs: ['plants', 'electronics'],
                 groupByProduct: true,
+                ...nonExistentInput,
             },
         },
     );
-    // Should return products from both Plants and Electronics collections
-    expect(result.search.items.length).toBeGreaterThan(4);
-    expect(result.search.totalItems).toBeGreaterThan(4);
-
-    // Verify that products from Plants collection are included
-    const productNames = result.search.items.map(i => i.productName);
-    expect(productNames).toContain('Bonsai Tree');
-    expect(productNames).toContain('Orchid');
-    expect(productNames).toContain('Spiky Cactus');
-
-    // Verify that products from Electronics collection are included
-    expect(productNames).toContain('Hard Drive');
-    expect(productNames).toContain('Curvy Monitor');
+    expect(resultNonExistent.search.items).toEqual([]);
+    expect(resultNonExistent.search.totalItems).toBe(0);
 }
 
 export async function testCollectionIdsEdgeCases(client: SimpleGraphQLClient) {
-    // Test with duplicate IDs - should handle gracefully
-    const resultWithDuplicates = await client.query<
-        SearchProductsShopQuery,
-        SearchProductsShopQueryVariables
-    >(SEARCH_PRODUCTS_SHOP, {
-        input: {
-            collectionIds: ['T_2', 'T_2', 'T_2'],
-            groupByProduct: true,
-        },
-    });
-    // Should still return Plants collection products, de-duplicated
-    expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Bonsai Tree (Ch2)',
-        'Orchid',
-        'Spiky Cactus',
-    ]);
-
-    // Test with non-existent collection ID - should return no results
-    const resultNonExistent = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
-        SEARCH_PRODUCTS_SHOP,
-        {
-            input: {
-                collectionIds: ['T_999'],
-                groupByProduct: true,
-            },
-        },
+    return testCollectionEdgeCases(
+        client,
+        { collectionIds: ['T_2', 'T_2', 'T_2'] },
+        { collectionIds: ['T_999'] },
     );
-    expect(resultNonExistent.search.items).toEqual([]);
-    expect(resultNonExistent.search.totalItems).toBe(0);
 }
 
 export async function testCollectionSlugsEdgeCases(client: SimpleGraphQLClient) {
-    // Test with duplicate slugs - should handle gracefully
-    const resultWithDuplicates = await client.query<
-        SearchProductsShopQuery,
-        SearchProductsShopQueryVariables
-    >(SEARCH_PRODUCTS_SHOP, {
-        input: {
-            collectionSlugs: ['plants', 'plants', 'plants'],
-            groupByProduct: true,
-        },
-    });
-    // Should still return Plants collection products, de-duplicated
-    expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Bonsai Tree (Ch2)',
-        'Orchid',
-        'Spiky Cactus',
-    ]);
-
-    // Test with non-existent collection slug - should return no results
-    const resultNonExistent = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
-        SEARCH_PRODUCTS_SHOP,
-        {
-            input: {
-                collectionSlugs: ['non-existent-collection'],
-                groupByProduct: true,
-            },
-        },
+    return testCollectionEdgeCases(
+        client,
+        { collectionSlugs: ['plants', 'plants', 'plants'] },
+        { collectionSlugs: ['non-existent-collection'] },
     );
-    expect(resultNonExistent.search.items).toEqual([]);
-    expect(resultNonExistent.search.totalItems).toBe(0);
 }
 
 export async function testSinglePrices(client: SimpleGraphQLClient) {
