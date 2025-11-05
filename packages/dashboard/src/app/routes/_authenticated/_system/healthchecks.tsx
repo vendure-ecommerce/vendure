@@ -1,12 +1,12 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { Page, PageActionBar, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
+import { getApiBaseUrl } from '@/vdb/utils/config-utils.js';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';
 import { CheckCircle2Icon, CircleXIcon } from 'lucide-react';
-import { uiConfig } from 'virtual:vendure-ui-config';
 
 export const Route = createFileRoute('/_authenticated/_system/healthchecks')({
     component: HealthchecksPage,
@@ -28,11 +28,7 @@ function HealthchecksPage() {
     const { data, refetch, dataUpdatedAt } = useQuery({
         queryKey: ['healthchecks'],
         queryFn: async () => {
-            const host =
-                uiConfig.api.host !== 'auto'
-                    ? uiConfig.api.host
-                    : `${window.location.protocol}//${window.location.hostname}`;
-            const schemeAndHost = host + (uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '');
+            const schemeAndHost = getApiBaseUrl();
 
             const res = await fetch(`${schemeAndHost}/health`);
             return res.json() as Promise<HealthcheckResponse>;
