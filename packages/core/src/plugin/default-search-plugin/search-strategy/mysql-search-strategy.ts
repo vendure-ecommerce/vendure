@@ -159,8 +159,16 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } =
-            input;
+        const {
+            term,
+            facetValueFilters,
+            facetValueIds,
+            facetValueOperator,
+            collectionId,
+            collectionSlug,
+            collectionIds,
+            collectionSlugs,
+        } = input;
 
         if (term && term.length > this.minTermLength) {
             const safeTerm = term
@@ -261,6 +269,30 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         if (collectionSlug) {
             qb.andWhere('FIND_IN_SET (:collectionSlug, si.collectionSlugs)', { collectionSlug });
+        }
+        if (collectionIds?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const id of Array.from(new Set(collectionIds))) {
+                        const placeholder = createPlaceholderFromId(id);
+                        qb1.orWhere(`FIND_IN_SET(:${placeholder}, si.collectionIds)`, {
+                            [placeholder]: id,
+                        });
+                    }
+                }),
+            );
+        }
+        if (collectionSlugs?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const slug of Array.from(new Set(collectionSlugs))) {
+                        const placeholder = createPlaceholderFromId(slug);
+                        qb1.orWhere(`FIND_IN_SET(:${placeholder}, si.collectionSlugs)`, {
+                            [placeholder]: slug,
+                        });
+                    }
+                }),
+            );
         }
 
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
