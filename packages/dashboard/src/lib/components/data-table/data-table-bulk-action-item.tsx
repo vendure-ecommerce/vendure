@@ -39,7 +39,8 @@ export interface DataTableBulkActionItemProps {
  *
  * @example
  * ```tsx
- * import { DataTableBulkActionItem, Trans } from '\@vendure/dashboard';
+ * import { Trans } from '@lingui/react/macro';
+ * import { DataTableBulkActionItem, BulkActionComponent } from '\@vendure/dashboard';
  * import { Check } from 'lucide-react';
  *
  * export const MyBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
