@@ -1,5 +1,5 @@
 import path from 'path';
-import { pathToFileURL } from 'url';
+import { pathToFileURL } from 'node:url';
 import { Plugin } from 'vite';
 
 import { CompileResult } from './utils/compiler.js';
