@@ -13,7 +13,7 @@ import {
     TransactionalConnection,
 } from '@vendure/core';
 
-import { getGateway } from './braintree-common';
+import { getGateway, lookupMerchantAccountIdByCurrency } from './braintree-common';
 import { braintreePaymentMethodHandler } from './braintree.handler';
 import { BRAINTREE_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
@@ -45,13 +45,18 @@ export class BraintreeResolver {
         }
         const order = await this.orderService.findOne(ctx, sessionOrder.id);
         if (order) {
-            const customerId = order.customer?.customFields.braintreeCustomerId ?? undefined;
+            const customerId = order.customer?.customFields?.braintreeCustomerId ?? undefined;
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
             try {
                 let result = await gateway.clientToken.generate({
                     customerId: includeCustomerId === false ? undefined : customerId,
+                    merchantAccountId: lookupMerchantAccountIdByCurrency(
+                        this.options.merchantAccountIds,
+                        order.currencyCode,
+                    ),
                 });
+
                 if (result.success === true) {
                     return result.clientToken;
                 } else {
@@ -65,7 +70,13 @@ export class BraintreeResolver {
                                 await this.connection.getRepository(ctx, Customer).save(order.customer);
                             }
                         }
-                        result = await gateway.clientToken.generate({ customerId: undefined });
+                        result = await gateway.clientToken.generate({
+                            customerId: undefined,
+                            merchantAccountId: lookupMerchantAccountIdByCurrency(
+                                this.options.merchantAccountIds,
+                                order.currencyCode,
+                            ),
+                        });
                         if (result.success === true) {
                             return result.clientToken;
                         }

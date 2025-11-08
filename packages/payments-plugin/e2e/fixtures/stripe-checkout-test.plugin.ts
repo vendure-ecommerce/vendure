@@ -18,8 +18,8 @@ export class StripeTestCheckoutController {
   <title>Checkout</title>
   <script src="https://js.stripe.com/v3/"></script>
 </head>
-<html>
 
+<html>
 <form id="payment-form">
   <div id="payment-element">
     <!-- Elements will create form elements here -->

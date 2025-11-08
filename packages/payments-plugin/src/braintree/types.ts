@@ -1,4 +1,4 @@
-import { PaymentMetadata } from '@vendure/core';
+import { CurrencyCode, PaymentMetadata } from '@vendure/core';
 import { ConfigArgValues } from '@vendure/core/dist/common/configurable-operation';
 import '@vendure/core/dist/entity/custom-entity-fields';
 import { Environment, Transaction } from 'braintree';
@@ -6,6 +6,7 @@ import { Environment, Transaction } from 'braintree';
 import { braintreePaymentMethodHandler } from './braintree.handler';
 
 export type PaymentMethodArgsHash = ConfigArgValues<(typeof braintreePaymentMethodHandler)['args']>;
+export type BraintreeMerchantAccountIds = Partial<Record<CurrencyCode, string>>;
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Stripe
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
@@ -96,5 +97,6 @@ export interface BraintreePluginOptions {
      *
      * @since 1.7.0
      */
+    merchantAccountIds?: BraintreeMerchantAccountIds;
     extractMetadata?: (transaction: Transaction) => PaymentMetadata;
 }

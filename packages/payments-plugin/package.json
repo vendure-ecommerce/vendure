@@ -20,7 +20,8 @@
         "lint": "eslint --fix .",
         "ci": "npm run build",
         "dev-server:mollie": "npm run build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
-        "dev-server:stripe": "npm run build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
+        "dev-server:stripe": "npm run build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts",
+        "dev-server:braintree": "npm run build && DB=sqlite node -r ts-node/register e2e/braintree-dev-server.ts"
     },
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
