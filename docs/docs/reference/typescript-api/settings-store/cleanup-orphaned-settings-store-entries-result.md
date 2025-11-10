@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CleanupOrphanedSettingsStoreEntriesResult
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="278" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="308" packageName="@vendure/core" since="3.4.0" />
 
 Result of a cleanup operation for orphaned settings store entries.
 

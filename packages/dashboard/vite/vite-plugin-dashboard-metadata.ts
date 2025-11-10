@@ -1,4 +1,5 @@
 import path from 'path';
+import { pathToFileURL } from 'node:url';
 import { Plugin } from 'vite';
 
 import { CompileResult } from './utils/compiler.js';
@@ -63,7 +64,7 @@ export function dashboardMetadataPlugin(): Plugin {
                     export async function runDashboardExtensions() {
                         ${pluginsWithExtensions
                             .map(extension => {
-                                return `await import(\`${extension}\`);`;
+                                return `await import(\`${pathToFileURL(extension)}\`);`;
                             })
                             .join('\n')}
                 }`;

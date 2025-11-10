@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { modifyOrderDocument, orderDetailDocument } from '../orders.graphql.js';
 
@@ -42,7 +42,8 @@ export function OrderModificationSummary({
             if (
                 orig &&
                 (adj.quantity !== orig.quantity ||
-                    JSON.stringify(adj.customFields) !== JSON.stringify((orig as any).customFields))
+                    JSON.stringify(adj.customFields) !== JSON.stringify((orig as any).customFields)) &&
+                adj.quantity > 0
             ) {
                 return {
                     orderLineId: adj.orderLineId,

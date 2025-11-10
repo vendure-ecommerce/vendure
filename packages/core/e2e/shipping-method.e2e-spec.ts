@@ -10,7 +10,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 
 import { SHIPPING_METHOD_FRAGMENT } from './graphql/fragments';
@@ -131,6 +131,7 @@ describe('ShippingMethod resolver', () => {
                     {
                         ui: {
                             component: 'number-form-input',
+                            min: 0,
                             suffix: '%',
                         },
                         description: null,

@@ -109,7 +109,7 @@ export const config: VendureConfig = {
 
 An important factor when working with TypeORM subscribers is that they are very low-level and require some understanding of the Vendure schema.
 
-For example consider the `ProductSubscriber` above. If an admin changes a product's name in the Admin UI, this subscriber **will not fire**. The reason is that the `name` property is actually stored on the `ProductTranslation` entity, rather than on the `Product` entity.
+For example consider the `ProductSubscriber` above. If an admin changes a product's name in the Dashboard, this subscriber **will not fire**. The reason is that the `name` property is actually stored on the `ProductTranslation` entity, rather than on the `Product` entity.
 
 So if your subscribers do not seem to work as expected, check your database schema and make sure you are really targeting the correct entity which has the property that you are interested in.
 

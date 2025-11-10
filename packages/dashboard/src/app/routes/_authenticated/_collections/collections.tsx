@@ -4,7 +4,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
@@ -13,6 +13,7 @@ import { ResultOf } from 'gql.tada';
 import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { collectionListDocument } from './collections.graphql.js';
 import {
@@ -82,7 +83,7 @@ function CollectionListPage() {
         <>
             <ListPage
                 pageId="collection-list"
-                title="Collections"
+                title={<Trans>Collections</Trans>}
                 listQuery={collectionListDocument}
                 transformVariables={input => {
                     const filterTerm = input.options?.filter?.name?.contains;
@@ -96,13 +97,17 @@ function CollectionListPage() {
                 }}
                 customizeColumns={{
                     name: {
-                        header: 'Collection Name',
+                        meta: {
+                            // This column needs the following fields to always be available
+                            // in order to correctly render.
+                            dependencies: ['children', 'breadcrumbs'],
+                        },
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;
                             return (
                                 <div
-                                    style={{ marginLeft: (row.original.breadcrumbs.length - 2) * 20 + 'px' }}
+                                    style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
                                     className="flex gap-2 items-center"
                                 >
                                     <Button
@@ -118,6 +123,9 @@ function CollectionListPage() {
                                 </div>
                             );
                         },
+                    },
+                    description: {
+                        cell: RichTextDescriptionCell,
                     },
                     breadcrumbs: {
                         cell: ({ cell }) => {
@@ -136,14 +144,14 @@ function CollectionListPage() {
                         },
                     },
                     productVariants: {
-                        header: 'Contents',
+                        header: () => <Trans>Contents</Trans>,
                         cell: ({ row }) => {
                             return (
                                 <CollectionContentsSheet
                                     collectionId={row.original.id}
                                     collectionName={row.original.name}
                                 >
-                                    <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                                    <Trans>{row.original.productVariants?.totalItems} variants</Trans>
                                 </CollectionContentsSheet>
                             );
                         },
@@ -200,6 +208,7 @@ function CollectionListPage() {
                     position: false,
                     parentId: false,
                     children: false,
+                    description: false,
                 }}
                 onSearchTermChange={searchTerm => {
                     return {

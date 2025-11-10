@@ -116,7 +116,7 @@ Whether to use the asset's focal point in crop mode.
 
 <MemberInfo kind="property" type={`React.ReactNode`}   />
 
-The fallback to show if no asset is provided. If no fallback is provided, 
+The fallback to show if no asset is provided. If no fallback is provided,
 a default placeholder will be shown.
 ### ref
 

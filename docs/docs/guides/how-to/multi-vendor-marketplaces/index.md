@@ -18,7 +18,7 @@ All the concepts presented here have been implemented in our [example multi-vend
 **Note:** the [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin) is for educational purposes only, and for the sake of clarity leaves out several parts that would be required in a production-ready solution, such as email verification and setup of a real payment solution.
 :::
 
-![The Admin UI Aggregate Order screen](./aggregate-order.webp)
+![The Dashboard Aggregate Order screen](./aggregate-order.webp)
 
 ## Sellers, Channels & Roles
 
@@ -56,7 +56,7 @@ Executing the `registerNewSeller` mutation does the following:
 - Create a [ShippingMethod](/reference/typescript-api/entities/shipping-method) for Bob's shop
 - Create a [StockLocation](/reference/typescript-api/entities/stock-location) for Bob's shop
 
-Bob can now log in to the Admin UI using the provided credentials and begin creating products to sell!
+Bob can now log in to the Dashboard using the provided credentials and begin creating products to sell!
 
 ### Keeping prices synchronized
 

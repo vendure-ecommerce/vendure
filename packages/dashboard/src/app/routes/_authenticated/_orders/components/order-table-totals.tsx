@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from '@/vdb/components/ui/table.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Order } from '../utils/order-types.js';
 import { MoneyGrossNet } from './money-gross-net.js';
 
@@ -10,7 +10,6 @@ export interface OrderTableTotalsProps {
 
 export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTotalsProps>) {
     const currencyCode = order.currencyCode;
-
     return (
         <>
             {order.surcharges?.length > 0

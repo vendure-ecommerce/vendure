@@ -233,7 +233,7 @@ describe(
                 vi.resetModules();
 
                 // Mock the loadVendureConfigFile helper to return a config with an invalid database path
-                vi.doMock('../src/commands/migrate/load-vendure-config-file', async () => {
+                vi.doMock('../src/shared/load-vendure-config-file', async () => {
                     const { config: realConfig }: { config: any } = await vi.importActual(
                         path.join(TEST_PROJECT_DIR, 'src', 'vendure-config.ts'),
                     );

@@ -9,8 +9,8 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Save } from 'lucide-react';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ export function AddOptionGroupDialog({
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const form = useForm<OptionGroup>({
         resolver: zodResolver(optionGroupSchema),
@@ -79,12 +79,12 @@ export function AddOptionGroupDialog({
                 });
             }
 
-            toast.success(i18n.t('Successfully created option group'));
+            toast.success(t`Successfully created option group`);
             setOpen(false);
             onSuccess?.();
         } catch (error) {
-            toast.error(i18n.t('Failed to create option group'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create option group`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         }
     };

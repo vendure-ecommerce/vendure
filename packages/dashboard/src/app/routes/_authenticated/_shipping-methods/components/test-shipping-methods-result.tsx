@@ -1,6 +1,6 @@
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Check } from 'lucide-react';
 import { MetadataBadges } from './metadata-badges.js';
 import { PriceDisplay } from './price-display.js';
@@ -26,13 +26,13 @@ interface ShippingEligibilityTestResultProps {
 }
 
 export function TestShippingMethodsResult({
-    testResult,
-    okToRun,
-    testDataUpdated,
-    hasTestedOnce,
-    onRunTest,
-    loading = false,
-}: Readonly<ShippingEligibilityTestResultProps>) {
+                                              testResult,
+                                              okToRun,
+                                              testDataUpdated,
+                                              hasTestedOnce,
+                                              onRunTest,
+                                              loading = false,
+                                          }: Readonly<ShippingEligibilityTestResultProps>) {
     const { activeChannel } = useChannel();
     const currencyCode = activeChannel?.defaultCurrencyCode ?? 'USD';
     const hasResults = testResult && testResult.length > 0;

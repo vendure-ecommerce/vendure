@@ -13,7 +13,8 @@ import {
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
@@ -64,9 +65,10 @@ export function OrderDetailShared({
     titleSlot,
     beforeOrderTable,
 }: Readonly<OrderDetailSharedProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const { getTranslatedOrderState } = useDynamicTranslations();
 
     const { form, submitHandler, entity, refreshEntity } = useDetailPage({
         pageId,
@@ -80,11 +82,11 @@ export function OrderDetailShared({
         },
         params: { id: orderId },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated order'));
+            toast(t`Successfully updated order`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update order'), {
+            toast(t`Failed to update order`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -102,12 +104,12 @@ export function OrderDetailShared({
             return [];
         }
         return entity.nextStates.map((state: string) => ({
-            label: `Transition to ${state}`,
+            label: t`Transition to ${getTranslatedOrderState(state)}`,
             type: getTypeForState(state),
             onClick: async () => {
                 const transitionError = await transitionToState(state);
                 if (transitionError) {
-                    toast(i18n.t('Failed to transition order to state'), {
+                    toast(t`Failed to transition order to state`, {
                         description: transitionError,
                     });
                 } else {
@@ -115,7 +117,7 @@ export function OrderDetailShared({
                 }
             },
         }));
-    }, [entity, transitionToState, i18n]);
+    }, [entity, transitionToState, t]);
 
     if (!entity) {
         return null;
@@ -131,7 +133,7 @@ export function OrderDetailShared({
             await queryClient.invalidateQueries({ queryKey });
             await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
         } catch (error) {
-            toast(i18n.t('Failed to modify order'), {
+            toast(t`Failed to modify order`, {
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         }
@@ -239,7 +241,7 @@ export function OrderDetailShared({
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer ? (
-                        <Button variant="ghost" asChild>
+                        <Button variant="outline" asChild>
                             <Link to={`/customers/${entity.customer.id}`}>
                                 <User className="w-4 h-4" />
                                 {entity.customer.firstName} {entity.customer.lastName}
@@ -253,7 +255,7 @@ export function OrderDetailShared({
                     <div className="mt-4 divide-y">
                         {entity?.shippingAddress && (
                             <div className="pb-6">
-                                <div className="font-medium">
+                                <div className="font-medium mb-6">
                                     <Trans>Shipping address</Trans>
                                 </div>
                                 <OrderAddress address={entity.shippingAddress} />
@@ -261,7 +263,7 @@ export function OrderDetailShared({
                         )}
                         {entity?.billingAddress && (
                             <div className="pt-4">
-                                <div className="font-medium">
+                                <div className="font-medium mb-6">
                                     <Trans>Billing address</Trans>
                                 </div>
                                 <OrderAddress address={entity.billingAddress} />
@@ -291,7 +293,7 @@ export function OrderDetailShared({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
+                        <div className="text-muted-foreground text-sm">
                             <Trans>No fulfillments</Trans>
                         </div>
                     )}

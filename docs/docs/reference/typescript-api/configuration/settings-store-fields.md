@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SettingsStoreFields
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="111" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="141" packageName="@vendure/core" since="3.4.0" />
 
 This is how SettingsStoreFields are defined in the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object.
 

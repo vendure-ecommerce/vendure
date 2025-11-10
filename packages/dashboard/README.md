@@ -110,3 +110,7 @@ when developing dashboard extensions.
 ## Testing
 
 Run `npm run test` to run tests once, or `npx vitest` to run tests in watch mode
+
+## Translations
+
+See [./scripts/translate/README.md](./scripts/translate/README.md)

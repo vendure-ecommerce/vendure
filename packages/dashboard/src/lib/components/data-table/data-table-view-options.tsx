@@ -17,9 +17,11 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>;
@@ -45,6 +47,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 
 export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
     const { setTableSettings } = useUserSettings();
+    const { getTranslatedFieldName } = useDynamicTranslations();
     const page = usePage();
     const columns = table
         .getAllColumns()
@@ -78,12 +81,18 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     return (
         <div className="flex items-center gap-2">
             <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="ml-auto hidden h-8 lg:flex">
-                        <Settings2 />
-                        <Trans>Columns</Trans>
-                    </Button>
-                </DropdownMenuTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+                                <Settings2 />
+                            </Button>
+                        </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <Trans>Column settings</Trans>
+                    </TooltipContent>
+                </Tooltip>
                 <DropdownMenuContent align="end" className="overflow-auto">
                     <ScrollArea className="max-h-[60vh]" type="always">
                         <DndContext
@@ -100,17 +109,19 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                                         <DropdownMenuCheckboxItem
                                             className="capitalize"
                                             checked={column.getIsVisible()}
-                                            onCheckedChange={value => column.toggleVisibility(!!value)}
+                                            onCheckedChange={value => column.toggleVisibility(value)}
                                             onSelect={e => e.preventDefault()}
                                         >
-                                            {column.id}
+                                            {getTranslatedFieldName(column.id)}
                                         </DropdownMenuCheckboxItem>
                                     </SortableItem>
                                 ))}
                             </SortableContext>
                         </DndContext>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleReset}>Reset</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleReset}>
+                            <Trans>Reset</Trans>
+                        </DropdownMenuItem>
                     </ScrollArea>
                 </DropdownMenuContent>
             </DropdownMenu>

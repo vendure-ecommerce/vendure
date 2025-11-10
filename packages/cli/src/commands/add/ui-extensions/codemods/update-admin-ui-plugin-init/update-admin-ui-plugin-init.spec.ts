@@ -9,7 +9,7 @@ import { expectSourceFileContentToMatch } from '../../../../../utilities/testing
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
 
 describe('updateAdminUiPluginInit', () => {
-    it('adds app prop', () => {
+    it('adds app prop', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });

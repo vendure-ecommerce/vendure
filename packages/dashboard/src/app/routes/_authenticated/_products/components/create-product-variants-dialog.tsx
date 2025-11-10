@@ -10,7 +10,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { normalizeString } from '@/vdb/lib/utils.js';
 import { useMutation } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -95,6 +95,7 @@ export function CreateProductVariantsDialog({
                     const name = variant.options.length
                         ? `${productName} ${variant.options.map(option => option.value).join(' ')}`
                         : productName;
+
                     return {
                         productId,
                         sku: variant.sku,

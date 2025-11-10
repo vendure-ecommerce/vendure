@@ -1,4 +1,5 @@
-import { api, SELECTED_CHANNEL_TOKEN_KEY } from '@/vdb/graphql/api.js';
+import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
+import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -15,6 +16,7 @@ const channelFragment = graphql(`
         defaultCurrencyCode
         pricesIncludeTax
         availableLanguageCodes
+        availableCurrencyCodes
     }
 `);
 
@@ -94,7 +96,7 @@ export interface ChannelContext {
  */
 function setChannelTokenInLocalStorage(channelToken: string) {
     try {
-        localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, channelToken);
+        localStorage.setItem(LS_KEY_SELECTED_CHANNEL_TOKEN, channelToken);
     } catch (e) {
         console.error('Failed to store selected channel in localStorage', e);
     }

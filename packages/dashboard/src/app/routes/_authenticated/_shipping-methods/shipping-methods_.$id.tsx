@@ -18,7 +18,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { FulfillmentHandlerSelector } from './components/fulfillment-handler-selector.js';
@@ -52,7 +52,7 @@ function ShippingMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -86,11 +86,9 @@ function ShippingMethodDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             toast.success(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Successfully created shipping method'
-                        : 'Successfully updated shipping method',
-                ),
+                creatingNewEntity
+                    ? t`Successfully created shipping method`
+                    : t`Successfully updated shipping method`,
             );
             resetForm();
             if (creatingNewEntity) {
@@ -99,11 +97,7 @@ function ShippingMethodDetailPage() {
         },
         onError: err => {
             toast.error(
-                i18n.t(
-                    creatingNewEntity
-                        ? 'Failed to create shipping method'
-                        : 'Failed to update shipping method',
-                ),
+                creatingNewEntity ? t`Failed to create shipping method` : t`Failed to update shipping method`,
                 {
                     description: err instanceof Error ? err.message : 'Unknown error',
                 },
@@ -127,7 +121,13 @@ function ShippingMethodDetailPage() {
                     <PermissionGuard requires={['UpdateShippingMethod']}>
                         <Button
                             type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            disabled={
+                                !form.formState.isDirty ||
+                                !form.formState.isValid ||
+                                isPending ||
+                                !checker?.code ||
+                                !calculator?.code
+                            }
                         >
                             {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
@@ -169,7 +169,7 @@ function ShippingMethodDetailPage() {
                         />
                     </DetailFormGrid>
                 </PageBlock>
-                <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                <CustomFieldsPageBlock column="main" entityType="ShippingMethod" control={form.control} />
                 <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
                     <FormFieldWrapper
                         control={form.control}

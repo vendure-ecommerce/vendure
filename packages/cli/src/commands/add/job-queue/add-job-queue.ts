@@ -28,7 +28,7 @@ export const addJobQueueCommand = new CliCommand({
     run: options => addJobQueue(options),
 });
 
-async function addJobQueue(
+export async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;

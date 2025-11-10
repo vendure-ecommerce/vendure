@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LanguageCode
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2264" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2274" packageName="@vendure/common" />
 
 Languages in the form of a ISO 639-1 language code with optional
 region or script modifier (e.g. de_AT). The selection available is based

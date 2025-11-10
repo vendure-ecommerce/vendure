@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
@@ -60,7 +60,7 @@ export function DataTableBulkActions<TData>({
 
     return (
         <div
-            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-white shadow-2xl rounded-md border z-50"
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 shadow-2xl bg-background rounded-md border z-50"
             style={{
                 height: 'auto',
                 maxHeight: '60px',

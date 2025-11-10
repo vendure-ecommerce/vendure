@@ -1,9 +1,10 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCustomersBulkAction } from './components/customer-bulk-actions.js';
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers')({
 function CustomerListPage() {
     return (
         <ListPage
-            title="Customers"
+            title={<Trans>Customers</Trans>}
             pageId="customer-list"
             listQuery={customerListDocument}
             onSearchTermChange={searchTerm => {
@@ -42,16 +43,33 @@ function CustomerListPage() {
             route={Route}
             customizeColumns={{
                 user: {
-                    header: 'Status',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
+                    header: () => <Trans>Status</Trans>,
+                    cell: ({ row }) => {
+                        const value = row.original.user;
                         return <CustomerStatusBadge user={value} />;
+                    },
+                },
+                groups: {
+                    cell: ({ row }) => {
+                        return (
+                            <div className="flex flex-wrap gap-1">
+                                {row.original.groups?.map(g => (
+                                    <Badge variant="secondary" key={g.id}>
+                                        {g.name}
+                                    </Badge>
+                                ))}
+                            </div>
+                        );
                     },
                 },
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    id: 'name',
+                    meta: {
+                        dependencies: ['id', 'firstName', 'lastName'],
+                    },
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => {
                         const value = `${row.original.firstName} ${row.original.lastName}`;
                         return <DetailPageButton id={row.original.id} label={value} />;
@@ -60,11 +78,9 @@ function CustomerListPage() {
             }}
             defaultColumnOrder={['name', 'emailAddress', 'user', 'createdAt']}
             defaultVisibility={{
-                id: false,
-                createdAt: false,
-                updatedAt: false,
-                firstName: false,
-                lastName: false,
+                name: true,
+                emailAddress: true,
+                user: true,
             }}
             bulkActions={[
                 {

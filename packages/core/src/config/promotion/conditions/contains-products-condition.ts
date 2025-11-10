@@ -14,6 +14,7 @@ export const containsProducts = new PromotionCondition({
         minimum: {
             type: 'int',
             defaultValue: 1,
+            ui: { component: '', min: 0 },
         },
         productVariantIds: {
             type: 'ID',

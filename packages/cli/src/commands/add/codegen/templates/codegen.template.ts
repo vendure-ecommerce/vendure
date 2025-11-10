@@ -2,9 +2,10 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
     overwrite: true,
-    // This assumes your server is running on the standard port
-    // and with the default admin API path. Adjust accordingly.
-    schema: 'http://localhost:3000/admin-api',
+    // To generate this schema file, run `npx vendure schema`
+    // whenever your schema changes, e.g. after adding custom fields
+    // or API extensions
+    schema: 'schema.graphql',
     config: {
         // This tells codegen that the `Money` scalar is a number
         scalars: { Money: 'number' },

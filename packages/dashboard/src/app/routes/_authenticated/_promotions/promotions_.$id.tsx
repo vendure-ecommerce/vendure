@@ -1,4 +1,5 @@
 import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
@@ -20,7 +21,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PromotionActionsSelector } from './components/promotion-actions-selector.js';
@@ -52,7 +53,7 @@ function PromotionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -99,19 +100,24 @@ function PromotionDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Promotion') {
-                toast.success(i18n.t(creatingNewEntity ? 'Successfully created promotion' : 'Successfully updated promotion'));
+                toast.success(
+                    creatingNewEntity ? t`Successfully created promotion` : t`Successfully updated promotion`,
+                );
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
-                toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
-                    description: data.message,
-                });
+                toast.error(
+                    creatingNewEntity ? t`Failed to create promotion` : t`Failed to update promotion`,
+                    {
+                        description: data.message,
+                    },
+                );
             }
         },
         onError: err => {
-            toast.error(i18n.t(creatingNewEntity ? 'Failed to create promotion' : 'Failed to update promotion'), {
+            toast.error(creatingNewEntity ? t`Failed to create promotion` : t`Failed to update promotion`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -169,8 +175,9 @@ function PromotionDetailPage() {
                             label={<Trans>Starts at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
@@ -180,8 +187,9 @@ function PromotionDetailPage() {
                             label={<Trans>Ends at</Trans>}
                             render={({ field }) => (
                                 <DateTimeInput
+                                    {...field}
                                     value={field.value}
-                                    onChange={value => field.onChange(value.toISOString())}
+                                    onChange={value => field.onChange(value)}
                                 />
                             )}
                         />
@@ -196,11 +204,7 @@ function PromotionDetailPage() {
                             name="perCustomerUsageLimit"
                             label={<Trans>Per customer usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                         <FormFieldWrapper
@@ -208,11 +212,7 @@ function PromotionDetailPage() {
                             name="usageLimit"
                             label={<Trans>Usage limit</Trans>}
                             render={({ field }) => (
-                                <Input
-                                    type="number"
-                                    value={field.value ?? ''}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value ?? ''} min={0} max={1000} />
                             )}
                         />
                     </DetailFormGrid>

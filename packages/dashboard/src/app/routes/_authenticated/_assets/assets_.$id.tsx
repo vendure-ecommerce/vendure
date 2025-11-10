@@ -18,7 +18,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -45,7 +45,7 @@ export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
 
 function AssetDetailPage() {
     const params = Route.useParams();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const imageRef = useRef<HTMLImageElement>(null);
     const [size, setSize] = useState<PreviewPreset>('medium');
@@ -67,11 +67,11 @@ function AssetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated asset'));
+            toast(t`Successfully updated asset`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update asset'), {
+            toast(t`Failed to update asset`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

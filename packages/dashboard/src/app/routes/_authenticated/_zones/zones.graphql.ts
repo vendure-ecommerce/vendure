@@ -11,8 +11,8 @@ export const zoneItemFragment = graphql(`
 
 export const zoneListQuery = graphql(
     `
-        query ZoneList {
-            zones {
+        query ZoneList($options: ZoneListOptions) {
+            zones(options: $options) {
                 items {
                     ...ZoneItem
                 }

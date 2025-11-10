@@ -9,7 +9,7 @@ import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from
 import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
@@ -108,12 +108,6 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
         <DuplicateBulkAction
             entityType="Product"
             duplicatorCode="product-duplicator"
-            duplicatorArguments={[
-                {
-                    name: 'includeVariants',
-                    value: 'true',
-                },
-            ]}
             requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
             entityName="Product"
             selection={selection}

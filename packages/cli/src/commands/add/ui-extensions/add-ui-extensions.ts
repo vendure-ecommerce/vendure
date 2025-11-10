@@ -7,7 +7,7 @@ import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { createFile, getRelativeImportPath, getPluginClasses } from '../../../utilities/ast-utils';
+import { createFile, getPluginClasses, getRelativeImportPath } from '../../../utilities/ast-utils';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
@@ -26,7 +26,7 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
     run: options => addUiExtensions(options),
 });
 
-async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
+export async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({ providedVendurePlugin, config: options?.config });
 
@@ -45,7 +45,7 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
             const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
             throw new Error(
                 `Plugin "${options.pluginName}" not found. Available plugins:\n` +
-                availablePlugins.map(name => `  - ${name as string}`).join('\n')
+                    availablePlugins.map(name => `  - ${name as string}`).join('\n'),
             );
         }
 

@@ -1,5 +1,5 @@
 import { HistoryEntryItem } from '@/vdb/framework/extension-api/types/index.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import {
     ArrowRightToLine,
     Ban,

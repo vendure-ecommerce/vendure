@@ -23,7 +23,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
 import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
@@ -235,22 +235,32 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                 childBlock.props.blockId ??
                 (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
+
             if (extensionBlock) {
-                const ExtensionBlock = (
-                    <PageBlock
-                        key={childBlock.key}
-                        column={extensionBlock.location.column}
-                        blockId={extensionBlock.id}
-                        title={extensionBlock.title}
-                    >
-                        {<extensionBlock.component context={page} />}
-                    </PageBlock>
-                );
+                let extensionBlockShouldRender = true;
+                if (typeof extensionBlock?.shouldRender === 'function') {
+                    extensionBlockShouldRender = extensionBlock.shouldRender(page);
+                }
+                const ExtensionBlock =
+                    extensionBlock.component && extensionBlockShouldRender ? (
+                        <PageBlock
+                            key={childBlock.key}
+                            column={extensionBlock.location.column}
+                            blockId={extensionBlock.id}
+                            title={extensionBlock.title}
+                        >
+                            {<extensionBlock.component context={page} />}
+                        </PageBlock>
+                    ) : undefined;
                 if (extensionBlock.location.position.order === 'before') {
-                    finalChildArray.push(ExtensionBlock, childBlock);
+                    finalChildArray.push(...[ExtensionBlock, childBlock].filter(x => !!x));
                 } else if (extensionBlock.location.position.order === 'after') {
-                    finalChildArray.push(childBlock, ExtensionBlock);
-                } else if (extensionBlock.location.position.order === 'replace') {
+                    finalChildArray.push(...[childBlock, ExtensionBlock].filter(x => !!x));
+                } else if (
+                    extensionBlock.location.position.order === 'replace' &&
+                    extensionBlockShouldRender &&
+                    ExtensionBlock
+                ) {
                     finalChildArray.push(ExtensionBlock);
                 }
             } else {
@@ -266,17 +276,17 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
     return (
-        <div className={cn('w-full space-y-4', className)}>
+        <div className={cn('w-full space-y-4', className, '@container/layout')}>
             {isDesktop ? (
-                <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-4 md:gap-4">
+                <div className="grid grid-cols-1 gap-4 @3xl/layout:grid-cols-4">
                     {fullWidthBlocks.length > 0 && (
-                        <div className="md:col-span-5 space-y-4">{fullWidthBlocks}</div>
+                        <div className="@md/layout:col-span-5 space-y-4">{fullWidthBlocks}</div>
                     )}
-                    <div className="md:col-span-3 space-y-4">{mainBlocks}</div>
-                    <div className="md:col-span-2 lg:col-span-1 space-y-4">{sideBlocks}</div>
+                    <div className="@3xl/layout:col-span-3 space-y-4">{mainBlocks}</div>
+                    <div className="@3xl/layout:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
             ) : (
-                <div className="md:hidden space-y-4">{children}</div>
+                <div className="space-y-4">{children}</div>
             )}
         </div>
     );
@@ -569,14 +579,16 @@ export function PageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <Card className={cn('@container  w-full', className)}>
+                <Card className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
                     {title || description ? (
                         <CardHeader>
                             {title && <CardTitle>{title}</CardTitle>}
                             {description && <CardDescription>{description}</CardDescription>}
                         </CardHeader>
                     ) : null}
-                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                    <CardContent className={cn(!title ? 'pt-6' : '', 'overflow-auto')}>
+                        {children}
+                    </CardContent>
                 </Card>
             </LocationWrapper>
         </PageBlockContext.Provider>
@@ -603,7 +615,7 @@ export function FullWidthPageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <div className={cn('w-full', className)}>{children}</div>
+                <div className={cn('w-full', className, 'animate-in fade-in duration-300')}>{children}</div>
             </LocationWrapper>
         </PageBlockContext.Provider>
     );
