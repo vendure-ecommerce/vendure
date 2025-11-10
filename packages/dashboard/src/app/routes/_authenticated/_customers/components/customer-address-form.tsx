@@ -1,3 +1,4 @@
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import {
@@ -284,6 +285,8 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: Readonly<Cu
                     />
                 </div>
 
+                {/* Custom Fields */}
+                <CustomFieldsForm entityType="Address" control={form.control} />
                 {/* Default Address Checkboxes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <FormField

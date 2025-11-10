@@ -395,6 +395,92 @@ describe('Default search plugin', () => {
         ]);
     }
 
+    async function testMatchCollectionIds(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionIds: ['T_2', 'T_3'],
+            groupByProduct: true,
+        });
+
+        // Should return products from both Plants (T_2) and Electronics (T_3) collections
+        // Plants has 3 products in the default test data
+        expect(result.search.items.length).toBeGreaterThanOrEqual(3);
+        expect(result.search.totalItems).toBeGreaterThanOrEqual(3);
+
+        const productNames = result.search.items.map(i => i.productName);
+
+        // Verify that products from Plants collection are included
+        expect(productNames).toContain('Bonsai Tree');
+        expect(productNames).toContain('Orchid');
+        expect(productNames).toContain('Spiky Cactus');
+    }
+
+    async function testMatchCollectionSlugs(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionSlugs: ['plants', 'electronics'],
+            groupByProduct: true,
+        });
+
+        // Should return products from both Plants and Electronics collections
+        // Plants has 3 products in the default test data
+        expect(result.search.items.length).toBeGreaterThanOrEqual(3);
+        expect(result.search.totalItems).toBeGreaterThanOrEqual(3);
+
+        const productNames = result.search.items.map(i => i.productName);
+
+        // Verify that products from Plants collection are included
+        expect(productNames).toContain('Bonsai Tree');
+        expect(productNames).toContain('Orchid');
+        expect(productNames).toContain('Spiky Cactus');
+    }
+
+    async function testCollectionIdsEdgeCases(testProducts: TestProducts) {
+        // Test with duplicate IDs - should handle gracefully
+        const resultWithDuplicates = await testProducts({
+            collectionIds: ['T_2', 'T_2', 'T_2'],
+            groupByProduct: true,
+        });
+
+        // Should still return Plants collection products, de-duplicated
+        expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
+            'Bonsai Tree',
+            'Orchid',
+            'Spiky Cactus',
+        ]);
+
+        // Test with non-existent collection ID - should return no results
+        const resultNonExistent = await testProducts({
+            collectionIds: ['T_999'],
+            groupByProduct: true,
+        });
+
+        expect(resultNonExistent.search.items).toEqual([]);
+        expect(resultNonExistent.search.totalItems).toBe(0);
+    }
+
+    async function testCollectionSlugsEdgeCases(testProducts: TestProducts) {
+        // Test with duplicate slugs - should handle gracefully
+        const resultWithDuplicates = await testProducts({
+            collectionSlugs: ['plants', 'plants', 'plants'],
+            groupByProduct: true,
+        });
+
+        // Should still return Plants collection products, de-duplicated
+        expect(resultWithDuplicates.search.items.map(i => i.productName).sort()).toEqual([
+            'Bonsai Tree',
+            'Orchid',
+            'Spiky Cactus',
+        ]);
+
+        // Test with non-existent collection slug - should return no results
+        const resultNonExistent = await testProducts({
+            collectionSlugs: ['non-existent'],
+            groupByProduct: true,
+        });
+
+        expect(resultNonExistent.search.items).toEqual([]);
+        expect(resultNonExistent.search.totalItems).toBe(0);
+    }
+
     async function testSinglePrices(client: SimpleGraphQLClient) {
         const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
             SEARCH_GET_PRICES,
@@ -478,6 +564,14 @@ describe('Default search plugin', () => {
         it('matches by collectionId', () => testMatchCollectionId(testProductsShop));
 
         it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsShop));
+
+        it('matches by multiple collectionIds', () => testMatchCollectionIds(testProductsShop));
+
+        it('matches by multiple collectionSlugs', () => testMatchCollectionSlugs(testProductsShop));
+
+        it('handles collectionIds edge cases', () => testCollectionIdsEdgeCases(testProductsShop));
+
+        it('handles collectionSlugs edge cases', () => testCollectionSlugsEdgeCases(testProductsShop));
 
         it('single prices', () => testSinglePrices(shopClient));
 
@@ -778,6 +872,14 @@ describe('Default search plugin', () => {
         it('matches by collectionId', () => testMatchCollectionId(testProductsAdmin));
 
         it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsAdmin));
+
+        it('matches by multiple collectionIds', () => testMatchCollectionIds(testProductsAdmin));
+
+        it('matches by multiple collectionSlugs', () => testMatchCollectionSlugs(testProductsAdmin));
+
+        it('handles collectionIds edge cases', () => testCollectionIdsEdgeCases(testProductsAdmin));
+
+        it('handles collectionSlugs edge cases', () => testCollectionSlugsEdgeCases(testProductsAdmin));
 
         it('single prices', () => testSinglePrices(adminClient));
 

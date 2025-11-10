@@ -164,7 +164,7 @@ There is a [`StockMovement`](/reference/typescript-api/entities/stock-movement/)
 - [`Sale`](/reference/typescript-api/entities/stock-movement/#sale): When allocated stock gets fulfilled. Removes stock from `allocated` as well as `stockOnHand`.
 - [`Cancellation`](/reference/typescript-api/entities/stock-movement/#cancellation): When items from a fulfilled order are cancelled, the stock is returned to `stockOnHand`. Adds stock to `stockOnHand`.
 - [`Release`](/reference/typescript-api/entities/stock-movement/#release): When items which have been allocated (but not yet converted to sales via the creation of a Fulfillment) are cancelled. Removes stock from `allocated`.
-- [`StockAdjustment`](/reference/typescript-api/entities/stock-movement/#stockadjustment): A general-purpose stock adjustment. Adds or removes stock from `stockOnHand`. Used when manually setting stock levels via the Admin UI, for example.
+- [`StockAdjustment`](/reference/typescript-api/entities/stock-movement/#stockadjustment): A general-purpose stock adjustment. Adds or removes stock from `stockOnHand`. Used when manually setting stock levels via the Dashboard, for example.
 
 Stock movements can be queried via the `ProductVariant.stockMovements`. Here's an example where we query the stock levels and stock movements of a particular variant:
 

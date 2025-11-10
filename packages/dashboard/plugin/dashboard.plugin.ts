@@ -240,7 +240,7 @@ export class DashboardPlugin implements NestModule {
     private createDefaultPage() {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 20_000,
             standardHeaders: true,
             legacyHeaders: false,
         });

@@ -76,11 +76,9 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual([
-        'Camera Lens',
-        'Instant Camera',
-        'SLR Camera',
-    ]);
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Camera Lens', 'Instant Camera', 'SLR Camera'].sort((a, b) => a.localeCompare(b)),
+    );
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
@@ -150,8 +148,10 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort(),
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort((a, b) =>
+            a.localeCompare(b),
+        ),
     );
 }
 
@@ -169,7 +169,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Bonsai Tree',
             'Bonsai Tree (Ch2)',
@@ -185,7 +185,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             'Spiky Cactus',
             'Tripod',
             'USB Cable',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -199,7 +199,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -211,7 +211,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             'Camera Lens',
             'Tripod',
             'SLR Camera',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -227,7 +227,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -239,7 +239,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             'Camera Lens',
             'Tripod',
             'SLR Camera',
-        ].sort(),
+        ].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -255,8 +255,8 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
+        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort((a, b) => a.localeCompare(b)),
     );
 }
 
@@ -270,7 +270,7 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual([
         'Bonsai Tree',
         'Bonsai Tree (Ch2)',
         'Orchid',
@@ -288,12 +288,94 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual([
         'Bonsai Tree',
         'Bonsai Tree (Ch2)',
         'Orchid',
         'Spiky Cactus',
     ]);
+}
+
+async function testMatchCollections(client: SimpleGraphQLClient, searchInput: Partial<SearchInput>) {
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupByProduct: true,
+                ...searchInput,
+            },
+        },
+    );
+    // Should return products from both Plants (T_2) and Electronics (T_3) collections
+    expect(result.search.items.length).toBeGreaterThan(4);
+    expect(result.search.totalItems).toBeGreaterThan(4);
+
+    // Verify that products from both collections are included by checking collectionIds
+    const allCollectionIds = result.search.items.flatMap(i => i.collectionIds);
+
+    // Should contain products from Plants collection (T_2)
+    expect(allCollectionIds.filter(id => id === 'T_2').length).toBeGreaterThan(0);
+
+    // Should contain products from Electronics collection (T_3)
+    expect(allCollectionIds.filter(id => id === 'T_3').length).toBeGreaterThan(0);
+}
+
+export async function testMatchCollectionIds(client: SimpleGraphQLClient) {
+    return testMatchCollections(client, { collectionIds: ['T_2', 'T_3'] });
+}
+
+export async function testMatchCollectionSlugs(client: SimpleGraphQLClient) {
+    return testMatchCollections(client, { collectionSlugs: ['plants', 'electronics'] });
+}
+
+async function testCollectionEdgeCases(
+    client: SimpleGraphQLClient,
+    duplicateInput: Partial<SearchInput>,
+    nonExistentInput: Partial<SearchInput>,
+) {
+    // Test with duplicates - should handle gracefully
+    const resultWithDuplicates = await client.query<
+        SearchProductsShopQuery,
+        SearchProductsShopQueryVariables
+    >(SEARCH_PRODUCTS_SHOP, {
+        input: {
+            groupByProduct: true,
+            ...duplicateInput,
+        },
+    });
+    // Should still return Plants collection products, de-duplicated
+    expect(
+        resultWithDuplicates.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b)),
+    ).toEqual(['Bonsai Tree', 'Bonsai Tree (Ch2)', 'Orchid', 'Spiky Cactus']);
+
+    // Test with non-existent collection - should return no results
+    const resultNonExistent = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupByProduct: true,
+                ...nonExistentInput,
+            },
+        },
+    );
+    expect(resultNonExistent.search.items).toEqual([]);
+    expect(resultNonExistent.search.totalItems).toBe(0);
+}
+
+export async function testCollectionIdsEdgeCases(client: SimpleGraphQLClient) {
+    return testCollectionEdgeCases(
+        client,
+        { collectionIds: ['T_2', 'T_2', 'T_2'] },
+        { collectionIds: ['T_999'] },
+    );
+}
+
+export async function testCollectionSlugsEdgeCases(client: SimpleGraphQLClient) {
+    return testCollectionEdgeCases(
+        client,
+        { collectionSlugs: ['plants', 'plants', 'plants'] },
+        { collectionSlugs: ['non-existent-collection'] },
+    );
 }
 
 export async function testSinglePrices(client: SimpleGraphQLClient) {

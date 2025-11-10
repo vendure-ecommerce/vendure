@@ -1,6 +1,7 @@
 import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { Zone } from '../../entity/zone/zone.entity';
@@ -34,6 +35,7 @@ export interface ProductVariantPriceCalculationStrategy extends InjectableStrate
  */
 export interface ProductVariantPriceCalculationArgs {
     inputPrice: number;
+    productVariantPrice?: ProductVariantPrice;
     productVariant: ProductVariant;
     taxCategory: TaxCategory;
     activeTaxZone: Zone;
