@@ -199,7 +199,7 @@ Optional tailwind classes to apply to the icon. For instance
 
 ```ts
 const success = 'bg-success text-success-foreground';
-const destructive = 'bg-danger text-danger-foreground';
+const destructive = 'bg-destructive text-destructive-foreground';
 ```
 ### actorName
 
