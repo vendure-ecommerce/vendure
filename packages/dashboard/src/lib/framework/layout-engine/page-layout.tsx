@@ -242,89 +242,77 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
 
             // sort the blocks to make sure we have the correct order
             const arrangedExtensionBlocks = matchingExtensionBlocks.sort((a, b) => {
-                const orderPriority = { 'before': 1, 'replace': 2, 'after': 3 };
+                const orderPriority = { before: 1, replace: 2, after: 3 };
                 return orderPriority[a.location.position.order] - orderPriority[b.location.position.order];
-            })
-
-            // get the length of blocks with the "before" position to know when to insert the child block
-            const beforeExtensionBlocksLength = arrangedExtensionBlocks.filter(
-                block => block.location.position.order === 'before',
-            ).length;
+            });
 
             const replacementBlockExists = arrangedExtensionBlocks.some(
                 block => block.location.position.order === 'replace',
-            )
+            );
 
             let childBlockInserted = false;
             if (matchingExtensionBlocks.length > 0) {
                 for (const extensionBlock of arrangedExtensionBlocks) {
-
                     let extensionBlockShouldRender = true;
                     if (typeof extensionBlock?.shouldRender === 'function') {
                         extensionBlockShouldRender = extensionBlock.shouldRender(page);
                     }
 
                     // Insert child block before the first non-"before" block
-                    if (!childBlockInserted && !replacementBlockExists && extensionBlock.location.position.order !== 'before') {
-                        finalChildArray.push(childBlock)
-                        childBlockInserted = true
-                      }
+                    if (
+                        !childBlockInserted &&
+                        !replacementBlockExists &&
+                        extensionBlock.location.position.order !== 'before'
+                    ) {
+                        finalChildArray.push(childBlock);
+                        childBlockInserted = true;
+                    }
+
+                    const isFullWidth = extensionBlock.location.column === 'full';
+                    const BlockComponent = isFullWidth ? FullWidthPageBlock : PageBlock;
 
                     const ExtensionBlock =
                         extensionBlock.component && extensionBlockShouldRender ? (
-                            <PageBlock
+                            <BlockComponent
                                 key={extensionBlock.id}
                                 column={extensionBlock.location.column}
                                 blockId={extensionBlock.id}
                                 title={extensionBlock.title}
                             >
                                 {<extensionBlock.component context={page} />}
-                            </PageBlock>
+                            </BlockComponent>
                         ) : undefined;
 
-                    if(extensionBlockShouldRender && ExtensionBlock) {
-                        finalChildArray.push(ExtensionBlock)
+                    if (extensionBlockShouldRender && ExtensionBlock) {
+                        finalChildArray.push(ExtensionBlock);
                     }
                 }
 
                 // If all blocks were "before", insert child block at the end
                 if (!childBlockInserted && !replacementBlockExists) {
-                    finalChildArray.push(childBlock)
+                    finalChildArray.push(childBlock);
                 }
-
             } else {
                 finalChildArray.push(childBlock);
             }
         }
     }
 
+    const fullWidthBlocks = finalChildArray.filter(
+        child => isPageBlock(child) && isOfType(child, FullWidthPageBlock),
+    );
+    const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
+    const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
+
     return (
         <div className={cn('w-full space-y-4', className, '@container/layout')}>
             {isDesktop ? (
                 <div className="grid grid-cols-1 gap-4 @3xl/layout:grid-cols-4">
-                    {finalChildArray.map((child, index) => {
-                        const key = child.props?.blockId ?? `block-${index}`;
-                        if(isPageBlock(child )) {
-                            if (isOfType(child, FullWidthPageBlock)) {
-                                return (
-                                    <div key={key} className="@md/layout:col-span-5 space-y-4">{child}</div>
-                                );
-                            }
-
-                            if (child.props.column === 'main') {
-                                return (
-                                    <div key={key} className="@3xl/layout:col-span-3 space-y-4">{child}</div>
-                                )
-                            }
-
-                            if (child.props.column === 'side') {
-                                return (
-                                    <div key={key} className="@3xl/layout:col-span-1 space-y-4">{child}</div>
-                                )
-                            }
-                        }
-                        return null
-                    })}
+                    {fullWidthBlocks.length > 0 && (
+                        <div className="@md/layout:col-span-5 space-y-4">{fullWidthBlocks}</div>
+                    )}
+                    <div className="@3xl/layout:col-span-3 space-y-4">{mainBlocks}</div>
+                    <div className="@3xl/layout:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
             ) : (
                 <div className="space-y-4">{finalChildArray}</div>
