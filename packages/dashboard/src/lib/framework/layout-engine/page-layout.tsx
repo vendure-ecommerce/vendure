@@ -268,16 +268,19 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                         childBlockInserted = true;
                     }
 
+                    const isFullWidth = extensionBlock.location.column === 'full';
+                    const BlockComponent = isFullWidth ? FullWidthPageBlock : PageBlock;
+
                     const ExtensionBlock =
                         extensionBlock.component && extensionBlockShouldRender ? (
-                            <PageBlock
+                            <BlockComponent
                                 key={extensionBlock.id}
                                 column={extensionBlock.location.column}
                                 blockId={extensionBlock.id}
                                 title={extensionBlock.title}
                             >
                                 {<extensionBlock.component context={page} />}
-                            </PageBlock>
+                            </BlockComponent>
                         ) : undefined;
 
                     if (extensionBlockShouldRender && ExtensionBlock) {
