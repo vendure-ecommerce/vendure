@@ -15,8 +15,8 @@ export const shippingMethodItemFragment = graphql(`
 
 export const shippingMethodListQuery = graphql(
     `
-        query ShippingMethodList {
-            shippingMethods {
+        query ShippingMethodList($options: ShippingMethodListOptions) {
+            shippingMethods(options: $options) {
                 items {
                     ...ShippingMethodItem
                 }
@@ -105,6 +105,33 @@ export const removeShippingMethodsFromChannelDocument = graphql(`
         removeShippingMethodsFromChannel(input: $input) {
             id
             name
+        }
+    }
+`);
+
+export const testEligibleShippingMethodsDocument = graphql(`
+    query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
+        testEligibleShippingMethods(input: $input) {
+            id
+            name
+            code
+            description
+            price
+            priceWithTax
+            metadata
+        }
+    }
+`);
+
+export const testShippingMethodDocument = graphql(`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            quote {
+                price
+                priceWithTax
+                metadata
+            }
         }
     }
 `);

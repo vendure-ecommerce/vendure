@@ -1,7 +1,6 @@
 import { AppSidebar } from '@/vdb/components/layout/app-sidebar.js';
 import { DevModeIndicator } from '@/vdb/components/layout/dev-mode-indicator.js';
 import { GeneratedBreadcrumbs } from '@/vdb/components/layout/generated-breadcrumbs.js';
-import { PrereleasePopup } from '@/vdb/components/layout/prerelease-popup.js';
 import { Separator } from '@/vdb/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/vdb/components/ui/sidebar.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -31,7 +30,6 @@ export function AppLayout() {
                     <Outlet />
                 </div>
             </SidebarInset>
-            <PrereleasePopup />
         </SidebarProvider>
     );
 }

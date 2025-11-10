@@ -116,7 +116,7 @@ Whether to use the asset's focal point in crop mode.
 
 <MemberInfo kind="property" type={`React.ReactNode`}   />
 
-The fallback to show if no asset is provided. If no fallback is provided, 
+The fallback to show if no asset is provided. If no fallback is provided,
 a default placeholder will be shown.
 ### ref
 
@@ -177,7 +177,7 @@ interface AssetLike {
 The presets that can be used for the <a href='/reference/dashboard/components/vendure-image#vendureimage'>VendureImage</a> component.
 
 ```ts title="Signature"
-type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | null
+type ImagePreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | 'full' | null
 ```
 
 

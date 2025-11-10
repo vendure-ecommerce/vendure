@@ -5,10 +5,10 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
+import { channelListQuery } from './channels.graphql.js';
 import { DeleteChannelsBulkAction } from './components/channel-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
@@ -21,9 +21,8 @@ function ChannelListPage() {
     return (
         <ListPage
             pageId="channel-list"
-            title="Channels"
+            title={<Trans>Channels</Trans>}
             listQuery={channelListQuery}
-            deleteMutation={deleteChannelDocument}
             route={Route}
             defaultVisibility={{
                 code: true,
@@ -40,7 +39,6 @@ function ChannelListPage() {
             }}
             customizeColumns={{
                 code: {
-                    header: 'Code',
                     cell: ({ row }) => {
                         return (
                             <DetailPageButton
@@ -51,13 +49,11 @@ function ChannelListPage() {
                     },
                 },
                 seller: {
-                    header: 'Seller',
                     cell: ({ row }) => {
                         return row.original.seller?.name;
                     },
                 },
                 defaultLanguageCode: {
-                    header: 'Default Language',
                     cell: ({ row }) => {
                         return formatLanguageName(row.original.defaultLanguageCode);
                     },
@@ -75,7 +71,7 @@ function ChannelListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                            New Channel
+                            <Trans>New Channel</Trans>
                         </Link>
                     </Button>
                 </PermissionGuard>

@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { SetImageOptions } from '@tiptap/extension-image';
 import { Editor } from '@tiptap/react';
 import { ImageIcon, PaperclipIcon } from 'lucide-react';

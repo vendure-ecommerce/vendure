@@ -1,18 +1,20 @@
-import { DataTable, FacetedFilter } from '\@/vdb/components/data-table/data-table.js';
-import { getObjectPathToPaginatedList } from '\@/vdb/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '\@/vdb/framework/document-introspection/hooks.js';
-import { api } from '\@/vdb/graphql/api.js';
+import { DataTable, FacetedFilter } from '@/vdb/components/data-table/data-table.js';
+import { getObjectPathToPaginatedList } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
+import { api } from '@/vdb/graphql/api.js';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
-import { BulkAction } from '\@/vdb/framework/extension-api/types/index.js';
-import { ResultOf } from '\@/vdb/graphql/graphql.js';
-import { useExtendedListQuery } from '\@/vdb/hooks/use-extended-list-query.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { includeOnlySelectedListFields } from '@/vdb/framework/document-introspection/include-only-selected-list-fields.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { ColumnFiltersState, ColumnSort, SortingState, Table } from '@tanstack/react-table';
 import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
 import React from 'react';
-import { getColumnVisibility } from '../data-table/data-table-utils.js';
+import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
@@ -87,8 +89,23 @@ export type AllItemFieldKeys<T extends TypedDocumentNode<any, any>> =
     | keyof PaginatedListItemFields<T>
     | CustomFieldKeysOfItem<PaginatedListItemFields<T>>;
 
+export type ColumnDefWithMetaDependencies<T extends TypedDocumentNode<any, any>> = Partial<
+    ColumnDef<T, any>
+> & {
+    meta?: {
+        /**
+         * @description
+         * Columns that rely on _other_ columns in order to correctly render,
+         * can declare those other columns as dependencies in order to ensure that
+         * those columns are always fetched, even when those columns are not explicitly
+         * included in the visible table columns.
+         */
+        dependencies?: Array<AllItemFieldKeys<T>>;
+    };
+};
+
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>>;
+    [Key in AllItemFieldKeys<T>]?: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -132,7 +149,7 @@ export type ListQueryOptionsShape = {
 };
 
 export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
-    [key: string]: ColumnDef<PaginatedListItemFields<T>>;
+    [key: string]: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
 
 export interface PaginatedListContext {
@@ -365,7 +382,7 @@ export function PaginatedListDataTable<
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
-    const extendedListQuery = useExtendedListQuery(listQuery);
+    const extendedListQuery = useExtendedListQuery(addCustomFields(listQuery));
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -376,6 +393,39 @@ export function PaginatedListDataTable<
         }
         return { ...acc, [field]: direction };
     }, {});
+
+    function refetchPaginatedList() {
+        queryClient.invalidateQueries({ queryKey });
+    }
+
+    registerRefresher?.(refetchPaginatedList);
+
+    // First we get info on _all_ the fields, including all custom fields, for the
+    // purpose of configuring the table columns.
+    const fields = useListQueryFields(extendedListQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
+
+    const { columns, customFieldColumnNames } = useGeneratedColumns({
+        fields,
+        customizeColumns,
+        rowActions,
+        bulkActions,
+        deleteMutation,
+        additionalColumns,
+        defaultColumnOrder: getStandardizedDefaultColumnOrder(defaultColumnOrder),
+    });
+    const columnVisibility = getColumnVisibility(columns, defaultVisibility, customFieldColumnNames);
+    // Get the actual visible columns and only fetch those
+    const visibleColumns = columns
+        // Filter out invisible columns, but _always_ select "id"
+        // because it is usually needed.
+        .filter(c => columnVisibility[c.id as string] !== false || c.id === 'id')
+        .map(c => ({
+            name: c.id as string,
+            isCustomField: (c.meta as any)?.isCustomField ?? false,
+            dependencies: (c.meta as any)?.dependencies ?? [],
+        }));
+    const minimalListQuery = includeOnlySelectedListFields(extendedListQuery, visibleColumns);
 
     const filter = columnFilters?.length
         ? {
@@ -390,7 +440,8 @@ export function PaginatedListDataTable<
 
     const defaultQueryKey = [
         PaginatedListDataTableKey,
-        extendedListQuery,
+        minimalListQuery,
+        visibleColumns,
         page,
         itemsPerPage,
         sorting,
@@ -399,19 +450,13 @@ export function PaginatedListDataTable<
     ];
     const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
-    function refetchPaginatedList() {
-        queryClient.invalidateQueries({ queryKey });
-    }
-
-    registerRefresher?.(refetchPaginatedList);
-
     const { data, isFetching } = useQuery({
         queryFn: () => {
             const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
             const mergedFilter = { ...filter, ...searchFilter };
             const variables = {
                 options: {
-                    take: itemsPerPage,
+                    take: Math.min(itemsPerPage, 100),
                     skip: (page - 1) * itemsPerPage,
                     sort,
                     filter: mergedFilter,
@@ -419,30 +464,16 @@ export function PaginatedListDataTable<
             } as V;
 
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
-            return api.query(extendedListQuery, transformedVariables);
+            return api.query(minimalListQuery, transformedVariables);
         },
         queryKey,
         placeholderData: keepPreviousData,
     });
-
-    const fields = useListQueryFields(extendedListQuery);
-    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
-
     let listData = data as any;
     for (const path of paginatedListObjectPath) {
         listData = listData?.[path];
     }
 
-    const { columns, customFieldColumnNames } = useGeneratedColumns({
-        fields,
-        customizeColumns,
-        rowActions,
-        deleteMutation,
-        additionalColumns,
-        defaultColumnOrder,
-    });
-
-    const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     const transformedData =
         typeof transformData === 'function' ? transformData(listData?.items ?? []) : (listData?.items ?? []);
     return (

@@ -8,12 +8,17 @@ import {
     RichTextInput,
     SelectWithOptions,
 } from '@/vdb/components/data-input/index.js';
-import { PasswordInput } from '@/vdb/components/data-input/password-input.js';
+import { PasswordFormInput } from '@/vdb/components/data-input/password-form-input.js';
 import { TextareaInput } from '@/vdb/components/data-input/textarea-input.js';
 import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
 globalRegistry.register('inputComponents', new Map<string, DashboardFormComponent>());
+
+const DefaultProductInput: DashboardFormComponent = props => (
+    <DefaultRelationInput {...props} entityType="ProductVariant" />
+);
+DefaultProductInput.metadata = { isListInput: 'dynamic' };
 
 // Register built-in input components
 const inputComponents = globalRegistry.get('inputComponents');
@@ -27,8 +32,8 @@ inputComponents.set('json-editor-form-input', TextareaInput);
 inputComponents.set('textarea-form-input', TextareaInput);
 inputComponents.set('html-editor-form-input', RichTextInput);
 inputComponents.set('rich-text-form-input', RichTextInput);
-inputComponents.set('password-form-input', PasswordInput);
-inputComponents.set('product-selector-form-input', DefaultRelationInput);
+inputComponents.set('password-form-input', PasswordFormInput);
+inputComponents.set('product-selector-form-input', DefaultProductInput);
 inputComponents.set('relation-form-input', DefaultRelationInput);
 inputComponents.set('select-form-input', SelectWithOptions);
 inputComponents.set('product-multi-form-input', ProductMultiInput);

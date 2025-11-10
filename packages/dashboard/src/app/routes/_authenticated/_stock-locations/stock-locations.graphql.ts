@@ -12,8 +12,8 @@ export const stockLocationFragment = graphql(`
 
 export const stockLocationListQuery = graphql(
     `
-        query StockLocationList {
-            stockLocations {
+        query StockLocationList($options: StockLocationListOptions) {
+            stockLocations(options: $options) {
                 items {
                     ...StockLocationItem
                 }

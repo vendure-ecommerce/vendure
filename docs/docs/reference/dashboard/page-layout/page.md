@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Page
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="84" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="91" packageName="@vendure/dashboard" since="3.3.0" />
 
 This component should be used to wrap _all_ pages in the dashboard. It provides
 a consistent layout as well as a context for the slot-based PageBlock system.
@@ -61,7 +61,7 @@ Parameters
 
 ## PageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="31" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="38" packageName="@vendure/dashboard" since="3.3.0" />
 
 The props used to configure the <a href='/reference/dashboard/page-layout/page#page'>Page</a> component.
 

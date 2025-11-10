@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrphanedSettingsStoreEntry
 
-<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="207" packageName="@vendure/core" since="3.4.0" />
+<GenerationInfo sourceFile="packages/core/src/config/settings-store/settings-store-types.ts" sourceLine="237" packageName="@vendure/core" since="3.4.0" />
 
 Represents an orphaned settings store entry that no longer has a corresponding
 field definition in the configuration.

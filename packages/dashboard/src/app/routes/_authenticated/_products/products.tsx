@@ -1,11 +1,15 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
+import { ListRestart, PlusIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import {
     AssignFacetValuesToProductsBulkAction,
     AssignProductsToChannelBulkAction,
@@ -13,7 +17,7 @@ import {
     DuplicateProductsBulkAction,
     RemoveProductsFromChannelBulkAction,
 } from './components/product-bulk-actions.js';
-import { deleteProductDocument, productListDocument } from './products.graphql.js';
+import { productListDocument, reindexDocument } from './products.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -21,22 +25,56 @@ export const Route = createFileRoute('/_authenticated/_products/products')({
 });
 
 function ProductListPage() {
+    const { t } = useLingui();
+    const reindexMutation = useMutation({
+        mutationFn: () => api.mutate(reindexDocument, {}),
+        onSuccess: () => {
+            toast.success(t`Search index rebuild started`);
+        },
+        onError: () => {
+            toast.error(t`Search index rebuild could not be started`);
+        },
+    });
+
+    const handleRebuildSearchIndex = () => {
+        reindexMutation.mutate();
+    };
+
     return (
         <ListPage
             pageId="product-list"
             listQuery={productListDocument}
-            deleteMutation={deleteProductDocument}
-            title="Products"
+            title={<Trans>Products</Trans>}
             customizeColumns={{
                 name: {
-                    header: 'Product Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
+                },
+                description: {
+                    cell: RichTextDescriptionCell,
                 },
             }}
             onSearchTermChange={searchTerm => {
+                return searchTerm
+                    ? {
+                          name: { contains: searchTerm },
+                          slug: { contains: searchTerm },
+                          sku: { contains: searchTerm },
+                      }
+                    : {};
+            }}
+            transformVariables={variables => {
                 return {
-                    name: { contains: searchTerm },
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR',
+                    },
                 };
+            }}
+            defaultVisibility={{
+                name: true,
+                featuredAsset: true,
+                slug: true,
+                enabled: true,
             }}
             route={Route}
             bulkActions={[
@@ -63,6 +101,12 @@ function ProductListPage() {
             ]}
         >
             <PageActionBarRight>
+                <PermissionGuard requires={['UpdateCatalog']}>
+                    <Button variant="outline" onClick={handleRebuildSearchIndex}>
+                        <ListRestart />
+                        <Trans>Rebuild search index</Trans>
+                    </Button>
+                </PermissionGuard>
                 <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
                     <Button asChild>
                         <Link to="./new">

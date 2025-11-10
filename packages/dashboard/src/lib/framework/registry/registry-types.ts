@@ -1,6 +1,7 @@
 import {
     BulkAction,
     DashboardActionBarItem,
+    DashboardHistoryEntryComponent,
     DashboardLoginExtensions,
     DashboardPageBlockDefinition,
     DashboardWidgetDefinition,
@@ -26,4 +27,5 @@ export interface GlobalRegistryContents {
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
     detailQueryDocumentRegistry: Map<string, DocumentNode[]>;
     loginExtensions: DashboardLoginExtensions;
+    historyEntries: Map<string, DashboardHistoryEntryComponent['component']>;
 }

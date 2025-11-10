@@ -2,15 +2,15 @@ import { log } from '@clack/prompts';
 import { generateMigration, revertLastMigration, runMigrations, VendureConfig } from '@vendure/core';
 import path from 'path';
 
+import { loadVendureConfigFile } from '../../shared/load-vendure-config-file';
 import { validateVendureProjectDirectory } from '../../shared/project-validation';
 import { analyzeProject } from '../../shared/shared-prompts';
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
 
-import { loadVendureConfigFile } from './load-vendure-config-file';
-
 export interface MigrationOptions {
     name?: string;
     outputDir?: string;
+    config?: string;
 }
 
 export interface MigrationResult {
@@ -25,7 +25,7 @@ export async function generateMigrationOperation(options: MigrationOptions = {})
         validateVendureProjectDirectory();
 
         const { project, tsConfigPath } = await analyzeProject({ cancelledMessage: '' });
-        const vendureConfig = new VendureConfigRef(project);
+        const vendureConfig = new VendureConfigRef(project, options.config);
         log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
 
         const name = options.name;
@@ -68,12 +68,12 @@ export async function generateMigrationOperation(options: MigrationOptions = {})
     }
 }
 
-export async function runMigrationsOperation(): Promise<MigrationResult> {
+export async function runMigrationsOperation(configFile?: string): Promise<MigrationResult> {
     try {
         validateVendureProjectDirectory();
 
         const { project } = await analyzeProject({ cancelledMessage: '' });
-        const vendureConfig = new VendureConfigRef(project);
+        const vendureConfig = new VendureConfigRef(project, configFile);
         log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
         const config = await loadVendureConfigFile(vendureConfig);
 
@@ -97,12 +97,12 @@ export async function runMigrationsOperation(): Promise<MigrationResult> {
     }
 }
 
-export async function revertMigrationOperation(): Promise<MigrationResult> {
+export async function revertMigrationOperation(configFile?: string): Promise<MigrationResult> {
     try {
         validateVendureProjectDirectory();
 
         const { project } = await analyzeProject({ cancelledMessage: '' });
-        const vendureConfig = new VendureConfigRef(project);
+        const vendureConfig = new VendureConfigRef(project, configFile);
         log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
         const config = await loadVendureConfigFile(vendureConfig);
 

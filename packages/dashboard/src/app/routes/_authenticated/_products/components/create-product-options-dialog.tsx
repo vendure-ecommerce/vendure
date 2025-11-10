@@ -12,8 +12,8 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -90,7 +90,7 @@ export function CreateProductOptionsDialog({
     onSuccess?: () => void;
 }) {
     const [open, setOpen] = useState(false);
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { data: productData } = useQuery({
         queryKey: ['product', productId],
@@ -116,13 +116,13 @@ export function CreateProductOptionsDialog({
     const updateProductVariantMutation = useMutation({
         mutationFn: api.mutate(updateProductVariantDocument),
         onSuccess: () => {
-            toast.success(i18n.t('Successfully created product options'));
+            toast.success(t`Successfully created product options`);
             setOpen(false);
             onSuccess?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to create product options'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create product options`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         },
     });
@@ -206,8 +206,8 @@ export function CreateProductOptionsDialog({
                 });
             }
         } catch (error) {
-            toast.error(i18n.t('Failed to create product options'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create product options`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         }
     };
@@ -266,7 +266,7 @@ export function CreateProductOptionsDialog({
                                             name={`optionGroups.${groupIndex}.name`}
                                             label={<Trans>Option group name</Trans>}
                                             render={({ field }) => (
-                                                <Input {...field} placeholder={i18n.t('e.g. Size')} />
+                                                <Input {...field} placeholder={t`e.g. Size`} />
                                             )}
                                         />
                                         {groupIndex > 0 && (
@@ -287,10 +287,7 @@ export function CreateProductOptionsDialog({
                                                     name={`optionGroups.${groupIndex}.options.${optionIndex}`}
                                                     label={<Trans>Option name</Trans>}
                                                     render={({ field }) => (
-                                                        <Input
-                                                            {...field}
-                                                            placeholder={i18n.t('e.g. Small')}
-                                                        />
+                                                        <Input {...field} placeholder={t`e.g. Small`} />
                                                     )}
                                                 />
                                                 {optionIndex > 0 && (

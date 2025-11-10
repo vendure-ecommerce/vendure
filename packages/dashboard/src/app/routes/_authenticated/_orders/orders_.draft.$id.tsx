@@ -15,11 +15,11 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -44,39 +44,17 @@ import {
     unsetBillingAddressForDraftOrderDocument,
     unsetShippingAddressForDraftOrderDocument,
 } from './orders.graphql.js';
+import { loadDraftOrder } from './utils/order-detail-loaders.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/draft/$id')({
     component: DraftOrderPage,
-    loader: async ({ context, params }) => {
-        if (!params.id) {
-            throw new Error('ID param is required');
-        }
-
-        const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-            { id: params.id },
-        );
-
-        if (!result.order) {
-            throw new Error(`Order with the ID ${params.id} was not found`);
-        }
-
-        if (result.order.state !== 'Draft') {
-            throw redirect({
-                to: `/orders/${params.id}`,
-            });
-        }
-
-        return {
-            breadcrumb: [{ path: '/orders', label: <Trans>Orders</Trans> }, result.order.code],
-        };
-    },
+    loader: ({ context, params }) => loadDraftOrder(context, params),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
 function DraftOrderPage() {
     const params = Route.useParams();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const navigate = useNavigate();
 
     const { entity, refreshEntity, form } = useDetailPage({
@@ -108,6 +86,7 @@ function DraftOrderPage() {
     const { mutate: setDraftOrderCustomFields } = useMutation({
         mutationFn: api.mutate(setDraftOrderCustomFieldsDocument),
         onSuccess: (result: ResultOf<typeof setDraftOrderCustomFieldsDocument>) => {
+            toast.success(t`Order custom fields updated`);
             refreshEntity();
         },
     });
@@ -124,12 +103,17 @@ function DraftOrderPage() {
             const order = result.addItemToDraftOrder;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Item added to order'));
+                    toast.success(t`Item added to order`);
                     refreshEntity();
                     break;
                 default:
                     toast.error(order.message);
                     break;
+            }
+        },
+        onError: error => {
+            if ((error as any).extensions?.code === 'ENTITY_NOT_FOUND') {
+                toast.error(t`The variant could not be added. Ensure the parent product is enabled.`);
             }
         },
     });
@@ -140,7 +124,7 @@ function DraftOrderPage() {
             const order = result.adjustDraftOrderLine;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Order line updated'));
+                    toast.success(t`Order line updated`);
                     refreshEntity();
                     break;
                 default:
@@ -156,7 +140,7 @@ function DraftOrderPage() {
             const order = result.removeDraftOrderLine;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Order line removed'));
+                    toast.success(t`Order line removed`);
                     refreshEntity();
                     break;
                 default:
@@ -172,7 +156,16 @@ function DraftOrderPage() {
             const order = result.setCustomerForDraftOrder;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Customer set for order'));
+                    toast.success(t`Customer set for order`);
+
+                    // When we change the customer, we should clear
+                    // any selected shipping/billing address
+                    if (entity?.shippingAddress) {
+                        unsetShippingAddressForDraftOrder({ orderId: entity.id });
+                    }
+                    if (entity?.billingAddress) {
+                        unsetBillingAddressForDraftOrder({ orderId: entity.id });
+                    }
                     refreshEntity();
                     break;
                 default:
@@ -185,7 +178,7 @@ function DraftOrderPage() {
     const { mutate: setShippingAddressForDraftOrder } = useMutation({
         mutationFn: api.mutate(setShippingAddressForDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof setShippingAddressForDraftOrderDocument>) => {
-            toast.success(i18n.t('Shipping address set for order'));
+            toast.success(t`Shipping address set for order`);
             refreshEntity();
         },
     });
@@ -193,7 +186,7 @@ function DraftOrderPage() {
     const { mutate: setBillingAddressForDraftOrder } = useMutation({
         mutationFn: api.mutate(setBillingAddressForDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof setBillingAddressForDraftOrderDocument>) => {
-            toast.success(i18n.t('Billing address set for order'));
+            toast.success(t`Billing address set for order`);
             refreshEntity();
         },
     });
@@ -201,7 +194,7 @@ function DraftOrderPage() {
     const { mutate: unsetShippingAddressForDraftOrder } = useMutation({
         mutationFn: api.mutate(unsetShippingAddressForDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof unsetShippingAddressForDraftOrderDocument>) => {
-            toast.success(i18n.t('Shipping address unset for order'));
+            toast.success(t`Shipping address unset for order`);
             refreshEntity();
         },
     });
@@ -209,7 +202,7 @@ function DraftOrderPage() {
     const { mutate: unsetBillingAddressForDraftOrder } = useMutation({
         mutationFn: api.mutate(unsetBillingAddressForDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof unsetBillingAddressForDraftOrderDocument>) => {
-            toast.success(i18n.t('Billing address unset for order'));
+            toast.success(t`Billing address unset for order`);
             refreshEntity();
         },
     });
@@ -220,7 +213,7 @@ function DraftOrderPage() {
             const order = result.setDraftOrderShippingMethod;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Shipping method set for order'));
+                    toast.success(t`Shipping method set for order`);
                     refreshEntity();
                     break;
                 default:
@@ -236,7 +229,7 @@ function DraftOrderPage() {
             const order = result.applyCouponCodeToDraftOrder;
             switch (order.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Coupon code set for order'));
+                    toast.success(t`Coupon code set for order`);
                     refreshEntity();
                     break;
                 default:
@@ -249,7 +242,7 @@ function DraftOrderPage() {
     const { mutate: removeCouponCodeForDraftOrder } = useMutation({
         mutationFn: api.mutate(removeCouponCodeFromDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof removeCouponCodeFromDraftOrderDocument>) => {
-            toast.success(i18n.t('Coupon code removed from order'));
+            toast.success(t`Coupon code removed from order`);
             refreshEntity();
         },
     });
@@ -260,7 +253,7 @@ function DraftOrderPage() {
             const order = result.transitionOrderToState;
             switch (order?.__typename) {
                 case 'Order':
-                    toast.success(i18n.t('Draft order completed'));
+                    toast.success(t`Draft order completed`);
                     refreshEntity();
                     setTimeout(() => {
                         navigate({ to: `/orders/$id`, params: { id: order.id } });
@@ -277,7 +270,7 @@ function DraftOrderPage() {
         mutationFn: api.mutate(deleteDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof deleteDraftOrderDocument>) => {
             if (result.deleteDraftOrder.result === 'DELETED') {
-                toast.success(i18n.t('Draft order deleted'));
+                toast.success(t`Draft order deleted`);
                 navigate({ to: '/orders' });
             } else {
                 toast.error(result.deleteDraftOrder.message);
@@ -305,8 +298,8 @@ function DraftOrderPage() {
                 <PageActionBarRight>
                     <PermissionGuard requires={['DeleteOrder']}>
                         <ConfirmationDialog
-                            title={i18n.t('Delete draft order')}
-                            description={i18n.t('Are you sure you want to delete this draft order?')}
+                            title={t`Delete draft order`}
+                            description={t`Are you sure you want to delete this draft order?`}
                             onConfirm={() => {
                                 deleteDraftOrder({ orderId: entity.id });
                             }}
@@ -399,7 +392,7 @@ function DraftOrderPage() {
                                 onClick={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    orderCustomFieldsForm.handleSubmit(onSaveCustomFields)();
+                                    onSaveCustomFields(orderCustomFieldsForm.getValues());
                                 }}
                             >
                                 <Trans>Set custom fields</Trans>
@@ -409,7 +402,7 @@ function DraftOrderPage() {
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer?.id ? (
-                        <Button variant="ghost" asChild className="mb-4">
+                        <Button variant="outline" asChild className="mb-4">
                             <Link to={`/customers/${entity?.customer?.id}`}>
                                 <User className="w-4 h-4" />
                                 {entity?.customer?.firstName} {entity?.customer?.lastName}
@@ -430,25 +423,27 @@ function DraftOrderPage() {
                                 onClick={() => unsetShippingAddressForDraftOrder({ orderId: entity.id })}
                             />
                         ) : (
-                            <CustomerAddressSelector
-                                customerId={entity.customer?.id}
-                                onSelect={address => {
-                                    setShippingAddressForDraftOrder({
-                                        orderId: entity.id,
-                                        input: {
-                                            fullName: address.fullName,
-                                            company: address.company,
-                                            streetLine1: address.streetLine1,
-                                            streetLine2: address.streetLine2,
-                                            city: address.city,
-                                            province: address.province,
-                                            postalCode: address.postalCode,
-                                            countryCode: address.country.code,
-                                            phoneNumber: address.phoneNumber,
-                                        },
-                                    });
-                                }}
-                            />
+                            <div className="mt-4">
+                                <CustomerAddressSelector
+                                    customerId={entity.customer?.id}
+                                    onSelect={address => {
+                                        setShippingAddressForDraftOrder({
+                                            orderId: entity.id,
+                                            input: {
+                                                fullName: address.fullName,
+                                                company: address.company,
+                                                streetLine1: address.streetLine1,
+                                                streetLine2: address.streetLine2,
+                                                city: address.city,
+                                                province: address.province,
+                                                postalCode: address.postalCode,
+                                                countryCode: address.country.code,
+                                                phoneNumber: address.phoneNumber,
+                                            },
+                                        });
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                 </PageBlock>
@@ -460,25 +455,27 @@ function DraftOrderPage() {
                                 onClick={() => unsetBillingAddressForDraftOrder({ orderId: entity.id })}
                             />
                         ) : (
-                            <CustomerAddressSelector
-                                customerId={entity.customer?.id}
-                                onSelect={address => {
-                                    setBillingAddressForDraftOrder({
-                                        orderId: entity.id,
-                                        input: {
-                                            fullName: address.fullName,
-                                            company: address.company,
-                                            streetLine1: address.streetLine1,
-                                            streetLine2: address.streetLine2,
-                                            city: address.city,
-                                            province: address.province,
-                                            postalCode: address.postalCode,
-                                            countryCode: address.country.code,
-                                            phoneNumber: address.phoneNumber,
-                                        },
-                                    });
-                                }}
-                            />
+                            <div className="mt-4">
+                                <CustomerAddressSelector
+                                    customerId={entity.customer?.id}
+                                    onSelect={address => {
+                                        setBillingAddressForDraftOrder({
+                                            orderId: entity.id,
+                                            input: {
+                                                fullName: address.fullName,
+                                                company: address.company,
+                                                streetLine1: address.streetLine1,
+                                                streetLine2: address.streetLine2,
+                                                city: address.city,
+                                                province: address.province,
+                                                postalCode: address.postalCode,
+                                                countryCode: address.country.code,
+                                                phoneNumber: address.phoneNumber,
+                                            },
+                                        });
+                                    }}
+                                />
+                            </div>
                         )}
                     </div>
                 </PageBlock>

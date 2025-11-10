@@ -20,6 +20,7 @@ export const collectionListDocument = graphql(
                     }
                     name
                     slug
+                    description
                     breadcrumbs {
                         id
                         name

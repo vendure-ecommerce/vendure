@@ -26,7 +26,7 @@ export const addCodegenCommand = new CliCommand({
     run: addCodegen,
 });
 
-async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
+export async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({
         providedVendurePlugin,
@@ -34,7 +34,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
         config: options?.config,
     });
 
-    const { plugin: resolvedPlugin, shouldPromptForSelection } = resolvePluginFromOptions(project, {
+    const { plugin: resolvedPlugin } = resolvePluginFromOptions(project, {
         providedPlugin: providedVendurePlugin,
         pluginName: options?.pluginName,
         isNonInteractive: options?.isNonInteractive === true,
@@ -116,7 +116,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
         }
     }
 
-    packageJson.addScript('codegen', 'graphql-codegen --config codegen.ts');
+    packageJson.addScriptToRootPackageJson('codegen', 'graphql-codegen --config codegen.ts');
 
     configSpinner.stop('Configured codegen file');
 
@@ -124,7 +124,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
 
     const nextSteps = [
         `You can run codegen by doing the following:`,
-        `1. Ensure your dev server is running`,
+        `1. Run "npx vendure schema" to generate a schema file`,
         `2. Run "npm run codegen"`,
     ];
     note(nextSteps.join('\n'));

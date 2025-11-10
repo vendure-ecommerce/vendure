@@ -21,6 +21,8 @@ interface DashboardRouteDefinition {
     path: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
     loader?: RouteOptions['loader'];
+    validateSearch?: RouteOptions['validateSearch'];
+    authenticated?: boolean;
 }
 ```
 
@@ -38,10 +40,14 @@ The React component that will be rendered for this route.
 The URL path for this route, e.g. '/my-custom-page'.
 ### navMenuItem
 
-<MemberInfo kind="property" type={`Partial&#60;<a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>&#62; &#38; { sectionId: string }`}   />
+<MemberInfo kind="property" type={`Partial&#60;<a href='/reference/dashboard/extensions-api/navigation#navmenuitem'>NavMenuItem</a>&#62; &#38; { sectionId: string }`}   />
 
 Optional navigation menu item configuration to add this route to the nav menu
 on the left side of the dashboard.
+
+The `sectionId` specifies which nav menu section (e.g. "catalog", "customers")
+this item should appear in. It can also point to custom nav menu sections that
+have been defined using the `navSections` extension property.
 ### loader
 
 <MemberInfo kind="property" type={`RouteOptions['loader']`}   />
@@ -49,6 +55,19 @@ on the left side of the dashboard.
 Optional loader function to fetch data before the route renders.
 The value is a Tanstack Router
 [loader function](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#route-loaders)
+### validateSearch
+
+<MemberInfo kind="property" type={`RouteOptions['validateSearch']`}   />
+
+Optional search parameter validation function.
+The value is a Tanstack Router
+[validateSearch function](https://tanstack.com/router/latest/docs/framework/react/guide/search-params#search-param-validation)
+### authenticated
+
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
+
+Define if the route should be under the authentication context, i.e have the authenticated route
+as a parent.
 
 
 </div>

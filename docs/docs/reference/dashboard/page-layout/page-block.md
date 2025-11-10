@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageBlock
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="465" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="562" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
 A component for displaying a block of content on a page. This should be used inside the <a href='/reference/dashboard/page-layout/#pagelayout'>PageLayout</a> component.
@@ -39,7 +39,7 @@ Parameters
 
 ## PageBlockProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="414" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="511" packageName="@vendure/dashboard" since="3.3.0" />
 
 Props used to configure the <a href='/reference/dashboard/page-layout/page-block#pageblock'>PageBlock</a> component.
 
@@ -93,7 +93,7 @@ An optional set of CSS classes to apply to the block.
 
 ## FullWidthPageBlock
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="510" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="609" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -113,7 +113,7 @@ Parameters
 
 ## CustomFieldsPageBlock
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="540" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="639" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
 A component for displaying an auto-generated form for custom fields on a page.

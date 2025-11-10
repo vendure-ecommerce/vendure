@@ -1,3 +1,4 @@
+import { DateRangePicker } from '@/vdb/components/date-range-picker.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import type { GridLayout as GridLayoutType } from '@/vdb/components/ui/grid-layout.js';
 import { GridLayout } from '@/vdb/components/ui/grid-layout.js';
@@ -5,6 +6,10 @@ import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
 } from '@/vdb/framework/dashboard-widget/widget-extensions.js';
+import {
+    DefinedDateRange,
+    WidgetFiltersProvider,
+} from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
 import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
@@ -16,7 +21,9 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState, useRef } from 'react';
+import { endOfDay, startOfMonth } from 'date-fns';
+import { useEffect, useRef, useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
@@ -67,12 +74,17 @@ function DashboardPage() {
     const [editMode, setEditMode] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const prevEditModeRef = useRef(editMode);
+    const { t } = useLingui();
+    const [dateRange, setDateRange] = useState<DefinedDateRange>({
+        from: startOfMonth(new Date()),
+        to: endOfDay(new Date()),
+    });
 
     const { settings, setWidgetLayout } = useUserSettings();
 
     useEffect(() => {
         const savedLayouts = settings.widgetLayout || {};
-        
+
         const initialWidgets = Array.from(getDashboardWidgetRegistry().entries()).reduce(
             (acc: DashboardWidgetInstance[], [id, widget]) => {
                 const defaultSize = {
@@ -88,7 +100,7 @@ function DashboardPage() {
 
                 // Check if we have a saved layout for this widget
                 const savedLayout = savedLayouts[id];
-                
+
                 const layout = {
                     w: savedLayout?.w ?? defaultSize.w,
                     h: savedLayout?.h ?? defaultSize.h,
@@ -125,7 +137,7 @@ function DashboardPage() {
         setWidgets(initialWidgets);
         setIsInitialized(true);
     }, [settings.widgetLayout]);
-    
+
     // Save layout when edit mode is turned off
     useEffect(() => {
         // Only save when transitioning from edit mode ON to OFF
@@ -141,7 +153,7 @@ function DashboardPage() {
             });
             setWidgetLayout(layoutConfig);
         }
-        
+
         // Update the ref for next render
         prevEditModeRef.current = editMode;
     }, [editMode, isInitialized, widgets, setWidgetLayout]);
@@ -165,14 +177,21 @@ function DashboardPage() {
 
     return (
         <Page pageId="insights">
-            <PageTitle>Insights</PageTitle>
+            <PageTitle>
+                <Trans>Insights</Trans>
+            </PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
-                    <Button 
-                        variant={editMode ? "default" : "outline"} 
+                    <DateRangePicker
+                        dateRange={dateRange}
+                        onDateRangeChange={setDateRange}
+                        className="mr-2"
+                    />
+                    <Button
+                        variant={editMode ? 'default' : 'outline'}
                         onClick={() => setEditMode(prev => !prev)}
                     >
-                        {editMode ? "Save Layout" : "Edit Layout"}
+                        {editMode ? t`Save Layout` : t`Edit Layout`}
                     </Button>
                 </PageActionBarRight>
             </PageActionBar>
@@ -180,22 +199,24 @@ function DashboardPage() {
                 <FullWidthPageBlock blockId="widgets">
                     <div className="w-full">
                         {widgets.length > 0 ? (
-                            <GridLayout
-                                layouts={widgets.map(w => ({ ...w.layout, i: w.id }))}
-                                onLayoutChange={handleLayoutChange}
-                                cols={12}
-                                rowHeight={100}
-                                isDraggable={editMode}
-                                isResizable={editMode}
-                                className="min-h-[400px]"
-                                gutter={10}
-                            >
-                                {
-                                    widgets
-                                        .map(widget => renderWidget(widget))
-                                        .filter(Boolean) as React.ReactElement[]
-                                }
-                            </GridLayout>
+                            <WidgetFiltersProvider filters={{ dateRange }}>
+                                <GridLayout
+                                    layouts={widgets.map(w => ({ ...w.layout, i: w.id }))}
+                                    onLayoutChange={handleLayoutChange}
+                                    cols={12}
+                                    rowHeight={100}
+                                    isDraggable={editMode}
+                                    isResizable={editMode}
+                                    className="min-h-[400px]"
+                                    gutter={10}
+                                >
+                                    {
+                                        widgets
+                                            .map(widget => renderWidget(widget))
+                                            .filter(Boolean) as React.ReactElement[]
+                                    }
+                                </GridLayout>
+                            </WidgetFiltersProvider>
                         ) : (
                             <div
                                 className="flex items-center justify-center text-muted-foreground"

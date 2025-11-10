@@ -1,6 +1,7 @@
+import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
-import react from '@vitejs/plugin-react';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { PluginOption } from 'vite';
 
@@ -11,14 +12,21 @@ import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
+import { hmrPlugin } from './vite-plugin-hmr.js';
 import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
 import { themeVariablesPlugin, ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
+import { translationsPlugin } from './vite-plugin-translations.js';
 import { uiConfigPlugin, UiConfigPluginOptions } from './vite-plugin-ui-config.js';
 
 /**
  * @description
  * Options for the {@link vendureDashboardPlugin} Vite plugin.
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ * @docsWeight 1
  */
 export type VitePluginVendureDashboardOptions = {
     /**
@@ -78,7 +86,6 @@ export type VitePluginVendureDashboardOptions = {
      */
     gqlOutputPath?: string;
     tempCompilationDir?: string;
-    disableTansStackRouterPlugin?: boolean;
     /**
      * @description
      * Allows you to customize the location of node_modules & glob patterns used to scan for potential
@@ -86,6 +93,37 @@ export type VitePluginVendureDashboardOptions = {
      * the location based on the location of the `@vendure/core` package.
      */
     pluginPackageScanner?: PackageScannerConfig;
+    /**
+     * @description
+     * Allows you to selectively disable individual plugins.
+     * @example
+     * ```ts
+     * vendureDashboardPlugin({
+     *   vendureConfigPath: './config.ts',
+     *   disablePlugins: {
+     *     react: true,
+     *     lingui: true,
+     *   }
+     * })
+     * ```
+     */
+    disablePlugins?: {
+        tanstackRouter?: boolean;
+        react?: boolean;
+        lingui?: boolean;
+        themeVariables?: boolean;
+        tailwindSource?: boolean;
+        tailwindcss?: boolean;
+        configLoader?: boolean;
+        viteConfig?: boolean;
+        adminApiSchema?: boolean;
+        dashboardMetadata?: boolean;
+        uiConfig?: boolean;
+        gqlTada?: boolean;
+        transformIndexHtml?: boolean;
+        translations?: boolean;
+        hmr?: boolean;
+    };
 } & UiConfigPluginOptions &
     ThemeVariablesPluginOptions;
 
@@ -93,52 +131,136 @@ export type VitePluginVendureDashboardOptions = {
  * @description
  * This is a Vite plugin which configures a set of plugins required to build the Vendure Dashboard.
  */
+type PluginKey = keyof NonNullable<VitePluginVendureDashboardOptions['disablePlugins']>;
+
+type PluginMapEntry = {
+    key: PluginKey;
+    plugin: () => PluginOption | PluginOption[] | false | '';
+};
+
+/**
+ * @description
+ * This is the Vite plugin which powers the Vendure Dashboard, including:
+ *
+ * - Configuring routing, styling and React support
+ * - Analyzing your VendureConfig file and introspecting your schema
+ * - Loading your custom Dashboard extensions
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ * @docsWeight 0
+ */
 export function vendureDashboardPlugin(options: VitePluginVendureDashboardOptions): PluginOption[] {
     const tempDir = options.tempCompilationDir ?? path.join(import.meta.dirname, './.vendure-dashboard-temp');
     const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
     const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
+    const disabled = options.disablePlugins ?? {};
 
     if (process.env.IS_LOCAL_DEV !== 'true') {
         process.env.LINGUI_CONFIG = linguiConfigPath;
     }
 
-    return [
-        // TODO: solve https://github.com/kentcdodds/babel-plugin-macros/issues/87
-        // lingui(),
-        ...(options.disableTansStackRouterPlugin
-            ? []
-            : [
-                  TanStackRouterVite({
-                      autoCodeSplitting: true,
-                      routeFileIgnorePattern: '.graphql.ts|components|hooks|utils',
-                      routesDirectory: path.join(packageRoot, 'src/app/routes'),
-                      generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
-                  }),
-              ]),
-        react({
-            // babel: {
-            //     plugins: ['@lingui/babel-plugin-lingui-macro'],
-            // },
-        }),
-        themeVariablesPlugin({ theme: options.theme }),
-        dashboardTailwindSourcePlugin(),
-        tailwindcss(),
-        configLoaderPlugin({
-            vendureConfigPath: normalizedVendureConfigPath,
-            outputPath: tempDir,
-            pathAdapter: options.pathAdapter,
-            pluginPackageScanner: options.pluginPackageScanner,
-        }),
-        viteConfigPlugin({ packageRoot }),
-        adminApiSchemaPlugin(),
-        dashboardMetadataPlugin(),
-        uiConfigPlugin(options),
-        ...(options.gqlOutputPath
-            ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlOutputPath, tempDir, packageRoot })]
-            : []),
-        transformIndexHtmlPlugin(),
+    const pluginMap: PluginMapEntry[] = [
+        {
+            key: 'tanstackRouter',
+            plugin: () =>
+                tanstackRouter({
+                    autoCodeSplitting: true,
+                    routeFileIgnorePattern: '.graphql.ts|components|hooks|utils',
+                    routesDirectory: path.join(packageRoot, 'src/app/routes'),
+                    generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
+                }),
+        },
+        {
+            key: 'react',
+            plugin: () =>
+                react({
+                    plugins: [['@lingui/swc-plugin', {}]],
+                }),
+        },
+        {
+            key: 'lingui',
+            plugin: () => lingui({}),
+        },
+        {
+            key: 'themeVariables',
+            plugin: () => themeVariablesPlugin({ theme: options.theme }),
+        },
+        {
+            key: 'tailwindSource',
+            plugin: () => dashboardTailwindSourcePlugin(),
+        },
+        {
+            key: 'tailwindcss',
+            plugin: () => tailwindcss(),
+        },
+        {
+            key: 'configLoader',
+            plugin: () =>
+                configLoaderPlugin({
+                    vendureConfigPath: normalizedVendureConfigPath,
+                    outputPath: tempDir,
+                    pathAdapter: options.pathAdapter,
+                    pluginPackageScanner: options.pluginPackageScanner,
+                }),
+        },
+        {
+            key: 'viteConfig',
+            plugin: () => viteConfigPlugin({ packageRoot }),
+        },
+        {
+            key: 'adminApiSchema',
+            plugin: () => adminApiSchemaPlugin(),
+        },
+        {
+            key: 'dashboardMetadata',
+            plugin: () => dashboardMetadataPlugin(),
+        },
+        {
+            key: 'uiConfig',
+            plugin: () => uiConfigPlugin(options),
+        },
+        {
+            key: 'gqlTada',
+            plugin: () =>
+                options.gqlOutputPath &&
+                gqlTadaPlugin({ gqlTadaOutputPath: options.gqlOutputPath, tempDir, packageRoot }),
+        },
+        {
+            key: 'transformIndexHtml',
+            plugin: () => transformIndexHtmlPlugin(),
+        },
+        {
+            key: 'translations',
+            plugin: () =>
+                translationsPlugin({
+                    packageRoot,
+                }),
+        },
+        {
+            key: 'hmr',
+            plugin: () => hmrPlugin(),
+        },
     ];
+
+    const plugins: PluginOption[] = [];
+
+    for (const entry of pluginMap) {
+        if (!disabled[entry.key]) {
+            const plugin = entry.plugin();
+            if (plugin) {
+                if (Array.isArray(plugin)) {
+                    plugins.push(...plugin);
+                } else {
+                    plugins.push(plugin);
+                }
+            }
+        }
+    }
+
+    return plugins;
 }
 
 /**

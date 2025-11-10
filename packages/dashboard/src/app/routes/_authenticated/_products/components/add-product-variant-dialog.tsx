@@ -14,8 +14,8 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf, VariablesOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -83,7 +83,7 @@ export function AddProductVariantDialog({
 }) {
     const [open, setOpen] = useState(false);
     const { activeChannel } = useChannel();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [duplicateVariantError, setDuplicateVariantError] = useState<string | null>(null);
     const [nameTouched, setNameTouched] = useState(false);
 
@@ -166,13 +166,13 @@ export function AddProductVariantDialog({
     const createProductVariantMutation = useMutation({
         mutationFn: api.mutate(createProductVariantDocument),
         onSuccess: (result: ResultOf<typeof createProductVariantDocument>) => {
-            toast.success(i18n.t('Successfully created product variant'));
+            toast.success(t`Successfully created product variant`);
             setOpen(false);
             onSuccess?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to create product variant'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create product variant`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         },
     });
@@ -343,7 +343,7 @@ export function AddProductVariantDialog({
                                     {...field}
                                     value={Number(field.value) || 0}
                                     onChange={value => field.onChange(value.toString())}
-                                    currency={activeChannel?.defaultCurrencyCode ?? 'USD'}
+                                    currency={activeChannel?.defaultCurrencyCode}
                                 />
                             )}
                         />

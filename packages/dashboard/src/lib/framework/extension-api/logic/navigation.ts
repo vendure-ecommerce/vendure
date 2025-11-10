@@ -26,6 +26,9 @@ export function registerNavigationExtensions(
                     id: route.navMenuItem.id ?? route.path,
                     title: route.navMenuItem.title ?? route.path,
                     order: route.navMenuItem.order,
+                    requiresPermission: route.navMenuItem.requiresPermission,
+                    icon: route.navMenuItem.icon,
+                    placement: route.navMenuItem.placement,
                 };
                 addNavMenuItem(item, route.navMenuItem.sectionId);
             }

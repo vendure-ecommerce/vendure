@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
@@ -17,14 +16,4 @@ export function getAlertRegistry() {
 
 export function getAlert(id: string) {
     return getAlertRegistry().get(id);
-}
-
-export function useAlerts() {
-    const [alerts, setAlerts] = useState<DashboardAlertDefinition[]>([]);
-
-    useEffect(() => {
-        setAlerts(Array.from(getAlertRegistry().values()));
-    }, []);
-
-    return { alerts };
 }

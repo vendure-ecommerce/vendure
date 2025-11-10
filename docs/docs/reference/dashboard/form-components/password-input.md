@@ -9,14 +9,14 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## PasswordInput
+## PasswordFormInput
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/password-input.tsx" sourceLine="12" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/password-form-input.tsx" sourceLine="12" packageName="@vendure/dashboard" />
 
 A component for displaying a password input.
 
 ```ts title="Signature"
-function PasswordInput(props: Readonly<DashboardFormComponentProps>): void
+function PasswordFormInput(props: Readonly<DashboardFormComponentProps>): void
 ```
 Parameters
 

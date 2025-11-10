@@ -13,7 +13,7 @@ export type AffixedInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>
 /**
  * @description
  * A component for displaying an input with a prefix and/or a suffix.
- * 
+ *
  * @example
  * ```tsx
  * <AffixedInput
@@ -24,7 +24,7 @@ export type AffixedInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>
  *     onChange={e => field.onChange(e.target.valueAsNumber)}
  * />
  * ```
- * 
+ *
  * @docsCategory form-components
  * @docsPage AffixedInput
  */
@@ -65,6 +65,9 @@ export function AffixedInput({ prefix, suffix, className = '', ...props }: Reado
                 className={className}
                 style={style}
                 disabled={readOnly}
+                min={props.min}
+                max={props.max}
+                step={props.step}
             />
             {suffix && (
                 <span ref={suffixRef} className="absolute right-3 text-muted-foreground whitespace-nowrap">

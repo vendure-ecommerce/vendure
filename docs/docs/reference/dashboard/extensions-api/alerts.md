@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardAlertDefinition
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/alerts.ts" sourceLine="9" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/alerts.ts" sourceLine="11" packageName="@vendure/dashboard" since="3.3.0" />
 
 Allows you to define custom alerts that can be displayed in the dashboard.
 
@@ -20,13 +20,13 @@ interface DashboardAlertDefinition<TResponse = any> {
     id: string;
     title: string | ((data: TResponse) => string);
     description?: string | ((data: TResponse) => string);
-    severity: 'info' | 'warning' | 'error';
+    severity: AlertSeverity | ((data: TResponse) => AlertSeverity);
     check: () => Promise<TResponse> | TResponse;
+    shouldShow: (data: TResponse) => boolean;
     recheckInterval?: number;
-    shouldShow?: (data: TResponse) => boolean;
     actions?: Array<{
         label: string;
-        onClick: (data: TResponse) => void;
+        onClick: (args: { data: TResponse; dismiss: () => void }) => void | Promise<any>;
     }>;
 }
 ```
@@ -50,7 +50,7 @@ The title of the alert. Can be a string or a function that returns a string base
 The description of the alert. Can be a string or a function that returns a string based on the response data.
 ### severity
 
-<MemberInfo kind="property" type={`'info' | 'warning' | 'error'`}   />
+<MemberInfo kind="property" type={`AlertSeverity | ((data: TResponse) =&#62; AlertSeverity)`}   />
 
 The severity level of the alert.
 ### check
@@ -58,21 +58,25 @@ The severity level of the alert.
 <MemberInfo kind="property" type={`() =&#62; Promise&#60;TResponse&#62; | TResponse`}   />
 
 A function that checks the condition and returns the response data.
+### shouldShow
+
+<MemberInfo kind="property" type={`(data: TResponse) =&#62; boolean`}   />
+
+A function that determines whether the alert should be rendered based on the response data.
 ### recheckInterval
 
 <MemberInfo kind="property" type={`number`}   />
 
 The interval in milliseconds to recheck the condition.
-### shouldShow
-
-<MemberInfo kind="property" type={`(data: TResponse) =&#62; boolean`}   />
-
-A function that determines whether the alert should be shown based on the response data.
 ### actions
 
-<MemberInfo kind="property" type={`Array&#60;{         label: string;         onClick: (data: TResponse) =&#62; void;     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{         label: string;         onClick: (args: { data: TResponse; dismiss: () =&#62; void }) =&#62; void | Promise&#60;any&#62;;     }&#62;`}   />
 
 Optional actions that can be performed when the alert is shown.
+
+The `onClick()` handler will receive the data returned by the `check` function,
+as well as a `dismiss()` function that can be used to immediately dismiss the
+current alert.
 
 
 </div>

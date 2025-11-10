@@ -90,6 +90,13 @@ export interface AdminUiPluginOptions {
 
 /**
  * @description
+ *
+ * :::warning Deprecated
+ * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).
+ * The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues.
+ * Community contributions will always be merged and released.
+ * :::
+ *
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
  *
  * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by

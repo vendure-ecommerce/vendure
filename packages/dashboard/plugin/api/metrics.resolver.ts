@@ -2,7 +2,7 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
 
 import { MetricsService } from '../service/metrics.service.js';
-import { MetricSummary, MetricSummaryInput } from '../types.js';
+import { DashboardMetricSummary, DashboardMetricSummaryInput } from '../types.js';
 
 @Resolver()
 export class MetricsResolver {
@@ -10,10 +10,10 @@ export class MetricsResolver {
 
     @Query()
     @Allow(Permission.ReadOrder)
-    async metricSummary(
+    async dashboardMetricSummary(
         @Ctx() ctx: RequestContext,
-        @Args('input') input: MetricSummaryInput,
-    ): Promise<MetricSummary[]> {
+        @Args('input') input: DashboardMetricSummaryInput,
+    ): Promise<DashboardMetricSummary[]> {
         return this.service.getMetrics(ctx, input);
     }
 }

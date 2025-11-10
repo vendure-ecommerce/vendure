@@ -2,7 +2,6 @@ import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal
 import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
-import { Point } from '@/vdb/components/shared/asset/focal-point-control.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
@@ -19,12 +18,13 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
+import { AssetTagsEditor } from './components/asset-tags-editor.js';
 
 const pageId = 'asset-detail';
 
@@ -45,15 +45,14 @@ export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
 
 function AssetDetailPage() {
     const params = Route.useParams();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const imageRef = useRef<HTMLImageElement>(null);
     const [size, setSize] = useState<PreviewPreset>('medium');
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-    const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
-    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
@@ -68,11 +67,11 @@ function AssetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async () => {
-            toast(i18n.t('Successfully updated asset'));
+            toast(t`Successfully updated asset`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update asset'), {
+            toast(t`Failed to update asset`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -106,12 +105,12 @@ function AssetDetailPage() {
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="asset-preview">
-                    <div className="relative flex items-center justify-center bg-muted/30 rounded-lg min-h-[300px] overflow-auto">
+                    <div className="relative flex items-center justify-center bg-muted/30 rounded-lg min-h-[300px] overflow-auto resize-y">
                         <AssetFocalPointEditor
                             width={width}
                             height={height}
                             settingFocalPoint={settingFocalPoint}
-                            focalPoint={form.getValues().focalPoint ?? { x: 0.5, y: 0.5 }}
+                            focalPoint={entity.focalPoint ?? { x: 0.5, y: 0.5 }}
                             onFocalPointChange={point => {
                                 form.setValue('focalPoint.x', point.x, { shouldDirty: true });
                                 form.setValue('focalPoint.y', point.y, { shouldDirty: true });
@@ -125,10 +124,9 @@ function AssetDetailPage() {
                                 ref={imageRef}
                                 asset={entity}
                                 preset={size || undefined}
-                                mode="resize"
                                 useFocalPoint={true}
                                 onLoad={updateDimensions}
-                                className="max-w-full max-h-full object-contain"
+                                className="max-w-full object-contain"
                             />
                         </AssetFocalPointEditor>
                     </div>
@@ -163,6 +161,19 @@ function AssetDetailPage() {
                             </div>
                         </div>
                     </div>
+                </PageBlock>
+                <PageBlock column="side" blockId="asset-tags">
+                    <AssetTagsEditor
+                        selectedTags={form.watch('tags') || []}
+                        onTagsChange={tags => {
+                            form.setValue('tags', tags, { shouldDirty: true });
+                        }}
+                        onTagsUpdated={() => {
+                            // Refresh the asset entity to get updated tag values
+                            refreshEntity();
+                        }}
+                        disabled={isPending}
+                    />
                 </PageBlock>
             </PageLayout>
         </Page>

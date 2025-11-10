@@ -6,7 +6,7 @@ import {
 } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField, isStringFieldWithOptions } from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import React from 'react';
 import { MultiSelect } from '../shared/multi-select.js';
 

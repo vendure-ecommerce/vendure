@@ -15,8 +15,8 @@ export const paymentMethodItemFragment = graphql(`
 
 export const paymentMethodListQuery = graphql(
     `
-        query PaymentMethodList {
-            paymentMethods {
+        query PaymentMethodList($options: PaymentMethodListOptions) {
+            paymentMethods(options: $options) {
                 items {
                     ...PaymentMethodItem
                 }

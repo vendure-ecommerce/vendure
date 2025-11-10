@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defineDashboardExtension
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/define-dashboard-extension.ts" sourceLine="60" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/define-dashboard-extension.ts" sourceLine="62" packageName="@vendure/dashboard" since="3.3.0" />
 
 The main entry point for extensions to the React-based dashboard. Every dashboard extension
 must contain a call to this function, usually in the entry point file that is referenced by
@@ -26,6 +26,7 @@ Every type of customisation of the dashboard can be defined here, including:
 - Data tables
 - Detail forms
 - Login
+- Custom history entries
 
 *Example*
 
@@ -51,7 +52,7 @@ Parameters
 
 ## DashboardExtension
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="33" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="34" packageName="@vendure/dashboard" since="3.3.0" />
 
 This is the main interface for defining _all_ extensions to the dashboard.
 
@@ -77,6 +78,7 @@ interface DashboardExtension {
     dataTables?: DashboardDataTableExtensionDefinition[];
     detailForms?: DashboardDetailFormExtensionDefinition[];
     login?: DashboardLoginExtensions;
+    historyEntries?: DashboardHistoryEntryComponent[];
 }
 ```
 
@@ -120,7 +122,7 @@ given components and optionally also add a nav menu item.
 Unified registration for custom form custom field components.
 ### dataTables
 
-<MemberInfo kind="property" type={`<a href='/reference/dashboard/list-views/data-table#dashboarddatatableextensiondefinition'>DashboardDataTableExtensionDefinition</a>[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/data-tables#dashboarddatatableextensiondefinition'>DashboardDataTableExtensionDefinition</a>[]`}   />
 
 Allows you to customize aspects of existing data tables in the dashboard.
 ### detailForms
@@ -133,6 +135,12 @@ Allows you to customize the detail form for any page in the dashboard.
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/login#dashboardloginextensions'>DashboardLoginExtensions</a>`}   />
 
 Allows you to customize the login page with custom components.
+### historyEntries
+
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions-api/history-entries#dashboardhistoryentrycomponent'>DashboardHistoryEntryComponent</a>[]`}   />
+
+Allows a custom component to be used to render a history entry item
+in the Order or Customer history lists.
 
 
 </div>

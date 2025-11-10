@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
+    createProxyHandler,
     Logger,
     PluginCommonModule,
     ProcessContext,
@@ -10,12 +11,13 @@ import {
 } from '@vendure/core';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'node:fs';
+import * as http from 'node:http';
+import * as path from 'node:path';
 
 import { adminApiExtensions } from './api/api-extensions.js';
 import { MetricsResolver } from './api/metrics.resolver.js';
-import { DEFAULT_APP_PATH, loggerCtx } from './constants.js';
+import { loggerCtx, manageDashboardGlobalViews } from './constants.js';
 import { MetricsService } from './service/metrics.service.js';
 
 /**
@@ -34,10 +36,18 @@ export interface DashboardPluginOptions {
     route: string;
     /**
      * @description
-     * The path to the dashboard UI app dist directory. By default, the built-in dashboard UI
-     * will be served. This can be overridden with a custom build of the dashboard.
+     * The path to the dashboard UI app dist directory.
      */
     appDir: string;
+    /**
+     * @description
+     * The port on which to check for a running Vite dev server.
+     * If a Vite dev server is detected on this port, requests will be proxied to it
+     * instead of serving static files from appDir.
+     *
+     * @default 5173
+     */
+    viteDevServerPort?: number;
 }
 
 /**
@@ -54,10 +64,16 @@ export interface DashboardPluginOptions {
  * First you need to set up compilation of the Dashboard, using the Vite configuration
  * described in the [Dashboard Getting Started Guide](/guides/extending-the-dashboard/getting-started/)
  *
- * Once set up, you run `npx vite build` to build the production version of the dashboard app.
+ * ## Development vs Production
  *
- * The built app files will be output to the location specified by `build.outDir` in your Vite
- * config file. This should then be passed to the `appDir` init option, as in the example below:
+ * When developing, you can run `npx vite` (or `npm run dev`) to start the Vite development server.
+ * The plugin will automatically detect if Vite is running on the default port (5173) and proxy
+ * requests to it instead of serving static files. This enables hot module replacement and faster
+ * development iterations.
+ *
+ * For production, run `npx vite build` to build the dashboard app. The built app files will be
+ * output to the location specified by `build.outDir` in your Vite config file. This should then
+ * be passed to the `appDir` init option, as in the example below:
  *
  * @example
  * ```ts
@@ -69,6 +85,8 @@ export interface DashboardPluginOptions {
  *     DashboardPlugin.init({
  *       route: 'dashboard',
  *       appDir: './dist/dashboard',
+ *       // Optional: customize Vite dev server port (defaults to 5173)
+ *       viteDevServerPort: 3000,
  *     }),
  *   ],
  * };
@@ -106,9 +124,23 @@ export interface DashboardPluginOptions {
     },
     providers: [MetricsService],
     configuration: config => {
+        config.authOptions.customPermissions.push(manageDashboardGlobalViews);
+
         config.settingsStoreFields['vendure.dashboard'] = [
             {
                 name: 'userSettings',
+                scope: SettingsStoreScopes.user,
+            },
+            {
+                name: 'globalSavedViews',
+                scope: SettingsStoreScopes.global,
+                requiresPermission: {
+                    read: manageDashboardGlobalViews.Read,
+                    write: manageDashboardGlobalViews.Write,
+                },
+            },
+            {
+                name: 'userSavedViews',
                 scope: SettingsStoreScopes.user,
             },
         ];
@@ -135,17 +167,17 @@ export class DashboardPlugin implements NestModule {
             return;
         }
         if (!DashboardPlugin.options) {
-            Logger.info(
+            Logger.warn(
                 `DashboardPlugin's init() method was not called. The Dashboard UI will not be served.`,
                 loggerCtx,
             );
             return;
         }
-        const { route, appDir } = DashboardPlugin.options;
-        const dashboardPath = appDir || this.getDashboardPath();
+        const { route, appDir, viteDevServerPort = 5173 } = DashboardPlugin.options;
 
-        Logger.info('Creating dashboard middleware', loggerCtx);
-        consumer.apply(this.createStaticServer(dashboardPath)).forRoutes(route);
+        Logger.verbose('Creating dashboard middleware', loggerCtx);
+
+        consumer.apply(this.createDynamicHandler(route, appDir, viteDevServerPort)).forRoutes(route);
 
         registerPluginStartupMessage('Dashboard UI', route);
     }
@@ -153,16 +185,13 @@ export class DashboardPlugin implements NestModule {
     private createStaticServer(dashboardPath: string) {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 10_000,
             standardHeaders: true,
             legacyHeaders: false,
         });
 
         const dashboardServer = express.Router();
-        // This is a workaround for a type mismatch between express v5 (Vendure core)
-        // and express v4 (several transitive dependencies). Can be removed once the
-        // ecosystem has more significantly shifted to v5.
-        dashboardServer.use(limiter as any);
+        dashboardServer.use(limiter);
         dashboardServer.use(express.static(dashboardPath));
         dashboardServer.use((req, res) => {
             res.sendFile('index.html', { root: dashboardPath });
@@ -171,26 +200,174 @@ export class DashboardPlugin implements NestModule {
         return dashboardServer;
     }
 
-    private getDashboardPath(): string {
-        // First, try to find the dashboard dist directory in the @vendure/dashboard package
+    private async checkViteDevServer(port: number): Promise<boolean> {
+        return new Promise(resolve => {
+            const req = http.request(
+                {
+                    hostname: 'localhost',
+                    port,
+                    path: '/',
+                    method: 'HEAD',
+                    timeout: 1000,
+                },
+                (res: http.IncomingMessage) => {
+                    resolve(res.statusCode !== undefined && res.statusCode < 400);
+                },
+            );
+
+            req.on('error', () => {
+                resolve(false);
+            });
+
+            req.on('timeout', () => {
+                req.destroy();
+                resolve(false);
+            });
+
+            req.end();
+        });
+    }
+
+    private checkBuiltFiles(appDir: string): boolean {
         try {
-            const dashboardPackageJson = require.resolve('@vendure/dashboard/package.json');
-            const dashboardPackageRoot = path.dirname(dashboardPackageJson);
-            const dashboardDistPath = path.join(dashboardPackageRoot, 'dist');
-
-            if (fs.existsSync(dashboardDistPath)) {
-                Logger.info(`Found dashboard UI at ${dashboardDistPath}`, loggerCtx);
-                return dashboardDistPath;
-            }
-        } catch (e) {
-            // Dashboard package not found, continue to fallback
+            const indexPath = path.join(appDir, 'index.html');
+            return fs.existsSync(indexPath);
+        } catch {
+            return false;
         }
+    }
 
-        // Fallback to default path
-        Logger.warn(
-            `Could not find @vendure/dashboard dist directory. Falling back to default path: ${DEFAULT_APP_PATH}`,
-            loggerCtx,
+    private createDefaultPage() {
+        const limiter = rateLimit({
+            windowMs: 60 * 1000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 20_000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        });
+
+        const defaultPageServer = express.Router();
+        defaultPageServer.use(limiter);
+
+        defaultPageServer.use((req, res) => {
+            try {
+                const htmlPath = path.join(__dirname, 'default-page.html');
+                const defaultHtml = fs.readFileSync(htmlPath, 'utf8');
+                res.setHeader('Content-Type', 'text/html');
+                res.send(defaultHtml);
+            } catch (error) {
+                res.status(500).send(
+                    `Unable to load default page: ${error instanceof Error ? error.message : String(error)}`,
+                );
+            }
+        });
+
+        return defaultPageServer;
+    }
+
+    private createDynamicHandler(route: string, appDir: string, viteDevServerPort: number) {
+        const limiter = rateLimit({
+            windowMs: 60 * 1000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        });
+
+        // Pre-create handlers to avoid recreating them on each request
+        const proxyHandler = createProxyHandler({
+            label: 'Dashboard Vite Dev Server',
+            route,
+            port: viteDevServerPort,
+            basePath: route,
+        });
+
+        const staticServer = this.createStaticServer(appDir);
+        const defaultPage = this.createDefaultPage();
+
+        // Track current mode to log changes
+        let currentMode: 'vite' | 'built' | 'default' | null = null;
+
+        const dynamicRouter = express.Router();
+        dynamicRouter.use(limiter);
+
+        // Add status endpoint for polling (localhost only for security)
+        dynamicRouter.get(
+            '/__status',
+            (req, res, next) => {
+                const clientIp = req.ip || req.connection.remoteAddress || req.socket.remoteAddress;
+                const isLocalhost =
+                    clientIp === '127.0.0.1' ||
+                    clientIp === '::1' ||
+                    clientIp === '::ffff:127.0.0.1' ||
+                    clientIp === 'localhost';
+
+                if (!isLocalhost) {
+                    return res.status(403).json({ error: 'Access denied' });
+                }
+
+                next();
+            },
+            async (req, res) => {
+                try {
+                    const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
+                    const hasBuiltFiles = this.checkBuiltFiles(appDir);
+                    const mode = isViteRunning ? 'vite' : hasBuiltFiles ? 'built' : 'default';
+                    res.json({
+                        viteRunning: isViteRunning,
+                        hasBuiltFiles,
+                        mode,
+                    });
+                } catch (error) {
+                    res.status(500).json({
+                        error: `Status check failed: ${error instanceof Error ? error.message : String(error)}`,
+                    });
+                }
+            },
         );
-        return DEFAULT_APP_PATH;
+
+        dynamicRouter.use(async (req, res, next) => {
+            try {
+                // Check for Vite dev server first (highest priority)
+                const isViteRunning = await this.checkViteDevServer(viteDevServerPort);
+                const hasBuiltFiles = this.checkBuiltFiles(appDir);
+
+                // Determine new mode
+                const staticMode = hasBuiltFiles ? 'built' : 'default';
+                const newMode: 'vite' | 'built' | 'default' = isViteRunning ? 'vite' : staticMode;
+
+                // Log mode change
+                if (currentMode !== newMode) {
+                    const modeDescriptions = {
+                        vite: 'Vite dev server (with HMR)',
+                        built: 'built static files',
+                        default: 'default getting-started page',
+                    };
+
+                    if (currentMode !== null) {
+                        Logger.info(
+                            `Dashboard mode changed: ${currentMode} → ${newMode} (serving ${modeDescriptions[newMode]})`,
+                            loggerCtx,
+                        );
+                    }
+                    currentMode = newMode;
+                }
+
+                // Route to appropriate handler
+                if (isViteRunning) {
+                    return proxyHandler(req, res, next);
+                }
+
+                if (hasBuiltFiles) {
+                    return staticServer(req, res, next);
+                }
+
+                // Fall back to default page
+                return defaultPage(req, res, next);
+            } catch (error) {
+                Logger.error(`Dashboard dynamic handler error: ${String(error)}`, loggerCtx);
+                res.status(500).send('Dashboard unavailable');
+            }
+        });
+
+        return dynamicRouter;
     }
 }
