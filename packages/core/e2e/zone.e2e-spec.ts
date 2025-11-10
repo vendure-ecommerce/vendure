@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { COUNTRY_FRAGMENT, ZONE_FRAGMENT } from './graphql/fragments';
+import { ZONE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
@@ -261,12 +261,12 @@ describe('Zone resolver', () => {
             const result = await adminClient.query<
                 CreateZoneMutationWithCF,
                 Codegen.CreateZoneMutationVariables
-            >(CREATE_ZONE, { input });
+            >(CREATE_ZONE_WITH_CF, { input });
 
             //  Verify the return value
             expect(result.createZone.customFields.relatedFacet.id).toBe(testFacet.id);
             //  Verify by querying it again from the database
-            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>( // <--- USE NEW TYPE HERE
+            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
                 GET_ZONE_WITH_CUSTOM_FIELDS,
                 { id: result.createZone.id },
             );
@@ -278,7 +278,7 @@ describe('Zone resolver', () => {
             const result = await adminClient.query<
                 UpdateZoneMutationWithCF,
                 Codegen.UpdateZoneMutationVariables
-            >(UPDATE_ZONE, {
+            >(UPDATE_ZONE_WITH_CF, {
                 input: {
                     id: zones[1].id,
                     customFields: {
@@ -291,7 +291,7 @@ describe('Zone resolver', () => {
             expect(result.updateZone.customFields.relatedFacet.id).toBe(testFacet.id);
 
             // Verify by querying it again from the database
-            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>( // <--- USE NEW TYPE HERE
+            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
                 GET_ZONE_WITH_CUSTOM_FIELDS,
                 { id: zones[1].id },
             );
@@ -329,22 +329,6 @@ const CREATE_FACET_WITH_VALUE = gql`
     }
 `;
 
-const ZONE_FRAGMENT_WITH_CF = gql`
-    fragment Zone on Zone {
-        id
-        name
-        members {
-            ...Country
-        }
-        customFields {
-            relatedFacet {
-                id
-            }
-        }
-    }
-    ${COUNTRY_FRAGMENT}
-`;
-
 // A new fragment to include the custom fields
 const ZONE_CUSTOM_FIELDS_FRAGMENT = gql`
     fragment ZoneCustomFields on Zone {
@@ -356,6 +340,30 @@ const ZONE_CUSTOM_FIELDS_FRAGMENT = gql`
     }
 `;
 
+// A new mutation to create a Zone with custom fields
+const CREATE_ZONE_WITH_CF = gql`
+    mutation CreateZoneWithCF($input: CreateZoneInput!) {
+        createZone(input: $input) {
+            ...Zone
+            ...ZoneCustomFields
+        }
+    }
+    ${ZONE_FRAGMENT}
+    ${ZONE_CUSTOM_FIELDS_FRAGMENT}
+`;
+
+// A new mutation to update a Zone with custom fields
+const UPDATE_ZONE_WITH_CF = gql`
+    mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
+        updateZone(input: $input) {
+            ...Zone
+            ...ZoneCustomFields
+        }
+    }
+    ${ZONE_FRAGMENT}
+    ${ZONE_CUSTOM_FIELDS_FRAGMENT}
+`;
+
 // A new query to fetch the Zone with its custom fields
 const GET_ZONE_WITH_CUSTOM_FIELDS = gql`
     query GetZoneWithCustomFields($id: ID!) {
@@ -364,7 +372,7 @@ const GET_ZONE_WITH_CUSTOM_FIELDS = gql`
             ...ZoneCustomFields
         }
     }
-    ${ZONE_FRAGMENT_WITH_CF}
+    ${ZONE_FRAGMENT}
     ${ZONE_CUSTOM_FIELDS_FRAGMENT}
 `;
 
@@ -395,7 +403,7 @@ export const GET_ZONE = gql`
             ...Zone
         }
     }
-    ${ZONE_FRAGMENT_WITH_CF}
+    ${ZONE_FRAGMENT}
 `;
 
 export const GET_ACTIVE_CHANNEL_WITH_ZONE_MEMBERS = gql`
@@ -418,7 +426,7 @@ export const CREATE_ZONE = gql`
             ...Zone
         }
     }
-    ${ZONE_FRAGMENT_WITH_CF}
+    ${ZONE_FRAGMENT}
 `;
 
 export const UPDATE_ZONE = gql`
@@ -427,7 +435,7 @@ export const UPDATE_ZONE = gql`
             ...Zone
         }
     }
-    ${ZONE_FRAGMENT_WITH_CF}
+    ${ZONE_FRAGMENT}
 `;
 
 export const ADD_MEMBERS_TO_ZONE = gql`
