@@ -188,19 +188,7 @@ npx vite
 
 To stop the running dashboard, type `q` and hit enter.
 
-:::warning Compatibility with the legacy Admin UI
+:::info Compatibility with the legacy Admin UI
 If you still need to run the legacy Angular-based Admin UI in parallel with the Dashboard,
-this is totally possible.
-
-You just need to make sure to set the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) setting in the
-AdminUiPlugin's init options.
-
-```ts
-AdminUiPlugin.init({
-  // ...
-  // highlight-next-line  
-  compatibilityMode: true,  
-})
-```
+this is totally possible. Both plugins can now be used simultaneously without any special configuration.
 :::
-

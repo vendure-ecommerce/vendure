@@ -11,7 +11,7 @@ Until then, we will continue patching critical bugs and security issues. Communi
 
 **For new projects, use the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
 
-If you want to use the Admin UI and the Dashboard together please change the [compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) to true.
+If you want to use the Admin UI and the Dashboard together, both plugins can now be used simultaneously without any special configuration.
 :::
 
 When creating a plugin, you may wish to extend the Admin UI in order to expose a graphical interface to the plugin's functionality, or to add new functionality to the Admin UI itself. The UI can be extended with custom components written in [Angular](https://angular.io/) or [React](https://react.dev/).
