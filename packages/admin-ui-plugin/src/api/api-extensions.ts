@@ -32,6 +32,6 @@ export const metricsApiExtensions = gql`
     }
 `;
 
-export function getApiExtensions(compatibilityMode: boolean) {
-    return compatibilityMode ? undefined : metricsApiExtensions;
+export function getApiExtensions() {
+    return metricsApiExtensions;
 }
