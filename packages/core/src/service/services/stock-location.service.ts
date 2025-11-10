@@ -228,7 +228,7 @@ export class StockLocationService {
         );
     }
 
-    getAllStockLocations(ctx: RequestContext) {
+    private getAllStockLocations(ctx: RequestContext) {
         return this.requestContextCache.get(ctx, 'StockLocationService.getAllStockLocations', () =>
             this.connection.getRepository(ctx, StockLocation).find(),
         );
