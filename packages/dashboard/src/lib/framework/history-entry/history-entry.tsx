@@ -34,7 +34,7 @@ export interface HistoryEntryProps {
      *
      * ```ts
      * const success = 'bg-success text-success-foreground';
-     * const destructive = 'bg-danger text-danger-foreground';
+     * const destructive = 'bg-destructive text-destructive-foreground';
      * ```
      */
     timelineIconClassName?: string;
