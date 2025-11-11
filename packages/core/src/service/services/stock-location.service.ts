@@ -32,6 +32,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link StockLocation} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 @Instrument()
 export class StockLocationService {
@@ -103,6 +109,12 @@ export class StockLocationService {
         return assertFound(this.findOne(ctx, updatedStockLocation.id));
     }
 
+    /**
+     * @description
+     * Deletes a StockLocation. If `transferToLocationId` is specified in the input, all stock levels
+     * from the deleted location will be transferred to the target location. The last StockLocation
+     * cannot be deleted.
+     */
     async delete(ctx: RequestContext, input: DeleteStockLocationInput): Promise<DeletionResponse> {
         const stockLocation = await this.connection.findOneInChannel(
             ctx,
@@ -169,6 +181,11 @@ export class StockLocationService {
         };
     }
 
+    /**
+     * @description
+     * Assigns multiple StockLocations to the specified Channel. Requires the `UpdateStockLocation`
+     * permission on the target channel.
+     */
     async assignStockLocationsToChannel(
         ctx: RequestContext,
         input: AssignStockLocationsToChannelInput,
@@ -199,6 +216,11 @@ export class StockLocationService {
         );
     }
 
+    /**
+     * @description
+     * Removes multiple StockLocations from the specified Channel. Requires the `DeleteStockLocation`
+     * permission on the target channel. StockLocations cannot be removed from the default channel.
+     */
     async removeStockLocationsFromChannel(
         ctx: RequestContext,
         input: RemoveStockLocationsFromChannelInput,
@@ -241,6 +263,11 @@ export class StockLocationService {
             .then(items => items[0]);
     }
 
+    /**
+     * @description
+     * Returns the locations and quantities to use for allocating stock when an OrderLine is created.
+     * This uses the configured {@link StockLocationStrategy}.
+     */
     async getAllocationLocations(ctx: RequestContext, orderLine: OrderLine, quantity: number) {
         const { stockLocationStrategy } = this.configService.catalogOptions;
         const stockLocations = await this.getAllStockLocations(ctx);
@@ -253,6 +280,11 @@ export class StockLocationService {
         return allocationLocations;
     }
 
+    /**
+     * @description
+     * Returns the locations and quantities to use for releasing allocated stock when an OrderLine is cancelled
+     * or modified. This uses the configured {@link StockLocationStrategy}.
+     */
     async getReleaseLocations(ctx: RequestContext, orderLine: OrderLine, quantity: number) {
         const { stockLocationStrategy } = this.configService.catalogOptions;
         const stockLocations = await this.getAllStockLocations(ctx);
@@ -265,6 +297,11 @@ export class StockLocationService {
         return releaseLocations;
     }
 
+    /**
+     * @description
+     * Returns the locations and quantities to use for creating sales when an Order is fulfilled.
+     * This uses the configured {@link StockLocationStrategy}.
+     */
     async getSaleLocations(ctx: RequestContext, orderLine: OrderLine, quantity: number) {
         const { stockLocationStrategy } = this.configService.catalogOptions;
         const stockLocations = await this.getAllStockLocations(ctx);
@@ -272,6 +309,11 @@ export class StockLocationService {
         return saleLocations;
     }
 
+    /**
+     * @description
+     * Returns the locations and quantities to use for cancelling sales when an OrderLine is cancelled
+     * after fulfillment. This uses the configured {@link StockLocationStrategy}.
+     */
     async getCancellationLocations(ctx: RequestContext, orderLine: OrderLine, quantity: number) {
         const { stockLocationStrategy } = this.configService.catalogOptions;
         const stockLocations = await this.getAllStockLocations(ctx);
