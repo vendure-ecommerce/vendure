@@ -379,14 +379,14 @@ export async function createVendureApp(
         const autoRunServer = false;
         if (mode === 'quick' && autoRunServer) {
             // In quick-start mode, we want to now run the server and open up
-            // a browser window to the Admin UI.
+            // a browser window to the Dashboard.
             try {
-                const adminUiUrl = `http://localhost:${port}/admin`;
+                const dashboardUrl = `http://localhost:${port}/dashboard`;
                 const quickStartInstructions = [
-                    'Use the following credentials to log in to the Admin UI:',
+                    'Use the following credentials to log in to the Dashboard:',
                     `Username: ${pc.green(config.authOptions.superadminCredentials?.identifier)}`,
                     `Password: ${pc.green(config.authOptions.superadminCredentials?.password)}`,
-                    `Open your browser and navigate to: ${pc.green(adminUiUrl)}`,
+                    `Open your browser and navigate to: ${pc.green(dashboardUrl)}`,
                     '',
                 ];
                 note(quickStartInstructions.join('\n'));
@@ -413,7 +413,7 @@ export async function createVendureApp(
                 // before opening the window.
                 await sleep(10_000);
                 try {
-                    await open(adminUiUrl, {
+                    await open(dashboardUrl, {
                         newInstance: true,
                     });
                 } catch (e: any) {
@@ -452,9 +452,12 @@ function displayOutro(
         pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
         `\n`,
         `This will start the server in development mode.`,
-        `To access the Admin UI, open your browser and navigate to:`,
         `\n`,
-        pc.green(`http://localhost:3000/admin`),
+        `To run the Dashboard, in a new terminal navigate to your project directory and run:`,
+        pc.gray('$ ') + pc.blue(pc.bold(`npx vite`)),
+        `\n`,
+        `To access the Dashboard, open your browser and navigate to:`,
+        pc.green(`http://localhost:3000/dashboard`),
         `\n`,
         `Use the following credentials to log in:`,
         `Username: ${pc.green(superAdminCredentials?.identifier ?? 'superadmin')}`,
