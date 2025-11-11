@@ -3,7 +3,7 @@ import { graphql } from 'gql.tada';
 import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, print } from 'graphql';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { addCustomFields } from './add-custom-fields.js';
+import { addCustomFields, addCustomFieldsToFragment } from './add-custom-fields.js';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('addCustomFields()', () => {
@@ -547,6 +547,912 @@ describe('addCustomFields()', () => {
             expect(printed).not.toMatch(/country\s*\{[^}]*customFields/s);
             expect(printed).not.toMatch(/productVariant\s*\{[^}]*customFields/s);
             expect(printed).not.toMatch(/product\s*\{[^}]*customFields/s);
+        });
+    });
+
+    describe('includeNestedFragments option', () => {
+        it('Should add custom fields to nested fragments when explicitly included', () => {
+            const assetFragment = graphql(`
+                fragment Asset on Asset {
+                    id
+                    preview
+                }
+            `);
+
+            const documentNode = graphql(
+                `
+                    query ProductList($options: ProductListOptions) {
+                        products(options: $options) {
+                            items {
+                                id
+                                name
+                                featuredAsset {
+                                    ...Asset
+                                }
+                            }
+                        }
+                    }
+                `,
+                [assetFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [{ name: 'productCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('Asset', [{ name: 'assetCustomField', type: 'string', list: false }]);
+
+            const result = addCustomFields(documentNode, {
+                customFieldsMap: customFieldsConfig,
+                includeNestedFragments: ['Asset'], // Explicitly include the nested Asset fragment
+            });
+            const printed = print(result);
+
+            // Should add customFields to Product (top-level)
+            expect(printed).toContain('productCustomField');
+
+            // Should ALSO add customFields to Asset (nested, but explicitly included)
+            expect(printed).toContain('fragment Asset on Asset');
+            expect(printed).toContain('assetCustomField');
+        });
+
+        it('Should handle multiple nested fragments in includeNestedFragments', () => {
+            const assetFragment = graphql(`
+                fragment Asset on Asset {
+                    id
+                    preview
+                }
+            `);
+
+            const orderLineFragment = graphql(`
+                fragment OrderLine on OrderLine {
+                    id
+                    quantity
+                }
+            `);
+
+            const documentNode = graphql(
+                `
+                    query GetOrder($id: ID!) {
+                        order(id: $id) {
+                            id
+                            code
+                            lines {
+                                ...OrderLine
+                            }
+                            featuredAsset {
+                                ...Asset
+                            }
+                        }
+                    }
+                `,
+                [orderLineFragment, assetFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+            customFieldsConfig.set('Asset', [{ name: 'assetCustomField', type: 'string', list: false }]);
+
+            const result = addCustomFields(documentNode, {
+                customFieldsMap: customFieldsConfig,
+                includeNestedFragments: ['OrderLine', 'Asset'], // Include both nested fragments
+            });
+            const printed = print(result);
+
+            // Should add customFields to all three
+            expect(printed).toContain('orderCustomField');
+            expect(printed).toContain('orderLineCustomField');
+            expect(printed).toContain('assetCustomField');
+        });
+
+        it('Should only add custom fields to specified nested fragments, not all nested fragments', () => {
+            const assetFragment = graphql(`
+                fragment Asset on Asset {
+                    id
+                    preview
+                }
+            `);
+
+            const orderLineFragment = graphql(`
+                fragment OrderLine on OrderLine {
+                    id
+                    quantity
+                }
+            `);
+
+            const documentNode = graphql(
+                `
+                    query GetOrder($id: ID!) {
+                        order(id: $id) {
+                            id
+                            lines {
+                                ...OrderLine
+                            }
+                            featuredAsset {
+                                ...Asset
+                            }
+                        }
+                    }
+                `,
+                [orderLineFragment, assetFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+            customFieldsConfig.set('Asset', [{ name: 'assetCustomField', type: 'string', list: false }]);
+
+            const result = addCustomFields(documentNode, {
+                customFieldsMap: customFieldsConfig,
+                includeNestedFragments: ['OrderLine'], // Only include OrderLine, not Asset
+            });
+            const printed = print(result);
+
+            // Should add customFields to Order (top-level) and OrderLine (explicitly included)
+            expect(printed).toContain('orderCustomField');
+            expect(printed).toContain('orderLineCustomField');
+
+            // Should NOT add customFields to Asset (nested and not included)
+            expect(printed).not.toContain('assetCustomField');
+        });
+
+        it('Works with the timing issue - called later when globalCustomFieldsMap is populated', () => {
+            const orderLineFragment = graphql(`
+                fragment OrderLine on OrderLine {
+                    id
+                    quantity
+                }
+            `);
+
+            const orderDetailFragment = graphql(
+                `
+                    fragment OrderDetail on Order {
+                        id
+                        code
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+                `,
+                [orderLineFragment],
+            );
+
+            const orderDetailDocument = graphql(
+                `
+                    query GetOrder($id: ID!) {
+                        order(id: $id) {
+                            ...OrderDetail
+                        }
+                    }
+                `,
+                [orderDetailFragment],
+            );
+
+            // Initially, globalCustomFieldsMap is empty (simulating module load time)
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            // Documents are created...
+
+            // Later, when server config is loaded and custom fields are available
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+
+            // Now when addCustomFields is called (e.g., in a component), it has access to custom fields
+            const result = addCustomFields(orderDetailDocument, {
+                customFieldsMap: customFieldsConfig,
+                includeNestedFragments: ['OrderLine'], // Explicitly include nested OrderLine fragment
+            });
+            const printed = print(result);
+
+            // Should add customFields to both Order and OrderLine
+            expect(printed).toContain('orderCustomField');
+            expect(printed).toContain('orderLineCustomField');
+        });
+    });
+});
+
+describe('addCustomFieldsToFragment()', () => {
+    /**
+     * Normalizes the indentation of a string to make it easier to compare with the expected output
+     */
+    function normalizeIndentation(str: string): string {
+        const lines = str.replace(/    /g, '  ').split('\n');
+        const indentLength = lines[1].search(/\S|$/); // Find the first non-whitespace character
+        return lines
+            .map(line => line.slice(indentLength))
+            .join('\n')
+            .trim()
+            .replace(/"/g, '');
+    }
+
+    describe('Basic functionality', () => {
+        it('Adds customFields to a simple fragment', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            expect(print(result)).toBe(
+                normalizeIndentation(`
+                fragment Product on Product {
+                    id
+                    name
+                    customFields {
+                        custom1
+                        custom2
+                    }
+                }
+            `),
+            );
+        });
+
+        it('Adds customFields with includeCustomFields filter', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+                { name: 'custom3', type: 'int', list: false },
+            ]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+                includeCustomFields: ['custom1', 'custom3'],
+            });
+
+            expect(print(result)).toBe(
+                normalizeIndentation(`
+                fragment Product on Product {
+                    id
+                    name
+                    customFields {
+                        custom1
+                        custom3
+                    }
+                }
+            `),
+            );
+        });
+
+        it('Handles fragment with no custom fields configured', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            // Should return the fragment unchanged
+            expect(print(result)).toBe(
+                normalizeIndentation(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `),
+            );
+        });
+    });
+
+    describe('Validation', () => {
+        it('Throws error when given a query document', () => {
+            const documentNode = graphql(`
+                query GetProduct {
+                    product {
+                        id
+                        name
+                    }
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [{ name: 'custom', type: 'string', list: false }]);
+
+            expect(() =>
+                addCustomFieldsToFragment(documentNode, { customFieldsMap: customFieldsConfig }),
+            ).toThrow('expects a fragment-only document');
+        });
+
+        it('Only modifies the first fragment when multiple fragments are present', () => {
+            const productFragment = graphql(`
+                fragment Product on Product {
+                    id
+                }
+            `);
+            const variantFragment = graphql(`
+                fragment Variant on ProductVariant {
+                    id
+                }
+            `);
+
+            // Create a document with both fragments (Product first, then Variant)
+            const multiFragmentDoc = {
+                kind: Kind.DOCUMENT,
+                definitions: [...productFragment.definitions, ...variantFragment.definitions],
+            } as DocumentNode;
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [{ name: 'productCustom', type: 'string', list: false }]);
+            customFieldsConfig.set('ProductVariant', [
+                { name: 'variantCustom', type: 'string', list: false },
+            ]);
+
+            const result = addCustomFieldsToFragment(multiFragmentDoc, {
+                customFieldsMap: customFieldsConfig,
+            });
+            const printed = print(result);
+
+            // Should add customFields to Product (first fragment)
+            expect(printed).toContain('fragment Product on Product');
+            expect(printed).toContain('productCustom');
+
+            // Should NOT add customFields to Variant (dependency fragment)
+            expect(printed).toContain('fragment Variant on ProductVariant');
+            expect(printed).not.toContain('variantCustom');
+        });
+
+        it('Throws error when given an empty document', () => {
+            const emptyDoc = {
+                kind: Kind.DOCUMENT,
+                definitions: [],
+            } as DocumentNode;
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+
+            expect(() =>
+                addCustomFieldsToFragment(emptyDoc, { customFieldsMap: customFieldsConfig }),
+            ).toThrow('expects a document with at least one fragment definition');
+        });
+    });
+
+    describe('Advanced field types', () => {
+        it('Handles relation custom fields', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                {
+                    name: 'relatedProduct',
+                    type: 'relation',
+                    list: false,
+                    scalarFields: ['id', 'name', 'slug'],
+                },
+            ]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            expect(print(result)).toBe(
+                normalizeIndentation(`
+                fragment Product on Product {
+                    id
+                    name
+                    customFields {
+                        relatedProduct {
+                            id
+                            name
+                            slug
+                        }
+                    }
+                }
+            `),
+            );
+        });
+
+        it('Handles struct custom fields', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                {
+                    name: 'dimensions',
+                    type: 'struct',
+                    list: false,
+                    fields: [
+                        { name: 'width', type: 'int' },
+                        { name: 'height', type: 'int' },
+                        { name: 'depth', type: 'int' },
+                    ],
+                },
+            ]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            expect(print(result)).toBe(
+                normalizeIndentation(`
+                fragment Product on Product {
+                    id
+                    name
+                    customFields {
+                        dimensions {
+                            width
+                            height
+                            depth
+                        }
+                    }
+                }
+            `),
+            );
+        });
+
+        it('Handles localized custom fields in translations', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    translations {
+                        languageCode
+                        name
+                    }
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'customDescription', type: 'localeString', list: false },
+                { name: 'customSeoTitle', type: 'localeText', list: false },
+            ]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            const printed = print(result);
+            // Should add localized fields to translations
+            expect(printed).toContain('translations {');
+            expect(printed).toMatch(/translations\s*\{[^}]*customFields/s);
+
+            const fragmentDef = result.definitions[0] as FragmentDefinitionNode;
+            const translationsField = fragmentDef.selectionSet.selections.find(
+                s => s.kind === Kind.FIELD && s.name.value === 'translations',
+            ) as FieldNode;
+            const customFieldsInTranslations = translationsField.selectionSet!.selections.find(
+                s => s.kind === Kind.FIELD && s.name.value === 'customFields',
+            ) as FieldNode;
+
+            expect(customFieldsInTranslations).toBeTruthy();
+            expect(customFieldsInTranslations.selectionSet!.selections.length).toBe(2);
+        });
+    });
+
+    describe('Special type handling', () => {
+        it('Handles OrderAddress as alias of Address', () => {
+            const fragmentDocument = graphql(`
+                fragment OrderAddress on OrderAddress {
+                    id
+                    streetLine1
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            // Custom fields are configured for Address, not OrderAddress
+            customFieldsConfig.set('Address', [{ name: 'buildingNumber', type: 'string', list: false }]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            // Should still add custom fields because OrderAddress is aliased to Address
+            expect(print(result)).toContain('customFields {');
+            expect(print(result)).toContain('buildingNumber');
+        });
+
+        it('Handles Country as alias of Region', () => {
+            const fragmentDocument = graphql(`
+                fragment Country on Country {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            // Custom fields are configured for Region, not Country
+            customFieldsConfig.set('Region', [{ name: 'regionCode', type: 'string', list: false }]);
+
+            const result = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            // Should still add custom fields because Country is aliased to Region
+            expect(print(result)).toContain('customFields {');
+            expect(print(result)).toContain('regionCode');
+        });
+    });
+
+    describe('Memoization', () => {
+        it('Returns the same instance for the same inputs', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [{ name: 'custom', type: 'string', list: false }]);
+
+            const result1 = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+            const result2 = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            // Should return the exact same instance (identity equality)
+            expect(result1).toBe(result2);
+        });
+
+        it('Returns different instances for different options', () => {
+            const fragmentDocument = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ]);
+
+            const result1 = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+                includeCustomFields: ['custom1'],
+            });
+            const result2 = addCustomFieldsToFragment(fragmentDocument, {
+                customFieldsMap: customFieldsConfig,
+                includeCustomFields: ['custom2'],
+            });
+
+            // Should return different instances for different options
+            expect(result1).not.toBe(result2);
+            expect(print(result1)).toContain('custom1');
+            expect(print(result1)).not.toContain('custom2');
+            expect(print(result2)).toContain('custom2');
+            expect(print(result2)).not.toContain('custom1');
+        });
+    });
+
+    describe('Fragment spreads handling', () => {
+        it('Should only add custom fields to the top-level fragment, not to referenced fragments', () => {
+            const orderLineFragment = graphql(`
+                fragment OrderLine on OrderLine {
+                    id
+                    quantity
+                }
+            `);
+
+            const orderDetailFragment = graphql(
+                `
+                    fragment OrderDetail on Order {
+                        id
+                        code
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+                `,
+                [orderLineFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+
+            // Apply to the OrderDetail fragment only
+            const result = addCustomFieldsToFragment(orderDetailFragment, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            const printed = print(result);
+
+            // Should add customFields to OrderDetail (top-level fragment)
+            expect(printed).toContain('fragment OrderDetail on Order');
+            expect(printed).toContain('orderCustomField');
+
+            // Should include the OrderLine fragment definition (dependency) but NOT add customFields to it
+            expect(printed).toContain('...OrderLine');
+            expect(printed).toContain('fragment OrderLine on OrderLine');
+            expect(printed).not.toContain('orderLineCustomField');
+        });
+
+        it('Should work with deeply nested fragment spreads', () => {
+            const assetFragment = graphql(`
+                fragment Asset on Asset {
+                    id
+                    preview
+                }
+            `);
+
+            const orderLineFragment = graphql(
+                `
+                    fragment OrderLine on OrderLine {
+                        id
+                        quantity
+                        featuredAsset {
+                            ...Asset
+                        }
+                    }
+                `,
+                [assetFragment],
+            );
+
+            const orderDetailFragment = graphql(
+                `
+                    fragment OrderDetail on Order {
+                        id
+                        code
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+                `,
+                [orderLineFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+            customFieldsConfig.set('Asset', [{ name: 'assetCustomField', type: 'string', list: false }]);
+
+            const result = addCustomFieldsToFragment(orderDetailFragment, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            const printed = print(result);
+
+            // Should ONLY add customFields to OrderDetail
+            expect(printed).toContain('orderCustomField');
+            expect(printed).not.toContain('orderLineCustomField');
+            expect(printed).not.toContain('assetCustomField');
+
+            // Should still contain the fragment definitions (dependencies) but without custom fields
+            expect(printed).toContain('...OrderLine');
+            expect(printed).toContain('fragment OrderLine on OrderLine');
+            expect(printed).toContain('fragment Asset on Asset');
+        });
+    });
+
+    describe('Composability with addCustomFields()', () => {
+        it('Can be used inline in graphql() dependency array (like the original pattern)', () => {
+            const productFragment = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ]);
+
+            // Use addCustomFieldsToFragment directly in the array - this is the pattern from orders.graphql.ts
+            const queryDocument = graphql(
+                `
+                    query GetProduct {
+                        product {
+                            ...Product
+                        }
+                    }
+                `,
+                [addCustomFieldsToFragment(productFragment, { customFieldsMap: customFieldsConfig })],
+            );
+
+            // The query should include the modified fragment with custom fields
+            const printed = print(queryDocument);
+            expect(printed).toContain('customFields {');
+            expect(printed).toContain('custom1');
+            expect(printed).toContain('custom2');
+        });
+
+        it('addCustomFieldsToFragment produces same result as addCustomFields for single fragments', () => {
+            const productFragment = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ]);
+
+            const resultFromFragment = addCustomFieldsToFragment(productFragment, {
+                customFieldsMap: customFieldsConfig,
+            });
+            const resultFromFull = addCustomFields(productFragment, { customFieldsMap: customFieldsConfig });
+
+            // Both should produce the same output
+            expect(print(resultFromFragment)).toBe(print(resultFromFull));
+        });
+
+        it('Works with fragments that have dependencies when used inline', () => {
+            const orderLineFragment = graphql(`
+                fragment OrderLine on OrderLine {
+                    id
+                    quantity
+                }
+            `);
+
+            const orderDetailFragment = graphql(
+                `
+                    fragment OrderDetail on Order {
+                        id
+                        code
+                        lines {
+                            ...OrderLine
+                        }
+                    }
+                `,
+                [orderLineFragment],
+            );
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Order', [{ name: 'orderCustomField', type: 'string', list: false }]);
+            customFieldsConfig.set('OrderLine', [
+                { name: 'orderLineCustomField', type: 'string', list: false },
+            ]);
+
+            // This is exactly the pattern used in orders.graphql.ts
+            const queryDocument = graphql(
+                `
+                    query GetOrder($id: ID!) {
+                        order(id: $id) {
+                            ...OrderDetail
+                        }
+                    }
+                `,
+                [addCustomFieldsToFragment(orderDetailFragment, { customFieldsMap: customFieldsConfig })],
+            );
+
+            const printed = print(queryDocument);
+
+            // Should add custom fields to OrderDetail
+            expect(printed).toContain('fragment OrderDetail on Order');
+            expect(printed).toContain('orderCustomField');
+
+            // Should NOT add custom fields to OrderLine (dependency)
+            expect(printed).toContain('fragment OrderLine on OrderLine');
+            expect(printed).not.toContain('orderLineCustomField');
+
+            // Verify the query structure is correct
+            expect(printed).toContain('query GetOrder');
+            expect(printed).toContain('order(id: $id)');
+            expect(printed).toContain('...OrderDetail');
+        });
+
+        it('Can be used to compose fragments in query documents', () => {
+            const productFragment = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ]);
+
+            // Use addCustomFieldsToFragment to modify the fragment
+            const modifiedFragment = addCustomFieldsToFragment(productFragment, {
+                customFieldsMap: customFieldsConfig,
+            });
+
+            // Then compose it into a query
+            const queryDocument = graphql(
+                `
+                    query GetProduct {
+                        product {
+                            ...Product
+                        }
+                    }
+                `,
+                [modifiedFragment],
+            );
+
+            // The query should include the modified fragment with custom fields
+            const printed = print(queryDocument);
+            expect(printed).toContain('customFields {');
+            expect(printed).toContain('custom1');
+            expect(printed).toContain('custom2');
+        });
+
+        it('Can selectively modify different fragments with different custom fields', () => {
+            const productFragment = graphql(`
+                fragment Product on Product {
+                    id
+                    name
+                }
+            `);
+
+            const variantFragment = graphql(`
+                fragment Variant on ProductVariant {
+                    id
+                    sku
+                }
+            `);
+
+            const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+            customFieldsConfig.set('Product', [
+                { name: 'productCustom1', type: 'string', list: false },
+                { name: 'productCustom2', type: 'boolean', list: false },
+            ]);
+            customFieldsConfig.set('ProductVariant', [
+                { name: 'variantCustom1', type: 'string', list: false },
+            ]);
+
+            // Selectively modify each fragment with different custom fields
+            const modifiedProductFragment = addCustomFieldsToFragment(productFragment, {
+                customFieldsMap: customFieldsConfig,
+                includeCustomFields: ['productCustom1'], // Only include productCustom1
+            });
+
+            const modifiedVariantFragment = addCustomFieldsToFragment(variantFragment, {
+                customFieldsMap: customFieldsConfig,
+                includeCustomFields: ['variantCustom1'],
+            });
+
+            // Compose into a query
+            const queryDocument = graphql(
+                `
+                    query GetProductWithVariants {
+                        product {
+                            ...Product
+                            variants {
+                                ...Variant
+                            }
+                        }
+                    }
+                `,
+                [modifiedProductFragment, modifiedVariantFragment],
+            );
+
+            const printed = print(queryDocument);
+            // Product fragment should have only productCustom1
+            expect(printed).toContain('productCustom1');
+            expect(printed).not.toContain('productCustom2');
+            // Variant fragment should have variantCustom1
+            expect(printed).toContain('variantCustom1');
         });
     });
 });
