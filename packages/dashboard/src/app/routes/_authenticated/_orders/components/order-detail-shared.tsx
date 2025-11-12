@@ -2,6 +2,7 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     Page,
     PageActionBar,
@@ -72,7 +73,9 @@ export function OrderDetailShared({
 
     const { form, submitHandler, entity, refreshEntity } = useDetailPage({
         pageId,
-        queryDocument: orderDetailDocument,
+        queryDocument: addCustomFields(orderDetailDocument, {
+            includeNestedFragments: ['OrderLine'],
+        }),
         updateDocument: setOrderCustomFieldsDocument,
         setValuesForUpdate: (entity: any) => {
             return {

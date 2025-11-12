@@ -1,7 +1,7 @@
-import path from 'path';
 import { Plugin } from 'vite';
 
 import { CompileResult } from './utils/compiler.js';
+import { getDashboardPaths } from './utils/get-dashboard-paths.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 /**
@@ -25,29 +25,7 @@ export function dashboardTailwindSourcePlugin(): Plugin {
                     loadVendureConfigResult = await configLoaderApi.getVendureConfig();
                 }
                 const { pluginInfo } = loadVendureConfigResult;
-                const dashboardExtensionDirs =
-                    pluginInfo
-                        ?.flatMap(({ dashboardEntryPath, sourcePluginPath, pluginPath }) => {
-                            if (!dashboardEntryPath) {
-                                return [];
-                            }
-                            const sourcePaths = [];
-                            if (sourcePluginPath) {
-                                sourcePaths.push(
-                                    path.join(
-                                        path.dirname(sourcePluginPath),
-                                        path.dirname(dashboardEntryPath),
-                                    ),
-                                );
-                            }
-                            if (pluginPath) {
-                                sourcePaths.push(
-                                    path.join(path.dirname(pluginPath), path.dirname(dashboardEntryPath)),
-                                );
-                            }
-                            return sourcePaths;
-                        })
-                        .filter(x => x != null) ?? [];
+                const dashboardExtensionDirs = getDashboardPaths(pluginInfo);
                 const sources = dashboardExtensionDirs
                     .map(extension => {
                         return `@source '${extension}';`;
