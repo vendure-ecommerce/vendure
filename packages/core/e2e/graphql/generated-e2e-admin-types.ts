@@ -12800,6 +12800,12 @@ export type DeleteTaxRateMutationVariables = Exact<{
 
 export type DeleteTaxRateMutation = { deleteTaxRate: { result: DeletionResult; message?: string | null } };
 
+export type CreateFacetWithValueMutationVariables = Exact<{
+    input: CreateFacetInput;
+}>;
+
+export type CreateFacetWithValueMutation = { createFacet: { id: string; name: string } };
+
 export type DeleteZoneMutationVariables = Exact<{
     id: Scalars['ID']['input'];
 }>;
@@ -40964,6 +40970,49 @@ export const DeleteTaxRateDocument = {
         },
     ],
 } as unknown as DocumentNode<DeleteTaxRateMutation, DeleteTaxRateMutationVariables>;
+export const CreateFacetWithValueDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'CreateFacetWithValue' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'CreateFacetInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createFacet' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<CreateFacetWithValueMutation, CreateFacetWithValueMutationVariables>;
 export const DeleteZoneDocument = {
     kind: 'Document',
     definitions: [

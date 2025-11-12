@@ -11,7 +11,7 @@ import { ZONE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
-// import { Facet, LanguageCode } from '../src';
+
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Zone resolver', () => {
@@ -261,13 +261,13 @@ describe('Zone resolver', () => {
             const result = await adminClient.query<
                 CreateZoneMutationWithCF,
                 Codegen.CreateZoneMutationVariables
-            >(CREATE_ZONE_WITH_CF, { input });
+            >(gql(CREATE_ZONE_WITH_CF), { input });
 
             //  Verify the return value
             expect(result.createZone.customFields.relatedFacet.id).toBe(testFacet.id);
             //  Verify by querying it again from the database
             const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
-                GET_ZONE_WITH_CUSTOM_FIELDS,
+                gql(GET_ZONE_WITH_CUSTOM_FIELDS),
                 { id: result.createZone.id },
             );
             expect(result2.zone.customFields.relatedFacet.id).toBe(testFacet.id);
@@ -278,7 +278,7 @@ describe('Zone resolver', () => {
             const result = await adminClient.query<
                 UpdateZoneMutationWithCF,
                 Codegen.UpdateZoneMutationVariables
-            >(UPDATE_ZONE_WITH_CF, {
+            >(gql(UPDATE_ZONE_WITH_CF), {
                 input: {
                     id: zones[1].id,
                     customFields: {
@@ -292,7 +292,7 @@ describe('Zone resolver', () => {
 
             // Verify by querying it again from the database
             const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
-                GET_ZONE_WITH_CUSTOM_FIELDS,
+                gql(GET_ZONE_WITH_CUSTOM_FIELDS),
                 { id: zones[1].id },
             );
             expect(result2.zone.customFields.relatedFacet.id).toBe(testFacet.id);
@@ -330,7 +330,7 @@ const CREATE_FACET_WITH_VALUE = gql`
 `;
 
 // A new fragment to include the custom fields
-const ZONE_CUSTOM_FIELDS_FRAGMENT = gql`
+const ZONE_CUSTOM_FIELDS_FRAGMENT = `
     fragment ZoneCustomFields on Zone {
         customFields {
             relatedFacet {
@@ -341,38 +341,38 @@ const ZONE_CUSTOM_FIELDS_FRAGMENT = gql`
 `;
 
 // A new mutation to create a Zone with custom fields
-const CREATE_ZONE_WITH_CF = gql`
+const CREATE_ZONE_WITH_CF = `
     mutation CreateZoneWithCF($input: CreateZoneInput!) {
         createZone(input: $input) {
-            ...Zone
+            id
+            name
             ...ZoneCustomFields
         }
     }
-    ${ZONE_FRAGMENT}
     ${ZONE_CUSTOM_FIELDS_FRAGMENT}
 `;
 
 // A new mutation to update a Zone with custom fields
-const UPDATE_ZONE_WITH_CF = gql`
+const UPDATE_ZONE_WITH_CF = `
     mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
         updateZone(input: $input) {
-            ...Zone
+            id
+            name
             ...ZoneCustomFields
         }
     }
-    ${ZONE_FRAGMENT}
     ${ZONE_CUSTOM_FIELDS_FRAGMENT}
 `;
 
 // A new query to fetch the Zone with its custom fields
-const GET_ZONE_WITH_CUSTOM_FIELDS = gql`
+const GET_ZONE_WITH_CUSTOM_FIELDS = `
     query GetZoneWithCustomFields($id: ID!) {
         zone(id: $id) {
-            ...Zone
+            id
+            name
             ...ZoneCustomFields
         }
     }
-    ${ZONE_FRAGMENT}
     ${ZONE_CUSTOM_FIELDS_FRAGMENT}
 `;
 
