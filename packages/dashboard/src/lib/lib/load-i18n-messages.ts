@@ -13,7 +13,8 @@ export async function loadI18nMessages(locale: string): Promise<Messages> {
         // In dev mode we allow the dynamic import behaviour
         const { messages } = await import(`../../i18n/locales/${locale}.po`);
         const pluginTranslations = await import('virtual:plugin-translations');
-        const pluginTranslationsForLocale = pluginTranslations[locale] ?? {};
+        const safeLocale = locale.replace(/-/g, '_');
+        const pluginTranslationsForLocale = pluginTranslations[safeLocale] ?? {};
         return { ...messages, ...pluginTranslationsForLocale };
     }
 }

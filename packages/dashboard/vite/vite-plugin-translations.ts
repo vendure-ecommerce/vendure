@@ -95,7 +95,8 @@ export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
                 return `
                         ${[...mergedMessageMap.entries()]
                             .map(([locale, messages]) => {
-                                return `export const ${locale} = ${JSON.stringify(messages)}`;
+                                const safeLocale = locale.replace(/-/g, '_');
+                                return `export const ${safeLocale} = ${JSON.stringify(messages)}`;
                             })
                             .join('\n')}
                 `;
