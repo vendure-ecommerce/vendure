@@ -51,7 +51,6 @@ export class NodemailerEmailSender implements EmailSender {
     async send(email: EmailDetails, options: EmailTransportOptions) {
         switch (options.type) {
             case 'none':
-                return;
                 break;
             case 'file':
                 const fileName = normalizeString(
@@ -112,6 +111,7 @@ export class NodemailerEmailSender implements EmailSender {
             from: email.from,
             to: email.recipient,
             subject: email.subject,
+            text: email.text,
             html: email.body,
             attachments: email.attachments,
             cc: email.cc,

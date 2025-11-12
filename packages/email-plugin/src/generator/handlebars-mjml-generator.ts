@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
 import Handlebars from 'handlebars';
+import { convert } from 'html-to-text';
 import mjml2html from 'mjml';
 
 import { InitializedEmailPluginOptions } from '../types';
@@ -23,7 +24,23 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    generate(from: string, subject: string, template: string, templateVars: any) {
+    private htmlToPlainText(html: string, wordwrap: number = 80): string {
+        if (!html) return '';
+        return convert(html, {
+            wordwrap: wordwrap === 0 ? false : wordwrap,
+            // selectors let you control how specific elements are handled
+            selectors: [
+                { selector: 'a.button', format: 'skip' },
+                { selector: 'a.btn', format: 'skip' },
+                { selector: 'a[data-button]', format: 'skip' },
+                { selector: 'a', options: { leadingLineBreaks: 0, trailingLineBreaks: 0 } },
+                { selector: 'img', format: 'image' },
+            ],
+            preserveNewlines: false,
+        });
+    }
+
+    generate(from: string, subject: string, template: string, templateVars: any, text?: string) {
         const compiledFrom = Handlebars.compile(from, { noEscape: true });
         const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
@@ -31,12 +48,13 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         // described here: https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access
         // This is needed because some Vendure entities use getters on the entity
         // prototype (e.g. Order.total) which may need to be interpolated.
-        const templateOptions: RuntimeOptions = { allowProtoPropertiesByDefault: true };
-        const fromResult = compiledFrom(templateVars, { allowProtoPropertiesByDefault: true });
-        const subjectResult = compiledSubject(templateVars, { allowProtoPropertiesByDefault: true });
-        const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
+        const runTimeOps: RuntimeOptions = { allowProtoPropertiesByDefault: true };
+        const fromResult = compiledFrom(templateVars, runTimeOps);
+        const subjectResult = compiledSubject(templateVars, runTimeOps);
+        const mjml = compiledTemplate(templateVars, runTimeOps);
         const body = mjml2html(mjml).html;
-        return { from: fromResult, subject: subjectResult, body };
+        const plainText: string = text ? text : this.htmlToPlainText(body);
+        return { from: fromResult, subject: subjectResult, body, text: plainText };
     }
 
     private registerHelpers() {

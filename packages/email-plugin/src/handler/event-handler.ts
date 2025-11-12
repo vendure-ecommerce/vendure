@@ -155,6 +155,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
     private setMetadataFn?: SetMetadataFn<Event>;
+    private setTextFallBackFn?: (event: Event) => string;
+
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
@@ -200,6 +202,23 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      */
     setRecipient(setRecipientFn: (event: Event) => string): EmailEventHandler<T, Event> {
         this.setRecipientFn = setRecipientFn;
+        return this;
+    }
+
+    /**
+     * @description
+     * Defines a function that provides a custom plain-text fallback for the email body.
+     *
+     * By default, if an email client does not support HTML, the HTML content is automatically
+     * converted to plain text. Use this method to supply your own plain-text version instead —
+     * for example, a more concise or differently formatted message.
+     *
+     * The provided function should return a string containing the plain-text content.
+     *
+     * This is optional. If not set, the system will automatically generate a fallback from the HTML.
+     */
+    setTextFallBack(setTextFallBackFn: (event: Event) => string): EmailEventHandler<T, Event> {
+        this.setTextFallBackFn = setTextFallBackFn;
         return this;
     }
 
@@ -365,6 +384,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     ): EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>> {
         const asyncHandler = new EmailEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
         asyncHandler.setRecipientFn = this.setRecipientFn;
+        asyncHandler.setTextFallBackFn = this.setTextFallBackFn;
+
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
         asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
         asyncHandler.setOptionalAddressFieldsFn = this.setOptionalAddressFieldsFn;
@@ -435,6 +456,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             );
         }
         const recipient = this.setRecipientFn(event);
+        const textFallBack: string = this.setTextFallBackFn ? this.setTextFallBackFn(event) : '';
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
         let attachmentsArray: EmailAttachment[] = [];
         try {
@@ -450,6 +472,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             ctx: event.ctx.serialize(),
             type: this.type,
             recipient,
+            text: textFallBack,
             from: this.from,
             templateVars: { ...globals, ...templateVars },
             subject,

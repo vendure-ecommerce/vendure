@@ -28,5 +28,6 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
+        text?: string,
+    ): Pick<EmailDetails, 'from' | 'subject' | 'body' | 'text'>;
 }

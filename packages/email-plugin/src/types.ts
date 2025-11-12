@@ -290,6 +290,7 @@ export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unse
     recipient: string;
     subject: string;
     body: string;
+    text?: string;
     attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
     cc?: string;
     bcc?: string;
@@ -351,6 +352,7 @@ export type IntermediateEmailDetails = {
     recipient: string;
     templateVars: any;
     subject: string;
+    text?: string;
     templateFile: string;
     attachments: SerializedAttachment[];
     cc?: string;

@@ -32,6 +32,9 @@
     "publish-prerelease": "lerna version -m \"chore: Pre-release %s\" prerelease --exact --no-push --force-publish --preid next --dist-tag next",
     "publish-local": "lerna version --force-publish --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
   },
+  "overrides": {
+    "@swc/core": "1.13.5"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.1.0",
     "@commitlint/config-conventional": "^19.1.0",
@@ -42,7 +45,6 @@
     "@graphql-codegen/typescript": "5.0.1",
     "@graphql-codegen/typescript-operations": "5.0.1",
     "@graphql-tools/schema": "^10.0.25",
-    "@swc/core": "^1.4.6",
     "@types/klaw-sync": "^6.0.5",
     "@types/node": "^20.11.19",
     "concurrently": "^9.2.0",
