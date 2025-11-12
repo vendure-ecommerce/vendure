@@ -199,7 +199,14 @@ export class ProductService {
             .getRepository(ctx, ProductTranslation)
             .createQueryBuilder('_product_translation')
             .select('_product_translation.baseId')
-            .andWhere('_product_translation.slug = :slug', { slug });
+            .andWhere('_product_translation.slug = :slug', { slug })
+            .andWhere(
+                '(_product_translation.languageCode = :languageCode OR _product_translation.languageCode = :defaultLanguageCode)',
+                {
+                    languageCode: ctx.languageCode,
+                    defaultLanguageCode: ctx.channel.defaultLanguageCode,
+                },
+            );
 
         qb.leftJoin('product.translations', 'translation')
             .leftJoin('product.channels', 'channel')
