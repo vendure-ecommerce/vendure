@@ -1,20 +1,33 @@
+import { Facet, LanguageCode, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
-
+// import { Facet, LanguageCode } from '../src';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Zone resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig());
+    const { server, adminClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            customFields: {
+                Zone: [
+                    {
+                        name: 'relatedFacet',
+                        type: 'relation',
+                        entity: Facet,
+                    },
+                ],
+            },
+        }),
+    );
     let countries: Codegen.GetCountryListQuery['countries']['items'];
     let zones: Array<{ id: string; name: string }>;
     let oceania: { id: string; name: string };
@@ -215,7 +228,153 @@ describe('Zone resolver', () => {
             expect(result2.zones.items.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
     });
+
+    describe('Zone custom fields', () => {
+        let testFacet: Codegen.CreateFacetMutation['createFacet'];
+        // Create a target entity (Facet) to link the Zone to
+        it('create a target Facet', async () => {
+            const result = await adminClient.query<
+                Codegen.CreateFacetMutation,
+                Codegen.CreateFacetMutationVariables
+            >(CREATE_FACET_WITH_VALUE, {
+                input: {
+                    code: 'test-relation-facet',
+                    isPrivate: false,
+                    translations: [{ languageCode: LanguageCode.en, name: 'Test Relation Facet' }],
+                },
+            });
+
+            testFacet = result.createFacet;
+            expect(testFacet.name).toBe('Test Relation Facet');
+        });
+
+        // Test createZone with a custom relation field
+        it('createZone persists custom relation field', async () => {
+            const input: Codegen.CreateZoneInput = {
+                name: 'Zone with Custom Relation',
+                memberIds: [],
+                customFields: {
+                    relatedFacetId: testFacet.id,
+                },
+            };
+
+            const result = await adminClient.query<
+                CreateZoneMutationWithCF,
+                Codegen.CreateZoneMutationVariables
+            >(CREATE_ZONE_WITH_CF, { input });
+
+            //  Verify the return value
+            expect(result.createZone.customFields.relatedFacet.id).toBe(testFacet.id);
+            //  Verify by querying it again from the database
+            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
+                GET_ZONE_WITH_CUSTOM_FIELDS,
+                { id: result.createZone.id },
+            );
+            expect(result2.zone.customFields.relatedFacet.id).toBe(testFacet.id);
+        });
+
+        // Test updateZone with a custom relation field
+        it('updateZone persists custom relation field', async () => {
+            const result = await adminClient.query<
+                UpdateZoneMutationWithCF,
+                Codegen.UpdateZoneMutationVariables
+            >(UPDATE_ZONE_WITH_CF, {
+                input: {
+                    id: zones[1].id,
+                    customFields: {
+                        relatedFacetId: testFacet.id,
+                    },
+                },
+            });
+
+            // Verify the return value
+            expect(result.updateZone.customFields.relatedFacet.id).toBe(testFacet.id);
+
+            // Verify by querying it again from the database
+            const result2 = await adminClient.query<GetZoneQueryWithCF, Codegen.GetZoneQueryVariables>(
+                GET_ZONE_WITH_CUSTOM_FIELDS,
+                { id: zones[1].id },
+            );
+            expect(result2.zone.customFields.relatedFacet.id).toBe(testFacet.id);
+        });
+    });
 });
+
+type ZoneWithCustomFields = Omit<Codegen.Zone, 'customFields'> & {
+    customFields: {
+        relatedFacet: {
+            id: string;
+        };
+    };
+};
+
+type CreateZoneMutationWithCF = Omit<Codegen.CreateZoneMutation, 'createZone'> & {
+    createZone: ZoneWithCustomFields;
+};
+
+type UpdateZoneMutationWithCF = Omit<Codegen.UpdateZoneMutation, 'updateZone'> & {
+    updateZone: ZoneWithCustomFields;
+};
+
+type GetZoneQueryWithCF = Omit<Codegen.GetZoneQuery, 'zone'> & {
+    zone: ZoneWithCustomFields;
+};
+
+const CREATE_FACET_WITH_VALUE = gql`
+    mutation CreateFacetWithValue($input: CreateFacetInput!) {
+        createFacet(input: $input) {
+            id
+            name
+        }
+    }
+`;
+
+// A new fragment to include the custom fields
+const ZONE_CUSTOM_FIELDS_FRAGMENT = gql`
+    fragment ZoneCustomFields on Zone {
+        customFields {
+            relatedFacet {
+                id
+            }
+        }
+    }
+`;
+
+// A new mutation to create a Zone with custom fields
+const CREATE_ZONE_WITH_CF = gql`
+    mutation CreateZoneWithCF($input: CreateZoneInput!) {
+        createZone(input: $input) {
+            ...Zone
+            ...ZoneCustomFields
+        }
+    }
+    ${ZONE_FRAGMENT}
+    ${ZONE_CUSTOM_FIELDS_FRAGMENT}
+`;
+
+// A new mutation to update a Zone with custom fields
+const UPDATE_ZONE_WITH_CF = gql`
+    mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
+        updateZone(input: $input) {
+            ...Zone
+            ...ZoneCustomFields
+        }
+    }
+    ${ZONE_FRAGMENT}
+    ${ZONE_CUSTOM_FIELDS_FRAGMENT}
+`;
+
+// A new query to fetch the Zone with its custom fields
+const GET_ZONE_WITH_CUSTOM_FIELDS = gql`
+    query GetZoneWithCustomFields($id: ID!) {
+        zone(id: $id) {
+            ...Zone
+            ...ZoneCustomFields
+        }
+    }
+    ${ZONE_FRAGMENT}
+    ${ZONE_CUSTOM_FIELDS_FRAGMENT}
+`;
 
 const DELETE_ZONE = gql`
     mutation DeleteZone($id: ID!) {
