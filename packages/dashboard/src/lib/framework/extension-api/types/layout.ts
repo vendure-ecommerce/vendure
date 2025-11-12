@@ -79,7 +79,7 @@ export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | '
 export type PageBlockLocation = {
     pageId: string;
     position: PageBlockPosition;
-    column: 'main' | 'side';
+    column: 'main' | 'side' | 'full';
 };
 
 /**

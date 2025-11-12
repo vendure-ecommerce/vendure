@@ -95,6 +95,18 @@ export type VitePluginVendureDashboardOptions = {
     pluginPackageScanner?: PackageScannerConfig;
     /**
      * @description
+     * Allows you to specify the module system to use when compiling and loading your Vendure config.
+     * By default, the compiler will use CommonJS, but you can set it to `esm` if you are using
+     * ES Modules in your Vendure project.
+     *
+     * **Status** Developer preview. If you are using ESM please try this out and provide us with feedback!
+     *
+     * @since 3.5.1
+     * @default 'commonjs'
+     */
+    module?: 'commonjs' | 'esm';
+    /**
+     * @description
      * Allows you to selectively disable individual plugins.
      * @example
      * ```ts
@@ -204,6 +216,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
                     outputPath: tempDir,
                     pathAdapter: options.pathAdapter,
                     pluginPackageScanner: options.pluginPackageScanner,
+                    module: options.module,
                 }),
         },
         {
