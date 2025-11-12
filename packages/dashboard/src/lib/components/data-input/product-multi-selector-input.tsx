@@ -93,13 +93,13 @@ function EmptyState() {
 }
 
 function ProductList({
-                         items,
-                         mode,
-                         selectedIds,
-                         getItemId,
-                         getItemName,
-                         toggleSelection,
-                     }: Readonly<{
+    items,
+    mode,
+    selectedIds,
+    getItemId,
+    getItemName,
+    toggleSelection,
+}: Readonly<{
     items: SearchItem[];
     mode: 'product' | 'variant';
     selectedIds: Set<string>;
@@ -163,12 +163,12 @@ function ProductList({
 }
 
 function ProductMultiSelectorDialog({
-                                        mode,
-                                        initialSelectionIds = [],
-                                        onSelectionChange,
-                                        open,
-                                        onOpenChange,
-                                    }: Readonly<ProductMultiSelectorProps>) {
+    mode,
+    initialSelectionIds = [],
+    onSelectionChange,
+    open,
+    onOpenChange,
+}: Readonly<ProductMultiSelectorProps>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedItems, setSelectedItems] = useState<SearchItem[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -221,7 +221,7 @@ function ProductMultiSelectorDialog({
 
             if (selectedIds.has(itemId)) {
                 newSelectedIds.delete(itemId);
-                const index = selectedItems.findIndex(selected => getItemId(selected) === itemId);
+                const index = newSelectedItems.findIndex(selected => getItemId(selected) === itemId);
                 if (index >= 0) {
                     newSelectedItems.splice(index, 1);
                 }
@@ -363,7 +363,7 @@ function ProductMultiSelectorDialog({
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
                         <Trans>Cancel</Trans>
                     </Button>
-                    <Button onClick={handleSelect} disabled={selectedItems.length === 0}>
+                    <Button onClick={handleSelect}>
                         <Trans>Select {selectedItems.length} Items</Trans>
                     </Button>
                 </DialogFooter>
@@ -374,20 +374,17 @@ function ProductMultiSelectorDialog({
 
 export const ProductMultiInput: DashboardFormComponent = ({ value, onChange, ...props }) => {
     const [open, setOpen] = useState(false);
-    // Parse the configuration from the field definition
     const mode = props.fieldDef?.ui?.selectionMode === 'variant' ? 'variant' : 'product';
-    // Parse the current value (JSON array of IDs)
-    const selectedIds = value;
+    const selectedIds = value || [];
 
     const handleSelectionChange = useCallback(
         (newSelectedIds: string[]) => {
-            onChange(JSON.stringify(newSelectedIds));
+            onChange(newSelectedIds);
         },
         [onChange],
     );
     const itemType = mode === 'product' ? 'products' : 'variants';
-    const buttonText =
-        selectedIds.length > 0 ? `Selected ${selectedIds.length} ${itemType}` : `Select ${itemType}`;
+    const buttonText = selectedIds.length > 0 ? `Change selected ${itemType}` : `Select ${itemType}`;
     return (
         <>
             <div className="space-y-2">
