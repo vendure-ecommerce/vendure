@@ -93,12 +93,15 @@ export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
                     sourceLocale: linguiConfig.sourceLocale,
                 });
                 return `
+                    const translations = {
                         ${[...mergedMessageMap.entries()]
                             .map(([locale, messages]) => {
                                 const safeLocale = locale.replace(/-/g, '_');
-                                return `export const ${safeLocale} = ${JSON.stringify(messages)}`;
+                                return `${safeLocale}: ${JSON.stringify(messages)}`;
                             })
-                            .join('\n')}
+                            .join(',\n')}
+                    };
+                    export default translations;
                 `;
             }
         },
