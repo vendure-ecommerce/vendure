@@ -20,7 +20,7 @@ import {
     StructCustomFieldConfig,
     StructField,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
+import { isReadonlyField, isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { CustomFieldListInput } from './custom-field-list-input.js';
 import { DateTimeInput } from './datetime-input.js';
@@ -82,6 +82,11 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
     const { control } = useFormContext();
     const { value, name } = field;
 
+    // Early return if not a struct field config
+    if (!fieldDef || !isStructFieldConfig(fieldDef)) {
+        return null;
+    }
+
     // Watch the struct field for changes to update display mode
     const watchedStructValue =
         useWatch({
@@ -98,7 +103,7 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         return input?.find(t => t.languageCode === displayLanguage)?.value;
     };
 
-    const isReadonly = fieldDef?.readonly === true;
+    const isReadonly = isReadonlyField(fieldDef);
 
     // Helper function to render individual struct field inputs
     const renderStructFieldInput = (
@@ -243,7 +248,7 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
                         </Button>
                     </div>
                 )}
-                {fieldDef?.fields?.map(structField => (
+                {fieldDef.fields.map(structField => (
                     <FormField
                         key={structField.name}
                         control={control}
@@ -276,10 +281,6 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         ),
         [fieldDef, control, field.name, getTranslation, renderStructFieldInput, isReadonly],
     );
-
-    if (!fieldDef || !isStructFieldConfig(fieldDef)) {
-        return null;
-    }
 
     // Helper function to format field value for display
     const formatFieldValue = (value: any, structField: StructField) => {
