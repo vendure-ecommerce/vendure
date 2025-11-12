@@ -5,9 +5,13 @@ import {
     getCatalogs,
 } from '@lingui/cli/api';
 import { getConfig } from '@lingui/conf';
+import glob from 'fast-glob';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Plugin } from 'vite';
+
+import { getDashboardPaths } from './utils/get-dashboard-paths.js';
+import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 export interface TranslationsPluginOptions {
     /**
@@ -25,27 +29,50 @@ export interface TranslationsPluginOptions {
     packageRoot: string;
 }
 
-type TranslationFile = {
-    name: string;
-    path: string;
+type PluginTranslation = {
+    pluginRootPath: string;
+    translations: string[];
 };
 
 /**
  * @description
- * This Vite plugin compiles
+ * This Vite plugin compiles the source .po files into JS bundles that can be loaded statically.
+ * During dev mode, the Lingui plugin is responsible for loading the po files dynamically.
  * @param options
  */
 export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
-    const { externalPoFiles = [], localesDir = 'src/i18n/locales', outputPath = 'assets/i18n' } = options;
+    let configLoaderApi: ConfigLoaderApi;
+    const { localesDir = 'src/i18n/locales', outputPath = 'assets/i18n' } = options;
 
     const linguiConfig = getConfig({ configPath: path.join(options.packageRoot, 'lingui.config.js') });
 
-    const catalogsPromise = getCatalogs(linguiConfig);
+    async function compileTranslations(pluginTranslations: PluginTranslation[], emitFile: any) {
+        const resolvedLocalesDir = path.resolve(options.packageRoot, localesDir);
 
-    async function compileTranslations(files: TranslationFile[], emitFile: any) {
+        for (const pluginTranslation of pluginTranslations) {
+            if (pluginTranslation.translations.length === 0) {
+                continue;
+            }
+            linguiConfig.catalogs?.push({
+                path: pluginTranslation.translations[0]?.replace(/[a-z_-]+\.po$/, '{locale}') ?? '',
+                include: [],
+            });
+        }
+
+        // Get all built-in .po files
+        const builtInFiles = fs
+            .readdirSync(resolvedLocalesDir)
+            .filter(file => file.endsWith('.po'))
+            .map(file => path.join(resolvedLocalesDir, file));
+
+        const pluginFiles = pluginTranslations.flatMap(translation => translation.translations);
+
+        const catalogsPromise = getCatalogs(linguiConfig);
         const catalogs = await catalogsPromise;
-        for (const file of files) {
-            const catalogRelativePath = path.relative(options.packageRoot, file.path);
+        const mergedMessageMap = new Map<string, Record<string, string>>();
+
+        for (const file of [...builtInFiles, ...pluginFiles]) {
+            const catalogRelativePath = path.relative(options.packageRoot, file);
             const fileCatalog = getCatalogForFile(catalogRelativePath, catalogs);
 
             const { locale, catalog } = fileCatalog;
@@ -57,6 +84,11 @@ export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
                 sourceLocale: linguiConfig.sourceLocale!,
             });
 
+            const mergedMessages = mergedMessageMap.get(locale) ?? {};
+            mergedMessageMap.set(locale, { ...mergedMessages, ...messages });
+        }
+
+        for (const [locale, messages] of mergedMessageMap.entries()) {
             const { source: code, errors } = createCompiledCatalog(locale, messages, {
                 namespace: 'es',
                 pseudoLocale: linguiConfig.pseudoLocale,
@@ -82,23 +114,38 @@ export function translationsPlugin(options: TranslationsPluginOptions): Plugin {
 
     return {
         name: 'vendure:compile-translations',
+        configResolved({ plugins }) {
+            configLoaderApi = getConfigLoaderApi(plugins);
+        },
         async generateBundle() {
             // This runs during the bundle generation phase - emit files directly to build output
             try {
-                const resolvedLocalesDir = path.resolve(options.packageRoot, localesDir);
+                const { pluginInfo } = await configLoaderApi.getVendureConfig();
 
-                // Get all built-in .po files
-                const builtInFiles = fs
-                    .readdirSync(resolvedLocalesDir)
-                    .filter(file => file.endsWith('.po'))
-                    .map(file => ({
-                        name: file,
-                        path: path.join(resolvedLocalesDir, file),
-                    }));
-
-                await compileTranslations(builtInFiles, this.emitFile);
-
-                this.info(`✓ Processed ${builtInFiles.length} translation files to ${outputPath}`);
+                // Get any plugin-provided .po files
+                const dashboardPaths = getDashboardPaths(pluginInfo);
+                const pluginTranslations: PluginTranslation[] = [];
+                for (const dashboardPath of dashboardPaths) {
+                    const poPatterns = path.join(dashboardPath, '**/*.po');
+                    const translations = await glob(poPatterns, {
+                        ignore: [
+                            // Standard test & doc files
+                            '**/node_modules/**/node_modules/**',
+                            '**/*.spec.js',
+                            '**/*.test.js',
+                        ],
+                        onlyFiles: true,
+                        absolute: true,
+                        followSymbolicLinks: false,
+                        stats: false,
+                    });
+                    pluginTranslations.push({
+                        pluginRootPath: dashboardPath,
+                        translations,
+                    });
+                }
+                this.info(`Found ${pluginTranslations.length} plugins with translations`);
+                await compileTranslations(pluginTranslations, this.emitFile);
             } catch (error) {
                 this.error(
                     `Translation plugin error: ${error instanceof Error ? error.message : String(error)}`,
