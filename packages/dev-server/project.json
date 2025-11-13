@@ -1,0 +1,25 @@
+{
+  "name": "dev-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/dev-server",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/dev-server"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/dev-server"
+      }
+    }
+  },
+  "tags": ["type:application", "scope:dev-server"]
+}

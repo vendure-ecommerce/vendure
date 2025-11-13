@@ -1,0 +1,40 @@
+{
+  "name": "@vendure/email-plugin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/email-plugin/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/email-plugin"
+      },
+      "outputs": ["{projectRoot}/lib"],
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/email-plugin"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/email-plugin"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/email-plugin/e2e"
+      },
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["type:plugin", "scope:email"]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@vendure/common",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/common/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "cwd": "packages/common"
+      },
+      "outputs": ["{projectRoot}/lib"]
+    },
+    "watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p ./tsconfig.build.json -w",
+        "cwd": "packages/common"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/common"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/common"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:common"]
+}

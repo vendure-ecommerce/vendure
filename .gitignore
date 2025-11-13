@@ -389,3 +389,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 __admin-ui/
+
+# Nx cache
+.nx/cache
+.nx/workspace-data

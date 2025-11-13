@@ -1,0 +1,32 @@
+{
+  "name": "@vendure/testing",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/testing/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/testing"
+      },
+      "outputs": ["{projectRoot}/lib"],
+      "dependsOn": ["@vendure/common:build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/testing"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/testing"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:testing"]
+}
