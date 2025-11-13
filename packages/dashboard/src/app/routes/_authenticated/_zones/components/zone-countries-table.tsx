@@ -1,9 +1,9 @@
 import { DataTable } from '@/vdb/components/data-table/data-table.js';
+import { useGeneratedColumns } from '@/vdb/components/data-table/use-generated-columns.js';
 import { CountrySelector } from '@/vdb/components/shared/country-selector.js';
-import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
+import { Trans } from '@lingui/react/macro';
 import { useMemo, useState } from 'react';
 import {
     addCountryToZoneMutation,
@@ -36,61 +36,48 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
         return data?.zone?.members?.slice((page - 1) * pageSize, page * pageSize);
     }, [data, page, pageSize]);
 
-    const columns: ColumnDef<any>[] = [
-        {
-            id: 'selection',
-            accessorKey: 'selection',
-            header: ({ table }) => (
-                <Checkbox
-                    className="mx-1"
-                    checked={table.getIsAllRowsSelected()}
-                    onCheckedChange={checked =>
-                        table.toggleAllRowsSelected(checked === 'indeterminate' ? undefined : checked)
-                    }
-                />
-            ),
-            enableColumnFilter: false,
-            enableHiding: false,
-            cell: ({ row }) => {
-                return (
-                    <Checkbox
-                        className="mx-1"
-                        checked={row.getIsSelected()}
-                        onCheckedChange={row.getToggleSelectedHandler()}
-                    />
-                );
+    const bulkActions = useMemo(
+        () => [
+            {
+                component: removeCountryFromZoneBulkAction(zoneId),
+                order: 500,
+            },
+        ],
+        [zoneId],
+    );
+
+    const { columns } = useGeneratedColumns({
+        fields: [],
+        additionalColumns: {
+            name: {
+                header: () => <Trans>Country</Trans>,
+                accessorKey: 'name',
+            },
+            enabled: {
+                header: () => <Trans>Enabled</Trans>,
+                accessorKey: 'enabled',
+            },
+            code: {
+                header: () => <Trans>Code</Trans>,
+                accessorKey: 'code',
             },
         },
-        {
-            header: 'Country',
-            accessorKey: 'name',
-        },
-        {
-            header: 'Enabled',
-            accessorKey: 'enabled',
-        },
-        {
-            header: 'Code',
-            accessorKey: 'code',
-        },
-    ];
+        bulkActions,
+        includeActionsColumn: false,
+        enableSorting: false,
+    });
 
     return (
         <div>
             <DataTable
-                columns={columns}
+                columns={columns as any}
                 data={paginatedItems ?? []}
                 onPageChange={(table, page, itemsPerPage) => {
                     setPage(page);
                     setPageSize(itemsPerPage);
                 }}
                 totalItems={data?.zone?.members?.length ?? 0}
-                bulkActions={[
-                    {
-                        component: removeCountryFromZoneBulkAction(zoneId),
-                        order: 500,
-                    },
-                ]}
+                bulkActions={bulkActions}
             />
             {canAddCountries && (
                 <CountrySelector
