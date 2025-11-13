@@ -85,7 +85,8 @@ const ALL_LANGUAGE_CODES = [
     'hi',
     'sv',
     'da',
-    'no',
+    'nb',
+    'nn',
     'fi',
 ];
 
