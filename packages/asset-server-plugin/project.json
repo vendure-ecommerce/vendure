@@ -1,0 +1,40 @@
+{
+  "name": "@vendure/asset-server-plugin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/asset-server-plugin/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/asset-server-plugin"
+      },
+      "outputs": ["{projectRoot}/lib"],
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/asset-server-plugin"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/asset-server-plugin"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/asset-server-plugin/e2e"
+      },
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["type:plugin", "scope:asset-server"]
+}

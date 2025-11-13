@@ -1,0 +1,46 @@
+{
+  "name": "@vendure/admin-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/admin-ui/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node scripts/copy-package-json.js",
+          "node scripts/set-version.js",
+          "node scripts/build-public-api.js",
+          "ng build vendure-admin-lib --configuration production",
+          "node scripts/compile-styles.js"
+        ],
+        "parallel": false,
+        "cwd": "packages/admin-ui"
+      },
+      "outputs": ["{projectRoot}/package"],
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/set-version.js && ng serve",
+        "cwd": "packages/admin-ui"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ng lint --fix",
+        "cwd": "packages/admin-ui"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
+        "cwd": "packages/admin-ui"
+      }
+    }
+  },
+  "tags": ["type:application", "scope:admin-ui"]
+}

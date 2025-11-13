@@ -1,0 +1,57 @@
+{
+  "name": "@vendure/core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/core/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf dist",
+          "tsc -p ./build/tsconfig.build.json",
+          "tsc -p ./build/tsconfig.cli.json",
+          "ts-node build/copy-static.ts build"
+        ],
+        "parallel": false,
+        "cwd": "packages/core"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["@vendure/common:build"]
+    },
+    "watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc -p ./build/tsconfig.build.json --watch",
+          "ts-node build/copy-static.ts watch"
+        ],
+        "parallel": true,
+        "cwd": "packages/core"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/core"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --config vitest.config.mts --run",
+        "cwd": "packages/core"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.mts --run",
+        "cwd": "packages/core"
+      },
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["type:library", "scope:core"]
+}

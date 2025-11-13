@@ -1,0 +1,32 @@
+{
+  "name": "@vendure/ui-devkit",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ui-devkit/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/ui-devkit"
+      },
+      "outputs": ["{projectRoot}/lib"],
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint --fix .",
+        "cwd": "packages/ui-devkit"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --run",
+        "cwd": "packages/ui-devkit"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:ui-devkit"]
+}
