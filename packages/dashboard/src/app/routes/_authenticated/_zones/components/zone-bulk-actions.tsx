@@ -20,10 +20,7 @@ export const DeleteZonesBulkAction: BulkActionComponent<any> = ({ selection, tab
     );
 };
 
-/**
- * Factory function to create a RemoveCountryFromZoneBulkAction with a specific zoneId
- */
-export function createRemoveCountryFromZoneBulkAction(zoneId: string): BulkActionComponent<any> {
+export function removeCountryFromZoneBulkAction(zoneId: string): BulkActionComponent<any> {
     const RemoveCountryFromZoneBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
         const { t } = useLingui();
         const queryClient = useQueryClient();
@@ -32,7 +29,6 @@ export function createRemoveCountryFromZoneBulkAction(zoneId: string): BulkActio
             mutationFn: api.mutate(removeCountryFromZoneMutation),
             onSuccess: () => {
                 toast.success(t`Removed ${selection.length} ${selection.length === 1 ? 'country' : 'countries'} from zone`);
-                // Invalidate the zone query to refetch the data
                 queryClient.invalidateQueries({ queryKey: ['zone', zoneId] });
                 table.resetRowSelection();
             },
