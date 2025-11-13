@@ -1,5 +1,6 @@
 import { DataTable } from '@/vdb/components/data-table/data-table.js';
 import { CountrySelector } from '@/vdb/components/shared/country-selector.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
@@ -9,6 +10,7 @@ import {
     removeCountryFromZoneMutation,
     zoneMembersQuery,
 } from '../zones.graphql.js';
+import { createRemoveCountryFromZoneBulkAction } from './zone-bulk-actions.js';
 
 interface ZoneCountriesTableProps {
     zoneId: string;
@@ -37,6 +39,30 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
 
     const columns: ColumnDef<any>[] = [
         {
+            id: 'selection',
+            accessorKey: 'selection',
+            header: ({ table }) => (
+                <Checkbox
+                    className="mx-1"
+                    checked={table.getIsAllRowsSelected()}
+                    onCheckedChange={checked =>
+                        table.toggleAllRowsSelected(checked === 'indeterminate' ? undefined : checked)
+                    }
+                />
+            ),
+            enableColumnFilter: false,
+            enableHiding: false,
+            cell: ({ row }) => {
+                return (
+                    <Checkbox
+                        className="mx-1"
+                        checked={row.getIsSelected()}
+                        onCheckedChange={row.getToggleSelectedHandler()}
+                    />
+                );
+            },
+        },
+        {
             header: 'Country',
             accessorKey: 'name',
         },
@@ -60,6 +86,12 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
                     setPageSize(itemsPerPage);
                 }}
                 totalItems={data?.zone?.members?.length ?? 0}
+                bulkActions={[
+                    {
+                        component: createRemoveCountryFromZoneBulkAction(zoneId),
+                        order: 500,
+                    },
+                ]}
             />
             {canAddCountries && (
                 <CountrySelector
