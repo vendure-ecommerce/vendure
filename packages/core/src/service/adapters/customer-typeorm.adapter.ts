@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Address } from '../../entity/address/address.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { RequestContext } from '../../api/common/request-context';
 
 import {
     CreateCustomerData,
@@ -86,15 +85,17 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         // Apply filters
         if (filter.firstName) {
             qb.andWhere('customer.firstName LIKE :firstName', {
-                firstName: `%${filter.firstName}%`,
+                firstName: `%${String(filter.firstName)}%`,
             });
         }
         if (filter.lastName) {
-            qb.andWhere('customer.lastName LIKE :lastName', { lastName: `%${filter.lastName}%` });
+            qb.andWhere('customer.lastName LIKE :lastName', {
+                lastName: `%${String(filter.lastName)}%`,
+            });
         }
         if (filter.emailAddress) {
             qb.andWhere('customer.emailAddress LIKE :emailAddress', {
-                emailAddress: `%${filter.emailAddress}%`,
+                emailAddress: `%${String(filter.emailAddress)}%`,
             });
         }
 
@@ -147,7 +148,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
 
         const updated = await this.findOne(id, ['addresses', 'user']);
         if (!updated) {
-            throw new Error(`Customer with id ${id} not found after update`);
+            throw new Error(`Customer with id ${String(id)} not found after update`);
         }
         return updated;
     }
@@ -171,7 +172,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!restored) {
-            throw new Error(`Customer with id ${id} not found after restore`);
+            throw new Error(`Customer with id ${String(id)} not found after restore`);
         }
         return restored;
     }
@@ -198,15 +199,17 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
 
         if (filter.firstName) {
             qb.andWhere('customer.firstName LIKE :firstName', {
-                firstName: `%${filter.firstName}%`,
+                firstName: `%${String(filter.firstName)}%`,
             });
         }
         if (filter.lastName) {
-            qb.andWhere('customer.lastName LIKE :lastName', { lastName: `%${filter.lastName}%` });
+            qb.andWhere('customer.lastName LIKE :lastName', {
+                lastName: `%${String(filter.lastName)}%`,
+            });
         }
         if (filter.emailAddress) {
             qb.andWhere('customer.emailAddress LIKE :emailAddress', {
-                emailAddress: `%${filter.emailAddress}%`,
+                emailAddress: `%${String(filter.emailAddress)}%`,
             });
         }
 
@@ -221,7 +224,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!customer) {
-            throw new Error(`Customer with id ${customerId} not found`);
+            throw new Error(`Customer with id ${String(customerId)} not found`);
         }
 
         const group = await this.connection.getRepository(ctx, CustomerGroup).findOne({
@@ -229,7 +232,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!group) {
-            throw new Error(`CustomerGroup with id ${groupId} not found`);
+            throw new Error(`CustomerGroup with id ${String(groupId)} not found`);
         }
 
         if (!customer.groups) {
@@ -250,7 +253,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!customer) {
-            throw new Error(`Customer with id ${customerId} not found`);
+            throw new Error(`Customer with id ${String(customerId)} not found`);
         }
 
         if (customer.groups) {
@@ -277,7 +280,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!customer) {
-            throw new Error(`Customer with id ${customerId} not found`);
+            throw new Error(`Customer with id ${String(customerId)} not found`);
         }
 
         const channel = await this.connection.getRepository(ctx, Channel).findOne({
@@ -285,7 +288,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!channel) {
-            throw new Error(`Channel with id ${channelId} not found`);
+            throw new Error(`Channel with id ${String(channelId)} not found`);
         }
 
         if (!customer.channels) {
@@ -306,7 +309,7 @@ export class CustomerTypeOrmAdapter implements ICustomerOrmAdapter {
         });
 
         if (!customer) {
-            throw new Error(`Customer with id ${customerId} not found`);
+            throw new Error(`Customer with id ${String(customerId)} not found`);
         }
 
         if (customer.channels) {

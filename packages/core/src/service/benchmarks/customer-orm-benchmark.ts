@@ -9,7 +9,10 @@
  * @since 3.6.0
  */
 
+/* eslint-disable no-console */
+
 import { Bench } from 'tinybench';
+
 import { CustomerPrismaAdapter } from '../adapters/customer-prisma.adapter';
 import { CustomerTypeOrmAdapter } from '../adapters/customer-typeorm.adapter';
 
@@ -32,6 +35,7 @@ export class CustomerOrmBenchmark {
         // This would initialize real adapters with database connections
         // For now, it's a placeholder
         console.log('Setting up benchmark environment...');
+        return Promise.resolve();
     }
 
     /**
@@ -39,6 +43,7 @@ export class CustomerOrmBenchmark {
      */
     async teardown() {
         console.log('Cleaning up benchmark environment...');
+        return Promise.resolve();
     }
 
     /**
@@ -118,7 +123,7 @@ export class CustomerOrmBenchmark {
      */
     private displayResults() {
         console.log('\n📊 Customer ORM Benchmark Results\n');
-        console.log('=' .repeat(80));
+        console.log('='.repeat(80));
 
         const tasks = this.bench.tasks;
         const grouped = new Map<string, typeof tasks>();
@@ -129,16 +134,19 @@ export class CustomerOrmBenchmark {
             if (!grouped.has(operation)) {
                 grouped.set(operation, []);
             }
-            grouped.get(operation)!.push(task);
+            const group = grouped.get(operation);
+            if (group) {
+                group.push(task);
+            }
         });
 
         // Display comparison for each operation
-        grouped.forEach((tasks, operation) => {
+        grouped.forEach((taskList, operation) => {
             console.log(`\n${operation}:`);
             console.log('-'.repeat(80));
 
-            const typeormTask = tasks.find(t => t.name.startsWith('TypeORM'));
-            const prismaTask = tasks.find(t => t.name.startsWith('Prisma'));
+            const typeormTask = taskList.find(t => t.name.startsWith('TypeORM'));
+            const prismaTask = taskList.find(t => t.name.startsWith('Prisma'));
 
             if (typeormTask && prismaTask) {
                 const typeormOps = typeormTask.result?.hz || 0;
@@ -158,15 +166,13 @@ export class CustomerOrmBenchmark {
         console.log('\n' + '='.repeat(80));
 
         // Summary
+        const typeormTasks = tasks.filter(t => t.name.startsWith('TypeORM'));
         const allTypeormOps =
-            tasks
-                .filter(t => t.name.startsWith('TypeORM'))
-                .reduce((sum, t) => sum + (t.result?.hz || 0), 0) / tasks.length;
+            typeormTasks.reduce((sum, t) => sum + (t.result?.hz || 0), 0) / (typeormTasks.length || 1);
 
         const allPrismaOps =
-            tasks
-                .filter(t => t.name.startsWith('Prisma'))
-                .reduce((sum, t) => sum + (t.result?.hz || 0), 0) / tasks.length;
+            tasks.filter(t => t.name.startsWith('Prisma')).reduce((sum, t) => sum + (t.result?.hz || 0), 0) /
+            tasks.length;
 
         const overallImprovement = ((allPrismaOps - allTypeormOps) / allTypeormOps) * 100;
 

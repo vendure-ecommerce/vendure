@@ -9,9 +9,13 @@
  * @since 3.6.0
  */
 
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { PrismaService } from '../../connection/prisma.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+
 import { CustomerPrismaAdapter } from './customer-prisma.adapter';
 import { CustomerTypeOrmAdapter } from './customer-typeorm.adapter';
 
@@ -184,7 +188,8 @@ describe('Customer ORM Adapters', () => {
                 deletedAt: new Date(),
             } as any);
 
-            await expect(prismaAdapter.softDelete(customerId)).resolves.not.toThrow();
+            await prismaAdapter.softDelete(customerId);
+            expect(true).toBe(true); // Verify no error thrown
         });
     });
 
@@ -226,7 +231,8 @@ describe('Customer ORM Adapters', () => {
                 groupId,
             } as any);
 
-            await expect(prismaAdapter.addToGroup(customerId, groupId)).resolves.not.toThrow();
+            await prismaAdapter.addToGroup(customerId, groupId);
+            expect(true).toBe(true); // Verify no error thrown
         });
 
         it('should remove customer from group', async () => {
@@ -238,7 +244,8 @@ describe('Customer ORM Adapters', () => {
                 groupId,
             } as any);
 
-            await expect(prismaAdapter.removeFromGroup(customerId, groupId)).resolves.not.toThrow();
+            await prismaAdapter.removeFromGroup(customerId, groupId);
+            expect(true).toBe(true); // Verify no error thrown
         });
     });
 
@@ -252,7 +259,8 @@ describe('Customer ORM Adapters', () => {
                 channelId,
             } as any);
 
-            await expect(prismaAdapter.addToChannel(customerId, channelId)).resolves.not.toThrow();
+            await prismaAdapter.addToChannel(customerId, channelId);
+            expect(true).toBe(true); // Verify no error thrown
         });
 
         it('should remove customer from channel', async () => {
@@ -264,9 +272,8 @@ describe('Customer ORM Adapters', () => {
                 channelId,
             } as any);
 
-            await expect(
-                prismaAdapter.removeFromChannel(customerId, channelId),
-            ).resolves.not.toThrow();
+            await prismaAdapter.removeFromChannel(customerId, channelId);
+            expect(true).toBe(true); // Verify no error thrown
         });
     });
 });

@@ -105,6 +105,8 @@
  * @since 3.6.0
  */
 
+/* eslint-disable no-console */
+
 import { Injectable } from '@nestjs/common';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -112,7 +114,6 @@ import { RequestContext } from '../../api/common/request-context';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Customer } from '../../entity/customer/customer.entity';
-
 import { CustomerPrismaAdapter, CustomerTypeOrmAdapter, ICustomerOrmAdapter } from '../adapters';
 
 /**
