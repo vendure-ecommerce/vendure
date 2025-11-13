@@ -7,10 +7,9 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import {
     addCountryToZoneMutation,
-    removeCountryFromZoneMutation,
     zoneMembersQuery,
 } from '../zones.graphql.js';
-import { createRemoveCountryFromZoneBulkAction } from './zone-bulk-actions.js';
+import { removeCountryFromZoneBulkAction } from './zone-bulk-actions.js';
 
 interface ZoneCountriesTableProps {
     zoneId: string;
@@ -88,7 +87,7 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
                 totalItems={data?.zone?.members?.length ?? 0}
                 bulkActions={[
                     {
-                        component: createRemoveCountryFromZoneBulkAction(zoneId),
+                        component: removeCountryFromZoneBulkAction(zoneId),
                         order: 500,
                     },
                 ]}
