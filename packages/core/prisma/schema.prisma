@@ -1,0 +1,594 @@
+// Prisma Schema for Vendure
+// Phase 2: ORM Migration - Pilot Schema (Customer + Address)
+//
+// This schema represents the initial migration of Customer and Address entities
+// from TypeORM to Prisma. Additional entities will be added in subsequent phases.
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../../node_modules/.prisma/client"
+  previewFeatures = ["multiSchema", "views", "fullTextSearch"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// BASE MODELS (All entities inherit these fields)
+// =============================================================================
+
+// Note: Prisma doesn't support inheritance, so we use a documentation pattern
+// All entities should include: id, createdAt, updatedAt
+
+// =============================================================================
+// USER & AUTHENTICATION
+// =============================================================================
+
+model User {
+  id                     String    @id @default(cuid())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
+
+  identifier             String    @unique
+  verified               Boolean   @default(false)
+  lastLogin              DateTime?
+
+  // Relations
+  customer               Customer?
+  administrator          Administrator?
+  authenticationMethods  AuthenticationMethod[]
+  roles                  UserRole[]
+
+  customFields           Json?
+
+  @@index([identifier])
+  @@index([deletedAt])
+  @@map("user")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  code        String   @unique
+  description String
+  permissions String[] // Array of permission codes
+
+  // Relations
+  channels    RoleChannel[]
+  users       UserRole[]
+
+  customFields Json?
+
+  @@map("role")
+}
+
+// Join table: User <-> Role
+model UserRole {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+model Administrator {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  firstName   String
+  lastName    String
+  emailAddress String
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @unique
+
+  customFields Json?
+
+  @@index([emailAddress])
+  @@index([deletedAt])
+  @@map("administrator")
+}
+
+model AuthenticationMethod {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Discriminator for inheritance
+  type      String   // 'native' or 'external'
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  // Native authentication fields
+  identifier       String?
+  passwordHash     String?
+  verificationToken String?
+  passwordResetToken String?
+  identifierChangeToken String?
+  pendingIdentifier String?
+
+  // External authentication fields
+  strategy         String?
+  externalIdentifier String?
+  metadata         Json?
+
+  @@index([userId])
+  @@index([type])
+  @@map("authentication_method")
+}
+
+// =============================================================================
+// CHANNEL
+// =============================================================================
+
+model Channel {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  code            String    @unique
+  token           String    @unique
+  defaultLanguageCode String
+  availableLanguageCodes String[]
+  pricesIncludeTax Boolean  @default(false)
+
+  defaultCurrencyCode String
+  availableCurrencyCodes String[]
+
+  trackInventory  Boolean?
+  outOfStockThreshold Int?
+
+  // Relations
+  customers       CustomerChannel[]
+  orders          OrderChannel[]
+  products        ProductChannel[]
+  roles           RoleChannel[]
+  sellers         ChannelSeller[]
+
+  customFields    Json?
+
+  @@index([code])
+  @@index([token])
+  @@map("channel")
+}
+
+// Join table: Channel <-> Seller
+model ChannelSeller {
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  sellerId  String
+  seller    Seller  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@id([channelId, sellerId])
+  @@map("channel_seller")
+}
+
+// Join table: Role <-> Channel
+model RoleChannel {
+  roleId    String
+  role      Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, channelId])
+  @@map("role_channel")
+}
+
+model Seller {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  channels  ChannelSeller[]
+
+  customFields Json?
+
+  @@map("seller")
+}
+
+// =============================================================================
+// REGION (Country, Province, Zone)
+// =============================================================================
+
+model Zone {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  members   ZoneMember[]
+
+  customFields Json?
+
+  @@map("zone")
+}
+
+model ZoneMember {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Polymorphic relation: Country or Zone
+  entityType String  // 'Country' or 'Zone'
+  entityId   String
+
+  // Relations
+  zone      Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  zoneId    String
+
+  @@index([zoneId])
+  @@index([entityType, entityId])
+  @@map("zone_member")
+}
+
+model Region {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  code        String   @unique
+  type        String   // 'country' or 'province'
+  name        String
+  enabled     Boolean  @default(true)
+
+  // For Province
+  parentId    String?
+  parent      Region?  @relation("RegionHierarchy", fields: [parentId], references: [id])
+  children    Region[] @relation("RegionHierarchy")
+
+  // Relations
+  translations RegionTranslation[]
+
+  customFields Json?
+
+  @@index([code])
+  @@index([type])
+  @@index([parentId])
+  @@map("region")
+}
+
+model RegionTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  // Relations
+  base        Region   @relation(fields: [baseId], references: [id], onDelete: Cascade)
+  baseId      String
+
+  @@unique([languageCode, baseId])
+  @@map("region_translation")
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code      String   @unique
+  name      String
+  enabled   Boolean  @default(true)
+
+  // Relations
+  addresses Address[]
+  translations CountryTranslation[]
+
+  customFields Json?
+
+  @@index([code])
+  @@map("country")
+}
+
+model CountryTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  // Relations
+  base        Country  @relation(fields: [baseId], references: [id], onDelete: Cascade)
+  baseId      String
+
+  @@unique([languageCode, baseId])
+  @@map("country_translation")
+}
+
+// =============================================================================
+// CUSTOMER & ADDRESS (Phase 2.3 - Pilot Migration)
+// =============================================================================
+
+model Customer {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  title        String?
+  firstName    String
+  lastName     String
+  phoneNumber  String?
+  emailAddress String
+
+  // Relations
+  addresses    Address[]
+  orders       Order[]
+
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?   @unique
+
+  // Many-to-Many Relations
+  groups       CustomerGroupMembership[]
+  channels     CustomerChannel[]
+  historyEntries CustomerHistoryEntry[]
+
+  // Custom fields (JSON for flexibility)
+  customFields Json?
+
+  @@index([emailAddress])
+  @@index([deletedAt])
+  @@index([userId])
+  @@map("customer")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  fullName    String   @default("")
+  company     String   @default("")
+  streetLine1 String
+  streetLine2 String   @default("")
+  city        String   @default("")
+  province    String   @default("")
+  postalCode  String   @default("")
+  phoneNumber String   @default("")
+
+  defaultShippingAddress Boolean @default(false)
+  defaultBillingAddress  Boolean @default(false)
+
+  // Relations
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId  String
+
+  country     Country  @relation(fields: [countryId], references: [id])
+  countryId   String
+
+  // Orders using this address
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  // Custom fields
+  customFields Json?
+
+  @@index([customerId])
+  @@index([countryId])
+  @@map("address")
+}
+
+model CustomerGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  customers CustomerGroupMembership[]
+
+  customFields Json?
+
+  @@map("customer_group")
+}
+
+// Join table: Customer <-> CustomerGroup
+model CustomerGroupMembership {
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  groupId    String
+  group      CustomerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, groupId])
+  @@map("customer_group_membership")
+}
+
+// Join table: Customer <-> Channel
+model CustomerChannel {
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  channelId  String
+  channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, channelId])
+  @@map("customer_channel")
+}
+
+// =============================================================================
+// HISTORY ENTRIES
+// =============================================================================
+
+model HistoryEntry {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type      String   // Discriminator: 'customer' or 'order'
+  isPublic  Boolean  @default(false)
+  data      Json
+
+  // Relations
+  administrator Administrator? @relation(fields: [administratorId], references: [id])
+  administratorId String?
+
+  customerHistories CustomerHistoryEntry[]
+  orderHistories    OrderHistoryEntry[]
+
+  @@index([type])
+  @@map("history_entry")
+}
+
+model CustomerHistoryEntry {
+  id        String   @id @default(cuid())
+
+  // Relations
+  historyEntry HistoryEntry @relation(fields: [historyEntryId], references: [id], onDelete: Cascade)
+  historyEntryId String @unique
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+
+  @@index([customerId])
+  @@map("customer_history_entry")
+}
+
+model OrderHistoryEntry {
+  id        String   @id @default(cuid())
+
+  // Relations
+  historyEntry HistoryEntry @relation(fields: [historyEntryId], references: [id], onDelete: Cascade)
+  historyEntryId String @unique
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  @@index([orderId])
+  @@map("order_history_entry")
+}
+
+// =============================================================================
+// ORDER (Minimal definition for relationships)
+// =============================================================================
+
+model Order {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  code              String    @unique
+  state             String
+  active            Boolean   @default(true)
+  orderPlacedAt     DateTime?
+
+  type              String    @default("Regular") // OrderType: Regular, Seller, Aggregate
+
+  // Aggregate order relationships
+  aggregateOrder    Order?    @relation("AggregateOrders", fields: [aggregateOrderId], references: [id])
+  aggregateOrderId  String?
+  sellerOrders      Order[]   @relation("AggregateOrders")
+
+  // Relations
+  customer          Customer? @relation(fields: [customerId], references: [id])
+  customerId        String?
+
+  channels          OrderChannel[]
+  historyEntries    OrderHistoryEntry[]
+
+  // Addresses (stored as JSON for simplicity, can be relations later)
+  shippingAddress   Address?  @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String?
+
+  billingAddress    Address?  @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  String?
+
+  customFields      Json?
+
+  @@index([code])
+  @@index([state])
+  @@index([customerId])
+  @@index([orderPlacedAt])
+  @@index([aggregateOrderId])
+  @@map("order")
+}
+
+// Join table: Order <-> Channel
+model OrderChannel {
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, channelId])
+  @@map("order_channel")
+}
+
+// =============================================================================
+// PRODUCT (Minimal definition for relationships)
+// =============================================================================
+
+model Product {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  enabled   Boolean   @default(true)
+
+  // Relations
+  channels  ProductChannel[]
+
+  customFields Json?
+
+  @@index([deletedAt])
+  @@map("product")
+}
+
+// Join table: Product <-> Channel
+model ProductChannel {
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([productId, channelId])
+  @@map("product_channel")
+}
+
+// =============================================================================
+// NOTES:
+// =============================================================================
+//
+// 1. This is Phase 2.3 (Pilot) schema focusing on Customer + Address
+// 2. Other models (Order, Product, User, etc.) are minimally defined for relations
+// 3. Custom fields use Json type for flexibility (will be refined in Phase 2.7)
+// 4. Soft deletes use deletedAt field (nullable DateTime)
+// 5. All timestamps follow TypeORM convention: createdAt, updatedAt
+// 6. Many-to-many relations use explicit join tables for clarity
+// 7. Index strategy follows TypeORM patterns for compatibility
+// 8. IDs use CUID (Collision-resistant Unique Identifier) by default
+//    - Can be changed to UUID or auto-increment based on EntityIdStrategy
+//
+// TODO for subsequent phases:
+// - Phase 2.4: Complete Product and Order schemas
+// - Phase 2.5: Add remaining 60+ entities
+// - Phase 2.6: Refactor services to use Prisma Client
+// - Phase 2.7: Optimize custom fields system

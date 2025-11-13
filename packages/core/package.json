@@ -28,7 +28,16 @@
         "e2e": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.mts --run",
         "e2e:watch": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.mts",
         "bench": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.bench.ts --run",
-        "ci": "npm run build"
+        "ci": "npm run build",
+        "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+        "prisma:migrate:dev": "prisma migrate dev --schema=./prisma/schema.prisma",
+        "prisma:migrate:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
+        "prisma:migrate:reset": "prisma migrate reset --schema=./prisma/schema.prisma",
+        "prisma:db:pull": "prisma db pull --schema=./prisma/schema.prisma",
+        "prisma:db:push": "prisma db push --schema=./prisma/schema.prisma",
+        "prisma:studio": "prisma studio --schema=./prisma/schema.prisma",
+        "prisma:format": "prisma format --schema=./prisma/schema.prisma",
+        "prisma:validate": "prisma validate --schema=./prisma/schema.prisma"
     },
     "publishConfig": {
         "access": "public"
@@ -49,6 +58,7 @@
         "@nestjs/platform-express": "^11.0.12",
         "@nestjs/terminus": "^11.0.0",
         "@nestjs/typeorm": "^11.0.0",
+        "@prisma/client": "^6.2.0",
         "@vendure/common": "3.5.0",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
@@ -101,6 +111,7 @@
         "glob": "^10.3.10",
         "mysql2": "^3.15.0",
         "pg": "^8.13.1",
+        "prisma": "^6.2.0",
         "rimraf": "^5.0.5",
         "sql.js": "1.13.0",
         "sqlite3": "^5.1.7",
