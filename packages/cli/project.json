@@ -34,6 +34,15 @@
         "cwd": "packages/cli/e2e"
       },
       "dependsOn": ["build"]
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/cli"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^ci"]
     }
   },
   "tags": ["type:application", "scope:cli"]

@@ -34,6 +34,15 @@
         "cwd": "packages/payments-plugin/e2e"
       },
       "dependsOn": ["build"]
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/payments-plugin"
+      },
+      "outputs": ["{projectRoot}/package"],
+      "dependsOn": ["^ci"]
     }
   },
   "tags": ["type:plugin", "scope:payments"]
