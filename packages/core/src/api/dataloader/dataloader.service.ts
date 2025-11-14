@@ -10,6 +10,13 @@ import { Injectable, Scope } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 import DataLoader from 'dataloader';
 
+import { Collection } from '../../entity/collection/collection.entity';
+import { Customer } from '../../entity/customer/customer.entity';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../entity/facet/facet.entity';
+import { Order } from '../../entity/order/order.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { OrmAdapterFactory } from '../../service/adapters/orm-adapter.factory';
 
 /**
@@ -19,25 +26,25 @@ import { OrmAdapterFactory } from '../../service/adapters/orm-adapter.factory';
 @Injectable({ scope: Scope.REQUEST })
 export class DataLoaderService {
     // Customer loaders
-    private customerByIdLoader: DataLoader<ID, any>;
-    private customersByIdsLoader: DataLoader<ID[], any[]>;
+    private customerByIdLoader: DataLoader<ID, Customer | null>;
+    private customersByIdsLoader: DataLoader<ID[], Array<Customer | null>>;
 
     // Product loaders
-    private productByIdLoader: DataLoader<ID, any>;
-    private productsByIdsLoader: DataLoader<ID[], any[]>;
-    private productVariantByIdLoader: DataLoader<ID, any>;
+    private productByIdLoader: DataLoader<ID, Product | null>;
+    private productsByIdsLoader: DataLoader<ID[], Array<Product | null>>;
+    private productVariantByIdLoader: DataLoader<ID, ProductVariant | null>;
 
     // Order loaders
-    private orderByIdLoader: DataLoader<ID, any>;
-    private ordersByCustomerIdLoader: DataLoader<ID, any[]>;
+    private orderByIdLoader: DataLoader<ID, Order | null>;
+    private ordersByCustomerIdLoader: DataLoader<ID, Order[]>;
 
     // Collection loaders
-    private collectionByIdLoader: DataLoader<ID, any>;
-    private collectionsByIdsLoader: DataLoader<ID[], any[]>;
+    private collectionByIdLoader: DataLoader<ID, Collection | null>;
+    private collectionsByIdsLoader: DataLoader<ID[], Array<Collection | null>>;
 
     // Facet loaders
-    private facetByIdLoader: DataLoader<ID, any>;
-    private facetValueByIdLoader: DataLoader<ID, any>;
+    private facetByIdLoader: DataLoader<ID, Facet | null>;
+    private facetValueByIdLoader: DataLoader<ID, FacetValue | null>;
 
     constructor(private readonly ormFactory: OrmAdapterFactory) {
         this.initializeLoaders();
@@ -48,7 +55,7 @@ export class DataLoaderService {
      */
     private initializeLoaders(): void {
         // Customer loaders
-        this.customerByIdLoader = new DataLoader<ID, any>(
+        this.customerByIdLoader = new DataLoader<ID, Customer | null>(
             async (ids: readonly ID[]) => {
                 const adapter = this.ormFactory.getCustomerAdapter();
                 const customers = await Promise.all(ids.map(id => adapter.findOne(id, true)));
@@ -62,16 +69,18 @@ export class DataLoaderService {
             },
         );
 
-        this.customersByIdsLoader = new DataLoader<ID[], any[]>(async (idArrays: readonly ID[][]) => {
-            const adapter = this.ormFactory.getCustomerAdapter();
-            const results = await Promise.all(
-                idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
-            );
-            return results;
-        });
+        this.customersByIdsLoader = new DataLoader<ID[], Array<Customer | null>>(
+            async (idArrays: readonly ID[][]) => {
+                const adapter = this.ormFactory.getCustomerAdapter();
+                const results = await Promise.all(
+                    idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
+                );
+                return results;
+            },
+        );
 
         // Product loaders
-        this.productByIdLoader = new DataLoader<ID, any>(
+        this.productByIdLoader = new DataLoader<ID, Product | null>(
             async (ids: readonly ID[]) => {
                 const adapter = this.ormFactory.getProductAdapter();
                 const products = await Promise.all(ids.map(id => adapter.findOne(id, true)));
@@ -83,30 +92,34 @@ export class DataLoaderService {
             },
         );
 
-        this.productsByIdsLoader = new DataLoader<ID[], any[]>(async (idArrays: readonly ID[][]) => {
-            const adapter = this.ormFactory.getProductAdapter();
-            const results = await Promise.all(
-                idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
-            );
-            return results;
-        });
+        this.productsByIdsLoader = new DataLoader<ID[], Array<Product | null>>(
+            async (idArrays: readonly ID[][]) => {
+                const adapter = this.ormFactory.getProductAdapter();
+                const results = await Promise.all(
+                    idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
+                );
+                return results;
+            },
+        );
 
-        this.productVariantByIdLoader = new DataLoader<ID, any>(async (ids: readonly ID[]) => {
-            // TODO: Implement ProductVariant loader
-            // For now, load through Product adapter
-            const adapter = this.ormFactory.getProductAdapter();
-            const variants = await Promise.all(
-                ids.map(async id => {
-                    // This is a placeholder - need ProductVariant adapter
-                    const product = await adapter.findOne(id, true);
-                    return product?.variants?.[0];
-                }),
-            );
-            return variants;
-        });
+        this.productVariantByIdLoader = new DataLoader<ID, ProductVariant | null>(
+            async (ids: readonly ID[]) => {
+                // TODO: Implement ProductVariant loader
+                // For now, load through Product adapter
+                const adapter = this.ormFactory.getProductAdapter();
+                const variants = await Promise.all(
+                    ids.map(async id => {
+                        // This is a placeholder - need ProductVariant adapter
+                        const product = await adapter.findOne(id, true);
+                        return product?.variants?.[0];
+                    }),
+                );
+                return variants;
+            },
+        );
 
         // Order loaders
-        this.orderByIdLoader = new DataLoader<ID, any>(
+        this.orderByIdLoader = new DataLoader<ID, Order | null>(
             async (ids: readonly ID[]) => {
                 const adapter = this.ormFactory.getOrderAdapter();
                 const orders = await Promise.all(ids.map(id => adapter.findOne(id, true)));
@@ -118,7 +131,7 @@ export class DataLoaderService {
             },
         );
 
-        this.ordersByCustomerIdLoader = new DataLoader<ID, any[]>(async (customerIds: readonly ID[]) => {
+        this.ordersByCustomerIdLoader = new DataLoader<ID, Order[]>(async (customerIds: readonly ID[]) => {
             const adapter = this.ormFactory.getOrderAdapter();
             const orderArrays = await Promise.all(
                 customerIds.map(async customerId => {
@@ -132,7 +145,7 @@ export class DataLoaderService {
         });
 
         // Collection loaders
-        this.collectionByIdLoader = new DataLoader<ID, any>(
+        this.collectionByIdLoader = new DataLoader<ID, Collection | null>(
             async (ids: readonly ID[]) => {
                 const adapter = this.ormFactory.getCollectionAdapter();
                 const collections = await Promise.all(ids.map(id => adapter.findOne(id, true)));
@@ -144,22 +157,24 @@ export class DataLoaderService {
             },
         );
 
-        this.collectionsByIdsLoader = new DataLoader<ID[], any[]>(async (idArrays: readonly ID[][]) => {
-            const adapter = this.ormFactory.getCollectionAdapter();
-            const results = await Promise.all(
-                idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
-            );
-            return results;
-        });
+        this.collectionsByIdsLoader = new DataLoader<ID[], Array<Collection | null>>(
+            async (idArrays: readonly ID[][]) => {
+                const adapter = this.ormFactory.getCollectionAdapter();
+                const results = await Promise.all(
+                    idArrays.map(ids => Promise.all(ids.map(id => adapter.findOne(id, true)))),
+                );
+                return results;
+            },
+        );
 
         // Facet loaders
-        this.facetByIdLoader = new DataLoader<ID, any>(async (ids: readonly ID[]) => {
+        this.facetByIdLoader = new DataLoader<ID, Facet | null>(async (ids: readonly ID[]) => {
             const adapter = this.ormFactory.getFacetAdapter();
             const facets = await Promise.all(ids.map(id => adapter.findOne(id, true)));
             return facets;
         });
 
-        this.facetValueByIdLoader = new DataLoader<ID, any>(async (ids: readonly ID[]) => {
+        this.facetValueByIdLoader = new DataLoader<ID, FacetValue | null>(async (ids: readonly ID[]) => {
             const adapter = this.ormFactory.getFacetAdapter();
             const facetValues = await Promise.all(ids.map(id => adapter.findValueById(id)));
             return facetValues;
@@ -169,77 +184,77 @@ export class DataLoaderService {
     /**
      * Load customer by ID
      */
-    async loadCustomer(id: ID): Promise<any> {
+    async loadCustomer(id: ID): Promise<Customer | null> {
         return this.customerByIdLoader.load(id);
     }
 
     /**
      * Load multiple customers by IDs
      */
-    async loadCustomers(ids: ID[]): Promise<any[]> {
+    async loadCustomers(ids: ID[]): Promise<Array<Customer | null>> {
         return this.customersByIdsLoader.load(ids);
     }
 
     /**
      * Load product by ID
      */
-    async loadProduct(id: ID): Promise<any> {
+    async loadProduct(id: ID): Promise<Product | null> {
         return this.productByIdLoader.load(id);
     }
 
     /**
      * Load multiple products by IDs
      */
-    async loadProducts(ids: ID[]): Promise<any[]> {
+    async loadProducts(ids: ID[]): Promise<Array<Product | null>> {
         return this.productsByIdsLoader.load(ids);
     }
 
     /**
      * Load product variant by ID
      */
-    async loadProductVariant(id: ID): Promise<any> {
+    async loadProductVariant(id: ID): Promise<ProductVariant | null> {
         return this.productVariantByIdLoader.load(id);
     }
 
     /**
      * Load order by ID
      */
-    async loadOrder(id: ID): Promise<any> {
+    async loadOrder(id: ID): Promise<Order | null> {
         return this.orderByIdLoader.load(id);
     }
 
     /**
      * Load orders by customer ID
      */
-    async loadOrdersByCustomer(customerId: ID): Promise<any[]> {
+    async loadOrdersByCustomer(customerId: ID): Promise<Order[]> {
         return this.ordersByCustomerIdLoader.load(customerId);
     }
 
     /**
      * Load collection by ID
      */
-    async loadCollection(id: ID): Promise<any> {
+    async loadCollection(id: ID): Promise<Collection | null> {
         return this.collectionByIdLoader.load(id);
     }
 
     /**
      * Load multiple collections by IDs
      */
-    async loadCollections(ids: ID[]): Promise<any[]> {
+    async loadCollections(ids: ID[]): Promise<Array<Collection | null>> {
         return this.collectionsByIdsLoader.load(ids);
     }
 
     /**
      * Load facet by ID
      */
-    async loadFacet(id: ID): Promise<any> {
+    async loadFacet(id: ID): Promise<Facet | null> {
         return this.facetByIdLoader.load(id);
     }
 
     /**
      * Load facet value by ID
      */
-    async loadFacetValue(id: ID): Promise<any> {
+    async loadFacetValue(id: ID): Promise<FacetValue | null> {
         return this.facetValueByIdLoader.load(id);
     }
 
@@ -282,19 +297,19 @@ export class DataLoaderService {
     /**
      * Prime cache with data (useful when you already have the data)
      */
-    primeCustomer(customer: any): void {
+    primeCustomer(customer: Customer): void {
         if (customer?.id) {
             this.customerByIdLoader.prime(customer.id, customer);
         }
     }
 
-    primeProduct(product: any): void {
+    primeProduct(product: Product): void {
         if (product?.id) {
             this.productByIdLoader.prime(product.id, product);
         }
     }
 
-    primeOrder(order: any): void {
+    primeOrder(order: Order): void {
         if (order?.id) {
             this.orderByIdLoader.prime(order.id, order);
         }

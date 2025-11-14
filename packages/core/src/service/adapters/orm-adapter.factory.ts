@@ -6,7 +6,7 @@
  * @since 3.6.0
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
 
 import { PrismaConfigService } from '../config/prisma-config.service';
 
@@ -28,6 +28,8 @@ import { TaxRatePrismaAdapter } from './tax-rate-prisma.adapter';
  */
 @Injectable()
 export class OrmAdapterFactory {
+    private readonly logger = new Logger(OrmAdapterFactory.name);
+
     constructor(
         private readonly prismaConfig: PrismaConfigService,
         // Prisma adapters
@@ -47,8 +49,7 @@ export class OrmAdapterFactory {
             return this.customerPrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM Customer adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('Customer');
     }
 
     /**
@@ -59,8 +60,7 @@ export class OrmAdapterFactory {
             return this.productPrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM Product adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('Product');
     }
 
     /**
@@ -71,8 +71,7 @@ export class OrmAdapterFactory {
             return this.orderPrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM Order adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('Order');
     }
 
     /**
@@ -83,8 +82,7 @@ export class OrmAdapterFactory {
             return this.taxRatePrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM TaxRate adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('TaxRate');
     }
 
     /**
@@ -95,8 +93,7 @@ export class OrmAdapterFactory {
             return this.collectionPrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM Collection adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('Collection');
     }
 
     /**
@@ -107,7 +104,32 @@ export class OrmAdapterFactory {
             return this.facetPrismaAdapter;
         }
 
-        // TODO: Return TypeORM adapter when implemented
-        throw new Error('TypeORM Facet adapter not yet implemented');
+        return this.throwTypeOrmNotImplemented('Facet');
+    }
+
+    /**
+     * Throw descriptive error when TypeORM adapter is not yet implemented
+     */
+    private throwTypeOrmNotImplemented(entityName: string): never {
+        const errorMessage = [
+            `TypeORM ${entityName} adapter is not yet implemented.`,
+            '',
+            'The Prisma ORM adapters are currently the only available implementation.',
+            'To use Prisma, please configure your Vendure server:',
+            '',
+            '1. Set environment variable: VENDURE_ENABLE_PRISMA=true',
+            '2. Or configure in VendureConfig:',
+            '   {',
+            '     dbConnectionOptions: {',
+            '       enablePrisma: true,',
+            '       ormMode: "prisma"',
+            '     }',
+            '   }',
+            '',
+            `For more information, see the Prisma migration guide in packages/core/PRISMA_MIGRATION.md`,
+        ].join('\n');
+
+        this.logger.error(errorMessage);
+        throw new NotImplementedException(errorMessage);
     }
 }

@@ -57,28 +57,29 @@ export interface FastifyConfig {
 export class VendureFastifyAdapter {
     private readonly fastifyInstance: FastifyInstance;
     private readonly adapter: FastifyAdapter;
+    private readonly config: Required<FastifyConfig>;
 
-    constructor(config: FastifyConfig = {}) {
-        const {
-            enableCompression = true,
-            enableSecurity = true,
-            enableCors = true,
-            bodyLimit = 1048576, // 1MB
-            requestTimeout = 30000, // 30s
-            keepAliveTimeout = 5000, // 5s
-            logger = false,
-            trustProxy = false,
-        } = config;
+    private constructor(config: FastifyConfig = {}) {
+        this.config = {
+            enableCompression: config.enableCompression ?? true,
+            enableSecurity: config.enableSecurity ?? true,
+            enableCors: config.enableCors ?? true,
+            bodyLimit: config.bodyLimit ?? 1048576, // 1MB
+            requestTimeout: config.requestTimeout ?? 30000, // 30s
+            keepAliveTimeout: config.keepAliveTimeout ?? 5000, // 5s
+            logger: config.logger ?? false,
+            trustProxy: config.trustProxy ?? false,
+        };
 
         // Fastify options optimized for performance
         const fastifyOptions: FastifyServerOptions = {
-            logger,
-            bodyLimit,
-            requestTimeout,
-            keepAliveTimeout,
-            trustProxy,
+            logger: this.config.logger,
+            bodyLimit: this.config.bodyLimit,
+            requestTimeout: this.config.requestTimeout,
+            keepAliveTimeout: this.config.keepAliveTimeout,
+            trustProxy: this.config.trustProxy,
             // Disable request logging for better performance
-            disableRequestLogging: !logger,
+            disableRequestLogging: !this.config.logger,
             // Ignore trailing slash for consistent routing
             ignoreTrailingSlash: true,
             // Case-insensitive routing
@@ -92,21 +93,40 @@ export class VendureFastifyAdapter {
         // Create Fastify instance
         this.fastifyInstance = fastify(fastifyOptions);
 
-        // Register plugins asynchronously
-        if (enableCompression) {
-            void this.registerCompression();
-        }
-
-        if (enableSecurity) {
-            void this.registerSecurity();
-        }
-
-        if (enableCors) {
-            void this.registerCors();
-        }
-
         // Create NestJS adapter
         this.adapter = new FastifyAdapter(this.fastifyInstance);
+    }
+
+    /**
+     * Static factory method to create and initialize adapter with all plugins
+     */
+    static async create(config: FastifyConfig = {}): Promise<VendureFastifyAdapter> {
+        const adapter = new VendureFastifyAdapter(config);
+        await adapter.initialize();
+        return adapter;
+    }
+
+    /**
+     * Initialize all plugins asynchronously
+     */
+    private async initialize(): Promise<void> {
+        const plugins: Array<Promise<void>> = [];
+
+        // Register all enabled plugins in parallel
+        if (this.config.enableCompression) {
+            plugins.push(this.registerCompression());
+        }
+
+        if (this.config.enableSecurity) {
+            plugins.push(this.registerSecurity());
+        }
+
+        if (this.config.enableCors) {
+            plugins.push(this.registerCors());
+        }
+
+        // Wait for all plugins to register
+        await Promise.all(plugins);
     }
 
     /**
@@ -232,9 +252,9 @@ export class VendureFastifyAdapter {
 }
 
 /**
- * Factory function to create Fastify adapter
+ * Factory function to create Fastify adapter with all plugins initialized
  */
-export function createFastifyAdapter(config?: FastifyConfig): FastifyAdapter {
-    const vendureFastifyAdapter = new VendureFastifyAdapter(config);
+export async function createFastifyAdapter(config?: FastifyConfig): Promise<FastifyAdapter> {
+    const vendureFastifyAdapter = await VendureFastifyAdapter.create(config);
     return vendureFastifyAdapter.getAdapter();
 }
