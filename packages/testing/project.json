@@ -26,6 +26,15 @@
         "command": "vitest --run",
         "cwd": "packages/testing"
       }
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run build",
+        "cwd": "packages/testing"
+      },
+      "outputs": ["{projectRoot}/lib"],
+      "dependsOn": ["@vendure/common:build", "@vendure/core:build"]
     }
   },
   "tags": ["type:library", "scope:testing"]
