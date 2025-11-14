@@ -42,6 +42,7 @@ model User {
   administrator          Administrator?
   authenticationMethods  AuthenticationMethod[]
   roles                  UserRole[]
+  sessions               Session[]
 
   customFields           Json?
 
@@ -226,6 +227,7 @@ model Zone {
 
   // Relations
   members   ZoneMember[]
+  taxRates  TaxRate[]
 
   customFields Json?
 
@@ -409,6 +411,7 @@ model CustomerGroup {
 
   // Relations
   customers CustomerGroupMembership[]
+  taxRates  TaxRate[]
 
   customFields Json?
 
@@ -992,6 +995,7 @@ model ProductVariant {
   facetValues       ProductVariantFacetValue[]
   channels          ProductVariantChannel[]
   stockLevels       StockLevel[]
+  stockMovements    StockMovement[]
   orderLines        OrderLine[]
   collections       CollectionProductVariant[]
 
@@ -1390,11 +1394,40 @@ model TaxCategory {
 
   productVariants ProductVariant[]
   orderLines   OrderLine[]
+  taxRates     TaxRate[]
 
   customFields Json?
 
   @@index([isDefault])
   @@map("tax_category")
+}
+
+model TaxRate {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  enabled     Boolean  @default(true)
+  value       Float    // Tax rate as percentage (e.g., 20.00 for 20%)
+
+  // Relations
+  category    TaxCategory @relation(fields: [categoryId], references: [id])
+  categoryId  String
+
+  zone        Zone     @relation(fields: [zoneId], references: [id])
+  zoneId      String
+
+  customerGroup CustomerGroup? @relation(fields: [customerGroupId], references: [id])
+  customerGroupId String?
+
+  customFields Json?
+
+  @@index([categoryId])
+  @@index([zoneId])
+  @@index([customerGroupId])
+  @@index([enabled])
+  @@map("tax_rate")
 }
 
 // =============================================================================
@@ -1528,12 +1561,110 @@ model StockLocation {
   name        String   @unique
   description String   @default("")
 
-  stockLevels StockLevel[]
+  stockLevels    StockLevel[]
+  stockMovements StockMovement[]
 
   customFields Json?
 
   @@index([name])
   @@map("stock_location")
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  type        String   // StockMovementType: ADJUSTMENT, ALLOCATION, RELEASE, SALE, CANCELLATION, RETURN
+
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariantId String
+
+  stockLocation    StockLocation @relation(fields: [stockLocationId], references: [id], onDelete: Cascade)
+  stockLocationId  String
+
+  quantity    Int      // Positive for increases, negative for decreases
+
+  // Type-specific fields (stored as JSON for flexibility)
+  // For different stock movement types, different fields are relevant:
+  // - ALLOCATION/RELEASE: orderLineId
+  // - SALE: orderLineId
+  // - CANCELLATION: orderLineId
+  // - RETURN: orderLineId
+  // - ADJUSTMENT: none
+  metadata    Json?    // Stores type-specific data
+
+  customFields Json?
+
+  @@index([productVariantId])
+  @@index([stockLocationId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movement")
+}
+
+// =============================================================================
+// GLOBAL SETTINGS
+// =============================================================================
+
+model GlobalSettings {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Deprecated fields (moved to Channel)
+  availableLanguages String[]
+  trackInventory     Boolean  @default(true)
+  outOfStockThreshold Int     @default(0)
+
+  customFields Json?
+
+  @@map("global_settings")
+}
+
+// =============================================================================
+// SESSION & AUTHENTICATION TOKENS
+// =============================================================================
+
+model Session {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  token       String   @unique
+  expires     DateTime
+  invalidated Boolean  @default(false)
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+
+  // Active order for guest sessions
+  activeOrderId String?
+
+  // Session data (stored as JSON)
+  data        Json?
+
+  @@index([token])
+  @@index([expires])
+  @@index([userId])
+  @@map("session")
+}
+
+model AnonymousSession {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  token       String   @unique
+  expires     DateTime
+
+  // Session data
+  data        Json?
+
+  @@index([token])
+  @@index([expires])
+  @@map("anonymous_session")
 }
 
 // =============================================================================
@@ -1542,23 +1673,62 @@ model StockLocation {
 //
 // Phase 2.3 (Complete): Customer + Address entities
 // Phase 2.4 (Complete): Product, Order, and core e-commerce entities
+// Phase 2.5 (Complete): Tax, Inventory, and System entities
 //
-// Completed Entities (45+ models):
+// Completed Entities (51 models):
+//
+// **Core System:**
 // - User, Role, Administrator, Authentication
+// - Session, AnonymousSession
+// - GlobalSettings
+//
+// **Channels & Regions:**
 // - Channel, Region, Country, Zone
+// - Seller
+//
+// **Customers:**
 // - Customer, Address, CustomerGroup
-// - Order, OrderLine, Payment, Refund, Fulfillment, Promotion
-// - Surcharge, OrderModification, ShippingLine, ShippingMethod
-// - Product, ProductVariant, ProductTranslation, ProductVariantPrice
-// - ProductOption, ProductOptionGroup, ProductAsset
+// - CustomerGroupMembership, CustomerChannel
+// - CustomerHistoryEntry
+//
+// **Orders (15+ models):**
+// - Order, OrderLine, OrderChannel
+// - Payment, Refund
+// - Fulfillment, OrderFulfillment
+// - Promotion, PromotionTranslation, OrderPromotion, PromotionChannel
+// - Surcharge, OrderModification
+// - ShippingLine, ShippingMethod, ShippingMethodTranslation, ShippingMethodChannel
+//
+// **Products (20+ models):**
+// - Product, ProductTranslation, ProductChannel
+// - ProductVariant, ProductVariantTranslation, ProductVariantChannel, ProductVariantPrice
+// - ProductOption, ProductOptionTranslation, ProductOptionGroup, ProductOptionGroupTranslation
+// - ProductAsset, ProductVariantAsset, ProductVariantOption
+// - ProductFacetValue, ProductVariantFacetValue
+//
+// **Assets:**
 // - Asset, AssetTag
-// - Facet, FacetValue
-// - Collection
-// - TaxCategory
+//
+// **Facets:**
+// - Facet, FacetTranslation, FacetChannel
+// - FacetValue, FacetValueTranslation, FacetValueChannel
+//
+// **Collections:**
+// - Collection, CollectionTranslation, CollectionChannel
+// - CollectionAsset, CollectionProductVariant
+//
+// **Tax:**
+// - TaxCategory, TaxRate
+//
+// **Inventory:**
 // - StockLevel, StockLocation
+// - StockMovement
+//
+// **History:**
+// - HistoryEntry, CustomerHistoryEntry, OrderHistoryEntry
 //
 // Design Notes:
-// 1. Custom fields use Json type for flexibility (will be refined later)
+// 1. Custom fields use Json type for flexibility
 // 2. Soft deletes use deletedAt field (nullable DateTime)
 // 3. All timestamps follow TypeORM convention: createdAt, updatedAt
 // 4. Many-to-many relations use explicit join tables for clarity
@@ -1567,11 +1737,20 @@ model StockLocation {
 // 7. Money amounts stored as Int (minor units) to avoid floating point issues
 // 8. Translatable entities use separate translation tables
 // 9. Calculated fields (like Order.total) computed in application layer
-// 10. Complex structures (adjustments, discounts) stored as Json
+// 10. Complex structures (adjustments, discounts, taxLines) stored as Json
+// 11. StockMovement uses single-table approach with type discriminator
+// 12. Session management supports both authenticated and anonymous users
+//
+// Migration Status:
+// ✅ Phase 2.1-2.2: Prisma setup and configuration
+// ✅ Phase 2.3: Customer + Address (with repositories, adapters, tests)
+// ✅ Phase 2.4.1: Product + Order schema design (45+ models)
+// ✅ Phase 2.4.2: Product + Order repositories and adapters
+// ✅ Phase 2.5: Tax, Inventory, Session entities (6 models)
 //
 // TODO for subsequent phases:
-// - Phase 2.5: Add remaining entities (TaxRate, StockMovement, PaymentMethod, etc.)
-// - Phase 2.6: Create Prisma repositories and adapters
-// - Phase 2.7: Refactor services to use Prisma Client
-// - Phase 2.8: Performance testing and optimization
-// - Phase 2.9: Remove TypeORM dependencies
+// - Phase 2.6: Additional repositories and adapters for remaining entities
+// - Phase 2.7: Service layer integration and feature flags
+// - Phase 2.8: Unit tests and integration tests
+// - Phase 2.9: Performance testing and benchmarking
+// - Phase 2.10: Remove TypeORM dependencies
