@@ -36,6 +36,7 @@ const specFileToIgnore = [
     'order-multi-vendor.e2e-spec',
     'auth.e2e-spec',
     'order-line-custom-fields.e2e-spec',
+    'zone.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,
