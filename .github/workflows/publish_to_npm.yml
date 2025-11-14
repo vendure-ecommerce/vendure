@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+      # Ensure npm 11.5.1 or later is installed
+      - name: Update npm
+        run: npm install -g npm@latest
       # Install dependencies without modifying package-lock.json file
       - run: npm install --no-save
       - run: npm run build
