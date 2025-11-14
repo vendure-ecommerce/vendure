@@ -11,7 +11,7 @@
         "cwd": "packages/testing"
       },
       "outputs": ["{projectRoot}/lib"],
-      "dependsOn": ["@vendure/common:build"]
+      "dependsOn": ["@vendure/common:build", "@vendure/core:build"]
     },
     "lint": {
       "executor": "nx:run-commands",
