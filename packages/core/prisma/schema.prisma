@@ -1,0 +1,1756 @@
+// Prisma Schema for Vendure
+// Phase 2: ORM Migration - Pilot Schema (Customer + Address)
+//
+// This schema represents the initial migration of Customer and Address entities
+// from TypeORM to Prisma. Additional entities will be added in subsequent phases.
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../../../node_modules/.prisma/client"
+  previewFeatures = ["multiSchema", "views", "fullTextSearch"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// BASE MODELS (All entities inherit these fields)
+// =============================================================================
+
+// Note: Prisma doesn't support inheritance, so we use a documentation pattern
+// All entities should include: id, createdAt, updatedAt
+
+// =============================================================================
+// USER & AUTHENTICATION
+// =============================================================================
+
+model User {
+  id                     String    @id @default(cuid())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
+
+  identifier             String    @unique
+  verified               Boolean   @default(false)
+  lastLogin              DateTime?
+
+  // Relations
+  customer               Customer?
+  administrator          Administrator?
+  authenticationMethods  AuthenticationMethod[]
+  roles                  UserRole[]
+  sessions               Session[]
+
+  customFields           Json?
+
+  @@index([identifier])
+  @@index([deletedAt])
+  @@map("user")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  code        String   @unique
+  description String
+  permissions String[] // Array of permission codes
+
+  // Relations
+  channels    RoleChannel[]
+  users       UserRole[]
+
+  customFields Json?
+
+  @@map("role")
+}
+
+// Join table: User <-> Role
+model UserRole {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+model Administrator {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  firstName   String
+  lastName    String
+  emailAddress String
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @unique
+
+  customFields Json?
+
+  @@index([emailAddress])
+  @@index([deletedAt])
+  @@map("administrator")
+}
+
+model AuthenticationMethod {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Discriminator for inheritance
+  type      String   // 'native' or 'external'
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  // Native authentication fields
+  identifier       String?
+  passwordHash     String?
+  verificationToken String?
+  passwordResetToken String?
+  identifierChangeToken String?
+  pendingIdentifier String?
+
+  // External authentication fields
+  strategy         String?
+  externalIdentifier String?
+  metadata         Json?
+
+  @@index([userId])
+  @@index([type])
+  @@map("authentication_method")
+}
+
+// =============================================================================
+// CHANNEL
+// =============================================================================
+
+model Channel {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  code            String    @unique
+  token           String    @unique
+  defaultLanguageCode String
+  availableLanguageCodes String[]
+  pricesIncludeTax Boolean  @default(false)
+
+  defaultCurrencyCode String
+  availableCurrencyCodes String[]
+
+  trackInventory  Boolean?
+  outOfStockThreshold Int?
+
+  // Relations
+  customers       CustomerChannel[]
+  orders          OrderChannel[]
+  products        ProductChannel[]
+  productVariants ProductVariantChannel[]
+  productVariantPrices ProductVariantPrice[]
+  roles           RoleChannel[]
+  sellers         ChannelSeller[]
+  promotions      PromotionChannel[]
+  shippingMethods ShippingMethodChannel[]
+  facets          FacetChannel[]
+  facetValues     FacetValueChannel[]
+  collections     CollectionChannel[]
+  orderLineSellerChannels OrderLine[] @relation("OrderLineSellerChannel")
+
+  customFields    Json?
+
+  @@index([code])
+  @@index([token])
+  @@map("channel")
+}
+
+// Join table: Channel <-> Seller
+model ChannelSeller {
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  sellerId  String
+  seller    Seller  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@id([channelId, sellerId])
+  @@map("channel_seller")
+}
+
+// Join table: Role <-> Channel
+model RoleChannel {
+  roleId    String
+  role      Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, channelId])
+  @@map("role_channel")
+}
+
+model Seller {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  channels  ChannelSeller[]
+
+  customFields Json?
+
+  @@map("seller")
+}
+
+// =============================================================================
+// REGION (Country, Province, Zone)
+// =============================================================================
+
+model Zone {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  members   ZoneMember[]
+  taxRates  TaxRate[]
+
+  customFields Json?
+
+  @@map("zone")
+}
+
+model ZoneMember {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Polymorphic relation: Country or Zone
+  entityType String  // 'Country' or 'Zone'
+  entityId   String
+
+  // Relations
+  zone      Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  zoneId    String
+
+  @@index([zoneId])
+  @@index([entityType, entityId])
+  @@map("zone_member")
+}
+
+model Region {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  code        String   @unique
+  type        String   // 'country' or 'province'
+  name        String
+  enabled     Boolean  @default(true)
+
+  // For Province
+  parentId    String?
+  parent      Region?  @relation("RegionHierarchy", fields: [parentId], references: [id])
+  children    Region[] @relation("RegionHierarchy")
+
+  // Relations
+  translations RegionTranslation[]
+
+  customFields Json?
+
+  @@index([code])
+  @@index([type])
+  @@index([parentId])
+  @@map("region")
+}
+
+model RegionTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  // Relations
+  base        Region   @relation(fields: [baseId], references: [id], onDelete: Cascade)
+  baseId      String
+
+  @@unique([languageCode, baseId])
+  @@map("region_translation")
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code      String   @unique
+  name      String
+  enabled   Boolean  @default(true)
+
+  // Relations
+  addresses Address[]
+  translations CountryTranslation[]
+
+  customFields Json?
+
+  @@index([code])
+  @@map("country")
+}
+
+model CountryTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  // Relations
+  base        Country  @relation(fields: [baseId], references: [id], onDelete: Cascade)
+  baseId      String
+
+  @@unique([languageCode, baseId])
+  @@map("country_translation")
+}
+
+// =============================================================================
+// CUSTOMER & ADDRESS (Phase 2.3 - Pilot Migration)
+// =============================================================================
+
+model Customer {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  title        String?
+  firstName    String
+  lastName     String
+  phoneNumber  String?
+  emailAddress String
+
+  // Relations
+  addresses    Address[]
+  orders       Order[]
+
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?   @unique
+
+  // Many-to-Many Relations
+  groups       CustomerGroupMembership[]
+  channels     CustomerChannel[]
+  historyEntries CustomerHistoryEntry[]
+
+  // Custom fields (JSON for flexibility)
+  customFields Json?
+
+  @@index([emailAddress])
+  @@index([deletedAt])
+  @@index([userId])
+  @@map("customer")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  fullName    String   @default("")
+  company     String   @default("")
+  streetLine1 String
+  streetLine2 String   @default("")
+  city        String   @default("")
+  province    String   @default("")
+  postalCode  String   @default("")
+  phoneNumber String   @default("")
+
+  defaultShippingAddress Boolean @default(false)
+  defaultBillingAddress  Boolean @default(false)
+
+  // Relations
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId  String
+
+  country     Country  @relation(fields: [countryId], references: [id])
+  countryId   String
+
+  // Orders using this address
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  // Custom fields
+  customFields Json?
+
+  @@index([customerId])
+  @@index([countryId])
+  @@map("address")
+}
+
+model CustomerGroup {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String   @unique
+
+  // Relations
+  customers CustomerGroupMembership[]
+  taxRates  TaxRate[]
+
+  customFields Json?
+
+  @@map("customer_group")
+}
+
+// Join table: Customer <-> CustomerGroup
+model CustomerGroupMembership {
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  groupId    String
+  group      CustomerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, groupId])
+  @@map("customer_group_membership")
+}
+
+// Join table: Customer <-> Channel
+model CustomerChannel {
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  channelId  String
+  channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([customerId, channelId])
+  @@map("customer_channel")
+}
+
+// =============================================================================
+// HISTORY ENTRIES
+// =============================================================================
+
+model HistoryEntry {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type      String   // Discriminator: 'customer' or 'order'
+  isPublic  Boolean  @default(false)
+  data      Json
+
+  // Relations
+  administrator Administrator? @relation(fields: [administratorId], references: [id])
+  administratorId String?
+
+  customerHistories CustomerHistoryEntry[]
+  orderHistories    OrderHistoryEntry[]
+
+  @@index([type])
+  @@map("history_entry")
+}
+
+model CustomerHistoryEntry {
+  id        String   @id @default(cuid())
+
+  // Relations
+  historyEntry HistoryEntry @relation(fields: [historyEntryId], references: [id], onDelete: Cascade)
+  historyEntryId String @unique
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+
+  @@index([customerId])
+  @@map("customer_history_entry")
+}
+
+model OrderHistoryEntry {
+  id        String   @id @default(cuid())
+
+  // Relations
+  historyEntry HistoryEntry @relation(fields: [historyEntryId], references: [id], onDelete: Cascade)
+  historyEntryId String @unique
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  @@index([orderId])
+  @@map("order_history_entry")
+}
+
+// =============================================================================
+// ORDER (Phase 2.4 - Full Schema)
+// =============================================================================
+
+model Order {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Core fields
+  code              String    @unique
+  state             String
+  active            Boolean   @default(true)
+  orderPlacedAt     DateTime?
+
+  type              String    @default("Regular") // OrderType: Regular, Seller, Aggregate
+
+  // Aggregate order relationships
+  aggregateOrder    Order?    @relation("AggregateOrders", fields: [aggregateOrderId], references: [id])
+  aggregateOrderId  String?
+  sellerOrders      Order[]   @relation("AggregateOrders")
+
+  // Customer relationship
+  customer          Customer? @relation(fields: [customerId], references: [id])
+  customerId        String?
+
+  // Financial fields (stored in cents/minor units)
+  subTotal          Int       // Money amount in minor units
+  subTotalWithTax   Int       // Money amount with tax
+  shipping          Int       @default(0)
+  shippingWithTax   Int       @default(0)
+
+  // Currency and tax
+  currencyCode      String    // CurrencyCode enum
+  taxZoneId         String?
+
+  // Coupon codes
+  couponCodes       String[]  // Array of applied coupon codes
+
+  // Addresses (can be JSON or relations)
+  shippingAddress   Address?  @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String?
+
+  billingAddress    Address?  @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  String?
+
+  // Relations to other entities
+  lines             OrderLine[]
+  surcharges        Surcharge[]
+  payments          Payment[]
+  fulfillments      OrderFulfillment[]
+  promotions        OrderPromotion[]
+  modifications     OrderModification[]
+  shippingLines     ShippingLine[]
+  channels          OrderChannel[]
+  historyEntries    OrderHistoryEntry[]
+
+  customFields      Json?
+
+  @@index([code])
+  @@index([state])
+  @@index([customerId])
+  @@index([orderPlacedAt])
+  @@index([aggregateOrderId])
+  @@index([active])
+  @@map("order")
+}
+
+// OrderLine - Items in an order
+model OrderLine {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+
+  productVariant    ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariantId  String
+
+  taxCategory       TaxCategory? @relation(fields: [taxCategoryId], references: [id])
+  taxCategoryId     String?
+
+  featuredAsset     Asset?    @relation("OrderLineFeaturedAsset", fields: [featuredAssetId], references: [id])
+  featuredAssetId   String?
+
+  shippingLine      ShippingLine? @relation(fields: [shippingLineId], references: [id])
+  shippingLineId    String?
+
+  sellerChannel     Channel?  @relation("OrderLineSellerChannel", fields: [sellerChannelId], references: [id])
+  sellerChannelId   String?
+
+  // Line item details
+  quantity          Int
+
+  // Pricing (in minor units)
+  linePrice         Int       // Unit price * quantity
+  linePriceWithTax  Int
+  unitPrice         Int
+  unitPriceWithTax  Int
+  proratedLinePrice Int       // After order-level discounts
+  proratedLinePriceWithTax Int
+
+  // Discounts and adjustments (stored as JSON)
+  discounts         Json?     // Array of Discount objects
+  taxLines          Json?     // Array of TaxLine objects
+  adjustments       Json?     // Array of Adjustment objects
+
+  // Initial values (before modifications)
+  initialLinePrice  Int
+  initialLinePriceWithTax Int
+
+  customFields      Json?
+
+  @@index([orderId])
+  @@index([productVariantId])
+  @@index([shippingLineId])
+  @@map("order_line")
+}
+
+// Surcharge - Additional charges on an order
+model Surcharge {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+
+  description       String
+  sku               String?
+  listPrice         Int       // Money in minor units
+  listPriceIncludesTax Boolean
+
+  price             Int       // Money in minor units
+  priceWithTax      Int
+  taxRate           Float
+
+  taxLines          Json?     // Array of TaxLine objects
+
+  @@index([orderId])
+  @@map("surcharge")
+}
+
+// Payment - Payment for an order
+model Payment {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+
+  method            String    // Payment method code
+  amount            Int       // Money in minor units
+  state             String    // PaymentState
+  errorMessage      String?
+  transactionId     String?
+  metadata          Json?
+
+  refunds           Refund[]
+
+  customFields      Json?
+
+  @@index([orderId])
+  @@index([state])
+  @@map("payment")
+}
+
+// Refund - Refund for a payment
+model Refund {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  payment           Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId         String
+
+  items             Int       // Total amount refunded
+  shipping          Int       // Shipping amount refunded
+  adjustment        Int       // Adjustment amount
+  total             Int       // Total = items + shipping + adjustment
+
+  method            String?
+  state             String    // RefundState
+  reason            String?
+  transactionId     String?
+  metadata          Json?
+
+  @@index([paymentId])
+  @@map("refund")
+}
+
+// Fulfillment - Fulfillment of order items
+model Fulfillment {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  state             String    // FulfillmentState
+  method            String    // Fulfillment method code
+  trackingCode      String?
+
+  orders            OrderFulfillment[]
+
+  customFields      Json?
+
+  @@index([state])
+  @@map("fulfillment")
+}
+
+// Join table: Order <-> Fulfillment
+model OrderFulfillment {
+  orderId       String
+  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  fulfillmentId String
+  fulfillment   Fulfillment @relation(fields: [fulfillmentId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, fulfillmentId])
+  @@map("order_fulfillment")
+}
+
+// Promotion - Marketing promotions
+model Promotion {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  name              String
+  enabled           Boolean   @default(true)
+  couponCode        String?
+  perCustomerUsageLimit Int?
+  usageLimit        Int?
+
+  startsAt          DateTime?
+  endsAt            DateTime?
+
+  conditions        Json      // Array of promotion conditions
+  actions           Json      // Array of promotion actions
+  priorityScore     Int       @default(0)
+
+  orders            OrderPromotion[]
+  translations      PromotionTranslation[]
+  channels          PromotionChannel[]
+
+  customFields      Json?
+
+  @@index([enabled])
+  @@index([couponCode])
+  @@index([deletedAt])
+  @@map("promotion")
+}
+
+model PromotionTranslation {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  languageCode      String
+  name              String
+  description       String    @default("")
+
+  promotion         Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  promotionId       String
+
+  @@unique([languageCode, promotionId])
+  @@map("promotion_translation")
+}
+
+// Join table: Order <-> Promotion
+model OrderPromotion {
+  orderId       String
+  order         Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  promotionId   String
+  promotion     Promotion  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, promotionId])
+  @@map("order_promotion")
+}
+
+// Join table: Promotion <-> Channel
+model PromotionChannel {
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  channelId   String
+  channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([promotionId, channelId])
+  @@map("promotion_channel")
+}
+
+// OrderModification - Modifications made to orders after placement
+model OrderModification {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+
+  note              String
+  priceChange       Int       // Amount changed (can be negative)
+  isSettled         Boolean   @default(false)
+
+  // Relations
+  payment           Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId         String?   @unique
+  refund            Refund?   @relation(fields: [refundId], references: [id])
+  refundId          String?   @unique
+
+  lines             Json?     // Array of order line modifications
+  surcharges        Json?     // Array of surcharge modifications
+
+  @@index([orderId])
+  @@map("order_modification")
+}
+
+// ShippingLine - Shipping methods applied to an order
+model ShippingLine {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+
+  shippingMethod    ShippingMethod @relation(fields: [shippingMethodId], references: [id])
+  shippingMethodId  String
+
+  listPrice         Int       // Money in minor units
+  listPriceIncludesTax Boolean
+
+  price             Int       // Money in minor units (after discounts)
+  priceWithTax      Int
+  discountedPrice   Int
+  discountedPriceWithTax Int
+
+  discounts         Json?     // Array of Discount objects
+  taxLines          Json?     // Array of TaxLine objects
+
+  orderLines        OrderLine[]
+
+  customFields      Json?
+
+  @@index([orderId])
+  @@index([shippingMethodId])
+  @@map("shipping_line")
+}
+
+// ShippingMethod - Available shipping methods
+model ShippingMethod {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  code              String    @unique
+  name              String
+  description       String    @default("")
+
+  checker           Json      // ShippingEligibilityChecker config
+  calculator        Json      // ShippingCalculator config
+  fulfillmentHandlerCode String
+
+  translations      ShippingMethodTranslation[]
+  channels          ShippingMethodChannel[]
+  shippingLines     ShippingLine[]
+
+  customFields      Json?
+
+  @@index([code])
+  @@index([deletedAt])
+  @@map("shipping_method")
+}
+
+model ShippingMethodTranslation {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  languageCode      String
+  name              String
+  description       String    @default("")
+
+  shippingMethod    ShippingMethod @relation(fields: [shippingMethodId], references: [id], onDelete: Cascade)
+  shippingMethodId  String
+
+  @@unique([languageCode, shippingMethodId])
+  @@map("shipping_method_translation")
+}
+
+// Join table: ShippingMethod <-> Channel
+model ShippingMethodChannel {
+  shippingMethodId String
+  shippingMethod   ShippingMethod @relation(fields: [shippingMethodId], references: [id], onDelete: Cascade)
+
+  channelId        String
+  channel          Channel        @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([shippingMethodId, channelId])
+  @@map("shipping_method_channel")
+}
+
+// Join table: Order <-> Channel
+model OrderChannel {
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, channelId])
+  @@map("order_channel")
+}
+
+// =============================================================================
+// PRODUCT (Phase 2.4 - Full Schema)
+// =============================================================================
+
+model Product {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  enabled           Boolean   @default(true)
+
+  // Featured asset
+  featuredAsset     Asset?    @relation("ProductFeaturedAsset", fields: [featuredAssetId], references: [id])
+  featuredAssetId   String?
+
+  // Relations
+  assets            ProductAsset[]
+  translations      ProductTranslation[]
+  variants          ProductVariant[]
+  optionGroups      ProductOptionGroup[]
+  facetValues       ProductFacetValue[]
+  channels          ProductChannel[]
+
+  customFields      Json?
+
+  @@index([deletedAt])
+  @@index([enabled])
+  @@index([featuredAssetId])
+  @@map("product")
+}
+
+// ProductTranslation - Translatable fields for Product
+model ProductTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+  slug         String
+  description  String   @default("")
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+
+  @@unique([languageCode, productId])
+  @@index([slug])
+  @@map("product_translation")
+}
+
+// ProductVariant - SKU/variant of a product
+model ProductVariant {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  enabled           Boolean   @default(true)
+  sku               String    @unique
+
+  // Product relationship
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId         String
+
+  // Featured asset
+  featuredAsset     Asset?    @relation("ProductVariantFeaturedAsset", fields: [featuredAssetId], references: [id])
+  featuredAssetId   String?
+
+  // Tax category
+  taxCategory       TaxCategory @relation(fields: [taxCategoryId], references: [id])
+  taxCategoryId     String
+
+  // Relations
+  assets            ProductVariantAsset[]
+  translations      ProductVariantTranslation[]
+  prices            ProductVariantPrice[]
+  options           ProductVariantOption[]
+  facetValues       ProductVariantFacetValue[]
+  channels          ProductVariantChannel[]
+  stockLevels       StockLevel[]
+  stockMovements    StockMovement[]
+  orderLines        OrderLine[]
+  collections       CollectionProductVariant[]
+
+  // Calculated fields (managed by application)
+  // Note: trackInventory, outOfStockThreshold, useGlobalOutOfStockThreshold are
+  // typically calculated from Channel settings in the application layer
+
+  customFields      Json?
+
+  @@index([sku])
+  @@index([productId])
+  @@index([deletedAt])
+  @@index([enabled])
+  @@index([taxCategoryId])
+  @@map("product_variant")
+}
+
+// ProductVariantTranslation - Translatable fields for ProductVariant
+model ProductVariantTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  productVariant  ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId String
+
+  @@unique([languageCode, productVariantId])
+  @@map("product_variant_translation")
+}
+
+// ProductVariantPrice - Prices for a variant in different channels/currencies
+model ProductVariantPrice {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  price             Int       // Money in minor units
+  currencyCode      String
+
+  productVariant    ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId  String
+
+  channel           Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId         String
+
+  @@unique([productVariantId, channelId, currencyCode])
+  @@index([productVariantId])
+  @@index([channelId])
+  @@map("product_variant_price")
+}
+
+// ProductAsset - Join table for Product <-> Asset
+model ProductAsset {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assetId     String
+
+  position    Int      @default(0)
+
+  @@unique([productId, assetId])
+  @@index([productId])
+  @@index([assetId])
+  @@map("product_asset")
+}
+
+// ProductVariantAsset - Join table for ProductVariant <-> Asset
+model ProductVariantAsset {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId String
+
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assetId     String
+
+  position    Int      @default(0)
+
+  @@unique([productVariantId, assetId])
+  @@index([productVariantId])
+  @@index([assetId])
+  @@map("product_variant_asset")
+}
+
+// Join table: Product <-> Channel
+model ProductChannel {
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([productId, channelId])
+  @@map("product_channel")
+}
+
+// Join table: ProductVariant <-> Channel
+model ProductVariantChannel {
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  channelId        String
+  channel          Channel        @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([productVariantId, channelId])
+  @@map("product_variant_channel")
+}
+
+// ProductOption - Option values for variants (e.g., "Size: Large")
+model ProductOption {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  code        String
+
+  group       ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+
+  translations ProductOptionTranslation[]
+  variants     ProductVariantOption[]
+
+  customFields Json?
+
+  @@index([code])
+  @@index([groupId])
+  @@index([deletedAt])
+  @@map("product_option")
+}
+
+model ProductOptionTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  option      ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  optionId    String
+
+  @@unique([languageCode, optionId])
+  @@map("product_option_translation")
+}
+
+// ProductOptionGroup - Group of options (e.g., "Size", "Color")
+model ProductOptionGroup {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  code        String
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+
+  options     ProductOption[]
+  translations ProductOptionGroupTranslation[]
+
+  customFields Json?
+
+  @@index([code])
+  @@index([productId])
+  @@index([deletedAt])
+  @@map("product_option_group")
+}
+
+model ProductOptionGroupTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  group       ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+
+  @@unique([languageCode, groupId])
+  @@map("product_option_group_translation")
+}
+
+// Join table: ProductVariant <-> ProductOption
+model ProductVariantOption {
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  optionId         String
+  option           ProductOption  @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([productVariantId, optionId])
+  @@map("product_variant_option")
+}
+
+// =============================================================================
+// ASSET
+// =============================================================================
+
+model Asset {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  type        String   // image, video, binary, etc.
+  mimeType    String
+  width       Int      @default(0)
+  height      Int      @default(0)
+  fileSize    Int
+
+  source      String
+  preview     String
+
+  focalPoint  Json?    // { x: number, y: number }
+
+  tags        AssetTag[]
+  products    ProductAsset[]
+  variants    ProductVariantAsset[]
+  collections CollectionAsset[]
+
+  // Asset can be featured in various entities
+  featuredInProducts    Product[]        @relation("ProductFeaturedAsset")
+  featuredInVariants    ProductVariant[] @relation("ProductVariantFeaturedAsset")
+  featuredInCollections Collection[]     @relation("CollectionFeaturedAsset")
+  featuredInOrderLines  OrderLine[]      @relation("OrderLineFeaturedAsset")
+
+  customFields Json?
+
+  @@index([type])
+  @@index([mimeType])
+  @@map("asset")
+}
+
+// AssetTag - Tags for organizing assets
+model AssetTag {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  value       String   @unique
+
+  assets      Asset[]  @relation(fields: [assetIds], references: [id])
+  assetIds    String[]
+
+  @@index([value])
+  @@map("asset_tag")
+}
+
+// =============================================================================
+// FACET & FACET VALUE (Product attributes/filters)
+// =============================================================================
+
+model Facet {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  isPrivate   Boolean  @default(false)
+  code        String   @unique
+
+  values      FacetValue[]
+  translations FacetTranslation[]
+  channels    FacetChannel[]
+
+  customFields Json?
+
+  @@index([code])
+  @@index([isPrivate])
+  @@map("facet")
+}
+
+model FacetTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  facet       Facet    @relation(fields: [facetId], references: [id], onDelete: Cascade)
+  facetId     String
+
+  @@unique([languageCode, facetId])
+  @@map("facet_translation")
+}
+
+model FacetValue {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  code        String
+
+  facet       Facet    @relation(fields: [facetId], references: [id], onDelete: Cascade)
+  facetId     String
+
+  translations FacetValueTranslation[]
+  products    ProductFacetValue[]
+  variants    ProductVariantFacetValue[]
+  channels    FacetValueChannel[]
+
+  customFields Json?
+
+  @@unique([facetId, code])
+  @@index([code])
+  @@index([facetId])
+  @@map("facet_value")
+}
+
+model FacetValueTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+
+  facetValue  FacetValue @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
+  facetValueId String
+
+  @@unique([languageCode, facetValueId])
+  @@map("facet_value_translation")
+}
+
+// Join table: Product <-> FacetValue
+model ProductFacetValue {
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  facetValueId String
+  facetValue   FacetValue @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
+
+  @@id([productId, facetValueId])
+  @@map("product_facet_value")
+}
+
+// Join table: ProductVariant <-> FacetValue
+model ProductVariantFacetValue {
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  facetValueId     String
+  facetValue       FacetValue     @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
+
+  @@id([productVariantId, facetValueId])
+  @@map("product_variant_facet_value")
+}
+
+// Join table: Facet <-> Channel
+model FacetChannel {
+  facetId   String
+  facet     Facet   @relation(fields: [facetId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([facetId, channelId])
+  @@map("facet_channel")
+}
+
+// Join table: FacetValue <-> Channel
+model FacetValueChannel {
+  facetValueId String
+  facetValue   FacetValue @relation(fields: [facetValueId], references: [id], onDelete: Cascade)
+
+  channelId    String
+  channel      Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([facetValueId, channelId])
+  @@map("facet_value_channel")
+}
+
+// =============================================================================
+// TAX
+// =============================================================================
+
+model TaxCategory {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String   @unique
+  isDefault   Boolean  @default(false)
+
+  productVariants ProductVariant[]
+  orderLines   OrderLine[]
+  taxRates     TaxRate[]
+
+  customFields Json?
+
+  @@index([isDefault])
+  @@map("tax_category")
+}
+
+model TaxRate {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  enabled     Boolean  @default(true)
+  value       Float    // Tax rate as percentage (e.g., 20.00 for 20%)
+
+  // Relations
+  category    TaxCategory @relation(fields: [categoryId], references: [id])
+  categoryId  String
+
+  zone        Zone     @relation(fields: [zoneId], references: [id])
+  zoneId      String
+
+  customerGroup CustomerGroup? @relation(fields: [customerGroupId], references: [id])
+  customerGroupId String?
+
+  customFields Json?
+
+  @@index([categoryId])
+  @@index([zoneId])
+  @@index([customerGroupId])
+  @@index([enabled])
+  @@map("tax_rate")
+}
+
+// =============================================================================
+// COLLECTION (Product groupings)
+// =============================================================================
+
+model Collection {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  isPrivate   Boolean  @default(false)
+  isRoot      Boolean  @default(false)
+  position    Int      @default(0)
+
+  // Tree structure
+  parent      Collection? @relation("CollectionTree", fields: [parentId], references: [id])
+  parentId    String?
+  children    Collection[] @relation("CollectionTree")
+
+  // Featured asset
+  featuredAsset     Asset?  @relation("CollectionFeaturedAsset", fields: [featuredAssetId], references: [id])
+  featuredAssetId   String?
+
+  // Relations
+  assets       CollectionAsset[]
+  translations CollectionTranslation[]
+  filters      Json?      // Array of ConfigurableOperations
+  productVariants CollectionProductVariant[]
+  channels     CollectionChannel[]
+
+  customFields Json?
+
+  @@index([parentId])
+  @@index([isPrivate])
+  @@index([isRoot])
+  @@map("collection")
+}
+
+model CollectionTranslation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  languageCode String
+  name         String
+  slug         String
+  description  String   @default("")
+
+  collection  Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+
+  @@unique([languageCode, collectionId])
+  @@index([slug])
+  @@map("collection_translation")
+}
+
+// Join table: Collection <-> Asset
+model CollectionAsset {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  collection  Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assetId     String
+
+  position    Int      @default(0)
+
+  @@unique([collectionId, assetId])
+  @@index([collectionId])
+  @@index([assetId])
+  @@map("collection_asset")
+}
+
+// Join table: Collection <-> ProductVariant
+model CollectionProductVariant {
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  productVariantId String
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, productVariantId])
+  @@map("collection_product_variant")
+}
+
+// Join table: Collection <-> Channel
+model CollectionChannel {
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  channelId    String
+  channel      Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, channelId])
+  @@map("collection_channel")
+}
+
+// =============================================================================
+// STOCK MANAGEMENT
+// =============================================================================
+
+model StockLevel {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stockOnHand Int      @default(0)
+  stockAllocated Int   @default(0)
+
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariantId String
+
+  stockLocation StockLocation @relation(fields: [stockLocationId], references: [id])
+  stockLocationId String
+
+  @@unique([productVariantId, stockLocationId])
+  @@index([productVariantId])
+  @@index([stockLocationId])
+  @@map("stock_level")
+}
+
+model StockLocation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String   @unique
+  description String   @default("")
+
+  stockLevels    StockLevel[]
+  stockMovements StockMovement[]
+
+  customFields Json?
+
+  @@index([name])
+  @@map("stock_location")
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  type        String   // StockMovementType: ADJUSTMENT, ALLOCATION, RELEASE, SALE, CANCELLATION, RETURN
+
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariantId String
+
+  stockLocation    StockLocation @relation(fields: [stockLocationId], references: [id], onDelete: Cascade)
+  stockLocationId  String
+
+  quantity    Int      // Positive for increases, negative for decreases
+
+  // Type-specific fields (stored as JSON for flexibility)
+  // For different stock movement types, different fields are relevant:
+  // - ALLOCATION/RELEASE: orderLineId
+  // - SALE: orderLineId
+  // - CANCELLATION: orderLineId
+  // - RETURN: orderLineId
+  // - ADJUSTMENT: none
+  metadata    Json?    // Stores type-specific data
+
+  customFields Json?
+
+  @@index([productVariantId])
+  @@index([stockLocationId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movement")
+}
+
+// =============================================================================
+// GLOBAL SETTINGS
+// =============================================================================
+
+model GlobalSettings {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Deprecated fields (moved to Channel)
+  availableLanguages String[]
+  trackInventory     Boolean  @default(true)
+  outOfStockThreshold Int     @default(0)
+
+  customFields Json?
+
+  @@map("global_settings")
+}
+
+// =============================================================================
+// SESSION & AUTHENTICATION TOKENS
+// =============================================================================
+
+model Session {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  token       String   @unique
+  expires     DateTime
+  invalidated Boolean  @default(false)
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+
+  // Active order for guest sessions
+  activeOrderId String?
+
+  // Session data (stored as JSON)
+  data        Json?
+
+  @@index([token])
+  @@index([expires])
+  @@index([userId])
+  @@map("session")
+}
+
+model AnonymousSession {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  token       String   @unique
+  expires     DateTime
+
+  // Session data
+  data        Json?
+
+  @@index([token])
+  @@index([expires])
+  @@map("anonymous_session")
+}
+
+// =============================================================================
+// NOTES:
+// =============================================================================
+//
+// Phase 2.3 (Complete): Customer + Address entities
+// Phase 2.4 (Complete): Product, Order, and core e-commerce entities
+// Phase 2.5 (Complete): Tax, Inventory, and System entities
+//
+// Completed Entities (51 models):
+//
+// **Core System:**
+// - User, Role, Administrator, Authentication
+// - Session, AnonymousSession
+// - GlobalSettings
+//
+// **Channels & Regions:**
+// - Channel, Region, Country, Zone
+// - Seller
+//
+// **Customers:**
+// - Customer, Address, CustomerGroup
+// - CustomerGroupMembership, CustomerChannel
+// - CustomerHistoryEntry
+//
+// **Orders (15+ models):**
+// - Order, OrderLine, OrderChannel
+// - Payment, Refund
+// - Fulfillment, OrderFulfillment
+// - Promotion, PromotionTranslation, OrderPromotion, PromotionChannel
+// - Surcharge, OrderModification
+// - ShippingLine, ShippingMethod, ShippingMethodTranslation, ShippingMethodChannel
+//
+// **Products (20+ models):**
+// - Product, ProductTranslation, ProductChannel
+// - ProductVariant, ProductVariantTranslation, ProductVariantChannel, ProductVariantPrice
+// - ProductOption, ProductOptionTranslation, ProductOptionGroup, ProductOptionGroupTranslation
+// - ProductAsset, ProductVariantAsset, ProductVariantOption
+// - ProductFacetValue, ProductVariantFacetValue
+//
+// **Assets:**
+// - Asset, AssetTag
+//
+// **Facets:**
+// - Facet, FacetTranslation, FacetChannel
+// - FacetValue, FacetValueTranslation, FacetValueChannel
+//
+// **Collections:**
+// - Collection, CollectionTranslation, CollectionChannel
+// - CollectionAsset, CollectionProductVariant
+//
+// **Tax:**
+// - TaxCategory, TaxRate
+//
+// **Inventory:**
+// - StockLevel, StockLocation
+// - StockMovement
+//
+// **History:**
+// - HistoryEntry, CustomerHistoryEntry, OrderHistoryEntry
+//
+// Design Notes:
+// 1. Custom fields use Json type for flexibility
+// 2. Soft deletes use deletedAt field (nullable DateTime)
+// 3. All timestamps follow TypeORM convention: createdAt, updatedAt
+// 4. Many-to-many relations use explicit join tables for clarity
+// 5. Index strategy follows TypeORM patterns for compatibility
+// 6. IDs use CUID by default (configurable to UUID or auto-increment)
+// 7. Money amounts stored as Int (minor units) to avoid floating point issues
+// 8. Translatable entities use separate translation tables
+// 9. Calculated fields (like Order.total) computed in application layer
+// 10. Complex structures (adjustments, discounts, taxLines) stored as Json
+// 11. StockMovement uses single-table approach with type discriminator
+// 12. Session management supports both authenticated and anonymous users
+//
+// Migration Status:
+// ✅ Phase 2.1-2.2: Prisma setup and configuration
+// ✅ Phase 2.3: Customer + Address (with repositories, adapters, tests)
+// ✅ Phase 2.4.1: Product + Order schema design (45+ models)
+// ✅ Phase 2.4.2: Product + Order repositories and adapters
+// ✅ Phase 2.5: Tax, Inventory, Session entities (6 models)
+//
+// TODO for subsequent phases:
+// - Phase 2.6: Additional repositories and adapters for remaining entities
+// - Phase 2.7: Service layer integration and feature flags
+// - Phase 2.8: Unit tests and integration tests
+// - Phase 2.9: Performance testing and benchmarking
+// - Phase 2.10: Remove TypeORM dependencies
