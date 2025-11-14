@@ -32,6 +32,14 @@
         "command": "vitest --run",
         "cwd": "packages/common"
       }
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "cwd": "packages/common"
+      },
+      "outputs": ["{projectRoot}/lib"]
     }
   },
   "tags": ["type:library", "scope:common"]

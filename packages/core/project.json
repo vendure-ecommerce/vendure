@@ -51,6 +51,21 @@
         "cwd": "packages/core"
       },
       "dependsOn": ["build"]
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rimraf dist",
+          "tsc -p ./build/tsconfig.build.json",
+          "tsc -p ./build/tsconfig.cli.json",
+          "ts-node build/copy-static.ts build"
+        ],
+        "parallel": false,
+        "cwd": "packages/core"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["@vendure/common:build"]
     }
   },
   "tags": ["type:library", "scope:core"]
