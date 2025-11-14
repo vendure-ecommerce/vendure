@@ -65,7 +65,7 @@
         "cwd": "packages/core"
       },
       "outputs": ["{projectRoot}/dist"],
-      "dependsOn": ["@vendure/common:build"]
+      "dependsOn": ["@vendure/common:ci"]
     }
   },
   "tags": ["type:library", "scope:core"]

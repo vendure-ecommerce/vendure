@@ -34,7 +34,7 @@
         "cwd": "packages/testing"
       },
       "outputs": ["{projectRoot}/lib"],
-      "dependsOn": ["@vendure/common:build", "@vendure/core:build"]
+      "dependsOn": ["@vendure/common:ci", "@vendure/core:ci"]
     }
   },
   "tags": ["type:library", "scope:testing"]
