@@ -75,6 +75,12 @@ function SortableItem({ id, item, isDisabled, isEditing, onRemove, onEdit, onSav
         }
     }, [isEditing]);
 
+    useEffect(() => {
+        if (item !== editValue) {
+            setEditValue(item);
+        }
+    }, [item]);
+
     return (
         <Badge
             ref={setNodeRef}
@@ -112,12 +118,13 @@ function SortableItem({ id, item, isDisabled, isEditing, onRemove, onEdit, onSav
                     style={{ width: `${Math.max(editValue.length * 8, 60)}px` }}
                 />
             ) : (
-                <span
+                <button
+                    type="button"
                     onClick={!isDisabled ? onEdit : undefined}
                     className={cn(!isDisabled && 'cursor-text hover:underline')}
                 >
                     {item}
-                </span>
+                </button>
             )}
             {!isDisabled && (
                 <button

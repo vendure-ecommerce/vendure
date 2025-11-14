@@ -209,7 +209,6 @@ export function DataTable<TData>({
                 ...pagination,
                 pageIndex: 0,
             });
-            pagination.pageIndex;
         }
         prevColumnFiltersRef.current = columnFilters;
     }, [columnFilters]);
