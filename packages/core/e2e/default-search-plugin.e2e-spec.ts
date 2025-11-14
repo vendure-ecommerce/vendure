@@ -14,7 +14,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { SEARCH_PRODUCTS_ADMIN } from './graphql/admin-definitions';
+import { searchProductsAdminDocument } from './graphql/admin-definitions';
 import {
     AssignProductsToChannelMutation,
     AssignProductsToChannelMutationVariables,
@@ -140,7 +140,7 @@ describe('Default search plugin', () => {
 
     function testProductsAdmin(input: SearchInput) {
         return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-            SEARCH_PRODUCTS_ADMIN,
+            searchProductsAdminDocument,
             { input },
         );
     }
@@ -1651,7 +1651,7 @@ describe('Default search plugin', () => {
                         SearchProductsAdminQuery,
                         SearchProductsAdminQueryVariables
                     >(
-                        SEARCH_PRODUCTS_ADMIN,
+                        searchProductsAdminDocument,
                         {
                             input: { term: 'product', groupByProduct: true },
                         },
@@ -1791,7 +1791,7 @@ describe('Default search plugin', () => {
             describe('search products', () => {
                 function searchInLanguage(languageCode: LanguageCode) {
                     return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                        SEARCH_PRODUCTS_ADMIN,
+                        searchProductsAdminDocument,
                         {
                             input: {
                                 take: 100,
@@ -1900,7 +1900,7 @@ describe('Default search plugin', () => {
             describe('search products grouped by product and sorted by name ASC', () => {
                 function searchInLanguage(languageCode: LanguageCode) {
                     return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                        SEARCH_PRODUCTS_ADMIN,
+                        searchProductsAdminDocument,
                         {
                             input: {
                                 groupByProduct: true,
@@ -2011,7 +2011,7 @@ describe('Default search plugin', () => {
         describe('input escaping', () => {
             function search(term: string) {
                 return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                    SEARCH_PRODUCTS_ADMIN,
+                    searchProductsAdminDocument,
                     {
                         input: { take: 10, term },
                     },
