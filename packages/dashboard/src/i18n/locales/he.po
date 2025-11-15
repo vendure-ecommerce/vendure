@@ -4045,8 +4045,8 @@ msgid "Sets the languages that are available for all channels. Individual channe
 msgstr "מגדיר את השפות הזמינות עבור כל הערוצים. ערוצים בודדים יכולים אז לתמוך בתת-קבוצה של שפות אלה."
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:133
-msgid "Sets the stock level at which variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
-msgstr "מגדיר את רמת המלאי שבה גרסה נחשבת כלא זמינה במלאי. שימוש בערך שלילי מאפשר תמיכה בהזמנה מראש. ניתן לעקוף על ידי גרסאות מוצר."
+msgid "Sets the stock level at which a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
+msgstr "מגדיר את רמת המלאי שבה וריאנט נחשב לאזלת מלאי. שימוש בערך שלילי מאפשר תמיכה בהזמנה מראש. ניתן לעקוף זאת על ידי וריאנטים של מוצר."
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:355
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:373
