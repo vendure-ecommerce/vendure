@@ -103,7 +103,7 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                                     {isVerifying && (
                                         <>
                                             <Loader2 className="animate-spin" />
-                                            Please wait
+                                            <Trans>Please wait</Trans>
                                         </>
                                     )}
                                     {!isVerifying && <Trans>Sign in</Trans>}
