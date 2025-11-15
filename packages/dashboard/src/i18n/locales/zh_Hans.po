@@ -1335,7 +1335,7 @@ msgid "Clear"
 msgstr "清除"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "全部清除"
 
@@ -3174,7 +3174,7 @@ msgstr "不需要支付或退款"
 msgid "No result yet"
 msgstr "尚无结果"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "无结果"

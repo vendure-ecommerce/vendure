@@ -1335,7 +1335,7 @@ msgid "Clear"
 msgstr "נקה"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "נקה הכל"
 
@@ -3174,7 +3174,7 @@ msgstr "לא נדרש תשלום או החזר"
 msgid "No result yet"
 msgstr "עדיין אין תוצאה"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "אין תוצאות"

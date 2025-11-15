@@ -1331,7 +1331,7 @@ msgid "Clear"
 msgstr "Wyczyść"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "Wyczyść wszystko"
 
@@ -3170,7 +3170,7 @@ msgstr "Nie wymagana płatność ani zwrot"
 msgid "No result yet"
 msgstr "Brak wyniku"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Brak wyników"

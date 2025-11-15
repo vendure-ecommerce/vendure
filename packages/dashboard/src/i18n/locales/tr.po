@@ -1335,7 +1335,7 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "Tümünü temizle"
 
@@ -3174,7 +3174,7 @@ msgstr "Ödeme veya iade gerekmiyor"
 msgid "No result yet"
 msgstr "Henüz sonuç yok"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Sonuç yok"
