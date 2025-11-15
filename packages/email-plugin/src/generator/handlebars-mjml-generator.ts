@@ -2,7 +2,6 @@ import dateFormat from 'dateformat';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 
-import { DynamicTemplate } from '../template-loader/template-loader';
 import { InitializedEmailPluginOptions } from '../types';
 
 import { EmailGenerator } from './email-generator';
@@ -24,11 +23,10 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    async generate(from: string, subject: string, template: string | DynamicTemplate, templateVars: any) {
-        const templateString = typeof template === 'function' ? await template() : template;
+    generate(from: string, subject: string, template: string, templateVars: any) {
         const compiledFrom = Handlebars.compile(from, { noEscape: true });
         const compiledSubject = Handlebars.compile(subject);
-        const compiledTemplate = Handlebars.compile(templateString);
+        const compiledTemplate = Handlebars.compile(template);
         // We enable prototype properties here, aware of the security implications
         // described here: https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access
         // This is needed because some Vendure entities use getters on the entity

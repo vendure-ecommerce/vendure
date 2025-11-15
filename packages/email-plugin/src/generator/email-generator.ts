@@ -1,6 +1,5 @@
 import { InjectableStrategy, VendureEvent } from '@vendure/core';
 
-import { DynamicTemplate } from '../template-loader/template-loader';
 import { EmailDetails, EmailPluginOptions } from '../types';
 
 type EmailGeneratorResult = Pick<EmailDetails, 'from' | 'subject' | 'body'>;
@@ -29,7 +28,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
     generate(
         from: string,
         subject: string,
-        body: string | DynamicTemplate,
+        body: string,
         templateVars: { [key: string]: any },
     ): EmailGeneratorResult | Promise<EmailGeneratorResult>;
 }
