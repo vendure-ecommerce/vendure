@@ -1,4 +1,5 @@
 import { graphql } from '@/graphql/graphql';
+import { Trans } from '@lingui/react/macro';
 import { DashboardRouteDefinition, DetailPageButton, ListPage } from '@vendure/dashboard';
 
 const getReviewList = graphql(`
@@ -47,7 +48,7 @@ export const reviewList: DashboardRouteDefinition = {
     component: route => (
         <ListPage
             pageId="review-list"
-            title="Product Reviews"
+            title={<Trans>Product Reviews</Trans>}
             listQuery={getReviewList}
             route={route}
             defaultVisibility={{

@@ -105,7 +105,7 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
 
     const getIconColor = ({ type, data }: HistoryEntryItem) => {
         const success = 'bg-success text-success-foreground';
-        const destructive = 'bg-danger text-danger-foreground';
+        const destructive = 'bg-destructive text-destructive-foreground';
         const regular = 'bg-muted text-muted-foreground';
 
         if (type === 'ORDER_PAYMENT_TRANSITION' && data.to === 'Settled') {

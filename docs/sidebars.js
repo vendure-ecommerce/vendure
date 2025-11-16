@@ -177,6 +177,7 @@ const sidebars = {
                 'guides/extending-the-dashboard/alerts/index',
                 'guides/extending-the-dashboard/data-fetching/index',
                 'guides/extending-the-dashboard/theming/index',
+                'guides/extending-the-dashboard/localization/index',
                 'guides/extending-the-dashboard/deployment/index',
                 'guides/extending-the-dashboard/tech-stack/index',
                 'guides/extending-the-dashboard/migration/index',

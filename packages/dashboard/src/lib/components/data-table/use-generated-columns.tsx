@@ -163,7 +163,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id, enableColumnFilter: false }));
+            finalColumns.push(columnHelper.accessor(id as any, { enableColumnFilter: false, ...column, id }));
         }
 
         if (defaultColumnOrder) {

@@ -127,7 +127,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
     return (
         <Popover>
             <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0" side="bottom" align="start">
+            <PopoverContent className="w-[200px] p-0" side="bottom" align="start" onWheel={(e) => e.stopPropagation()}>
                 {(showSearch === true || items.length > 10) && (
                     <div className="p-2">
                         <Input

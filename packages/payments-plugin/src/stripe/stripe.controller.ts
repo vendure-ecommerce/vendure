@@ -36,7 +36,7 @@ export class StripeController {
         private requestContextService: RequestContextService,
         private connection: TransactionalConnection,
         private channelService: ChannelService,
-    ) { }
+    ) {}
 
     @Post('stripe')
     async webhook(
@@ -107,7 +107,10 @@ export class StripeController {
                 return;
             }
 
-            if (order.state !== 'ArrangingPayment') {
+            if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
+                // The stripe plugin based on https://github.com/vendure-ecommerce/vendure/pull/3624 can export the
+                // StripeService to support additional payment flows where state can be ArrangingAdditionalPayment.
+
                 // Orders can switch channels (e.g., global to UK store), causing lookups by the original
                 // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
                 // See https://github.com/vendure-ecommerce/vendure/issues/3072
@@ -124,8 +127,12 @@ export class StripeController {
                 // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
                     const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-                    const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
-                    
+                    const ctxWithDefaultChannel = await this.createContext(
+                        defaultChannel.token,
+                        languageCode,
+                        request,
+                    );
+
                     transitionToStateResult = await this.orderService.transitionToState(
                         ctxWithDefaultChannel,
                         orderId,
