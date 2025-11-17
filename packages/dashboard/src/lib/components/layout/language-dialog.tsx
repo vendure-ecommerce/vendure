@@ -23,7 +23,6 @@ export function LanguageDialog() {
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
     // Map and sort languages by their formatted names
-
     const sortedLanguages = useMemo(
         () =>
             availableLanguages
@@ -35,7 +34,18 @@ export function LanguageDialog() {
         [availableLanguages, formatLanguageName],
     );
 
-    const orderedAvailableLocales = availableLocales.slice().sort((a, b) => a.localeCompare(b));
+    // Map and sort locales by their formatted region names
+    const sortedLocales = useMemo(
+        () =>
+            availableLocales
+                .map(code => ({
+                    code,
+                    label: formatRegionName(code),
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)),
+        [availableLocales, formatRegionName],
+    );
+
     const handleLanguageChange = async (value: string) => {
         setDisplayLanguage(value);
         void loadAndActivateLocale(value);
@@ -76,10 +86,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a locale" />
                         </SelectTrigger>
                         <SelectContent>
-                            {orderedAvailableLocales.map(locale => (
-                                <SelectItem key={locale} value={locale} className="flex gap-1">
-                                    <span className="uppercase text-muted-foreground">{locale}</span>
-                                    <span>{formatRegionName(locale)}</span>
+                            {sortedLocales.map(({ code, label }) => (
+                                <SelectItem key={code} value={code} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{code}</span>
+                                    <span>{label}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
