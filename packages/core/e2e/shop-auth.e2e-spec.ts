@@ -9,32 +9,34 @@ import {
     EventBusModule,
     IdentifierChangeEvent,
     IdentifierChangeRequestEvent,
-    mergeConfig,
     PasswordResetEvent,
     PasswordValidationStrategy,
     RequestContext,
     VendurePlugin,
+    mergeConfig,
 } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { ErrorResultGuard, createErrorResultGuard, createTestEnvironment } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import path from 'path';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { Mock, afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { PasswordValidationError } from '../src/common/error/generated-graphql-shop-errors';
 
-import { CurrentUserShopFragment } from './graphql/generated-e2e-shop-types';
-import { ResultOf } from './graphql/graphql-admin';
+// import { CurrentUserShopFragment } from './graphql/generated-e2e-shop-types';
+
+import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
+    MeDocument,
     createAdministratorDocument,
     createRoleDocument,
     getCustomerDocument,
     getCustomerHistoryDocument,
     getCustomerListDocument,
-    MeDocument,
 } from './graphql/shared-definitions';
 import {
+    currentUserFragmentDocument,
     getActiveCustomerDocument,
     refreshTokenDocument,
     registerAccountDocument,
@@ -76,6 +78,8 @@ class TestEmailPlugin implements OnModuleInit {
 const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard(
     input => input.success != null,
 );
+
+type CurrentUserShopFragment = FragmentOf<typeof currentUserFragmentDocument>;
 
 const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createErrorResultGuard(
     input => input.identifier != null,
@@ -425,7 +429,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertSuccess(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.identifier).toBe('test2@test.com');
-            const { activeCustomer } = await shopClient.query(getActiveCustomerDocument);
+            await shopClient.query(getActiveCustomerDocument);
         });
     });
 
@@ -755,7 +759,10 @@ describe('Shop auth & accounts', () => {
         });
     });
 
-    async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
+    async function assertRequestAllowed<V extends Record<string, any>>(
+        operation: DocumentNode,
+        variables?: V,
+    ) {
         try {
             const status = await shopClient.queryStatus(operation, variables);
             expect(status).toBe(200);
@@ -769,7 +776,10 @@ describe('Shop auth & accounts', () => {
         }
     }
 
-    async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
+    async function assertRequestForbidden<V extends Record<string, any>>(
+        operation: DocumentNode,
+        variables: V,
+    ) {
         try {
             const status = await shopClient.query(operation, variables);
             fail('Should have thrown');
