@@ -1,6 +1,8 @@
 import gql from 'graphql-tag';
 
-export const SEARCH_PRODUCTS_ADMIN = gql`
+import { graphql } from './graphql-admin';
+
+export const searchProductsAdminDocument = graphql(`
     query SearchProductsAdmin($input: SearchInput!) {
         search(input: $input) {
             totalItems
@@ -16,9 +18,9 @@ export const SEARCH_PRODUCTS_ADMIN = gql`
             }
         }
     }
-`;
+`);
 
-export const GET_ORDER_WITH_SELLER_ORDERS = gql`
+export const getOrderWithSellerOrdersDocument = gql`
     query GetOrderWithSellerOrders($id: ID!) {
         order(id: $id) {
             id
