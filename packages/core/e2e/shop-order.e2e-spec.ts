@@ -37,10 +37,18 @@ import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ErrorCode, RemoveItemFromOrderDocument } from './graphql/generated-e2e-shop-types';
 import {
     attemptLoginDocument,
+    cancelOrderDocument,
+    createShippingMethodDocument,
+    deleteProductDocument,
+    deleteProductVariantDocument,
+    deleteShippingMethodDocument,
     getCountryListDocument,
     getCustomerDocument,
     getCustomerListDocument,
+    getProductWithVariantsDocument,
+    getShippingMethodListDocument,
     updateCountryDocument,
+    updateProductDocument,
     updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
@@ -1356,10 +1364,7 @@ describe('Shop orders', () => {
         });
 
         it('sets OrderLine.featuredAsset to that of ProductVariant if defined', async () => {
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(getProductWithVariantsDocument, {
                 id: 'T_4',
             });
             const variantWithFeaturedAsset = product?.variants.find(v => !!v.featuredAsset);
@@ -1383,10 +1388,7 @@ describe('Shop orders', () => {
         });
 
         it('sets OrderLine.featuredAsset to that of Product if ProductVariant has no featuredAsset', async () => {
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(getProductWithVariantsDocument, {
                 id: 'T_4',
             });
             const variantWithoutFeaturedAsset = product?.variants.find(v => !v.featuredAsset);
@@ -2154,10 +2156,7 @@ describe('Shop orders', () => {
             await setShippingOnActiveOrder();
 
             // attempt to log in and merge the guest order with the existing order
-            const { login } = await shopClient.query<
-                Codegen.AttemptLoginMutation,
-                Codegen.AttemptLoginMutationVariables
-            >(ATTEMPT_LOGIN, {
+            const { login } = await shopClient.query(attemptLoginDocument, {
                 username: customers[2].emailAddress,
                 password: 'test',
             });
@@ -2345,10 +2344,7 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product is disabled',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
+                await adminClient.query(updateProductDocument, {
                     input: {
                         id: bonsaiProductId,
                         enabled: false,
@@ -2368,10 +2364,7 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product variant is disabled',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
+                await adminClient.query(updateProductDocument, {
                     input: {
                         id: bonsaiProductId,
                         enabled: true,
@@ -2401,10 +2394,7 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product is deleted',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.DeleteProductMutation,
-                    Codegen.DeleteProductMutationVariables
-                >(DELETE_PRODUCT, {
+                await adminClient.query(deleteProductDocument, {
                     id: bonsaiProductId,
                 });
 
@@ -2420,10 +2410,7 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product variant is deleted',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.DeleteProductVariantMutation,
-                    Codegen.DeleteProductVariantMutationVariables
-                >(DELETE_PRODUCT_VARIANT, {
+                await adminClient.query(deleteProductVariantDocument, {
                     id: bonsaiVariantId,
                 });
 
@@ -2454,12 +2441,9 @@ describe('Shop orders', () => {
             orderResultGuard.assertSuccess(addItemToOrder);
             orderWithDeletedProductVariantId = addItemToOrder.id;
 
-            await adminClient.query<Codegen.DeleteProductMutation, Codegen.DeleteProductMutationVariables>(
-                DELETE_PRODUCT,
-                {
-                    id: orchidProductId,
-                },
-            );
+            await adminClient.query(deleteProductDocument, {
+                id: orchidProductId,
+            });
 
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
@@ -2477,10 +2461,7 @@ describe('Shop orders', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1567
         it('allows transitioning to Cancelled with deleted variant', async () => {
-            const { cancelOrder } = await adminClient.query<
-                Codegen.CancelOrderMutation,
-                Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            const { cancelOrder } = await adminClient.query(cancelOrderDocument, {
                 input: {
                     orderId: orderWithDeletedProductVariantId,
                 },
@@ -2499,13 +2480,9 @@ describe('Shop orders', () => {
 
         beforeAll(async () => {
             // First we will remove all ShippingMethods and set up 2 specialized ones
-            const { shippingMethods } =
-                await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+            const { shippingMethods } = await adminClient.query(getShippingMethodListDocument);
             for (const method of shippingMethods.items) {
-                await adminClient.query<
-                    Codegen.DeleteShippingMethodMutation,
-                    Codegen.DeleteShippingMethodMutationVariables
-                >(DELETE_SHIPPING_METHOD, {
+                await adminClient.query(deleteShippingMethodDocument, {
                     id: method.id,
                 });
             }
@@ -2536,14 +2513,14 @@ describe('Shop orders', () => {
             const result1 = await adminClient.query<
                 Codegen.CreateShippingMethodMutation,
                 Codegen.CreateShippingMethodMutationVariables
-            >(CREATE_SHIPPING_METHOD, {
+            >(createShippingMethodDocument, {
                 input: createCountryCodeShippingMethodInput('GB'),
             });
             GBShippingMethodId = result1.createShippingMethod.id;
             const result2 = await adminClient.query<
                 Codegen.CreateShippingMethodMutation,
                 Codegen.CreateShippingMethodMutationVariables
-            >(CREATE_SHIPPING_METHOD, {
+            >(createShippingMethodDocument, {
                 input: createCountryCodeShippingMethodInput('AT'),
             });
             ATShippingMethodId = result2.createShippingMethod.id;
@@ -2621,7 +2598,7 @@ describe('Shop orders', () => {
             const { createShippingMethod } = await adminClient.query<
                 CreateShippingMethod.Mutation,
                 CreateShippingMethod.Variables
-            >(CREATE_SHIPPING_METHOD, {
+            >(createShippingMethodDocument, {
                 input: {
                     code: 'min-price-shipping',
                     translations: [

@@ -941,3 +941,123 @@ export const getActiveShippingMethodsDocument = graphql(`
         }
     }
 `);
+
+export const getCollectionShopDocument = graphql(`
+    query GetCollectionShop($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
+            id
+            name
+            slug
+            description
+            parent {
+                id
+                name
+            }
+            children {
+                id
+                name
+            }
+        }
+    }
+`);
+
+export const disableProductDocument = graphql(`
+    mutation DisableProduct($id: ID!) {
+        updateProduct(input: { id: $id, enabled: false }) {
+            id
+        }
+    }
+`);
+
+export const getCollectionVariantsDocument = graphql(`
+    query GetCollectionVariants($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
+            id
+            productVariants {
+                items {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const getCollectionListDocument = graphql(`
+    query GetCollectionList {
+        collections {
+            items {
+                id
+                name
+            }
+        }
+    }
+`);
+
+export const getProductFacetValuesDocument = graphql(`
+    query GetProductFacetValues($id: ID!) {
+        product(id: $id) {
+            id
+            name
+            facetValues {
+                name
+            }
+        }
+    }
+`);
+
+export const getProductVariantFacetValuesDocument = graphql(`
+    query GetVariantFacetValues($id: ID!) {
+        product(id: $id) {
+            id
+            name
+            variants {
+                id
+                facetValues {
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const getProductsTake3Document = graphql(`
+    query GetProductsTake3 {
+        products(options: { take: 3 }) {
+            items {
+                id
+            }
+        }
+    }
+`);
+
+export const getProduct1Document = graphql(`
+    query GetProduct1 {
+        product(id: "T_1") {
+            id
+        }
+    }
+`);
+
+export const getProduct2VariantsDocument = graphql(`
+    query GetProduct2Variants {
+        product(id: "T_2") {
+            id
+            variants {
+                id
+                name
+            }
+        }
+    }
+`);
+
+export const getProductCollectionDocument = graphql(`
+    query GetProductCollection {
+        product(id: "T_12") {
+            collections {
+                id
+                name
+            }
+        }
+    }
+`);
