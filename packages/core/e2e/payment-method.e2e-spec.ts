@@ -17,7 +17,7 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, DeletionResult } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ErrorCode } from './graphql/generated-e2e-shop-types';
-import { CREATE_CHANNEL } from './graphql/shared-definitions';
+import { createChannelDocument } from './graphql/shared-definitions';
 import {
     activePaymentMethodsQueryDocument,
     addItemToOrderDocument,
@@ -324,7 +324,7 @@ describe('PaymentMethod resolver', () => {
 
         beforeAll(async () => {
             await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-                CREATE_CHANNEL,
+                createChannelDocument,
                 {
                     input: {
                         code: 'second-channel',
@@ -338,7 +338,7 @@ describe('PaymentMethod resolver', () => {
                 },
             );
             await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-                CREATE_CHANNEL,
+                createChannelDocument,
                 {
                     input: {
                         code: 'third-channel',

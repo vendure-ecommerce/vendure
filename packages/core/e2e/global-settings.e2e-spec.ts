@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { GLOBAL_SETTINGS_FRAGMENT } from './graphql/fragments';
 import {
@@ -14,7 +14,7 @@ import {
     UpdateGlobalSettingsMutation,
     UpdateGlobalSettingsMutationVariables,
 } from './graphql/generated-e2e-admin-types';
-import { UPDATE_GLOBAL_SETTINGS } from './graphql/shared-definitions';
+import { updateGlobalSettingsDocument } from './graphql/shared-definitions';
 
 describe('GlobalSettings resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -39,7 +39,7 @@ describe('GlobalSettings resolver', () => {
         });
         await adminClient.asSuperAdmin();
         await adminClient.query<UpdateGlobalSettingsMutation, UpdateGlobalSettingsMutationVariables>(
-            UPDATE_GLOBAL_SETTINGS,
+            updateGlobalSettingsDocument,
             {
                 input: {
                     trackInventory: false,
@@ -94,7 +94,7 @@ describe('GlobalSettings resolver', () => {
             const { updateGlobalSettings } = await adminClient.query<
                 UpdateGlobalSettingsMutation,
                 UpdateGlobalSettingsMutationVariables
-            >(UPDATE_GLOBAL_SETTINGS, {
+            >(updateGlobalSettingsDocument, {
                 input: {
                     availableLanguages: [LanguageCode.zh],
                 },
@@ -110,7 +110,7 @@ describe('GlobalSettings resolver', () => {
             const { updateGlobalSettings } = await adminClient.query<
                 UpdateGlobalSettingsMutation,
                 UpdateGlobalSettingsMutationVariables
-            >(UPDATE_GLOBAL_SETTINGS, {
+            >(updateGlobalSettingsDocument, {
                 input: {
                     availableLanguages: [LanguageCode.en, LanguageCode.zh],
                     trackInventory: true,

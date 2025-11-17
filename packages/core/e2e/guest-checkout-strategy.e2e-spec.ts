@@ -28,7 +28,7 @@ import { AlreadyLoggedInError } from '../src/common/error/generated-graphql-shop
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { getCustomerListDocument } from './graphql/shared-definitions';
 import { addItemToOrderDocument, setCustomerDocument } from './graphql/shop-definitions';
 
 class TestGuestCheckoutStrategy implements GuestCheckoutStrategy {
@@ -109,7 +109,7 @@ describe('Order taxes', () => {
             customerCount: 2,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 

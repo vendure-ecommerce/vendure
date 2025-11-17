@@ -15,13 +15,6 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
-import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    CREATE_CHANNEL,
-    GET_CUSTOMER_LIST,
-    GET_ORDERS_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-} from './graphql/shared-definitions';
 import { addItemToOrderDocument, GET_ORDER_SHOP, getActiveOrderDocument } from './graphql/shop-definitions';
 
 describe('Channelaware orders', () => {

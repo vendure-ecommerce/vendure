@@ -12,10 +12,10 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { GetProductListQuery, GetProductListQueryVariables } from './graphql/generated-e2e-admin-types';
-import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
+import { getProductListDocument } from './graphql/shared-definitions';
 
 describe('UuidIdStrategy', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -38,7 +38,7 @@ describe('UuidIdStrategy', () => {
 
     it('uses uuids', async () => {
         const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
-            GET_PRODUCT_LIST,
+            getProductListDocument,
             {
                 options: {
                     take: 1,

@@ -15,7 +15,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ErrorCode, LanguageCode } from './graphql/generated-e2e-shop-types';
-import { CREATE_SHIPPING_METHOD } from './graphql/shared-definitions';
+import { createShippingMethodDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
     adjustItemQuantityDocument,
@@ -106,7 +106,7 @@ describe('ShippingMethod eligibility', () => {
         const result1 = await adminClient.query<
             Codegen.CreateShippingMethodMutation,
             Codegen.CreateShippingMethodMutationVariables
-        >(CREATE_SHIPPING_METHOD, {
+        >(createShippingMethodDocument, {
             input: {
                 code: 'single-line',
                 fulfillmentHandler: manualFulfillmentHandler.code,
@@ -128,7 +128,7 @@ describe('ShippingMethod eligibility', () => {
         const result2 = await adminClient.query<
             Codegen.CreateShippingMethodMutation,
             Codegen.CreateShippingMethodMutationVariables
-        >(CREATE_SHIPPING_METHOD, {
+        >(createShippingMethodDocument, {
             input: {
                 code: 'multi-line',
                 fulfillmentHandler: manualFulfillmentHandler.code,
@@ -150,7 +150,7 @@ describe('ShippingMethod eligibility', () => {
         const result3 = await adminClient.query<
             Codegen.CreateShippingMethodMutation,
             Codegen.CreateShippingMethodMutationVariables
-        >(CREATE_SHIPPING_METHOD, {
+        >(createShippingMethodDocument, {
             input: {
                 code: 'optimized',
                 fulfillmentHandler: manualFulfillmentHandler.code,

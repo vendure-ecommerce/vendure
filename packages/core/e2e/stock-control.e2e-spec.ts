@@ -35,10 +35,10 @@ import {
     CREATE_FULFILLMENT,
     GET_ORDER,
     GET_STOCK_MOVEMENT,
-    GET_STOCK_MOVEMENT_BY_TYPE,
-    SETTLE_PAYMENT,
-    UPDATE_GLOBAL_SETTINGS,
-    UPDATE_PRODUCT_VARIANTS,
+    getStockMovementByTypeDocument,
+    settlePaymentDocument,
+    updateGlobalSettingsDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -116,7 +116,7 @@ describe('Stock control', () => {
         const { product } = await adminClient.query<
             Codegen.GetStockMovementByTypeQuery,
             Codegen.GetStockMovementByTypeQueryVariables
-        >(GET_STOCK_MOVEMENT_BY_TYPE, { id: productId, type });
+        >(getStockMovementByTypeDocument, { id: productId, type });
         return product;
     }
 
@@ -155,7 +155,7 @@ describe('Stock control', () => {
         await adminClient.query<
             Codegen.UpdateGlobalSettingsMutation,
             Codegen.UpdateGlobalSettingsMutationVariables
-        >(UPDATE_GLOBAL_SETTINGS, {
+        >(updateGlobalSettingsDocument, {
             input: {
                 trackInventory: false,
             },
@@ -627,7 +627,7 @@ describe('Stock control', () => {
             await adminClient.query<
                 Codegen.UpdateGlobalSettingsMutation,
                 Codegen.UpdateGlobalSettingsMutationVariables
-            >(UPDATE_GLOBAL_SETTINGS, {
+            >(updateGlobalSettingsDocument, {
                 input: {
                     trackInventory: true,
                     outOfStockThreshold: -5,
@@ -637,7 +637,7 @@ describe('Stock control', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_1',
@@ -844,7 +844,7 @@ describe('Stock control', () => {
 
         it('does not re-allocate stock when transitioning Payment from Authorized -> Settled', async () => {
             await adminClient.query<Codegen.SettlePaymentMutation, Codegen.SettlePaymentMutationVariables>(
-                SETTLE_PAYMENT,
+                settlePaymentDocument,
                 {
                     id: order.id,
                 },
@@ -979,7 +979,7 @@ describe('Stock control', () => {
             const { updateProductVariants } = await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_4',
@@ -1023,7 +1023,7 @@ describe('Stock control', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: variant1Id,
@@ -1079,7 +1079,7 @@ describe('Stock control', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: variant5Id,
@@ -1139,7 +1139,7 @@ describe('Stock control', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: variant5Id,
@@ -1200,7 +1200,7 @@ describe('Stock control', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: variant7Id,
@@ -1223,7 +1223,7 @@ describe('Stock control', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: variant7Id,

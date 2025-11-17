@@ -17,22 +17,6 @@ import {
     GetFacetWithValueListDocument,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    CREATE_CHANNEL,
-    CREATE_FACET,
-    CREATE_FACET_VALUE,
-    GET_FACET_LIST,
-    GET_FACET_LIST_SIMPLE,
-    GET_FACET_VALUE,
-    GET_FACET_VALUES,
-    GET_FACET_WITH_VALUES,
-    GET_PRODUCT_WITH_VARIANTS,
-    UPDATE_FACET,
-    UPDATE_FACET_VALUE,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */

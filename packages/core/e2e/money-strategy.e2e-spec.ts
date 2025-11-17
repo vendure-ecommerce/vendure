@@ -11,7 +11,7 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { SortOrder } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
-import { GET_PRODUCT_VARIANT_LIST } from './graphql/shared-definitions';
+import { getProductVariantListDocument } from './graphql/shared-definitions';
 import { addItemToOrderDocument } from './graphql/shop-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -87,7 +87,7 @@ describe('Custom MoneyStrategy', () => {
         const { productVariants } = await adminClient.query<
             Codegen.GetProductVariantListQuery,
             Codegen.GetProductVariantListQueryVariables
-        >(GET_PRODUCT_VARIANT_LIST, {
+        >(getProductVariantListDocument, {
             options: {
                 sort: {
                     price: SortOrder.ASC,

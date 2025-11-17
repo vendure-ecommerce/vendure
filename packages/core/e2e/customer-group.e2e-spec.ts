@@ -4,23 +4,21 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { HistoryEntryType } from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-shop-types';
 import {
-    ADD_CUSTOMERS_TO_GROUP,
-    CREATE_CUSTOMER_GROUP,
-    DELETE_CUSTOMER,
-    DELETE_CUSTOMER_GROUP,
-    GET_CUSTOMER_GROUP,
-    GET_CUSTOMER_GROUPS,
-    GET_CUSTOMER_HISTORY,
-    GET_CUSTOMER_LIST,
-    GET_CUSTOMER_WITH_GROUPS,
-    REMOVE_CUSTOMERS_FROM_GROUP,
-    UPDATE_CUSTOMER_GROUP,
+    addCustomersToGroupDocument,
+    createCustomerGroupDocument,
+    deleteCustomerDocument,
+    getCustomerGroupDocument,
+    getCustomerHistoryDocument,
+    getCustomerListDocument,
+    getCustomerWithGroupsDocument,
+    removeCustomersFromGroupDocument,
+    updateCustomerGroupDocument,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
@@ -37,7 +35,7 @@ describe('CustomerGroup resolver', () => {
             customerCount: 5,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -49,7 +47,7 @@ describe('CustomerGroup resolver', () => {
         const { createCustomerGroup } = await adminClient.query<
             Codegen.CreateCustomerGroupMutation,
             Codegen.CreateCustomerGroupMutationVariables
-        >(CREATE_CUSTOMER_GROUP, {
+        >(createCustomerGroupDocument, {
             input: {
                 name: 'group 1',
                 customerIds: [customers[0].id, customers[1].id],
@@ -67,7 +65,7 @@ describe('CustomerGroup resolver', () => {
         const { customer } = await adminClient.query<
             Codegen.GetCustomerHistoryQuery,
             Codegen.GetCustomerHistoryQueryVariables
-        >(GET_CUSTOMER_HISTORY, {
+        >(getCustomerHistoryDocument, {
             id: customers[0].id,
             options: {
                 skip: 3,
@@ -88,7 +86,7 @@ describe('CustomerGroup resolver', () => {
         const { customerGroups } = await adminClient.query<
             Codegen.GetCustomerGroupsQuery,
             Codegen.GetCustomerGroupsQueryVariables
-        >(GET_CUSTOMER_GROUPS, {
+        >(getCustomerGroupDocumentS, {
             options: {},
         });
 
@@ -100,7 +98,7 @@ describe('CustomerGroup resolver', () => {
         const { customerGroup } = await adminClient.query<
             Codegen.GetCustomerGroupQuery,
             Codegen.GetCustomerGroupQueryVariables
-        >(GET_CUSTOMER_GROUP, {
+        >(getCustomerGroupDocument, {
             id: 'T_1',
             options: {
                 take: 1,
@@ -117,7 +115,7 @@ describe('CustomerGroup resolver', () => {
         const { updateCustomerGroup } = await adminClient.query<
             Codegen.UpdateCustomerGroupMutation,
             Codegen.UpdateCustomerGroupMutationVariables
-        >(UPDATE_CUSTOMER_GROUP, {
+        >(updateCustomerGroupDocument, {
             input: {
                 id: 'T_1',
                 name: 'group 1 updated',
@@ -131,7 +129,7 @@ describe('CustomerGroup resolver', () => {
         const { addCustomersToGroup } = await adminClient.query<
             Codegen.AddCustomersToGroupMutation,
             Codegen.AddCustomersToGroupMutationVariables
-        >(ADD_CUSTOMERS_TO_GROUP, {
+        >(addCustomersToGroupDocument, {
             groupId: 'T_1',
             customerIds: [customers[0].id],
         });
@@ -145,7 +143,7 @@ describe('CustomerGroup resolver', () => {
         const { addCustomersToGroup } = await adminClient.query<
             Codegen.AddCustomersToGroupMutation,
             Codegen.AddCustomersToGroupMutationVariables
-        >(ADD_CUSTOMERS_TO_GROUP, {
+        >(addCustomersToGroupDocument, {
             groupId: 'T_1',
             customerIds: [customers[2].id, customers[3].id],
         });
@@ -162,7 +160,7 @@ describe('CustomerGroup resolver', () => {
         const { customer } = await adminClient.query<
             Codegen.GetCustomerHistoryQuery,
             Codegen.GetCustomerHistoryQueryVariables
-        >(GET_CUSTOMER_HISTORY, {
+        >(getCustomerHistoryDocument, {
             id: customers[0].id,
             options: {
                 filter: {
@@ -185,7 +183,7 @@ describe('CustomerGroup resolver', () => {
         const { customer } = await adminClient.query<
             Codegen.GetCustomerHistoryQuery,
             Codegen.GetCustomerHistoryQueryVariables
-        >(GET_CUSTOMER_HISTORY, {
+        >(getCustomerHistoryDocument, {
             id: customers[2].id,
             options: {
                 skip: 3,
@@ -206,7 +204,7 @@ describe('CustomerGroup resolver', () => {
         const { customer } = await adminClient.query<
             Codegen.GetCustomerWithGroupsQuery,
             Codegen.GetCustomerWithGroupsQueryVariables
-        >(GET_CUSTOMER_WITH_GROUPS, {
+        >(getCustomerWithGroupsDocument, {
             id: customers[0].id,
         });
 
@@ -219,7 +217,7 @@ describe('CustomerGroup resolver', () => {
             await adminClient.query<
                 Codegen.RemoveCustomersFromGroupMutation,
                 Codegen.RemoveCustomersFromGroupMutationVariables
-            >(REMOVE_CUSTOMERS_FROM_GROUP, {
+            >(removeCustomersFromGroupDocument, {
                 groupId: 'T_1',
                 customerIds: [customers[4].id],
             });
@@ -230,7 +228,7 @@ describe('CustomerGroup resolver', () => {
         const { removeCustomersFromGroup } = await adminClient.query<
             Codegen.RemoveCustomersFromGroupMutation,
             Codegen.RemoveCustomersFromGroupMutationVariables
-        >(REMOVE_CUSTOMERS_FROM_GROUP, {
+        >(removeCustomersFromGroupDocument, {
             groupId: 'T_1',
             customerIds: [customers[1].id, customers[3].id],
         });
@@ -245,7 +243,7 @@ describe('CustomerGroup resolver', () => {
         const { customer } = await adminClient.query<
             Codegen.GetCustomerHistoryQuery,
             Codegen.GetCustomerHistoryQueryVariables
-        >(GET_CUSTOMER_HISTORY, {
+        >(getCustomerHistoryDocument, {
             id: customers[1].id,
             options: {
                 skip: 4,
@@ -266,16 +264,15 @@ describe('CustomerGroup resolver', () => {
         const { deleteCustomerGroup } = await adminClient.query<
             Codegen.DeleteCustomerGroupMutation,
             Codegen.DeleteCustomerGroupMutationVariables
-        >(DELETE_CUSTOMER_GROUP, {
+        >(deleteCustomerDocument_GROUP, {
             id: 'T_1',
         });
 
         expect(deleteCustomerGroup.message).toBeNull();
         expect(deleteCustomerGroup.result).toBe(DeletionResult.DELETED);
 
-        const { customerGroups } = await adminClient.query<Codegen.GetCustomerGroupsQuery>(
-            GET_CUSTOMER_GROUPS,
-        );
+        const { customerGroups } =
+            await adminClient.query<Codegen.GetCustomerGroupsQuery>(getCustomerGroupDocumentS);
         expect(customerGroups.totalItems).toBe(0);
     });
 
@@ -285,7 +282,7 @@ describe('CustomerGroup resolver', () => {
         const { createCustomerGroup } = await adminClient.query<
             Codegen.CreateCustomerGroupMutation,
             Codegen.CreateCustomerGroupMutationVariables
-        >(CREATE_CUSTOMER_GROUP, {
+        >(createCustomerGroupDocument, {
             input: {
                 name: 'group-1785',
                 customerIds: [customer5Id],
@@ -295,7 +292,7 @@ describe('CustomerGroup resolver', () => {
         expect(createCustomerGroup.customers.items).toEqual([{ id: customer5Id }]);
 
         await adminClient.query<Codegen.DeleteCustomerMutation, Codegen.DeleteCustomerMutationVariables>(
-            DELETE_CUSTOMER,
+            deleteCustomerDocument,
             {
                 id: customer5Id,
             },
@@ -304,7 +301,7 @@ describe('CustomerGroup resolver', () => {
         const { customerGroup } = await adminClient.query<
             Codegen.GetCustomerGroupQuery,
             Codegen.GetCustomerGroupQueryVariables
-        >(GET_CUSTOMER_GROUP, {
+        >(getCustomerGroupDocument, {
             id: createCustomerGroup.id,
         });
 

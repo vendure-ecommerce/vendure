@@ -4,14 +4,14 @@ import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { initialData } from '../mock-data/data-sources/initial-data';
 
 import {
     GetProductWithVariantsQuery,
     GetProductWithVariantsQueryVariables,
 } from './graphql/generated-e2e-admin-types';
-import { GET_PRODUCT_WITH_VARIANTS } from './graphql/shared-definitions';
+import { getProductWithVariantsDocument } from './graphql/shared-definitions';
 
 describe('FastImporterService resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
@@ -48,7 +48,7 @@ describe('FastImporterService resolver', () => {
         const { product } = await adminClient.query<
             GetProductWithVariantsQuery,
             GetProductWithVariantsQueryVariables
-        >(GET_PRODUCT_WITH_VARIANTS, {
+        >(getProductWithVariantsDocument, {
             id: productId as string,
         });
 

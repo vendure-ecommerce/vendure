@@ -76,24 +76,20 @@ import {
     SearchProductsShopQueryVariables,
 } from './graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
-    CREATE_CHANNEL,
-    CREATE_COLLECTION,
-    CREATE_FACET,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_VARIANTS,
-    DELETE_ASSET,
-    DELETE_PRODUCT,
-    DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCT_FROM_CHANNEL,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
-    UPDATE_ASSET,
-    UPDATE_CHANNEL,
-    UPDATE_COLLECTION,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-    UPDATE_TAX_RATE,
+    assignProductToChannelDocument,
+    assignProductVariantToChannelDocument,
+    createChannelDocument,
+    createCollectionDocument,
+    createFacetDocument,
+    createProductDocument,
+    deleteAssetDocument,
+    deleteProductDocument,
+    removeProductFromChannelDocument,
+    removeProductVariantFromChannelDocument,
+    updateAssetDocument,
+    updateChannelDocument,
+    updateCollectionDocument,
+    updateTaxRateDocument,
 } from './graphql/shared-definitions';
 import { searchProductsShopDocument } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
@@ -636,7 +632,7 @@ describe('Default search plugin', () => {
             const { createFacet } = await adminClient.query<
                 CreateFacetMutation,
                 CreateFacetMutationVariables
-            >(CREATE_FACET, {
+            >(createFacetDocument, {
                 input: {
                     code: 'profit-margin',
                     isPrivate: true,
@@ -938,7 +934,7 @@ describe('Default search plugin', () => {
                 expect(variantToDelete.sku).toBe('IHD455T1_updated');
 
                 await adminClient.query<DeleteProductVariantMutation, DeleteProductVariantMutationVariables>(
-                    DELETE_PRODUCT_VARIANT,
+                    deleteProductDocument_VARIANT,
                     {
                         id: variantToDelete.productVariantId,
                     },
@@ -983,7 +979,7 @@ describe('Default search plugin', () => {
                 const { search } = await testProductsAdmin({ facetValueIds: ['T_2'], groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_2', 'T_3', 'T_4', 'T_5', 'T_6']);
                 await adminClient.query<DeleteProductMutation, DeleteProductMutationVariables>(
-                    DELETE_PRODUCT,
+                    deleteProductDocument,
                     {
                         id: 'T_5',
                     },
@@ -998,7 +994,7 @@ describe('Default search plugin', () => {
 
             it('updates index when a Collection is changed', async () => {
                 await adminClient.query<UpdateCollectionMutation, UpdateCollectionMutationVariables>(
-                    UPDATE_COLLECTION,
+                    updateCollectionDocument,
                     {
                         input: {
                             id: 'T_2',
@@ -1052,7 +1048,7 @@ describe('Default search plugin', () => {
                 const { createCollection } = await adminClient.query<
                     CreateCollectionMutation,
                     CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+                >(createCollectionDocument, {
                     input: {
                         translations: [
                             {
@@ -1096,7 +1092,7 @@ describe('Default search plugin', () => {
 
             it('updates index when a taxRate is changed', async () => {
                 await adminClient.query<UpdateTaxRateMutation, UpdateTaxRateMutationVariables>(
-                    UPDATE_TAX_RATE,
+                    updateTaxRateDocument,
                     {
                         input: {
                             // Default Channel's defaultTaxZone is Europe (id 2) and the id of the standard TaxRate
@@ -1143,15 +1139,18 @@ describe('Default search plugin', () => {
                     expect(search1.items[0].productAsset!.id).toBe('T_1');
                     expect(search1.items[0].productAsset!.focalPoint).toBeNull();
 
-                    await adminClient.query<UpdateAssetMutation, UpdateAssetMutationVariables>(UPDATE_ASSET, {
-                        input: {
-                            id: 'T_1',
-                            focalPoint: {
-                                x: 0.42,
-                                y: 0.42,
+                    await adminClient.query<UpdateAssetMutation, UpdateAssetMutationVariables>(
+                        updateAssetDocument,
+                        {
+                            input: {
+                                id: 'T_1',
+                                focalPoint: {
+                                    x: 0.42,
+                                    y: 0.42,
+                                },
                             },
                         },
-                    });
+                    );
 
                     await awaitRunningJobs(adminClient);
 
@@ -1167,12 +1166,15 @@ describe('Default search plugin', () => {
                     const assetId = search1.items[0].productAsset?.id;
                     expect(assetId).toBeTruthy();
 
-                    await adminClient.query<DeleteAssetMutation, DeleteAssetMutationVariables>(DELETE_ASSET, {
-                        input: {
-                            assetId: assetId!,
-                            force: true,
+                    await adminClient.query<DeleteAssetMutation, DeleteAssetMutationVariables>(
+                        deleteAssetDocument,
+                        {
+                            input: {
+                                assetId: assetId!,
+                                force: true,
+                            },
                         },
-                    });
+                    );
 
                     await awaitRunningJobs(adminClient);
 
@@ -1213,7 +1215,7 @@ describe('Default search plugin', () => {
                 const { deleteProductVariant } = await adminClient.query<
                     DeleteProductVariantMutation,
                     DeleteProductVariantMutationVariables
-                >(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
+                >(deleteProductDocument_VARIANT, { id: s1.items[0].productVariantId });
 
                 await awaitRunningJobs(adminClient);
 
@@ -1359,7 +1361,7 @@ describe('Default search plugin', () => {
                 const { createProduct } = await adminClient.query<
                     CreateProductMutation,
                     CreateProductMutationVariables
-                >(CREATE_PRODUCT, {
+                >(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -1374,7 +1376,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<
                     CreateProductVariantsMutation,
                     CreateProductVariantsMutationVariables
-                >(CREATE_PRODUCT_VARIANTS, {
+                >(createProductDocument_VARIANTS, {
                     input: [
                         {
                             productId: createProduct.id,
@@ -1392,7 +1394,7 @@ describe('Default search plugin', () => {
                     'Very long description aabbccdd',
                 ]);
                 await adminClient.query<DeleteProductMutation, DeleteProductMutationVariables>(
-                    DELETE_PRODUCT,
+                    deleteProductDocument,
                     {
                         id: createProduct.id,
                     },
@@ -1408,7 +1410,7 @@ describe('Default search plugin', () => {
                 const { createProduct } = await adminClient.query<
                     CreateProductMutation,
                     CreateProductMutationVariables
-                >(CREATE_PRODUCT, {
+                >(createProductDocument, {
                     input: {
                         facetValueIds: ['T_1'],
                         translations: [
@@ -1452,7 +1454,7 @@ describe('Default search plugin', () => {
                 const { createProductVariants } = await adminClient.query<
                     CreateProductVariantsMutation,
                     CreateProductVariantsMutationVariables
-                >(CREATE_PRODUCT_VARIANTS, {
+                >(createProductDocument_VARIANTS, {
                     input: [
                         {
                             productId: createdProductId,
@@ -1481,7 +1483,7 @@ describe('Default search plugin', () => {
                 const { createChannel } = await adminClient.query<
                     CreateChannelMutation,
                     CreateChannelMutationVariables
-                >(CREATE_CHANNEL, {
+                >(createChannelDocument, {
                     input: {
                         code: 'second-channel',
                         token: SECOND_CHANNEL_TOKEN,
@@ -1501,7 +1503,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<
                     AssignProductsToChannelMutation,
                     AssignProductsToChannelMutationVariables
-                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                >(assignProductToChannelDocument, {
                     input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1516,7 +1518,7 @@ describe('Default search plugin', () => {
                 const { removeProductsFromChannel } = await adminClient.query<
                     RemoveProductsFromChannelMutation,
                     RemoveProductsFromChannelMutationVariables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                >(removeProductFromChannelDocument, {
                     input: {
                         productIds: ['T_2'],
                         channelId: secondChannel.id,
@@ -1534,7 +1536,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<
                     AssignProductVariantsToChannelMutation,
                     AssignProductVariantsToChannelMutationVariables
-                >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                >(assignProductVariantToChannelDocument, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1560,7 +1562,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<
                     RemoveProductVariantsFromChannelMutation,
                     RemoveProductVariantsFromChannelMutationVariables
-                >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                >(removeProductVariantFromChannelDocument, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1640,7 +1642,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<
                     AssignProductsToChannelMutation,
                     AssignProductsToChannelMutationVariables
-                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                >(assignProductToChannelDocument, {
                     input: { channelId: secondChannel.id, productIds: ['T_4'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1667,7 +1669,7 @@ describe('Default search plugin', () => {
                 const { removeProductsFromChannel } = await adminClient.query<
                     RemoveProductsFromChannelMutation,
                     RemoveProductsFromChannelMutationVariables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                >(removeProductFromChannelDocument, {
                     input: {
                         productIds: ['T_4'],
                         channelId: secondChannel.id,
@@ -1685,7 +1687,7 @@ describe('Default search plugin', () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
                 await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
-                    UPDATE_CHANNEL,
+                    updateChannelDocument,
                     {
                         input: {
                             id: 'T_1',

@@ -4,12 +4,12 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
-import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
+import { getCountryListDocument, updateChannelDocument } from './graphql/shared-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -28,7 +28,7 @@ describe('Zone resolver', () => {
         });
         await adminClient.asSuperAdmin();
 
-        const result = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
+        const result = await adminClient.query<Codegen.GetCountryListQuery>(getCountryListDocument, {});
         countries = result.countries.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -158,7 +158,7 @@ describe('Zone resolver', () => {
 
         it('does not delete Zone that is used as a Channel defaultTaxZone', async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',
@@ -187,7 +187,7 @@ describe('Zone resolver', () => {
 
         it('does not delete Zone that is used as a Channel defaultShippingZone', async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',

@@ -27,7 +27,7 @@ import {
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import { ATTEMPT_LOGIN, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { attemptLoginDocument, getCustomerListDocument } from './graphql/shared-definitions';
 import { getNextStatesDocument, testOrderFragment } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
@@ -71,7 +71,7 @@ describe('Order merging', () => {
             customerCount: 10,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -105,7 +105,7 @@ describe('Order merging', () => {
         }
 
         await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-            ATTEMPT_LOGIN,
+            attemptLoginDocument,
             {
                 username: customerEmailAddress,
                 password: 'test',
@@ -266,7 +266,7 @@ describe('Order merging', () => {
         );
 
         const { login } = await shopClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(
-            ATTEMPT_LOGIN,
+            attemptLoginDocument,
             { username: customers[7].emailAddress, password: 'test' },
         );
 

@@ -21,20 +21,6 @@ import {
     SetCustomerForOrderMutationVariables,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import {
-    CREATE_ADDRESS,
-    CREATE_ADMINISTRATOR,
-    CREATE_CUSTOMER,
-    DELETE_CUSTOMER,
-    DELETE_CUSTOMER_NOTE,
-    GET_CUSTOMER,
-    GET_CUSTOMER_HISTORY,
-    GET_CUSTOMER_LIST,
-    ME,
-    UPDATE_ADDRESS,
-    UPDATE_CUSTOMER,
-    UPDATE_CUSTOMER_NOTE,
-} from './graphql/shared-definitions';
 import { addItemToOrderDocument, setCustomerDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 

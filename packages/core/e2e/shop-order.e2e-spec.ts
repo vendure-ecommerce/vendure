@@ -36,20 +36,12 @@ import {
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ErrorCode, RemoveItemFromOrderDocument } from './graphql/generated-e2e-shop-types';
 import {
-    ATTEMPT_LOGIN,
-    CANCEL_ORDER,
-    CREATE_SHIPPING_METHOD,
-    DELETE_PRODUCT,
-    DELETE_PRODUCT_VARIANT,
-    DELETE_SHIPPING_METHOD,
-    GET_COUNTRY_LIST,
-    GET_CUSTOMER,
-    GET_CUSTOMER_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-    GET_SHIPPING_METHOD_LIST,
-    UPDATE_COUNTRY,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
+    attemptLoginDocument,
+    getCountryListDocument,
+    getCustomerDocument,
+    getCustomerListDocument,
+    updateCountryDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -154,10 +146,13 @@ describe('Shop orders', () => {
 
     it('availableCountries returns enabled countries', async () => {
         // disable Austria
-        const { countries } = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
+        const { countries } = await adminClient.query<Codegen.GetCountryListQuery>(
+            getCountryListDocument,
+            {},
+        );
         const AT = countries.items.find(c => c.code === 'AT')!;
         await adminClient.query<Codegen.UpdateCountryMutation, Codegen.UpdateCountryMutationVariables>(
-            UPDATE_COUNTRY,
+            updateCountryDocument,
             {
                 input: {
                     id: AT.id,
@@ -716,7 +711,7 @@ describe('Shop orders', () => {
             const { updateProductVariants } = await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: variantId,
@@ -791,7 +786,7 @@ describe('Shop orders', () => {
             const { updateProductVariants } = await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: variantId,
@@ -881,7 +876,7 @@ describe('Shop orders', () => {
             const { updateProductVariants } = await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: variantId,
@@ -1073,7 +1068,8 @@ describe('Shop orders', () => {
         });
 
         it('setCustomerForOrder returns error result on email address conflict', async () => {
-            const { customers } = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+            const { customers } =
+                await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
 
             const { setCustomerForOrder } = await shopClient.query<
                 CodegenShop.SetCustomerForOrderMutation,
@@ -1267,7 +1263,7 @@ describe('Shop orders', () => {
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerQuery,
                 Codegen.GetCustomerQueryVariables
-            >(GET_CUSTOMER, { id: activeOrder!.customer!.id });
+            >(getCustomerDocument, { id: activeOrder!.customer!.id });
 
             expect(customer!.addresses).toEqual([]);
         });
@@ -1340,7 +1336,7 @@ describe('Shop orders', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerQuery,
                 Codegen.GetCustomerQueryVariables
-            >(GET_CUSTOMER, {
+            >(getCustomerDocument, {
                 id: createdCustomerId,
             });
 
@@ -1461,7 +1457,7 @@ describe('Shop orders', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST, {
+            >(getCustomerListDocument, {
                 options: {
                     take: 2,
                 },
@@ -1920,7 +1916,7 @@ describe('Shop orders', () => {
                 const { customer } = await adminClient.query<
                     Codegen.GetCustomerQuery,
                     Codegen.GetCustomerQueryVariables
-                >(GET_CUSTOMER, { id: customers[0].id });
+                >(getCustomerDocument, { id: customers[0].id });
                 expect(customer!.addresses!.length).toBe(1);
             });
         });
@@ -2011,7 +2007,7 @@ describe('Shop orders', () => {
         let customers: Codegen.GetCustomerListQuery['customers']['items'];
 
         beforeAll(async () => {
-            const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+            const result = await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
             customers = result.customers.items;
         });
 
@@ -2029,7 +2025,7 @@ describe('Shop orders', () => {
             expect(addItemToOrder.lines[0].productVariant.id).toBe('T_1');
 
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-                ATTEMPT_LOGIN,
+                attemptLoginDocument,
                 {
                     username: customers[1].emailAddress,
                     password: 'test',
@@ -2056,7 +2052,7 @@ describe('Shop orders', () => {
             expect(addItemToOrder.lines[0].productVariant.id).toBe('T_2');
 
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-                ATTEMPT_LOGIN,
+                attemptLoginDocument,
                 {
                     username: customers[1].emailAddress,
                     password: 'test',
@@ -2075,7 +2071,7 @@ describe('Shop orders', () => {
          */
         it('does not merge when logging in to a different account (issue #263)', async () => {
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-                ATTEMPT_LOGIN,
+                attemptLoginDocument,
                 {
                     username: customers[2].emailAddress,
                     password: 'test',
@@ -2097,7 +2093,7 @@ describe('Shop orders', () => {
             });
 
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-                ATTEMPT_LOGIN,
+                attemptLoginDocument,
                 {
                     username: customers[1].emailAddress,
                     password: 'test',
@@ -2174,7 +2170,7 @@ describe('Shop orders', () => {
         let customers: Codegen.GetCustomerListQuery['customers']['items'];
 
         beforeAll(async () => {
-            const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
+            const result = await adminClient.query<Codegen.GetCustomerListQuery>(getCustomerListDocument);
             customers = result.customers.items;
         });
 
@@ -2206,7 +2202,7 @@ describe('Shop orders', () => {
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerQuery,
                 Codegen.GetCustomerQueryVariables
-            >(GET_CUSTOMER, {
+            >(getCustomerDocument, {
                 id: customers[0].id,
             });
             expect(customer!.firstName).not.toBe('Evil');
@@ -2384,7 +2380,7 @@ describe('Shop orders', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: bonsaiVariantId,

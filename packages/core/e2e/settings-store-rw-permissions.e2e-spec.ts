@@ -12,7 +12,7 @@ import {
     SettingsStoreRwPermissionsPlugin,
 } from './fixtures/test-plugins/settings-store-rw-permissions-plugin';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE } from './graphql/shared-definitions';
+import { createAdministratorDocument, createRoleDocument } from './graphql/shared-definitions';
 
 const GET_SETTINGS_STORE_VALUE = gql`
     query GetSettingsStoreValue($key: String!) {
@@ -453,7 +453,7 @@ async function createAdminWithPermissions(input: {
     const { createRole } = await adminClient.query<
         Codegen.CreateRoleMutation,
         Codegen.CreateRoleMutationVariables
-    >(CREATE_ROLE, {
+    >(createRoleDocument, {
         input: {
             code: name,
             description: name,
@@ -464,7 +464,7 @@ async function createAdminWithPermissions(input: {
     const { createAdministrator } = await adminClient.query<
         Codegen.CreateAdministratorMutation,
         Codegen.CreateAdministratorMutationVariables
-    >(CREATE_ADMINISTRATOR, {
+    >(createAdministratorDocument, {
         input: {
             firstName: name,
             lastName: 'LastName',

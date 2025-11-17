@@ -58,21 +58,18 @@ import {
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
-    CANCEL_ORDER,
-    CREATE_FULFILLMENT,
-    CREATE_SHIPPING_METHOD,
-    DELETE_PRODUCT,
-    DELETE_SHIPPING_METHOD,
-    GET_CUSTOMER_LIST,
-    GET_ORDER,
-    GET_ORDER_FULFILLMENTS,
-    GET_ORDER_HISTORY,
-    GET_ORDERS_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-    GET_STOCK_MOVEMENT,
-    SETTLE_PAYMENT,
-    TRANSIT_FULFILLMENT,
-    UPDATE_PRODUCT_VARIANTS,
+    cancelOrderDocument,
+    createFulfillmentDocument,
+    createShippingMethodDocument,
+    deleteProductDocument,
+    deleteShippingMethodDocument,
+    getCustomerListDocument,
+    getOrderDocument,
+    getProductWithVariantsDocument,
+    getStockMovementDocument,
+    settlePaymentDocument,
+    transitFulfillmentDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -156,7 +153,7 @@ describe('Orders resolver', () => {
         const result = await adminClient.query<
             Codegen.GetCustomerListQuery,
             Codegen.GetCustomerListQueryVariables
-        >(GET_CUSTOMER_LIST, {
+        >(getCustomerListDocument, {
             options: {
                 take: 3,
             },
@@ -202,7 +199,7 @@ describe('Orders resolver', () => {
         const { order } = await adminClient.query<
             Codegen.GetOrderHistoryQuery,
             Codegen.GetOrderHistoryQueryVariables
-        >(GET_ORDER_HISTORY, { id: 'T_1' });
+        >(getOrderDocument_HISTORY, { id: 'T_1' });
         expect(order!.history.totalItems).toBe(1);
         expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
             {
@@ -217,7 +214,7 @@ describe('Orders resolver', () => {
 
     describe('querying', () => {
         it('orders', async () => {
-            const result = await adminClient.query<Codegen.GetOrderListQuery>(GET_ORDERS_LIST);
+            const result = await adminClient.query<Codegen.GetOrderListQuery>(getOrderDocumentS_LIST);
             expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
@@ -225,7 +222,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: { total: { gt: 1000_00 } },
                 },
@@ -237,7 +234,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         _and: [{ total: { gt: 1000_00 } }],
@@ -249,7 +246,7 @@ describe('Orders resolver', () => {
 
         it('order', async () => {
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: 'T_2',
                 },
@@ -333,7 +330,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     sort: {
                         total: SortOrder.DESC,
@@ -351,7 +348,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     sort: {
                         totalWithTax: SortOrder.DESC,
@@ -369,7 +366,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     sort: {
                         totalQuantity: SortOrder.DESC,
@@ -388,7 +385,7 @@ describe('Orders resolver', () => {
                 const { orders } = await adminClient.query<
                     Codegen.GetOrderListQuery,
                     Codegen.GetOrderListQueryVariables
-                >(GET_ORDERS_LIST, {
+                >(getOrderDocumentS_LIST, {
                     options: {
                         sort: {
                             customerLastName: sortOrder,
@@ -411,7 +408,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         total: { gt: 323760 },
@@ -428,7 +425,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         totalWithTax: { gt: 323760 },
@@ -445,7 +442,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         totalQuantity: { eq: 4 },
@@ -461,7 +458,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         customerLastName: {
@@ -491,17 +488,17 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 Codegen.SettlePaymentMutation,
                 Codegen.SettlePaymentMutationVariables
-            >(SETTLE_PAYMENT, {
+            >(settlePaymentDocument, {
                 id: payment.id,
             });
             paymentGuard.assertErrorResult(settlePayment);
 
             expect(settlePayment.message).toBe('Settling the payment failed');
-            expect(settlePayment.errorCode).toBe(ErrorCode.SETTLE_PAYMENT_ERROR);
+            expect(settlePayment.errorCode).toBe(ErrorCode.settlePaymentDocument_ERROR);
             expect((settlePayment as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -531,7 +528,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderWithPaymentsQuery,
                 Codegen.GetOrderWithPaymentsQueryVariables
-            >(GET_ORDER_WITH_PAYMENTS, { id: firstOrderId });
+            >(getOrderDocument_WITH_PAYMENTS, { id: firstOrderId });
 
             expect(order?.payments?.[0].metadata).toEqual({
                 privateCreatePaymentData: 'secret',
@@ -559,7 +556,7 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 Codegen.SettlePaymentMutation,
                 Codegen.SettlePaymentMutationVariables
-            >(SETTLE_PAYMENT, {
+            >(settlePaymentDocument, {
                 id: payment.id,
             });
             paymentGuard.assertSuccess(settlePayment);
@@ -578,7 +575,7 @@ describe('Orders resolver', () => {
             expect(onTransitionSpy.mock.calls[1][1]).toBe('Settled');
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -592,7 +589,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
+            >(getOrderDocument_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
             expect(order.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
@@ -645,7 +642,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
                 Codegen.GetOrderListQueryVariables
-            >(GET_ORDERS_LIST, {
+            >(getOrderDocumentS_LIST, {
                 options: {
                     filter: {
                         transactionId: {
@@ -667,7 +664,7 @@ describe('Orders resolver', () => {
 
         it('return error result if lines is empty', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -676,7 +673,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines: [],
                     handler: {
@@ -693,7 +690,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if all quantities are zero', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -702,7 +699,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
                     handler: {
@@ -719,7 +716,7 @@ describe('Orders resolver', () => {
 
         it('creates the first fulfillment', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -730,7 +727,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines: [{ orderLineId: lines[0].id, quantity: lines[0].quantity }],
                     handler: {
@@ -754,7 +751,7 @@ describe('Orders resolver', () => {
             f1Id = addFulfillmentToOrder.id;
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -779,7 +776,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines,
                     handler: {
@@ -804,7 +801,7 @@ describe('Orders resolver', () => {
             const { transitionFulfillmentToState } = await adminClient.query<
                 Codegen.TransitFulfillmentMutation,
                 Codegen.TransitFulfillmentMutationVariables
-            >(TRANSIT_FULFILLMENT, {
+            >(transitFulfillmentDocument, {
                 id: f2Id,
                 state: 'Cancelled',
             });
@@ -818,7 +815,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderFulfillmentsQuery,
                 Codegen.GetOrderFulfillmentsQueryVariables
-            >(GET_ORDER_FULFILLMENTS, {
+            >(getOrderDocument_FULFILLMENTS, {
                 id: orderId,
             });
 
@@ -832,7 +829,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderFulfillmentsQuery,
                 Codegen.GetOrderFulfillmentsQueryVariables
-            >(GET_ORDER_FULFILLMENTS, {
+            >(getOrderDocument_FULFILLMENTS, {
                 id: orderId,
             });
 
@@ -846,7 +843,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderLineFulfillmentsQuery,
                 Codegen.GetOrderLineFulfillmentsQueryVariables
-            >(GET_ORDER_LINE_FULFILLMENTS, {
+            >(getOrderDocument_LINE_FULFILLMENTS, {
                 id: orderId,
             });
 
@@ -862,7 +859,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines,
                     handler: {
@@ -885,7 +882,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if an OrderItem already part of a Fulfillment', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -893,7 +890,7 @@ describe('Orders resolver', () => {
             const { addFulfillmentToOrder } = await adminClient.query<
                 Codegen.CreateFulfillmentMutation,
                 Codegen.CreateFulfillmentMutationVariables
-            >(CREATE_FULFILLMENT, {
+            >(createFulfillmentDocument, {
                 input: {
                     lines: [
                         {
@@ -919,7 +916,7 @@ describe('Orders resolver', () => {
             const { transitionFulfillmentToState } = await adminClient.query<
                 Codegen.TransitFulfillmentMutation,
                 Codegen.TransitFulfillmentMutationVariables
-            >(TRANSIT_FULFILLMENT, {
+            >(transitFulfillmentDocument, {
                 id: f1Id,
                 state: 'Shipped',
             });
@@ -929,7 +926,7 @@ describe('Orders resolver', () => {
             expect(transitionFulfillmentToState.state).toBe('Shipped');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -941,7 +938,7 @@ describe('Orders resolver', () => {
             const { transitionFulfillmentToState } = await adminClient.query<
                 Codegen.TransitFulfillmentMutation,
                 Codegen.TransitFulfillmentMutationVariables
-            >(TRANSIT_FULFILLMENT, {
+            >(transitFulfillmentDocument, {
                 id: f3Id,
                 state: 'Shipped',
             });
@@ -951,7 +948,7 @@ describe('Orders resolver', () => {
             expect(transitionFulfillmentToState.state).toBe('Shipped');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -963,7 +960,7 @@ describe('Orders resolver', () => {
             const { transitionFulfillmentToState } = await adminClient.query<
                 Codegen.TransitFulfillmentMutation,
                 Codegen.TransitFulfillmentMutationVariables
-            >(TRANSIT_FULFILLMENT, {
+            >(transitFulfillmentDocument, {
                 id: f1Id,
                 state: 'Delivered',
             });
@@ -973,7 +970,7 @@ describe('Orders resolver', () => {
             expect(transitionFulfillmentToState.state).toBe('Delivered');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -985,7 +982,7 @@ describe('Orders resolver', () => {
             const { transitionFulfillmentToState } = await adminClient.query<
                 Codegen.TransitFulfillmentMutation,
                 Codegen.TransitFulfillmentMutationVariables
-            >(TRANSIT_FULFILLMENT, {
+            >(transitFulfillmentDocument, {
                 id: f3Id,
                 state: 'Delivered',
             });
@@ -995,7 +992,7 @@ describe('Orders resolver', () => {
             expect(transitionFulfillmentToState.state).toBe('Delivered');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1007,7 +1004,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 6,
@@ -1131,7 +1128,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderFulfillmentsQuery,
                 Codegen.GetOrderFulfillmentsQueryVariables
-            >(GET_ORDER_FULFILLMENTS, {
+            >(getOrderDocument_FULFILLMENTS, {
                 id: orderId,
             });
 
@@ -1145,8 +1142,9 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } =
-                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
+            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
+                getOrderDocument_LIST_FULFILLMENTS,
+            );
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
@@ -1166,7 +1164,7 @@ describe('Orders resolver', () => {
                 password,
             );
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: testOrder.orderId,
                 },
@@ -1175,7 +1173,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId: testOrder.orderId,
                 },
@@ -1184,7 +1182,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: testOrder.orderId,
             });
             expect(order2!.state).toBe('Cancelled');
@@ -1201,14 +1199,14 @@ describe('Orders resolver', () => {
             );
             await proceedToArrangingPayment(shopClient);
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: testOrder.orderId,
                 },
             );
             expect(order!.state).toBe('ArrangingPayment');
             await adminClient.query<Codegen.CancelOrderMutation, Codegen.CancelOrderMutationVariables>(
-                CANCEL_ORDER,
+                cancelOrderDocument,
                 {
                     input: {
                         orderId: testOrder.orderId,
@@ -1219,7 +1217,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: testOrder.orderId,
             });
             expect(order2!.state).toBe('Cancelled');
@@ -1244,7 +1242,7 @@ describe('Orders resolver', () => {
             const result1 = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: 'T_3',
             });
             let variant1 = result1.product!.variants[0];
@@ -1258,7 +1256,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId: testOrder.orderId,
                     cancelShipping: true,
@@ -1272,7 +1270,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: testOrder.orderId,
             });
             expect(order2!.active).toBe(false);
@@ -1283,7 +1281,7 @@ describe('Orders resolver', () => {
             const result2 = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: 'T_3',
             });
             variant1 = result2.product!.variants[0];
@@ -1300,7 +1298,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: productId,
             });
             const variant2 = result.product!.variants[0];
@@ -1330,7 +1328,7 @@ describe('Orders resolver', () => {
 
         it('cannot cancel from AddingItems state', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1340,7 +1338,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
@@ -1357,7 +1355,7 @@ describe('Orders resolver', () => {
         it('cannot cancel from ArrangingPayment state', async () => {
             await proceedToArrangingPayment(shopClient, 2);
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1366,7 +1364,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
@@ -1389,7 +1387,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: [],
@@ -1403,7 +1401,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if all quantities zero', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1411,7 +1409,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
@@ -1427,7 +1425,7 @@ describe('Orders resolver', () => {
             const result1 = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: product!.id,
             });
             const variant1 = result1.product!.variants[0];
@@ -1441,7 +1439,7 @@ describe('Orders resolver', () => {
             ]);
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1450,7 +1448,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
@@ -1464,7 +1462,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: orderId,
             });
 
@@ -1474,7 +1472,7 @@ describe('Orders resolver', () => {
             const result2 = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: product!.id,
             });
             const variant2 = result2.product!.variants[0];
@@ -1491,7 +1489,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if attempting to cancel already cancelled item', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1499,7 +1497,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 2 })),
@@ -1515,13 +1513,13 @@ describe('Orders resolver', () => {
 
         it('complete cancellation', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
             );
             await adminClient.query<Codegen.CancelOrderMutation, Codegen.CancelOrderMutationVariables>(
-                CANCEL_ORDER,
+                cancelOrderDocument,
                 {
                     input: {
                         orderId,
@@ -1535,7 +1533,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: orderId,
             });
             expect(order2!.state).toBe('Cancelled');
@@ -1545,7 +1543,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: product!.id,
             });
             const variant2 = result.product!.variants[0];
@@ -1563,7 +1561,7 @@ describe('Orders resolver', () => {
 
         it('cancelled OrderLine.unitPrice is not zero', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1576,7 +1574,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 0,
@@ -1681,7 +1679,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if no amount and no shipping', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1689,7 +1687,7 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 Codegen.SettlePaymentMutation,
                 Codegen.SettlePaymentMutationVariables
-            >(SETTLE_PAYMENT, {
+            >(settlePaymentDocument, {
                 id: order!.payments![0].id,
             });
             paymentGuard.assertSuccess(settlePayment);
@@ -1719,7 +1717,7 @@ describe('Orders resolver', () => {
                 const { order } = await adminClient.query<
                     Codegen.GetOrderQuery,
                     Codegen.GetOrderQueryVariables
-                >(GET_ORDER, {
+                >(getOrderDocument, {
                     id: orderId,
                 });
                 const { refundOrder } = await adminClient.query<
@@ -1738,7 +1736,7 @@ describe('Orders resolver', () => {
 
         it('returns error result if payment and order lines do not belong to the same Order', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1762,7 +1760,7 @@ describe('Orders resolver', () => {
 
         it('creates a Refund to be manually settled', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -1809,7 +1807,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 0,
@@ -1936,7 +1934,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<
                 Codegen.CancelOrderMutation,
                 Codegen.CancelOrderMutationVariables
-            >(CANCEL_ORDER, {
+            >(cancelOrderDocument, {
                 input: {
                     orderId: order.id,
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
@@ -2010,7 +2008,7 @@ describe('Orders resolver', () => {
             const { order: checkorder } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: order.id,
             });
             expect(checkorder!.payments![0].state).toBe('Authorized');
@@ -2109,7 +2107,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 1,
@@ -2152,7 +2150,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 2,
@@ -2208,7 +2206,7 @@ describe('Orders resolver', () => {
             const { order: before } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, { id: orderId });
+            >(getOrderDocument_HISTORY, { id: orderId });
             expect(before?.history.totalItems).toBe(3);
 
             const { deleteOrderNote } = await adminClient.query<
@@ -2223,7 +2221,7 @@ describe('Orders resolver', () => {
             const { order: after } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, { id: orderId });
+            >(getOrderDocument_HISTORY, { id: orderId });
             expect(after?.history.totalItems).toBe(2);
         });
     });
@@ -2309,7 +2307,7 @@ describe('Orders resolver', () => {
 
         it('partial refunding of order with multiple payments', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -2332,7 +2330,7 @@ describe('Orders resolver', () => {
             const { order: orderWithPayments } = await adminClient.query<
                 Codegen.GetOrderWithPaymentsQuery,
                 Codegen.GetOrderWithPaymentsQueryVariables
-            >(GET_ORDER_WITH_PAYMENTS, {
+            >(getOrderDocument_WITH_PAYMENTS, {
                 id: orderId,
             });
 
@@ -2349,7 +2347,7 @@ describe('Orders resolver', () => {
 
         it('refunding remaining amount of order with multiple payments', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: orderId,
                 },
@@ -2372,7 +2370,7 @@ describe('Orders resolver', () => {
             const { order: orderWithPayments } = await adminClient.query<
                 Codegen.GetOrderWithPaymentsQuery,
                 Codegen.GetOrderWithPaymentsQueryVariables
-            >(GET_ORDER_WITH_PAYMENTS, {
+            >(getOrderDocument_WITH_PAYMENTS, {
                 id: orderId,
             });
 
@@ -2427,7 +2425,7 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 Codegen.SettlePaymentMutation,
                 Codegen.SettlePaymentMutationVariables
-            >(SETTLE_PAYMENT, {
+            >(settlePaymentDocument, {
                 id: order.payments!.find(p => p.method === partialPaymentMethod.code)!.id,
             });
 
@@ -2438,7 +2436,7 @@ describe('Orders resolver', () => {
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: order.id,
             });
 
@@ -2519,7 +2517,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
-            >(GET_ORDER_HISTORY, {
+            >(getOrderDocument_HISTORY, {
                 id: orderId,
                 options: {
                     skip: 4,
@@ -2556,7 +2554,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 Codegen.GetOrderFulfillmentsQuery,
                 Codegen.GetOrderFulfillmentsQueryVariables
-            >(GET_ORDER_FULFILLMENTS, {
+            >(getOrderDocument_FULFILLMENTS, {
                 id: activeOrder!.id,
             });
 
@@ -2578,7 +2576,7 @@ describe('Orders resolver', () => {
             const { orders } = await adminClient.query<
                 Codegen.GetOrderListWithQtyQuery,
                 Codegen.GetOrderListWithQtyQueryVariables
-            >(GET_ORDERS_LIST_WITH_QUANTITIES, {
+            >(getOrderDocumentS_LIST_WITH_QUANTITIES, {
                 options: {
                     filter: {
                         code: { eq: addItemToOrder.code },
@@ -2595,7 +2593,7 @@ describe('Orders resolver', () => {
             const { createShippingMethod: shippingMethod } = await adminClient.query<
                 Codegen.CreateShippingMethodMutation,
                 Codegen.CreateShippingMethodMutationVariables
-            >(CREATE_SHIPPING_METHOD, {
+            >(createShippingMethodDocument, {
                 input: {
                     code: 'royal-mail',
                     translations: [{ languageCode: LanguageCode.en, name: 'Royal Mail', description: '' }],
@@ -2644,14 +2642,14 @@ describe('Orders resolver', () => {
             await adminClient.query<
                 Codegen.DeleteShippingMethodMutation,
                 Codegen.DeleteShippingMethodMutationVariables
-            >(DELETE_SHIPPING_METHOD, {
+            >(deleteShippingMethodDocument, {
                 id: shippingMethod.id,
             });
 
             const { order: order2 } = await adminClient.query<
                 Codegen.GetOrderQuery,
                 Codegen.GetOrderQueryVariables
-            >(GET_ORDER, {
+            >(getOrderDocument, {
                 id: order.id,
             });
             expect(order2?.shippingLines[0]).toEqual({
@@ -2719,7 +2717,7 @@ describe('Orders resolver', () => {
             orderGuard.assertSuccess(order);
 
             await adminClient.query<Codegen.DeleteProductMutation, Codegen.DeleteProductMutationVariables>(
-                DELETE_PRODUCT,
+                deleteProductDocument,
                 {
                     id: 'T_3',
                 },
@@ -2917,7 +2915,7 @@ async function createTestOrder(
     const result = await adminClient.query<
         Codegen.GetProductWithVariantsQuery,
         Codegen.GetProductWithVariantsQueryVariables
-    >(GET_PRODUCT_WITH_VARIANTS, {
+    >(getProductWithVariantsDocument, {
         id: 'T_3',
     });
     const product = result.product!;
@@ -2927,7 +2925,7 @@ async function createTestOrder(
     const { updateProductVariants } = await adminClient.query<
         Codegen.UpdateProductVariantsMutation,
         Codegen.UpdateProductVariantsMutationVariables
-    >(UPDATE_PRODUCT_VARIANTS, {
+    >(updateProductVariantsDocument, {
         input: [
             {
                 id: productVariantId,
@@ -2953,9 +2951,12 @@ async function getUnfulfilledOrderLineInput(
     client: SimpleGraphQLClient,
     id: string,
 ): Promise<OrderLineInput[]> {
-    const { order } = await client.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(GET_ORDER, {
-        id,
-    });
+    const { order } = await client.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+        getOrderDocument,
+        {
+            id,
+        },
+    );
     const allFulfillmentLines =
         order?.fulfillments
             ?.filter(f => f.state !== 'Cancelled')
@@ -2977,7 +2978,7 @@ async function getUnfulfilledOrderLineInput(
     }));
 }
 
-export const GET_ORDER_LIST_FULFILLMENTS = gql`
+export const getOrderDocument_LIST_FULFILLMENTS = gql`
     query GetOrderListFulfillments {
         orders {
             items {
@@ -2994,7 +2995,7 @@ export const GET_ORDER_LIST_FULFILLMENTS = gql`
     }
 `;
 
-export const GET_ORDER_FULFILLMENT_ITEMS = gql`
+export const getOrderDocument_FULFILLMENT_ITEMS = gql`
     query GetOrderFulfillmentItems($id: ID!) {
         order(id: $id) {
             id
@@ -3072,7 +3073,7 @@ export const DELETE_ORDER_NOTE = gql`
     }
 `;
 
-const GET_ORDER_WITH_PAYMENTS = gql`
+const getOrderDocument_WITH_PAYMENTS = gql`
     query GetOrderWithPayments($id: ID!) {
         order(id: $id) {
             id
@@ -3089,7 +3090,7 @@ const GET_ORDER_WITH_PAYMENTS = gql`
     }
 `;
 
-export const GET_ORDER_LINE_FULFILLMENTS = gql`
+export const getOrderDocument_LINE_FULFILLMENTS = gql`
     query GetOrderLineFulfillments($id: ID!) {
         order(id: $id) {
             id
@@ -3108,7 +3109,7 @@ export const GET_ORDER_LINE_FULFILLMENTS = gql`
     }
 `;
 
-const GET_ORDERS_LIST_WITH_QUANTITIES = gql`
+const getOrderDocumentS_LIST_WITH_QUANTITIES = gql`
     query GetOrderListWithQty($options: OrderListOptions) {
         orders(options: $options) {
             items {

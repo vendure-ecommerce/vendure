@@ -14,20 +14,6 @@ import { ProtectedFieldsPlugin, transactions } from './fixtures/test-plugins/wit
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode, Permission } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import {
-    ATTEMPT_LOGIN,
-    CREATE_ADMINISTRATOR,
-    CREATE_CUSTOMER,
-    CREATE_CUSTOMER_GROUP,
-    CREATE_PRODUCT,
-    CREATE_ROLE,
-    GET_CUSTOMER_LIST,
-    GET_PRODUCT_LIST,
-    GET_TAX_RATES_LIST,
-    ME,
-    UPDATE_PRODUCT,
-    UPDATE_TAX_RATE,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Authorization & permissions', () => {

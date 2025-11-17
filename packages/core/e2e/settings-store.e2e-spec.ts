@@ -32,7 +32,11 @@ import {
     SetSettingsStoreValuesMutation,
     SetSettingsStoreValuesMutationVariables,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_CHANNEL, CREATE_ROLE } from './graphql/shared-definitions';
+import {
+    createAdministratorDocument,
+    createChannelDocument,
+    createRoleDocument,
+} from './graphql/shared-definitions';
 
 describe('SettingsStore system', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -78,7 +82,7 @@ describe('SettingsStore system', () => {
         it('should return same global value from different contexts', async () => {
             // Create another user
             await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
-                CREATE_ADMINISTRATOR,
+                createAdministratorDocument,
                 {
                     input: {
                         firstName: 'Test',
@@ -119,7 +123,7 @@ describe('SettingsStore system', () => {
 
             // Create and switch to another user
             await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
-                CREATE_ADMINISTRATOR,
+                createAdministratorDocument,
                 {
                     input: {
                         firstName: 'Test2',
@@ -189,7 +193,7 @@ describe('SettingsStore system', () => {
             const { createChannel } = await adminClient.query<
                 CreateChannelMutation,
                 CreateChannelMutationVariables
-            >(CREATE_CHANNEL, {
+            >(createChannelDocument, {
                 input: {
                     code: 'test-channel',
                     token: testChannelToken,
@@ -457,7 +461,7 @@ describe('SettingsStore system', () => {
 
             // Create a role with limited permissions (no CreateAdministrator permission)
             const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
-                CREATE_ROLE,
+                createRoleDocument,
                 {
                     input: {
                         code: 'limited-role',
@@ -469,7 +473,7 @@ describe('SettingsStore system', () => {
 
             // Create a user with limited permissions
             await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
-                CREATE_ADMINISTRATOR,
+                createAdministratorDocument,
                 {
                     input: {
                         firstName: 'Limited',

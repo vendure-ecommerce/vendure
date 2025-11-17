@@ -17,12 +17,6 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode, FulfillmentFragment } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
-import {
-    CREATE_FULFILLMENT,
-    GET_CUSTOMER_LIST,
-    GET_ORDER_FULFILLMENTS,
-    TRANSIT_FULFILLMENT,
-} from './graphql/shared-definitions';
 import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 

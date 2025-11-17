@@ -25,9 +25,9 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
-    ADMIN_TRANSITION_TO_STATE,
-    GET_ORDER,
-    TRANSITION_PAYMENT_TO_STATE,
+    adminTransitionToStateDocument,
+    getOrderDocument,
+    transitionPaymentToStateDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -191,7 +191,7 @@ describe('Payment process', () => {
         orderGuard.assertSuccess(addPaymentToOrder);
 
         const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            GET_ORDER,
+            getOrderDocument,
             {
                 id: orderId,
             },
@@ -211,7 +211,7 @@ describe('Payment process', () => {
 
     it('Payment next states', async () => {
         const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            GET_ORDER,
+            getOrderDocument,
             {
                 id: orderId,
             },
@@ -227,7 +227,7 @@ describe('Payment process', () => {
         const { transitionOrderToState } = await adminClient.query<
             Codegen.AdminTransitionMutation,
             Codegen.AdminTransitionMutationVariables
-        >(ADMIN_TRANSITION_TO_STATE, {
+        >(adminTransitionToStateDocument, {
             id: orderId,
             state: 'ValidatingPayment',
         });
@@ -246,7 +246,7 @@ describe('Payment process', () => {
         const { transitionPaymentToState } = await adminClient.query<
             Codegen.TransitionPaymentToStateMutation,
             Codegen.TransitionPaymentToStateMutationVariables
-        >(TRANSITION_PAYMENT_TO_STATE, {
+        >(transitionPaymentToStateDocument, {
             id: payment1Id,
             state: 'Settled',
         });
@@ -255,7 +255,7 @@ describe('Payment process', () => {
         expect(transitionPaymentToState.state).toBe('Settled');
 
         const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            GET_ORDER,
+            getOrderDocument,
             {
                 id: orderId,
             },
@@ -296,7 +296,7 @@ describe('Payment process', () => {
             await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'ValidatingPayment',
             });
@@ -306,7 +306,7 @@ describe('Payment process', () => {
             const { transitionPaymentToState } = await adminClient.query<
                 Codegen.TransitionPaymentToStateMutation,
                 Codegen.TransitionPaymentToStateMutationVariables
-            >(TRANSITION_PAYMENT_TO_STATE, {
+            >(transitionPaymentToStateDocument, {
                 id: payment2Id,
                 state: 'Settled',
             });
@@ -316,7 +316,7 @@ describe('Payment process', () => {
             expect((transitionPaymentToState as any).transitionError).toBe(PAYMENT_ERROR_MESSAGE);
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order2Id,
                 },
@@ -328,7 +328,7 @@ describe('Payment process', () => {
             const { transitionPaymentToState } = await adminClient.query<
                 Codegen.TransitionPaymentToStateMutation,
                 Codegen.TransitionPaymentToStateMutationVariables
-            >(TRANSITION_PAYMENT_TO_STATE, {
+            >(transitionPaymentToStateDocument, {
                 id: payment2Id,
                 state: 'Cancelled',
             });
@@ -337,7 +337,7 @@ describe('Payment process', () => {
             expect(transitionPaymentToState.state).toBe('Cancelled');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order2Id,
                 },
@@ -349,7 +349,7 @@ describe('Payment process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'ArrangingAdditionalPayment',
             });
@@ -378,7 +378,7 @@ describe('Payment process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'PaymentSettled',
             });
@@ -387,7 +387,7 @@ describe('Payment process', () => {
             expect(transitionOrderToState.state).toBe('PaymentSettled');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order2Id,
                 },

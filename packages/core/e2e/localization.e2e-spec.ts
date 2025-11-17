@@ -5,11 +5,11 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-definitions';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
+import { getProductWithVariantsDocument, updateProductDocument } from './graphql/shared-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('Localization', () => {
@@ -26,7 +26,7 @@ describe('Localization', () => {
         const { updateProduct } = await adminClient.query<
             Codegen.UpdateProductMutation,
             Codegen.UpdateProductMutationVariables
-        >(UPDATE_PRODUCT, {
+        >(updateProductDocument, {
             input: {
                 id: 'T_1',
                 translations: [
@@ -75,7 +75,7 @@ describe('Localization', () => {
         const { product } = await adminClient.query<
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables
-        >(GET_PRODUCT_WITH_VARIANTS, {
+        >(getProductWithVariantsDocument, {
             id: 'T_1',
         });
         expect(pick(product!, ['name', 'slug', 'description'])).toEqual({
@@ -90,7 +90,7 @@ describe('Localization', () => {
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables
         >(
-            GET_PRODUCT_WITH_VARIANTS,
+            getProductWithVariantsDocument,
             {
                 id: 'T_1',
             },
@@ -108,7 +108,7 @@ describe('Localization', () => {
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables
         >(
-            GET_PRODUCT_WITH_VARIANTS,
+            getProductWithVariantsDocument,
             {
                 id: 'T_1',
             },
@@ -126,7 +126,7 @@ describe('Localization', () => {
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables
         >(
-            GET_PRODUCT_WITH_VARIANTS,
+            getProductWithVariantsDocument,
             {
                 id: 'T_1',
             },
@@ -142,7 +142,7 @@ describe('Localization', () => {
             Codegen.UpdateProductMutation,
             Codegen.UpdateProductMutationVariables
         >(
-            UPDATE_PRODUCT,
+            updateProductDocument,
             {
                 input: {
                     id: 'T_1',

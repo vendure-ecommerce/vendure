@@ -6,12 +6,12 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { TAX_RATE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
-import { GET_TAX_RATES_LIST, UPDATE_TAX_RATE } from './graphql/shared-definitions';
+import { getTaxRatesListDocument, updateTaxRateDocument } from './graphql/shared-definitions';
 
 describe('TaxRate resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
@@ -30,7 +30,7 @@ describe('TaxRate resolver', () => {
     });
 
     it('taxRates list', async () => {
-        const { taxRates } = await adminClient.query<Codegen.GetTaxRatesQuery>(GET_TAX_RATES_LIST);
+        const { taxRates } = await adminClient.query<Codegen.GetTaxRatesQuery>(getTaxRatesListDocument);
 
         expect(taxRates.totalItems).toBe(15);
     });
@@ -75,7 +75,7 @@ describe('TaxRate resolver', () => {
         const { updateTaxRate } = await adminClient.query<
             Codegen.UpdateTaxRateMutation,
             Codegen.UpdateTaxRateMutationVariables
-        >(UPDATE_TAX_RATE, {
+        >(updateTaxRateDocument, {
             input: {
                 id: 'T_1',
                 value: 17.5,
@@ -96,7 +96,7 @@ describe('TaxRate resolver', () => {
         expect(deleteTaxRate.result).toBe(DeletionResult.DELETED);
         expect(deleteTaxRate.message).toBeNull();
 
-        const { taxRates } = await adminClient.query<Codegen.GetTaxRatesQuery>(GET_TAX_RATES_LIST);
+        const { taxRates } = await adminClient.query<Codegen.GetTaxRatesQuery>(getTaxRatesListDocument);
         expect(taxRates.items.find(x => x.id === 'T_3')).toBeUndefined();
     });
 });

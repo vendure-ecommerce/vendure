@@ -4,24 +4,19 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMeDocumentOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
 import {
-    ADD_CUSTOMERS_TO_GROUP,
-    CREATE_ADDRESS,
-    CREATE_CHANNEL,
-    CREATE_CUSTOMER,
-    CREATE_CUSTOMER_GROUP,
-    DELETE_CUSTOMER,
-    GET_CUSTOMER_GROUP,
-    GET_CUSTOMER_LIST,
-    ME,
-    REMOVE_CUSTOMERS_FROM_GROUP,
-    UPDATE_ADDRESS,
-    UPDATE_CUSTOMER,
+    createAddressDocument,
+    createChannelDocument,
+    deleteCustomerDocument,
+    getCustomerGroupDocument,
+    getCustomerListDocument,
+    MeDocument,
+    updateAddressDocument,
 } from './graphql/shared-definitions';
 import { deleteAddressDocument, registerAccountDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -48,7 +43,7 @@ describe('ChannelAware Customers', () => {
         const { customers } = await adminClient.query<
             Codegen.GetCustomerListQuery,
             Codegen.GetCustomerListQueryVariables
-        >(GET_CUSTOMER_LIST, {
+        >(getCustomerListDocument, {
             options: { take: numberOfCustomers },
         });
         firstCustomer = customers.items[0];
@@ -56,7 +51,7 @@ describe('ChannelAware Customers', () => {
         thirdCustomer = customers.items[2];
 
         await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-            CREATE_CHANNEL,
+            createChannelDocument,
             {
                 input: {
                     code: 'second-channel',
@@ -73,13 +68,13 @@ describe('ChannelAware Customers', () => {
         const { createCustomerGroup } = await adminClient.query<
             Codegen.CreateCustomerGroupMutation,
             Codegen.CreateCustomerGroupMutationVariables
-        >(CREATE_CUSTOMER_GROUP, {
+        >(CREATE_CUSTOMeDocumentR_GROUP, {
             input: {
                 name: 'TestGroup',
             },
         });
         customerGroupId = createCustomerGroup.id;
-    }, TEST_SETUP_TIMEOUT_MS);
+    }, TEST_SETUP_TIMeDocumentOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -93,7 +88,7 @@ describe('ChannelAware Customers', () => {
                 await adminClient.query<
                     Codegen.UpdateAddressMutation,
                     Codegen.UpdateAddressMutationVariables
-                >(UPDATE_ADDRESS, {
+                >(updateAddressDocument, {
                     input: {
                         id: 'T_1',
                         streetLine1: 'Dummy street',
@@ -109,7 +104,7 @@ describe('ChannelAware Customers', () => {
                 await adminClient.query<
                     Codegen.CreateAddressMutation,
                     Codegen.CreateAddressMutationVariables
-                >(CREATE_ADDRESS, {
+                >(createAddressDocument, {
                     id: firstCustomer.id,
                     input: {
                         streetLine1: 'Dummy street',
@@ -141,7 +136,7 @@ describe('ChannelAware Customers', () => {
                 await adminClient.query<
                     Codegen.DeleteCustomerMutation,
                     Codegen.DeleteCustomerMutationVariables
-                >(DELETE_CUSTOMER, {
+                >(deleteCustomerDocument, {
                     id: firstCustomer.id,
                 });
             }, 'No Customer with the id "1" could be found'),
@@ -154,7 +149,7 @@ describe('ChannelAware Customers', () => {
                 await adminClient.query<
                     Codegen.UpdateCustomerMutation,
                     Codegen.UpdateCustomerMutationVariables
-                >(UPDATE_CUSTOMER, {
+                >(UPDATE_CUSTOMeDocumentR, {
                     input: {
                         id: firstCustomer.id,
                         firstName: 'John',
@@ -167,7 +162,7 @@ describe('ChannelAware Customers', () => {
         it('creates customers on current and default channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             await adminClient.query<Codegen.CreateCustomerMutation, Codegen.CreateCustomerMutationVariables>(
-                CREATE_CUSTOMER,
+                CREATE_CUSTOMeDocumentR,
                 {
                     input: {
                         firstName: 'John',
@@ -179,12 +174,12 @@ describe('ChannelAware Customers', () => {
             const customersSecondChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const customersDefaultChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
 
             expect(customersSecondChannel.customers.totalItems).toBe(1);
             expect(customersDefaultChannel.customers.totalItems).toBe(numberOfCustomers + 1);
@@ -195,7 +190,7 @@ describe('ChannelAware Customers', () => {
             const { customers } = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customers.totalItems).toBe(1);
         });
 
@@ -204,7 +199,7 @@ describe('ChannelAware Customers', () => {
             const { customers } = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customers.totalItems).toBe(numberOfCustomers + 1);
         });
 
@@ -213,12 +208,12 @@ describe('ChannelAware Customers', () => {
             let customersDefaultChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             let customersSecondChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customersDefaultChannel.customers.items.map(customer => customer.emailAddress)).toContain(
                 firstCustomer.emailAddress,
             );
@@ -227,7 +222,7 @@ describe('ChannelAware Customers', () => {
             ).not.toContain(firstCustomer.emailAddress);
 
             await adminClient.query<Codegen.CreateCustomerMutation, Codegen.CreateCustomerMutationVariables>(
-                CREATE_CUSTOMER,
+                CREATE_CUSTOMeDocumentR,
                 {
                     input: {
                         firstName: firstCustomer.firstName + '_new',
@@ -240,12 +235,12 @@ describe('ChannelAware Customers', () => {
             customersSecondChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             customersDefaultChannel = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             const firstCustomerOnNewChannel = customersSecondChannel.customers.items.find(
                 customer => customer.emailAddress === firstCustomer.emailAddress,
             );
@@ -269,13 +264,13 @@ describe('ChannelAware Customers', () => {
         it('assigns authenticated customers to the channels they visit', async () => {
             shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             await shopClient.asUserWithCredentials(secondCustomer.emailAddress, 'test');
-            await shopClient.query<Codegen.MeQuery>(ME);
+            await shopClient.query<Codegen.MeQuery>(MeDocument);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { customers } = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customers.totalItems).toBe(3);
             expect(customers.items.map(customer => customer.emailAddress)).toContain(
                 secondCustomer.emailAddress,
@@ -295,7 +290,7 @@ describe('ChannelAware Customers', () => {
             const { customers } = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customers.totalItems).toBe(4);
             expect(customers.items.map(customer => customer.emailAddress)).toContain('john.doe.2@test.com');
         });
@@ -304,7 +299,7 @@ describe('ChannelAware Customers', () => {
         it('handles concurrent assignments to a new channel', async () => {
             const THIRD_CHANNEL_TOKEN = 'third_channel_token';
             await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-                CREATE_CHANNEL,
+                createChannelDocument,
                 {
                     input: {
                         code: 'third-channel',
@@ -323,8 +318,8 @@ describe('ChannelAware Customers', () => {
 
             try {
                 await Promise.all([
-                    shopClient.query<Codegen.MeQuery>(ME),
-                    shopClient.query<Codegen.MeQuery>(ME),
+                    shopClient.query<Codegen.MeQuery>(MeDocument),
+                    shopClient.query<Codegen.MeQuery>(MeDocument),
                 ]);
             } catch (e: any) {
                 fail('Threw: ' + (e.message as string));
@@ -334,7 +329,7 @@ describe('ChannelAware Customers', () => {
             const { customers } = await adminClient.query<
                 Codegen.GetCustomerListQuery,
                 Codegen.GetCustomerListQueryVariables
-            >(GET_CUSTOMER_LIST);
+            >(getCustomerListDocument);
             expect(customers.totalItems).toBe(1);
             expect(customers.items.map(customer => customer.emailAddress)).toContain(
                 secondCustomer.emailAddress,
@@ -348,7 +343,7 @@ describe('ChannelAware Customers', () => {
             await adminClient.query<
                 Codegen.AddCustomersToGroupMutation,
                 Codegen.AddCustomersToGroupMutationVariables
-            >(ADD_CUSTOMERS_TO_GROUP, {
+            >(ADD_CUSTOMeDocumentRS_TO_GROUP, {
                 groupId: customerGroupId,
                 customerIds: [thirdCustomer.id],
             });
@@ -357,7 +352,7 @@ describe('ChannelAware Customers', () => {
             const { customerGroup } = await adminClient.query<
                 Codegen.GetCustomerGroupQuery,
                 Codegen.GetCustomerGroupQueryVariables
-            >(GET_CUSTOMER_GROUP, {
+            >(getCustomerGroupDocument, {
                 id: customerGroupId,
             });
             expect(customerGroup!.customers.totalItems).toBe(0);
@@ -368,7 +363,7 @@ describe('ChannelAware Customers', () => {
             await adminClient.query<
                 Codegen.AddCustomersToGroupMutation,
                 Codegen.AddCustomersToGroupMutationVariables
-            >(ADD_CUSTOMERS_TO_GROUP, {
+            >(ADD_CUSTOMeDocumentRS_TO_GROUP, {
                 groupId: customerGroupId,
                 customerIds: [secondCustomer.id, thirdCustomer.id],
             });
@@ -377,7 +372,7 @@ describe('ChannelAware Customers', () => {
             const { customerGroup } = await adminClient.query<
                 Codegen.GetCustomerGroupQuery,
                 Codegen.GetCustomerGroupQueryVariables
-            >(GET_CUSTOMER_GROUP, {
+            >(getCustomerGroupDocument, {
                 id: customerGroupId,
             });
             expect(customerGroup!.customers.totalItems).toBe(1);
@@ -389,7 +384,7 @@ describe('ChannelAware Customers', () => {
             await adminClient.query<
                 Codegen.RemoveCustomersFromGroupMutation,
                 Codegen.RemoveCustomersFromGroupMutationVariables
-            >(REMOVE_CUSTOMERS_FROM_GROUP, {
+            >(REMOVE_CUSTOMeDocumentRS_FROM_GROUP, {
                 groupId: customerGroupId,
                 customerIds: [thirdCustomer.id],
             });

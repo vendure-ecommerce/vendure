@@ -16,7 +16,7 @@ import {
     CurrentUser,
     DeletionResult,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, UPDATE_ADMINISTRATOR } from './graphql/shared-definitions';
+import { createAdministratorDocument, updateAdministratorDocument } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
@@ -49,7 +49,7 @@ describe('Administrator resolver', () => {
         const result = await adminClient.query<
             Codegen.CreateAdministratorMutation,
             Codegen.CreateAdministratorMutationVariables
-        >(CREATE_ADMINISTRATOR, {
+        >(createAdministratorDocument, {
             input: {
                 emailAddress: 'test@test.com',
                 firstName: 'First',
@@ -77,7 +77,7 @@ describe('Administrator resolver', () => {
         const result = await adminClient.query<
             Codegen.UpdateAdministratorMutation,
             Codegen.UpdateAdministratorMutationVariables
-        >(UPDATE_ADMINISTRATOR, {
+        >(updateAdministratorDocument, {
             input: {
                 id: createdAdmin.id,
                 emailAddress: 'new-email',
@@ -94,7 +94,7 @@ describe('Administrator resolver', () => {
         const result = await adminClient.query<
             Codegen.UpdateAdministratorMutation,
             Codegen.UpdateAdministratorMutationVariables
-        >(UPDATE_ADMINISTRATOR, {
+        >(updateAdministratorDocument, {
             input: {
                 id: createdAdmin.id,
                 emailAddress: 'newest-email',
@@ -112,7 +112,7 @@ describe('Administrator resolver', () => {
                 adminClient.query<
                     Codegen.UpdateAdministratorMutation,
                     Codegen.UpdateAdministratorMutationVariables
-                >(UPDATE_ADMINISTRATOR, {
+                >(updateAdministratorDocument, {
                     input: {
                         id: createdAdmin.id,
                         emailAddress: 'new-email',
@@ -182,7 +182,7 @@ describe('Administrator resolver', () => {
             const result = await adminClient.query<
                 Codegen.UpdateAdministratorMutation,
                 Codegen.UpdateAdministratorMutationVariables
-            >(UPDATE_ADMINISTRATOR, {
+            >(updateAdministratorDocument, {
                 input: {
                     id: 'T_1',
                     roleIds: [],
@@ -205,16 +205,14 @@ describe('Administrator resolver', () => {
     it('activeAdministrator', async () => {
         await adminClient.asAnonymousUser();
 
-        const { activeAdministrator: result1 } = await adminClient.query<Codegen.ActiveAdministratorQuery>(
-            GET_ACTIVE_ADMINISTRATOR,
-        );
+        const { activeAdministrator: result1 } =
+            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
         expect(result1).toBeNull();
 
         await adminClient.asSuperAdmin();
 
-        const { activeAdministrator: result2 } = await adminClient.query<Codegen.ActiveAdministratorQuery>(
-            GET_ACTIVE_ADMINISTRATOR,
-        );
+        const { activeAdministrator: result2 } =
+            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
         expect(result2?.emailAddress).toBe(SUPER_ADMIN_USER_IDENTIFIER);
     });
 
@@ -233,9 +231,8 @@ describe('Administrator resolver', () => {
         expect(updateActiveAdministrator.firstName).toBe('Thomas');
         expect(updateActiveAdministrator.lastName).toBe('Anderson');
 
-        const { activeAdministrator } = await adminClient.query<Codegen.ActiveAdministratorQuery>(
-            GET_ACTIVE_ADMINISTRATOR,
-        );
+        const { activeAdministrator } =
+            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
 
         expect(activeAdministrator?.firstName).toBe('Thomas');
         expect(activeAdministrator?.user.identifier).toBe('neo@metacortex.com');
@@ -248,7 +245,7 @@ describe('Administrator resolver', () => {
         const { createAdministrator } = await adminClient.query<
             Codegen.CreateAdministratorMutation,
             Codegen.CreateAdministratorMutationVariables
-        >(CREATE_ADMINISTRATOR, {
+        >(createAdministratorDocument, {
             input: {
                 emailAddress: 'NewAdmin',
                 firstName: 'New',

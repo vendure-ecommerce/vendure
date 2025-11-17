@@ -11,11 +11,14 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { UpdateShippingMethodMutationVariables } from './graphql/generated-e2e-admin-types';
-import { GetCheckersQuery, UpdateShippingMethodMutation } from './graphql/generated-e2e-admin-types';
-import { UPDATE_SHIPPING_METHOD } from './graphql/shared-definitions';
+import {
+    GetCheckersQuery,
+    UpdateShippingMethodMutation,
+    UpdateShippingMethodMutationVariables,
+} from './graphql/generated-e2e-admin-types';
+import { updateShippingMethodDocument } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 const testShippingEligibilityChecker = new ShippingEligibilityChecker({
@@ -73,7 +76,7 @@ describe('Configurable operations', () => {
             const { updateShippingMethod } = await adminClient.query<
                 UpdateShippingMethodMutation,
                 UpdateShippingMethodMutationVariables
-            >(UPDATE_SHIPPING_METHOD, {
+            >(updateShippingMethodDocument, {
                 input: {
                     id: 'T_1',
                     checker: {
@@ -103,7 +106,7 @@ describe('Configurable operations', () => {
             'throws if a required arg is null',
             assertThrowsWithMessage(async () => {
                 await adminClient.query<UpdateShippingMethodMutation, UpdateShippingMethodMutationVariables>(
-                    UPDATE_SHIPPING_METHOD,
+                    updateShippingMethodDocument,
                     {
                         input: {
                             id: 'T_1',

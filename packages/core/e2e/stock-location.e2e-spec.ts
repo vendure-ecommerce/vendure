@@ -30,7 +30,7 @@ import {
     TestUpdateStockLocationDocument,
 } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { CREATE_CHANNEL } from './graphql/shared-definitions';
+import { createChannelDocument } from './graphql/shared-definitions';
 
 describe('Stock location', () => {
     const defaultStockLocationId = 'T_1';
@@ -183,7 +183,7 @@ describe('Stock location', () => {
             const { createChannel } = await adminClient.query<
                 Codegen.CreateChannelMutation,
                 Codegen.CreateChannelMutationVariables
-            >(CREATE_CHANNEL, {
+            >(createChannelDocument, {
                 input: {
                     code: 'second-channel',
                     token: SECOND_CHANNEL_TOKEN,

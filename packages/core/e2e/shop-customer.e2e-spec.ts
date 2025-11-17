@@ -12,7 +12,11 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { HistoryEntryType } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { CreateAddressInput, ErrorCode, UpdateAddressInput } from './graphql/generated-e2e-shop-types';
-import { ATTEMPT_LOGIN, GET_CUSTOMER, GET_CUSTOMER_HISTORY } from './graphql/shared-definitions';
+import {
+    attemptLoginDocument,
+    getCustomerDocument,
+    getCustomerHistoryDocument,
+} from './graphql/shared-definitions';
 import {
     createAddressDocument,
     deleteAddressDocument,
@@ -49,7 +53,7 @@ describe('Shop customers', () => {
             }
         `);
         const result = await adminClient.query<Codegen.GetCustomerQuery, Codegen.GetCustomerQueryVariables>(
-            GET_CUSTOMER,
+            getCustomerDocument,
             {
                 id: customers.items[0].id,
             },
@@ -125,7 +129,7 @@ describe('Shop customers', () => {
 
         beforeAll(async () => {
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
-                ATTEMPT_LOGIN,
+                attemptLoginDocument,
                 {
                     username: customer.emailAddress,
                     password: 'test',
@@ -150,7 +154,7 @@ describe('Shop customers', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, {
+            >(getCustomerHistoryDocument, {
                 id: customer.id,
                 options: {
                     // skip populated CUSTOMER_ADDRESS_CREATED entry
@@ -192,7 +196,7 @@ describe('Shop customers', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, {
+            >(getCustomerHistoryDocument, {
                 id: customer.id,
                 options: {
                     // skip populated CUSTOMER_ADDRESS_CREATED, CUSTOMER_DETAIL_UPDATED entries
@@ -229,7 +233,7 @@ describe('Shop customers', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, { id: customer.id, options: { skip: 5 } });
+            >(getCustomerHistoryDocument, { id: customer.id, options: { skip: 5 } });
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
@@ -273,7 +277,7 @@ describe('Shop customers', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, { id: customer!.id, options: { skip: 6 } });
+            >(getCustomerHistoryDocument, { id: customer!.id, options: { skip: 6 } });
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
@@ -327,7 +331,7 @@ describe('Shop customers', () => {
             const result = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, { id: customer.id, options: { skip: 7 } });
+            >(getCustomerHistoryDocument, { id: customer.id, options: { skip: 7 } });
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
                 {

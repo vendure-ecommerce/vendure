@@ -16,14 +16,6 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, DeletionResult, ErrorCode, LanguageCode } from './graphql/generated-e2e-admin-types';
-import {
-    ASSIGN_PROMOTIONS_TO_CHANNEL,
-    CREATE_CHANNEL,
-    CREATE_PROMOTION,
-    DELETE_PROMOTION,
-    GET_PROMOTION,
-    REMOVE_PROMOTIONS_FROM_CHANNEL,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */

@@ -56,10 +56,10 @@ import {
     DELETE_PROMOTION,
     GET_ORDER,
     GET_ORDER_HISTORY,
-    GET_PRODUCT_VARIANT_LIST,
-    GET_STOCK_MOVEMENT,
-    UPDATE_CHANNEL,
-    UPDATE_PRODUCT_VARIANTS,
+    getProductVariantListDocument,
+    getStockMovementDocument,
+    updateChannelDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
     applyCouponCodeDocument,
@@ -179,7 +179,7 @@ describe('Order modification', () => {
         await adminClient.query<
             Codegen.UpdateProductVariantsMutation,
             Codegen.UpdateProductVariantsMutationVariables
-        >(UPDATE_PRODUCT_VARIANTS, {
+        >(updateProductVariantsDocument, {
             input: [
                 {
                     id: 'T_1',
@@ -989,7 +989,7 @@ describe('Order modification', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_6',
@@ -1674,7 +1674,7 @@ describe('Order modification', () => {
 
         beforeAll(async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',
@@ -1854,7 +1854,7 @@ describe('Order modification', () => {
                 const { productVariants } = await adminClient.query<
                     Codegen.GetProductVariantListQuery,
                     Codegen.GetProductVariantListQueryVariables
-                >(GET_PRODUCT_VARIANT_LIST, {
+                >(getProductVariantListDocument, {
                     options: {
                         filter: {
                             name: { contains: 'football' },
@@ -1982,7 +1982,7 @@ describe('Order modification', () => {
             const { product } = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: 'T_1',
             });
             return product!.variants.find(v => v.id === id)!;

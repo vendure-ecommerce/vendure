@@ -32,18 +32,17 @@ import {
     RoleFragment,
 } from './graphql/generated-e2e-admin-types';
 import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    CREATE_ADMINISTRATOR,
-    CREATE_CHANNEL,
-    CREATE_COLLECTION,
-    CREATE_PROMOTION,
-    CREATE_ROLE,
-    GET_COLLECTION,
-    GET_COLLECTIONS,
-    GET_FACET_WITH_VALUES,
-    GET_PRODUCT_WITH_VARIANTS,
-    GET_PROMOTION,
-    UPDATE_PRODUCT_VARIANTS,
+    assignProductToChannelDocument,
+    createAdministratorDocument,
+    createChannelDocument,
+    createCollectionDocument,
+    createPromotionDocument,
+    createRoleDocument,
+    getCollectionDocument,
+    getFacetWithValuesDocument,
+    getProductWithVariantsDocument,
+    getPromotionDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 
 const customPermission = new PermissionDefinition({
@@ -135,7 +134,7 @@ describe('Duplicating entities', () => {
 
         // create a new role and Admin and sign in as that Admin
         const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
-            CREATE_ROLE,
+            createRoleDocument,
             {
                 input: {
                     channelIds: ['T_1'],
@@ -153,7 +152,7 @@ describe('Duplicating entities', () => {
         const { createAdministrator } = await adminClient.query<
             CreateAdministratorMutation,
             CreateAdministratorMutationVariables
-        >(CREATE_ADMINISTRATOR, {
+        >(createAdministratorDocument, {
             input: {
                 firstName: 'Test',
                 lastName: 'Admin',
@@ -250,7 +249,7 @@ describe('Duplicating entities', () => {
     it('errors thrown cause all DB changes to be rolled back', async () => {
         await adminClient.asSuperAdmin();
 
-        const { collections } = await adminClient.query<Codegen.GetCollectionsQuery>(GET_COLLECTIONS);
+        const { collections } = await adminClient.query<Codegen.GetCollectionsQuery>(getCollectionDocumentS);
 
         expect(collections.items.length).toBe(1);
         expect(collections.items.map(i => i.name)).toEqual(['Plants']);
@@ -288,7 +287,7 @@ describe('Duplicating entities', () => {
         const { collection } = await adminClient.query<
             Codegen.GetCollectionQuery,
             Codegen.GetCollectionQueryVariables
-        >(GET_COLLECTION, {
+        >(getCollectionDocument, {
             id: newEntityId,
         });
 
@@ -315,7 +314,7 @@ describe('Duplicating entities', () => {
                 const { updateProductVariants } = await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [
                         {
                             id: 'T_1',
@@ -329,7 +328,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: 'T_1',
                 });
                 originalProduct = product!;
@@ -367,7 +366,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct1Id,
                 });
 
@@ -378,7 +377,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct1Id,
                 });
 
@@ -389,7 +388,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct1Id,
                 });
 
@@ -402,7 +401,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct1Id,
                 });
 
@@ -441,7 +440,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -457,7 +456,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -468,7 +467,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -484,7 +483,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -501,7 +500,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -518,7 +517,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: newProduct2Id,
                 });
 
@@ -550,7 +549,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: duplicateEntity.newEntityId,
                 });
 
@@ -565,7 +564,7 @@ describe('Duplicating entities', () => {
                 const { createChannel } = await adminClient.query<
                     Codegen.CreateChannelMutation,
                     Codegen.CreateChannelMutationVariables
-                >(CREATE_CHANNEL, {
+                >(createChannelDocument, {
                     input: {
                         code: 'second-channel',
                         token: 'second-channel',
@@ -580,7 +579,7 @@ describe('Duplicating entities', () => {
                 await adminClient.query<
                     Codegen.AssignProductsToChannelMutation,
                     Codegen.AssignProductsToChannelMutationVariables
-                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                >(assignProductToChannelDocument, {
                     input: {
                         channelId: createChannel.id,
                         productIds: ['T_1'],
@@ -590,7 +589,7 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: 'T_1',
                 });
                 const productVariant = product!.variants[0];
@@ -600,7 +599,7 @@ describe('Duplicating entities', () => {
                 await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: {
                         id: productVariant.id,
                         price: productVariant.price + 150,
@@ -631,7 +630,7 @@ describe('Duplicating entities', () => {
                 const { product: productWithVariantChannelNull } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: duplicateEntity.newEntityId,
                 });
 
@@ -665,7 +664,7 @@ describe('Duplicating entities', () => {
                 const { product: productWithVariantChannel2 } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: duplicateEntitySecondChannel.newEntityId,
                 });
 
@@ -682,13 +681,13 @@ describe('Duplicating entities', () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: 'T_1',
                 });
                 const { updateProductVariants } = await adminClient.query<
                     Codegen.UpdateProductVariantsMutation,
                     Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                >(updateProductVariantsDocument, {
                     input: [{ id: product!.variants[0].id, taxCategoryId: 'T_2' }],
                 });
                 const { duplicateEntity } = await adminClient.query<
@@ -712,7 +711,7 @@ describe('Duplicating entities', () => {
                 const { product: productReloaded } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
                     Codegen.GetProductWithVariantsQueryVariables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+                >(getProductWithVariantsDocument, {
                     id: duplicateEntity.newEntityId,
                 });
                 const variant = productReloaded?.variants.find(v =>
@@ -733,7 +732,7 @@ describe('Duplicating entities', () => {
                 const { createCollection } = await adminClient.query<
                     Codegen.CreateCollectionMutation,
                     Codegen.CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+                >(createCollectionDocument, {
                     input: {
                         parentId: 'T_2',
                         assetIds: ['T_1'],
@@ -794,7 +793,7 @@ describe('Duplicating entities', () => {
                 const { collection } = await adminClient.query<
                     Codegen.GetCollectionQuery,
                     Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                >(getCollectionDocument, {
                     id: duplicatedCollectionId,
                 });
 
@@ -805,7 +804,7 @@ describe('Duplicating entities', () => {
                 const { collection } = await adminClient.query<
                     Codegen.GetCollectionQuery,
                     Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                >(getCollectionDocument, {
                     id: duplicatedCollectionId,
                 });
 
@@ -816,7 +815,7 @@ describe('Duplicating entities', () => {
                 const { collection } = await adminClient.query<
                     Codegen.GetCollectionQuery,
                     Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                >(getCollectionDocument, {
                     id: duplicatedCollectionId,
                 });
 
@@ -829,7 +828,7 @@ describe('Duplicating entities', () => {
                 const { collection } = await adminClient.query<
                     Codegen.GetCollectionQuery,
                     Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                >(getCollectionDocument, {
                     id: duplicatedCollectionId,
                 });
 
@@ -840,7 +839,7 @@ describe('Duplicating entities', () => {
                 const { collection } = await adminClient.query<
                     Codegen.GetCollectionQuery,
                     Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                >(getCollectionDocument, {
                     id: duplicatedCollectionId,
                 });
 
@@ -881,7 +880,7 @@ describe('Duplicating entities', () => {
                 const { facet } = await adminClient.query<
                     Codegen.GetFacetWithValuesQuery,
                     Codegen.GetFacetWithValuesQueryVariables
-                >(GET_FACET_WITH_VALUES, {
+                >(getFacetWithValuesDocument, {
                     id: newFacetId,
                 });
 
@@ -892,7 +891,7 @@ describe('Duplicating entities', () => {
                 const { facet } = await adminClient.query<
                     Codegen.GetFacetWithValuesQuery,
                     Codegen.GetFacetWithValuesQueryVariables
-                >(GET_FACET_WITH_VALUES, {
+                >(getFacetWithValuesDocument, {
                     id: newFacetId,
                 });
 
@@ -903,7 +902,7 @@ describe('Duplicating entities', () => {
                 const { facet } = await adminClient.query<
                     Codegen.GetFacetWithValuesQuery,
                     Codegen.GetFacetWithValuesQueryVariables
-                >(GET_FACET_WITH_VALUES, {
+                >(getFacetWithValuesDocument, {
                     id: newFacetId,
                 });
 
@@ -927,7 +926,7 @@ describe('Duplicating entities', () => {
                 const { createPromotion } = await adminClient.query<
                     Codegen.CreatePromotionMutation,
                     Codegen.CreatePromotionMutationVariables
-                >(CREATE_PROMOTION, {
+                >(createPromotionDocument, {
                     input: {
                         enabled: true,
                         couponCode: 'TEST',
@@ -997,7 +996,7 @@ describe('Duplicating entities', () => {
                 const { promotion } = await adminClient.query<
                     Codegen.GetPromotionQuery,
                     Codegen.GetPromotionQueryVariables
-                >(GET_PROMOTION, {
+                >(getPromotionDocument, {
                     id: duplicatedPromotionId,
                 });
 
@@ -1008,7 +1007,7 @@ describe('Duplicating entities', () => {
                 const { promotion } = await adminClient.query<
                     Codegen.GetPromotionQuery,
                     Codegen.GetPromotionQueryVariables
-                >(GET_PROMOTION, {
+                >(getPromotionDocument, {
                     id: duplicatedPromotionId,
                 });
 
@@ -1019,7 +1018,7 @@ describe('Duplicating entities', () => {
                 const { promotion } = await adminClient.query<
                     Codegen.GetPromotionQuery,
                     Codegen.GetPromotionQueryVariables
-                >(GET_PROMOTION, {
+                >(getPromotionDocument, {
                     id: duplicatedPromotionId,
                 });
 
@@ -1034,7 +1033,7 @@ describe('Duplicating entities', () => {
                 const { promotion } = await adminClient.query<
                     Codegen.GetPromotionQuery,
                     Codegen.GetPromotionQueryVariables
-                >(GET_PROMOTION, {
+                >(getPromotionDocument, {
                     id: duplicatedPromotionId,
                 });
 
@@ -1045,7 +1044,7 @@ describe('Duplicating entities', () => {
                 const { promotion } = await adminClient.query<
                     Codegen.GetPromotionQuery,
                     Codegen.GetPromotionQueryVariables
-                >(GET_PROMOTION, {
+                >(getPromotionDocument, {
                     id: duplicatedPromotionId,
                 });
 

@@ -21,9 +21,9 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
-    GET_PRODUCTS_WITH_VARIANT_PRICES,
-    UPDATE_CHANNEL,
-    UPDATE_TAX_RATE,
+    getProductsWithVariantPricesDocument,
+    updateChannelDocument,
+    updateTaxRateDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -107,7 +107,7 @@ describe('Order taxes', () => {
         });
         await adminClient.asSuperAdmin();
         const result = await adminClient.query<Codegen.GetProductsWithVariantPricesQuery>(
-            GET_PRODUCTS_WITH_VARIANT_PRICES,
+            getProductsWithVariantPricesDocument,
         );
         products = result.products.items;
     }, TEST_SETUP_TIMEOUT_MS);
@@ -119,7 +119,7 @@ describe('Order taxes', () => {
     describe('Channel.pricesIncludeTax = false', () => {
         beforeAll(async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',
@@ -163,7 +163,7 @@ describe('Order taxes', () => {
     describe('Channel.pricesIncludeTax = true', () => {
         beforeAll(async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',
@@ -212,7 +212,7 @@ describe('Order taxes', () => {
                 await adminClient.query<
                     Codegen.UpdateTaxRateMutation,
                     Codegen.UpdateTaxRateMutationVariables
-                >(UPDATE_TAX_RATE, {
+                >(updateTaxRateDocument, {
                     input: {
                         id: taxRate.id,
                         value: 0,
@@ -289,7 +289,7 @@ describe('Order taxes', () => {
 
     it('taxSummary works', async () => {
         await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-            UPDATE_CHANNEL,
+            updateChannelDocument,
             {
                 input: {
                     id: 'T_1',

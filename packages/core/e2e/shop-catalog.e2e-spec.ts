@@ -1,25 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { facetValueCollectionFilter, JobQueueService } from '@vendure/core';
+import { facetValueCollectionFilter } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import {
-    CREATE_COLLECTION,
-    CREATE_FACET,
-    GET_FACET_LIST,
-    GET_PRODUCT_SIMPLE,
-    GET_PRODUCT_WITH_VARIANTS,
-    UPDATE_COLLECTION,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from './graphql/shared-definitions';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 

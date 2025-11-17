@@ -29,13 +29,6 @@ import { HistoryEntryType, Permission } from './graphql/generated-e2e-admin-type
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { CurrentUserShopFragment } from './graphql/generated-e2e-shop-types';
 import {
-    CREATE_ADMINISTRATOR,
-    CREATE_ROLE,
-    GET_CUSTOMER,
-    GET_CUSTOMER_HISTORY,
-    GET_CUSTOMER_LIST,
-} from './graphql/shared-definitions';
-import {
     getActiveCustomerDocument,
     refreshTokenDocument,
     registerAccountDocument,

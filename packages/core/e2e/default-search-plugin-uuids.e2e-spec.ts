@@ -17,7 +17,7 @@ import {
     SearchProductsShopQueryVariables,
     SortOrder,
 } from './graphql/generated-e2e-shop-types';
-import { GET_FACET_LIST } from './graphql/shared-definitions';
+import { getFacetListDocument } from './graphql/shared-definitions';
 import { searchProductsShopDocument } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
@@ -53,7 +53,7 @@ describe('Default search plugin with UUIDs', () => {
         await awaitRunningJobs(adminClient, 10_000, 1000);
 
         const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
-            GET_FACET_LIST,
+            getFacetListDocument,
             {
                 options: {
                     sort: {
@@ -93,7 +93,7 @@ describe('Default search plugin with UUIDs', () => {
 
     it('can filter by facetValueFilters', async () => {
         const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
-            GET_FACET_LIST,
+            getFacetListDocument,
         );
         const result = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             searchProductsShopDocument,

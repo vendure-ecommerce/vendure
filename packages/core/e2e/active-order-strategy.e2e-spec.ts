@@ -20,7 +20,7 @@ import {
     AddItemToOrderMutationVariables,
     GetActiveOrderQuery,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { createPromotionDocument, getCustomerListDocument } from './graphql/shared-definitions';
 import { addItemToOrderDocument, getActiveOrderDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -60,7 +60,7 @@ describe('custom ActiveOrderStrategy', () => {
             customerCount: 3,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<GetCustomerListQuery>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<GetCustomerListQuery>(getCustomerListDocument);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -146,7 +146,7 @@ describe('custom ActiveOrderStrategy', () => {
         beforeAll(async () => {
             await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
             const result = await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
-                CREATE_PROMOTION,
+                createPromotionDocument,
                 {
                     input: {
                         enabled: true,

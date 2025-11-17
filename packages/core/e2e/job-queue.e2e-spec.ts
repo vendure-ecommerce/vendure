@@ -5,7 +5,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { PluginWithJobQueue } from './fixtures/test-plugins/with-job-queue';
 import {
@@ -15,7 +15,7 @@ import {
     GetRunningJobsQueryVariables,
     JobState,
 } from './graphql/generated-e2e-admin-types';
-import { GET_RUNNING_JOBS } from './graphql/shared-definitions';
+import { getRunningJobsDocument } from './graphql/shared-definitions';
 
 describe('JobQueue', () => {
     const activeConfig = testConfig();
@@ -58,7 +58,7 @@ describe('JobQueue', () => {
 
     function getJobsInTestQueue(state?: JobState) {
         return adminClient
-            .query<GetRunningJobsQuery, GetRunningJobsQueryVariables>(GET_RUNNING_JOBS, {
+            .query<GetRunningJobsQuery, GetRunningJobsQueryVariables>(getRunningJobsDocument, {
                 options: {
                     filter: {
                         queueName: {

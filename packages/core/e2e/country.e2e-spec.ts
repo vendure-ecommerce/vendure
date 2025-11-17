@@ -4,12 +4,12 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { COUNTRY_FRAGMENT } from './graphql/fragments';
-import { DeletionResult, GetCountryListQuery, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
+import { DeletionResult, GetCountryListQuery, LanguageCode } from './graphql/generated-e2e-admin-types';
+import { getCountryListDocument, updateCountryDocument } from './graphql/shared-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -33,7 +33,7 @@ describe('Country resolver', () => {
     });
 
     it('countries', async () => {
-        const result = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
+        const result = await adminClient.query<Codegen.GetCountryListQuery>(getCountryListDocument, {});
 
         expect(result.countries.totalItems).toBe(7);
         countries = result.countries.items;
@@ -56,7 +56,7 @@ describe('Country resolver', () => {
         const result = await adminClient.query<
             Codegen.UpdateCountryMutation,
             Codegen.UpdateCountryMutationVariables
-        >(UPDATE_COUNTRY, {
+        >(updateCountryDocument, {
             input: {
                 id: AT.id,
                 enabled: false,
@@ -93,7 +93,7 @@ describe('Country resolver', () => {
                 message: '',
             });
 
-            const result2 = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
+            const result2 = await adminClient.query<Codegen.GetCountryListQuery>(getCountryListDocument, {});
             expect(result2.countries.items.find(c => c.id === AT.id)).toBeUndefined();
         });
 
@@ -108,7 +108,7 @@ describe('Country resolver', () => {
                 message: 'The selected Country cannot be deleted as it is used in 1 Address',
             });
 
-            const result2 = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
+            const result2 = await adminClient.query<Codegen.GetCountryListQuery>(getCountryListDocument, {});
             expect(result2.countries.items.find(c => c.id === GB.id)).not.toBeUndefined();
         });
     });

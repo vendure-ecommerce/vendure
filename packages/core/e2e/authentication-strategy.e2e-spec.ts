@@ -8,7 +8,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMeDocumentOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     TestAuthenticationStrategy,
@@ -17,7 +17,7 @@ import {
     TestSSOStrategyShop,
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
-import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
+import { CURRENT_USER_FRAGMeDocumentNT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AttemptLoginDocument,
@@ -26,7 +26,12 @@ import {
     HistoryEntryType,
 } from './graphql/generated-e2e-admin-types';
 import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
-import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
+import {
+    createCustomerDocument,
+    deleteCustomerDocument,
+    getCustomerHistoryDocument,
+    MeDocument,
+} from './graphql/shared-definitions';
 import { registerAccountDocument } from './graphql/shop-definitions';
 
 const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
@@ -58,7 +63,7 @@ describe('AuthenticationStrategy', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-    }, TEST_SETUP_TIMEOUT_MS);
+    }, TEST_SETUP_TIMeDocumentOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -101,7 +106,8 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('creates a new Customer with valid token', async () => {
-            const { customers: before } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
+            const { customers: before } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
             expect(before.totalItems).toBe(1);
 
             const { authenticate } = await shopClient.query<Codegen.AuthenticateMutation>(AUTHENTICATE, {
@@ -116,7 +122,8 @@ describe('AuthenticationStrategy', () => {
 
             expect(authenticate.identifier).toEqual(userData.email);
 
-            const { customers: after } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
+            const { customers: after } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
             expect(after.totalItems).toBe(2);
             expect(after.items.map(i => i.emailAddress)).toEqual([
                 'hayden.zieme12@hotmail.com',
@@ -129,7 +136,7 @@ describe('AuthenticationStrategy', () => {
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, {
+            >(getCustomerHistoryDocument, {
                 id: newCustomerId,
             });
 
@@ -137,13 +144,13 @@ describe('AuthenticationStrategy', () => {
                 customer?.history.items.sort((a, b) => (a.id > b.id ? 1 : -1)).map(pick(['type', 'data'])),
             ).toEqual([
                 {
-                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    type: HistoryEntryType.CUSTOMeDocumentR_REGISTERED,
                     data: {
                         strategy: 'test_strategy',
                     },
                 },
                 {
-                    type: HistoryEntryType.CUSTOMER_VERIFIED,
+                    type: HistoryEntryType.CUSTOMeDocumentR_VERIFIED,
                     data: {
                         strategy: 'test_strategy',
                     },
@@ -155,7 +162,7 @@ describe('AuthenticationStrategy', () => {
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerUserAuthQuery,
                 Codegen.GetCustomerUserAuthQueryVariables
-            >(GET_CUSTOMER_USER_AUTH, {
+            >(GET_CUSTOMeDocumentR_USER_AUTH, {
                 id: newCustomerId,
             });
 
@@ -164,7 +171,7 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('creates authenticated session', async () => {
-            const { me } = await shopClient.query<Codegen.MeQuery>(ME);
+            const { me } = await shopClient.query<Codegen.MeQuery>(MeDocument);
 
             expect(me?.identifier).toBe(userData.email);
         });
@@ -185,7 +192,8 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(authenticate);
             expect(authenticate.identifier).toEqual(userData.email);
 
-            const { customers: after } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
+            const { customers: after } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
             expect(after.totalItems).toBe(2);
             expect(after.items.map(i => i.emailAddress)).toEqual([
                 'hayden.zieme12@hotmail.com',
@@ -195,7 +203,7 @@ describe('AuthenticationStrategy', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/695
         it('multiple external auth strategies to not interfere with one another', async () => {
-            const EXPECTED_CUSTOMERS = [
+            const EXPECTED_CUSTOMeDocumentRS = [
                 {
                     emailAddress: 'hayden.zieme12@hotmail.com',
                     id: 'T_1',
@@ -207,8 +215,8 @@ describe('AuthenticationStrategy', () => {
             ];
 
             const { customers: customers1 } =
-                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
-            expect(customers1.items).toEqual(EXPECTED_CUSTOMERS);
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
+            expect(customers1.items).toEqual(EXPECTED_CUSTOMeDocumentRS);
             const { authenticate: auth1 } = await shopClient.query<Codegen.AuthenticateMutation>(
                 AUTHENTICATE,
                 {
@@ -225,8 +233,8 @@ describe('AuthenticationStrategy', () => {
             expect(auth1.identifier).toBe(userData.email);
 
             const { customers: customers2 } =
-                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
-            expect(customers2.items).toEqual(EXPECTED_CUSTOMERS);
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
+            expect(customers2.items).toEqual(EXPECTED_CUSTOMeDocumentRS);
 
             await shopClient.asAnonymousUser();
 
@@ -246,8 +254,8 @@ describe('AuthenticationStrategy', () => {
             expect(auth2.identifier).toBe(userData.email);
 
             const { customers: customers3 } =
-                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
-            expect(customers3.items).toEqual(EXPECTED_CUSTOMERS);
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMeDocumentRS);
+            expect(customers3.items).toEqual(EXPECTED_CUSTOMeDocumentRS);
         });
 
         it('registerCustomerAccount with external email', async () => {
@@ -269,7 +277,7 @@ describe('AuthenticationStrategy', () => {
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerUserAuthQuery,
                 Codegen.GetCustomerUserAuthQueryVariables
-            >(GET_CUSTOMER_USER_AUTH, {
+            >(GET_CUSTOMeDocumentR_USER_AUTH, {
                 id: newCustomerId,
             });
 
@@ -283,7 +291,7 @@ describe('AuthenticationStrategy', () => {
             const { customer: customer2 } = await adminClient.query<
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
-            >(GET_CUSTOMER_HISTORY, {
+            >(getCustomerHistoryDocument, {
                 id: newCustomerId,
                 options: {
                     skip: 4,
@@ -292,7 +300,7 @@ describe('AuthenticationStrategy', () => {
 
             expect(customer2?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
-                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    type: HistoryEntryType.CUSTOMeDocumentR_REGISTERED,
                     data: {
                         strategy: 'native',
                     },
@@ -340,7 +348,7 @@ describe('AuthenticationStrategy', () => {
             const { createCustomer: result1 } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
-            >(CREATE_CUSTOMER, {
+            >(createCustomerDocument, {
                 input: {
                     firstName: 'Test',
                     lastName: 'Person',
@@ -351,7 +359,7 @@ describe('AuthenticationStrategy', () => {
             customerGuard.assertSuccess(result1);
 
             await adminClient.query<Codegen.DeleteCustomerMutation, Codegen.DeleteCustomerMutationVariables>(
-                DELETE_CUSTOMER,
+                deleteCustomerDocument,
                 {
                     id: result1.id,
                 },
@@ -360,7 +368,7 @@ describe('AuthenticationStrategy', () => {
             const { createCustomer: result2 } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
-            >(CREATE_CUSTOMER, {
+            >(createCustomerDocument, {
                 input: {
                     firstName: 'Test',
                     lastName: 'Person',
@@ -404,7 +412,7 @@ describe('No NativeAuthStrategy on Shop API', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-    }, TEST_SETUP_TIMEOUT_MS);
+    }, TEST_SETUP_TIMeDocumentOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -433,10 +441,10 @@ const AUTHENTICATE = gql`
             }
         }
     }
-    ${CURRENT_USER_FRAGMENT}
+    ${CURRENT_USER_FRAGMeDocumentNT}
 `;
 
-const GET_CUSTOMERS = gql`
+const GET_CUSTOMeDocumentRS = gql`
     query GetCustomers {
         customers {
             totalItems
@@ -448,7 +456,7 @@ const GET_CUSTOMERS = gql`
     }
 `;
 
-const GET_CUSTOMER_USER_AUTH = gql`
+const GET_CUSTOMeDocumentR_USER_AUTH = gql`
     query GetCustomerUserAuth($id: ID!) {
         customer(id: $id) {
             id

@@ -37,16 +37,16 @@ import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generate
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { AdjustmentType, ErrorCode } from './graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    ASSIGN_PROMOTIONS_TO_CHANNEL,
-    CANCEL_ORDER,
-    CREATE_CHANNEL,
-    CREATE_CUSTOMER_GROUP,
-    CREATE_PROMOTION,
-    CREATE_SHIPPING_METHOD,
-    GET_FACET_LIST,
-    GET_PRODUCTS_WITH_VARIANT_PRICES,
-    REMOVE_CUSTOMERS_FROM_GROUP,
+    assignProductToChannelDocument,
+    assignPromotionsToChannelDocument,
+    cancelOrderDocument,
+    createChannelDocument,
+    createCustomerGroupDocument,
+    createPromotionDocument,
+    createShippingMethodDocument,
+    getFacetListDocument,
+    getProductsWithVariantPricesDocument,
+    removeCustomersFromGroupDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -328,7 +328,7 @@ describe('Promotions applied to Orders', () => {
                 const { createChannel } = await adminClient.query<
                     Codegen.CreateChannelMutation,
                     Codegen.CreateChannelMutationVariables
-                >(CREATE_CHANNEL, {
+                >(createChannelDocument, {
                     input: {
                         code: 'other-channel',
                         currencyCode: CurrencyCode.GBP,
@@ -407,7 +407,7 @@ describe('Promotions applied to Orders', () => {
         });
 
         it('atLeastNWithFacets', async () => {
-            const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
+            const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(getFacetListDocument);
             const saleFacetValue = facets.items[0].values[0];
             const promotion = await createPromotion({
                 enabled: true,
@@ -511,7 +511,7 @@ describe('Promotions applied to Orders', () => {
             const { createCustomerGroup } = await adminClient.query<
                 Codegen.CreateCustomerGroupMutation,
                 Codegen.CreateCustomerGroupMutationVariables
-            >(CREATE_CUSTOMER_GROUP, {
+            >(createCustomerGroupDocument, {
                 input: { name: 'Test Group', customerIds: ['T_1'] },
             });
 
@@ -545,7 +545,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.RemoveCustomersFromGroupMutation,
                 Codegen.RemoveCustomersFromGroupMutationVariables
-            >(REMOVE_CUSTOMERS_FROM_GROUP, {
+            >(removeCustomersFromGroupDocument, {
                 groupId: createCustomerGroup.id,
                 customerIds: ['T_1'],
             });
@@ -575,7 +575,7 @@ describe('Promotions applied to Orders', () => {
             const { createChannel } = await adminClient.query<
                 Codegen.CreateChannelMutation,
                 Codegen.CreateChannelMutationVariables
-            >(CREATE_CHANNEL, {
+            >(createChannelDocument, {
                 input: {
                     code: 'tax-included-channel',
                     currencyCode: CurrencyCode.GBP,
@@ -590,7 +590,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.AssignProductsToChannelMutation,
                 Codegen.AssignProductsToChannelMutationVariables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            >(assignProductToChannelDocument, {
                 input: {
                     channelId: taxIncludedChannel.id,
                     priceFactor: 1,
@@ -607,7 +607,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.AssignPromotionToChannelMutation,
                 Codegen.AssignPromotionToChannelMutationVariables
-            >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
+            >(assignPromotionsToChannelDocument, {
                 input: {
                     promotionIds: Array.isArray(promotionId) ? promotionId : [promotionId],
                     channelId: taxIncludedChannel.id,
@@ -908,7 +908,7 @@ describe('Promotions applied to Orders', () => {
             }
 
             beforeAll(async () => {
-                const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
+                const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(getFacetListDocument);
                 const saleFacetValue = facets.items[0].values[0];
                 promotion = await createPromotion({
                     enabled: true,
@@ -1151,7 +1151,7 @@ describe('Promotions applied to Orders', () => {
                 const result = await adminClient.query<
                     Codegen.CreateShippingMethodMutation,
                     Codegen.CreateShippingMethodMutationVariables
-                >(CREATE_SHIPPING_METHOD, {
+                >(createShippingMethodDocument, {
                     input: {
                         code: 'test-method',
                         fulfillmentHandler: manualFulfillmentHandler.code,
@@ -1332,7 +1332,7 @@ describe('Promotions applied to Orders', () => {
             let promotion2: Codegen.PromotionFragment;
 
             beforeAll(async () => {
-                const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
+                const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(getFacetListDocument);
                 const saleFacetValue = facets.items[0].values[0];
                 promotion1 = await createPromotion({
                     enabled: true,
@@ -1695,7 +1695,7 @@ describe('Promotions applied to Orders', () => {
                 const { cancelOrder } = await adminClient.query<
                     Codegen.CancelOrderMutation,
                     Codegen.CancelOrderMutationVariables
-                >(CANCEL_ORDER, {
+                >(cancelOrderDocument, {
                     input: {
                         orderId,
                         cancelShipping: true,
@@ -1882,7 +1882,7 @@ describe('Promotions applied to Orders', () => {
                 const { cancelOrder } = await adminClient.query<
                     Codegen.CancelOrderMutation,
                     Codegen.CancelOrderMutationVariables
-                >(CANCEL_ORDER, {
+                >(cancelOrderDocument, {
                     input: {
                         orderId,
                         cancelShipping: true,
@@ -2010,7 +2010,7 @@ describe('Promotions applied to Orders', () => {
             const { createChannel } = await adminClient.query<
                 Codegen.CreateChannelMutation,
                 Codegen.CreateChannelMutationVariables
-            >(CREATE_CHANNEL, {
+            >(createChannelDocument, {
                 input: {
                     code: 'tax-included-channel-2',
                     currencyCode: CurrencyCode.GBP,
@@ -2025,7 +2025,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.AssignProductsToChannelMutation,
                 Codegen.AssignProductsToChannelMutationVariables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            >(assignProductToChannelDocument, {
                 input: {
                     channelId: taxIncludedChannel.id,
                     priceFactor: 1,
@@ -2072,7 +2072,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.AssignPromotionToChannelMutation,
                 Codegen.AssignPromotionToChannelMutationVariables
-            >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
+            >(assignPromotionsToChannelDocument, {
                 input: {
                     promotionIds: [promo100.id, promo20.id],
                     channelId: taxIncludedChannel.id,
@@ -2160,7 +2160,7 @@ describe('Promotions applied to Orders', () => {
             const result = await adminClient.query<
                 Codegen.CreateChannelMutation,
                 Codegen.CreateChannelMutationVariables
-            >(CREATE_CHANNEL, {
+            >(createChannelDocument, {
                 input: {
                     code,
                     token,
@@ -2175,7 +2175,7 @@ describe('Promotions applied to Orders', () => {
             await adminClient.query<
                 Codegen.AssignProductsToChannelMutation,
                 Codegen.AssignProductsToChannelMutationVariables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            >(assignProductToChannelDocument, {
                 input: {
                     channelId: (result.createChannel as Codegen.ChannelFragment).id,
                     priceFactor: 1,
@@ -2291,7 +2291,7 @@ describe('Promotions applied to Orders', () => {
 
     async function getProducts() {
         const result = await adminClient.query<Codegen.GetProductsWithVariantPricesQuery>(
-            GET_PRODUCTS_WITH_VARIANT_PRICES,
+            getProductsWithVariantPricesDocument,
             {
                 options: {
                     take: 10,
@@ -2303,7 +2303,7 @@ describe('Promotions applied to Orders', () => {
     }
 
     async function createGlobalPromotions() {
-        const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
+        const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(getFacetListDocument);
         const saleFacetValue = facets.items[0].values[0];
         await createPromotion({
             enabled: true,
@@ -2333,7 +2333,7 @@ describe('Promotions applied to Orders', () => {
         const result = await adminClient.query<
             Codegen.CreatePromotionMutation,
             Codegen.CreatePromotionMutationVariables
-        >(CREATE_PROMOTION, {
+        >(createPromotionDocument, {
             input: correctedInput,
         });
         return result.createPromotion as Codegen.PromotionFragment;

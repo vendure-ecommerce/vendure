@@ -10,7 +10,11 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { Permission } from './graphql/generated-e2e-shop-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, UPDATE_PRODUCT } from './graphql/shared-definitions';
+import {
+    createAdministratorDocument,
+    createRoleDocument,
+    updateProductDocument,
+} from './graphql/shared-definitions';
 
 describe('Custom field permissions', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -149,7 +153,7 @@ describe('Custom field permissions', () => {
     it('superadmin can update all custom fields', async () => {
         await adminClient.asSuperAdmin();
         await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-            UPDATE_PRODUCT,
+            updateProductDocument,
             {
                 input: {
                     id: 'T_1',
@@ -180,7 +184,7 @@ describe('Custom field permissions', () => {
     it('readProductUpdateProductAdmin can update updateProduct custom field', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateProductAdmin.emailAddress, 'test');
         await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-            UPDATE_PRODUCT,
+            updateProductDocument,
             {
                 input: {
                     id: 'T_1',
@@ -204,7 +208,7 @@ describe('Custom field permissions', () => {
             const result = await adminClient.query<
                 Codegen.UpdateProductMutation,
                 Codegen.UpdateProductMutationVariables
-            >(UPDATE_PRODUCT, {
+            >(updateProductDocument, {
                 input: {
                     id: 'T_1',
                     customFields: {
@@ -228,7 +232,7 @@ describe('Custom field permissions', () => {
             const result = await adminClient.query<
                 Codegen.UpdateProductMutation,
                 Codegen.UpdateProductMutationVariables
-            >(UPDATE_PRODUCT, {
+            >(updateProductDocument, {
                 input: {
                     id: 'T_1',
                     customFields: {
@@ -281,7 +285,7 @@ async function createAdminWithPermissions(input: {
     const { createRole } = await adminClient.query<
         Codegen.CreateRoleMutation,
         Codegen.CreateRoleMutationVariables
-    >(CREATE_ROLE, {
+    >(createRoleDocument, {
         input: {
             code: name,
             description: name,
@@ -292,7 +296,7 @@ async function createAdminWithPermissions(input: {
     const { createAdministrator } = await adminClient.query<
         Codegen.CreateAdministratorMutation,
         Codegen.CreateAdministratorMutationVariables
-    >(CREATE_ADMINISTRATOR, {
+    >(createAdministratorDocument, {
         input: {
             firstName: name,
             lastName: 'LastName',

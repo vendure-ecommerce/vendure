@@ -16,12 +16,6 @@ import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfi
 import { SHIPPING_METHOD_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult, LanguageCode } from './graphql/generated-e2e-admin-types';
-import {
-    CREATE_SHIPPING_METHOD,
-    DELETE_SHIPPING_METHOD,
-    GET_SHIPPING_METHOD_LIST,
-    UPDATE_SHIPPING_METHOD,
-} from './graphql/shared-definitions';
 import { getActiveShippingMethodsDocument } from './graphql/shop-definitions';
 
 const TEST_METADATA = {

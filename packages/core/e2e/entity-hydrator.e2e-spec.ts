@@ -34,7 +34,7 @@ import {
     AddItemToOrderMutationVariables,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import { UPDATE_CHANNEL } from './graphql/shared-definitions';
+import { updateChannelDocument } from './graphql/shared-definitions';
 import { addItemToOrderDocument } from './graphql/shop-definitions';
 
 const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard(
@@ -240,14 +240,17 @@ describe('Entity hydration', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1284
     it('hydrates custom field relations', async () => {
-        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
-            input: {
-                id: 'T_1',
-                customFields: {
-                    thumbId: 'T_2',
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
+            updateChannelDocument,
+            {
+                input: {
+                    id: 'T_1',
+                    customFields: {
+                        thumbId: 'T_2',
+                    },
                 },
             },
-        });
+        );
 
         const { hydrateChannel } = await adminClient.query<{
             hydrateChannel: any;
@@ -260,14 +263,17 @@ describe('Entity hydration', () => {
     });
 
     it('hydrates a nested custom field', async () => {
-        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
-            input: {
-                id: 'T_1',
-                customFields: {
-                    additionalConfigId: 'T_1',
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
+            updateChannelDocument,
+            {
+                input: {
+                    id: 'T_1',
+                    customFields: {
+                        additionalConfigId: 'T_1',
+                    },
                 },
             },
-        });
+        );
 
         const { hydrateChannelWithNestedRelation } = await adminClient.query<{
             hydrateChannelWithNestedRelation: any;
@@ -280,14 +286,17 @@ describe('Entity hydration', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/2682
     it('hydrates a nested custom field where the first level is null', async () => {
-        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
-            input: {
-                id: 'T_1',
-                customFields: {
-                    additionalConfigId: null,
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
+            updateChannelDocument,
+            {
+                input: {
+                    id: 'T_1',
+                    customFields: {
+                        additionalConfigId: null,
+                    },
                 },
             },
-        });
+        );
 
         const { hydrateChannelWithNestedRelation } = await adminClient.query<{
             hydrateChannelWithNestedRelation: any;
@@ -399,14 +408,17 @@ describe('Entity hydration', () => {
      * https://github.com/vendure-ecommerce/vendure/issues/2899
      */
     it('Hydrates properties with very long names', async () => {
-        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
-            input: {
-                id: 'T_1',
-                customFields: {
-                    additionalConfigId: 'T_1',
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
+            updateChannelDocument,
+            {
+                input: {
+                    id: 'T_1',
+                    customFields: {
+                        additionalConfigId: 'T_1',
+                    },
                 },
             },
-        });
+        );
 
         const { hydrateChannelWithVeryLongPropertyName } = await adminClient.query<{
             hydrateChannelWithVeryLongPropertyName: any;

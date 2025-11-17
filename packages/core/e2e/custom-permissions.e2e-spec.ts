@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 import {
@@ -22,7 +22,11 @@ import {
     UpdateRoleMutation,
     UpdateRoleMutationVariables,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, UPDATE_ROLE } from './graphql/shared-definitions';
+import {
+    createAdministratorDocument,
+    createRoleDocument,
+    updateRoleDocument,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Custom permissions', () => {
@@ -45,7 +49,7 @@ describe('Custom permissions', () => {
 
         // create a new role and Admin and sign in as that Admin
         const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
-            CREATE_ROLE,
+            createRoleDocument,
             {
                 input: {
                     channelIds: ['T_1'],
@@ -59,7 +63,7 @@ describe('Custom permissions', () => {
         const { createAdministrator } = await adminClient.query<
             CreateAdministratorMutation,
             CreateAdministratorMutationVariables
-        >(CREATE_ADMINISTRATOR, {
+        >(createAdministratorDocument, {
             input: {
                 firstName: 'Test',
                 lastName: 'Admin',
@@ -152,7 +156,7 @@ describe('Custom permissions', () => {
     describe('adding permissions enables access', () => {
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.query<UpdateRoleMutation, UpdateRoleMutationVariables>(UPDATE_ROLE, {
+            await adminClient.query<UpdateRoleMutation, UpdateRoleMutationVariables>(updateRoleDocument, {
                 input: {
                     id: testRole.id,
                     permissions: [

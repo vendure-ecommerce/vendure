@@ -25,7 +25,7 @@ import {
     TransitionToStateMutation,
     TransitionToStateMutationVariables,
 } from './graphql/generated-e2e-shop-types';
-import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
+import { adminTransitionToStateDocument, getOrderDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
     addPaymentDocument,
@@ -386,7 +386,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order.id,
                 state: 'PaymentAuthorized',
             });
@@ -400,7 +400,7 @@ describe('Order process', () => {
             );
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -412,7 +412,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order.id,
                 state: 'PaymentSettled',
             });
@@ -426,7 +426,7 @@ describe('Order process', () => {
             );
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -451,7 +451,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order.id,
                 state: 'Cancelled',
             });
@@ -465,7 +465,7 @@ describe('Order process', () => {
             );
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -477,7 +477,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order.id,
                 state: 'PartiallyDelivered',
             });
@@ -491,7 +491,7 @@ describe('Order process', () => {
             );
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },
@@ -503,7 +503,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await adminClient.query<
                 Codegen.AdminTransitionMutation,
                 Codegen.AdminTransitionMutationVariables
-            >(ADMIN_TRANSITION_TO_STATE, {
+            >(adminTransitionToStateDocument, {
                 id: order.id,
                 state: 'Delivered',
             });
@@ -517,7 +517,7 @@ describe('Order process', () => {
             );
 
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                GET_ORDER,
+                getOrderDocument,
                 {
                     id: order.id,
                 },

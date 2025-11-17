@@ -8,10 +8,10 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    AssetFragment,
     AssetWithTagsAndFocalPointFragment,
     CreateAssetsMutation,
     DeletionResult,
@@ -19,16 +19,6 @@ import {
     LogicalOperator,
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import {
-    CREATE_ASSETS,
-    DELETE_ASSET,
-    GET_ASSET,
-    GET_ASSET_FRAGMENT_FIRST,
-    GET_ASSET_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-    UPDATE_ASSET,
-} from './graphql/shared-definitions';
 
 describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(

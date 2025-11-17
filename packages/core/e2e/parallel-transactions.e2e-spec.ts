@@ -3,18 +3,12 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 import { SlowMutationPlugin } from './fixtures/test-plugins/slow-mutation-plugin';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { LanguageCode } from './graphql/generated-e2e-admin-types';
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_OPTION_GROUP,
-    CREATE_PRODUCT_VARIANTS,
-} from './graphql/shared-definitions';
 
 describe('Parallel transactions', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({

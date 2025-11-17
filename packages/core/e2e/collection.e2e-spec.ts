@@ -27,19 +27,6 @@ import {
     LanguageCode,
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
-import {
-    ASSIGN_COLLECTIONS_TO_CHANNEL,
-    CREATE_CHANNEL,
-    CREATE_COLLECTION,
-    DELETE_PRODUCT,
-    DELETE_PRODUCT_VARIANT,
-    GET_ASSET_LIST,
-    GET_COLLECTION,
-    GET_COLLECTIONS,
-    UPDATE_COLLECTION,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 import { sortById } from './utils/test-order-utils';

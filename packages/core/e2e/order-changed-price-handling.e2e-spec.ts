@@ -15,7 +15,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
+import { updateProductVariantsDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
     adjustItemQuantityDocument,
@@ -97,7 +97,7 @@ describe('ChangedPriceHandlingStrategy', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_12',
@@ -129,7 +129,7 @@ describe('ChangedPriceHandlingStrategy', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_12',
@@ -176,7 +176,7 @@ describe('ChangedPriceHandlingStrategy', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_13',
@@ -208,7 +208,7 @@ describe('ChangedPriceHandlingStrategy', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_13',

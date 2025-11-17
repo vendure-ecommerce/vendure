@@ -28,7 +28,7 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { CREATE_PROMOTION } from './graphql/shared-definitions';
+import { createPromotionDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
     addPaymentDocument,
@@ -162,7 +162,7 @@ describe('Entity serialization', () => {
 
     it('serialize Promotion', async () => {
         await adminClient.query<Codegen.CreatePromotionMutation, Codegen.CreatePromotionMutationVariables>(
-            CREATE_PROMOTION,
+            createPromotionDocument,
             {
                 input: {
                     enabled: true,

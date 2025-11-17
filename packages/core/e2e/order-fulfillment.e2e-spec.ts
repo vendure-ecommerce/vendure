@@ -22,11 +22,6 @@ import {
     AddItemToOrderMutationVariables,
     TestOrderWithPaymentsFragment,
 } from './graphql/generated-e2e-shop-types';
-import {
-    CREATE_FULFILLMENT,
-    CREATE_SHIPPING_METHOD,
-    TRANSIT_FULFILLMENT,
-} from './graphql/shared-definitions';
 import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 

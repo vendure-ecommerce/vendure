@@ -3,11 +3,10 @@ import { CachedSession, mergeConfig, SessionCacheStrategy } from '@vendure/core'
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMeDocumentOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../common/src/shared-constants';
 
 import {
@@ -15,7 +14,7 @@ import {
     AttemptLoginMutationVariables,
     MeQuery,
 } from './graphql/generated-e2e-admin-types';
-import { ATTEMPT_LOGIN, ME } from './graphql/shared-definitions';
+import { attemptLoginDocument, MeDocument } from './graphql/shared-definitions';
 
 const testSessionCache = new Map<string, CachedSession>();
 const getSpy = vi.fn();
@@ -62,7 +61,7 @@ describe('Session caching', () => {
             customerCount: 1,
         });
         testSessionCache.clear();
-    }, TEST_SETUP_TIMEOUT_MS);
+    }, TEST_SETUP_TIMeDocumentOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -73,7 +72,7 @@ describe('Session caching', () => {
         expect(setSpy.mock.calls.length).toBe(0);
         expect(testSessionCache.size).toBe(0);
 
-        await adminClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(ATTEMPT_LOGIN, {
+        await adminClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(attemptLoginDocument, {
             username: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         });
@@ -84,7 +83,7 @@ describe('Session caching', () => {
 
     it('takes user data from cache on next request', async () => {
         getSpy.mockClear();
-        const { me } = await adminClient.query<MeQuery>(ME);
+        const { me } = await adminClient.query<MeQuery>(MeDocument);
 
         expect(getSpy.mock.calls.length).toBe(1);
     });
@@ -92,30 +91,28 @@ describe('Session caching', () => {
     it('sets fresh data after TTL expires', async () => {
         setSpy.mockClear();
 
-        await adminClient.query<MeQuery>(ME);
+        await adminClient.query<MeQuery>(MeDocument);
         expect(setSpy.mock.calls.length).toBe(0);
 
-        await adminClient.query<MeQuery>(ME);
+        await adminClient.query<MeQuery>(MeDocument);
         expect(setSpy.mock.calls.length).toBe(0);
 
         await pause(2000);
 
-        await adminClient.query<MeQuery>(ME);
+        await adminClient.query<MeQuery>(MeDocument);
         expect(setSpy.mock.calls.length).toBe(1);
     });
 
     it('clears cache for that user on logout', async () => {
         deleteSpy.mockClear();
         expect(deleteSpy.mock.calls.length).toBe(0);
-        await adminClient.query(
-            gql`
-                mutation Logout {
-                    logout {
-                        success
-                    }
+        await adminClient.query(gql`
+            mutation Logout {
+                logout {
+                    success
                 }
-            `,
-        );
+            }
+        `);
 
         expect(testSessionCache.size).toBe(0);
         expect(deleteSpy.mock.calls.length).toBeGreaterThan(0);
@@ -139,7 +136,7 @@ describe('Session expiry', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-    }, TEST_SETUP_TIMEOUT_MS);
+    }, TEST_SETUP_TIMeDocumentOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -148,20 +145,20 @@ describe('Session expiry', () => {
     it('session does not expire with continued use', async () => {
         await adminClient.asSuperAdmin();
         await pause(1000);
-        await adminClient.query(ME);
+        await adminClient.query(MeDocument);
         await pause(1000);
-        await adminClient.query(ME);
+        await adminClient.query(MeDocument);
         await pause(1000);
-        await adminClient.query(ME);
+        await adminClient.query(MeDocument);
         await pause(1000);
-        await adminClient.query(ME);
+        await adminClient.query(MeDocument);
     }, 10000);
 
     it('session expires when not used for longer than sessionDuration', async () => {
         await adminClient.asSuperAdmin();
         await pause(3500);
         try {
-            await adminClient.query(ME);
+            await adminClient.query(MeDocument);
             fail('Should have thrown');
         } catch (e: any) {
             expect(e.message).toContain('You are not currently authorized to perform this action');
