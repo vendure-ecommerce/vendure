@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-    DefaultLogger,
-    dummyPaymentHandler,
-    LanguageCode,
-    PaymentMethodEligibilityChecker,
-} from '@vendure/core';
+import { dummyPaymentHandler, LanguageCode, PaymentMethodEligibilityChecker } from '@vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -13,22 +8,21 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { CurrencyCode, DeletionResult } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { ErrorCode } from './graphql/generated-e2e-shop-types';
+import { CurrencyCode, DeletionResult } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { ErrorCode } from './graphql/generated-e2e-shop-types';
 import { CREATE_CHANNEL } from './graphql/shared-definitions';
 import {
-    ACTIVE_PAYMENT_METHODS_QUERY,
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ELIGIBLE_PAYMENT_METHODS,
+    activePaymentMethodsQueryDocument,
+    addItemToOrderDocument,
+    addPaymentDocument,
+    getEligiblePaymentMethodsDocument,
 } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -275,7 +269,7 @@ describe('PaymentMethod resolver', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -286,7 +280,7 @@ describe('PaymentMethod resolver', () => {
         it('eligiblePaymentMethods', async () => {
             const { eligiblePaymentMethods } =
                 await shopClient.query<CodegenShop.GetEligiblePaymentMethodsQuery>(
-                    GET_ELIGIBLE_PAYMENT_METHODS,
+                    getEligiblePaymentMethodsDocument,
                 );
             expect(eligiblePaymentMethods).toEqual([
                 {
@@ -309,7 +303,7 @@ describe('PaymentMethod resolver', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: 'price-check',
                     metadata: {},
@@ -591,7 +585,7 @@ describe('PaymentMethod resolver', () => {
         });
 
         // Act: Query active payment methods
-        const { activePaymentMethods } = await shopClient.query(ACTIVE_PAYMENT_METHODS_QUERY);
+        const { activePaymentMethods } = await shopClient.query(activePaymentMethodsQueryDocument);
 
         // Assert: Ensure only the active payment method is returned
         expect(activePaymentMethods).toHaveLength(1);

@@ -95,7 +95,7 @@ import {
     UPDATE_PRODUCT_VARIANTS,
     UPDATE_TAX_RATE,
 } from './graphql/shared-definitions';
-import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
+import { searchProductsShopDocument } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
@@ -133,7 +133,7 @@ describe('Default search plugin', () => {
 
     function testProductsShop(input: SearchProductsShopQueryVariablesExt['input']) {
         return shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
-            SEARCH_PRODUCTS_SHOP,
+            searchProductsShopDocument,
             { input },
         );
     }
@@ -709,7 +709,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     take: 1,
@@ -740,7 +740,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     take: 3,
@@ -753,7 +753,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     term: 'cactus',
@@ -768,7 +768,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     inStock: false,
@@ -781,7 +781,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: true,
                     inStock: false,
@@ -794,7 +794,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     inStock: true,
@@ -807,7 +807,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: true,
                     inStock: true,
@@ -820,7 +820,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: false,
                     inStock: undefined,
@@ -833,7 +833,7 @@ describe('Default search plugin', () => {
             const result = await shopClient.query<
                 SearchProductsShopQuery,
                 SearchProductsShopQueryVariablesExt
-            >(SEARCH_PRODUCTS_SHOP, {
+            >(searchProductsShopDocument, {
                 input: {
                     groupByProduct: true,
                     inStock: undefined,

@@ -8,15 +8,15 @@ import {
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { OrderFragment } from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     AddPaymentToOrderMutation,
     AddPaymentToOrderMutationVariables,
@@ -25,16 +25,15 @@ import {
     TransitionToStateMutation,
     TransitionToStateMutationVariables,
 } from './graphql/generated-e2e-shop-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_NEXT_STATES,
-    SET_CUSTOMER,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    addItemToOrderDocument,
+    addPaymentDocument,
+    getNextStatesDocument,
+    setCustomerDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 
 type TestOrderState = OrderState | 'ValidatingCustomer';
@@ -138,7 +137,7 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -160,14 +159,13 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
-            const { nextOrderStates } = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(
-                GET_NEXT_STATES,
-            );
+            const { nextOrderStates } =
+                await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(getNextStatesDocument);
 
             expect(nextOrderStates).toEqual(['ValidatingCustomer']);
         });
@@ -179,7 +177,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ValidatingCustomer',
             });
             orderErrorGuard.assertSuccess(transitionOrderToState);
@@ -200,7 +198,7 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.SetCustomerForOrderMutation,
                 CodegenShop.SetCustomerForOrderMutationVariables
-            >(SET_CUSTOMER, {
+            >(setCustomerDocument, {
                 input: {
                     firstName: 'Joe',
                     lastName: 'Test',
@@ -211,7 +209,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ValidatingCustomer',
             });
             orderErrorGuard.assertErrorResult(transitionOrderToState);
@@ -240,7 +238,7 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.SetCustomerForOrderMutation,
                 CodegenShop.SetCustomerForOrderMutationVariables
-            >(SET_CUSTOMER, {
+            >(setCustomerDocument, {
                 input: {
                     firstName: 'Joe',
                     lastName: 'Test',
@@ -251,7 +249,7 @@ describe('Order process', () => {
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ValidatingCustomer',
             });
             orderErrorGuard.assertSuccess(transitionOrderToState);
@@ -265,16 +263,15 @@ describe('Order process', () => {
             transitionEndSpy.mockClear();
             transitionEndSpy2.mockClear();
 
-            const { nextOrderStates } = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(
-                GET_NEXT_STATES,
-            );
+            const { nextOrderStates } =
+                await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(getNextStatesDocument);
 
             expect(nextOrderStates).toEqual(['ArrangingPayment', 'AddingItems', 'Cancelled']);
 
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'AddingItems',
             });
 
@@ -290,25 +287,25 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,
                 CodegenShop.SetShippingMethodMutationVariables
-            >(SET_SHIPPING_METHOD, { id: 'T_1' });
+            >(setShippingMethodDocument, { id: 'T_1' });
             const result0 = await shopClient.query<
                 TransitionToStateMutation,
                 TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ValidatingCustomer',
             });
             orderErrorGuard.assertSuccess(result0.transitionOrderToState);
             const result1 = await shopClient.query<
                 TransitionToStateMutation,
                 TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ArrangingPayment',
             });
             orderErrorGuard.assertSuccess(result1.transitionOrderToState);
             const result2 = await shopClient.query<
                 TransitionToStateMutation,
                 TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'PaymentProcessing',
             });
             orderErrorGuard.assertSuccess(result2.transitionOrderToState);
@@ -316,7 +313,7 @@ describe('Order process', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 AddPaymentToOrderMutation,
                 AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},
@@ -335,14 +332,14 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
             await shopClient.query<
                 CodegenShop.SetCustomerForOrderMutation,
                 CodegenShop.SetCustomerForOrderMutationVariables
-            >(SET_CUSTOMER, {
+            >(setCustomerDocument, {
                 input: {
                     firstName: 'Su',
                     lastName: 'Test',
@@ -352,7 +349,7 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     fullName: 'name',
                     streetLine1: '12 the street',
@@ -365,17 +362,17 @@ describe('Order process', () => {
             await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,
                 CodegenShop.SetShippingMethodMutationVariables
-            >(SET_SHIPPING_METHOD, { id: 'T_1' });
+            >(setShippingMethodDocument, { id: 'T_1' });
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ValidatingCustomer',
             });
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ArrangingPayment',
             });
             orderErrorGuard.assertSuccess(transitionOrderToState);
@@ -441,7 +438,7 @@ describe('Order process', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},

@@ -6,18 +6,14 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod, twoStagePaymentMethod } from './fixtures/test-payment-methods';
-import {
-    TestMultiLocationStockPlugin,
-    TestStockDisplayStrategy,
-    TestStockLocationStrategy,
-} from './fixtures/test-plugins/multi-location-stock-plugin';
+import { TestMultiLocationStockPlugin } from './fixtures/test-plugins/multi-location-stock-plugin';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CreateAddressInput, FulfillmentFragment } from './graphql/generated-e2e-admin-types';
-import { PaymentInput } from './graphql/generated-e2e-shop-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { PaymentInput } from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
@@ -27,13 +23,12 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    GET_PRODUCT_WITH_STOCK_LEVEL,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    addPaymentDocument,
+    getEligibleShippingMethodsDocument,
+    getProductWithStockLevelDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 
 describe('Stock control (multi-location)', () => {
@@ -66,12 +61,12 @@ describe('Stock control (multi-location)', () => {
 
     async function setFirstEligibleShippingMethod() {
         const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-            GET_ELIGIBLE_SHIPPING_METHODS,
+            getEligibleShippingMethodsDocument,
         );
         await shopClient.query<
             CodegenShop.SetShippingMethodMutation,
             CodegenShop.SetShippingMethodMutationVariables
-        >(SET_SHIPPING_METHOD, {
+        >(setShippingMethodDocument, {
             id: eligibleShippingMethods[0].id,
         });
     }
@@ -207,7 +202,7 @@ describe('Stock control (multi-location)', () => {
         const result1 = await shopClient.query<
             CodegenShop.GetProductStockLevelQuery,
             CodegenShop.GetProductStockLevelQueryVariables
-        >(GET_PRODUCT_WITH_STOCK_LEVEL, {
+        >(getProductWithStockLevelDocument, {
             id: 'T_1',
         });
 
@@ -217,7 +212,7 @@ describe('Stock control (multi-location)', () => {
             CodegenShop.GetProductStockLevelQuery,
             CodegenShop.GetProductStockLevelQueryVariables
         >(
-            GET_PRODUCT_WITH_STOCK_LEVEL,
+            getProductWithStockLevelDocument,
             {
                 id: 'T_1',
             },
@@ -230,7 +225,7 @@ describe('Stock control (multi-location)', () => {
             CodegenShop.GetProductStockLevelQuery,
             CodegenShop.GetProductStockLevelQueryVariables
         >(
-            GET_PRODUCT_WITH_STOCK_LEVEL,
+            getProductWithStockLevelDocument,
             {
                 id: 'T_1',
             },
@@ -290,31 +285,31 @@ describe('Stock control (multi-location)', () => {
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     streetLine1: '1 Test Street',
                     countryCode: 'GB',
                 } as CreateAddressInput,
             });
             const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-                GET_ELIGIBLE_SHIPPING_METHODS,
+                getEligibleShippingMethodsDocument,
             );
             await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,
                 CodegenShop.SetShippingMethodMutationVariables
-            >(SET_SHIPPING_METHOD, {
+            >(setShippingMethodDocument, {
                 id: eligibleShippingMethods[0].id,
             });
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ArrangingPayment',
             });
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},

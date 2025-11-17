@@ -1,21 +1,19 @@
-import { DefaultSearchPlugin, JobQueueService, mergeConfig } from '@vendure/core';
+import { DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { TestOrderItemPriceCalculationStrategy } from './fixtures/test-order-item-price-calculation-strategy';
 import {
-    AddItemToOrderMutation,
-    AddItemToOrderMutationVariables,
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
     SinglePrice,
 } from './graphql/generated-e2e-shop-types';
-import { ADD_ITEM_TO_ORDER, SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
+import { searchProductsShopDocument } from './graphql/shop-definitions';
 
 describe('custom OrderItemPriceCalculationStrategy', () => {
     let variants: SearchProductsShopQuery['search']['items'];
@@ -38,7 +36,7 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
             customerCount: 3,
         });
         const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
+            searchProductsShopDocument,
             {
                 input: { take: 3, groupByProduct: false },
             },

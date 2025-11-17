@@ -30,10 +30,10 @@ import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { CREATE_PROMOTION } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    addItemToOrderDocument,
+    addPaymentDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 
 /**
@@ -108,25 +108,25 @@ describe('Entity serialization', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
         await shopClient.query<
             CodegenShop.SetShippingMethodMutation,
             CodegenShop.SetShippingMethodMutationVariables
-        >(SET_SHIPPING_METHOD, {
+        >(setShippingMethodDocument, {
             id: 'T_1',
         });
         const result = await shopClient.query<
             CodegenShop.TransitionToStateMutation,
             CodegenShop.TransitionToStateMutationVariables
-        >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+        >(transitionToStateDocument, { state: 'ArrangingPayment' });
 
         const { addPaymentToOrder } = await shopClient.query<
             CodegenShop.AddPaymentToOrderMutation,
             CodegenShop.AddPaymentToOrderMutationVariables
-        >(ADD_PAYMENT, {
+        >(addPaymentDocument, {
             input: {
                 method: testSuccessfulPaymentMethod.code,
                 metadata: {

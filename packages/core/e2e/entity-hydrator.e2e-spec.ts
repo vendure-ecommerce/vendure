@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
+    ActiveOrderService,
     Asset,
     ChannelService,
     EntityHydrator,
     mergeConfig,
     Order,
+    OrderLine,
+    OrderService,
     Product,
     ProductVariant,
     RequestContext,
-    ActiveOrderService,
-    OrderService,
-    TransactionalConnection,
-    OrderLine,
     RequestContextService,
+    TransactionalConnection,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -20,7 +20,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AdditionalConfig,
@@ -35,7 +35,7 @@ import {
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { UPDATE_CHANNEL } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 
 const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard(
     input => !!input.lines,
@@ -203,7 +203,7 @@ describe('Entity hydration', () => {
         const { addItemToOrder } = await shopClient.query<
             AddItemToOrderMutation,
             AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
@@ -223,7 +223,7 @@ describe('Entity hydration', () => {
         const { addItemToOrder } = await shopClient.query<
             AddItemToOrderMutation,
             AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 2,
         });

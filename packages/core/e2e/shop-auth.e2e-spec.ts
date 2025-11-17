@@ -18,11 +18,10 @@ import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from 
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
-import { Mock, vi } from 'vitest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { PasswordValidationError } from '../src/common/error/generated-graphql-shop-errors';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -37,14 +36,14 @@ import {
     GET_CUSTOMER_LIST,
 } from './graphql/shared-definitions';
 import {
-    GET_ACTIVE_CUSTOMER,
-    REFRESH_TOKEN,
-    REGISTER_ACCOUNT,
-    REQUEST_PASSWORD_RESET,
-    REQUEST_UPDATE_EMAIL_ADDRESS,
-    RESET_PASSWORD,
-    UPDATE_EMAIL_ADDRESS,
-    VERIFY_EMAIL,
+    getActiveCustomerDocument,
+    refreshTokenDocument,
+    registerAccountDocument,
+    requestPasswordResetDocument,
+    requestUpdateEmailAddressDocument,
+    resetPasswordDocument,
+    updateEmailAddressDocument,
+    verifyEmailDocument,
 } from './graphql/shop-definitions';
 
 let sendEmailFn: Mock;
@@ -144,7 +143,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -161,7 +160,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -204,7 +203,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -227,7 +226,7 @@ describe('Shop auth & accounts', () => {
             const { refreshCustomerVerification } = await shopClient.query<
                 CodegenShop.RefreshTokenMutation,
                 CodegenShop.RefreshTokenMutationVariables
-            >(REFRESH_TOKEN, { emailAddress });
+            >(refreshTokenDocument, { emailAddress });
             successErrorGuard.assertSuccess(refreshCustomerVerification);
             const newVerificationToken = await sendEmail;
 
@@ -242,7 +241,7 @@ describe('Shop auth & accounts', () => {
             const { refreshCustomerVerification } = await shopClient.query<
                 CodegenShop.RefreshTokenMutation,
                 CodegenShop.RefreshTokenMutationVariables
-            >(REFRESH_TOKEN, {
+            >(refreshTokenDocument, {
                 emailAddress: 'never-been-registered@test.com',
             });
             successErrorGuard.assertSuccess(refreshCustomerVerification);
@@ -261,7 +260,7 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 password,
                 token: 'bad-token',
             });
@@ -275,7 +274,7 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 token: verificationToken,
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
@@ -288,7 +287,7 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 token: verificationToken,
                 password: '2short',
             });
@@ -305,16 +304,15 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 password,
                 token: verificationToken,
             });
             currentUserErrorGuard.assertSuccess(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.identifier).toBe('test1@test.com');
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(getActiveCustomerDocument);
             newCustomerId = activeCustomer!.id;
         });
 
@@ -327,7 +325,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -341,7 +339,7 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 password,
                 token: verificationToken,
             });
@@ -399,7 +397,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertErrorResult(registerCustomerAccount);
@@ -422,7 +420,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 CodegenShop.RegisterMutation,
                 CodegenShop.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input,
             });
             successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -461,7 +459,7 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 token: verificationToken,
                 password: 'new password',
             });
@@ -475,15 +473,14 @@ describe('Shop auth & accounts', () => {
             const { verifyCustomerAccount } = await shopClient.query<
                 CodegenShop.VerifyMutation,
                 CodegenShop.VerifyMutationVariables
-            >(VERIFY_EMAIL, {
+            >(verifyEmailDocument, {
                 token: verificationToken,
             });
             currentUserErrorGuard.assertSuccess(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.identifier).toBe('test2@test.com');
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(getActiveCustomerDocument);
         });
     });
 
@@ -509,7 +506,7 @@ describe('Shop auth & accounts', () => {
             const { requestPasswordReset } = await shopClient.query<
                 CodegenShop.RequestPasswordResetMutation,
                 CodegenShop.RequestPasswordResetMutationVariables
-            >(REQUEST_PASSWORD_RESET, {
+            >(requestPasswordResetDocument, {
                 identifier: 'invalid-identifier',
             });
             successErrorGuard.assertSuccess(requestPasswordReset);
@@ -525,7 +522,7 @@ describe('Shop auth & accounts', () => {
             const { requestPasswordReset } = await shopClient.query<
                 CodegenShop.RequestPasswordResetMutation,
                 CodegenShop.RequestPasswordResetMutationVariables
-            >(REQUEST_PASSWORD_RESET, {
+            >(requestPasswordResetDocument, {
                 identifier: customer!.emailAddress,
             });
             successErrorGuard.assertSuccess(requestPasswordReset);
@@ -541,7 +538,7 @@ describe('Shop auth & accounts', () => {
             const { resetPassword } = await shopClient.query<
                 CodegenShop.ResetPasswordMutation,
                 CodegenShop.ResetPasswordMutationVariables
-            >(RESET_PASSWORD, {
+            >(resetPasswordDocument, {
                 password: 'newPassword',
                 token: 'bad-token',
             });
@@ -555,7 +552,7 @@ describe('Shop auth & accounts', () => {
             const { resetPassword } = await shopClient.query<
                 CodegenShop.ResetPasswordMutation,
                 CodegenShop.ResetPasswordMutationVariables
-            >(RESET_PASSWORD, {
+            >(resetPasswordDocument, {
                 token: passwordResetToken,
                 password: '2short',
             });
@@ -572,7 +569,7 @@ describe('Shop auth & accounts', () => {
             const { resetPassword } = await shopClient.query<
                 CodegenShop.ResetPasswordMutation,
                 CodegenShop.ResetPasswordMutationVariables
-            >(RESET_PASSWORD, {
+            >(resetPasswordDocument, {
                 token: passwordResetToken,
                 password: 'newPassword',
             });
@@ -632,7 +629,7 @@ describe('Shop auth & accounts', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 Codegen.RegisterMutation,
                 Codegen.RegisterMutationVariables
-            >(REGISTER_ACCOUNT, { input });
+            >(registerAccountDocument, { input });
             successErrorGuard.assertSuccess(registerCustomerAccount);
             verificationToken = await verificationTokenPromise;
 
@@ -656,7 +653,7 @@ describe('Shop auth & accounts', () => {
             const { requestPasswordReset } = await shopClient.query<
                 RequestPasswordReset.Mutation,
                 RequestPasswordReset.Variables
-            >(REQUEST_PASSWORD_RESET, {
+            >(requestPasswordResetDocument, {
                 identifier: emailAddress,
             });
             successErrorGuard.assertSuccess(requestPasswordReset);
@@ -670,7 +667,7 @@ describe('Shop auth & accounts', () => {
 
         it('resetPassword also performs verification', async () => {
             const { resetPassword } = await shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(
-                RESET_PASSWORD,
+                resetPasswordDocument,
                 {
                     token: passwordResetToken,
                     password: 'newPassword',
@@ -721,7 +718,7 @@ describe('Shop auth & accounts', () => {
                 await shopClient.query<
                     CodegenShop.RequestUpdateEmailAddressMutation,
                     CodegenShop.RequestUpdateEmailAddressMutationVariables
-                >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                >(requestUpdateEmailAddressDocument, {
                     password: PASSWORD,
                     newEmailAddress: NEW_EMAIL_ADDRESS,
                 });
@@ -736,7 +733,7 @@ describe('Shop auth & accounts', () => {
             const { requestUpdateCustomerEmailAddress } = await shopClient.query<
                 CodegenShop.RequestUpdateEmailAddressMutation,
                 CodegenShop.RequestUpdateEmailAddressMutationVariables
-            >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+            >(requestUpdateEmailAddressDocument, {
                 password: 'bad password',
                 newEmailAddress: NEW_EMAIL_ADDRESS,
             });
@@ -759,7 +756,7 @@ describe('Shop auth & accounts', () => {
             const { requestUpdateCustomerEmailAddress } = await shopClient.query<
                 CodegenShop.RequestUpdateEmailAddressMutation,
                 CodegenShop.RequestUpdateEmailAddressMutationVariables
-            >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+            >(requestUpdateEmailAddressDocument, {
                 password: PASSWORD,
                 newEmailAddress: otherCustomer.emailAddress,
             });
@@ -776,7 +773,7 @@ describe('Shop auth & accounts', () => {
             await shopClient.query<
                 CodegenShop.RequestUpdateEmailAddressMutation,
                 CodegenShop.RequestUpdateEmailAddressMutationVariables
-            >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+            >(requestUpdateEmailAddressDocument, {
                 password: PASSWORD,
                 newEmailAddress: NEW_EMAIL_ADDRESS,
             });
@@ -798,7 +795,7 @@ describe('Shop auth & accounts', () => {
             const { updateCustomerEmailAddress } = await shopClient.query<
                 CodegenShop.UpdateEmailAddressMutation,
                 CodegenShop.UpdateEmailAddressMutationVariables
-            >(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
+            >(updateEmailAddressDocument, { token: 'bad token' });
             successErrorGuard.assertErrorResult(updateCustomerEmailAddress);
 
             expect(updateCustomerEmailAddress.message).toBe('Identifier change token not recognized');
@@ -811,7 +808,7 @@ describe('Shop auth & accounts', () => {
             const { updateCustomerEmailAddress } = await shopClient.query<
                 CodegenShop.UpdateEmailAddressMutation,
                 CodegenShop.UpdateEmailAddressMutationVariables
-            >(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
+            >(updateEmailAddressDocument, { token: emailUpdateToken });
             successErrorGuard.assertSuccess(updateCustomerEmailAddress);
 
             expect(updateCustomerEmailAddress.success).toBe(true);
@@ -826,9 +823,8 @@ describe('Shop auth & accounts', () => {
 
         it('can login with new email address after verification', async () => {
             await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(getActiveCustomerDocument);
             expect(activeCustomer!.id).toBe(customer!.id);
             expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
         });
@@ -981,7 +977,7 @@ describe('Expiring tokens', () => {
         const { registerCustomerAccount } = await shopClient.query<
             CodegenShop.RegisterMutation,
             CodegenShop.RegisterMutationVariables
-        >(REGISTER_ACCOUNT, {
+        >(registerAccountDocument, {
             input,
         });
         successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -997,7 +993,7 @@ describe('Expiring tokens', () => {
         const { verifyCustomerAccount } = await shopClient.query<
             CodegenShop.VerifyMutation,
             CodegenShop.VerifyMutationVariables
-        >(VERIFY_EMAIL, {
+        >(verifyEmailDocument, {
             password: 'test',
             token: verificationToken,
         });
@@ -1021,7 +1017,7 @@ describe('Expiring tokens', () => {
         const { requestPasswordReset } = await shopClient.query<
             CodegenShop.RequestPasswordResetMutation,
             CodegenShop.RequestPasswordResetMutationVariables
-        >(REQUEST_PASSWORD_RESET, {
+        >(requestPasswordResetDocument, {
             identifier: customer!.emailAddress,
         });
         successErrorGuard.assertSuccess(requestPasswordReset);
@@ -1037,7 +1033,7 @@ describe('Expiring tokens', () => {
         const { resetPassword } = await shopClient.query<
             CodegenShop.ResetPasswordMutation,
             CodegenShop.ResetPasswordMutationVariables
-        >(RESET_PASSWORD, {
+        >(resetPasswordDocument, {
             password: 'test',
             token: passwordResetToken,
         });
@@ -1086,7 +1082,7 @@ describe('Registration without email verification', () => {
         const { registerCustomerAccount } = await shopClient.query<
             CodegenShop.RegisterMutation,
             CodegenShop.RegisterMutationVariables
-        >(REGISTER_ACCOUNT, {
+        >(registerAccountDocument, {
             input,
         });
         successErrorGuard.assertErrorResult(registerCustomerAccount);
@@ -1105,7 +1101,7 @@ describe('Registration without email verification', () => {
         const { registerCustomerAccount } = await shopClient.query<
             CodegenShop.RegisterMutation,
             CodegenShop.RegisterMutationVariables
-        >(REGISTER_ACCOUNT, {
+        >(registerAccountDocument, {
             input,
         });
         successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -1117,30 +1113,26 @@ describe('Registration without email verification', () => {
     it('can login after registering', async () => {
         await shopClient.asUserWithCredentials(userEmailAddress, 'test');
 
-        const result = await shopClient.query(
-            gql`
-                query GetMe {
-                    me {
-                        identifier
-                    }
+        const result = await shopClient.query(gql`
+            query GetMe {
+                me {
+                    identifier
                 }
-            `,
-        );
+            }
+        `);
         expect(result.me.identifier).toBe(userEmailAddress);
     });
 
     it('can login case insensitive', async () => {
         await shopClient.asUserWithCredentials(userEmailAddress.toUpperCase(), 'test');
 
-        const result = await shopClient.query(
-            gql`
-                query GetMe {
-                    me {
-                        identifier
-                    }
+        const result = await shopClient.query(gql`
+            query GetMe {
+                me {
+                    identifier
                 }
-            `,
-        );
+            }
+        `);
         expect(result.me.identifier).toBe(userEmailAddress);
     });
 
@@ -1154,7 +1146,7 @@ describe('Registration without email verification', () => {
         const { registerCustomerAccount } = await shopClient.query<
             CodegenShop.RegisterMutation,
             CodegenShop.RegisterMutationVariables
-        >(REGISTER_ACCOUNT, {
+        >(registerAccountDocument, {
             input,
         });
         successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -1184,7 +1176,7 @@ describe('Registration without email verification', () => {
         const { registerCustomerAccount } = await shopClient.query<
             CodegenShop.RegisterMutation,
             CodegenShop.RegisterMutationVariables
-        >(REGISTER_ACCOUNT, {
+        >(registerAccountDocument, {
             input,
         });
         successErrorGuard.assertSuccess(registerCustomerAccount);
@@ -1246,7 +1238,7 @@ describe('Updating email address without email verification', () => {
         const { requestUpdateCustomerEmailAddress } = await shopClient.query<
             CodegenShop.RequestUpdateEmailAddressMutation,
             CodegenShop.RequestUpdateEmailAddressMutationVariables
-        >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+        >(requestUpdateEmailAddressDocument, {
             password: 'test',
             newEmailAddress: NEW_EMAIL_ADDRESS,
         });
@@ -1258,9 +1250,8 @@ describe('Updating email address without email verification', () => {
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
 
-        const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-            GET_ACTIVE_CUSTOMER,
-        );
+        const { activeCustomer } =
+            await shopClient.query<CodegenShop.GetActiveCustomerQuery>(getActiveCustomerDocument);
         expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
     });
 
@@ -1269,7 +1260,7 @@ describe('Updating email address without email verification', () => {
         const { requestUpdateCustomerEmailAddress } = await shopClient.query<
             CodegenShop.RequestUpdateEmailAddressMutation,
             CodegenShop.RequestUpdateEmailAddressMutationVariables
-        >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+        >(requestUpdateEmailAddressDocument, {
             password: 'test',
             newEmailAddress: ' Not.Normal@test.com ',
         });
@@ -1281,9 +1272,8 @@ describe('Updating email address without email verification', () => {
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
 
-        const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-            GET_ACTIVE_CUSTOMER,
-        );
+        const { activeCustomer } =
+            await shopClient.query<CodegenShop.GetActiveCustomerQuery>(getActiveCustomerDocument);
         expect(activeCustomer!.emailAddress).toBe('not.normal@test.com');
     });
 });

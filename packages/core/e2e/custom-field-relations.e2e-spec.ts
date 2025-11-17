@@ -32,7 +32,7 @@ import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/iss
 import { PluginIssue2453 } from './fixtures/test-plugins/issue-2453/plugin-issue2453';
 import { TestCustomEntity, WithCustomEntity } from './fixtures/test-plugins/with-custom-entity';
 import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
 const entitiesWithCustomFields: Array<keyof CustomFields> = [
@@ -717,7 +717,7 @@ describe('Custom field relations', () => {
 
             beforeAll(async () => {
                 const { addItemToOrder } = await shopClient.query<any, AddItemToOrderMutationVariables>(
-                    ADD_ITEM_TO_ORDER,
+                    addItemToOrderDocument,
                     {
                         productVariantId: 'T_1',
                         quantity: 1,

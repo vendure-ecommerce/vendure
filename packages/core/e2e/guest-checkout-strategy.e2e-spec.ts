@@ -1,15 +1,15 @@
 import { CreateCustomerInput, SetCustomerForOrderResult } from '@vendure/common/lib/generated-shop-types';
 import {
-    GuestCheckoutStrategy,
-    Order,
-    RequestContext,
-    ErrorResultUnion,
+    ChannelService,
     Customer,
     CustomerService,
+    ErrorResultUnion,
     GuestCheckoutError,
+    GuestCheckoutStrategy,
     Injector,
+    Order,
+    RequestContext,
     TransactionalConnection,
-    ChannelService,
 } from '@vendure/core';
 import {
     createErrorResultGuard,
@@ -19,18 +19,17 @@ import {
 } from '@vendure/testing';
 import path from 'path';
 import { IsNull } from 'typeorm';
-import { it, afterAll, beforeAll, describe, expect } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { AlreadyLoggedInError } from '../src/common/error/generated-graphql-shop-errors';
-import { CustomerEvent } from '../src/index';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST, GET_PRODUCTS_WITH_VARIANT_PRICES } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
+import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { addItemToOrderDocument, setCustomerDocument } from './graphql/shop-definitions';
 
 class TestGuestCheckoutStrategy implements GuestCheckoutStrategy {
     static allowGuestCheckout = true;
@@ -127,7 +126,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: 'guest@test.com',
                 firstName: 'Guest',
@@ -149,7 +148,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: 'guest@test.com',
                 firstName: 'Guest',
@@ -170,7 +169,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: customers[0].emailAddress,
                 firstName: customers[0].firstName,
@@ -191,7 +190,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: customers[0].emailAddress,
                 firstName: customers[0].firstName,
@@ -213,7 +212,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: customers[0].emailAddress,
                 firstName: customers[0].firstName,
@@ -233,7 +232,7 @@ describe('Order taxes', () => {
         const { setCustomerForOrder } = await shopClient.query<
             CodegenShop.SetCustomerForOrderMutation,
             CodegenShop.SetCustomerForOrderMutationVariables
-        >(SET_CUSTOMER, {
+        >(setCustomerDocument, {
             input: {
                 emailAddress: customers[0].emailAddress,
                 firstName: customers[0].firstName,
@@ -248,7 +247,7 @@ describe('Order taxes', () => {
 
 async function addItemToOrder(shopClient: SimpleGraphQLClient) {
     await shopClient.query<CodegenShop.AddItemToOrderMutation, CodegenShop.AddItemToOrderMutationVariables>(
-        ADD_ITEM_TO_ORDER,
+        addItemToOrderDocument,
         {
             productVariantId: 'T_1',
             quantity: 1,

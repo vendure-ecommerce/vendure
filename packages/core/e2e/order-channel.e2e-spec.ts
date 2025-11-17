@@ -9,12 +9,12 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
@@ -22,7 +22,7 @@ import {
     GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER, GET_ORDER_SHOP } from './graphql/shop-definitions';
+import { addItemToOrderDocument, GET_ORDER_SHOP, getActiveOrderDocument } from './graphql/shop-definitions';
 
 describe('Channelaware orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
@@ -133,7 +133,7 @@ describe('Channelaware orders', () => {
         const { addItemToOrder } = await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: product1!.variants[0].id,
             quantity: 1,
         });
@@ -148,7 +148,7 @@ describe('Channelaware orders', () => {
 
     it('sets active order to null when switching channel', async () => {
         shopClient.setChannelToken(THIRD_CHANNEL_TOKEN);
-        const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(result.activeOrder).toBeNull();
     });
 
@@ -156,7 +156,7 @@ describe('Channelaware orders', () => {
         const { addItemToOrder } = await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: product2!.variants[0].id,
             quantity: 1,
         });
@@ -171,7 +171,8 @@ describe('Channelaware orders', () => {
 
     it('goes back to most recent active order when switching channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-        const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        const { activeOrder } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(activeOrder!.id).toBe(order1Id);
     });
 

@@ -8,15 +8,14 @@ import {
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { ErrorCode, FulfillmentFragment } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
+import { ErrorCode, FulfillmentFragment } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import {
     CREATE_FULFILLMENT,
@@ -24,7 +23,7 @@ import {
     GET_ORDER_FULFILLMENTS,
     TRANSIT_FULFILLMENT,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 const initSpy = vi.fn();
@@ -122,14 +121,20 @@ describe('Fulfillment process', () => {
          */
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         // Add Items
-        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_1',
-            quantity: 1,
-        });
-        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_2',
-            quantity: 1,
-        });
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
+            addItemToOrderDocument,
+            {
+                productVariantId: 'T_1',
+                quantity: 1,
+            },
+        );
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
+            addItemToOrderDocument,
+            {
+                productVariantId: 'T_2',
+                quantity: 1,
+            },
+        );
         // Transit to payment
         await proceedToArrangingPayment(shopClient);
         await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);

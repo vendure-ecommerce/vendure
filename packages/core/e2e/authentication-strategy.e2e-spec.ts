@@ -8,7 +8,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     TestAuthenticationStrategy,
@@ -18,16 +18,16 @@ import {
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AttemptLoginDocument,
     CurrentUserFragment,
     CustomerFragment,
     HistoryEntryType,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
-import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
+import { registerAccountDocument } from './graphql/shop-definitions';
 
 const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
     input => input.identifier != null,
@@ -206,9 +206,8 @@ describe('AuthenticationStrategy', () => {
                 },
             ];
 
-            const { customers: customers1 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers1 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers1.items).toEqual(EXPECTED_CUSTOMERS);
             const { authenticate: auth1 } = await shopClient.query<Codegen.AuthenticateMutation>(
                 AUTHENTICATE,
@@ -225,9 +224,8 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(auth1);
             expect(auth1.identifier).toBe(userData.email);
 
-            const { customers: customers2 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers2 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers2.items).toEqual(EXPECTED_CUSTOMERS);
 
             await shopClient.asAnonymousUser();
@@ -247,9 +245,8 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(auth2);
             expect(auth2.identifier).toBe(userData.email);
 
-            const { customers: customers3 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers3 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers3.items).toEqual(EXPECTED_CUSTOMERS);
         });
 
@@ -261,7 +258,7 @@ describe('AuthenticationStrategy', () => {
             const { registerCustomerAccount } = await shopClient.query<
                 RegisterMutation,
                 RegisterMutationVariables
-            >(REGISTER_ACCOUNT, {
+            >(registerAccountDocument, {
                 input: {
                     emailAddress: userData.email,
                 },

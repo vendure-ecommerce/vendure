@@ -62,10 +62,10 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
-    APPLY_COUPON_CODE,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    applyCouponCodeDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
@@ -1611,7 +1611,7 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.ApplyCouponCodeMutation,
             CodegenShop.ApplyCouponCodeMutationVariables
-        >(APPLY_COUPON_CODE, {
+        >(applyCouponCodeDocument, {
             couponCode: '5OFF',
         });
         await proceedToArrangingPayment(shopClient);
@@ -1727,7 +1727,7 @@ describe('Order modification', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: 'HALF',
             });
             await proceedToArrangingPayment(shopClient);
@@ -1772,7 +1772,7 @@ describe('Order modification', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: '5OFF2',
             });
             await proceedToArrangingPayment(shopClient);
@@ -2655,7 +2655,7 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.SetShippingAddressMutation,
             CodegenShop.SetShippingAddressMutationVariables
-        >(SET_SHIPPING_ADDRESS, {
+        >(setShippingAddressDocument, {
             input: {
                 fullName: 'name',
                 streetLine1: '12 the street',
@@ -2668,14 +2668,14 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.SetShippingMethodMutation,
             CodegenShop.SetShippingMethodMutationVariables
-        >(SET_SHIPPING_METHOD, {
+        >(setShippingMethodDocument, {
             id: testShippingMethodId,
         });
 
         await shopClient.query<
             CodegenShop.TransitionToStateMutation,
             CodegenShop.TransitionToStateMutationVariables
-        >(TRANSITION_TO_STATE, {
+        >(transitionToStateDocument, {
             state: 'ArrangingPayment',
         });
 

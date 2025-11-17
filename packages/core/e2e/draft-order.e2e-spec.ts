@@ -32,7 +32,7 @@ import {
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
-import { GET_ACTIVE_CUSTOMER_ORDERS } from './graphql/shop-definitions';
+import { getActiveCustomerOrdersDocument } from './graphql/shop-definitions';
 
 class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
     static spy = vi.fn();
@@ -208,8 +208,9 @@ describe('Draft Orders resolver', () => {
     it('custom does not see draft orders in history', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-        const { activeCustomer } =
-            await shopClient.query<GetActiveCustomerOrdersQuery>(GET_ACTIVE_CUSTOMER_ORDERS);
+        const { activeCustomer } = await shopClient.query<GetActiveCustomerOrdersQuery>(
+            getActiveCustomerOrdersDocument,
+        );
 
         expect(activeCustomer?.orders.totalItems).toBe(0);
         expect(activeCustomer?.orders.items.length).toBe(0);

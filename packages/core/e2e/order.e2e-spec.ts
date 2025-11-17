@@ -75,16 +75,16 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_MULTIPLE_ITEMS_TO_ORDER,
-    ADD_PAYMENT,
-    APPLY_COUPON_CODE,
-    GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
-    GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
-    GET_ACTIVE_ORDER,
-    GET_ORDER_BY_CODE_WITH_PAYMENTS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
+    addItemToOrderDocument,
+    addMultipleItemsToOrderDocument,
+    addPaymentDocument,
+    applyCouponCodeDocument,
+    getActiveCustomerWithOrdersProductPriceDocument,
+    getActiveCustomerWithOrdersProductSlugDocument,
+    getActiveOrderDocument,
+    getOrderByCodeWithPaymentsDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
@@ -166,14 +166,14 @@ describe('Orders resolver', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_2',
             quantity: 1,
         });
@@ -181,14 +181,14 @@ describe('Orders resolver', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_2',
             quantity: 1,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_3',
             quantity: 3,
         });
@@ -517,7 +517,7 @@ describe('Orders resolver', () => {
             const { orderByCode } = await shopClient.query<
                 CodegenShop.GetOrderByCodeWithPaymentsQuery,
                 CodegenShop.GetOrderByCodeWithPaymentsQueryVariables
-            >(GET_ORDER_BY_CODE_WITH_PAYMENTS, { code: firstOrderCode });
+            >(getOrderByCodeWithPaymentsDocument, { code: firstOrderCode });
 
             expect(orderByCode?.payments?.[0].metadata).toEqual({
                 public: {
@@ -2127,7 +2127,8 @@ describe('Orders resolver', () => {
 
             firstNoteId = order!.history.items[0].id;
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(activeOrder!.history.items.map(pick(['type']))).toEqual([
                 { type: HistoryEntryType.ORDER_STATE_TRANSITION },
@@ -2167,7 +2168,8 @@ describe('Orders resolver', () => {
                 },
             ]);
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(activeOrder!.history.items.map(pick(['type', 'data']))).toEqual([
                 {
@@ -2250,7 +2252,7 @@ describe('Orders resolver', () => {
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: partialPaymentMethod.code,
                     metadata: {
@@ -2281,7 +2283,7 @@ describe('Orders resolver', () => {
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: singleStageRefundablePaymentMethod.code,
                     metadata: {},
@@ -2400,7 +2402,7 @@ describe('Orders resolver', () => {
             await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: partialPaymentMethod.code,
                     metadata: {
@@ -2412,7 +2414,7 @@ describe('Orders resolver', () => {
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: singleStageRefundablePaymentMethod.code,
                     metadata: {},
@@ -2546,10 +2548,11 @@ describe('Orders resolver', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: 'TEST',
             });
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
             const { order } = await adminClient.query<
                 Codegen.GetOrderFulfillmentsQuery,
                 Codegen.GetOrderFulfillmentsQueryVariables
@@ -2566,7 +2569,7 @@ describe('Orders resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 2,
             });
@@ -2614,14 +2617,14 @@ describe('Orders resolver', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 2,
             });
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     fullName: 'name',
                     streetLine1: '12 the street',
@@ -2633,7 +2636,7 @@ describe('Orders resolver', () => {
             const { setOrderShippingMethod: order } = await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,
                 CodegenShop.SetShippingMethodMutationVariables
-            >(SET_SHIPPING_METHOD, {
+            >(setShippingMethodDocument, {
                 id: shippingMethod.id,
             });
             orderGuard.assertSuccess(order);
@@ -2663,7 +2666,7 @@ describe('Orders resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 2,
             });
@@ -2706,7 +2709,7 @@ describe('Orders resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_7',
                 quantity: 1,
             });
@@ -2725,7 +2728,7 @@ describe('Orders resolver', () => {
             const { activeCustomer } = await shopClient.query<
                 CodegenShop.GetActiveCustomerWithOrdersProductSlugQuery,
                 CodegenShop.GetActiveCustomerWithOrdersProductSlugQueryVariables
-            >(GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG, {
+            >(getActiveCustomerWithOrdersProductSlugDocument, {
                 options: {
                     sort: {
                         createdAt: SortOrder.ASC,
@@ -2743,7 +2746,7 @@ describe('Orders resolver', () => {
             const { activeCustomer } = await shopClient.query<
                 CodegenShop.GetActiveCustomerWithOrdersProductPriceQuery,
                 CodegenShop.GetActiveCustomerWithOrdersProductPriceQueryVariables
-            >(GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE, {
+            >(getActiveCustomerWithOrdersProductPriceDocument, {
                 options: {
                     sort: {
                         createdAt: SortOrder.ASC,
@@ -2762,7 +2765,7 @@ describe('Orders resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 2,
             });
@@ -2807,7 +2810,7 @@ describe('Orders resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_6',
                 quantity: 3,
             });
@@ -2853,7 +2856,7 @@ describe('Orders resolver', () => {
             const { addItemsToOrder } = await shopClient.query<
                 CodegenShop.AddItemsToOrderMutation,
                 CodegenShop.AddItemsToOrderMutationVariables
-            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+            >(addMultipleItemsToOrderDocument, {
                 inputs: [
                     {
                         productVariantId: 'T_1',
@@ -2875,7 +2878,7 @@ describe('Orders resolver', () => {
             const { addItemsToOrder } = await shopClient.query<
                 CodegenShop.AddItemsToOrderMutation,
                 CodegenShop.AddItemsToOrderMutationVariables
-            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+            >(addMultipleItemsToOrderDocument, {
                 inputs: [
                     {
                         productVariantId: 'T_1',
@@ -2938,7 +2941,7 @@ async function createTestOrder(
     const { addItemToOrder } = await shopClient.query<
         CodegenShop.AddItemToOrderMutation,
         CodegenShop.AddItemToOrderMutationVariables
-    >(ADD_ITEM_TO_ORDER, {
+    >(addItemToOrderDocument, {
         productVariantId,
         quantity: 2,
     });

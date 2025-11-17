@@ -1,18 +1,18 @@
-import { DefaultMoneyStrategy, Logger, mergeConfig, MoneyStrategy, VendurePlugin } from '@vendure/core';
+import { Logger, mergeConfig, MoneyStrategy, VendurePlugin } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { ColumnOptions } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { SortOrder } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import { GET_PRODUCT_VARIANT_LIST } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -111,7 +111,7 @@ describe('Custom MoneyStrategy', () => {
         const { addItemToOrder } = await shopClient.query<
             AddItemToOrderMutation,
             AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: expensiveVariantId,
             quantity: 2,
         });
@@ -129,7 +129,7 @@ describe('Custom MoneyStrategy', () => {
         const { addItemToOrder } = await shopClient.query<
             AddItemToOrderMutation,
             AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: cheapVariantId,
             quantity: 10,
         });

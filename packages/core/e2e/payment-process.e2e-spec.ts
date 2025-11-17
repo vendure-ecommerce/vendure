@@ -2,7 +2,6 @@
 import {
     CustomOrderProcess,
     CustomPaymentProcess,
-    DefaultLogger,
     defaultOrderProcess,
     LanguageCode,
     mergeConfig,
@@ -16,11 +15,10 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -31,7 +29,11 @@ import {
     GET_ORDER,
     TRANSITION_PAYMENT_TO_STATE,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
+import {
+    addItemToOrderDocument,
+    addPaymentDocument,
+    getActiveOrderDocument,
+} from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
 const initSpy = vi.fn();
@@ -157,7 +159,7 @@ describe('Payment process', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
@@ -177,7 +179,7 @@ describe('Payment process', () => {
         const { addPaymentToOrder } = await shopClient.query<
             CodegenShop.AddPaymentToOrderMutation,
             CodegenShop.AddPaymentToOrderMutationVariables
-        >(ADD_PAYMENT, {
+        >(addPaymentDocument, {
             input: {
                 method: testPaymentHandler.code,
                 metadata: {
@@ -218,9 +220,8 @@ describe('Payment process', () => {
     });
 
     it('transition Order to custom state, custom OrderPlacedStrategy sets as placed', async () => {
-        const { activeOrder: activeOrderPre } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: activeOrderPre } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(activeOrderPre).not.toBeNull();
 
         const { transitionOrderToState } = await adminClient.query<
@@ -236,9 +237,8 @@ describe('Payment process', () => {
         expect(transitionOrderToState.state).toBe('ValidatingPayment');
         expect(transitionOrderToState?.active).toBe(false);
 
-        const { activeOrder: activeOrderPost } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: activeOrderPost } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(activeOrderPost).toBeNull();
     });
 
@@ -273,7 +273,7 @@ describe('Payment process', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -281,7 +281,7 @@ describe('Payment process', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testPaymentHandler.code,
                     metadata: {

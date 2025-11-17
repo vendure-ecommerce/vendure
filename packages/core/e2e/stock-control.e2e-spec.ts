@@ -41,15 +41,15 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    ADJUST_ITEM_QUANTITY,
-    GET_ACTIVE_ORDER,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    GET_PRODUCT_WITH_STOCK_LEVEL,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    addItemToOrderDocument,
+    addPaymentDocument,
+    adjustItemQuantityDocument,
+    getActiveOrderDocument,
+    getEligibleShippingMethodsDocument,
+    getProductWithStockLevelDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
@@ -122,12 +122,12 @@ describe('Stock control', () => {
 
     async function setFirstEligibleShippingMethod() {
         const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-            GET_ELIGIBLE_SHIPPING_METHODS,
+            getEligibleShippingMethodsDocument,
         );
         await shopClient.query<
             CodegenShop.SetShippingMethodMutation,
             CodegenShop.SetShippingMethodMutationVariables
-        >(SET_SHIPPING_METHOD, {
+        >(setShippingMethodDocument, {
             id: eligibleShippingMethods[0].id,
         });
     }
@@ -290,28 +290,28 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variant1.id,
                 quantity: 2,
             });
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variant2.id,
                 quantity: 3,
             });
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variant3.id,
                 quantity: 4,
             });
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     streetLine1: '1 Test Street',
                     countryCode: 'GB',
@@ -321,14 +321,14 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' as OrderState });
+            >(transitionToStateDocument, { state: 'ArrangingPayment' as OrderState });
         });
 
         it('creates an Allocation when order completed', async () => {
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},
@@ -518,14 +518,14 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: trackedVariant1.id,
                 quantity: 1,
             });
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     streetLine1: '1 Test Street',
                     countryCode: 'GB',
@@ -535,11 +535,11 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' as OrderState });
+            >(transitionToStateDocument, { state: 'ArrangingPayment' as OrderState });
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},
@@ -684,7 +684,7 @@ describe('Stock control', () => {
             const { product } = await shopClient.query<
                 CodegenShop.GetProductStockLevelQuery,
                 CodegenShop.GetProductStockLevelQueryVariables
-            >(GET_PRODUCT_WITH_STOCK_LEVEL, {
+            >(getProductWithStockLevelDocument, {
                 id: 'T_2',
             });
 
@@ -700,7 +700,7 @@ describe('Stock control', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 1,
             });
@@ -718,7 +718,7 @@ describe('Stock control', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 5,
             });
@@ -747,7 +747,7 @@ describe('Stock control', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 5,
             });
@@ -771,7 +771,7 @@ describe('Stock control', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 2,
             });
@@ -801,7 +801,7 @@ describe('Stock control', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 8,
             });
@@ -1108,7 +1108,7 @@ describe('Stock control', () => {
                 const { addItemToOrder: add1 } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant5Id,
                     quantity: 25,
                 });
@@ -1123,7 +1123,7 @@ describe('Stock control', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant5Id,
                     quantity: 1,
                 });
@@ -1152,7 +1152,7 @@ describe('Stock control', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant5Id,
                     quantity: 1,
                 });
@@ -1170,7 +1170,7 @@ describe('Stock control', () => {
                 const { addItemToOrder: add1 } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant6Id,
                     quantity: 3,
                 });
@@ -1180,7 +1180,7 @@ describe('Stock control', () => {
                 const { addItemToOrder: add2 } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant6Id,
                     quantity: 1,
                 });
@@ -1213,7 +1213,7 @@ describe('Stock control', () => {
                 const { addItemToOrder: add1 } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant7Id,
                     quantity: 1,
                 });
@@ -1235,7 +1235,7 @@ describe('Stock control', () => {
                 const { adjustOrderLine: add2 } = await shopClient.query<
                     CodegenShop.AdjustItemQuantityMutation,
                     CodegenShop.AdjustItemQuantityMutationVariables
-                >(ADJUST_ITEM_QUANTITY, {
+                >(adjustItemQuantityDocument, {
                     orderLineId: add1.lines[0].id,
                     quantity: 2,
                 });
@@ -1244,7 +1244,7 @@ describe('Stock control', () => {
                 expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
 
                 const { activeOrder } =
-                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
                 expect(activeOrder!.lines.length).toBe(0);
             });
 
@@ -1259,7 +1259,7 @@ describe('Stock control', () => {
                 const { addItemToOrder: add1 } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: variant6.id,
                     quantity: 1,
                 });
@@ -1274,7 +1274,7 @@ describe('Stock control', () => {
                 await shopClient.query<
                     CodegenShop.SetShippingAddressMutation,
                     CodegenShop.SetShippingAddressMutationVariables
-                >(SET_SHIPPING_ADDRESS, {
+                >(setShippingAddressDocument, {
                     input: {
                         streetLine1: '1 Test Street',
                         countryCode: 'GB',
@@ -1284,7 +1284,7 @@ describe('Stock control', () => {
                 const { transitionOrderToState } = await shopClient.query<
                     CodegenShop.TransitionToStateMutation,
                     CodegenShop.TransitionToStateMutationVariables
-                >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+                >(transitionToStateDocument, { state: 'ArrangingPayment' });
                 orderGuard.assertSuccess(transitionOrderToState);
                 expect(transitionOrderToState.state).toBe('ArrangingPayment');
                 expect(transitionOrderToState.active).toBe(false);
@@ -1381,7 +1381,7 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     streetLine1: '1 Test Street',
                     countryCode: 'GB',
@@ -1391,13 +1391,13 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, {
+            >(transitionToStateDocument, {
                 state: 'ArrangingPayment',
             });
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables
-            >(ADD_PAYMENT, {
+            >(addPaymentDocument, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
                     metadata: {},
@@ -1475,7 +1475,7 @@ describe('Stock control', () => {
             const { addItemToOrder: add1 } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 1,
             });
@@ -1486,7 +1486,7 @@ describe('Stock control', () => {
             const { addItemToOrder: add2 } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variantId,
                 quantity: 1,
             });
@@ -1508,7 +1508,7 @@ describe('Stock control', () => {
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     fullName: 'name',
                     streetLine1: '12 the street',
@@ -1519,19 +1519,19 @@ describe('Stock control', () => {
             });
 
             const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-                GET_ELIGIBLE_SHIPPING_METHODS,
+                getEligibleShippingMethodsDocument,
             );
             const { setOrderShippingMethod } = await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,
                 CodegenShop.SetShippingMethodMutationVariables
-            >(SET_SHIPPING_METHOD, {
+            >(setShippingMethodDocument, {
                 id: eligibleShippingMethods[1].id,
             });
             orderGuard.assertSuccess(setOrderShippingMethod);
             const { transitionOrderToState } = await shopClient.query<
                 CodegenShop.TransitionToStateMutation,
                 CodegenShop.TransitionToStateMutationVariables
-            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+            >(transitionToStateDocument, { state: 'ArrangingPayment' });
             orderGuard.assertErrorResult(transitionOrderToState);
 
             expect(transitionOrderToState!.transitionError).toBe(

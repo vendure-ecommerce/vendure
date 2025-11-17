@@ -6,7 +6,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { HistoryEntryType } from './graphql/generated-e2e-admin-types';
@@ -14,11 +14,11 @@ import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { CreateAddressInput, ErrorCode, UpdateAddressInput } from './graphql/generated-e2e-shop-types';
 import { ATTEMPT_LOGIN, GET_CUSTOMER, GET_CUSTOMER_HISTORY } from './graphql/shared-definitions';
 import {
-    CREATE_ADDRESS,
-    DELETE_ADDRESS,
-    UPDATE_ADDRESS,
-    UPDATE_CUSTOMER,
-    UPDATE_PASSWORD,
+    createAddressDocument,
+    deleteAddressDocument,
+    updateAddressDocument,
+    updateCustomerDocument,
+    updatePasswordDocument,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -70,7 +70,7 @@ describe('Shop customers', () => {
             await shopClient.query<
                 CodegenShop.UpdateCustomerMutation,
                 CodegenShop.UpdateCustomerMutationVariables
-            >(UPDATE_CUSTOMER, {
+            >(updateCustomerDocument, {
                 input,
             });
         }, 'You are not currently authorized to perform this action'),
@@ -86,7 +86,7 @@ describe('Shop customers', () => {
             await shopClient.query<
                 CodegenShop.CreateAddressShopMutation,
                 CodegenShop.CreateAddressShopMutationVariables
-            >(CREATE_ADDRESS, {
+            >(createAddressDocument, {
                 input,
             });
         }, 'You are not currently authorized to perform this action'),
@@ -102,7 +102,7 @@ describe('Shop customers', () => {
             await shopClient.query<
                 CodegenShop.UpdateAddressShopMutation,
                 CodegenShop.UpdateAddressShopMutationVariables
-            >(UPDATE_ADDRESS, {
+            >(updateAddressDocument, {
                 input,
             });
         }, 'You are not currently authorized to perform this action'),
@@ -114,7 +114,7 @@ describe('Shop customers', () => {
             await shopClient.query<
                 CodegenShop.DeleteAddressShopMutation,
                 CodegenShop.DeleteAddressShopMutationVariables
-            >(DELETE_ADDRESS, {
+            >(deleteAddressDocument, {
                 id: 'T_1',
             });
         }, 'You are not currently authorized to perform this action'),
@@ -141,7 +141,7 @@ describe('Shop customers', () => {
             const result = await shopClient.query<
                 CodegenShop.UpdateCustomerMutation,
                 CodegenShop.UpdateCustomerMutationVariables
-            >(UPDATE_CUSTOMER, { input });
+            >(updateCustomerDocument, { input });
 
             expect(result.updateCustomer.firstName).toBe('xyz');
         });
@@ -176,7 +176,7 @@ describe('Shop customers', () => {
             const { createCustomerAddress } = await shopClient.query<
                 CodegenShop.CreateAddressShopMutation,
                 CodegenShop.CreateAddressShopMutationVariables
-            >(CREATE_ADDRESS, { input });
+            >(createAddressDocument, { input });
 
             expect(createCustomerAddress).toEqual({
                 id: 'T_3',
@@ -219,7 +219,7 @@ describe('Shop customers', () => {
             const result = await shopClient.query<
                 CodegenShop.UpdateAddressShopMutation,
                 CodegenShop.UpdateAddressShopMutationVariables
-            >(UPDATE_ADDRESS, { input });
+            >(updateAddressDocument, { input });
 
             expect(result.updateCustomerAddress.streetLine1).toEqual('5 Test Street');
             expect(result.updateCustomerAddress.country.code).toEqual('AT');
@@ -256,7 +256,7 @@ describe('Shop customers', () => {
                 await shopClient.query<
                     CodegenShop.UpdateAddressShopMutation,
                     CodegenShop.UpdateAddressShopMutationVariables
-                >(UPDATE_ADDRESS, { input });
+                >(updateAddressDocument, { input });
             }, 'You are not currently authorized to perform this action'),
         );
 
@@ -264,7 +264,7 @@ describe('Shop customers', () => {
             const { deleteCustomerAddress } = await shopClient.query<
                 CodegenShop.DeleteAddressShopMutation,
                 CodegenShop.DeleteAddressShopMutationVariables
-            >(DELETE_ADDRESS, { id: 'T_3' });
+            >(deleteAddressDocument, { id: 'T_3' });
 
             expect(deleteCustomerAddress.success).toBe(true);
         });
@@ -291,7 +291,7 @@ describe('Shop customers', () => {
                 await shopClient.query<
                     CodegenShop.DeleteAddressShopMutation,
                     CodegenShop.DeleteAddressShopMutationVariables
-                >(DELETE_ADDRESS, { id: 'T_2' });
+                >(deleteAddressDocument, { id: 'T_2' });
             }, 'You are not currently authorized to perform this action'),
         );
 
@@ -299,7 +299,7 @@ describe('Shop customers', () => {
             const { updateCustomerPassword } = await shopClient.query<
                 CodegenShop.UpdatePasswordMutation,
                 CodegenShop.UpdatePasswordMutationVariables
-            >(UPDATE_PASSWORD, {
+            >(updatePasswordDocument, {
                 old: 'wrong',
                 new: 'test2',
             });
@@ -313,7 +313,7 @@ describe('Shop customers', () => {
             const { updateCustomerPassword } = await shopClient.query<
                 CodegenShop.UpdatePasswordMutation,
                 CodegenShop.UpdatePasswordMutationVariables
-            >(UPDATE_PASSWORD, { old: 'test', new: 'test2' });
+            >(updatePasswordDocument, { old: 'test', new: 'test2' });
             successErrorGuard.assertSuccess(updateCustomerPassword);
 
             expect(updateCustomerPassword.success).toBe(true);

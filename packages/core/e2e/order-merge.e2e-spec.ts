@@ -16,27 +16,19 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import {
-    AttemptLogin,
-    AttemptLoginMutation,
-    AttemptLoginMutationVariables,
-    GetCustomerList,
-} from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
+import { AttemptLoginMutation, AttemptLoginMutationVariables } from './graphql/generated-e2e-admin-types';
 import {
-    AddItemToOrder,
-    AddItemToOrderMutation,
     AddItemToOrderMutation,
     AddItemToOrderMutationVariables,
-    GetActiveOrderPaymentsQuery,
     GetNextOrderStatesQuery,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { ATTEMPT_LOGIN, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
-import { GET_ACTIVE_ORDER_PAYMENTS, GET_NEXT_STATES, TEST_ORDER_FRAGMENT } from './graphql/shop-definitions';
+import { getNextStatesDocument, testOrderFragment } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
 /**
@@ -264,7 +256,7 @@ describe('Order merging', () => {
     it('does not throw FK error when merging with a cart with an existing session', async () => {
         await shopClient.asUserWithCredentials(customers[7].emailAddress, 'test');
         // Create an Order linked with the current session
-        const { nextOrderStates } = await shopClient.query<GetNextOrderStatesQuery>(GET_NEXT_STATES);
+        const { nextOrderStates } = await shopClient.query<GetNextOrderStatesQuery>(getNextStatesDocument);
 
         // unset last auth token to simulate a guest user in a different browser
         shopClient.setAuthToken('');
@@ -317,5 +309,5 @@ export const GET_ACTIVE_ORDER_WITH_CUSTOM_FIELDS = gql`
             }
         }
     }
-    ${TEST_ORDER_FRAGMENT}
+    ${testOrderFragment}
 `;

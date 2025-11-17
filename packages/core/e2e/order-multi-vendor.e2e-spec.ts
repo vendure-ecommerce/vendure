@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { mergeConfig, OrderService } from '@vendure/core';
+import { mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
-import { multivendorPaymentMethodHandler } from 'dev-server/example-plugins/multivendor-plugin/config/mv-payment-handler';
 import { CONNECTED_PAYMENT_METHOD_CODE } from 'dev-server/example-plugins/multivendor-plugin/constants';
 import { MultivendorPlugin } from 'dev-server/example-plugins/multivendor-plugin/multivendor.plugin';
 import gql from 'graphql-tag';
@@ -18,11 +17,11 @@ import {
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { SetShippingMethodDocument } from './graphql/generated-e2e-shop-types';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    TRANSITION_TO_STATE,
+    addItemToOrderDocument,
+    addPaymentDocument,
+    getEligibleShippingMethodsDocument,
+    setShippingAddressDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 
 declare module '@vendure/core/dist/entity/custom-entity-fields' {
@@ -138,14 +137,14 @@ describe('Multi-vendor orders', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: bobsPartsChannel.variantIds[0],
             quantity: 1,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: alicesWaresChannel.variantIds[0],
             quantity: 1,
         });
@@ -153,7 +152,7 @@ describe('Multi-vendor orders', () => {
         await shopClient.query<
             CodegenShop.SetShippingAddressMutation,
             CodegenShop.SetShippingAddressMutationVariables
-        >(SET_SHIPPING_ADDRESS, {
+        >(setShippingAddressDocument, {
             input: {
                 streetLine1: '12 the street',
                 postalCode: '123456',
@@ -162,7 +161,7 @@ describe('Multi-vendor orders', () => {
         });
 
         const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-            GET_ELIGIBLE_SHIPPING_METHODS,
+            getEligibleShippingMethodsDocument,
         );
 
         expect(eligibleShippingMethods.map(m => m.code).sort()).toEqual([
@@ -191,14 +190,14 @@ describe('Multi-vendor orders', () => {
         const { transitionOrderToState } = await shopClient.query<
             CodegenShop.TransitionToStateMutation,
             CodegenShop.TransitionToStateMutationVariables
-        >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+        >(transitionToStateDocument, { state: 'ArrangingPayment' });
 
         orderResultGuard.assertSuccess(transitionOrderToState);
 
         const { addPaymentToOrder } = await shopClient.query<
             CodegenShop.AddPaymentToOrderMutation,
             CodegenShop.AddPaymentToOrderMutationVariables
-        >(ADD_PAYMENT, {
+        >(addPaymentDocument, {
             input: {
                 method: CONNECTED_PAYMENT_METHOD_CODE,
                 metadata: {},

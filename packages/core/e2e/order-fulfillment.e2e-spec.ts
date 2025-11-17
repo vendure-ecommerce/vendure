@@ -9,11 +9,10 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -28,7 +27,7 @@ import {
     CREATE_SHIPPING_METHOD,
     TRANSIT_FULFILLMENT,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 const badTrackingCode = 'bad-code';
@@ -128,14 +127,20 @@ describe('Order fulfillments', () => {
             },
         });
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_1',
-            quantity: 1,
-        });
-        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_2',
-            quantity: 1,
-        });
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
+            addItemToOrderDocument,
+            {
+                productVariantId: 'T_1',
+                quantity: 1,
+            },
+        );
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
+            addItemToOrderDocument,
+            {
+                productVariantId: 'T_2',
+                quantity: 1,
+            },
+        );
         await proceedToArrangingPayment(shopClient);
         const result = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
         orderGuard.assertSuccess(result);
@@ -147,9 +152,8 @@ describe('Order fulfillments', () => {
     });
 
     it('fulfillmentHandlers query', async () => {
-        const { fulfillmentHandlers } = await adminClient.query<Codegen.GetFulfillmentHandlersQuery>(
-            GET_FULFILLMENT_HANDLERS,
-        );
+        const { fulfillmentHandlers } =
+            await adminClient.query<Codegen.GetFulfillmentHandlersQuery>(GET_FULFILLMENT_HANDLERS);
 
         expect(fulfillmentHandlers.map(h => h.code)).toEqual([
             'manual-fulfillment',

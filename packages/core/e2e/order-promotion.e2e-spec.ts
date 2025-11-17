@@ -25,17 +25,17 @@ import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { freeShipping } from '../src/config/promotion/actions/free-shipping-action';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 import { orderLineFixedDiscount } from '../src/config/promotion/actions/order-line-fixed-discount-action';
 
 import { TestMoneyStrategy } from './fixtures/test-money-strategy';
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { AdjustmentType, ErrorCode } from './graphql/generated-e2e-shop-types';
+import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { AdjustmentType, ErrorCode } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     ASSIGN_PROMOTIONS_TO_CHANNEL,
@@ -49,15 +49,15 @@ import {
     REMOVE_CUSTOMERS_FROM_GROUP,
 } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADJUST_ITEM_QUANTITY,
-    APPLY_COUPON_CODE,
-    GET_ACTIVE_ORDER,
-    GET_ORDER_PROMOTIONS_BY_CODE,
-    REMOVE_COUPON_CODE,
-    REMOVE_ITEM_FROM_ORDER,
-    SET_CUSTOMER,
-    SET_SHIPPING_METHOD,
+    addItemToOrderDocument,
+    adjustItemQuantityDocument,
+    applyCouponCodeDocument,
+    getActiveOrderDocument,
+    getOrderPromotionsByCodeDocument,
+    removeCouponCodeDocument,
+    removeItemFromOrderDocument,
+    setCustomerDocument,
+    setShippingMethodDocument,
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -144,7 +144,7 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -159,7 +159,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: 'bad code',
             });
             orderResultGuard.assertErrorResult(applyCouponCode);
@@ -171,7 +171,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: EXPIRED_COUPON_CODE,
             });
             orderResultGuard.assertErrorResult(applyCouponCode);
@@ -183,7 +183,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: TEST_COUPON_CODE.toLowerCase(),
             });
             orderResultGuard.assertErrorResult(applyCouponCode);
@@ -197,7 +197,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: TEST_COUPON_CODE,
             });
             orderResultGuard.assertSuccess(applyCouponCode);
@@ -208,7 +208,8 @@ describe('Promotions applied to Orders', () => {
         });
 
         it('order history records application', async () => {
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
@@ -232,7 +233,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: TEST_COUPON_CODE,
             });
             orderResultGuard.assertSuccess(applyCouponCode);
@@ -243,7 +244,7 @@ describe('Promotions applied to Orders', () => {
             const { removeCouponCode } = await shopClient.query<
                 CodegenShop.RemoveCouponCodeMutation,
                 CodegenShop.RemoveCouponCodeMutationVariables
-            >(REMOVE_COUPON_CODE, {
+            >(removeCouponCodeDocument, {
                 couponCode: TEST_COUPON_CODE,
             });
 
@@ -253,13 +254,15 @@ describe('Promotions applied to Orders', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/649
         it('discounts array cleared after coupon code removed', async () => {
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(activeOrder?.discounts).toEqual([]);
         });
 
         it('order history records removal', async () => {
-            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
@@ -289,7 +292,7 @@ describe('Promotions applied to Orders', () => {
             const { removeCouponCode } = await shopClient.query<
                 CodegenShop.RemoveCouponCodeMutation,
                 CodegenShop.RemoveCouponCodeMutationVariables
-            >(REMOVE_COUPON_CODE, {
+            >(removeCouponCodeDocument, {
                 couponCode: 'NOT_THERE',
             });
 
@@ -356,7 +359,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: OTHER_CHANNEL_COUPON_CODE,
                 });
                 orderResultGuard.assertErrorResult(applyCouponCode);
@@ -380,7 +383,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -391,7 +394,7 @@ describe('Promotions applied to Orders', () => {
             const { adjustOrderLine } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
-            >(ADJUST_ITEM_QUANTITY, {
+            >(adjustItemQuantityDocument, {
                 orderLineId: addItemToOrder.lines[0].id,
                 quantity: 2,
             });
@@ -424,7 +427,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder: res1 } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-sale-100').id,
                 quantity: 1,
             });
@@ -435,7 +438,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder: res2 } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-sale-1000').id,
                 quantity: 1,
             });
@@ -474,14 +477,14 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: item5000.id,
                 quantity: 1,
             });
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: item1000.id,
                 quantity: 1,
             });
@@ -492,7 +495,7 @@ describe('Promotions applied to Orders', () => {
             const { adjustOrderLine } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
-            >(ADJUST_ITEM_QUANTITY, {
+            >(adjustItemQuantityDocument, {
                 orderLineId: addItemToOrder.lines.find(l => l.productVariant.id === item5000.id)!.id,
                 quantity: 2,
             });
@@ -529,7 +532,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -550,7 +553,7 @@ describe('Promotions applied to Orders', () => {
             const { adjustOrderLine } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
-            >(ADJUST_ITEM_QUANTITY, {
+            >(adjustItemQuantityDocument, {
                 orderLineId: addItemToOrder.lines[0].id,
                 quantity: 2,
             });
@@ -641,7 +644,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -652,7 +655,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -666,7 +669,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -677,7 +680,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -705,7 +708,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -716,7 +719,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: decimalPercentageCouponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -756,7 +759,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -768,7 +771,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -783,7 +786,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -794,7 +797,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -808,7 +811,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-100').id,
                     quantity: 1,
                 });
@@ -819,7 +822,7 @@ describe('Promotions applied to Orders', () => {
                 const { setOrderShippingMethod } = await shopClient.query<
                     CodegenShop.SetShippingMethodMutation,
                     CodegenShop.SetShippingMethodMutationVariables
-                >(SET_SHIPPING_METHOD, {
+                >(setShippingMethodDocument, {
                     id: 'T_1',
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
@@ -828,7 +831,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -867,7 +870,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-1000').id,
                     quantity: 3,
                 });
@@ -880,7 +883,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -934,21 +937,21 @@ describe('Promotions applied to Orders', () => {
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-1000').id,
                     quantity: 1,
                 });
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-1000').id,
                     quantity: 1,
                 });
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-100').id,
                     quantity: 2,
                 });
@@ -962,7 +965,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -974,7 +977,7 @@ describe('Promotions applied to Orders', () => {
                 const { removeCouponCode } = await shopClient.query<
                     CodegenShop.RemoveCouponCodeMutation,
                     CodegenShop.RemoveCouponCodeMutationVariables
-                >(REMOVE_COUPON_CODE, {
+                >(removeCouponCodeDocument, {
                     couponCode,
                 });
 
@@ -983,7 +986,7 @@ describe('Promotions applied to Orders', () => {
                 expect(removeCouponCode!.totalWithTax).toBe(2640);
 
                 const { activeOrder } =
-                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
                 expect(getItemSale1Line(activeOrder!.lines).discounts.length).toBe(0);
                 expect(activeOrder!.total).toBe(2200);
                 expect(activeOrder!.totalWithTax).toBe(2640);
@@ -994,21 +997,21 @@ describe('Promotions applied to Orders', () => {
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-1000').id,
                     quantity: 1,
                 });
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-1000').id,
                     quantity: 1,
                 });
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-100').id,
                     quantity: 2,
                 });
@@ -1022,7 +1025,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1034,7 +1037,7 @@ describe('Promotions applied to Orders', () => {
                 const { removeCouponCode } = await shopClient.query<
                     CodegenShop.RemoveCouponCodeMutation,
                     CodegenShop.RemoveCouponCodeMutationVariables
-                >(REMOVE_COUPON_CODE, {
+                >(removeCouponCodeDocument, {
                     couponCode,
                 });
 
@@ -1043,7 +1046,7 @@ describe('Promotions applied to Orders', () => {
                 expect(removeCouponCode!.totalWithTax).toBe(2640);
 
                 const { activeOrder } =
-                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
                 expect(getItemSale1Line(activeOrder!.lines).discounts.length).toBe(0);
                 expect(activeOrder!.total).toBe(2200);
                 expect(activeOrder!.totalWithTax).toBe(2640);
@@ -1085,7 +1088,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1098,7 +1101,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1113,7 +1116,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1126,7 +1129,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1203,7 +1206,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1211,7 +1214,7 @@ describe('Promotions applied to Orders', () => {
                 const { setOrderShippingMethod } = await shopClient.query<
                     CodegenShop.SetShippingMethodMutation,
                     CodegenShop.SetShippingMethodMutationVariables
-                >(SET_SHIPPING_METHOD, {
+                >(setShippingMethodDocument, {
                     id: method.id,
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
@@ -1224,7 +1227,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1242,7 +1245,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1250,7 +1253,7 @@ describe('Promotions applied to Orders', () => {
                 const { setOrderShippingMethod } = await shopClient.query<
                     CodegenShop.SetShippingMethodMutation,
                     CodegenShop.SetShippingMethodMutationVariables
-                >(SET_SHIPPING_METHOD, {
+                >(setShippingMethodDocument, {
                     id: method.id,
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
@@ -1263,7 +1266,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1282,7 +1285,7 @@ describe('Promotions applied to Orders', () => {
                 const { addItemToOrder } = await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1290,7 +1293,7 @@ describe('Promotions applied to Orders', () => {
                 const { setOrderShippingMethod } = await shopClient.query<
                     CodegenShop.SetShippingMethodMutation,
                     CodegenShop.SetShippingMethodMutationVariables
-                >(SET_SHIPPING_METHOD, {
+                >(setShippingMethodDocument, {
                     id: method.id,
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
@@ -1300,7 +1303,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode,
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
@@ -1312,7 +1315,7 @@ describe('Promotions applied to Orders', () => {
                 const { removeCouponCode } = await shopClient.query<
                     CodegenShop.RemoveCouponCodeMutation,
                     CodegenShop.RemoveCouponCodeMutationVariables
-                >(REMOVE_COUPON_CODE, {
+                >(removeCouponCodeDocument, {
                     couponCode,
                 });
 
@@ -1371,14 +1374,14 @@ describe('Promotions applied to Orders', () => {
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-1000').id,
                     quantity: 2,
                 });
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1387,7 +1390,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode: apply1 } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: saleItem50pcOffCoupon,
                 });
                 orderResultGuard.assertSuccess(apply1);
@@ -1406,7 +1409,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode: apply2 } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: order15pcOffCoupon,
                 });
                 orderResultGuard.assertSuccess(apply2);
@@ -1424,14 +1427,14 @@ describe('Promotions applied to Orders', () => {
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-sale-1000').id,
                     quantity: 2,
                 });
                 await shopClient.query<
                     CodegenShop.AddItemToOrderMutation,
                     CodegenShop.AddItemToOrderMutationVariables
-                >(ADD_ITEM_TO_ORDER, {
+                >(addItemToOrderDocument, {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
@@ -1440,7 +1443,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode: apply1 } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: saleItem50pcOffCoupon,
                 });
                 orderResultGuard.assertSuccess(apply1);
@@ -1459,7 +1462,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode: apply2 } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, {
+                >(applyCouponCodeDocument, {
                     couponCode: order15pcOffCoupon,
                 });
                 orderResultGuard.assertSuccess(apply2);
@@ -1499,7 +1502,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -1514,7 +1517,7 @@ describe('Promotions applied to Orders', () => {
                 return shopClient.query<
                     CodegenShop.SetCustomerForOrderMutation,
                     CodegenShop.SetCustomerForOrderMutationVariables
-                >(SET_CUSTOMER, {
+                >(setCustomerDocument, {
                     input: {
                         emailAddress: GUEST_EMAIL_ADDRESS,
                         firstName: 'Guest',
@@ -1531,7 +1534,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1550,7 +1553,7 @@ describe('Promotions applied to Orders', () => {
                 const { orderByCode } = await shopClient.query<
                     CodegenShop.GetOrderPromotionsByCodeQuery,
                     CodegenShop.GetOrderPromotionsByCodeQueryVariables
-                >(GET_ORDER_PROMOTIONS_BY_CODE, {
+                >(getOrderPromotionsByCodeDocument, {
                     code: orderCode,
                 });
                 expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
@@ -1566,7 +1569,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertErrorResult(applyCouponCode);
 
                 expect(applyCouponCode.message).toEqual(
@@ -1581,7 +1584,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1590,7 +1593,7 @@ describe('Promotions applied to Orders', () => {
                 await addGuestCustomerToOrder();
 
                 const { activeOrder } =
-                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
                 expect(activeOrder!.couponCodes).toEqual([]);
                 expect(activeOrder!.totalWithTax).toBe(6000);
             });
@@ -1602,14 +1605,14 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
                 expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
 
                 await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                    SET_CUSTOMER,
+                    setCustomerDocument,
                     {
                         input: {
                             emailAddress: 'new-guest@test.com',
@@ -1619,7 +1622,7 @@ describe('Promotions applied to Orders', () => {
                     },
                 );
 
-                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(getActiveOrderDocument);
                 expect(activeOrder.couponCodes).toEqual([TEST_COUPON_CODE]);
                 expect(applyCouponCode.totalWithTax).toBe(0);
             });
@@ -1638,7 +1641,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1659,7 +1662,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertErrorResult(applyCouponCode);
                 expect(applyCouponCode.message).toEqual(
                     'Coupon code cannot be used more than once per customer',
@@ -1673,7 +1676,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
@@ -1682,7 +1685,7 @@ describe('Promotions applied to Orders', () => {
                 await logInAsRegisteredCustomer();
 
                 const { activeOrder } =
-                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
                 expect(activeOrder!.totalWithTax).toBe(6000);
                 expect(activeOrder!.couponCodes).toEqual([]);
             });
@@ -1707,7 +1710,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1726,7 +1729,7 @@ describe('Promotions applied to Orders', () => {
             const { addItemToOrder } = await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -1756,7 +1759,7 @@ describe('Promotions applied to Orders', () => {
                 return shopClient.query<
                     CodegenShop.SetCustomerForOrderMutation,
                     CodegenShop.SetCustomerForOrderMutationVariables
-                >(SET_CUSTOMER, {
+                >(setCustomerDocument, {
                     input: {
                         emailAddress: GUEST_EMAIL_ADDRESS,
                         firstName: 'Guest',
@@ -1773,7 +1776,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1792,7 +1795,7 @@ describe('Promotions applied to Orders', () => {
                 const { orderByCode } = await shopClient.query<
                     CodegenShop.GetOrderPromotionsByCodeQuery,
                     CodegenShop.GetOrderPromotionsByCodeQueryVariables
-                >(GET_ORDER_PROMOTIONS_BY_CODE, {
+                >(getOrderPromotionsByCodeDocument, {
                     code: orderCode,
                 });
                 expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
@@ -1808,7 +1811,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertErrorResult(applyCouponCode);
 
                 expect(applyCouponCode.message).toEqual(
@@ -1845,7 +1848,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1866,7 +1869,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertErrorResult(applyCouponCode);
                 expect(applyCouponCode.message).toEqual(
                     'Coupon code cannot be used more than once per customer',
@@ -1894,7 +1897,7 @@ describe('Promotions applied to Orders', () => {
                 const { applyCouponCode } = await shopClient.query<
                     CodegenShop.ApplyCouponCodeMutation,
                     CodegenShop.ApplyCouponCodeMutationVariables
-                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                >(applyCouponCodeDocument, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode.totalWithTax).toBe(0);
@@ -1921,14 +1924,14 @@ describe('Promotions applied to Orders', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: getVariantBySlug('item-1000').id,
             quantity: 8,
         });
         const { addItemToOrder } = await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: getVariantBySlug('item-5000').id,
             quantity: 1,
         });
@@ -1937,14 +1940,14 @@ describe('Promotions applied to Orders', () => {
         expect(addItemToOrder.discounts[0].description).toBe('Test Promo');
 
         const { activeOrder: check1 } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(check1!.discounts.length).toBe(1);
         expect(check1!.discounts[0].description).toBe('Test Promo');
 
         const { removeOrderLine } = await shopClient.query<
             CodegenShop.RemoveItemFromOrderMutation,
             CodegenShop.RemoveItemFromOrderMutationVariables
-        >(REMOVE_ITEM_FROM_ORDER, {
+        >(removeItemFromOrderDocument, {
             orderLineId: addItemToOrder.lines[1].id,
         });
 
@@ -1952,7 +1955,7 @@ describe('Promotions applied to Orders', () => {
         expect(removeOrderLine.discounts.length).toBe(0);
 
         const { activeOrder: check2 } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
         expect(check2!.discounts.length).toBe(0);
     });
 
@@ -1975,21 +1978,21 @@ describe('Promotions applied to Orders', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: getVariantBySlug('item-100').id,
             quantity: 1,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: getVariantBySlug('item-0').id,
             quantity: 1,
         });
         const { applyCouponCode } = await shopClient.query<
             CodegenShop.ApplyCouponCodeMutation,
             CodegenShop.ApplyCouponCodeMutationVariables
-        >(APPLY_COUPON_CODE, { couponCode });
+        >(applyCouponCodeDocument, { couponCode });
         orderResultGuard.assertSuccess(applyCouponCode);
         expect(applyCouponCode.totalWithTax).toBe(96);
     });
@@ -2084,18 +2087,18 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+            >(applyCouponCodeDocument, { couponCode: couponCode1 });
 
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: item1000.id,
                 quantity: 1,
             });
 
             const { activeOrder: check1 } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check1!.totalWithTax).toBe(0);
@@ -2103,10 +2106,10 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+            >(applyCouponCodeDocument, { couponCode: couponCode2 });
 
             const { activeOrder: check2 } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
             expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check2!.totalWithTax).toBe(0);
         });
@@ -2119,18 +2122,18 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+            >(applyCouponCodeDocument, { couponCode: couponCode1 });
 
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: item1000.id,
                 quantity: 1,
             });
 
             const { activeOrder: check1 } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
 
             expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check1!.totalWithTax).toBe(0);
@@ -2138,10 +2141,10 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+            >(applyCouponCodeDocument, { couponCode: couponCode2 });
 
             const { activeOrder: check2 } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
             expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check2!.totalWithTax).toBe(0);
         });
@@ -2188,7 +2191,7 @@ describe('Promotions applied to Orders', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: getVariantBySlug('item-5000').id,
                 quantity: 1,
             });
@@ -2196,7 +2199,7 @@ describe('Promotions applied to Orders', () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: promoCode,
             });
 

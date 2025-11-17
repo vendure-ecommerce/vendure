@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
@@ -23,7 +23,7 @@ import {
     UPDATE_ADDRESS,
     UPDATE_CUSTOMER,
 } from './graphql/shared-definitions';
-import { DELETE_ADDRESS, REGISTER_ACCOUNT } from './graphql/shop-definitions';
+import { deleteAddressDocument, registerAccountDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 type CustomerListItem = Codegen.GetCustomerListQuery['customers']['items'][number];
@@ -126,7 +126,7 @@ describe('ChannelAware Customers', () => {
                 await adminClient.query<
                     Codegen.DeleteCustomerAddressMutation,
                     Codegen.DeleteCustomerAddressMutationVariables
-                >(DELETE_ADDRESS, {
+                >(deleteAddressDocument, {
                     id: 'T_1',
                 });
             }, 'No Address with the id "1" could be found'),
@@ -285,7 +285,7 @@ describe('ChannelAware Customers', () => {
         it('assigns newly registered customers to channel', async () => {
             shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             await shopClient.asAnonymousUser();
-            await shopClient.query<RegisterMutation, RegisterMutationVariables>(REGISTER_ACCOUNT, {
+            await shopClient.query<RegisterMutation, RegisterMutationVariables>(registerAccountDocument, {
                 input: {
                     emailAddress: 'john.doe.2@test.com',
                 },

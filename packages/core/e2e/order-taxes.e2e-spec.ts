@@ -26,10 +26,10 @@ import {
     UPDATE_TAX_RATE,
 } from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    GET_ACTIVE_ORDER_WITH_PRICE_DATA,
-    SET_BILLING_ADDRESS,
-    SET_SHIPPING_ADDRESS,
+    addItemToOrderDocument,
+    getActiveOrderWithPriceDataDocument,
+    setBillingAddressDocument,
+    setShippingAddressDocument,
 } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
@@ -135,13 +135,13 @@ describe('Order taxes', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variant.id,
                 quantity: 2,
             });
 
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
-                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+                getActiveOrderWithPriceDataDocument,
             );
             expect(activeOrder?.totalWithTax).toBe(240);
             expect(activeOrder?.total).toBe(200);
@@ -179,13 +179,13 @@ describe('Order taxes', () => {
             await shopClient.query<
                 CodegenShop.AddItemToOrderMutation,
                 CodegenShop.AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: variant.id,
                 quantity: 2,
             });
 
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
-                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+                getActiveOrderWithPriceDataDocument,
             );
             expect(activeOrder?.totalWithTax).toBe(200);
             expect(activeOrder?.total).toBe(167);
@@ -223,7 +223,7 @@ describe('Order taxes', () => {
             await shopClient.query<
                 CodegenShop.SetShippingAddressMutation,
                 CodegenShop.SetShippingAddressMutationVariables
-            >(SET_SHIPPING_ADDRESS, {
+            >(setShippingAddressDocument, {
                 input: {
                     countryCode: 'CN',
                     streetLine1: '123 Lugu St',
@@ -234,7 +234,7 @@ describe('Order taxes', () => {
             });
 
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
-                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+                getActiveOrderWithPriceDataDocument,
             );
             expect(activeOrder?.totalWithTax).toBe(166);
             expect(activeOrder?.total).toBe(166);
@@ -257,7 +257,7 @@ describe('Order taxes', () => {
             await shopClient.query<
                 CodegenShop.SetBillingAddressMutation,
                 CodegenShop.SetBillingAddressMutationVariables
-            >(SET_BILLING_ADDRESS, {
+            >(setBillingAddressDocument, {
                 input: {
                     countryCode: 'US',
                     streetLine1: '123 Chad Street',
@@ -268,7 +268,7 @@ describe('Order taxes', () => {
             });
 
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
-                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+                getActiveOrderWithPriceDataDocument,
             );
             expect(activeOrder?.totalWithTax).toBe(199);
             expect(activeOrder?.total).toBe(166);
@@ -301,27 +301,27 @@ describe('Order taxes', () => {
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: products[0].variants[0].id,
             quantity: 2,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: products[1].variants[0].id,
             quantity: 2,
         });
         await shopClient.query<
             CodegenShop.AddItemToOrderMutation,
             CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
+        >(addItemToOrderDocument, {
             productVariantId: products[2].variants[0].id,
             quantity: 2,
         });
 
         const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
-            GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+            getActiveOrderWithPriceDataDocument,
         );
 
         expect(activeOrder?.taxSummary).toEqual([

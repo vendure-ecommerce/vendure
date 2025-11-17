@@ -22,7 +22,7 @@ import {
     GET_SHIPPING_METHOD_LIST,
     UPDATE_SHIPPING_METHOD,
 } from './graphql/shared-definitions';
-import { GET_ACTIVE_SHIPPING_METHODS } from './graphql/shop-definitions';
+import { getActiveShippingMethodsDocument } from './graphql/shop-definitions';
 
 const TEST_METADATA = {
     foo: 'bar',
@@ -507,7 +507,7 @@ describe('ShippingMethod resolver', () => {
         });
 
         // Act: Query active shipping methods
-        const { activeShippingMethods } = await shopClient.query(GET_ACTIVE_SHIPPING_METHODS);
+        const { activeShippingMethods } = await shopClient.query(getActiveShippingMethodsDocument);
 
         // Assert: Ensure only the new active method is returned
         expect(activeShippingMethods).toHaveLength(1);

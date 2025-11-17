@@ -33,7 +33,7 @@ import {
     ME,
     UPDATE_CHANNEL,
 } from './graphql/shared-definitions';
-import { GET_ACTIVE_ORDER } from './graphql/shop-definitions';
+import { getActiveOrderDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Channels', () => {
@@ -347,7 +347,7 @@ describe('Channels', () => {
 
         // create a Session on the Channel to be deleted to ensure it gets cleaned up
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-        await shopClient.query(GET_ACTIVE_ORDER);
+        await shopClient.query(getActiveOrderDocument);
 
         const { deleteChannel } = await adminClient.query<
             Codegen.DeleteChannelMutation,
