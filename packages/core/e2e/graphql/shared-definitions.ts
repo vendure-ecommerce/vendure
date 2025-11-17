@@ -186,6 +186,16 @@ export const getCustomerListDocument = graphql(`
     }
 `);
 
+export const getCustomerIdsDocument = graphql(`
+    query GetCustomerIds {
+        customers {
+            items {
+                id
+            }
+        }
+    }
+`);
+
 export const getAssetListDocument = graphql(
     `
         query GetAssetList($options: AssetListOptions) {
