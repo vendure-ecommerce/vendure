@@ -3,6 +3,7 @@ import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { useMemo } from 'react';
 
 interface ContentLanguageSelectorProps {
     value?: string;
@@ -18,8 +19,18 @@ export function ContentLanguageSelector({ value, onChange, className }: ContentL
         setContentLanguage,
     } = useUserSettings();
 
-    // Fallback to empty array if serverConfig is null
-    const languages = serverConfig?.availableLanguages || [];
+    // Map languages to code and label, then sort by label
+
+    const sortedLanguages = useMemo(
+        () =>
+            (serverConfig?.availableLanguages || [])
+                .map(code => ({
+                    code,
+                    label: formatLanguageName(code),
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)),
+        [serverConfig?.availableLanguages, formatLanguageName],
+    );
 
     // If no value is provided but languages are available, use the first language
     const currentValue = contentLanguage;
@@ -36,9 +47,9 @@ export function ContentLanguageSelector({ value, onChange, className }: ContentL
                 <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
-                {languages.map(language => (
-                    <SelectItem key={language} value={language}>
-                        {formatLanguageName(language)}
+                {sortedLanguages.map(({ code, label }) => (
+                    <SelectItem key={code} value={code}>
+                        {label}
                     </SelectItem>
                 ))}
             </SelectContent>

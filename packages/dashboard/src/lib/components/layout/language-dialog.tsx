@@ -4,7 +4,7 @@ import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';
 import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog.js';
@@ -22,7 +22,19 @@ export function LanguageDialog() {
         useLocalFormat();
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
-    const orderedAvailableLanguages = availableLanguages.slice().sort((a, b) => a.localeCompare(b));
+    // Map and sort languages by their formatted names
+
+    const sortedLanguages = useMemo(
+        () =>
+            availableLanguages
+                .map(code => ({
+                    code,
+                    label: formatLanguageName(code),
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)),
+        [availableLanguages, formatLanguageName],
+    );
+
     const orderedAvailableLocales = availableLocales.slice().sort((a, b) => a.localeCompare(b));
     const handleLanguageChange = async (value: string) => {
         setDisplayLanguage(value);
@@ -46,10 +58,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a language" />
                         </SelectTrigger>
                         <SelectContent>
-                            {orderedAvailableLanguages.map(language => (
-                                <SelectItem key={language} value={language} className="flex gap-1">
-                                    <span className="uppercase text-muted-foreground">{language}</span>
-                                    <span>{formatLanguageName(language)}</span>
+                            {sortedLanguages.map(({ code, label }) => (
+                                <SelectItem key={code} value={code} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{code}</span>
+                                    <span>{label}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
