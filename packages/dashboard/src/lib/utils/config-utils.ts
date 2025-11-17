@@ -5,7 +5,7 @@ export function getApiBaseUrl(): string {
         uiConfig.api.host !== 'auto'
             ? uiConfig.api.host
             : `${window.location.protocol}//${window.location.hostname}`;
-    const portPart = uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : '';
+    const portPart = uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : `:${window.location.port}`;
 
     return schemeAndHost + portPart;
 }
