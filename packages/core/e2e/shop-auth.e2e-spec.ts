@@ -23,8 +23,6 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { PasswordValidationError } from '../src/common/error/generated-graphql-shop-errors';
 
-// import { CurrentUserShopFragment } from './graphql/generated-e2e-shop-types';
-
 import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
     MeDocument,

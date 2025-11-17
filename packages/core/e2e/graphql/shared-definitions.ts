@@ -1,6 +1,7 @@
 import {
     administratorFragment,
     assetFragment,
+    canceledOrderFragment,
     channelFragment,
     collectionFragment,
     countryFragment,
@@ -19,6 +20,7 @@ import {
     productWithOptionsFragment,
     productWithVariantsFragment,
     promotionFragment,
+    refundFragment,
     roleFragment,
     shippingMethodFragment,
     taxRateFragment,
@@ -840,25 +842,20 @@ export const adminTransitionToStateDocument = graphql(
     [orderFragment],
 );
 
-export const cancelOrderDocument = graphql(`
-    mutation CancelOrder($input: CancelOrderInput!) {
-        cancelOrder(input: $input) {
-            ...CanceledOrder
-            ... on ErrorResult {
-                errorCode
-                message
+export const cancelOrderDocument = graphql(
+    `
+        mutation CancelOrder($input: CancelOrderInput!) {
+            cancelOrder(input: $input) {
+                ...CanceledOrder
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
             }
         }
-    }
-    fragment CanceledOrder on Order {
-        id
-        state
-        lines {
-            id
-            quantity
-        }
-    }
-`);
+    `,
+    [canceledOrderFragment],
+);
 
 export const updateGlobalSettingsDocument = graphql(
     `
@@ -1262,3 +1259,238 @@ export const getPromotionDocument = graphql(
     `,
     [promotionFragment],
 );
+
+export const getOrderListDocument = graphql(`
+    query GetOrderList($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                id
+                code
+                state
+                total
+                totalWithTax
+                totalQuantity
+                customer {
+                    id
+                    emailAddress
+                    lastName
+                }
+            }
+            totalItems
+        }
+    }
+`);
+
+export const getOrderWithPaymentsDocument = graphql(`
+    query GetOrderWithPayments($id: ID!) {
+        order(id: $id) {
+            id
+            payments {
+                id
+                errorMessage
+                metadata
+                refunds {
+                    id
+                    total
+                }
+            }
+        }
+    }
+`);
+
+export const getOrderListWithQtyDocument = graphql(`
+    query GetOrderListWithQty($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                id
+                code
+                totalQuantity
+                lines {
+                    id
+                    quantity
+                }
+            }
+        }
+    }
+`);
+
+export const refundOrderDocument = graphql(
+    `
+        mutation RefundOrder($input: RefundOrderInput!) {
+            refundOrder(input: $input) {
+                ...Refund
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [refundFragment],
+);
+
+export const settleRefundDocument = graphql(
+    `
+        mutation SettleRefund($input: SettleRefundInput!) {
+            settleRefund(input: $input) {
+                ...Refund
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [refundFragment],
+);
+
+export const addNoteToOrderDocument = graphql(`
+    mutation AddNoteToOrder($input: AddNoteToOrderInput!) {
+        addNoteToOrder(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateOrderNoteDocument = graphql(`
+    mutation UpdateOrderNote($input: UpdateOrderNoteInput!) {
+        updateOrderNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`);
+
+export const deleteOrderNoteDocument = graphql(`
+    mutation DeleteOrderNote($id: ID!) {
+        deleteOrderNote(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const getOrderLineFulfillmentsDocument = graphql(`
+    query GetOrderLineFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            lines {
+                id
+                fulfillmentLines {
+                    fulfillment {
+                        id
+                        state
+                    }
+                    orderLineId
+                    quantity
+                }
+            }
+        }
+    }
+`);
+
+export const getOrderListFulfillmentsDocument = graphql(`
+    query GetOrderListFulfillments {
+        orders {
+            items {
+                id
+                state
+                fulfillments {
+                    id
+                    state
+                    nextStates
+                    method
+                }
+            }
+        }
+    }
+`);
+
+export const cancelPaymentDocument = graphql(
+    `
+        mutation CancelPayment($paymentId: ID!) {
+            cancelPayment(id: $paymentId) {
+                ...Payment
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+                ... on PaymentStateTransitionError {
+                    transitionError
+                }
+                ... on CancelPaymentError {
+                    paymentErrorMessage
+                }
+            }
+        }
+    `,
+    [paymentFragment],
+);
+
+export const setOrderCustomerDocument = graphql(`
+    mutation SetOrderCustomer($input: SetOrderCustomerInput!) {
+        setOrderCustomer(input: $input) {
+            id
+            customer {
+                id
+            }
+        }
+    }
+`);
+
+export const getOrderAssetEdgeCaseDocument = graphql(`
+    query OrderAssetEdgeCase($id: ID!) {
+        order(id: $id) {
+            lines {
+                id
+            }
+            id
+            lines {
+                id
+                featuredAsset {
+                    preview
+                }
+            }
+        }
+    }
+`);
+
+export const getOrderWithLineCalculatedPropsDocument = graphql(`
+    query GetOrderWithLineCalculatedProps($id: ID!) {
+        order(id: $id) {
+            id
+            lines {
+                id
+                linePriceWithTax
+                quantity
+            }
+        }
+    }
+`);
+
+export const addManualPaymentDocument = graphql(`
+    mutation AddManualPaymentToOrder($input: ManualPaymentInput!) {
+        addManualPaymentToOrder(input: $input) {
+            ... on Order {
+                id
+                code
+                state
+                active
+                total
+                totalWithTax
+                lines {
+                    id
+                }
+                payments {
+                    id
+                    state
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+`);

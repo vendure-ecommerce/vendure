@@ -347,6 +347,17 @@ export const orderFragment = graphql(`
     }
 `);
 
+export const canceledOrderFragment = graphql(`
+    fragment CanceledOrder on Order {
+        id
+        state
+        lines {
+            id
+            quantity
+        }
+    }
+`);
+
 export const paymentFragment = graphql(`
     fragment Payment on Payment {
         id
@@ -361,6 +372,18 @@ export const paymentFragment = graphql(`
             total
             reason
         }
+    }
+`);
+
+export const refundFragment = graphql(`
+    fragment Refund on Refund {
+        id
+        state
+        items
+        transactionId
+        shipping
+        total
+        metadata
     }
 `);
 
