@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OnModuleInit } from '@nestjs/common';
 import { ErrorCode, RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
-import { HistoryEntryType, Permission } from '@vendure/common/lib/generated-types';
+import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     AccountRegistrationEvent,
@@ -16,7 +16,6 @@ import {
     mergeConfig,
 } from '@vendure/core';
 import { ErrorResultGuard, createErrorResultGuard, createTestEnvironment } from '@vendure/testing';
-import { DocumentNode } from 'graphql';
 import path from 'path';
 import { Mock, afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -29,8 +28,6 @@ import { PasswordValidationError } from '../src/common/error/generated-graphql-s
 import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
     MeDocument,
-    createAdministratorDocument,
-    createRoleDocument,
     getCustomerDocument,
     getCustomerHistoryDocument,
     getCustomerListDocument,
@@ -86,7 +83,7 @@ const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createE
 );
 
 class TestPasswordValidationStrategy implements PasswordValidationStrategy {
-    validate(ctx: RequestContext, password: string): boolean | string {
+    validate(_: RequestContext, password: string): boolean | string {
         if (password === 'test') {
             // allow the default seed data password
             return true;
@@ -536,9 +533,7 @@ describe('Shop auth & accounts', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1659
     describe('password reset before verification', () => {
-        const password = 'password';
         const emailAddress = 'test3@test.com';
-        let verificationToken: string;
         let passwordResetToken: string;
         let newCustomerId: string;
 
@@ -547,15 +542,13 @@ describe('Shop auth & accounts', () => {
         });
 
         it('register a new account without password', async () => {
-            const verificationTokenPromise = getVerificationTokenPromise();
             const input: RegisterCustomerInput = {
                 firstName: 'Bobby',
                 lastName: 'Tester',
                 phoneNumber: '123456',
                 emailAddress,
             };
-            const { registerCustomerAccount } = await shopClient.query(registerAccountDocument, { input });
-            verificationToken = await verificationTokenPromise;
+            await shopClient.query(registerAccountDocument, { input });
 
             const { customers } = await adminClient.query(getCustomerListDocument, {
                 options: {
@@ -759,71 +752,8 @@ describe('Shop auth & accounts', () => {
         });
     });
 
-    async function assertRequestAllowed<V extends Record<string, any>>(
-        operation: DocumentNode,
-        variables?: V,
-    ) {
-        try {
-            const status = await shopClient.queryStatus(operation, variables);
-            expect(status).toBe(200);
-        } catch (e: any) {
-            const errorCode = getErrorCode(e);
-            if (!errorCode) {
-                fail(`Unexpected failure: ${JSON.stringify(e)}`);
-            } else {
-                fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
-            }
-        }
-    }
-
-    async function assertRequestForbidden<V extends Record<string, any>>(
-        operation: DocumentNode,
-        variables: V,
-    ) {
-        try {
-            const status = await shopClient.query(operation, variables);
-            fail('Should have thrown');
-        } catch (e: any) {
-            expect(getErrorCode(e)).toBe('FORBIDDEN');
-        }
-    }
-
     function getErrorCode(err: any): string {
         return err.response.errors[0].extensions.code;
-    }
-
-    async function createAdministratorWithPermissions(
-        code: string,
-        permissions: Permission[],
-    ): Promise<{ identifier: string; password: string }> {
-        const roleResult = await shopClient.query(createRoleDocument, {
-            input: {
-                code,
-                description: '',
-                permissions,
-            },
-        });
-
-        const role = roleResult.createRole;
-
-        const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
-        const password = 'test';
-
-        const adminResult = await shopClient.query(createAdministratorDocument, {
-            input: {
-                emailAddress: identifier,
-                firstName: code,
-                lastName: 'Admin',
-                password,
-                roleIds: [role.id],
-            },
-        });
-        const admin = adminResult.createAdministrator;
-
-        return {
-            identifier,
-            password,
-        };
     }
 
     /**
