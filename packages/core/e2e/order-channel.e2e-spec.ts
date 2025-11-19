@@ -15,7 +15,11 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
-import { addItemToOrderDocument, GET_ORDER_SHOP, getActiveOrderDocument } from './graphql/shop-definitions';
+import {
+    addItemToOrderDocument,
+    getActiveOrderDocument,
+    getOrderShopDocument,
+} from './graphql/shop-definitions';
 
 describe('Channelaware orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
@@ -166,18 +170,18 @@ describe('Channelaware orders', () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { activeOrder } =
             await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
-        expect(activeOrder!.id).toBe(order1Id);
+        expect(activeOrder.id).toBe(order1Id);
     });
 
     it('returns null when requesting order from other channel', async () => {
-        const result = await shopClient.query<CodegenShop.GetOrderShopQuery>(GET_ORDER_SHOP, {
+        const result = await shopClient.query<CodegenShop.GetOrderShopQuery>(getOrderShopDocument, {
             id: order2Id,
         });
         expect(result.order).toBeNull();
     });
 
     it('returns order when requesting order from correct channel', async () => {
-        const result = await shopClient.query<CodegenShop.GetOrderShopQuery>(GET_ORDER_SHOP, {
+        const result = await shopClient.query<CodegenShop.GetOrderShopQuery>(getOrderShopDocument, {
             id: order1Id,
         });
         expect(result.order!.id).toBe(order1Id);

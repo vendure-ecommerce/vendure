@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { ErrorCode, HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import * as path from 'path';
@@ -7,8 +8,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { HistoryEntryType } from './graphql/generated-e2e-admin-types';
-import { ErrorCode } from './graphql/generated-e2e-shop-types';
 import { ResultOf, VariablesOf } from './graphql/graphql-admin';
 import {
     attemptLoginDocument,
