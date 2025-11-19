@@ -61,3 +61,11 @@ export const getOrderWithSellerOrdersDocument = gql`
         }
     }
 `;
+
+export const disableProductDocument = graphql(`
+    mutation DisableProduct($id: ID!) {
+        updateProduct(input: { id: $id, enabled: false }) {
+            id
+        }
+    }
+`);

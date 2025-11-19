@@ -68,7 +68,7 @@ export const testOrderFragment = graphql(`
     }
 `);
 
-export const updatedOrderFragmentDocument = graphql(`
+export const updatedOrderFragment = graphql(`
     fragment UpdatedOrder on Order {
         id
         code
@@ -133,6 +133,7 @@ export const updatedOrderFragmentDocument = graphql(`
             featuredAsset {
                 id
             }
+            # Ignore error - customFields are dynamically generated at runtime, not in introspection schema
             customFields {
                 notes
                 lineImage {
@@ -158,7 +159,8 @@ export const updatedOrderFragmentDocument = graphql(`
             type
         }
     }
-`);
+`
+);
 
 export const addItemToOrderDocument = graphql(
     `
@@ -181,7 +183,7 @@ export const addItemToOrderDocument = graphql(
             }
         }
     `,
-    [updatedOrderFragmentDocument],
+    [updatedOrderFragment],
 );
 
 export const addMultipleItemsToOrderDocument = graphql(
@@ -200,7 +202,7 @@ export const addMultipleItemsToOrderDocument = graphql(
             }
         }
     `,
-    [updatedOrderFragmentDocument],
+    [updatedOrderFragment],
 );
 
 export const searchProductsShopDocument = graphql(`
@@ -563,7 +565,7 @@ export const getOrderByCodeDocument = graphql(
     [testOrderFragment],
 );
 
-export const GET_ORDER_SHOP = graphql(
+export const getOrderShopDocument = graphql(
     `
         query GetOrderShop($id: ID!) {
             order(id: $id) {
@@ -1037,13 +1039,6 @@ export const getCollectionShopDocument = graphql(`
     }
 `);
 
-export const disableProductDocument = graphql(`
-    mutation DisableProduct($id: ID!) {
-        updateProduct(input: { id: $id, enabled: false }) {
-            id
-        }
-    }
-`);
 
 export const getCollectionVariantsDocument = graphql(`
     query GetCollectionVariants($id: ID, $slug: String) {
@@ -1150,7 +1145,9 @@ export const getOrderCustomFieldsDocument = graphql(`
             }
         }
     }
-`);
+`
+);
+
 
 export const setOrderCustomFieldsDocument = graphql(`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
@@ -1170,7 +1167,8 @@ export const setOrderCustomFieldsDocument = graphql(`
             }
         }
     }
-`);
+`
+);
 
 export const logOutDocument = graphql(`
     mutation LogOut {
@@ -1185,7 +1183,7 @@ export const addItemToOrderWithCustomFieldsDocument = graphql(
         mutation AddItemToOrderWithCustomFields(
             $productVariantId: ID!
             $quantity: Int!
-            $customFields: OrderLineCustomFieldsInput
+            $customFields: JSON
         ) {
             addItemToOrder(
                 productVariantId: $productVariantId
@@ -1200,7 +1198,7 @@ export const addItemToOrderWithCustomFieldsDocument = graphql(
             }
         }
     `,
-    [updatedOrderFragmentDocument],
+    [updatedOrderFragment],
 );
 
 export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
@@ -1228,15 +1226,16 @@ export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
                 }
             }
         }
-    `,
-    [updatedOrderFragmentDocument],
+    `
+    [updatedOrderFragment],
 );
 
-export const adjustOrderLineWithCustomFieldsDocument = graphql(`
+export const adjustOrderLineWithCustomFieldsDocument = graphql(
+    `
     mutation AdjustOrderLineWithCustomFields(
         $orderLineId: ID!
         $quantity: Int!
-        $customFields: OrderLineCustomFieldsInput
+        $customFields: JSON
     ) {
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
             ... on Order {
@@ -1255,7 +1254,8 @@ export const adjustOrderLineWithCustomFieldsDocument = graphql(`
             }
         }
     }
-`);
+`
+);
 
 export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
     query GetOrderWithOrderLineCustomFields {
@@ -1274,4 +1274,5 @@ export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
             }
         }
     }
-`);
+`
+);

@@ -77,7 +77,7 @@ import {
     transitionToStateDocument,
     unsetBillingAddressDocument,
     unsetShippingAddressDocument,
-    updatedOrderFragmentDocument,
+    updatedOrderFragment,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -120,7 +120,7 @@ describe('Shop orders', () => {
         }),
     );
 
-    type OrderSuccessResult = FragmentOf<typeof updatedOrderFragmentDocument>;
+    type OrderSuccessResult = FragmentOf<typeof updatedOrderFragment>;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
@@ -267,7 +267,7 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             privateField: 'oh no!', // Testing that private fields are rejected
-                        } as any,
+                        },
                     });
                     fail('Should have thrown');
                 } catch (e: any) {
@@ -283,7 +283,7 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             notes: 'note1',
-                        } as any,
+                        },
                     },
                 );
                 orderResultGuard.assertSuccess(add1);
@@ -297,7 +297,7 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             notes: 'note1',
-                        } as any,
+                        },
                     },
                 );
                 orderResultGuard.assertSuccess(add2);
@@ -317,7 +317,7 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             notes: 'note2',
-                        } as any,
+                        },
                     },
                 );
                 orderResultGuard.assertSuccess(add1);
@@ -331,7 +331,7 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             notes: 'note3',
-                        } as any,
+                        },
                     },
                 );
                 orderResultGuard.assertSuccess(add2);
@@ -365,7 +365,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         notes: 'updated notes',
-                    } as any,
+                    },
                 });
                 orderResultGuard.assertSuccess(adjustOrderLine);
                 expect(adjustOrderLine.lines[1].customFields).toEqual({
@@ -423,7 +423,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImageId: 'T_1',
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -442,7 +442,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImageId: 'T_1',
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -461,7 +461,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImageId: 'T_2',
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -482,7 +482,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImageId: 'T_1',
-                    } as any,
+                    },
                 });
                 orderResultGuard.assertSuccess(adjustOrderLine);
 
@@ -505,7 +505,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImagesIds: ['T_1', 'T_2'],
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -525,7 +525,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImagesIds: ['T_1', 'T_2'],
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -546,7 +546,7 @@ describe('Shop orders', () => {
                     quantity: 1,
                     customFields: {
                         lineImagesIds: ['T_1'],
-                    } as any,
+                    },
                 });
 
                 orderResultGuard.assertSuccess(addItemToOrder);
@@ -672,7 +672,7 @@ describe('Shop orders', () => {
                 quantity: 9,
                 customFields: {
                     notes: 'abc',
-                } as any,
+                },
             });
 
             orderResultGuard.assertSuccess(add1);
@@ -686,7 +686,7 @@ describe('Shop orders', () => {
                 quantity: 2,
                 customFields: {
                     notes: 'def',
-                } as any,
+                },
             });
 
             orderResultGuard.assertErrorResult(add2);
@@ -731,7 +731,7 @@ describe('Shop orders', () => {
                 quantity: 5,
                 customFields: {
                     notes: 'abc',
-                } as any,
+                },
             });
 
             orderResultGuard.assertSuccess(add1);
@@ -745,7 +745,7 @@ describe('Shop orders', () => {
                 quantity: 5,
                 customFields: {
                     notes: 'def',
-                } as any,
+                },
             });
 
             orderResultGuard.assertSuccess(add2);
@@ -802,7 +802,7 @@ describe('Shop orders', () => {
                 quantity: 5,
                 customFields: {
                     notes: 'abc',
-                } as any,
+                },
             });
 
             orderResultGuard.assertSuccess(add1);
@@ -816,7 +816,7 @@ describe('Shop orders', () => {
                 quantity: 5,
                 customFields: {
                     notes: 'def',
-                } as any,
+                },
             });
 
             orderResultGuard.assertSuccess(add2);
@@ -1252,14 +1252,14 @@ describe('Shop orders', () => {
                             quantity: 1,
                             customFields: {
                                 notes: 'Variant 1 note',
-                            } as any,
+                            },
                         },
                         {
                             productVariantId: 'T_2',
                             quantity: 2,
                             customFields: {
                                 notes: 'Variant 2 note',
-                            } as any,
+                            },
                         },
                         {
                             productVariantId: 'T_3',
@@ -1269,7 +1269,7 @@ describe('Shop orders', () => {
                     ],
                 },
             );
-            const order = addItemsToOrder.order as any;
+            const order = addItemsToOrder.order;
             expect(order.lines.length).toBe(3);
             expect(order.lines[0].customFields.notes).toBe('Variant 1 note');
             expect(order.lines[1].quantity).toBe(2);
