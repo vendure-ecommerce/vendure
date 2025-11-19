@@ -31,7 +31,7 @@ import {
     getCustomerListDocument,
 } from './graphql/shared-definitions';
 import {
-    currentUserFragmentDocument,
+    currentUserFragment,
     getActiveCustomerDocument,
     refreshTokenDocument,
     registerAccountDocument,
@@ -74,7 +74,7 @@ const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorRes
     input => input.success != null,
 );
 
-type CurrentUserShopFragment = FragmentOf<typeof currentUserFragmentDocument>;
+type CurrentUserShopFragment = FragmentOf<typeof currentUserFragment>;
 
 const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createErrorResultGuard(
     input => input.identifier != null,

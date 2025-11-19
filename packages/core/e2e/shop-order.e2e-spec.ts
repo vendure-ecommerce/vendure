@@ -52,7 +52,7 @@ import {
     addPaymentDocument,
     adjustItemQuantityDocument,
     adjustOrderLineWithCustomFieldsDocument,
-    currentUserFragmentDocument,
+    currentUserFragment,
     getActiveOrderAddressesDocument,
     getActiveOrderDocument,
     getActiveOrderOrdersDocument,
@@ -133,7 +133,7 @@ describe('Shop orders', () => {
         NonNullable<ResultOf<typeof getOrderWithOrderLineCustomFieldsDocument>['activeOrder']>
     > = createErrorResultGuard(input => input !== null);
 
-    type CurrentUserShopFragment = FragmentOf<typeof currentUserFragmentDocument>;
+    type CurrentUserShopFragment = FragmentOf<typeof currentUserFragment>;
     const currentUserGuard: ErrorResultGuard<CurrentUserShopFragment> = createErrorResultGuard(
         input => input.identifier != null,
     );
