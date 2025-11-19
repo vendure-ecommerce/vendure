@@ -469,6 +469,102 @@ export const orderWithLinesFragment = graphql(
     [shippingAddressFragment, paymentFragment],
 );
 
+export const orderWithModificationsFragment = graphql(
+    `
+        fragment OrderWithModifications on Order {
+            id
+            state
+            subTotal
+            subTotalWithTax
+            shipping
+            shippingWithTax
+            total
+            totalWithTax
+            lines {
+                id
+                quantity
+                orderPlacedQuantity
+                linePrice
+                linePriceWithTax
+                unitPriceWithTax
+                discountedLinePriceWithTax
+                proratedLinePriceWithTax
+                proratedUnitPriceWithTax
+                discounts {
+                    description
+                    amountWithTax
+                }
+                productVariant {
+                    id
+                    name
+                }
+            }
+            surcharges {
+                id
+                description
+                sku
+                price
+                priceWithTax
+                taxRate
+            }
+            payments {
+                ...Payment
+            }
+            modifications {
+                id
+                note
+                priceChange
+                isSettled
+                lines {
+                    orderLineId
+                    quantity
+                }
+                surcharges {
+                    id
+                }
+                payment {
+                    id
+                    state
+                    amount
+                    method
+                }
+                refund {
+                    id
+                    state
+                    total
+                    paymentId
+                }
+            }
+            promotions {
+                id
+                name
+                couponCode
+            }
+            discounts {
+                description
+                adjustmentSource
+                amount
+                amountWithTax
+            }
+            shippingAddress {
+                ...ShippingAddress
+            }
+            billingAddress {
+                ...ShippingAddress
+            }
+            shippingLines {
+                id
+                discountedPriceWithTax
+                shippingMethod {
+                    id
+                    name
+                }
+            }
+        }
+    `,
+    [paymentFragment, shippingAddressFragment],
+);
+
 export const promotionFragment = graphql(
     `
         fragment Promotion on Promotion {

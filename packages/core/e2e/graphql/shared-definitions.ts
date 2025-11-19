@@ -14,6 +14,7 @@ import {
     globalSettingsFragment,
     orderFragment,
     orderWithLinesFragment,
+    orderWithModificationsFragment,
     paymentFragment,
     productOptionGroupFragment,
     productVariantFragment,
@@ -83,6 +84,43 @@ export const getProductListDocument = graphql(`
                 featuredAsset {
                     id
                     preview
+                }
+            }
+            totalItems
+        }
+    }
+`);
+
+export const getProductWithFacetValuesDocument = graphql(`
+    query GetProductWithFacetValues($id: ID!) {
+        product(id: $id) {
+            id
+            facetValues {
+                id
+                name
+                code
+            }
+            variants {
+                id
+                facetValues {
+                    id
+                    name
+                    code
+                }
+            }
+        }
+    }
+`);
+
+export const getProductsListWithVariantsDocument = graphql(`
+    query GetProductListWithVariants {
+        products {
+            items {
+                id
+                name
+                variants {
+                    id
+                    name
                 }
             }
             totalItems
@@ -166,6 +204,46 @@ export const updateFacetValueDocument = graphql(
     `,
     [facetValueFragment],
 );
+
+export const createFacetValuesDocument = graphql(
+    `
+        mutation CreateFacetValues($input: [CreateFacetValueInput!]!) {
+            createFacetValues(input: $input) {
+                ...FacetValue
+            }
+        }
+    `,
+    [facetValueFragment],
+);
+
+export const updateFacetValuesDocument = graphql(
+    `
+        mutation UpdateFacetValues($input: [UpdateFacetValueInput!]!) {
+            updateFacetValues(input: $input) {
+                ...FacetValue
+            }
+        }
+    `,
+    [facetValueFragment],
+);
+
+export const deleteFacetValuesDocument = graphql(`
+    mutation DeleteFacetValues($ids: [ID!]!, $force: Boolean) {
+        deleteFacetValues(ids: $ids, force: $force) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteFacetDocument = graphql(`
+    mutation DeleteFacet($id: ID!, $force: Boolean) {
+        deleteFacet(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`);
 
 export const getCustomerListDocument = graphql(`
     query GetCustomerList($options: CustomerListOptions) {
@@ -491,6 +569,63 @@ export const removeProductVariantFromChannelDocument = graphql(
     `,
     [productVariantFragment],
 );
+
+export const assignFacetsToChannelDocument = graphql(`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removeFacetsFromChannelDocument = graphql(`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+                name
+            }
+            ... on FacetInUseError {
+                errorCode
+                message
+                productCount
+                variantCount
+            }
+        }
+    }
+`);
+
+export const getEntityDuplicatorsDocument = graphql(`
+    query GetEntityDuplicators {
+        entityDuplicators {
+            code
+            description
+            requiresPermission
+            forEntities
+            args {
+                name
+                type
+                defaultValue
+            }
+        }
+    }
+`);
+
+export const duplicateEntityDocument = graphql(`
+    mutation DuplicateEntity($input: DuplicateEntityInput!) {
+        duplicateEntity(input: $input) {
+            ... on DuplicateEntitySuccess {
+                newEntityId
+            }
+            ... on DuplicateEntityError {
+                errorCode
+                message
+                duplicationError
+            }
+        }
+    }
+`);
 
 export const updateAssetDocument = graphql(
     `
@@ -1224,6 +1359,27 @@ export const getFacetWithValuesDocument = graphql(
     [facetWithValuesFragment],
 );
 
+export const getFacetWithValueListDocument = graphql(
+    `
+        query GetFacetWithValueList($id: ID!, $options: FacetValueListOptions) {
+            facet(id: $id) {
+                id
+                languageCode
+                isPrivate
+                code
+                name
+                valueList(options: $options) {
+                    items {
+                        ...FacetValue
+                    }
+                    totalItems
+                }
+            }
+        }
+    `,
+    [facetValueFragment],
+);
+
 export const getFacetValuesDocument = graphql(
     `
         query GetFacetValues($options: FacetValueListOptions) {
@@ -1494,3 +1650,44 @@ export const addManualPaymentDocument = graphql(`
         }
     }
 `);
+
+export const modifyOrderDocument = graphql(
+    `
+        mutation ModifyOrder($input: ModifyOrderInput!) {
+            modifyOrder(input: $input) {
+                ...OrderWithModifications
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [orderWithModificationsFragment],
+);
+
+export const addManualPaymentToOrderDocument = graphql(
+    `
+        mutation AddManualPayment($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                ...OrderWithModifications
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [orderWithModificationsFragment],
+);
+
+export const getOrderWithModificationsDocument = graphql(
+    `
+        query GetOrderWithModifications($id: ID!) {
+            order(id: $id) {
+                ...OrderWithModifications
+            }
+        }
+    `,
+    [orderWithModificationsFragment],
+);

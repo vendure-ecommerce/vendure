@@ -159,8 +159,7 @@ export const updatedOrderFragment = graphql(`
             type
         }
     }
-`
-);
+`);
 
 export const addItemToOrderDocument = graphql(
     `
@@ -247,7 +246,7 @@ export const registerAccountDocument = graphql(`
     }
 `);
 
-export const currentUserFragmentDocument = graphql(`
+export const currentUserFragment = graphql(`
     fragment CurrentUserShop on CurrentUser {
         id
         identifier
@@ -274,7 +273,7 @@ export const verifyEmailDocument = graphql(
             }
         }
     `,
-    [currentUserFragmentDocument],
+    [currentUserFragment],
 );
 
 export const refreshTokenDocument = graphql(`
@@ -320,7 +319,7 @@ export const resetPasswordDocument = graphql(
             }
         }
     `,
-    [currentUserFragmentDocument],
+    [currentUserFragment],
 );
 
 export const requestUpdateEmailAddressDocument = graphql(`
@@ -1039,7 +1038,6 @@ export const getCollectionShopDocument = graphql(`
     }
 `);
 
-
 export const getCollectionVariantsDocument = graphql(`
     query GetCollectionVariants($id: ID, $slug: String) {
         collection(id: $id, slug: $slug) {
@@ -1145,9 +1143,7 @@ export const getOrderCustomFieldsDocument = graphql(`
             }
         }
     }
-`
-);
-
+`);
 
 export const setOrderCustomFieldsDocument = graphql(`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
@@ -1167,8 +1163,7 @@ export const setOrderCustomFieldsDocument = graphql(`
             }
         }
     }
-`
-);
+`);
 
 export const logOutDocument = graphql(`
     mutation LogOut {
@@ -1226,17 +1221,11 @@ export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
                 }
             }
         }
-    `
-    [updatedOrderFragment],
+    `[updatedOrderFragment],
 );
 
-export const adjustOrderLineWithCustomFieldsDocument = graphql(
-    `
-    mutation AdjustOrderLineWithCustomFields(
-        $orderLineId: ID!
-        $quantity: Int!
-        $customFields: JSON
-    ) {
+export const adjustOrderLineWithCustomFieldsDocument = graphql(`
+    mutation AdjustOrderLineWithCustomFields($orderLineId: ID!, $quantity: Int!, $customFields: JSON) {
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
             ... on Order {
                 lines {
@@ -1254,8 +1243,7 @@ export const adjustOrderLineWithCustomFieldsDocument = graphql(
             }
         }
     }
-`
-);
+`);
 
 export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
     query GetOrderWithOrderLineCustomFields {
@@ -1274,5 +1262,4 @@ export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
             }
         }
     }
-`
-);
+`);
