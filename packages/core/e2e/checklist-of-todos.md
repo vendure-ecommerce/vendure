@@ -1,0 +1,92 @@
+# Refactoring e2e tests
+
+- [ ] fast-importer.e2e-spec.ts 57
+- [ ] entity-prefix.e2e-spec.ts 58
+- [ ] entity-uuid-strategy.e2e-spec.ts 58
+- [ ] cache-service-default.e2e-spec.ts 84
+- [ ] cache-service-in-memory.e2e-spec.ts 85
+- [ ] translations.e2e-spec.ts 94
+- [ ] apollo-server-plugin.e2e-spec.ts 106
+- [ ] lifecycle.e2e-spec.ts 106
+- [ ] default-search-plugin-uuids.e2e-spec.ts 118
+- [ ] tax-rate.e2e-spec.ts 129
+- [ ] parallel-transactions.e2e-spec.ts 133
+- [ ] cache-service-redis.e2e-spec.ts 134
+- [ ] global-settings.e2e-spec.ts 134
+- [ ] default-scheduler-plugin.e2e-spec.ts 138
+- [ ] money-strategy.e2e-spec.ts 141
+- [x] country.e2e-spec.ts 142
+- [x] tag.e2e-spec.ts 143
+- [ ] error-handler-strategy.e2e-spec.ts 144
+- [ ] configurable-operation.e2e-spec.ts 152
+- [ ] order-item-price-calculation-strategy.e2e-spec.ts 160
+- [ ] localization.e2e-spec.ts 167
+- [ ] relations-decorator.e2e-spec.ts 169
+- [ ] plugin.e2e-spec.ts 170
+- [ ] session-management.e2e-spec.ts 171
+- [ ] job-queue.e2e-spec.ts 192
+- [ ] order-channel.e2e-spec.ts 197
+- [ ] custom-permissions.e2e-spec.ts 231
+- [ ] tax-category.e2e-spec.ts 234
+- [ ] order-changed-price-handling.e2e-spec.ts 235
+- [ ] entity-serialization.e2e-spec.ts 241
+- [ ] order-fulfillment.e2e-spec.ts 243
+- [ ] order-multi-vendor.e2e-spec.ts 249
+- [ ] order-multiple-shipping.e2e-spec.ts 255
+- [ ] guest-checkout-strategy.e2e-spec.ts 256
+- [ ] fulfillment-process.e2e-spec.ts 264
+- [ ] populate.e2e-spec.ts 266
+- [ ] custom-field-default-values.e2e-spec.ts 278
+- [ ] entity-id-strategy.e2e-spec.ts 291
+- [ ] shop-customer.e2e-spec.ts 294
+- [ ] zone.e2e-spec.ts 298
+- [ ] custom-field-permissions.e2e-spec.ts 309
+- [ ] customer-group.e2e-spec.ts 310
+- [ ] order-merge.e2e-spec.ts 313
+- [ ] administrator.e2e-spec.ts 314
+- [ ] order-interceptor.e2e-spec.ts 336
+- [ ] shop-catalog.e2e-spec.ts 340
+- [ ] database-transactions.e2e-spec.ts 354
+- [ ] order-line-custom-fields.e2e-spec.ts 373
+- [ ] order-taxes.e2e-spec.ts 377
+- [ ] stock-location.e2e-spec.ts 388
+- [ ] product-option.e2e-spec.ts 392
+- [ ] customer-channel.e2e-spec.ts 393
+- [ ] asset-channel.e2e-spec.ts 398
+- [ ] payment-process.e2e-spec.ts 415
+- [ ] shipping-method-eligibility.e2e-spec.ts 451
+- [ ] auth.e2e-spec.ts 461
+- [ ] authentication-strategy.e2e-spec.ts 473
+- [ ] promotion.e2e-spec.ts 474
+- [ ] settings-store-rw-permissions.e2e-spec.ts 477
+- [ ] entity-hydrator.e2e-spec.ts 491
+- [ ] channel.e2e-spec.ts 514
+- [ ] import.e2e-spec.ts 515
+- [ ] order-process.e2e-spec.ts 528
+- [ ] asset.e2e-spec.ts 579
+- [ ] shipping-method.e2e-spec.ts 579
+- [ ] active-order-strategy.e2e-spec.ts 580
+- [ ] custom-field-struct.e2e-spec.ts 584
+- [ ] stock-control-multi-location.e2e-spec.ts 589
+- [ ] product-prices.e2e-spec.ts 599
+- [ ] draft-order.e2e-spec.ts 619
+- [ ] product-channel.e2e-spec.ts 680
+- [ ] payment-method.e2e-spec.ts 698
+- [ ] role.e2e-spec.ts 706
+- [ ] slug.e2e-spec.ts 724
+- [ ] settings-store.e2e-spec.ts 832
+- [ ] customer.e2e-spec.ts 835
+- [x] facet.e2e-spec.ts 1043
+- [x] duplicate-entity.e2e-spec.ts 1085
+- [x] shop-auth.e2e-spec.ts 1085
+- [ ] custom-fields.e2e-spec.ts 1351
+- [ ] custom-field-relations.e2e-spec.ts 1465
+- [ ] list-query-builder.e2e-spec.ts 1546
+- [ ] stock-control.e2e-spec.ts 1581
+- [ ] default-search-plugin.e2e-spec.ts 2143
+- [ ] product.e2e-spec.ts 2311
+- [ ] order-promotion.e2e-spec.ts 2357
+- [ ] collection.e2e-spec.ts 2602
+KIND OF DONE  WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
+- [x] shop-order.e2e-spec.ts 2893
+- [x] order.e2e-spec.ts 3156
