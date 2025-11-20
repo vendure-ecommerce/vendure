@@ -18,6 +18,7 @@ import {
 } from '../ui/form.js';
 import { Input } from '../ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
+import { CustomFieldsForm } from './custom-fields-form.js';
 
 // Query document to fetch available countries
 const getAvailableCountriesDocument = graphql(`
@@ -275,6 +276,8 @@ export function CustomerAddressForm<T>({
                     />
                 </div>
 
+                {/* Custom Fields */}
+                <CustomFieldsForm entityType="Address" control={form.control} />
                 {/* Default Address Checkboxes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <FormField

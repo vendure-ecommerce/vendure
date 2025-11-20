@@ -3,7 +3,7 @@ title: "Importing Data"
 showtoc: true
 ---
 
-If you have hundreds, thousands or more products, inputting all the data by hand via the Admin UI can be too inefficient. To solve this, Vendure supports bulk-importing product and other data.
+If you have hundreds, thousands or more products, inputting all the data by hand via the Dashboard can be too inefficient. To solve this, Vendure supports bulk-importing product and other data.
 
 Data import is also useful for setting up test or demo environments, and is also used by the `@vendure/testing` package for end-to-end tests.
 
@@ -219,7 +219,7 @@ populate(
 
 :::note
 When removing the `DefaultJobQueuePlugin` from the plugins list as in the code snippet above, one should manually rebuild the search index in order for the newly added products to appear.
-In the Admin UI, this can be done by navigating to the product list view and clicking the three icon next to the search input:
+In the Dashboard, this can be done by navigating to the product list view and clicking the button in the top right:
 
 ![Rebuild search index](./reindex.webp)
 :::

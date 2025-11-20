@@ -611,7 +611,7 @@ export function DefaultRelationInput({
                 onBlur={onBlur}
                 name={name}
                 ref={ref}
-                value={value ?? ''}
+                value={value}
                 onChange={onChange}
                 config={config}
                 disabled={disabled}
