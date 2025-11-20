@@ -7,7 +7,6 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
-import { GetCustomerListQuery, GetCustomerListQueryVariables } from './graphql/generated-e2e-admin-types';
 import { getCustomerListDocument } from './graphql/shared-definitions';
 
 /**
@@ -39,18 +38,15 @@ describe('Entity prefix edge-cases', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1569
     it('customers list filter by postalCode', async () => {
-        const result = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(
-            getCustomerListDocument,
-            {
-                options: {
-                    filter: {
-                        postalCode: {
-                            eq: 'NU9 0PW',
-                        },
+        const result = await adminClient.query(getCustomerListDocument, {
+            options: {
+                filter: {
+                    postalCode: {
+                        eq: 'NU9 0PW',
                     },
                 },
             },
-        );
+        });
 
         expect(result.customers.items.length).toBe(1);
         expect(result.customers.items[0].emailAddress).toBe('eliezer56@yahoo.com');

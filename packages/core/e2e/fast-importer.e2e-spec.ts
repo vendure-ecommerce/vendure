@@ -7,10 +7,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { initialData } from '../mock-data/data-sources/initial-data';
 
-import {
-    GetProductWithVariantsQuery,
-    GetProductWithVariantsQueryVariables,
-} from './graphql/generated-e2e-admin-types';
 import { getProductWithVariantsDocument } from './graphql/shared-definitions';
 
 describe('FastImporterService resolver', () => {
@@ -45,10 +41,7 @@ describe('FastImporterService resolver', () => {
         await fastImporterService.initialize();
         const productId = await fastImporterService.createProduct(createProductInput);
 
-        const { product } = await adminClient.query<
-            GetProductWithVariantsQuery,
-            GetProductWithVariantsQueryVariables
-        >(getProductWithVariantsDocument, {
+        const { product } = await adminClient.query(getProductWithVariantsDocument, {
             id: productId as string,
         });
 

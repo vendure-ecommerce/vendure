@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { SortOrder } from '@vendure/common/lib/generated-types';
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig, UuidIdStrategy } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
@@ -7,16 +8,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import {
-    FacetValueFragment,
-    GetFacetListQuery,
-    GetFacetListQueryVariables,
-} from './graphql/generated-e2e-admin-types';
-import {
-    SearchProductsShopQuery,
-    SearchProductsShopQueryVariables,
-    SortOrder,
-} from './graphql/generated-e2e-shop-types';
+import { facetValueFragment } from './graphql/fragments-admin';
+import { FragmentOf } from './graphql/graphql-admin';
 import { getFacetListDocument } from './graphql/shared-definitions';
 import { searchProductsShopDocument } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
@@ -31,10 +24,10 @@ describe('Default search plugin with UUIDs', () => {
         }),
     );
 
-    let plantsFacetValue: FacetValueFragment;
-    let furnitureFacetValue: FacetValueFragment;
-    let photoFacetValue: FacetValueFragment;
-    let electronicsFacetValue: FacetValueFragment;
+    let plantsFacetValue: FragmentOf<typeof facetValueFragment>;
+    let furnitureFacetValue: FragmentOf<typeof facetValueFragment>;
+    let photoFacetValue: FragmentOf<typeof facetValueFragment>;
+    let electronicsFacetValue: FragmentOf<typeof facetValueFragment>;
 
     beforeAll(async () => {
         await server.init({
@@ -52,16 +45,13 @@ describe('Default search plugin with UUIDs', () => {
         // triggered from all the product updates
         await awaitRunningJobs(adminClient, 10_000, 1000);
 
-        const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
-            getFacetListDocument,
-            {
-                options: {
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
+        const { facets } = await adminClient.query(getFacetListDocument, {
+            options: {
+                sort: {
+                    name: SortOrder.ASC,
                 },
             },
-        );
+        });
         plantsFacetValue = facets.items[0].values.find(v => v.code === 'plants')!;
         furnitureFacetValue = facets.items[0].values.find(v => v.code === 'furniture')!;
         photoFacetValue = facets.items[0].values.find(v => v.code === 'photo')!;
@@ -74,16 +64,13 @@ describe('Default search plugin with UUIDs', () => {
     });
 
     it('can filter by facetValueIds', async () => {
-        const result = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
-            searchProductsShopDocument,
-            {
-                input: {
-                    facetValueIds: [plantsFacetValue.id],
-                    groupByProduct: true,
-                    sort: { name: SortOrder.ASC },
-                },
+        const result = await shopClient.query(searchProductsShopDocument, {
+            input: {
+                facetValueIds: [plantsFacetValue.id],
+                groupByProduct: true,
+                sort: { name: SortOrder.ASC },
             },
-        );
+        });
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Bonsai Tree',
             'Orchid',
@@ -92,22 +79,17 @@ describe('Default search plugin with UUIDs', () => {
     });
 
     it('can filter by facetValueFilters', async () => {
-        const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
-            getFacetListDocument,
-        );
-        const result = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
-            searchProductsShopDocument,
-            {
-                input: {
-                    facetValueFilters: [
-                        { and: electronicsFacetValue.id },
-                        { or: [plantsFacetValue.id, photoFacetValue.id] },
-                    ],
-                    sort: { name: SortOrder.ASC },
-                    groupByProduct: true,
-                },
+        const { facets } = await adminClient.query(getFacetListDocument);
+        const result = await shopClient.query(searchProductsShopDocument, {
+            input: {
+                facetValueFilters: [
+                    { and: electronicsFacetValue.id },
+                    { or: [plantsFacetValue.id, photoFacetValue.id] },
+                ],
+                sort: { name: SortOrder.ASC },
+                groupByProduct: true,
             },
-        );
+        });
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Camera Lens',
             'Instant Camera',

@@ -29,6 +29,36 @@ import {
 } from './fragments-admin';
 import { graphql } from './graphql-admin';
 
+export const getTasksDocument = graphql(`
+    query GetTasks {
+        scheduledTasks {
+            id
+            description
+            schedule
+            scheduleDescription
+            lastResult
+            enabled
+        }
+    }
+`);
+
+export const updateTaskDocument = graphql(`
+    mutation UpdateTask($input: UpdateScheduledTaskInput!) {
+        updateScheduledTask(input: $input) {
+            id
+            enabled
+        }
+    }
+`);
+
+export const runTaskDocument = graphql(`
+    mutation RunTask($id: String!) {
+        runScheduledTask(id: $id) {
+            success
+        }
+    }
+`);
+
 export const createAdministratorDocument = graphql(
     `
         mutation CreateAdministrator($input: CreateAdministratorInput!) {
@@ -385,6 +415,17 @@ export const updateCountryDocument = graphql(
     [countryFragment],
 );
 
+export const getGlobalSettingsDocument = graphql(
+    `
+        query GetGlobalSettings {
+            globalSettings {
+                ...GlobalSettings
+            }
+        }
+    `,
+    [globalSettingsFragment],
+);
+
 export const getFacetListDocument = graphql(
     `
         query GetFacetList($options: FacetListOptions) {
@@ -424,6 +465,15 @@ export const getProductSimpleDocument = graphql(`
         product(slug: $slug, id: $id) {
             id
             slug
+        }
+    }
+`);
+
+export const getProductIdNameDocument = graphql(`
+    query GetProductIdName($id: ID!) {
+        product(id: $id) {
+            id
+            name
         }
     }
 `);
@@ -1203,6 +1253,37 @@ export const removePromotionsFromChannelDocument = graphql(`
         removePromotionsFromChannel(input: $input) {
             id
             name
+        }
+    }
+`);
+
+export const getTaxRateDocument = graphql(
+    `
+        query GetTaxRate($id: ID!) {
+            taxRate(id: $id) {
+                ...TaxRate
+            }
+        }
+    `,
+    [taxRateFragment],
+);
+
+export const createTaxRateDocument = graphql(
+    `
+        mutation CreateTaxRate($input: CreateTaxRateInput!) {
+            createTaxRate(input: $input) {
+                ...TaxRate
+            }
+        }
+    `,
+    [taxRateFragment],
+);
+
+export const deleteTaxRateDocument = graphql(`
+    mutation DeleteTaxRate($id: ID!) {
+        deleteTaxRate(id: $id) {
+            result
+            message
         }
     }
 `);
