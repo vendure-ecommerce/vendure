@@ -1,8 +1,6 @@
 import { Request } from 'express';
 
-import { ApiKeyHashingStrategy, Logger } from '../../config';
 import { AuthOptions } from '../../config/vendure-config';
-import { ApiKeyService } from '../../service/services/api-key.service';
 
 // Helper that gives us the content of the tokenmethod array so we dont duplicate options
 type ExtractArrayElement<T> = T extends ReadonlyArray<infer U> ? U : T;
@@ -18,18 +16,14 @@ export type ExtractTokenResult = {
  * 1. Cookie
  * 2. Authorization Header
  * 3. API-Key Header
- *     - If an ApiKey is found, its `lastUsedAt` timestamp will be updated in the background.
  *
  * @see {@link AuthOptions}
  */
-export async function extractSessionToken(
+export function extractSessionToken(
     req: Request,
     tokenMethod: Exclude<AuthOptions['tokenMethod'], undefined>,
     apiKeyHeaderKey: string,
-    apiKeyLookupHeaderKey: string,
-    apiKeyService: ApiKeyService,
-    apiKeyHashingStrategy: ApiKeyHashingStrategy,
-): Promise<ExtractTokenResult | undefined> {
+): ExtractTokenResult | undefined {
     if (req.session?.token && (tokenMethod === 'cookie' || tokenMethod.includes('cookie'))) {
         return { method: 'cookie', token: req.session.token as string };
     }
@@ -41,30 +35,7 @@ export async function extractSessionToken(
     }
 
     const apiKeyHeader = req.get(apiKeyHeaderKey)?.trim();
-    const apiKeyLookupHeader = req.get(apiKeyLookupHeaderKey)?.trim();
-
-    if (apiKeyHeader && apiKeyLookupHeader && tokenMethod.includes('api-key')) {
-        const apiKeyHash = await apiKeyService.getHashByLookupId(apiKeyLookupHeader);
-
-        if (!apiKeyHash) {
-            // Eventhough we know that there is no corresponding ApiKey entity, because
-            // the lookup ID yielded no result, we still hash the input, so that regardless
-            // of the ApiKey existing or not, this function takes around the same amount of time.
-            return void (await apiKeyHashingStrategy.hash(apiKeyHeader));
-        }
-
-        if (await apiKeyHashingStrategy.check(apiKeyHeader, apiKeyHash)) {
-            // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
-            apiKeyService
-                .updateLastUsedAtByLookupId(apiKeyLookupHeader)
-                .catch(err =>
-                    Logger.error(
-                        `Failed to update lastUsedAt for ApiKey with lookupId ${apiKeyLookupHeader}`,
-                        undefined,
-                        err?.stack,
-                    ),
-                );
-            return { method: 'api-key', token: apiKeyHash };
-        }
+    if (apiKeyHeader && tokenMethod.includes('api-key')) {
+        return { method: 'api-key', token: apiKeyHeader };
     }
 }

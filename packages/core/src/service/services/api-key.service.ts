@@ -137,8 +137,8 @@ export class ApiKeyService {
         const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
 
         const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
-        const authOptions = this.getApiKeyStrategyByApiType(ctx.apiType);
-        const lookupId = await authOptions.lookupIdStrategy.generateLookupId(ctx);
+        const strategy = this.getApiKeyStrategyByApiType(ctx.apiType);
+        const lookupId = await strategy.generateLookupId(ctx);
         const apiKeyUser = userIdApiKeyUser
             ? await this.connection.getEntityOrThrow(ctx, User, userIdApiKeyUser, {
                   // ApiKeyUsers generally require roles and their channels, its important for sessions!
@@ -150,8 +150,13 @@ export class ApiKeyService {
                   this.generateApiKeyUserIdentifier(lookupId),
               );
 
-        const apiKey = await authOptions.generationStrategy.generateApiKey(ctx);
-        const hash = await authOptions.hashingStrategy.hash(apiKey);
+        const secret = await strategy.generateSecret(ctx);
+        const apiKey = strategy.constructApiKey(lookupId, secret);
+        // TODO(Dan): should we only hash the secret or the entire apikey?
+        // the entire key has more entropy but the lookupid might be publically known
+        // Length extension attack is not really applicable here though
+        // If this changes, remember to also update `rotate` function!
+        const hash = await strategy.hashingStrategy.hash(apiKey);
 
         const newEntity = await this.translatableSaver.create({
             ctx,
@@ -214,8 +219,9 @@ export class ApiKeyService {
             beforeSave: async () => {
                 // Keep in mind that if the user of the ApiKey is being impersonated,
                 // this would change the roles of the impersonated user!
-                if (input.roleIds)
+                if (input.roleIds) {
                     await this.connection.getRepository(ctx, User).save(entity.user, { reload: false });
+                }
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, apiKey);
@@ -279,9 +285,10 @@ export class ApiKeyService {
             relations: { user: { roles: { channels: true } } },
         });
 
-        const authOptions = this.getApiKeyStrategyByApiType(ctx.apiType);
-        const apiKey = await authOptions.generationStrategy.generateApiKey(ctx);
-        const hash = await authOptions.hashingStrategy.hash(apiKey);
+        const strategy = this.getApiKeyStrategyByApiType(ctx.apiType);
+        const secret = await strategy.generateSecret(ctx);
+        const apiKey = strategy.constructApiKey(entity.lookupId, secret);
+        const hash = await strategy.hashingStrategy.hash(apiKey);
 
         await this.sessionService.deleteApiKeySession(ctx, entity);
         await this.sessionService.createNewAuthenticatedSession(
@@ -342,42 +349,32 @@ export class ApiKeyService {
 
     /**
      * @description
-     * Helper, intended for the AuthGuard to quickly find the ApiKeyHash.
-     * Does not return hash for a soft-deleted ApiKey.
+     * Is channel-/ and soft-delete aware, translates the entity as well.
      */
-    async getHashByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<string | null> {
-        const entity = await this.connection.rawConnection.getRepository(ApiKey).findOneBy({
-            lookupId,
-            deletedAt: IsNull(),
+    async findOneByLookupId(
+        ctx: RequestContext,
+        lookupId: ApiKey['lookupId'],
+        relations?: RelationPaths<ApiKey>,
+    ): Promise<ApiKey | null> {
+        const entity = await this.connection.getRepository(ctx, ApiKey).findOne({
+            relations: [...(relations ?? []), 'channels'],
+            where: {
+                lookupId,
+                deletedAt: IsNull(),
+                channels: { id: ctx.channelId },
+            },
         });
-        return entity?.apiKeyHash ?? null;
+        if (!entity) return null;
+        return this.translator.translate(entity, ctx);
     }
 
     /**
      * @description
      * Helper, intended for the AuthGuard to quickly update the lastUsedAt timestamp
      */
-    async updateLastUsedAtByLookupId(lookupId: NonNullable<ApiKey['lookupId']>): Promise<UpdateResult> {
+    async updateLastUsedAtByLookupId(lookupId: ApiKey['lookupId']): Promise<UpdateResult> {
         return this.connection.rawConnection
             .getRepository(ApiKey)
             .update({ lookupId }, { lastUsedAt: new Date() });
     }
-
-    /**
-     * @description
-     * Helper, intended to repair "broken" API-Keys i.e. keys which have no associated Session.
-     * For example someone might accidently "clean up" (delete) old sessions manually, resulting in a broken API-Key.
-     * This could also happen when the hashing function changes.
-     */
-    // async assertHasSessionTODODODODO(ctx: RequestContext, apiKey: ApiKey): Promise<CachedSession | undefined> {
-    //     throw new Error("UNIMPLEMENTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-
-    //     return this.sessionService.getSessionFromToken(apiKey.apiKeyHash);
-    //     await this.sessionService.createNewAuthenticatedSession(
-    //         ctx,
-    //         apiKey.user,
-    //         API_KEY_AUTH_STRATEGY_NAME,
-    //         apiKey.apiKeyHash,
-    //     );
-    // }
 }

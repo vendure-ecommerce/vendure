@@ -1,6 +1,25 @@
+import ms from 'ms';
+
 import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { SessionService } from '../../service';
 import { PasswordHashingStrategy } from '../auth/password-hashing-strategy';
+
+/**
+ * Needed to identify types of sessions when creating and deleting.
+ *
+ * @see {@link SessionService}
+ */
+export const API_KEY_AUTH_STRATEGY_NAME = 'apikey';
+
+/**
+ * Since API-Keys build upon Vendures Session mechanism, we need to set a very long
+ * default duration to mimic the "forever" nature of API-Keys.
+ *
+ * @unit Milliseconds
+ * @see {@link SessionService}
+ */
+export const API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS = ms('100y');
 
 /**
  * @see {@link ApiKeyStrategy}
@@ -74,15 +93,26 @@ export interface ApiKeyStrategy extends InjectableStrategy {
 
     /**
      * @description
+     * Used when constructing and parsing API-Keys. You might need to override this
+     * delimiter if you customized the secret-/ and or lookup-generation.
+     * See {@link constructApiKey} or {@link parse} for more detailed information.
+     *
+     * @default ":"
+     * @see {@link BaseApiKeyStrategy} for a default implementation
+     */
+    delimiter: string;
+
+    /**
+     * @description
      * Constructs an API-Key which the {@link User}s supply to the API.
      *
      * Each strategy determines how it combines the lookup ID with the secret itself,
      * because lookup-/ and secret-generation are customizable leading to Vendure not
      * enforcing a fixed delimiter.
      *
-     * The output of this function must be parsable via this strategys {@link tryParse} function.
+     * The output of this function must be parsable via this strategys {@link parse} function.
      *
-     * @see {@link tryParse}
+     * @see {@link BaseApiKeyStrategy} for a default implementation
      * @since 3.6.0
      */
     constructApiKey(lookupId: string, secret: string): string;
@@ -97,11 +127,46 @@ export interface ApiKeyStrategy extends InjectableStrategy {
      * and the lookup ID are both customizable and may conflict with it, hence the need for custom parsing.
      *
      * Custom parsing also allows strategies to use special characters in their API-Keys, by requiring
-     * the token to be base64 encoded for example.
+     * the token to be base64 encoded for example or include prefixes such as:
      *
+     * - `'test_'`, `'prod_'`
+     * - `'admin_'`, `'customer_'`
+     *
+     * to visually distinguish between keys more easily.
+     *
+     * @see {@link BaseApiKeyStrategy} for a default implementation
      * @since 3.6.0
-     * @see {@link constructApiKey}
      * @returns Either both parts for further processing or `null` if parsing failed.
      */
-    tryParse(token: string): ApiKeyStrategyParseResult;
+    parse(token: string): ApiKeyStrategyParseResult;
+}
+
+/**
+ * Intended to be extended by consumers of the {@link ApiKeyStrategy} if they do not
+ * require their own construction/parsing logic.
+ */
+export abstract class BaseApiKeyStrategy implements ApiKeyStrategy {
+    abstract hashingStrategy: PasswordHashingStrategy;
+    abstract generateSecret(ctx: RequestContext): Promise<string>;
+    abstract generateLookupId(ctx: RequestContext): Promise<string>;
+
+    delimiter = ':';
+
+    constructApiKey(lookupId: string, secret: string): string {
+        return `${lookupId}${this.delimiter}${secret}`;
+    }
+
+    parse(token: string): ApiKeyStrategyParseResult {
+        if (!token) {
+            return null;
+        }
+
+        const [lookupId, apiKey] = token.split(':', 2);
+
+        if (!lookupId || !apiKey) {
+            return null;
+        }
+
+        return { lookupId, apiKey };
+    }
 }

@@ -123,7 +123,6 @@ describe('ApiKey resolver', () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                [String(config.authOptions.apiKeyLookupHeaderKey)]: lookupId,
                 [String(config.authOptions.apiKeyHeaderKey)]: apiKey,
             },
             body: '{ "query": "query { administrator(id: 1) { user { identifier } } }" }',

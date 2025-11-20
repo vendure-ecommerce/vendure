@@ -6,11 +6,7 @@ import { Brackets, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEv
 
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
-import { Logger } from '../../config';
-import {
-    API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS,
-    API_KEY_AUTH_STRATEGY_NAME,
-} from '../../config/api-key-strategy/api-key-authentication-options';
+import { API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS, API_KEY_AUTH_STRATEGY_NAME, Logger } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';

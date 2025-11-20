@@ -63,17 +63,10 @@ export class BaseAuthResolver {
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
-        const apiKeyHashingStrategy = this.apiKeyService.getApiKeyStrategyByApiType(
-            ctx.apiType,
-        ).hashingStrategy;
-
-        const extraction = await extractSessionToken(
+        const extraction = extractSessionToken(
             req,
             this.configService.authOptions.tokenMethod,
             this.configService.authOptions.apiKeyHeaderKey,
-            this.configService.authOptions.apiKeyLookupHeaderKey,
-            this.apiKeyService,
-            apiKeyHashingStrategy,
         );
 
         // ApiKey "Sessions" are not meant to be logged out of

@@ -4,9 +4,10 @@ import { RequestContext } from '../../api';
 import { BcryptPasswordHashingStrategy } from '../auth/bcrypt-password-hashing-strategy';
 import { PasswordHashingStrategy } from '../auth/password-hashing-strategy';
 
-import { ApiKeyGenerationStrategy } from './api-key-generation-strategy';
-import { ApiKeyLookupIdGenerationStrategy } from './api-key-lookup-id-generation-strategy';
-import { ApiKeyStrategy, ApiKeyStrategyParseResult } from './api-key-strategy';
+import { ApiKeyStrategy, BaseApiKeyStrategy } from './api-key-strategy';
+
+export const DEFAULT_SIZE_RANDOM_BYTES_KEY = 32;
+export const DEFAULT_SIZE_RANDOM_BYTES_LOOKUP = 12;
 
 /**
  * @see {@link RandomBytesApiKeyStrategy}
@@ -41,48 +42,6 @@ export interface RandomBytesApiKeyStrategyOptions {
     hashingStrategy?: PasswordHashingStrategy;
 }
 
-export const DEFAULT_SIZE_RANDOM_BYTES_KEY = 32;
-export const DEFAULT_SIZE_RANDOM_BYTES_LOOKUP = 12;
-
-/**
- * @description
- * A generation strategy that uses `node:crypto` to generate random hex strings for API-Keys via `randomBytes`.
- *
- * // TODO(Dan): remove
- *
- * @docsCategory auth
- * @since 3.6.0
- */
-export class RandomBytesApiKeyGenerationStrategy
-    implements ApiKeyGenerationStrategy, ApiKeyLookupIdGenerationStrategy
-{
-    readonly sizeKey: number;
-    readonly sizeLookupId: number;
-
-    constructor(input?: RandomBytesApiKeyStrategyOptions) {
-        this.sizeKey = input?.sizeKey ?? DEFAULT_SIZE_RANDOM_BYTES_KEY;
-        this.sizeLookupId = input?.sizeLookupId ?? DEFAULT_SIZE_RANDOM_BYTES_LOOKUP;
-    }
-
-    generateApiKey(_ctx: RequestContext): Promise<string> {
-        return new Promise((resolve, reject) => {
-            randomBytes(this.sizeKey, (err, buf) => {
-                if (err) reject(err);
-                else resolve(buf.toString('hex'));
-            });
-        });
-    }
-
-    generateLookupId(_ctx: RequestContext): Promise<string> {
-        return new Promise((resolve, reject) => {
-            randomBytes(this.sizeLookupId, (err, buf) => {
-                if (err) reject(err);
-                else resolve(buf.toString('hex'));
-            });
-        });
-    }
-}
-
 /**
  * @description
  * A generation strategy that uses `node:crypto` to generate random hex strings for API-Keys via `randomBytes`.
@@ -98,37 +57,24 @@ export class RandomBytesApiKeyGenerationStrategy
  * @docsCategory auth
  * @since 3.6.0
  */
-export class RandomBytesApiKeyStrategy implements ApiKeyStrategy {
+export class RandomBytesApiKeyStrategy extends BaseApiKeyStrategy {
     readonly sizeKey: number;
     readonly sizeLookupId: number;
     readonly hashingStrategy: PasswordHashingStrategy;
 
     constructor(input?: RandomBytesApiKeyStrategyOptions) {
+        super();
         this.sizeKey = input?.sizeKey ?? DEFAULT_SIZE_RANDOM_BYTES_KEY;
         this.sizeLookupId = input?.sizeLookupId ?? DEFAULT_SIZE_RANDOM_BYTES_LOOKUP;
         this.hashingStrategy = input?.hashingStrategy ?? new BcryptPasswordHashingStrategy();
     }
 
-    generateApiKey(_ctx: RequestContext): Promise<string> {
+    generateSecret(ctx: RequestContext): Promise<string> {
         return this.promisifyRandomBytes(this.sizeKey);
     }
 
-    generateLookupId(_ctx: RequestContext): Promise<string> {
+    generateLookupId(ctx: RequestContext): Promise<string> {
         return this.promisifyRandomBytes(this.sizeLookupId);
-    }
-
-    tryParse(token: string): ApiKeyStrategyParseResult {
-        if (!token) {
-            return null;
-        }
-
-        const [lookupId, apiKey] = token.split(':', 2);
-
-        if (!lookupId || !apiKey) {
-            return null;
-        }
-
-        return { lookupId, apiKey };
     }
 
     private promisifyRandomBytes(size: number): Promise<string> {

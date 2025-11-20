@@ -4,9 +4,9 @@ import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { ForbiddenError } from '../../common/error/errors';
-import { ApiKeyHashingStrategy } from '../../config';
+import { API_KEY_AUTH_STRATEGY_NAME } from '../../config';
 import { ConfigService } from '../../config/config.service';
-import { LogLevel } from '../../config/logger/vendure-logger';
+import { Logger, LogLevel } from '../../config/logger/vendure-logger';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Customer } from '../../entity/customer/customer.entity';
 import { RequestContextService } from '../../service/helpers/request-context/request-context.service';
@@ -14,8 +14,8 @@ import { ApiKeyService } from '../../service/services/api-key.service';
 import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
-import { extractSessionToken } from '../common/extract-session-token';
-import { getApiType } from '../common/get-api-type';
+import { extractSessionToken, ExtractTokenResult } from '../common/extract-session-token';
+import { ApiType, getApiType } from '../common/get-api-type';
 import { isFieldResolver } from '../common/is-field-resolver';
 import { parseContext } from '../common/parse-context';
 import {
@@ -63,10 +63,7 @@ export class AuthGuard implements CanActivate {
         if (targetIsFieldResolver) {
             requestContext = internal_getRequestContext(req);
         } else {
-            const apiKeyHashingStrategy = this.apiKeyService.getApiKeyStrategyByApiType(
-                getApiType(info),
-            ).hashingStrategy;
-            const session = await this.getSession(req, res, hasOwnerPermission, apiKeyHashingStrategy);
+            const session = await this.getSession(req, res, hasOwnerPermission, getApiType(info));
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
 
             const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
@@ -144,26 +141,20 @@ export class AuthGuard implements CanActivate {
         req: Request,
         res: Response,
         hasOwnerPermission: boolean,
-        apiKeyHashingStrategy: ApiKeyHashingStrategy,
+        apiType: ApiType,
     ): Promise<CachedSession | undefined> {
-        const sessionToken = await extractSessionToken(
+        const sessionToken = extractSessionToken(
             req,
             this.configService.authOptions.tokenMethod,
             this.configService.authOptions.apiKeyHeaderKey,
-            this.configService.authOptions.apiKeyLookupHeaderKey,
-            this.apiKeyService,
-            apiKeyHashingStrategy,
         );
 
         let serializedSession: CachedSession | undefined;
-        if (sessionToken) {
-            serializedSession = await this.sessionService.getSessionFromToken(sessionToken.token);
+        if (sessionToken?.token) {
+            serializedSession = await this.getSessionFromToken(sessionToken, apiType);
             if (serializedSession) {
                 return serializedSession;
             }
-            // TODO(Dan): If we cant find an associated session for a valid Apikey, it means the key is broken!
-            // For example someone could have deleted the session manually in the DB.
-            // Think about moving the hashing into here instead of extract session token
 
             // if there is a token but it cannot be validated to a Session,
             // then the token is no longer valid and should be unset.
@@ -187,5 +178,66 @@ export class AuthGuard implements CanActivate {
             });
         }
         return serializedSession;
+    }
+
+    private async getSessionFromToken(
+        extracted: ExtractTokenResult,
+        apiType: ApiType,
+    ): Promise<CachedSession | undefined> {
+        if (extracted.method !== 'api-key') {
+            return this.sessionService.getSessionFromToken(extracted.token);
+        }
+
+        const strategy = this.apiKeyService.getApiKeyStrategyByApiType(apiType);
+        const parseResult = strategy.parse(extracted.token);
+        if (!parseResult) {
+            return;
+        }
+
+        const apiKey = await this.apiKeyService.findOneByLookupId(
+            RequestContext.empty(),
+            parseResult.lookupId,
+            ['user', 'user.roles', 'user.roles.channels'],
+        );
+        if (!apiKey) {
+            return;
+        }
+
+        const isHashMatching = await strategy.hashingStrategy.check(extracted.token, apiKey.apiKeyHash);
+        if (!isHashMatching) {
+            return;
+        }
+
+        this.apiKeyService
+            .updateLastUsedAtByLookupId(apiKey.lookupId)
+            // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
+            .catch(err =>
+                Logger.error(
+                    `Failed to update lastUsedAt for ApiKey with lookupId ${parseResult.lookupId}`,
+                    undefined,
+                    err?.stack,
+                ),
+            );
+
+        const session = await this.sessionService.getSessionFromToken(apiKey.apiKeyHash);
+        if (session) {
+            return session;
+        }
+
+        // At this point we may assert:
+        // 1. The token came from the api-key header
+        // 2. The hash matches
+        // 3. There is no session
+        // We can conclude that the API-Key is actually broken.
+        // For example someone could have deleted the session manually in the DB.
+        // We must create a new session, otherwise the API-Key is unusable.
+        const newSession = await this.sessionService.createNewAuthenticatedSession(
+            RequestContext.empty(), // TODO(Dan): can this have unintended consequences?
+            apiKey.user,
+            API_KEY_AUTH_STRATEGY_NAME,
+            apiKey.apiKeyHash,
+        );
+
+        return this.sessionService.getSessionFromToken(apiKey.apiKeyHash);
     }
 }
