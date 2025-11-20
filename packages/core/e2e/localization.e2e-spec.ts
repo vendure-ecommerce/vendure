@@ -1,15 +1,17 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { LanguageCode } from './graphql/generated-e2e-admin-types';
-import { getProductWithVariantsDocument, updateProductDocument } from './graphql/shared-definitions';
+import {
+    getProductWithVariantsDocument,
+    updateProductDocument,
+    updateProductOptionGroupDocument,
+} from './graphql/shared-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('Localization', () => {
@@ -23,10 +25,7 @@ describe('Localization', () => {
         });
         await adminClient.asSuperAdmin();
 
-        const { updateProduct } = await adminClient.query<
-            Codegen.UpdateProductMutation,
-            Codegen.UpdateProductMutationVariables
-        >(updateProductDocument, {
+        const { updateProduct } = await adminClient.query(updateProductDocument, {
             input: {
                 id: 'T_1',
                 translations: [
@@ -52,10 +51,7 @@ describe('Localization', () => {
             },
         });
 
-        await adminClient.query<
-            Codegen.UpdateOptionGroupMutation,
-            Codegen.UpdateOptionGroupMutationVariables
-        >(UPDATE_OPTION_GROUP, {
+        await adminClient.query(updateProductOptionGroupDocument, {
             input: {
                 id: 'T_1',
                 translations: [
@@ -72,10 +68,7 @@ describe('Localization', () => {
     });
 
     it('returns default language when none specified', async () => {
-        const { product } = await adminClient.query<
-            Codegen.GetProductWithVariantsQuery,
-            Codegen.GetProductWithVariantsQueryVariables
-        >(getProductWithVariantsDocument, {
+        const { product } = await adminClient.query(getProductWithVariantsDocument, {
             id: 'T_1',
         });
         expect(pick(product!, ['name', 'slug', 'description'])).toEqual({
@@ -86,10 +79,7 @@ describe('Localization', () => {
     });
 
     it('returns specified language', async () => {
-        const { product } = await adminClient.query<
-            Codegen.GetProductWithVariantsQuery,
-            Codegen.GetProductWithVariantsQueryVariables
-        >(
+        const { product } = await adminClient.query(
             getProductWithVariantsDocument,
             {
                 id: 'T_1',
@@ -104,10 +94,7 @@ describe('Localization', () => {
     });
 
     it('falls back to default language code', async () => {
-        const { product } = await adminClient.query<
-            Codegen.GetProductWithVariantsQuery,
-            Codegen.GetProductWithVariantsQueryVariables
-        >(
+        const { product } = await adminClient.query(
             getProductWithVariantsDocument,
             {
                 id: 'T_1',
@@ -122,10 +109,7 @@ describe('Localization', () => {
     });
 
     it('nested entites are translated', async () => {
-        const { product } = await adminClient.query<
-            Codegen.GetProductWithVariantsQuery,
-            Codegen.GetProductWithVariantsQueryVariables
-        >(
+        const { product } = await adminClient.query(
             getProductWithVariantsDocument,
             {
                 id: 'T_1',
@@ -138,10 +122,7 @@ describe('Localization', () => {
     });
 
     it('translates results of mutation', async () => {
-        const { updateProduct } = await adminClient.query<
-            Codegen.UpdateProductMutation,
-            Codegen.UpdateProductMutationVariables
-        >(
+        const { updateProduct } = await adminClient.query(
             updateProductDocument,
             {
                 input: {
@@ -157,11 +138,3 @@ describe('Localization', () => {
         });
     });
 });
-
-const UPDATE_OPTION_GROUP = gql`
-    mutation UpdateOptionGroup($input: UpdateProductOptionGroupInput!) {
-        updateProductOptionGroup(input: $input) {
-            id
-        }
-    }
-`;

@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CachedSession, mergeConfig, SessionCacheStrategy } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMeDocumentOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../common/src/shared-constants';
 
-import {
-    AttemptLoginMutation,
-    AttemptLoginMutationVariables,
-    MeQuery,
-} from './graphql/generated-e2e-admin-types';
-import { attemptLoginDocument, MeDocument } from './graphql/shared-definitions';
+import { attemptLoginDocument, logoutDocument, MeDocument } from './graphql/shared-definitions';
 
 const testSessionCache = new Map<string, CachedSession>();
 const getSpy = vi.fn();
@@ -61,7 +55,7 @@ describe('Session caching', () => {
             customerCount: 1,
         });
         testSessionCache.clear();
-    }, TEST_SETUP_TIMeDocumentOUT_MS);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
@@ -72,7 +66,7 @@ describe('Session caching', () => {
         expect(setSpy.mock.calls.length).toBe(0);
         expect(testSessionCache.size).toBe(0);
 
-        await adminClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(attemptLoginDocument, {
+        await adminClient.query(attemptLoginDocument, {
             username: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         });
@@ -83,7 +77,7 @@ describe('Session caching', () => {
 
     it('takes user data from cache on next request', async () => {
         getSpy.mockClear();
-        const { me } = await adminClient.query<MeQuery>(MeDocument);
+        const { me } = await adminClient.query(MeDocument);
 
         expect(getSpy.mock.calls.length).toBe(1);
     });
@@ -91,28 +85,22 @@ describe('Session caching', () => {
     it('sets fresh data after TTL expires', async () => {
         setSpy.mockClear();
 
-        await adminClient.query<MeQuery>(MeDocument);
+        await adminClient.query(MeDocument);
         expect(setSpy.mock.calls.length).toBe(0);
 
-        await adminClient.query<MeQuery>(MeDocument);
+        await adminClient.query(MeDocument);
         expect(setSpy.mock.calls.length).toBe(0);
 
         await pause(2000);
 
-        await adminClient.query<MeQuery>(MeDocument);
+        await adminClient.query(MeDocument);
         expect(setSpy.mock.calls.length).toBe(1);
     });
 
     it('clears cache for that user on logout', async () => {
         deleteSpy.mockClear();
         expect(deleteSpy.mock.calls.length).toBe(0);
-        await adminClient.query(gql`
-            mutation Logout {
-                logout {
-                    success
-                }
-            }
-        `);
+        await adminClient.query(logoutDocument);
 
         expect(testSessionCache.size).toBe(0);
         expect(deleteSpy.mock.calls.length).toBeGreaterThan(0);
@@ -136,7 +124,7 @@ describe('Session expiry', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-    }, TEST_SETUP_TIMeDocumentOUT_MS);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
