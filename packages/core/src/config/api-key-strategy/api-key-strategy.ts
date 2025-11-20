@@ -161,7 +161,7 @@ export abstract class BaseApiKeyStrategy implements ApiKeyStrategy {
             return null;
         }
 
-        const [lookupId, apiKey] = token.split(':', 2);
+        const [lookupId, apiKey] = token.split(this.delimiter, 2);
 
         if (!lookupId || !apiKey) {
             return null;
