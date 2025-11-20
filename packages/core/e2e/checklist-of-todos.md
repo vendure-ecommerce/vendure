@@ -30,17 +30,17 @@
 - [x] tax-category.e2e-spec.ts 234
 - [x] order-changed-price-handling.e2e-spec.ts 235
 - [x] entity-serialization.e2e-spec.ts 241
-- [ ] order-fulfillment.e2e-spec.ts 243
-- [ ] order-multi-vendor.e2e-spec.ts 249
-- [ ] order-multiple-shipping.e2e-spec.ts 255
-- [ ] guest-checkout-strategy.e2e-spec.ts 256
-- [ ] fulfillment-process.e2e-spec.ts 264
-- [ ] populate.e2e-spec.ts 266
-- [ ] custom-field-default-values.e2e-spec.ts 278
-- [ ] entity-id-strategy.e2e-spec.ts 291
+- [x] order-fulfillment.e2e-spec.ts 243
+- [x] order-multi-vendor.e2e-spec.ts 249
+- [x] order-multiple-shipping.e2e-spec.ts 255
+- [x] guest-checkout-strategy.e2e-spec.ts 256
+- [x] fulfillment-process.e2e-spec.ts 264
+- [x] populate.e2e-spec.ts 266
+- [x] custom-field-default-values.e2e-spec.ts 278
+- [x] entity-id-strategy.e2e-spec.ts 291
 - [ ] shop-customer.e2e-spec.ts 294
-- [ ] zone.e2e-spec.ts 298
-- [ ] custom-field-permissions.e2e-spec.ts 309
+- [x] zone.e2e-spec.ts 298
+- [x] custom-field-permissions.e2e-spec.ts 309
 - [ ] customer-group.e2e-spec.ts 310
 - [ ] order-merge.e2e-spec.ts 313
 - [ ] administrator.e2e-spec.ts 314
@@ -83,20 +83,26 @@
 - [ ] custom-field-relations.e2e-spec.ts 1465
 - [ ] list-query-builder.e2e-spec.ts 1546
 - [ ] stock-control.e2e-spec.ts 1581
-KIND OF DONE  WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
+      KIND OF DONE WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
 - [ ] product.e2e-spec.ts 2311
 - [ ] order-promotion.e2e-spec.ts 2357
 - [ ] collection.e2e-spec.ts 2602
-KIND OF DONE  WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
+      KIND OF DONE WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
 - [x] shop-order.e2e-spec.ts 2893
 - [x] order.e2e-spec.ts 3156
 
+fast-importer.e2e-spec.ts entity-prefix.e2e-spec.ts entity-uuid-strategy.e2e-spec.ts cache-service-default.e2e-spec.ts cache-service-in-memory.e2e-spec.ts translations.e2e-spec.ts apollo-server-plugin.e2e-spec.ts lifecycle.e2e-spec.ts default-search-plugin-uuids.e2e-spec.ts tax-rate.e2e-spec.ts parallel-transactions.e2e-spec.ts cache-service-redis.e2e-spec.ts global-settings.e2e-spec.ts default-scheduler-plugin.e2e-spec.ts
 
+error-handler-strategy.e2e-spec.ts configurable-operation.e2e-spec.ts order-item-price-calculation-strategy.e2e-spec.ts localization.e2e-spec.ts relations-decorator.e2e-spec.ts plugin.e2e-spec.ts session-management.e2e-spec.ts job-queue.e2e-spec.ts order-channel.e2e-spec.ts
 
-fast-importer.e2e-spec.ts entity-prefix.e2e-spec.ts entity-uuid-strategy.e2e-spec.ts cache-service-default.e2e-spec.ts cache-service-in-memory.e2e-spec.ts translations.e2e-spec.ts apollo-server-plugin.e2e-spec.ts lifecycle.e2e-spec.ts default-search-plugin-uuids.e2e-spec.ts tax-rate.e2e-spec.ts parallel-transactions.e2e-spec.ts cache-service-redis.e2e-spec.ts global-settings.e2e-spec.ts default-scheduler-plugin.e2e-spec.ts 
+custom-permissions.e2e-spec.ts tax-category.e2e-spec.ts order-changed-price-handling.e2e-spec.ts entity-serialization.e2e-spec.ts
 
+order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts
 
-error-handler-strategy.e2e-spec.ts configurable-operation.e2e-spec.ts order-item-price-calculation-strategy.e2e-spec.ts localization.e2e-spec.ts relations-decorator.e2e-spec.ts plugin.e2e-spec.ts session-management.e2e-spec.ts job-queue.e2e-spec.ts order-channel.e2e-spec.ts 
+order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts
 
+fulfillment-process.e2e-spec.ts populate.e2e-spec.ts custom-field-default-values.e2e-spec.ts entity-id-strategy.e2e-spec.ts 
 
-custom-permissions.e2e-spec.ts tax-category.e2e-spec.ts order-changed-price-handling.e2e-spec.ts entity-serialization.e2e-spec.ts 
+shop-customer.e2e-spec.ts zone.e2e-spec.ts custom-field-permissions.e2e-spec.ts 
+
+customer-group.e2e-spec.ts order-merge.e2e-spec.ts administrator.e2e-spec.ts order-interceptor.e2e-spec.ts 
