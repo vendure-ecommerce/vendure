@@ -831,6 +831,38 @@
       "created_at": "2025-10-27T19:55:12Z",
       "repoId": 136938012,
       "pullRequestNo": 3904
+    },
+    {
+      "name": "guicalmeida",
+      "id": 60672629,
+      "comment_id": 3518646806,
+      "created_at": "2025-11-11T20:35:07Z",
+      "repoId": 136938012,
+      "pullRequestNo": 3959
+    },
+    {
+      "name": "ahmed-e-elhor",
+      "id": 125192012,
+      "comment_id": 3508943878,
+      "created_at": "2025-11-09T23:30:10Z",
+      "repoId": 136938012,
+      "pullRequestNo": 3951
+    },
+    {
+      "name": "dev-ish",
+      "id": 1314551,
+      "comment_id": 3529614410,
+      "created_at": "2025-11-13T20:35:05Z",
+      "repoId": 136938012,
+      "pullRequestNo": 3968
+    },
+    {
+      "name": "nezerk",
+      "id": 2256828,
+      "comment_id": 3544856623,
+      "created_at": "2025-11-18T03:23:31Z",
+      "repoId": 136938012,
+      "pullRequestNo": 3982
     }
   ]
 }

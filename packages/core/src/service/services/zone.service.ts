@@ -24,6 +24,7 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ZoneEvent } from '../../event-bus/events/zone-event';
 import { ZoneMembersEvent } from '../../event-bus/events/zone-members-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -47,6 +48,7 @@ export class ZoneService {
         private eventBus: EventBus,
         private translator: TranslatorService,
         private listQueryBuilder: ListQueryBuilder,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     /** @internal */
@@ -121,6 +123,7 @@ export class ZoneService {
             zone.members = await this.getCountriesFromIds(ctx, input.memberIds);
         }
         const newZone = await this.connection.getRepository(ctx, Zone).save(zone);
+        await this.customFieldRelationService.updateRelations(ctx, Zone, input, newZone);
         await this.zones.refresh(ctx);
         await this.eventBus.publish(new ZoneEvent(ctx, newZone, 'created', input));
         return assertFound(this.findOne(ctx, newZone.id));
@@ -130,6 +133,7 @@ export class ZoneService {
         const zone = await this.connection.getEntityOrThrow(ctx, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(ctx, Zone).save(updatedZone, { reload: false });
+        await this.customFieldRelationService.updateRelations(ctx, Zone, input, updatedZone);
         await this.zones.refresh(ctx);
         await this.eventBus.publish(new ZoneEvent(ctx, zone, 'updated', input));
         return assertFound(this.findOne(ctx, zone.id));
