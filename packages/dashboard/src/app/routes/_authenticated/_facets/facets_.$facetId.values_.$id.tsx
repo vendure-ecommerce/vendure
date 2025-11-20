@@ -1,3 +1,5 @@
+import { SlugInput } from '@/vdb/components/data-input/index.js';
+import { PageBreadcrumb } from '@/vdb/components/layout/generated-breadcrumbs.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -17,7 +19,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -25,7 +27,6 @@ import {
     facetValueDetailDocument,
     updateFacetValueDocument,
 } from './facets.graphql.js';
-import { PageBreadcrumb } from '@/vdb/components/layout/generated-breadcrumbs.js';
 
 const pageId = 'facet-value-detail';
 
@@ -36,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$facetId/v
         queryDocument: facetValueDetailDocument,
         breadcrumb(isNew, entity) {
             const facetName = entity?.facet.name ?? 'Facet Value';
-            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: 'Facets' }];
+            const breadcrumb: PageBreadcrumb[] = [{ path: '/facets', label: <Trans>Facets</Trans> }];
             if (isNew) {
                 breadcrumb.push(<Trans>New facet value</Trans>);
             } else if (entity) {
@@ -52,7 +53,7 @@ function FacetValueDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -81,7 +82,9 @@ function FacetValueDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet value'));
+            toast(
+                creatingNewEntity ? t`Successfully created facet value` : t`Successfully updated facet value`,
+            );
             resetForm();
             const created = Array.isArray(data) ? data[0] : data;
             if (creatingNewEntity && created) {
@@ -89,7 +92,7 @@ function FacetValueDetailPage() {
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet value'), {
+            toast(creatingNewEntity ? t`Failed to create facet value` : t`Failed to update facet value`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -107,14 +110,14 @@ function FacetValueDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
             </PageActionBar>
             <PageLayout>
-                <PageBlock column="side" blockId="facet-info">
-                    {entity?.facet && (
+                {entity?.facet && (
+                    <PageBlock column="side" blockId="facet-info">
                         <div className="space-y-2">
                             <div className="text-sm font-medium">
                                 <Trans>Facet</Trans>
@@ -122,8 +125,8 @@ function FacetValueDetailPage() {
                             <div className="text-sm text-muted-foreground">{entity?.facet.name}</div>
                             <div className="text-xs text-muted-foreground">{entity?.facet.code}</div>
                         </div>
-                    )}
-                </PageBlock>
+                    </PageBlock>
+                )}
                 <PageBlock column="main" blockId="main-form">
                     <DetailFormGrid>
                         <TranslatableFormFieldWrapper
@@ -136,7 +139,15 @@ function FacetValueDetailPage() {
                             control={form.control}
                             name="code"
                             label={<Trans>Code</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="code"
+                                    watchFieldName="name"
+                                    entityName="FacetValue"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                 </PageBlock>

@@ -20,6 +20,18 @@ import { ProductReview } from './entities/product-review.entity';
         schema: shopApiExtensions,
         resolvers: [ProductEntityResolver, ProductReviewShopResolver, ProductReviewEntityResolver],
     },
+    configuration: config => {
+        config.customFields.Product.push({
+            name: 'reviews',
+            type: 'relation',
+            list: true,
+            entity: ProductReview,
+            inverseSide: (review: ProductReview) => review.product,
+            ui: { component: 'review-multi-select-with-create' },
+        });
+
+        return config;
+    },
     dashboard: './dashboard/index.tsx',
 })
 export class ReviewsPlugin {}

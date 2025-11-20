@@ -18,8 +18,8 @@ import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
@@ -54,9 +54,7 @@ export function ChannelSwitcher() {
         setContentLanguage,
     } = useUserSettings();
     const [showManageLanguagesDialog, setShowManageLanguagesDialog] = useState(false);
-
-    // Use the selected channel if available, otherwise fall back to the active channel
-    const displayChannel = activeChannel || activeChannel;
+    const displayChannel = activeChannel;
 
     // Get available languages from server config
     const availableLanguages = serverConfig?.availableLanguages || [];
@@ -101,13 +99,9 @@ export function ChannelSwitcher() {
                                         <ChannelCodeLabel code={displayChannel?.code} />
                                     </span>
                                     <span className="truncate text-xs">
-                                        {hasMultipleLanguages ? (
-                                            <span className="cursor-pointer hover:text-foreground">
-                                                Language: {formatLanguageName(contentLanguage)}
-                                            </span>
-                                        ) : (
-                                            <span>Language: {formatLanguageName(contentLanguage)}</span>
-                                        )}
+                                        <span>
+                                            <Trans>Language: {formatLanguageName(contentLanguage)}</Trans>
+                                        </span>
                                     </span>
                                 </div>
                                 <ChevronsUpDown className="ml-auto" />
@@ -141,7 +135,7 @@ export function ChannelSwitcher() {
                                         <ChannelCodeLabel code={channel.code} />
                                         {channel.id === displayChannel?.id && (
                                             <span className="ml-auto text-xs text-muted-foreground">
-                                                Current
+                                                <Trans context="current channel">Current</Trans>
                                             </span>
                                         )}
                                     </DropdownMenuItem>
@@ -170,7 +164,9 @@ export function ChannelSwitcher() {
                                                         <span>{formatLanguageName(languageCode)}</span>
                                                         {contentLanguage === languageCode && (
                                                             <span className="ml-auto text-xs text-muted-foreground">
-                                                                Active
+                                                                <Trans context="active language">
+                                                                    Active
+                                                                </Trans>
                                                             </span>
                                                         )}
                                                     </DropdownMenuItem>

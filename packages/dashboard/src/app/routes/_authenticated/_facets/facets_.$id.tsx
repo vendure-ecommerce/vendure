@@ -1,3 +1,4 @@
+import { SlugInput } from '@/vdb/components/data-input/index.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -18,7 +19,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { FacetValuesTable } from './components/facet-values-table.js';
@@ -32,7 +33,10 @@ export const Route = createFileRoute('/_authenticated/_facets/facets_/$id')({
         pageId,
         queryDocument: facetDetailDocument,
         breadcrumb(isNew, entity) {
-            return [{ path: '/facets', label: 'Facets' }, isNew ? <Trans>New facet</Trans> : entity?.name];
+            return [
+                { path: '/facets', label: <Trans>Facets</Trans> },
+                isNew ? <Trans>New facet</Trans> : entity?.name,
+            ];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
@@ -42,7 +46,7 @@ function FacetDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -72,14 +76,14 @@ function FacetDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet'));
+            toast(creatingNewEntity ? t`Successfully created facet` : t`Successfully updated facet`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet'), {
+            toast(creatingNewEntity ? t`Failed to create facet` : t`Failed to update facet`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -95,7 +99,7 @@ function FacetDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -124,7 +128,15 @@ function FacetDetailPage() {
                             control={form.control}
                             name="code"
                             label={<Trans>Code</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="code"
+                                    watchFieldName="name"
+                                    entityName="Facet"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                 </PageBlock>

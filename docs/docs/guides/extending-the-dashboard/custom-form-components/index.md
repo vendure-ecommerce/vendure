@@ -10,7 +10,7 @@ interact with forms. This includes:
 
 ## Anatomy of a Form Component
 
-All form components must implement the [DashboardFormComponent type](/reference/dashboard/forms/dashboard-form-component).
+All form components must implement the [DashboardFormComponent type](/reference/dashboard/extensions-api/form-components#dashboardformcomponent).
 
 This type is based on the props that are made available from `react-hook-form`, which is the
 underlying form library used by the Dashboard.
@@ -92,7 +92,7 @@ First we need to register the component with the `defineDashboardExtension` func
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { ColorPickerComponent } from './components/color-picker';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     customFormComponents: {
         // Custom field components for custom fields
         customFields: [
@@ -195,7 +195,7 @@ You can then use this component in your detail form definition:
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { MarkdownEditorComponent } from './components/markdown-editor';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     detailForms: [
         {
             // highlight-start
@@ -323,6 +323,94 @@ Always import UI components from the `@vendure/dashboard` package rather than cr
 :::
 
 The unified custom form elements system gives you complete flexibility in how data is presented and edited in the dashboard, while maintaining seamless integration with React Hook Form and the dashboard's design system.
+
+## Nested Forms and Event Handling
+
+When creating custom form components that contain their own forms (e.g., dialogs with forms inside detail pages), you need to prevent form submission events from bubbling up to parent forms. The dashboard provides the `handleNestedFormSubmit` utility for this purpose.
+
+### Why Use handleNestedFormSubmit?
+
+Detail pages in the dashboard are themselves forms. If you add a custom component with its own form (like a dialog with create/edit functionality), submitting the inner form will also trigger the outer detail page form submission. This can cause:
+
+- Unintended save operations on the detail page
+- Validation errors on unrelated fields
+- Loss of unsaved changes in the dialog
+
+### Using handleNestedFormSubmit
+
+The `handleNestedFormSubmit` utility prevents event propagation and properly handles form submission:
+
+```tsx title="src/plugins/my-plugin/dashboard/components/nested-form-dialog.tsx"
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+    Form,
+    DashboardFormComponent,
+    handleNestedFormSubmit
+} from '@vendure/dashboard';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const formSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().min(1, 'Description is required'),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+export const NestedFormDialogComponent: DashboardFormComponent = (props) => {
+    const form = useForm<FormData>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+        },
+    });
+
+    const onSubmit = (data: FormData) => {
+        // Handle your form submission logic
+        console.log('Form submitted:', data);
+        // You might update the parent form value here
+        props.onChange(data);
+        form.reset();
+    };
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline">Open Form</Button>
+            </DialogTrigger>
+            <DialogContent>
+                <Form {...form}>
+                    {/* Use handleNestedFormSubmit to prevent event bubbling */}
+                    <form onSubmit={handleNestedFormSubmit(form, onSubmit)}>
+                        {/* Your form fields here */}
+                        <Button type="submit">Save</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+};
+```
+
+### What handleNestedFormSubmit Does
+
+The utility function:
+1. Prevents the submit event from propagating to parent forms (`e.stopPropagation()`)
+2. Prevents the browser's default form submission behavior (`e.preventDefault()`)
+3. Properly triggers react-hook-form's handleSubmit with your custom handler
+4. Maintains type safety with TypeScript generics
+
+### When to Use It
+
+Use `handleNestedFormSubmit` whenever you have:
+- A dialog with a form inside a detail page
+- A custom component with its own form that's nested within another form
+- Any scenario where form submission events should not bubble up to parent forms
 
 ## Relation Selectors
 

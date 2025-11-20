@@ -233,7 +233,7 @@ Clicking the blue "Run Query" button will show you the traces for that service.
 ## Instrumenting Your Plugins
 
 You can also instrument your own plugins and services with Open Telemetry. To do so,
-add the [Instrument decorator](/reference/typescript-api/telemetry/instrument) to your service class:
+add the [Instrument decorator](/reference/typescript-api/telemetry/instrument) to your **service class**:
 
 ```ts
 import { Injectable } from '@nestjs/common';
@@ -252,3 +252,9 @@ export class MyService {
 ```
 
 You should now be able to see calls to `MyService.myMethod` in your traces.
+
+:::warning
+You should _not_ decorate GraphQL resolvers & REST controllers with this decorator. Those will
+already be instrumented, and adding the `@Instrument()` decorator will potentially
+interfere with other NestJS decorators on your resolver methods.
+:::

@@ -29,8 +29,15 @@ export const nativeValueTransformer: ValueTransformer = {
  */
 export const jsonStringValueTransformer: ValueTransformer = {
     parse: (value: string, fieldDef: ConfigurableFieldDef) => {
-        if (!value) {
+        if (value === undefined) {
             return getDefaultValue(fieldDef);
+        }
+        // This case arises often when the administrator is actively editing
+        // values and clears out the input. At that point, we don't want to suddenly
+        // switch to the default value otherwise it results in poor UX, e.g. pressing
+        // backspace to delete a number would result in `0` suddenly appearing as the value.
+        if (value === '') {
+            return value;
         }
 
         try {

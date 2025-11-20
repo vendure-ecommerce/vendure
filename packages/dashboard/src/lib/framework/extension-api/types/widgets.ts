@@ -4,7 +4,8 @@ import React, { PropsWithChildren } from 'react';
  * @description
  * Base props interface for dashboard widgets.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage widgets
  * @since 3.3.0
  */
 export type DashboardBaseWidgetProps = PropsWithChildren<{
@@ -19,7 +20,8 @@ export type DashboardBaseWidgetProps = PropsWithChildren<{
  * @description
  * Represents an instance of a dashboard widget with its layout and configuration.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage widgets
  * @since 3.3.0
  */
 export type DashboardWidgetInstance = {
@@ -60,7 +62,9 @@ export type DashboardWidgetInstance = {
  *
  * Defines a dashboard widget that can be added to the dashboard.
  *
- * @docsCategory extensions
+ * @docsCategory extensions-api
+ * @docsPage Widgets
+ * @docsWeight 0
  * @since 3.3.0
  */
 export type DashboardWidgetDefinition = {

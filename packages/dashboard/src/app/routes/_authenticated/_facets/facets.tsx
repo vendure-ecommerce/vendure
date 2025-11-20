@@ -1,3 +1,4 @@
+import { DataTableCellComponent } from '@/vdb/components/data-table/types.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -5,7 +6,7 @@ import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
@@ -16,17 +17,16 @@ import {
     RemoveFacetsFromChannelBulkAction,
 } from './components/facet-bulk-actions.js';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
-import { deleteFacetDocument, facetListDocument } from './facets.graphql.js';
-import { DataTableCellComponent } from '@/vdb/components/shared/table-cell/table-cell-types.js';
+import { facetListDocument } from './facets.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,
     loader: () => ({ breadcrumb: () => <Trans>Facets</Trans> }),
 });
 
-const FacetValuesCell: DataTableCellComponent<ResultOf<
-    typeof facetListDocument
->['facets']['items'][0]> = ({ row }) => {
+const FacetValuesCell: DataTableCellComponent<ResultOf<typeof facetListDocument>['facets']['items'][0]> = ({
+    row,
+}) => {
     const value = row.original.valueList;
     if (!value) {
         return null;
@@ -44,10 +44,7 @@ const FacetValuesCell: DataTableCellComponent<ResultOf<
                     />
                 );
             })}
-            <FacetValuesSheet
-                facetId={row.original.id}
-                facetName={row.original.name}
-            >
+            <FacetValuesSheet facetId={row.original.id} facetName={row.original.name}>
                 {list.totalItems > 3 ? (
                     <div>
                         <Trans>+ {list.totalItems - 3} more</Trans>
@@ -64,9 +61,8 @@ function FacetListPage() {
     return (
         <ListPage
             pageId="facet-list"
-            title="Facets"
+            title={<Trans>Facets</Trans>}
             listQuery={facetListDocument}
-            deleteMutation={deleteFacetDocument}
             defaultVisibility={{
                 name: true,
                 isPrivate: true,
@@ -74,7 +70,7 @@ function FacetListPage() {
             }}
             customizeColumns={{
                 name: {
-                    header: () => <Trans>Facet Name</Trans>,
+                    id: 'name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 isPrivate: {

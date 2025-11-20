@@ -5,17 +5,20 @@ import {
     OrderStateCell,
 } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
+import { useWidgetFilters } from '../widget-filters-context.js';
 import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
 
 export const WIDGET_ID = 'latest-orders-widget';
 
 export function LatestOrdersWidget() {
+    const { t } = useLingui();
+    const { dateRange } = useWidgetFilters();
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: 'orderPlacedAt',
@@ -24,11 +27,35 @@ export function LatestOrdersWidget() {
     ]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const { formatCurrency } = useLocalFormat();
+    const [filters, setFilters] = useState<ColumnFiltersState>([
+        {
+            id: 'orderPlacedAt',
+            value: {
+                between: {
+                    start: dateRange.from.toISOString(),
+                    end: dateRange.to.toISOString(),
+                },
+            },
+        },
+    ]);
+
+    // Update filters when date range changes
+    useEffect(() => {
+        setFilters([
+            {
+                id: 'orderPlacedAt',
+                value: {
+                    between: {
+                        start: dateRange.from.toISOString(),
+                        end: dateRange.to.toISOString(),
+                    },
+                },
+            },
+        ]);
+    }, [dateRange]);
 
     return (
-        <DashboardBaseWidget id={WIDGET_ID} title="Latest Orders" description="Your latest orders">
+        <DashboardBaseWidget id={WIDGET_ID} title={t`Latest Orders`} description={t`Your latest orders`}>
             <PaginatedListDataTable
                 page={page}
                 transformVariables={variables => ({
@@ -48,7 +75,7 @@ export function LatestOrdersWidget() {
                 })}
                 customizeColumns={{
                     code: {
-                        header: 'Code',
+                        header: t`Code`,
                         cell: ({ row }) => {
                             return (
                                 <Button variant="ghost" asChild>
@@ -58,7 +85,7 @@ export function LatestOrdersWidget() {
                         },
                     },
                     orderPlacedAt: {
-                        header: 'Placed At',
+                        header: t`Placed At`,
                         cell: ({ row }) => {
                             return (
                                 <span className="capitalize">
@@ -68,7 +95,7 @@ export function LatestOrdersWidget() {
                         },
                     },
                     total: {
-                        header: 'Total',
+                        header: t`Total`,
                         cell: OrderMoneyCell,
                     },
                     totalWithTax: { cell: OrderMoneyCell },

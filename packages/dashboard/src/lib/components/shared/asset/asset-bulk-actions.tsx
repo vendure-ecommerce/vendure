@@ -11,7 +11,7 @@ import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions
 import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { ChevronDown } from 'lucide-react';
 import { Asset } from './asset-gallery.js';
 
@@ -37,10 +37,10 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<A
     const { pageId } = usePage();
     const pageBlock = usePageBlock();
     const blockId = pageBlock?.blockId;
-    
+
     const { position, shouldShow } = useFloatingBulkActions({
         selectionCount: selection.length,
-        containerSelector: '[data-asset-gallery]'
+        containerSelector: '[data-asset-gallery]',
     });
 
     if (!shouldShow) {
@@ -70,12 +70,12 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<A
 
     return (
         <div
-            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-white shadow-2xl rounded-md border z-50"
-            style={{ 
-                height: 'auto', 
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-background shadow-2xl rounded-md border z-50"
+            style={{
+                height: 'auto',
                 maxHeight: '60px',
                 bottom: position.bottom,
-                left: position.left
+                left: position.left,
             }}
         >
             <span className="text-sm text-muted-foreground">

@@ -189,6 +189,13 @@ export const orderDetailFragment = graphql(
                     code
                 }
             }
+            channels {
+                id
+                code
+                seller {
+                    name
+                }
+            }
             code
             state
             nextStates
@@ -308,6 +315,10 @@ export const orderHistoryDocument = graphql(`
             updatedAt
             code
             currencyCode
+            customer {
+                firstName
+                lastName
+            }
             history(options: $options) {
                 totalItems
                 items {
@@ -627,8 +638,24 @@ export const modifyOrderDocument = graphql(
         mutation ModifyOrder($input: ModifyOrderInput!) {
             modifyOrder(input: $input) {
                 __typename
-                ...OrderDetail
                 ...ErrorResult
+                ... on Order {
+                    lines {
+                        productVariant {
+                            featuredAsset {
+                                id
+                                preview
+                            }
+                            product {
+                                featuredAsset {
+                                    id
+                                    preview
+                                }
+                            }
+                        }
+                    }
+                }
+                ...OrderDetail
             }
         }
     `,
@@ -719,6 +746,30 @@ export const setOrderCustomFieldsDocument = graphql(`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
         setOrderCustomFields(input: $input) {
             id
+        }
+    }
+`);
+
+export const sellerOrdersDocument = graphql(`
+    query GetSellerOrders($orderId: ID!) {
+        order(id: $orderId) {
+            id
+            sellerOrders {
+                id
+                code
+                state
+                orderPlacedAt
+                currencyCode
+                totalWithTax
+                channels {
+                    id
+                    code
+                    seller {
+                        id
+                        name
+                    }
+                }
+            }
         }
     }
 `);

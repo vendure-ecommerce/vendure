@@ -8,7 +8,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { DefinedInitialDataOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -134,7 +134,7 @@ export function ConfigurableOperationMultiSelector({
                 code: operation.code,
                 arguments: operationDef.args.map(arg => ({
                     name: arg.name,
-                    value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
+                    value: arg.defaultValue != null ? arg.defaultValue.toString() : arg.list ? '[]' : '',
                 })),
             },
         ]);

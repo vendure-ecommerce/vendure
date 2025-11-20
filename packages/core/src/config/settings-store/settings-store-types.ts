@@ -65,8 +65,38 @@ export interface SettingsStoreFieldConfig {
      * @description
      * Permissions required to access this field. If not specified,
      * basic authentication is required for admin API access.
+     *
+     * Can be either:
+     * - A single permission or array of permissions (applies to both read and write)
+     * - An object with `read` and `write` properties for granular control
+     *
+     * @example
+     * ```ts
+     * // Single permission for both read and write
+     * requiresPermission: Permission.UpdateSettings
+     *
+     * // Separate read and write permissions
+     * requiresPermission: {
+     *   read: Permission.ReadSettings,
+     *   write: Permission.UpdateSettings
+     * }
+     *
+     * // Using custom RwPermissionDefinition
+     * requiresPermission: {
+     *   read: dashboardSavedViews.Read,
+     *   write: dashboardSavedViews.Write
+     * }
+     * ```
+     * @since 3.5.0 - Added support for object with read/write properties
      */
-    requiresPermission?: Array<Permission | string> | Permission | string;
+    requiresPermission?:
+        | Array<Permission | string>
+        | Permission
+        | string
+        | {
+              read?: Array<Permission | string> | Permission | string;
+              write?: Array<Permission | string> | Permission | string;
+          };
 
     /**
      * @description

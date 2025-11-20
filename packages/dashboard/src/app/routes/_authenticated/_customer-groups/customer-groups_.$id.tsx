@@ -16,7 +16,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { CustomerGroupMembersTable } from './components/customer-group-members-table.js';
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_customer-groups/customer-
         pageId,
         queryDocument: customerGroupDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/customer-groups', label: 'Customer groups' },
+            { path: '/customer-groups', label: <Trans>Customer Groups</Trans> },
             isNew ? <Trans>New customer group</Trans> : entity?.name,
         ],
     }),
@@ -45,7 +45,7 @@ function CustomerGroupDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,16 +61,23 @@ function CustomerGroupDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated customer group'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created customer group`
+                    : t`Successfully updated customer group`,
+            );
             resetForm();
             if (creatingNewEntity && data?.id) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update customer group'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create customer group` : t`Failed to update customer group`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
@@ -86,7 +93,7 @@ function CustomerGroupDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

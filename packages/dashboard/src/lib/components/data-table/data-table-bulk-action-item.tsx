@@ -1,6 +1,6 @@
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -16,6 +16,13 @@ import {
 } from '../ui/alert-dialog.js';
 import { DropdownMenuItem } from '../ui/dropdown-menu.js';
 
+/**
+ * @description
+ *
+ * @docsCategory list-views
+ * @docsPage bulk-actions
+ * @since 3.4.0
+ */
 export interface DataTableBulkActionItemProps {
     label: React.ReactNode;
     icon?: LucideIcon;
@@ -23,8 +30,40 @@ export interface DataTableBulkActionItemProps {
     onClick: () => void;
     className?: string;
     requiresPermission?: string[];
+    disabled?: boolean;
 }
 
+/**
+ * @description
+ * A component that should be used to implement any bulk actions for list pages & data tables.
+ *
+ * @example
+ * ```tsx
+ * import { Trans } from '@lingui/react/macro';
+ * import { DataTableBulkActionItem, BulkActionComponent } from '\@vendure/dashboard';
+ * import { Check } from 'lucide-react';
+ *
+ * export const MyBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+ *
+ *   return (
+ *     <DataTableBulkActionItem
+ *       requiresPermission={['ReadMyCustomEntity']}
+ *       onClick={() => {
+ *         console.log('Selected items:', selection);
+ *       }}
+ *       label={<Trans>Delete</Trans>}
+ *       confirmationText={<Trans>Are you sure?</Trans>}
+ *       icon={Check}
+ *       className="text-destructive"
+ *     />
+ *   );
+ * }
+ * ```
+ *
+ * @docsCategory list-views
+ * @docsPage bulk-actions
+ * @since 3.4.0
+ */
 export function DataTableBulkActionItem({
     label,
     icon: Icon,
@@ -32,7 +71,8 @@ export function DataTableBulkActionItem({
     className,
     onClick,
     requiresPermission,
-}: DataTableBulkActionItemProps) {
+    disabled,
+}: Readonly<DataTableBulkActionItemProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const { hasPermissions } = usePermissions();
     const userHasPermission = hasPermissions(requiresPermission ?? []);
@@ -63,7 +103,7 @@ export function DataTableBulkActionItem({
         return (
             <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
                 <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onClick={handleClick} disabled={!userHasPermission}>
+                    <DropdownMenuItem onClick={handleClick} disabled={!userHasPermission || disabled}>
                         {Icon && <Icon className={cn('mr-1 h-4 w-4', className)} />}
                         <span className={cn('text-sm', className)}>
                             <Trans>{label}</Trans>

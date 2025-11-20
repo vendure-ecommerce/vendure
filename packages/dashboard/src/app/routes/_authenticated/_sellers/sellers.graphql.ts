@@ -11,8 +11,8 @@ export const sellerItemFragment = graphql(`
 
 export const sellerListQuery = graphql(
     `
-        query SellerList {
-            sellers {
+        query SellerList($options: SellerListOptions) {
+            sellers(options: $options) {
                 items {
                     ...SellerItem
                 }

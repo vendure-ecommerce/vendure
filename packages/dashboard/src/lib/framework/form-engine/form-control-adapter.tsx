@@ -2,6 +2,7 @@ import { JSX, useMemo } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
 
 import { CustomFieldListInput } from '@/vdb/components/data-input/custom-field-list-input.js';
+import { StringListInput } from '@/vdb/components/data-input/string-list-input.js';
 import { StructFormInput } from '@/vdb/components/data-input/struct-form-input.js';
 import { ConfigurableOperationListInput } from '../../components/data-input/configurable-operation-list-input.js';
 
@@ -124,7 +125,7 @@ function renderListField(
     }
 
     if (fieldDef.type === 'string') {
-        return <DefaultInputForType {...fieldWithTransform} fieldDef={fieldDef} />;
+        return <StringListInput {...fieldWithTransform} fieldDef={fieldDef} />;
     }
 
     return (

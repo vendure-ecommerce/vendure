@@ -1,5 +1,5 @@
 import { Badge } from '@/vdb/components/ui/badge.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { BadgeCheck, BadgeX } from 'lucide-react';
 
 export type CustomerStatus = 'guest' | 'registered' | 'verified';

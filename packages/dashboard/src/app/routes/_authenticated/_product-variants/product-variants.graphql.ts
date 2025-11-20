@@ -14,6 +14,7 @@ export const productVariantListDocument = graphql(
                     }
                     name
                     sku
+                    enabled
                     currencyCode
                     price
                     priceWithTax
@@ -57,6 +58,16 @@ export const productVariantDetailDocument = graphql(
                         id
                         code
                         name
+                    }
+                }
+                options {
+                    id
+                    name
+                    code
+                    group {
+                        id
+                        name
+                        code
                     }
                 }
                 translations {
@@ -178,6 +189,18 @@ export const updateProductVariantsDocument = graphql(`
                 id
                 name
                 code
+            }
+        }
+    }
+`);
+
+export const stockLocationsQueryDocument = graphql(`
+    query StockLocations {
+        stockLocations(options: { take: 100 }) {
+            items {
+                id
+                name
+                description
             }
         }
     }

@@ -1,11 +1,14 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { ControllerRenderProps } from 'react-hook-form';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useMemo } from 'react';
 import { MultiRelationInput, SingleRelationInput } from './relation-input.js';
 import { createRelationSelectorConfig } from './relation-selector.js';
 
-import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
+import {
+    DashboardFormComponentMetadata,
+    DashboardFormComponentProps,
+    RelationCustomFieldConfig,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isRelationCustomFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 
 interface PlaceholderIconProps {
@@ -100,10 +103,11 @@ function createBaseEntityConfig(
     labelKey: 'name' | 'code' | 'emailAddress' = 'name',
     searchField: string = 'name',
 ) {
+    const entityNameLower = entityName.toLowerCase();
     return {
         idKey: 'id',
         labelKey,
-        placeholder: i18n.t(`Search ${entityName.toLowerCase()}s...`),
+        placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
         }),
@@ -548,11 +552,9 @@ const createEntityConfigs = (i18n: any) => ({
     }),
 });
 
-interface DefaultRelationInputProps {
-    fieldDef: RelationCustomFieldConfig;
-    field: ControllerRenderProps<any, any>;
-    disabled?: boolean;
-}
+type DefaultRelationInputProps = DashboardFormComponentProps & {
+    entityType?: keyof ReturnType<typeof createEntityConfigs>;
+};
 
 export function DefaultRelationInput({
     fieldDef,
@@ -562,13 +564,14 @@ export function DefaultRelationInput({
     name,
     ref,
     disabled,
-}: Readonly<DashboardFormComponentProps>) {
-    const { i18n } = useLingui();
-    if (!fieldDef || !isRelationCustomFieldConfig(fieldDef)) {
+    entityType,
+}: Readonly<DefaultRelationInputProps>) {
+    const { t } = useLingui();
+    const ENTITY_CONFIGS = useMemo(() => createEntityConfigs(t), [t]);
+    if (!fieldDef || (!isRelationCustomFieldConfig(fieldDef) && !entityType)) {
         return null;
     }
-    const entityName = fieldDef.entity;
-    const ENTITY_CONFIGS = createEntityConfigs(i18n);
+    const entityName = entityType ?? (fieldDef as RelationCustomFieldConfig).entity;
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {
@@ -608,7 +611,7 @@ export function DefaultRelationInput({
                 onBlur={onBlur}
                 name={name}
                 ref={ref}
-                value={value ?? ''}
+                value={value}
                 onChange={onChange}
                 config={config}
                 disabled={disabled}
@@ -617,3 +620,7 @@ export function DefaultRelationInput({
         );
     }
 }
+
+DefaultRelationInput.metadata = {
+    isListInput: 'dynamic',
+} as DashboardFormComponentMetadata;

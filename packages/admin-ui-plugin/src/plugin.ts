@@ -79,9 +79,10 @@ export interface AdminUiPluginOptions {
     adminUiConfig?: Partial<AdminUiConfig>;
     /**
      * @description
-     * If you are running the AdminUiPlugin at the same time as the new `DashboardPlugin`, you should
-     * set this to `true` in order to avoid a conflict caused by both plugins defining the same
-     * schema extensions.
+     * @deprecated This option no longer has any effect.
+     *
+     * Previously used when running the AdminUiPlugin at the same time as the new `DashboardPlugin`
+     * to avoid conflicts, but this is no longer necessary as the schemas use different type names.
      *
      * @since 3.4.0
      */
@@ -90,6 +91,13 @@ export interface AdminUiPluginOptions {
 
 /**
  * @description
+ *
+ * :::warning Deprecated
+ * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).
+ * The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues.
+ * Community contributions will always be merged and released.
+ * :::
+ *
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
  *
  * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by
@@ -139,14 +147,8 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     adminApiExtensions: {
-        schema: () => {
-            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
-            return getApiExtensions(compatibilityMode);
-        },
-        resolvers: () => {
-            const compatibilityMode = !!AdminUiPlugin.options?.compatibilityMode;
-            return compatibilityMode ? [] : [MetricsResolver];
-        },
+        schema: () => getApiExtensions(),
+        resolvers: () => [MetricsResolver],
     },
     providers: [MetricsService],
     compatibility: '^3.0.0',

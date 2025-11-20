@@ -154,6 +154,80 @@ Returns the 'Delete' CRUD permission defined by this definition, for use in the
 </div>
 
 
+## RwPermissionDefinition
+
+<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="245" packageName="@vendure/core" since="3.5.0" />
+
+Defines a set of Read-Write Permissions for the given name, i.e. a `name` of 'DashboardSavedViews' will create
+2 Permissions: 'ReadDashboardSavedViews' and 'WriteDashboardSavedViews'.
+
+*Example*
+
+```ts
+export const dashboardSavedViews = new RwPermissionDefinition('DashboardSavedViews');
+```
+
+```ts
+const config: VendureConfig = {
+  authOptions: {
+    customPermissions: [dashboardSavedViews],
+  },
+}
+```
+
+```ts
+@Resolver()
+export class DashboardResolver {
+
+  @Allow(dashboardSavedViews.Read)
+  @Query()
+  getDashboardSavedViews() {
+    // ...
+  }
+
+  @Allow(dashboardSavedViews.Write)
+  @Mutation()
+  saveDashboardView() {
+    // ...
+  }
+}
+```
+
+```ts title="Signature"
+class RwPermissionDefinition extends PermissionDefinition {
+    constructor(name: string, descriptionFn?: (operation: 'read' | 'write') => string)
+    Read: Permission
+    Write: Permission
+}
+```
+* Extends: <code><a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a></code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(name: string, descriptionFn?: (operation: 'read' | 'write') =&#62; string) => RwPermissionDefinition`}   />
+
+
+### Read
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
+
+Returns the 'Read' permission defined by this definition, for use in the
+<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+### Write
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
+
+Returns the 'Write' permission defined by this definition, for use in the
+<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+
+
+</div>
+
+
 ## PermissionDefinitionConfig
 
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="10" packageName="@vendure/core" />

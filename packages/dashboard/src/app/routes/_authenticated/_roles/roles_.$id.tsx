@@ -16,10 +16,10 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { PermissionsGrid } from './components/permissions-grid.js';
+import { PermissionsTableGrid } from './components/permissions-table-grid.js';
 import { createRoleDocument, roleDetailDocument, updateRoleDocument } from './roles.graphql.js';
 
 const pageId = 'role-detail';
@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
         queryDocument: roleDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/roles', label: 'Roles' },
+                { path: '/roles', label: <Trans>Roles</Trans> },
                 isNew ? <Trans>New role</Trans> : entity?.description,
             ];
         },
@@ -43,7 +43,7 @@ function RoleDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -61,14 +61,14 @@ function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated role'));
+            toast.success(creatingNewEntity ? t`Successfully created role` : t`Successfully updated role`);
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update role'), {
+            toast.error(creatingNewEntity ? t`Failed to create role` : t`Failed to update role`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -84,7 +84,7 @@ function RoleDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -132,7 +132,7 @@ function RoleDetailPage() {
                             name="permissions"
                             label={<Trans>Permissions</Trans>}
                             render={({ field }) => (
-                                <PermissionsGrid
+                                <PermissionsTableGrid
                                     value={field.value ?? []}
                                     onChange={value => field.onChange(value)}
                                 />

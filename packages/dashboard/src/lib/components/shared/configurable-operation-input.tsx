@@ -144,7 +144,7 @@ export function interpolateDescription(
         (substring: string, argName: string) => {
             const normalizedArgName = argName.toLowerCase();
             const value = values.find(v => v.name === normalizedArgName)?.value;
-            if (value == null) {
+            if (value == null || value === '') {
                 return '_';
             }
             let formatted = value;

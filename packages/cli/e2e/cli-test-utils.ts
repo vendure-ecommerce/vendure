@@ -46,7 +46,7 @@ export function createTestProject(projectName: string = 'test-project'): CliTest
 
     // Create basic vendure-config.ts
     const vendureConfig = `
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig, NoopLogger } from '@vendure/core';
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -54,6 +54,7 @@ export const config: VendureConfig = {
         adminApiPath: 'admin-api',
         shopApiPath: 'shop-api',
     },
+    logger: new NoopLogger(),
     authOptions: {
         tokenMethod: ['bearer', 'cookie'],
         superadminCredentials: {

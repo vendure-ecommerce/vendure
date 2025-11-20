@@ -1,3 +1,4 @@
+import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -6,21 +7,53 @@ import * as React from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Provides information about the current user & their authentication & authorization
+ * status.
  *
  * @docsCategory hooks
  * @docsPage useAuth
- * @docsWeight 0
  * @since 3.3.0
  */
 export interface AuthContext {
+    /**
+     * @description
+     * The status of the authentication.
+     */
     status: 'initial' | 'authenticated' | 'verifying' | 'unauthenticated';
+    /**
+     * @description
+     * The error message if the authentication fails.
+     */
     authenticationError?: string;
+    /**
+     * @description
+     * Whether the user is authenticated.
+     */
     isAuthenticated: boolean;
+    /**
+     * @description
+     * The function to login the user.
+     */
     login: (username: string, password: string, onSuccess?: () => void) => void;
+    /**
+     * @description
+     * The function to logout the user.
+     */
     logout: (onSuccess?: () => void) => Promise<void>;
+    /**
+     * @description
+     * The user object.
+     */
     user: ResultOf<typeof CurrentUserQuery>['activeAdministrator'] | undefined;
+    /**
+     * @description
+     * The channels object.
+     */
     channels: NonNullable<ResultOf<typeof CurrentUserQuery>['me']>['channels'] | undefined;
+    /**
+     * @description
+     * The function to refresh the current user.
+     */
     refreshCurrentUser: () => void;
 }
 
@@ -138,8 +171,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     // Clear all cached queries to prevent stale data
                     queryClient.clear();
                     // Clear selected channel from localStorage
-                    localStorage.removeItem('vendure-selected-channel');
-                    localStorage.removeItem('vendure-selected-channel-token');
+                    localStorage.removeItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
                     setStatus('unauthenticated');
                     setIsLoginLogoutInProgress(false);
                     onLogoutSuccess?.();

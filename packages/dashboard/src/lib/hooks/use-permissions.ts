@@ -5,11 +5,15 @@ import { useChannel } from './use-channel.js';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Returns a `hasPermissions` function that can be used to determine whether the active user
  * has the given permissions on the active channel.
  *
+ * @example
+ * ```tsx
+ * const { hasPermissions } = usePermissions();
+ *
+ * const canReadChannel = hasPermissions(['ReadChannel']);
+ * ```
  *
  * @docsCategory hooks
  * @docsPage usePermissions

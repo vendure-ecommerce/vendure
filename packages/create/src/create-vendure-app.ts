@@ -24,6 +24,7 @@ import {
     installPackages,
     isSafeToCreateProjectIn,
     isServerPortInUse,
+    resolvePackageRootDir,
     scaffoldAlreadyExists,
     startPostgresDatabase,
 } from './helpers';
@@ -69,7 +70,10 @@ void createVendureApp(
     options.useNpm,
     options.verbose ? 'verbose' : options.logLevel || 'info',
     options.ci,
-);
+).catch(err => {
+    log(err);
+    process.exit(1);
+});
 
 export async function createVendureApp(
     name: string | undefined,
@@ -230,6 +234,15 @@ export async function createVendureApp(
             .then(() => fs.ensureDir(path.join(root, 'src/plugins')))
             .then(() => fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')))
             .then(() => fs.copyFile(assetPath('tsconfig.template.json'), path.join(root, 'tsconfig.json')))
+            .then(() =>
+                fs.copyFile(
+                    assetPath('tsconfig.dashboard.template.json'),
+                    path.join(root, 'tsconfig.dashboard.json'),
+                ),
+            )
+            .then(() =>
+                fs.copyFile(assetPath('vite.config.template.mts'), path.join(root, 'vite.config.mts')),
+            )
             .then(() => createDirectoryStructure(root))
             .then(() => copyEmailTemplates(root));
     } catch (e: any) {
@@ -294,13 +307,15 @@ export async function createVendureApp(
 
     // register ts-node so that the config file can be loaded
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(path.join(root, 'node_modules/ts-node')).register();
+    require(resolvePackageRootDir('ts-node', root)).register();
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
-        const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
-        const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
-            path.join(root, 'node_modules/@vendure/core/dist/index')
+        const { populate } = await import(
+            path.join(resolvePackageRootDir('@vendure/core', root), 'cli', 'populate')
+        );
+        const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
+            path.join(resolvePackageRootDir('@vendure/core', root), 'dist', 'index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -364,14 +379,14 @@ export async function createVendureApp(
         const autoRunServer = false;
         if (mode === 'quick' && autoRunServer) {
             // In quick-start mode, we want to now run the server and open up
-            // a browser window to the Admin UI.
+            // a browser window to the Dashboard.
             try {
-                const adminUiUrl = `http://localhost:${port}/admin`;
+                const dashboardUrl = `http://localhost:${port}/dashboard`;
                 const quickStartInstructions = [
-                    'Use the following credentials to log in to the Admin UI:',
+                    'Use the following credentials to log in to the Dashboard:',
                     `Username: ${pc.green(config.authOptions.superadminCredentials?.identifier)}`,
                     `Password: ${pc.green(config.authOptions.superadminCredentials?.password)}`,
-                    `Open your browser and navigate to: ${pc.green(adminUiUrl)}`,
+                    `Open your browser and navigate to: ${pc.green(dashboardUrl)}`,
                     '',
                 ];
                 note(quickStartInstructions.join('\n'));
@@ -398,7 +413,7 @@ export async function createVendureApp(
                 // before opening the window.
                 await sleep(10_000);
                 try {
-                    await open(adminUiUrl, {
+                    await open(dashboardUrl, {
                         newInstance: true,
                     });
                 } catch (e: any) {
@@ -437,9 +452,12 @@ function displayOutro(
         pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
         `\n`,
         `This will start the server in development mode.`,
-        `To access the Admin UI, open your browser and navigate to:`,
         `\n`,
-        pc.green(`http://localhost:3000/admin`),
+        `To run the Dashboard, in a new terminal navigate to your project directory and run:`,
+        pc.gray('$ ') + pc.blue(pc.bold(`npx vite`)),
+        `\n`,
+        `To access the Dashboard, open your browser and navigate to:`,
+        pc.green(`http://localhost:3000/dashboard`),
         `\n`,
         `Use the following credentials to log in:`,
         `Username: ${pc.green(superAdminCredentials?.identifier ?? 'superadmin')}`,
@@ -493,10 +511,13 @@ async function createDirectoryStructure(root: string) {
  * Copy the email templates into the app
  */
 async function copyEmailTemplates(root: string) {
-    const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
+    const emailPackageDirname = resolvePackageRootDir('@vendure/email-plugin', root);
+    const templateDir = path.join(emailPackageDirname, 'templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
         log(pc.red('Failed to copy email templates.'));
+        log(err);
+        process.exit(0);
     }
 }

@@ -14,6 +14,8 @@ import {
     NavMenuSection,
     NavMenuSectionPlacement,
 } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
+import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { useLingui } from '@lingui/react';
 import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
@@ -39,6 +41,8 @@ function escapeRegexChars(str: string): string {
 export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
     const router = useRouter();
     const routerState = useRouterState();
+    const { hasPermissions } = usePermissions();
+    const { i18n } = useLingui();
     const currentPath = routerState.location.pathname;
     const basePath = router.basepath || '';
 
@@ -46,16 +50,20 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const isPathActive = React.useCallback(
         (itemUrl: string) => {
             // Remove basepath prefix from current path for comparison
-            const normalizedCurrentPath = basePath ? currentPath.replace(new RegExp(`^${escapeRegexChars(basePath)}`), '') : currentPath;
-            
+            const normalizedCurrentPath = basePath
+                ? currentPath.replace(new RegExp(`^${escapeRegexChars(basePath)}`), '')
+                : currentPath;
+
             // Ensure normalized path starts with /
-            const cleanPath = normalizedCurrentPath.startsWith('/') ? normalizedCurrentPath : `/${normalizedCurrentPath}`;
-            
+            const cleanPath = normalizedCurrentPath.startsWith('/')
+                ? normalizedCurrentPath
+                : `/${normalizedCurrentPath}`;
+
             // Special handling for root path
             if (itemUrl === '/') {
                 return cleanPath === '/' || cleanPath === '';
             }
-            
+
             // For other paths, check exact match or prefix match
             return cleanPath === itemUrl || cleanPath.startsWith(`${itemUrl}/`);
         },
@@ -97,6 +105,20 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
         return activeTopSections;
     });
 
+    // Helper to check if an item is allowed based on permissions
+    const isItemAllowed = React.useCallback(
+        (item: NavMenuItem) => {
+            if (!item.requiresPermission) {
+                return true;
+            }
+            const permissions = Array.isArray(item.requiresPermission)
+                ? item.requiresPermission
+                : [item.requiresPermission];
+            return hasPermissions(permissions);
+        },
+        [hasPermissions],
+    );
+
     // Helper to build a sorted list of sections for a given placement, memoized for stability
     const getSortedSections = React.useCallback(
         (placement: NavMenuSectionPlacement) => {
@@ -104,13 +126,24 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                 .filter(item => item.placement === placement)
                 .slice()
                 .sort(sortByOrder)
-                .map(section =>
-                    'items' in section
-                        ? { ...section, items: section.items?.slice().sort(sortByOrder) }
-                        : section,
-                );
+                .map(section => {
+                    if ('items' in section) {
+                        // Filter items based on permissions
+                        const allowedItems = (section.items ?? []).filter(isItemAllowed).sort(sortByOrder);
+                        return { ...section, items: allowedItems };
+                    }
+                    return section;
+                })
+                .filter(section => {
+                    // Drop sections that have no items after permission filtering
+                    if ('items' in section) {
+                        return section.items && section.items.length > 0;
+                    }
+                    // For single items, check if they're allowed
+                    return isItemAllowed(section as NavMenuItem);
+                });
         },
-        [items],
+        [items, isItemAllowed],
     );
 
     const topSections = React.useMemo(() => getSortedSections('top'), [getSortedSections]);
@@ -152,16 +185,16 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+                <NavItemWrapper key={item.id} locationId={item.id} order={item.order} offset={true}>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip={item.title}
+                            tooltip={i18n.t(item.title)}
                             asChild
                             isActive={isPathActive(item.url)}
                         >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -170,7 +203,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
         }
 
         return (
-            <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
+            <NavItemWrapper key={item.id} locationId={item.id} order={item.order} offset={true}>
                 <Collapsible
                     asChild
                     open={openTopSectionIds.has(item.id)}
@@ -181,7 +214,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                         <CollapsibleTrigger asChild>
                             <SidebarMenuButton tooltip={item.title}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -189,7 +222,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuSub>
                                 {item.items?.map(subItem => (
                                     <NavItemWrapper
-                                        key={subItem.title}
+                                        key={subItem.id}
                                         locationId={subItem.id}
                                         order={subItem.order}
                                         parentLocationId={item.id}
@@ -200,7 +233,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                                 isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
-                                                    <span>{subItem.title}</span>
+                                                    <span>{i18n.t(subItem.title)}</span>
                                                 </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
@@ -221,13 +254,13 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                 <NavItemWrapper key={item.title} locationId={item.id} order={item.order} offset={true}>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip={item.title}
+                            tooltip={i18n.t(item.title)}
                             asChild
                             isActive={isPathActive(item.url)}
                         >
                             <Link to={item.url}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -244,9 +277,9 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                 >
                     <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                            <SidebarMenuButton tooltip={item.title}>
+                            <SidebarMenuButton tooltip={i18n.t(item.title)}>
                                 {item.icon && <item.icon />}
-                                <span>{item.title}</span>
+                                <span>{i18n.t(item.title)}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -254,7 +287,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuSub>
                                 {item.items?.map(subItem => (
                                     <NavItemWrapper
-                                        key={subItem.title}
+                                        key={i18n.t(subItem.title)}
                                         locationId={subItem.id}
                                         order={subItem.order}
                                         parentLocationId={item.id}
@@ -265,7 +298,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                                 isActive={isPathActive(subItem.url)}
                                             >
                                                 <Link to={subItem.url}>
-                                                    <span>{subItem.title}</span>
+                                                    <span>{i18n.t(subItem.title)}</span>
                                                 </Link>
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
@@ -287,10 +320,12 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
             </SidebarGroup>
 
             {/* Bottom sections - will be pushed to the bottom by CSS */}
-            <SidebarGroup className="mt-auto">
-                <SidebarGroupLabel>Administration</SidebarGroupLabel>
-                <SidebarMenu>{bottomSections.map(renderBottomSection)}</SidebarMenu>
-            </SidebarGroup>
+            {bottomSections.length ? (
+                <SidebarGroup className="mt-auto">
+                    <SidebarGroupLabel>Administration</SidebarGroupLabel>
+                    <SidebarMenu>{bottomSections.map(renderBottomSection)}</SidebarMenu>
+                </SidebarGroup>
+            ) : null}
         </>
     );
 }

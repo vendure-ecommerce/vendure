@@ -1,4 +1,5 @@
-import { api, SELECTED_CHANNEL_TOKEN_KEY } from '@/vdb/graphql/api.js';
+import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
+import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
@@ -15,11 +16,12 @@ const channelFragment = graphql(`
         defaultCurrencyCode
         pricesIncludeTax
         availableLanguageCodes
+        availableCurrencyCodes
     }
 `);
 
 // Query to get all available channels and the active channel
-const ChannelsQuery = graphql(
+const activeChannelDocument = graphql(
     `
         query ChannelInformation {
             activeChannel {
@@ -28,6 +30,14 @@ const ChannelsQuery = graphql(
                     id
                 }
             }
+        }
+    `,
+    [channelFragment],
+);
+
+const channelsDocument = graphql(
+    `
+        query ChannelInformation {
             channels {
                 items {
                     ...ChannelInfo
@@ -40,22 +50,43 @@ const ChannelsQuery = graphql(
 );
 
 // Define the type for a channel
-type ActiveChannel = ResultOf<typeof ChannelsQuery>['activeChannel'];
+type ActiveChannel = ResultOf<typeof activeChannelDocument>['activeChannel'];
 type Channel = ResultOf<typeof channelFragment>;
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Provides information about the active channel, and the means to set a new
+ * active channel.
  *
  * @docsCategory hooks
  * @docsPage useChannel
  * @since 3.3.0
  */
 export interface ChannelContext {
+    /**
+     * @description
+     * Whether the channels are loading.
+     */
     isLoading: boolean;
+    /**
+     * @description
+     * An array of all available channels.
+     */
     channels: Channel[];
+    /**
+     * @description
+     * The active channel.
+     */
     activeChannel: ActiveChannel | undefined;
+    /**
+     * @description
+     * The function to set the active channel.
+     */
     setActiveChannel: (channelId: string) => void;
+    /**
+     * @description
+     * The function to refresh the channels.
+     */
     refreshChannels: () => void;
 }
 
@@ -65,7 +96,7 @@ export interface ChannelContext {
  */
 function setChannelTokenInLocalStorage(channelToken: string) {
     try {
-        localStorage.setItem(SELECTED_CHANNEL_TOKEN_KEY, channelToken);
+        localStorage.setItem(LS_KEY_SELECTED_CHANNEL_TOKEN, channelToken);
     } catch (e) {
         console.error('Failed to store selected channel in localStorage', e);
     }
@@ -85,10 +116,18 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         return activeChannelId;
     });
 
+    // Fetch active channel
+    const { data: activeChannelData, isLoading: isActiveChannelLoading } = useQuery({
+        queryKey: ['activeChannel', isAuthenticated],
+        queryFn: () => api.query(activeChannelDocument),
+        retry: false,
+        enabled: isAuthenticated,
+    });
+
     // Fetch all available channels
-    const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
+    const { data: channelsData } = useQuery({
         queryKey: ['channels', isAuthenticated],
-        queryFn: () => api.query(ChannelsQuery),
+        queryFn: () => api.query(channelsDocument),
         retry: false,
         enabled: isAuthenticated,
     });
@@ -147,10 +186,10 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         }
     }, [selectedChannelId, channels]);
 
-    const isLoading = isChannelsLoading;
+    const isLoading = isActiveChannelLoading;
 
     // Find the selected channel from the list of channels
-    const selectedChannel = channelsData?.activeChannel;
+    const selectedChannel = activeChannelData?.activeChannel;
 
     const refreshChannels = () => {
         refreshCurrentUser();

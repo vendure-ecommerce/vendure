@@ -10,10 +10,13 @@ To do this, we will use [Graphql Code Generator](https://the-guild.dev/graphql/c
 
 :::cli
 Use `npx vendure add` and select "Set up GraphQL code generation" to quickly set up code generation.
+
+You can then run `npx vendure schema` to generate a `schema.graphql` file in your root
+directory.
 :::
 
 :::note
-This guide is for adding codegen to your Vendure plugins & Admin UI extensions. For a guide on adding codegen to your storefront, see the [Storefront Codegen](/guides/storefront/codegen/) guide.
+This guide is for adding codegen to your Vendure plugins. For a guide on adding codegen to your storefront, see the [Storefront Codegen](/guides/storefront/codegen/) guide.
 :::
 
 ## Installation
@@ -36,9 +39,10 @@ import type {CodegenConfig} from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
     overwrite: true,
-    // This assumes your server is running on the standard port
-    // and with the default admin API path. Adjust accordingly.
-    schema: 'http://localhost:3000/admin-api',
+    // To generate this schema file, run `npx vendure schema`
+    // whenever your schema changes, e.g. after adding custom fields
+    // or API extensions
+    schema: 'schema.graphql',
     config: {
         // This tells codegen that the `Money` scalar is a number
         scalars: { Money: 'number' },
@@ -148,6 +152,11 @@ export class OrganizationService {
 ```
 
 ## Codegen for Admin UI extensions
+
+:::warning Deprecated
+This section refers to the deprecated Angular-based Admin UI. The new React-based Dashboard has built-in graphql type safety
+and does not require additional setup.
+:::
 
 When you create Admin UI extensions, very often those UI components will be making API calls to the Admin API. In this case, you can use codegen to generate the types for those API calls.
 
