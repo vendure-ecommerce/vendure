@@ -1,5 +1,4 @@
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
-import './types';
 
 import { adminApiExtensions, shopApiExtensions } from './api/api-extensions';
 import { ProductEntityResolver } from './api/product-entity.resolver';
