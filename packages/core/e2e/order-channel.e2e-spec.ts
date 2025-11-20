@@ -25,6 +25,7 @@ import {
     addItemToOrderDocument,
     getActiveOrderDocument,
     getOrderShopDocument,
+    testOrderFragment,
     updatedOrderFragment,
 } from './graphql/shop-definitions';
 
@@ -112,6 +113,11 @@ describe('Channelaware orders', () => {
         input => !!input.lines,
     );
 
+    type TestOrderFragment = ShopFragmentOf<typeof testOrderFragment>;
+    const activeOrderGuard: ErrorResultGuard<TestOrderFragment> = createErrorResultGuard(
+        input => !!input.lines,
+    );
+
     it('creates order on current channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
@@ -150,6 +156,7 @@ describe('Channelaware orders', () => {
     it('goes back to most recent active order when switching channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { activeOrder } = await shopClient.query(getActiveOrderDocument);
+        activeOrderGuard.assertSuccess(activeOrder);
         expect(activeOrder.id).toBe(order1Id);
     });
 
