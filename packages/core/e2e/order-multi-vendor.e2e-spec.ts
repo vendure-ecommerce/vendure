@@ -3,25 +3,27 @@ import { mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { CONNECTED_PAYMENT_METHOD_CODE } from 'dev-server/example-plugins/multivendor-plugin/constants';
 import { MultivendorPlugin } from 'dev-server/example-plugins/multivendor-plugin/multivendor.plugin';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import { getOrderWithSellerOrdersDocument } from './graphql/admin-definitions';
+import { FragmentOf } from './graphql/graphql-shop';
+import { assignProductToChannelDocument } from './graphql/shared-definitions';
 import {
-    AssignProductsToChannelDocument,
-    GetOrderWithSellerOrdersDocument,
-} from './graphql/generated-e2e-admin-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { SetShippingMethodDocument } from './graphql/generated-e2e-shop-types';
-import {
+    activeOrderCustomerDocument,
     addItemToOrderDocument,
     addPaymentDocument,
     getEligibleShippingMethodsDocument,
+    registerSellerDocument,
     setShippingAddressDocument,
+    setShippingMethodDocument,
+    testOrderFragment,
+    testOrderWithPaymentsFragment,
     transitionToStateDocument,
+    updatedOrderFragment,
 } from './graphql/shop-definitions';
 
 declare module '@vendure/core/dist/entity/custom-entity-fields' {
@@ -48,10 +50,10 @@ describe('Multi-vendor orders', () => {
     let orderId: string;
 
     type OrderSuccessResult =
-        | CodegenShop.UpdatedOrderFragment
-        | CodegenShop.TestOrderFragmentFragment
-        | CodegenShop.TestOrderWithPaymentsFragment
-        | CodegenShop.ActiveOrderCustomerFragment;
+        | FragmentOf<typeof updatedOrderFragment>
+        | FragmentOf<typeof testOrderFragment>
+        | FragmentOf<typeof testOrderWithPaymentsFragment>
+        | FragmentOf<typeof activeOrderCustomerDocument>;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
@@ -70,7 +72,7 @@ describe('Multi-vendor orders', () => {
     });
 
     it('setup sellers', async () => {
-        const result1 = await shopClient.query(REGISTER_SELLER, {
+        const result1 = await shopClient.query(registerSellerDocument, {
             input: {
                 shopName: "Bob's Parts",
                 seller: {
@@ -84,7 +86,7 @@ describe('Multi-vendor orders', () => {
         bobsPartsChannel = result1.registerNewSeller;
         expect(bobsPartsChannel.token).toBe('bobs-parts-token');
 
-        const result2 = await shopClient.query(REGISTER_SELLER, {
+        const result2 = await shopClient.query(registerSellerDocument, {
             input: {
                 shopName: "Alice's Wares",
                 seller: {
@@ -100,7 +102,7 @@ describe('Multi-vendor orders', () => {
     });
 
     it('assign products to sellers', async () => {
-        const { assignProductsToChannel } = await adminClient.query(AssignProductsToChannelDocument, {
+        const { assignProductsToChannel } = await adminClient.query(assignProductToChannelDocument, {
             input: {
                 channelId: bobsPartsChannel.id,
                 productIds: ['T_1'],
@@ -116,16 +118,13 @@ describe('Multi-vendor orders', () => {
 
         expect(bobsPartsChannel.variantIds).toEqual(['T_1', 'T_2', 'T_3', 'T_4']);
 
-        const { assignProductsToChannel: result2 } = await adminClient.query(
-            AssignProductsToChannelDocument,
-            {
-                input: {
-                    channelId: alicesWaresChannel.id,
-                    productIds: ['T_11'],
-                    priceFactor: 1,
-                },
+        const { assignProductsToChannel: result2 } = await adminClient.query(assignProductToChannelDocument, {
+            input: {
+                channelId: alicesWaresChannel.id,
+                productIds: ['T_11'],
+                priceFactor: 1,
             },
-        );
+        });
         expect(result2[0].channels.map(c => c.code)).toEqual(['__default_channel__', 'alices-wares']);
         alicesWaresChannel.variantIds = result2[0].variants.map(v => v.id);
 
@@ -134,25 +133,16 @@ describe('Multi-vendor orders', () => {
 
     it('adds items and sets shipping methods', async () => {
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-        await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        await shopClient.query(addItemToOrderDocument, {
             productVariantId: bobsPartsChannel.variantIds[0],
             quantity: 1,
         });
-        await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        await shopClient.query(addItemToOrderDocument, {
             productVariantId: alicesWaresChannel.variantIds[0],
             quantity: 1,
         });
 
-        await shopClient.query<
-            CodegenShop.SetShippingAddressMutation,
-            CodegenShop.SetShippingAddressMutationVariables
-        >(setShippingAddressDocument, {
+        await shopClient.query(setShippingAddressDocument, {
             input: {
                 streetLine1: '12 the street',
                 postalCode: '123456',
@@ -160,9 +150,7 @@ describe('Multi-vendor orders', () => {
             },
         });
 
-        const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-            getEligibleShippingMethodsDocument,
-        );
+        const { eligibleShippingMethods } = await shopClient.query(getEligibleShippingMethodsDocument);
 
         expect(eligibleShippingMethods.map(m => m.code).sort()).toEqual([
             'alices-wares-shipping',
@@ -172,7 +160,7 @@ describe('Multi-vendor orders', () => {
             'standard-shipping',
         ]);
 
-        const { setOrderShippingMethod } = await shopClient.query(SetShippingMethodDocument, {
+        const { setOrderShippingMethod } = await shopClient.query(setShippingMethodDocument, {
             id: [
                 eligibleShippingMethods.find(m => m.code === 'bobs-parts-shipping')!.id,
                 eligibleShippingMethods.find(m => m.code === 'alices-wares-shipping')!.id,
@@ -187,17 +175,13 @@ describe('Multi-vendor orders', () => {
     });
 
     it('completing checkout splits order', async () => {
-        const { transitionOrderToState } = await shopClient.query<
-            CodegenShop.TransitionToStateMutation,
-            CodegenShop.TransitionToStateMutationVariables
-        >(transitionToStateDocument, { state: 'ArrangingPayment' });
+        const { transitionOrderToState } = await shopClient.query(transitionToStateDocument, {
+            state: 'ArrangingPayment',
+        });
 
         orderResultGuard.assertSuccess(transitionOrderToState);
 
-        const { addPaymentToOrder } = await shopClient.query<
-            CodegenShop.AddPaymentToOrderMutation,
-            CodegenShop.AddPaymentToOrderMutationVariables
-        >(addPaymentDocument, {
+        const { addPaymentToOrder } = await shopClient.query(addPaymentDocument, {
             input: {
                 method: CONNECTED_PAYMENT_METHOD_CODE,
                 metadata: {},
@@ -207,16 +191,16 @@ describe('Multi-vendor orders', () => {
 
         expect(addPaymentToOrder.state).toBe('PaymentSettled');
 
-        const { order } = await adminClient.query(GetOrderWithSellerOrdersDocument, {
+        const { order } = await adminClient.query(getOrderWithSellerOrdersDocument, {
             id: addPaymentToOrder.id,
         });
-        orderId = order!.id;
+        orderId = order.id;
 
         expect(order?.sellerOrders?.length).toBe(2);
     });
 
     it('order lines get split', async () => {
-        const { order } = await adminClient.query(GetOrderWithSellerOrdersDocument, {
+        const { order } = await adminClient.query(getOrderWithSellerOrdersDocument, {
             id: orderId,
         });
 
@@ -227,7 +211,7 @@ describe('Multi-vendor orders', () => {
     });
 
     it('shippingLines get split', async () => {
-        const { order } = await adminClient.query(GetOrderWithSellerOrdersDocument, {
+        const { order } = await adminClient.query(getOrderWithSellerOrdersDocument, {
             id: orderId,
         });
 
@@ -237,13 +221,3 @@ describe('Multi-vendor orders', () => {
         expect(order?.sellerOrders?.[1]?.shippingLines[0].shippingMethod.code).toBe('alices-wares-shipping');
     });
 });
-
-export const REGISTER_SELLER = gql`
-    mutation RegisterSeller($input: RegisterSellerInput!) {
-        registerNewSeller(input: $input) {
-            id
-            code
-            token
-        }
-    }
-`;

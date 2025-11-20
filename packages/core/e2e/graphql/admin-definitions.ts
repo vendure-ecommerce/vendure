@@ -164,3 +164,165 @@ export const deleteCountryDocument = graphql(`
         }
     }
 `);
+
+export const reindexDocument = graphql(`
+    mutation Reindex {
+        reindex {
+            id
+        }
+    }
+`);
+
+export const searchGetAssetsDocument = graphql(`
+    query SearchGetAssets($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            items {
+                productId
+                productVariantId
+                productName
+                productVariantName
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                productVariantAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const searchGetPricesDocument = graphql(`
+    query SearchGetPrices($input: SearchInput!) {
+        search(input: $input) {
+            items {
+                price {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const syncCustomPermissionsDocument = graphql(`
+    mutation Sync {
+        syncWishlist
+    }
+`);
+
+export const crudReadDocument = graphql(`
+    query CrudRead {
+        wishlist
+    }
+`);
+
+export const crudCreateDocument = graphql(`
+    mutation CrudCreate {
+        createWishlist
+    }
+`);
+
+export const crudUpdateDocument = graphql(`
+    mutation CrudUpdate {
+        updateWishlist
+    }
+`);
+
+export const crudDeleteDocument = graphql(`
+    mutation CrudDelete {
+        deleteWishlist
+    }
+`);
+
+export const getTaxCategoryListDocument = graphql(`
+    query GetTaxCategoryList {
+        taxCategories {
+            items {
+                id
+                name
+                isDefault
+            }
+        }
+    }
+`);
+
+export const getTaxCategoryDocument = graphql(`
+    query GetTaxCategory($id: ID!) {
+        taxCategory(id: $id) {
+            id
+            name
+            isDefault
+        }
+    }
+`);
+
+export const createTaxCategoryDocument = graphql(`
+    mutation CreateTaxCategory($input: CreateTaxCategoryInput!) {
+        createTaxCategory(input: $input) {
+            id
+            name
+            isDefault
+        }
+    }
+`);
+
+export const updateTaxCategoryDocument = graphql(`
+    mutation UpdateTaxCategory($input: UpdateTaxCategoryInput!) {
+        updateTaxCategory(input: $input) {
+            id
+            name
+            isDefault
+        }
+    }
+`);
+
+export const deleteTaxCategoryDocument = graphql(`
+    mutation DeleteTaxCategory($id: ID!) {
+        deleteTaxCategory(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const getFulfillmentHandlersDocument = graphql(`
+    query GetFulfillmentHandlers {
+        fulfillmentHandlers {
+            code
+            description
+            args {
+                name
+                type
+                description
+                label
+                ui
+            }
+        }
+    }
+`);

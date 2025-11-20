@@ -133,6 +133,89 @@ export const updatedOrderFragment = graphql(`
             featuredAsset {
                 id
             }
+            discounts {
+                adjustmentSource
+                amount
+                amountWithTax
+                description
+                type
+            }
+        }
+        discounts {
+            adjustmentSource
+            amount
+            amountWithTax
+            description
+            type
+        }
+    }
+`);
+
+export const updatedOrderWithCustomFieldsFragment = graphql(`
+    fragment UpdatedOrderWithCustomFields on Order {
+        id
+        code
+        state
+        active
+        total
+        totalWithTax
+        currencyCode
+        shipping
+        shippingWithTax
+        customer {
+            id
+        }
+        shippingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+        billingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+        shippingLines {
+            priceWithTax
+            shippingMethod {
+                id
+                code
+                description
+            }
+        }
+        payments {
+            id
+            transactionId
+            method
+            amount
+            state
+            metadata
+        }
+        lines {
+            id
+            quantity
+            productVariant {
+                id
+            }
+            unitPrice
+            unitPriceWithTax
+            linePrice
+            linePriceWithTax
+            featuredAsset {
+                id
+            }
             # Ignore error - customFields are dynamically generated at runtime, not in introspection schema
             customFields {
                 notes
@@ -1178,14 +1261,14 @@ export const addItemToOrderWithCustomFieldsDocument = graphql(
         mutation AddItemToOrderWithCustomFields(
             $productVariantId: ID!
             $quantity: Int!
-            $customFields: OrderLineCustomFieldsInput!
+            $customFields: OrderLineCustomFieldsInput
         ) {
             addItemToOrder(
                 productVariantId: $productVariantId
                 quantity: $quantity
                 customFields: $customFields
             ) {
-                ...UpdatedOrder
+                ...UpdatedOrderWithCustomFields
                 ... on ErrorResult {
                     errorCode
                     message
@@ -1193,7 +1276,7 @@ export const addItemToOrderWithCustomFieldsDocument = graphql(
             }
         }
     `,
-    [updatedOrderFragment],
+    [updatedOrderWithCustomFieldsFragment],
 );
 
 export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
@@ -1226,7 +1309,11 @@ export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
 );
 
 export const adjustOrderLineWithCustomFieldsDocument = graphql(`
-    mutation AdjustOrderLineWithCustomFields($orderLineId: ID!, $quantity: Int!, $customFields: JSON) {
+    mutation AdjustOrderLineWithCustomFields(
+        $orderLineId: ID!
+        $quantity: Int!
+        $customFields: OrderLineCustomFieldsInput
+    ) {
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
             ... on Order {
                 lines {
@@ -1302,3 +1389,121 @@ export const localAddItemToOrderDocument = graphql(
     `,
     [localUpdatedOrderFragment],
 );
+
+export const searchFacetValuesDocument = graphql(`
+    query SearchFacetValues($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            facetValues {
+                count
+                facetValue {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const searchCollectionsDocument = graphql(`
+    query SearchCollections($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            collections {
+                count
+                collection {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const searchGetPricesShopDocument = graphql(`
+    query SearchGetPrices($input: SearchInput!) {
+        search(input: $input) {
+            items {
+                price {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const orderWithLinesAndItemsFragment = graphql(`
+    fragment OrderWithLinesAndItems on Order {
+        id
+        subTotal
+        subTotalWithTax
+        shipping
+        total
+        totalWithTax
+        lines {
+            id
+            quantity
+            unitPrice
+            unitPriceWithTax
+        }
+    }
+`);
+
+export const addItemToOrderCustomFieldsDocument = graphql(
+    `
+        mutation AddItemToOrderCustomFields(
+            $productVariantId: ID!
+            $quantity: Int!
+            $customFields: OrderLineCustomFieldsInput
+        ) {
+            addItemToOrder(
+                productVariantId: $productVariantId
+                quantity: $quantity
+                customFields: $customFields
+            ) {
+                ...OrderWithLinesAndItems
+            }
+        }
+    `,
+    [orderWithLinesAndItemsFragment],
+);
+
+export const adjustOrderLineCustomFieldsDocument = graphql(
+    `
+        mutation AdjustOrderLineCustomFields(
+            $orderLineId: ID!
+            $quantity: Int!
+            $customFields: OrderLineCustomFieldsInput
+        ) {
+            adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
+                ...OrderWithLinesAndItems
+            }
+        }
+    `,
+    [orderWithLinesAndItemsFragment],
+);
+
+export const registerSellerDocument = graphql(`
+    mutation RegisterSeller($input: RegisterSellerInput!) {
+        registerNewSeller(input: $input) {
+            id
+            code
+            token
+        }
+    }
+`);

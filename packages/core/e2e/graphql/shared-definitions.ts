@@ -81,6 +81,14 @@ export const updateProductDocument = graphql(
     [productWithVariantsFragment],
 );
 
+export const updateProductOptionGroupDocument = graphql(`
+    mutation UpdateOptionGroup($input: UpdateProductOptionGroupInput!) {
+        updateProductOptionGroup(input: $input) {
+            id
+        }
+    }
+`);
+
 export const createProductDocument = graphql(
     `
         mutation CreateProduct($input: CreateProductInput!) {
@@ -390,6 +398,14 @@ export const attemptLoginDocument = graphql(
     [currentUserFragment],
 );
 
+export const logoutDocument = graphql(`
+    mutation Logout {
+        logout {
+            success
+        }
+    }
+`);
+
 export const getCountryListDocument = graphql(`
     query GetCountryList($options: CountryListOptions) {
         countries(options: $options) {
@@ -526,6 +542,18 @@ export const getRunningJobsDocument = graphql(`
         }
     }
 `);
+
+export const cancelJobDocument = graphql(`
+    mutation CancelJob($id: ID!) {
+        cancelJob(jobId: $id) {
+            id
+            state
+            isSettled
+            settledAt
+        }
+    }
+`);
+
 export const createPromotionDocument = graphql(
     `
         mutation CreatePromotion($input: CreatePromotionInput!) {
@@ -1819,6 +1847,23 @@ export const setSettingsStoreValuesDocument = graphql(`
             key
             result
             error
+        }
+    }
+`);
+
+export const getCheckersDocument = graphql(`
+    query GetCheckers {
+        shippingEligibilityCheckers {
+            code
+            args {
+                defaultValue
+                description
+                label
+                list
+                name
+                required
+                type
+            }
         }
     }
 `);
