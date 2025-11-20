@@ -1,35 +1,35 @@
 # Refactoring e2e tests
 
-- [ ] fast-importer.e2e-spec.ts 57
-- [ ] entity-prefix.e2e-spec.ts 58
-- [ ] entity-uuid-strategy.e2e-spec.ts 58
-- [ ] cache-service-default.e2e-spec.ts 84
-- [ ] cache-service-in-memory.e2e-spec.ts 85
-- [ ] translations.e2e-spec.ts 94
-- [ ] apollo-server-plugin.e2e-spec.ts 106
-- [ ] lifecycle.e2e-spec.ts 106
-- [ ] default-search-plugin-uuids.e2e-spec.ts 118
-- [ ] tax-rate.e2e-spec.ts 129
-- [ ] parallel-transactions.e2e-spec.ts 133
-- [ ] cache-service-redis.e2e-spec.ts 134
-- [ ] global-settings.e2e-spec.ts 134
-- [ ] default-scheduler-plugin.e2e-spec.ts 138
-- [ ] money-strategy.e2e-spec.ts 141
+- [x] fast-importer.e2e-spec.ts 57
+- [x] entity-prefix.e2e-spec.ts 58
+- [x] entity-uuid-strategy.e2e-spec.ts 58
+- [x] cache-service-default.e2e-spec.ts 84
+- [x] cache-service-in-memory.e2e-spec.ts 85
+- [x] translations.e2e-spec.ts 94
+- [x] apollo-server-plugin.e2e-spec.ts 106
+- [x] lifecycle.e2e-spec.ts 106
+- [x] default-search-plugin-uuids.e2e-spec.ts 118
+- [x] tax-rate.e2e-spec.ts 129
+- [x] parallel-transactions.e2e-spec.ts 133
+- [x] cache-service-redis.e2e-spec.ts 134
+- [x] global-settings.e2e-spec.ts 134
+- [x] default-scheduler-plugin.e2e-spec.ts 138
+- [x] money-strategy.e2e-spec.ts 141
 - [x] country.e2e-spec.ts 142
 - [x] tag.e2e-spec.ts 143
-- [ ] error-handler-strategy.e2e-spec.ts 144
-- [ ] configurable-operation.e2e-spec.ts 152
-- [ ] order-item-price-calculation-strategy.e2e-spec.ts 160
-- [ ] localization.e2e-spec.ts 167
-- [ ] relations-decorator.e2e-spec.ts 169
-- [ ] plugin.e2e-spec.ts 170
-- [ ] session-management.e2e-spec.ts 171
-- [ ] job-queue.e2e-spec.ts 192
-- [ ] order-channel.e2e-spec.ts 197
-- [ ] custom-permissions.e2e-spec.ts 231
-- [ ] tax-category.e2e-spec.ts 234
-- [ ] order-changed-price-handling.e2e-spec.ts 235
-- [ ] entity-serialization.e2e-spec.ts 241
+- [x] error-handler-strategy.e2e-spec.ts 144
+- [x] configurable-operation.e2e-spec.ts 152
+- [x] order-item-price-calculation-strategy.e2e-spec.ts 160
+- [x] localization.e2e-spec.ts 167
+- [x] relations-decorator.e2e-spec.ts 169
+- [x] plugin.e2e-spec.ts 170
+- [x] session-management.e2e-spec.ts 171
+- [x] job-queue.e2e-spec.ts 192
+- [x] order-channel.e2e-spec.ts 197
+- [x] custom-permissions.e2e-spec.ts 231
+- [x] tax-category.e2e-spec.ts 234
+- [x] order-changed-price-handling.e2e-spec.ts 235
+- [x] entity-serialization.e2e-spec.ts 241
 - [ ] order-fulfillment.e2e-spec.ts 243
 - [ ] order-multi-vendor.e2e-spec.ts 249
 - [ ] order-multiple-shipping.e2e-spec.ts 255
@@ -83,10 +83,20 @@
 - [ ] custom-field-relations.e2e-spec.ts 1465
 - [ ] list-query-builder.e2e-spec.ts 1546
 - [ ] stock-control.e2e-spec.ts 1581
-- [ ] default-search-plugin.e2e-spec.ts 2143
+KIND OF DONE  WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
 - [ ] product.e2e-spec.ts 2311
 - [ ] order-promotion.e2e-spec.ts 2357
 - [ ] collection.e2e-spec.ts 2602
 KIND OF DONE  WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
 - [x] shop-order.e2e-spec.ts 2893
 - [x] order.e2e-spec.ts 3156
+
+
+
+fast-importer.e2e-spec.ts entity-prefix.e2e-spec.ts entity-uuid-strategy.e2e-spec.ts cache-service-default.e2e-spec.ts cache-service-in-memory.e2e-spec.ts translations.e2e-spec.ts apollo-server-plugin.e2e-spec.ts lifecycle.e2e-spec.ts default-search-plugin-uuids.e2e-spec.ts tax-rate.e2e-spec.ts parallel-transactions.e2e-spec.ts cache-service-redis.e2e-spec.ts global-settings.e2e-spec.ts default-scheduler-plugin.e2e-spec.ts 
+
+
+error-handler-strategy.e2e-spec.ts configurable-operation.e2e-spec.ts order-item-price-calculation-strategy.e2e-spec.ts localization.e2e-spec.ts relations-decorator.e2e-spec.ts plugin.e2e-spec.ts session-management.e2e-spec.ts job-queue.e2e-spec.ts order-channel.e2e-spec.ts 
+
+
+custom-permissions.e2e-spec.ts tax-category.e2e-spec.ts order-changed-price-handling.e2e-spec.ts entity-serialization.e2e-spec.ts 

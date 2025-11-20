@@ -13,8 +13,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { updateProductVariantsDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -68,16 +66,12 @@ describe('ChangedPriceHandlingStrategy', () => {
     it('unitPriceChangeSinceAdded starts as 0', async () => {
         TestChangedPriceStrategy.spy.mockClear();
 
-        await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_12',
             quantity: 1,
         });
 
-        const { activeOrder } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder } = await shopClient.query(getActiveOrderDocument);
 
         expect(activeOrder?.lines[0].unitPriceChangeSinceAdded).toBe(0);
         expect(activeOrder?.lines[0].unitPrice).toBe(5374);
@@ -94,10 +88,7 @@ describe('ChangedPriceHandlingStrategy', () => {
         it('calls handlePriceChange on addItemToOrder', async () => {
             TestChangedPriceStrategy.spy.mockClear();
 
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(updateProductVariantsDocument, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_12',
@@ -106,16 +97,12 @@ describe('ChangedPriceHandlingStrategy', () => {
                 ],
             });
 
-            await shopClient.query<
-                CodegenShop.AddItemToOrderMutation,
-                CodegenShop.AddItemToOrderMutationVariables
-            >(addItemToOrderDocument, {
+            await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_12',
                 quantity: 1,
             });
 
-            const { activeOrder } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+            const { activeOrder } = await shopClient.query(getActiveOrderDocument);
             expect(activeOrder?.lines[0].unitPriceChangeSinceAdded).toBe(626);
             expect(activeOrder?.lines[0].unitPrice).toBe(6000);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
@@ -126,10 +113,7 @@ describe('ChangedPriceHandlingStrategy', () => {
         it('calls handlePriceChange on adjustOrderLine', async () => {
             TestChangedPriceStrategy.spy.mockClear();
 
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(updateProductVariantsDocument, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_12',
@@ -138,16 +122,12 @@ describe('ChangedPriceHandlingStrategy', () => {
                 ],
             });
 
-            await shopClient.query<
-                CodegenShop.AdjustItemQuantityMutation,
-                CodegenShop.AdjustItemQuantityMutationVariables
-            >(adjustItemQuantityDocument, {
+            await shopClient.query(adjustItemQuantityDocument, {
                 orderLineId: firstOrderLineId,
                 quantity: 3,
             });
 
-            const { activeOrder } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+            const { activeOrder } = await shopClient.query(getActiveOrderDocument);
             expect(activeOrder?.lines[0].unitPriceChangeSinceAdded).toBe(-2374);
             expect(activeOrder?.lines[0].unitPrice).toBe(3000);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
@@ -165,18 +145,12 @@ describe('ChangedPriceHandlingStrategy', () => {
         it('calls handlePriceChange on addItemToOrder', async () => {
             TestChangedPriceStrategy.spy.mockClear();
 
-            await shopClient.query<
-                CodegenShop.AddItemToOrderMutation,
-                CodegenShop.AddItemToOrderMutationVariables
-            >(addItemToOrderDocument, {
+            await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_13',
                 quantity: 1,
             });
 
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(updateProductVariantsDocument, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_13',
@@ -185,16 +159,12 @@ describe('ChangedPriceHandlingStrategy', () => {
                 ],
             });
 
-            await shopClient.query<
-                CodegenShop.AddItemToOrderMutation,
-                CodegenShop.AddItemToOrderMutationVariables
-            >(addItemToOrderDocument, {
+            await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_13',
                 quantity: 1,
             });
 
-            const { activeOrder } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+            const { activeOrder } = await shopClient.query(getActiveOrderDocument);
             expect(activeOrder?.lines[1].unitPriceChangeSinceAdded).toBe(0);
             expect(activeOrder?.lines[1].unitPrice).toBe(ORIGINAL_PRICE);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
@@ -205,10 +175,7 @@ describe('ChangedPriceHandlingStrategy', () => {
         it('calls handlePriceChange on adjustOrderLine', async () => {
             TestChangedPriceStrategy.spy.mockClear();
 
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(updateProductVariantsDocument, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_13',
@@ -217,16 +184,12 @@ describe('ChangedPriceHandlingStrategy', () => {
                 ],
             });
 
-            await shopClient.query<
-                CodegenShop.AdjustItemQuantityMutation,
-                CodegenShop.AdjustItemQuantityMutationVariables
-            >(adjustItemQuantityDocument, {
+            await shopClient.query(adjustItemQuantityDocument, {
                 orderLineId: secondOrderLineId,
                 quantity: 3,
             });
 
-            const { activeOrder } =
-                await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+            const { activeOrder } = await shopClient.query(getActiveOrderDocument);
             expect(activeOrder?.lines[1].unitPriceChangeSinceAdded).toBe(0);
             expect(activeOrder?.lines[1].unitPrice).toBe(ORIGINAL_PRICE);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
