@@ -35,6 +35,11 @@ describe('Shop customers', () => {
         input => input.success != null,
     );
 
+    type CustomersResult = ResultOf<typeof getCustomerIdsDocument>['customers'];
+    const customersGuard: ErrorResultGuard<CustomersResult> = createErrorResultGuard(
+        input => input.items != null && input.items.length > 0,
+    );
+
     beforeAll(async () => {
         await server.init({
             initialData,
@@ -44,9 +49,10 @@ describe('Shop customers', () => {
         await adminClient.asSuperAdmin();
 
         // Fetch the first Customer and store it as the `customer` variable.
-        const customerIdsResult = await adminClient.query(getCustomerIdsDocument);
+        const { customers } = await adminClient.query(getCustomerIdsDocument);
+        customersGuard.assertSuccess(customers);
         const result = await adminClient.query(getCustomerDocument, {
-            id: customerIdsResult.customers.items[0].id,
+            id: customers.items[0].id,
         });
         customer = result.customer!;
     }, TEST_SETUP_TIMEOUT_MS);

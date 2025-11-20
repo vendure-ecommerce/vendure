@@ -1,18 +1,19 @@
+import { Permission } from '@vendure/common/lib/generated-types';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import { fail } from 'assert';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { Permission } from './graphql/generated-e2e-shop-types';
+import { ResultOf } from './graphql/graphql-admin';
 import {
     createAdministratorDocument,
     createRoleDocument,
+    getProductWithCustomFieldsDocument,
+    getProductWithPublicCustomFieldsDocument,
     updateProductDocument,
 } from './graphql/shared-definitions';
 
@@ -60,8 +61,8 @@ describe('Custom field permissions', () => {
         }),
     );
 
-    let readProductUpdateProductAdmin: Codegen.CreateAdministratorMutation['createAdministrator'];
-    let readProductUpdateCustomerAdmin: Codegen.CreateAdministratorMutation['createAdministrator'];
+    let readProductUpdateProductAdmin: ResultOf<typeof createAdministratorDocument>['createAdministrator'];
+    let readProductUpdateCustomerAdmin: ResultOf<typeof createAdministratorDocument>['createAdministrator'];
 
     beforeAll(async () => {
         await server.init({
@@ -87,25 +88,10 @@ describe('Custom field permissions', () => {
         await server.destroy();
     });
 
-    const GET_PRODUCT_WITH_CUSTOM_FIELDS = gql(`
-            query {
-                product(id: "T_1") {
-                    id
-                    customFields {
-                        publicField
-                        authenticatedField
-                        updateProductField
-                        updateProductOrCustomerField
-                        superadminField
-                    }
-                }
-            }
-        `);
-
     it('readProductUpdateProductAdmin can read public and updateProduct custom fields', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateProductAdmin.emailAddress, 'test');
 
-        const { product } = await adminClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
+        const { product } = await adminClient.query(getProductWithCustomFieldsDocument, {
             id: 'T_1',
         });
 
@@ -121,7 +107,7 @@ describe('Custom field permissions', () => {
     it('readProductUpdateCustomerAdmin can read public and updateCustomer custom fields', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateCustomerAdmin.emailAddress, 'test');
 
-        const { product } = await adminClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
+        const { product } = await adminClient.query(getProductWithCustomFieldsDocument, {
             id: 'T_1',
         });
 
@@ -137,7 +123,7 @@ describe('Custom field permissions', () => {
     it('superadmin can read all custom fields', async () => {
         await adminClient.asSuperAdmin();
 
-        const { product } = await adminClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
+        const { product } = await adminClient.query(getProductWithCustomFieldsDocument, {
             id: 'T_1',
         });
 
@@ -152,23 +138,20 @@ describe('Custom field permissions', () => {
 
     it('superadmin can update all custom fields', async () => {
         await adminClient.asSuperAdmin();
-        await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-            updateProductDocument,
-            {
-                input: {
-                    id: 'T_1',
-                    customFields: {
-                        publicField: 'new publicField Value',
-                        authenticatedField: 'new authenticatedField Value',
-                        updateProductField: 'new updateProductField Value',
-                        updateProductOrCustomerField: 'new updateProductOrCustomerField Value',
-                        superadminField: 'new superadminField Value',
-                    },
+        await adminClient.query(updateProductDocument, {
+            input: {
+                id: 'T_1',
+                customFields: {
+                    publicField: 'new publicField Value',
+                    authenticatedField: 'new authenticatedField Value',
+                    updateProductField: 'new updateProductField Value',
+                    updateProductOrCustomerField: 'new updateProductOrCustomerField Value',
+                    superadminField: 'new superadminField Value',
                 },
             },
-        );
+        });
 
-        const { product } = await adminClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
+        const { product } = await adminClient.query(getProductWithCustomFieldsDocument, {
             id: 'T_1',
         });
 
@@ -183,19 +166,16 @@ describe('Custom field permissions', () => {
 
     it('readProductUpdateProductAdmin can update updateProduct custom field', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateProductAdmin.emailAddress, 'test');
-        await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-            updateProductDocument,
-            {
-                input: {
-                    id: 'T_1',
-                    customFields: {
-                        updateProductField: 'new updateProductField Value 2',
-                    },
+        await adminClient.query(updateProductDocument, {
+            input: {
+                id: 'T_1',
+                customFields: {
+                    updateProductField: 'new updateProductField Value 2',
                 },
             },
-        );
+        });
 
-        const { product } = await adminClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
+        const { product } = await adminClient.query(getProductWithCustomFieldsDocument, {
             id: 'T_1',
         });
 
@@ -205,10 +185,7 @@ describe('Custom field permissions', () => {
     it('readProductUpdateProductAdmin cannot update superadminField', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateProductAdmin.emailAddress, 'test');
         try {
-            const result = await adminClient.query<
-                Codegen.UpdateProductMutation,
-                Codegen.UpdateProductMutationVariables
-            >(updateProductDocument, {
+            await adminClient.query(updateProductDocument, {
                 input: {
                     id: 'T_1',
                     customFields: {
@@ -229,10 +206,7 @@ describe('Custom field permissions', () => {
     it('readProductUpdateCustomerAdmin cannot update updateProductField', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateCustomerAdmin.emailAddress, 'test');
         try {
-            const result = await adminClient.query<
-                Codegen.UpdateProductMutation,
-                Codegen.UpdateProductMutationVariables
-            >(updateProductDocument, {
+            await adminClient.query(updateProductDocument, {
                 input: {
                     id: 'T_1',
                     customFields: {
@@ -247,23 +221,10 @@ describe('Custom field permissions', () => {
     });
 
     describe('Shop API', () => {
-        const GET_PRODUCT_WITH_PUBLIC_CUSTOM_FIELDS = gql(`
-            query {
-                product(id: "T_1") {
-                    id
-                    customFields {
-                        publicField
-                        authenticatedField
-                        updateProductField
-                    }
-                }
-            }
-        `);
-
         it('all public fields are accessible in Shop API regardless of permissions', async () => {
             await shopClient.asAnonymousUser();
 
-            const { product } = await shopClient.query(GET_PRODUCT_WITH_PUBLIC_CUSTOM_FIELDS, {
+            const { product } = await shopClient.query(getProductWithPublicCustomFieldsDocument, {
                 id: 'T_1',
             });
 
@@ -282,10 +243,7 @@ async function createAdminWithPermissions(input: {
     permissions: Permission[];
 }) {
     const { adminClient, name, permissions } = input;
-    const { createRole } = await adminClient.query<
-        Codegen.CreateRoleMutation,
-        Codegen.CreateRoleMutationVariables
-    >(createRoleDocument, {
+    const { createRole } = await adminClient.query(createRoleDocument, {
         input: {
             code: name,
             description: name,
@@ -293,10 +251,7 @@ async function createAdminWithPermissions(input: {
         },
     });
 
-    const { createAdministrator } = await adminClient.query<
-        Codegen.CreateAdministratorMutation,
-        Codegen.CreateAdministratorMutationVariables
-    >(createAdministratorDocument, {
+    const { createAdministrator } = await adminClient.query(createAdministratorDocument, {
         input: {
             firstName: name,
             lastName: 'LastName',
