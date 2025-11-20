@@ -1178,7 +1178,7 @@ export const addItemToOrderWithCustomFieldsDocument = graphql(
         mutation AddItemToOrderWithCustomFields(
             $productVariantId: ID!
             $quantity: Int!
-            $customFields: JSON
+            $customFields: OrderLineCustomFieldsInput!
         ) {
             addItemToOrder(
                 productVariantId: $productVariantId
@@ -1221,7 +1221,8 @@ export const addMultipleItemsToOrderWithCustomFieldsDocument = graphql(
                 }
             }
         }
-    `[updatedOrderFragment],
+    `,
+    [updatedOrderFragment],
 );
 
 export const adjustOrderLineWithCustomFieldsDocument = graphql(`
@@ -1263,3 +1264,41 @@ export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
         }
     }
 `);
+
+export const localUpdatedOrderFragment = graphql(`
+    fragment UpdatedOrder on Order {
+        id
+        code
+        state
+        active
+        total
+        totalWithTax
+        currencyCode
+        lines {
+            id
+            linePrice
+            linePriceWithTax
+        }
+    }
+`);
+
+export const localAddItemToOrderDocument = graphql(
+    `
+        mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+            addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+                ...UpdatedOrder
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+                ... on InsufficientStockError {
+                    quantityAvailable
+                    order {
+                        ...UpdatedOrder
+                    }
+                }
+            }
+        }
+    `,
+    [localUpdatedOrderFragment],
+);

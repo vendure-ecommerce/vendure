@@ -323,6 +323,7 @@ export const shippingAddressFragment = graphql(`
         province
         postalCode
         country
+        countryCode
         phoneNumber
     }
 `);

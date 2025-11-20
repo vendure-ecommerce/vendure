@@ -1691,3 +1691,53 @@ export const getOrderWithModificationsDocument = graphql(
     `,
     [orderWithModificationsFragment],
 );
+
+export const getOrderWithCustomFieldsDocument = graphql(`
+    query GetOrderCustomFields($id: ID!) {
+        order(id: $id) {
+            # Ignore error - customFields are dynamically generated at runtime, not in introspection schema
+            customFields {
+                points
+            }
+            lines {
+                id
+                # Ignore error - customFields are dynamically generated at runtime, not in introspection schema
+                customFields {
+                    color
+                }
+            }
+        }
+    }
+`);
+
+export const getSettingsStoreValueDocument = graphql(`
+    query GetSettingsStoreValue($key: String!) {
+        getSettingsStoreValue(key: $key)
+    }
+`);
+
+export const getSettingsStoreValuesDocument = graphql(`
+    query GetSettingsStoreValues($keys: [String!]!) {
+        getSettingsStoreValues(keys: $keys)
+    }
+`);
+
+export const setSettingsStoreValueDocument = graphql(`
+    mutation SetSettingsStoreValue($input: SettingsStoreInput!) {
+        setSettingsStoreValue(input: $input) {
+            key
+            result
+            error
+        }
+    }
+`);
+
+export const setSettingsStoreValuesDocument = graphql(`
+    mutation SetSettingsStoreValues($inputs: [SettingsStoreInput!]!) {
+        setSettingsStoreValues(inputs: $inputs) {
+            key
+            result
+            error
+        }
+    }
+`);
