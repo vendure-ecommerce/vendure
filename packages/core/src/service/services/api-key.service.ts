@@ -152,10 +152,6 @@ export class ApiKeyService {
 
         const secret = await strategy.generateSecret(ctx);
         const apiKey = strategy.constructApiKey(lookupId, secret);
-        // TODO(Dan): should we only hash the secret or the entire apikey?
-        // the entire key has more entropy but the lookupid might be publically known
-        // Length extension attack is not really applicable here though
-        // If this changes, remember to also update `rotate` function!
         const hash = await strategy.hashingStrategy.hash(apiKey);
 
         const newEntity = await this.translatableSaver.create({
