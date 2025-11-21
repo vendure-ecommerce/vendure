@@ -399,9 +399,13 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
      * needing to run an update query on *every* request.
      */
     private async updateSessionExpiry(session: Session) {
-        const now = new Date().getTime();
-        if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
-            const newExpiryDate = this.getExpiryDate(this.sessionDurationInMs);
+        const isApiKeySession =
+            this.isAuthenticatedSession(session) &&
+            session.authenticationStrategy === API_KEY_AUTH_STRATEGY_NAME;
+        const ttlMs = isApiKeySession ? API_KEY_AUTH_STRATEGY_DEFAULT_DURATION_MS : this.sessionDurationInMs;
+
+        if (session.expires.getTime() - Date.now() < ttlMs / 2) {
+            const newExpiryDate = this.getExpiryDate(ttlMs);
             session.expires = newExpiryDate;
             await this.connection.rawConnection
                 .getRepository(Session)
