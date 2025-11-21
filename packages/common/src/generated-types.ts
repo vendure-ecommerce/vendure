@@ -846,11 +846,6 @@ export type CreateApiKeyResult = {
   apiKey: Scalars['String']['output'];
   /** ID of the created ApiKey-Entity */
   entityId: Scalars['ID']['output'];
-  /**
-   * ID by which you can look up the API-Key.
-   * Also helps you identify keys without leaking the underlying secret API-Key.
-   */
-  lookupId: Scalars['String']['output'];
 };
 
 export type CreateApiKeyTranslationInput = {

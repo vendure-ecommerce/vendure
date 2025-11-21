@@ -52,11 +52,6 @@ input CreateApiKeyInput {
 }
 
 type CreateApiKeyResult {
-    """
-    ID by which you can look up the API-Key.
-    Also helps you identify keys without leaking the underlying secret API-Key.
-    """
-    lookupId: String!
     "The generated API-Key. API-Keys cannot be viewed again after creation!"
     apiKey: String!
     "ID of the created ApiKey-Entity"

@@ -103,7 +103,7 @@ describe('ApiKey resolver', () => {
     });
 
     it('API-Key usage life cycle: Read, Rotate, Delete', async ({ expect }) => {
-        const { apiKey, lookupId, entityId } = (
+        const { apiKey, entityId } = (
             await adminClient.query(CreateApiKeyDocument, {
                 input: {
                     roleIds: ['1'],
@@ -160,7 +160,6 @@ describe('ApiKey resolver', () => {
 export const CREATE_API_KEY = gql`
     mutation CreateApiKey($input: CreateApiKeyInput!) {
         createApiKey(input: $input) {
-            lookupId
             apiKey
             entityId
         }

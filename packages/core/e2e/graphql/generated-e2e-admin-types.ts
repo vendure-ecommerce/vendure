@@ -832,11 +832,6 @@ export type CreateApiKeyResult = {
     apiKey: Scalars['String']['output'];
     /** ID of the created ApiKey-Entity */
     entityId: Scalars['ID']['output'];
-    /**
-     * ID by which you can look up the API-Key.
-     * Also helps you identify keys without leaking the underlying secret API-Key.
-     */
-    lookupId: Scalars['String']['output'];
 };
 
 export type CreateApiKeyTranslationInput = {
@@ -6887,7 +6882,7 @@ export type CreateApiKeyMutationVariables = Exact<{
     input: CreateApiKeyInput;
 }>;
 
-export type CreateApiKeyMutation = { createApiKey: { lookupId: string; apiKey: string; entityId: string } };
+export type CreateApiKeyMutation = { createApiKey: { apiKey: string; entityId: string } };
 
 export type ApiKeyQueryVariables = Exact<{
     id: Scalars['ID']['input'];
@@ -16202,7 +16197,6 @@ export const CreateApiKeyDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'lookupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'apiKey' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'entityId' } },
                             ],
