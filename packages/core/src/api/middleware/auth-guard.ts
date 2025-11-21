@@ -231,7 +231,7 @@ export class AuthGuard implements CanActivate {
         // We can conclude that the API-Key is actually broken.
         // For example someone could have deleted the session manually in the DB.
         // We must create a new session, otherwise the API-Key is unusable.
-        const newSession = await this.sessionService.createNewAuthenticatedSession(
+        await this.sessionService.createNewAuthenticatedSession(
             RequestContext.empty(), // TODO(Dan): can this have unintended consequences?
             apiKey.user,
             API_KEY_AUTH_STRATEGY_NAME,
