@@ -2465,6 +2465,8 @@ export enum Permission {
     Authenticated = 'Authenticated',
     /** Grants permission to create Administrator */
     CreateAdministrator = 'CreateAdministrator',
+    /** Grants permission to create ApiKey */
+    CreateApiKey = 'CreateApiKey',
     /** Grants permission to create Asset */
     CreateAsset = 'CreateAsset',
     /** Grants permission to create Products, Facets, Assets, Collections */
@@ -2509,6 +2511,8 @@ export enum Permission {
     CreateZone = 'CreateZone',
     /** Grants permission to delete Administrator */
     DeleteAdministrator = 'DeleteAdministrator',
+    /** Grants permission to delete ApiKey */
+    DeleteApiKey = 'DeleteApiKey',
     /** Grants permission to delete Asset */
     DeleteAsset = 'DeleteAsset',
     /** Grants permission to delete Products, Facets, Assets, Collections */
@@ -2557,6 +2561,8 @@ export enum Permission {
     Public = 'Public',
     /** Grants permission to read Administrator */
     ReadAdministrator = 'ReadAdministrator',
+    /** Grants permission to read ApiKey */
+    ReadApiKey = 'ReadApiKey',
     /** Grants permission to read Asset */
     ReadAsset = 'ReadAsset',
     /** Grants permission to read Products, Facets, Assets, Collections */
@@ -2603,6 +2609,8 @@ export enum Permission {
     SuperAdmin = 'SuperAdmin',
     /** Grants permission to update Administrator */
     UpdateAdministrator = 'UpdateAdministrator',
+    /** Grants permission to update ApiKey */
+    UpdateApiKey = 'UpdateApiKey',
     /** Grants permission to update Asset */
     UpdateAsset = 'UpdateAsset',
     /** Grants permission to update Products, Facets, Assets, Collections */
