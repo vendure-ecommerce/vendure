@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
+import { GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { API_KEY_AUTH_STRATEGY_NAME } from '../../config';
@@ -15,7 +16,7 @@ import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken, ExtractTokenResult } from '../common/extract-session-token';
-import { ApiType, getApiType } from '../common/get-api-type';
+import { getApiType } from '../common/get-api-type';
 import { isFieldResolver } from '../common/is-field-resolver';
 import { parseContext } from '../common/parse-context';
 import {
@@ -63,7 +64,7 @@ export class AuthGuard implements CanActivate {
         if (targetIsFieldResolver) {
             requestContext = internal_getRequestContext(req);
         } else {
-            const session = await this.getSession(req, res, hasOwnerPermission, getApiType(info));
+            const session = await this.getSession(req, res, hasOwnerPermission, info);
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
 
             const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
@@ -141,7 +142,7 @@ export class AuthGuard implements CanActivate {
         req: Request,
         res: Response,
         hasOwnerPermission: boolean,
-        apiType: ApiType,
+        info?: GraphQLResolveInfo,
     ): Promise<CachedSession | undefined> {
         const sessionToken = extractSessionToken(
             req,
@@ -151,7 +152,7 @@ export class AuthGuard implements CanActivate {
 
         let serializedSession: CachedSession | undefined;
         if (sessionToken?.token) {
-            serializedSession = await this.getSessionFromToken(req, sessionToken, apiType);
+            serializedSession = await this.getSessionFromToken(req, sessionToken, info);
             if (serializedSession) {
                 return serializedSession;
             }
@@ -183,23 +184,19 @@ export class AuthGuard implements CanActivate {
     private async getSessionFromToken(
         req: Request,
         extracted: ExtractTokenResult,
-        apiType: ApiType,
+        info?: GraphQLResolveInfo,
     ): Promise<CachedSession | undefined> {
         if (extracted.method !== 'api-key') {
             return this.sessionService.getSessionFromToken(extracted.token);
         }
 
-        const strategy = this.apiKeyService.getApiKeyStrategyByApiType(apiType);
+        const strategy = this.apiKeyService.getApiKeyStrategyByApiType(getApiType(info));
         const parseResult = strategy.parse(extracted.token);
         if (!parseResult) {
             return;
         }
 
-        const ctx = await this.requestContextService.create({
-            req,
-            apiType,
-            languageCode: this.configService.defaultLanguageCode,
-        });
+        const ctx = await this.requestContextService.fromRequest(req, info);
 
         const apiKey = await this.apiKeyService.findOneByLookupId(ctx, parseResult.lookupId, [
             'user',
