@@ -31,7 +31,9 @@ export function extractSessionToken(
     const authHeader = req.get('Authorization')?.trim();
     if (authHeader && (tokenMethod === 'bearer' || tokenMethod.includes('bearer'))) {
         const matchesBearer = authHeader.match(/^bearer\s(.+)$/i);
-        if (matchesBearer) return { method: 'bearer', token: matchesBearer[1] };
+        if (matchesBearer) {
+            return { method: 'bearer', token: matchesBearer[1] };
+        }
     }
 
     const apiKeyHeader = req.get(apiKeyHeaderKey)?.trim();

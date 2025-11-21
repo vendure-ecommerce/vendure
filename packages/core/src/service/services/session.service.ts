@@ -342,11 +342,11 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
             .getRepository(ctx, Session)
             // Using a query builder here because sessions utilize @TableInheritance,
             // `authenticationStrategy` only exists on `AuthenticatedSession`
-            .createQueryBuilder()
-            .where('activeOrderId = :activeOrderId', { activeOrderId })
+            .createQueryBuilder('s')
+            .where('s.activeOrderId = :activeOrderId', { activeOrderId })
             // Specifically do not delete api key based sessions,
             // else the api key becomes unusable!
-            .andWhere('(authenticationStrategy != :name OR authenticationStrategy IS NULL)', {
+            .andWhere('(s.authenticationStrategy != :name OR s.authenticationStrategy IS NULL)', {
                 name: API_KEY_AUTH_STRATEGY_NAME,
             })
             .getMany();
