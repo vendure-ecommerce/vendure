@@ -86,7 +86,7 @@ describe('ApiKey resolver', () => {
         const result = await adminClient.query(DeleteApiKeyDocument, { ids: [createdApiKeyId] });
         expect(result.deleteApiKeys?.[0]?.result).toBe(DeletionResult.DELETED);
         // Should not be found anymore
-        const { apiKey } = await adminClient.query(API_KEY, { id: createdApiKeyId });
+        const { apiKey } = await adminClient.query(ApiKeyDocument, { id: createdApiKeyId });
         expect(apiKey).toBeNull();
     });
 
