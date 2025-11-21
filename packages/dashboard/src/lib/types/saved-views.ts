@@ -5,6 +5,10 @@ export interface SavedView {
     name: string;
     scope: 'user' | 'global';
     filters: ColumnFiltersState;
+    columnConfig: {
+        columnVisibility: Record<string, boolean>;
+        columnOrder: string[];
+    };
     searchTerm?: string;
     pageId?: string;
     blockId?: string;
@@ -28,6 +32,10 @@ export interface SaveViewInput {
     name: string;
     scope: 'user' | 'global';
     filters: ColumnFiltersState;
+    columnConfig: {
+        columnVisibility: Record<string, boolean>;
+        columnOrder: string[];
+    };
     searchTerm?: string;
 }
 

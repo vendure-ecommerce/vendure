@@ -1,6 +1,8 @@
 'use client';
 
-import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { ColumnFiltersState, ColumnVisibility, SortingState, Table } from '@tanstack/react-table';
 import React, { createContext, ReactNode, useContext } from 'react';
 
 interface DataTableContextValue {
@@ -16,7 +18,10 @@ interface DataTableContextValue {
     onRefresh?: () => void;
     isLoading?: boolean;
     table?: Table<any>;
-    handleApplyView: (filters: ColumnFiltersState, searchTerm?: string) => void;
+    handleApplyView: (
+        filters: ColumnFiltersState,
+        columnConfig: { columnOrder?: string[], columnVisibility?: Record<string, boolean> },
+        searchTerm?: string) => void;
 }
 
 const DataTableContext = createContext<DataTableContextValue | undefined>(undefined);
@@ -52,8 +57,14 @@ export function DataTableProvider({
     isLoading,
     table,
 }: DataTableProviderProps) {
-    const handleApplyView = (filters: ColumnFiltersState, viewSearchTerm?: string) => {
+    const { setTableSettings } = useUserSettings();
+    const page = usePage();
+
+    const handleApplyView = (filters: ColumnFiltersState, columnConfig?: { columnOrder?: string[], columnVisibility?: Record<string, boolean> }, viewSearchTerm?: string) => {
         setColumnFilters(filters);
+        setTableSettings(page.pageId ?? "", 'columnOrder', columnConfig?.columnOrder);
+        setTableSettings(page.pageId ?? "", 'columnVisibility', columnConfig?.columnVisibility);
+        
         if (viewSearchTerm !== undefined && onSearchTermChange) {
             setSearchTerm(viewSearchTerm);
             onSearchTermChange(viewSearchTerm);
