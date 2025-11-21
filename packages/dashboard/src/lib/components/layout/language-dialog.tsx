@@ -19,8 +19,7 @@ export function LanguageDialog() {
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const { humanReadableLanguageAndLocale } = useDisplayLocale();
     const availableCurrencyCodes = Object.values(CurrencyCode);
-    const { formatCurrency, formatLanguageName, formatRegionName, formatCurrencyName, formatDate } =
-        useLocalFormat();
+    const { formatCurrency, formatRegionName, formatCurrencyName, formatDate } = useLocalFormat();
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
     // Map and sort languages by their formatted names

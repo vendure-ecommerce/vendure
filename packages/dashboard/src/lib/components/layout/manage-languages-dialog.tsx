@@ -17,10 +17,11 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Lock } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // GraphQL queries
@@ -116,16 +117,7 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
     const [channelDefaultLanguage, setChannelDefaultLanguage] = useState<string>('');
 
     // Map and sort channel languages by their formatted names
-    const sortedChannelLanguages = useMemo(
-        () =>
-            channelLanguages
-                .map(code => ({
-                    code,
-                    label: formatLanguageName(code),
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label)),
-        [channelLanguages, formatLanguageName],
-    );
+    const sortedChannelLanguages = useSortedLanguages(channelLanguages || []);
 
     // Queries
     const {

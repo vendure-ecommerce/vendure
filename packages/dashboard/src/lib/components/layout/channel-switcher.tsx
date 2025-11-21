@@ -22,7 +22,7 @@ import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ManageLanguagesDialog } from './manage-languages-dialog.js';
 
 /**
