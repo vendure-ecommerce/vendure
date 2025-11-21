@@ -151,7 +151,7 @@ export class AuthGuard implements CanActivate {
 
         let serializedSession: CachedSession | undefined;
         if (sessionToken?.token) {
-            serializedSession = await this.getSessionFromToken(sessionToken, apiType);
+            serializedSession = await this.getSessionFromToken(req, sessionToken, apiType);
             if (serializedSession) {
                 return serializedSession;
             }
@@ -181,6 +181,7 @@ export class AuthGuard implements CanActivate {
     }
 
     private async getSessionFromToken(
+        req: Request,
         extracted: ExtractTokenResult,
         apiType: ApiType,
     ): Promise<CachedSession | undefined> {
@@ -194,11 +195,17 @@ export class AuthGuard implements CanActivate {
             return;
         }
 
-        const apiKey = await this.apiKeyService.findOneByLookupId(
-            RequestContext.empty(),
-            parseResult.lookupId,
-            ['user', 'user.roles', 'user.roles.channels'],
-        );
+        const ctx = await this.requestContextService.create({
+            req,
+            apiType,
+            languageCode: this.configService.defaultLanguageCode,
+        });
+
+        const apiKey = await this.apiKeyService.findOneByLookupId(ctx, parseResult.lookupId, [
+            'user',
+            'user.roles',
+            'user.roles.channels',
+        ]);
         if (!apiKey) {
             return;
         }
@@ -232,7 +239,7 @@ export class AuthGuard implements CanActivate {
         // For example someone could have deleted the session manually in the DB.
         // We must create a new session, otherwise the API-Key is unusable.
         await this.sessionService.createNewAuthenticatedSession(
-            RequestContext.empty(), // TODO(Dan): can this have unintended consequences?
+            ctx,
             apiKey.user,
             API_KEY_AUTH_STRATEGY_NAME,
             apiKey.apiKeyHash,
