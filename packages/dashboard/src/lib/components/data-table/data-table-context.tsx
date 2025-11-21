@@ -58,20 +58,22 @@ export function DataTableProvider({
     table,
 }: DataTableProviderProps) {
     const { setTableSettings } = useUserSettings();
-    const page = usePage();
 
     const handleApplyView = (filters: ColumnFiltersState, columnConfig: { columnOrder: string[], columnVisibility: Record<string, boolean> }, viewSearchTerm?: string) => {
-        setColumnFilters(filters);
-        setTableSettings(page.pageId ?? "", 'columnOrder', columnConfig.columnOrder);
-        setTableSettings(page.pageId ?? "", 'columnVisibility', columnConfig.columnVisibility);
-        
-        if (viewSearchTerm !== undefined && onSearchTermChange) {
-            setSearchTerm(viewSearchTerm);
-            onSearchTermChange(viewSearchTerm);
+        if (!pageId) {
+            console.warn('Cannot persist column settings: pageId is undefined');
+            setColumnFilters(filters);
+            if (viewSearchTerm !== undefined && onSearchTermChange) {
+                setSearchTerm(viewSearchTerm);
+                onSearchTermChange(viewSearchTerm);
+            }
+            if (onFilterChange && table) {
+                onFilterChange(table, filters);
+            }
+            return;
         }
-        if (onFilterChange && table) {
-            onFilterChange(table, filters);
-        }
+        setTableSettings(pageId, 'columnOrder', columnConfig.columnOrder);
+        setTableSettings(pageId, 'columnVisibility', columnConfig.columnVisibility);
     };
 
     const value: DataTableContextValue = {
