@@ -6,7 +6,7 @@ import { PasswordHashingStrategy } from '../auth/password-hashing-strategy';
 
 import { ApiKeyStrategy, BaseApiKeyStrategy } from './api-key-strategy';
 
-export const DEFAULT_SIZE_RANDOM_BYTES_KEY = 32;
+export const DEFAULT_SIZE_RANDOM_BYTES_SECRET = 32;
 export const DEFAULT_SIZE_RANDOM_BYTES_LOOKUP = 12;
 
 /**
@@ -20,9 +20,9 @@ export interface RandomBytesApiKeyStrategyOptions {
      * This is the input size for `crypto.randomBytes`
      *
      * @default 32
-     * @see {@link DEFAULT_SIZE_RANDOM_BYTES_KEY}
+     * @see {@link DEFAULT_SIZE_RANDOM_BYTES_SECRET}
      */
-    sizeKey?: number;
+    secretSize?: number;
     /**
      * @description
      * The number of bytes to generate. The size must not be larger than 2**31 - 1.
@@ -31,7 +31,7 @@ export interface RandomBytesApiKeyStrategyOptions {
      * @default 12
      * @see {@link DEFAULT_SIZE_RANDOM_BYTES_LOOKUP}
      */
-    sizeLookupId?: number;
+    lookupSize?: number;
     /**
      * @description
      * Defines a custom strategy for how API-Keys get hashed and checked.
@@ -58,23 +58,23 @@ export interface RandomBytesApiKeyStrategyOptions {
  * @since 3.6.0
  */
 export class RandomBytesApiKeyStrategy extends BaseApiKeyStrategy {
-    readonly sizeKey: number;
-    readonly sizeLookupId: number;
+    readonly secretSize: number;
+    readonly lookupSize: number;
     readonly hashingStrategy: PasswordHashingStrategy;
 
     constructor(input?: RandomBytesApiKeyStrategyOptions) {
         super();
-        this.sizeKey = input?.sizeKey ?? DEFAULT_SIZE_RANDOM_BYTES_KEY;
-        this.sizeLookupId = input?.sizeLookupId ?? DEFAULT_SIZE_RANDOM_BYTES_LOOKUP;
+        this.secretSize = input?.secretSize ?? DEFAULT_SIZE_RANDOM_BYTES_SECRET;
+        this.lookupSize = input?.lookupSize ?? DEFAULT_SIZE_RANDOM_BYTES_LOOKUP;
         this.hashingStrategy = input?.hashingStrategy ?? new BcryptPasswordHashingStrategy();
     }
 
     generateSecret(ctx: RequestContext): Promise<string> {
-        return this.promisifyRandomBytes(this.sizeKey);
+        return this.promisifyRandomBytes(this.secretSize);
     }
 
     generateLookupId(ctx: RequestContext): Promise<string> {
-        return this.promisifyRandomBytes(this.sizeLookupId);
+        return this.promisifyRandomBytes(this.lookupSize);
     }
 
     private promisifyRandomBytes(size: number): Promise<string> {
