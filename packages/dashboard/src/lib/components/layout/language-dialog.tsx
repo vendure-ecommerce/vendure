@@ -1,6 +1,7 @@
 import { CurrencyCode } from '@/vdb/constants.js';
 import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
@@ -23,16 +24,7 @@ export function LanguageDialog() {
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
     // Map and sort languages by their formatted names
-    const sortedLanguages = useMemo(
-        () =>
-            availableLanguages
-                .map(code => ({
-                    code,
-                    label: formatLanguageName(code),
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label)),
-        [availableLanguages, formatLanguageName],
-    );
+    const sortedLanguages = useSortedLanguages(availableLanguages);
 
     // Map and sort locales by their formatted region names
     const sortedLocales = useMemo(

@@ -17,6 +17,7 @@ import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { Trans } from '@lingui/react/macro';
@@ -66,17 +67,7 @@ export function ChannelSwitcher() {
         : channels;
 
     // Sort language codes by their formatted names and map to code and label
-    const sortedLanguages = useMemo(
-        () =>
-            displayChannel?.availableLanguageCodes
-                ?.slice()
-                .map(code => ({
-                    code,
-                    label: formatLanguageName(code),
-                }))
-                .sort((a, b) => a.label.localeCompare(b.label)),
-        [displayChannel?.availableLanguageCodes, formatLanguageName],
-    );
+    const sortedLanguages = useSortedLanguages(displayChannel?.availableLanguageCodes);
 
     useEffect(() => {
         if (activeChannel?.availableLanguageCodes) {
