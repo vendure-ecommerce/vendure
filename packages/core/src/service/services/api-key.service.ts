@@ -184,7 +184,7 @@ export class ApiKeyService {
         );
         await this.eventBus.publish(new ApiKeyEvent(ctx, newEntity, 'created', input));
 
-        return { apiKey, lookupId, entityId: newEntity.id };
+        return { apiKey, entityId: newEntity.id };
     }
 
     /**
