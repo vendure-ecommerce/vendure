@@ -21,21 +21,7 @@ import {
     SetCustomerForOrderMutationVariables,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import {
-    CREATE_ADDRESS,
-    CREATE_ADMINISTRATOR,
-    CREATE_CUSTOMER,
-    DELETE_CUSTOMER,
-    DELETE_CUSTOMER_NOTE,
-    GET_CUSTOMER,
-    GET_CUSTOMER_HISTORY,
-    GET_CUSTOMER_LIST,
-    ME,
-    UPDATE_ADDRESS,
-    UPDATE_CUSTOMER,
-    UPDATE_CUSTOMER_NOTE,
-} from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
+import { addItemToOrderDocument, setCustomerDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -424,7 +410,7 @@ describe('Customer resolver', () => {
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrderMutation,
                 AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -703,7 +689,7 @@ describe('Customer resolver', () => {
 
             await shopClient.asAnonymousUser();
             await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
-                ADD_ITEM_TO_ORDER,
+                addItemToOrderDocument,
                 {
                     productVariantId: 'T_1',
                     quantity: 1,
@@ -712,7 +698,7 @@ describe('Customer resolver', () => {
             const { setCustomerForOrder } = await shopClient.query<
                 SetCustomerForOrderMutation,
                 SetCustomerForOrderMutationVariables
-            >(SET_CUSTOMER, {
+            >(setCustomerDocument, {
                 input: {
                     firstName: 'Guest',
                     lastName: 'Customer',

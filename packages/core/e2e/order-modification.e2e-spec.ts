@@ -56,16 +56,16 @@ import {
     DELETE_PROMOTION,
     GET_ORDER,
     GET_ORDER_HISTORY,
-    GET_PRODUCT_VARIANT_LIST,
-    GET_STOCK_MOVEMENT,
-    UPDATE_CHANNEL,
-    UPDATE_PRODUCT_VARIANTS,
+    getProductVariantListDocument,
+    getStockMovementDocument,
+    updateChannelDocument,
+    updateProductVariantsDocument,
 } from './graphql/shared-definitions';
 import {
-    APPLY_COUPON_CODE,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    applyCouponCodeDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
@@ -179,7 +179,7 @@ describe('Order modification', () => {
         await adminClient.query<
             Codegen.UpdateProductVariantsMutation,
             Codegen.UpdateProductVariantsMutationVariables
-        >(UPDATE_PRODUCT_VARIANTS, {
+        >(updateProductVariantsDocument, {
             input: [
                 {
                     id: 'T_1',
@@ -989,7 +989,7 @@ describe('Order modification', () => {
             await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
                 Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            >(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_6',
@@ -1611,7 +1611,7 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.ApplyCouponCodeMutation,
             CodegenShop.ApplyCouponCodeMutationVariables
-        >(APPLY_COUPON_CODE, {
+        >(applyCouponCodeDocument, {
             couponCode: '5OFF',
         });
         await proceedToArrangingPayment(shopClient);
@@ -1674,7 +1674,7 @@ describe('Order modification', () => {
 
         beforeAll(async () => {
             await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
-                UPDATE_CHANNEL,
+                updateChannelDocument,
                 {
                     input: {
                         id: 'T_1',
@@ -1727,7 +1727,7 @@ describe('Order modification', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: 'HALF',
             });
             await proceedToArrangingPayment(shopClient);
@@ -1772,7 +1772,7 @@ describe('Order modification', () => {
             await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,
                 CodegenShop.ApplyCouponCodeMutationVariables
-            >(APPLY_COUPON_CODE, {
+            >(applyCouponCodeDocument, {
                 couponCode: '5OFF2',
             });
             await proceedToArrangingPayment(shopClient);
@@ -1854,7 +1854,7 @@ describe('Order modification', () => {
                 const { productVariants } = await adminClient.query<
                     Codegen.GetProductVariantListQuery,
                     Codegen.GetProductVariantListQueryVariables
-                >(GET_PRODUCT_VARIANT_LIST, {
+                >(getProductVariantListDocument, {
                     options: {
                         filter: {
                             name: { contains: 'football' },
@@ -1982,7 +1982,7 @@ describe('Order modification', () => {
             const { product } = await adminClient.query<
                 Codegen.GetStockMovementQuery,
                 Codegen.GetStockMovementQueryVariables
-            >(GET_STOCK_MOVEMENT, {
+            >(getStockMovementDocument, {
                 id: 'T_1',
             });
             return product!.variants.find(v => v.id === id)!;
@@ -2655,7 +2655,7 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.SetShippingAddressMutation,
             CodegenShop.SetShippingAddressMutationVariables
-        >(SET_SHIPPING_ADDRESS, {
+        >(setShippingAddressDocument, {
             input: {
                 fullName: 'name',
                 streetLine1: '12 the street',
@@ -2668,14 +2668,14 @@ describe('Order modification', () => {
         await shopClient.query<
             CodegenShop.SetShippingMethodMutation,
             CodegenShop.SetShippingMethodMutationVariables
-        >(SET_SHIPPING_METHOD, {
+        >(setShippingMethodDocument, {
             id: testShippingMethodId,
         });
 
         await shopClient.query<
             CodegenShop.TransitionToStateMutation,
             CodegenShop.TransitionToStateMutationVariables
-        >(TRANSITION_TO_STATE, {
+        >(transitionToStateDocument, {
             state: 'ArrangingPayment',
         });
 

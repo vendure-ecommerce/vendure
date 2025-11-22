@@ -39,7 +39,7 @@ import {
     UpdateProductVariantsDocument,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ChannelAware Products and ProductVariants', () => {
@@ -239,7 +239,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrderMutation,
                 AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            >(addItemToOrderDocument, {
                 productVariantId: product1.variants[0].id,
                 quantity: 1,
             });

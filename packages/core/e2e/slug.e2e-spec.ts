@@ -7,7 +7,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { LanguageCode } from './graphql/generated-e2e-admin-types';
-import { CREATE_COLLECTION, CREATE_PRODUCT } from './graphql/shared-definitions';
+import { createCollectionDocument, createProductDocument } from './graphql/shared-definitions';
 
 describe('Slug generation', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
@@ -251,7 +251,7 @@ describe('Slug generation', () => {
         describe('uniqueness handling', () => {
             it('appends number for duplicate slugs', async () => {
                 // First, create a product with slug 'laptop'
-                const createProduct = await adminClient.query(CREATE_PRODUCT, {
+                const createProduct = await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -278,7 +278,7 @@ describe('Slug generation', () => {
 
             it('increments counter for multiple duplicates', async () => {
                 // Create products with slugs 'phone' and 'phone-1'
-                await adminClient.query(CREATE_PRODUCT, {
+                await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -291,7 +291,7 @@ describe('Slug generation', () => {
                     },
                 });
 
-                await adminClient.query(CREATE_PRODUCT, {
+                await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -318,7 +318,7 @@ describe('Slug generation', () => {
 
             it('excludes own ID when checking uniqueness', async () => {
                 // Create a product
-                const createResult = await adminClient.query(CREATE_PRODUCT, {
+                const createResult = await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -362,7 +362,7 @@ describe('Slug generation', () => {
 
             it('handles multi-language slug generation', async () => {
                 // Create a product with English translation first
-                const createProduct = await adminClient.query(CREATE_PRODUCT, {
+                const createProduct = await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -404,7 +404,7 @@ describe('Slug generation', () => {
 
             it('handles uniqueness across different language translations', async () => {
                 // Create first product with multiple language translations
-                const product1 = await adminClient.query(CREATE_PRODUCT, {
+                const product1 = await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -459,7 +459,7 @@ describe('Slug generation', () => {
 
             it('handles translation entity exclusion correctly with multiple languages', async () => {
                 // Create a product with multiple language translations
-                const createProduct = await adminClient.query(CREATE_PRODUCT, {
+                const createProduct = await adminClient.query(createProductDocument, {
                     input: {
                         translations: [
                             {
@@ -509,7 +509,7 @@ describe('Slug generation', () => {
         describe('multi-language collections', () => {
             it('generates unique slugs for collection translations', async () => {
                 // Create a collection with multiple language translations
-                const createCollection = await adminClient.query(CREATE_COLLECTION, {
+                const createCollection = await adminClient.query(createCollectionDocument, {
                     input: {
                         translations: [
                             {
@@ -546,7 +546,7 @@ describe('Slug generation', () => {
 
             it('handles collection slug conflicts across languages', async () => {
                 // Create collection with English name
-                await adminClient.query(CREATE_COLLECTION, {
+                await adminClient.query(createCollectionDocument, {
                     input: {
                         translations: [
                             {

@@ -17,7 +17,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { singleStageRefundablePaymentMethod } from './fixtures/test-payment-methods';
-import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
+import { orderWithLinesFragment } from './graphql/fragments-admin';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AddManualPaymentDocument,
@@ -31,8 +31,8 @@ import {
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
-import { GET_ACTIVE_CUSTOMER_ORDERS } from './graphql/shop-definitions';
+import { createPromotionDocument, getCustomerListDocument } from './graphql/shared-definitions';
+import { getActiveCustomerOrdersDocument } from './graphql/shop-definitions';
 
 class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
     static spy = vi.fn();
@@ -89,7 +89,7 @@ describe('Draft Orders resolver', () => {
         const result = await adminClient.query<
             Codegen.GetCustomerListQuery,
             Codegen.GetCustomerListQueryVariables
-        >(GET_CUSTOMER_LIST, {
+        >(getCustomerListDocument, {
             options: {
                 take: 3,
             },
@@ -100,7 +100,7 @@ describe('Draft Orders resolver', () => {
         const { createPromotion } = await adminClient.query<
             Codegen.CreatePromotionMutation,
             Codegen.CreatePromotionMutationVariables
-        >(CREATE_PROMOTION, {
+        >(createPromotionDocument, {
             input: {
                 enabled: true,
                 conditions: [],
@@ -208,8 +208,9 @@ describe('Draft Orders resolver', () => {
     it('custom does not see draft orders in history', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-        const { activeCustomer } =
-            await shopClient.query<GetActiveCustomerOrdersQuery>(GET_ACTIVE_CUSTOMER_ORDERS);
+        const { activeCustomer } = await shopClient.query<GetActiveCustomerOrdersQuery>(
+            getActiveCustomerOrdersDocument,
+        );
 
         expect(activeCustomer?.orders.totalItems).toBe(0);
         expect(activeCustomer?.orders.items.length).toBe(0);
@@ -450,7 +451,7 @@ export const CREATE_DRAFT_ORDER = gql`
             ...OrderWithLines
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const ADD_ITEM_TO_DRAFT_ORDER = gql`
@@ -463,7 +464,7 @@ export const ADD_ITEM_TO_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const ADJUST_DRAFT_ORDER_LINE = gql`
@@ -476,7 +477,7 @@ export const ADJUST_DRAFT_ORDER_LINE = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const REMOVE_DRAFT_ORDER_LINE = gql`
@@ -489,7 +490,7 @@ export const REMOVE_DRAFT_ORDER_LINE = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const SET_CUSTOMER_FOR_DRAFT_ORDER = gql`
@@ -502,7 +503,7 @@ export const SET_CUSTOMER_FOR_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
@@ -511,7 +512,7 @@ export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
             ...OrderWithLines
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
@@ -523,7 +524,7 @@ export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
@@ -535,7 +536,7 @@ export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
@@ -547,7 +548,7 @@ export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const APPLY_COUPON_CODE_TO_DRAFT_ORDER = gql`
@@ -563,7 +564,7 @@ export const APPLY_COUPON_CODE_TO_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const REMOVE_COUPON_CODE_FROM_DRAFT_ORDER = gql`
@@ -575,7 +576,7 @@ export const REMOVE_COUPON_CODE_FROM_DRAFT_ORDER = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS = gql`
@@ -602,7 +603,7 @@ export const SET_DRAFT_ORDER_SHIPPING_METHOD = gql`
             }
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${orderWithLinesFragment}
 `;
 
 export const GET_ORDER_PLACED_AT = gql`

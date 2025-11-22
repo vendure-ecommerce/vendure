@@ -2,16 +2,15 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { PaymentMethodHandler } from '@vendure/core';
 import { SimpleGraphQLClient } from '@vendure/testing';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import * as CodegenShop from '../graphql/generated-e2e-shop-types';
 import { TestOrderFragmentFragment } from '../graphql/generated-e2e-shop-types';
 import {
-    ADD_PAYMENT,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
+    addPaymentDocument,
+    getEligibleShippingMethodsDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
 } from '../graphql/shop-definitions';
 
 export async function proceedToArrangingPayment(
@@ -21,7 +20,7 @@ export async function proceedToArrangingPayment(
     await shopClient.query<
         CodegenShop.SetShippingAddressMutation,
         CodegenShop.SetShippingAddressMutationVariables
-    >(SET_SHIPPING_ADDRESS, {
+    >(setShippingAddressDocument, {
         input: {
             fullName: 'name',
             streetLine1: '12 the street',
@@ -32,20 +31,20 @@ export async function proceedToArrangingPayment(
     });
 
     const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
-        GET_ELIGIBLE_SHIPPING_METHODS,
+        getEligibleShippingMethodsDocument,
     );
 
     await shopClient.query<
         CodegenShop.SetShippingMethodMutation,
         CodegenShop.SetShippingMethodMutationVariables
-    >(SET_SHIPPING_METHOD, {
+    >(setShippingMethodDocument, {
         id: eligibleShippingMethods[shippingMethodIdx].id,
     });
 
     const { transitionOrderToState } = await shopClient.query<
         CodegenShop.TransitionToStateMutation,
         CodegenShop.TransitionToStateMutationVariables
-    >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+    >(transitionToStateDocument, { state: 'ArrangingPayment' });
 
     return (transitionOrderToState as TestOrderFragmentFragment)!.id;
 }
@@ -57,7 +56,7 @@ export async function addPaymentToOrder(
     const result = await shopClient.query<
         CodegenShop.AddPaymentToOrderMutation,
         CodegenShop.AddPaymentToOrderMutationVariables
-    >(ADD_PAYMENT, {
+    >(addPaymentDocument, {
         input: {
             method: handler.code,
             metadata: {

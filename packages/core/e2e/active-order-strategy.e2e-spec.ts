@@ -6,7 +6,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TokenActiveOrderPlugin } from './fixtures/test-plugins/token-active-order-plugin';
@@ -20,8 +20,8 @@ import {
     AddItemToOrderMutationVariables,
     GetActiveOrderQuery,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
+import { createPromotionDocument, getCustomerListDocument } from './graphql/shared-definitions';
+import { addItemToOrderDocument, getActiveOrderDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('custom ActiveOrderStrategy', () => {
@@ -60,7 +60,7 @@ describe('custom ActiveOrderStrategy', () => {
             customerCount: 3,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<GetCustomerListQuery>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<GetCustomerListQuery>(getCustomerListDocument);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -69,7 +69,7 @@ describe('custom ActiveOrderStrategy', () => {
     });
 
     it('activeOrder with no createActiveOrder defined returns null', async () => {
-        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(getActiveOrderDocument);
 
         expect(activeOrder).toBeNull();
     });
@@ -78,7 +78,7 @@ describe('custom ActiveOrderStrategy', () => {
         'addItemToOrder with no createActiveOrder throws',
         assertThrowsWithMessage(async () => {
             await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
-                ADD_ITEM_TO_ORDER,
+                addItemToOrderDocument,
                 {
                     productVariantId: 'T_1',
                     quantity: 1,
@@ -146,7 +146,7 @@ describe('custom ActiveOrderStrategy', () => {
         beforeAll(async () => {
             await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
             const result = await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
-                CREATE_PROMOTION,
+                createPromotionDocument,
                 {
                     input: {
                         enabled: true,

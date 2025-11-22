@@ -10,13 +10,6 @@ import { omit } from '../../common/lib/omit';
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult, LanguageCode } from './graphql/generated-e2e-admin-types';
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_OPTION_GROUP,
-    CREATE_PRODUCT_VARIANTS,
-    DELETE_PRODUCT_VARIANT,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */

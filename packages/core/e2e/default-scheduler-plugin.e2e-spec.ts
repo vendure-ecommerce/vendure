@@ -1,19 +1,12 @@
 import { DefaultSchedulerPlugin, mergeConfig, ScheduledTask } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import {
-    GetTasksQuery,
-    RunTaskMutation,
-    RunTaskMutationVariables,
-    UpdateTaskMutation,
-    UpdateTaskMutationVariables,
-} from './graphql/generated-e2e-admin-types';
+import { getTasksDocument, runTaskDocument, updateTaskDocument } from './graphql/shared-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Default scheduler plugin', () => {
@@ -57,7 +50,7 @@ describe('Default scheduler plugin', () => {
     });
 
     it('get tasks', async () => {
-        const { scheduledTasks } = await adminClient.query<GetTasksQuery>(GET_TASKS);
+        const { scheduledTasks } = await adminClient.query(getTasksDocument);
         expect(scheduledTasks.length).toBe(1);
         expect(scheduledTasks[0].id).toBe('test-job');
         expect(scheduledTasks[0].description).toBe("A test job that doesn't do anything");
@@ -67,10 +60,7 @@ describe('Default scheduler plugin', () => {
     });
 
     it('disable task', async () => {
-        const { updateScheduledTask } = await adminClient.query<
-            UpdateTaskMutation,
-            UpdateTaskMutationVariables
-        >(UPDATE_TASK, {
+        const { updateScheduledTask } = await adminClient.query(updateTaskDocument, {
             input: {
                 id: 'test-job',
                 enabled: false,
@@ -80,10 +70,7 @@ describe('Default scheduler plugin', () => {
     });
 
     it('enable task', async () => {
-        const { updateScheduledTask } = await adminClient.query<
-            UpdateTaskMutation,
-            UpdateTaskMutationVariables
-        >(UPDATE_TASK, {
+        const { updateScheduledTask } = await adminClient.query(updateTaskDocument, {
             input: {
                 id: 'test-job',
                 enabled: true,
@@ -96,43 +83,10 @@ describe('Default scheduler plugin', () => {
         taskSpy.mockClear();
         expect(taskSpy).toHaveBeenCalledTimes(0);
 
-        const { runScheduledTask } = await adminClient.query<RunTaskMutation, RunTaskMutationVariables>(
-            RUN_TASK,
-            { id: 'test-job' },
-        );
+        const { runScheduledTask } = await adminClient.query(runTaskDocument, { id: 'test-job' });
         expect(runScheduledTask.success).toBe(true);
 
         await new Promise(resolve => setTimeout(resolve, 100));
         expect(taskSpy).toHaveBeenCalledTimes(1);
     });
 });
-
-export const GET_TASKS = gql`
-    query GetTasks {
-        scheduledTasks {
-            id
-            description
-            schedule
-            scheduleDescription
-            lastResult
-            enabled
-        }
-    }
-`;
-
-export const UPDATE_TASK = gql`
-    mutation UpdateTask($input: UpdateScheduledTaskInput!) {
-        updateScheduledTask(input: $input) {
-            id
-            enabled
-        }
-    }
-`;
-
-export const RUN_TASK = gql`
-    mutation RunTask($id: String!) {
-        runScheduledTask(id: $id) {
-            success
-        }
-    }
-`;
