@@ -1,27 +1,30 @@
+import { DeletionResult } from '@vendure/common/lib/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { fail } from 'assert';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import { administratorFragment, currentUserFragment } from './graphql/fragments-admin';
+import { FragmentOf } from './graphql/graphql-admin';
 import {
-    AdministratorFragment,
-    AttemptLoginDocument,
-    CurrentUser,
-    DeletionResult,
-} from './graphql/generated-e2e-admin-types';
-import { createAdministratorDocument, updateAdministratorDocument } from './graphql/shared-definitions';
+    attemptLoginDocument,
+    createAdministratorDocument,
+    deleteAdministratorDocument,
+    getActiveAdministratorDocument,
+    getAdministratorDocument,
+    getAdministratorsDocument,
+    updateActiveAdministratorDocument,
+    updateAdministratorDocument,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
-    let createdAdmin: AdministratorFragment;
+    let createdAdmin: FragmentOf<typeof administratorFragment>;
 
     beforeAll(async () => {
         await server.init({
@@ -37,19 +40,13 @@ describe('Administrator resolver', () => {
     });
 
     it('administrators', async () => {
-        const result = await adminClient.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS);
+        const result = await adminClient.query(getAdministratorsDocument);
         expect(result.administrators.items.length).toBe(1);
         expect(result.administrators.totalItems).toBe(1);
     });
 
     it('createAdministrator', async () => {
-        const result = await adminClient.query<
-            Codegen.CreateAdministratorMutation,
-            Codegen.CreateAdministratorMutationVariables
-        >(createAdministratorDocument, {
+        const result = await adminClient.query(createAdministratorDocument, {
             input: {
                 emailAddress: 'test@test.com',
                 firstName: 'First',
@@ -64,20 +61,14 @@ describe('Administrator resolver', () => {
     });
 
     it('administrator', async () => {
-        const result = await adminClient.query<
-            Codegen.GetAdministratorQuery,
-            Codegen.GetAdministratorQueryVariables
-        >(GET_ADMINISTRATOR, {
+        const result = await adminClient.query(getAdministratorDocument, {
             id: createdAdmin.id,
         });
         expect(result.administrator).toEqual(createdAdmin);
     });
 
     it('updateAdministrator', async () => {
-        const result = await adminClient.query<
-            Codegen.UpdateAdministratorMutation,
-            Codegen.UpdateAdministratorMutationVariables
-        >(updateAdministratorDocument, {
+        const result = await adminClient.query(updateAdministratorDocument, {
             input: {
                 id: createdAdmin.id,
                 emailAddress: 'new-email',
@@ -91,10 +82,7 @@ describe('Administrator resolver', () => {
     });
 
     it('updateAdministrator works with partial input', async () => {
-        const result = await adminClient.query<
-            Codegen.UpdateAdministratorMutation,
-            Codegen.UpdateAdministratorMutationVariables
-        >(updateAdministratorDocument, {
+        const result = await adminClient.query(updateAdministratorDocument, {
             input: {
                 id: createdAdmin.id,
                 emailAddress: 'newest-email',
@@ -109,10 +97,7 @@ describe('Administrator resolver', () => {
         'updateAdministrator throws with invalid roleId',
         assertThrowsWithMessage(
             () =>
-                adminClient.query<
-                    Codegen.UpdateAdministratorMutation,
-                    Codegen.UpdateAdministratorMutationVariables
-                >(updateAdministratorDocument, {
+                adminClient.query(updateAdministratorDocument, {
                     input: {
                         id: createdAdmin.id,
                         emailAddress: 'new-email',
@@ -127,41 +112,26 @@ describe('Administrator resolver', () => {
     );
 
     it('deleteAdministrator', async () => {
-        const { administrators: before } = await adminClient.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS);
+        const { administrators: before } = await adminClient.query(getAdministratorsDocument);
         expect(before.totalItems).toBe(2);
 
-        const { deleteAdministrator } = await adminClient.query<
-            Codegen.DeleteAdministratorMutation,
-            Codegen.DeleteAdministratorMutationVariables
-        >(DELETE_ADMINISTRATOR, {
+        const { deleteAdministrator } = await adminClient.query(deleteAdministratorDocument, {
             id: createdAdmin.id,
         });
 
         expect(deleteAdministrator.result).toBe(DeletionResult.DELETED);
 
-        const { administrators: after } = await adminClient.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS);
+        const { administrators: after } = await adminClient.query(getAdministratorsDocument);
         expect(after.totalItems).toBe(1);
     });
 
     it('cannot delete sole SuperAdmin', async () => {
-        const { administrators: before } = await adminClient.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS);
+        const { administrators: before } = await adminClient.query(getAdministratorsDocument);
         expect(before.totalItems).toBe(1);
         expect(before.items[0].emailAddress).toBe('superadmin');
 
         try {
-            const { deleteAdministrator } = await adminClient.query<
-                Codegen.DeleteAdministratorMutation,
-                Codegen.DeleteAdministratorMutationVariables
-            >(DELETE_ADMINISTRATOR, {
+            await adminClient.query(deleteAdministratorDocument, {
                 id: before.items[0].id,
             });
             fail('Should have thrown');
@@ -169,20 +139,14 @@ describe('Administrator resolver', () => {
             expect(e.message).toBe('The sole SuperAdmin cannot be deleted');
         }
 
-        const { administrators: after } = await adminClient.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS);
+        const { administrators: after } = await adminClient.query(getAdministratorsDocument);
         expect(after.totalItems).toBe(1);
     });
 
     it(
         'cannot remove SuperAdmin role from sole SuperAdmin',
         assertThrowsWithMessage(async () => {
-            const result = await adminClient.query<
-                Codegen.UpdateAdministratorMutation,
-                Codegen.UpdateAdministratorMutationVariables
-            >(updateAdministratorDocument, {
+            await adminClient.query(updateAdministratorDocument, {
                 input: {
                     id: 'T_1',
                     roleIds: [],
@@ -192,10 +156,7 @@ describe('Administrator resolver', () => {
     );
 
     it('cannot query a deleted Administrator', async () => {
-        const { administrator } = await adminClient.query<
-            Codegen.GetAdministratorQuery,
-            Codegen.GetAdministratorQueryVariables
-        >(GET_ADMINISTRATOR, {
+        const { administrator } = await adminClient.query(getAdministratorDocument, {
             id: createdAdmin.id,
         });
 
@@ -205,22 +166,17 @@ describe('Administrator resolver', () => {
     it('activeAdministrator', async () => {
         await adminClient.asAnonymousUser();
 
-        const { activeAdministrator: result1 } =
-            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
+        const { activeAdministrator: result1 } = await adminClient.query(getActiveAdministratorDocument);
         expect(result1).toBeNull();
 
         await adminClient.asSuperAdmin();
 
-        const { activeAdministrator: result2 } =
-            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
+        const { activeAdministrator: result2 } = await adminClient.query(getActiveAdministratorDocument);
         expect(result2?.emailAddress).toBe(SUPER_ADMIN_USER_IDENTIFIER);
     });
 
     it('updateActiveAdministrator', async () => {
-        const { updateActiveAdministrator } = await adminClient.query<
-            Codegen.UpdateActiveAdministratorMutation,
-            Codegen.UpdateActiveAdministratorMutationVariables
-        >(UPDATE_ACTIVE_ADMINISTRATOR, {
+        const { updateActiveAdministrator } = await adminClient.query(updateActiveAdministratorDocument, {
             input: {
                 firstName: 'Thomas',
                 lastName: 'Anderson',
@@ -231,21 +187,16 @@ describe('Administrator resolver', () => {
         expect(updateActiveAdministrator.firstName).toBe('Thomas');
         expect(updateActiveAdministrator.lastName).toBe('Anderson');
 
-        const { activeAdministrator } =
-            await adminClient.query<Codegen.ActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR);
+        const { activeAdministrator } = await adminClient.query(getActiveAdministratorDocument);
 
         expect(activeAdministrator?.firstName).toBe('Thomas');
         expect(activeAdministrator?.user.identifier).toBe('neo@metacortex.com');
     });
 
     it('supports case-sensitive admin identifiers', async () => {
-        const loginResultGuard: ErrorResultGuard<CurrentUser> = createErrorResultGuard(
-            input => !!input.identifier,
-        );
-        const { createAdministrator } = await adminClient.query<
-            Codegen.CreateAdministratorMutation,
-            Codegen.CreateAdministratorMutationVariables
-        >(createAdministratorDocument, {
+        const loginResultGuard: ErrorResultGuard<FragmentOf<typeof currentUserFragment>> =
+            createErrorResultGuard(input => !!input.identifier);
+        await adminClient.query(createAdministratorDocument, {
             input: {
                 emailAddress: 'NewAdmin',
                 firstName: 'New',
@@ -255,7 +206,7 @@ describe('Administrator resolver', () => {
             },
         });
 
-        const { login } = await adminClient.query(AttemptLoginDocument, {
+        const { login } = await adminClient.query(attemptLoginDocument, {
             username: 'NewAdmin',
             password: 'password',
         });
@@ -264,51 +215,3 @@ describe('Administrator resolver', () => {
         expect(login.identifier).toBe('NewAdmin');
     });
 });
-
-export const GET_ADMINISTRATORS = gql`
-    query GetAdministrators($options: AdministratorListOptions) {
-        administrators(options: $options) {
-            items {
-                ...Administrator
-            }
-            totalItems
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const GET_ADMINISTRATOR = gql`
-    query GetAdministrator($id: ID!) {
-        administrator(id: $id) {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const GET_ACTIVE_ADMINISTRATOR = gql`
-    query ActiveAdministrator {
-        activeAdministrator {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const UPDATE_ACTIVE_ADMINISTRATOR = gql`
-    mutation UpdateActiveAdministrator($input: UpdateActiveAdministratorInput!) {
-        updateActiveAdministrator(input: $input) {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const DELETE_ADMINISTRATOR = gql`
-    mutation DeleteAdministrator($id: ID!) {
-        deleteAdministrator(id: $id) {
-            message
-            result
-        }
-    }
-`;

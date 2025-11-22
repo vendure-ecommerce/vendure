@@ -14,13 +14,14 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { FragmentOf } from './graphql/graphql-shop';
 import {
     addItemToOrderDocument,
     adjustItemQuantityDocument,
     getActiveOrderDocument,
     removeAllOrderLinesDocument,
     removeItemFromOrderDocument,
+    testOrderFragment,
 } from './graphql/shop-definitions';
 
 class Interceptor1 implements OrderInterceptor {
@@ -84,12 +85,8 @@ class Interceptor2 implements OrderInterceptor {
     }
 }
 
-type OrderSuccessResult =
-    | CodegenShop.UpdatedOrderFragment
-    | CodegenShop.TestOrderFragmentFragment
-    | CodegenShop.TestOrderWithPaymentsFragment
-    | CodegenShop.ActiveOrderCustomerFragment
-    | CodegenShop.OrderWithAddressesFragment;
+type TestOrderFragmentType = FragmentOf<typeof testOrderFragment>;
+type OrderSuccessResult = TestOrderFragmentType;
 const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(input => !!input.lines);
 
 describe('Order interceptor', () => {
@@ -117,10 +114,7 @@ describe('Order interceptor', () => {
     });
 
     it('willAddItemToOrder', async () => {
-        const { addItemToOrder } = await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
@@ -137,10 +131,7 @@ describe('Order interceptor', () => {
     });
 
     it('willAdjustOrderLine', async () => {
-        const { adjustOrderLine } = await shopClient.query<
-            CodegenShop.AdjustItemQuantityMutation,
-            CodegenShop.AdjustItemQuantityMutationVariables
-        >(adjustItemQuantityDocument, {
+        const { adjustOrderLine } = await shopClient.query(adjustItemQuantityDocument, {
             orderLineId: 'T_1',
             quantity: 2,
         });
@@ -156,10 +147,7 @@ describe('Order interceptor', () => {
     });
 
     it('willRemoveItemFromOrder when removing an item', async () => {
-        const { removeOrderLine } = await shopClient.query<
-            CodegenShop.RemoveItemFromOrderMutation,
-            CodegenShop.RemoveItemFromOrderMutationVariables
-        >(removeItemFromOrderDocument, {
+        const { removeOrderLine } = await shopClient.query(removeItemFromOrderDocument, {
             orderLineId: 'T_1',
         });
 
@@ -172,20 +160,14 @@ describe('Order interceptor', () => {
     });
 
     it('willRemoveItemFromOrder when removing all items', async () => {
-        const { addItemToOrder: addFirstItem } = await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        const { addItemToOrder: addFirstItem } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 2,
         });
 
         orderResultGuard.assertSuccess(addFirstItem);
 
-        const { addItemToOrder: addSecondItem } = await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        const { addItemToOrder: addSecondItem } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_2',
             quantity: 2,
         });
@@ -194,10 +176,7 @@ describe('Order interceptor', () => {
 
         interceptor1.willRemoveItemFromOrderSpy.mockClear();
 
-        const { removeAllOrderLines } = await shopClient.query<
-            CodegenShop.RemoveAllOrderLinesMutation,
-            CodegenShop.RemoveAllOrderLinesMutationVariables
-        >(removeAllOrderLinesDocument, undefined, {
+        const { removeAllOrderLines } = await shopClient.query(removeAllOrderLinesDocument, undefined, {
             overridden: 1,
         });
 
@@ -213,10 +192,7 @@ describe('Order interceptor', () => {
     });
 
     it('willAddItemToOrder with error', async () => {
-        const { addItemToOrder } = await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_2',
             quantity: 1,
         });
@@ -227,18 +203,14 @@ describe('Order interceptor', () => {
     });
 
     it('item was not added to order', async () => {
-        const { activeOrder } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder } = await shopClient.query(getActiveOrderDocument);
 
         orderResultGuard.assertSuccess(activeOrder);
         expect(activeOrder.lines.length).toBe(0);
     });
 
     it('add item that passes interceptor check', async () => {
-        const { addItemToOrder } = await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_2',
             quantity: 2,
         });
@@ -248,10 +220,7 @@ describe('Order interceptor', () => {
     });
 
     it('willAdjustOrderLine with error', async () => {
-        const { adjustOrderLine } = await shopClient.query<
-            CodegenShop.AdjustItemQuantityMutation,
-            CodegenShop.AdjustItemQuantityMutationVariables
-        >(adjustItemQuantityDocument, {
+        const { adjustOrderLine } = await shopClient.query(adjustItemQuantityDocument, {
             orderLineId: 'T_4',
             quantity: 1,
         });
@@ -263,8 +232,7 @@ describe('Order interceptor', () => {
     });
 
     it('item was not adjusted', async () => {
-        const { activeOrder } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder } = await shopClient.query(getActiveOrderDocument);
 
         orderResultGuard.assertSuccess(activeOrder);
         expect(activeOrder.lines.length).toBe(1);
@@ -272,10 +240,7 @@ describe('Order interceptor', () => {
     });
 
     it('adjust item that passes interceptor check', async () => {
-        const { adjustOrderLine } = await shopClient.query<
-            CodegenShop.AdjustItemQuantityMutation,
-            CodegenShop.AdjustItemQuantityMutationVariables
-        >(adjustItemQuantityDocument, {
+        const { adjustOrderLine } = await shopClient.query(adjustItemQuantityDocument, {
             orderLineId: 'T_4',
             quantity: 5,
         });
@@ -286,10 +251,7 @@ describe('Order interceptor', () => {
     });
 
     it('willRemoveItemFromOrder with error', async () => {
-        const { removeOrderLine } = await shopClient.query<
-            CodegenShop.RemoveItemFromOrderMutation,
-            CodegenShop.RemoveItemFromOrderMutationVariables
-        >(removeItemFromOrderDocument, {
+        const { removeOrderLine } = await shopClient.query(removeItemFromOrderDocument, {
             orderLineId: 'T_4',
         });
 
@@ -300,8 +262,7 @@ describe('Order interceptor', () => {
     });
 
     it('item was not removed', async () => {
-        const { activeOrder } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder } = await shopClient.query(getActiveOrderDocument);
 
         orderResultGuard.assertSuccess(activeOrder);
         expect(activeOrder.lines.length).toBe(1);
@@ -309,10 +270,7 @@ describe('Order interceptor', () => {
     });
 
     it('remove item that passes interceptor check', async () => {
-        const { removeOrderLine } = await shopClient.query<
-            CodegenShop.RemoveItemFromOrderMutation,
-            CodegenShop.RemoveItemFromOrderMutationVariables
-        >(
+        const { removeOrderLine } = await shopClient.query(
             removeItemFromOrderDocument,
             {
                 orderLineId: 'T_4',
@@ -327,8 +285,7 @@ describe('Order interceptor', () => {
     });
 
     it('item was removed', async () => {
-        const { activeOrder } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder } = await shopClient.query(getActiveOrderDocument);
 
         orderResultGuard.assertSuccess(activeOrder);
         expect(activeOrder.lines.length).toBe(0);
