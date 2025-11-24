@@ -2,7 +2,7 @@ import { uiConfig } from 'virtual:vendure-ui-config';
 
 /**
  * Returns the base URL for API requests based on the configuration.
- * Respects the 'auto' setting to derive the URL from the current window location.
+ * Respects the 'auto' setting to derive the URL from the current location.
  *
  * @returns {string} The constructed API base URL, e.g. https://api.example.test:3070
  */
@@ -10,9 +10,9 @@ export function getApiBaseUrl(): string {
     const schemeAndHost =
         uiConfig.api.host !== 'auto'
             ? uiConfig.api.host
-            : `${window.location.protocol}//${window.location.hostname}`;
+            : `${globalThis.location.protocol}//${globalThis.location.hostname}`;
 
-    const locationPortPart = window.location.port ? `:${window.location.port}` : '';
+    const locationPortPart = globalThis.location.port ? `:${globalThis.location.port}` : '';
     const portPart = uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : locationPortPart;
 
     return schemeAndHost + portPart;
