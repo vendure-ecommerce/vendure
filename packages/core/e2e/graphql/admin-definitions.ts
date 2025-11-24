@@ -1,6 +1,11 @@
 import gql from 'graphql-tag';
 
-import { countryFragment, orderWithModificationsFragment } from './fragments-admin';
+import {
+    assetFragment,
+    collectionFragment,
+    countryFragment,
+    orderWithModificationsFragment,
+} from './fragments-admin';
 import { graphql } from './graphql-admin';
 
 export const searchProductsAdminDocument = graphql(`
@@ -324,5 +329,84 @@ export const getFulfillmentHandlersDocument = graphql(`
                 ui
             }
         }
+    }
+`);
+
+export const getCollectionWithAssetsDocument = graphql(
+    `
+        query GetCollectionWithAssets($id: ID!) {
+            collection(id: $id) {
+                ...Collection
+            }
+        }
+    `,
+    [collectionFragment],
+);
+
+export const assignAssetsToChannelDocument = graphql(
+    `
+        mutation assignAssetsToChannel($input: AssignAssetsToChannelInput!) {
+            assignAssetsToChannel(input: $input) {
+                ...Asset
+            }
+        }
+    `,
+    [assetFragment],
+);
+
+export const canCreateCustomerDocument = graphql(`
+    mutation CanCreateCustomer($input: CreateCustomerInput!) {
+        createCustomer(input: $input) {
+            ... on Customer {
+                id
+            }
+        }
+    }
+`);
+
+export const getCustomerCountDocument = graphql(`
+    query GetCustomerCount {
+        customers {
+            totalItems
+        }
+    }
+`);
+
+export const getProductWithTransactionsDocument = graphql(`
+    query GetProductWithTransactions($id: ID!) {
+        product(id: $id) {
+            id
+            transactions {
+                id
+                amount
+                description
+            }
+        }
+    }
+`);
+
+export const deepFieldResolutionTestQueryDocument = graphql(`
+    query DeepFieldResolutionTestQuery {
+        product(id: "T_1") {
+            variants {
+                taxRateApplied {
+                    customerGroup {
+                        customers {
+                            items {
+                                id
+                                emailAddress
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const issue2097QueryDocument = graphql(`
+    query Issue2097 {
+        ownerProtectedThing
+        publicThing
     }
 `);

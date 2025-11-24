@@ -26,6 +26,7 @@ import {
     shippingMethodFragment,
     taxRateFragment,
     variantWithStockFragment,
+    zoneFragment,
 } from './fragments-admin';
 import { graphql } from './graphql-admin';
 
@@ -69,6 +70,73 @@ export const createAdministratorDocument = graphql(
     `,
     [administratorFragment],
 );
+
+export const getAdministratorsDocument = graphql(
+    `
+        query GetAdministrators($options: AdministratorListOptions) {
+            administrators(options: $options) {
+                items {
+                    ...Administrator
+                }
+                totalItems
+            }
+        }
+    `,
+    [administratorFragment],
+);
+
+export const getAdministratorDocument = graphql(
+    `
+        query GetAdministrator($id: ID!) {
+            administrator(id: $id) {
+                ...Administrator
+            }
+        }
+    `,
+    [administratorFragment],
+);
+
+export const getActiveAdministratorDocument = graphql(
+    `
+        query ActiveAdministrator {
+            activeAdministrator {
+                ...Administrator
+            }
+        }
+    `,
+    [administratorFragment],
+);
+
+export const updateAdministratorDocument = graphql(
+    `
+        mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
+            updateAdministrator(input: $input) {
+                ...Administrator
+            }
+        }
+    `,
+    [administratorFragment],
+);
+
+export const updateActiveAdministratorDocument = graphql(
+    `
+        mutation UpdateActiveAdministrator($input: UpdateActiveAdministratorInput!) {
+            updateActiveAdministrator(input: $input) {
+                ...Administrator
+            }
+        }
+    `,
+    [administratorFragment],
+);
+
+export const deleteAdministratorDocument = graphql(`
+    mutation DeleteAdministrator($id: ID!) {
+        deleteAdministrator(id: $id) {
+            message
+            result
+        }
+    }
+`);
 
 export const updateProductDocument = graphql(
     `
@@ -1417,17 +1485,6 @@ export const getChannelsDocument = graphql(`
     }
 `);
 
-export const updateAdministratorDocument = graphql(
-    `
-        mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
-            updateAdministrator(input: $input) {
-                ...Administrator
-            }
-        }
-    `,
-    [administratorFragment],
-);
-
 export const assignCollectionsToChannelDocument = graphql(
     `
         mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
@@ -1867,3 +1924,220 @@ export const getCheckersDocument = graphql(`
         }
     }
 `);
+
+export const getZonesDocument = graphql(`
+    query GetZones($options: ZoneListOptions) {
+        zones(options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
+        }
+    }
+`);
+
+export const getZoneDocument = graphql(
+    `
+        query GetZone($id: ID!) {
+            zone(id: $id) {
+                ...Zone
+            }
+        }
+    `,
+    [zoneFragment],
+);
+
+export const getActiveChannelWithZoneMembersDocument = graphql(`
+    query GetActiveChannelWithZoneMembers {
+        activeChannel {
+            id
+            defaultShippingZone {
+                id
+                members {
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const createZoneDocument = graphql(
+    `
+        mutation CreateZone($input: CreateZoneInput!) {
+            createZone(input: $input) {
+                ...Zone
+            }
+        }
+    `,
+    [zoneFragment],
+);
+
+export const updateZoneDocument = graphql(
+    `
+        mutation UpdateZone($input: UpdateZoneInput!) {
+            updateZone(input: $input) {
+                ...Zone
+            }
+        }
+    `,
+    [zoneFragment],
+);
+
+export const deleteZoneDocument = graphql(`
+    mutation DeleteZone($id: ID!) {
+        deleteZone(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const addMembersToZoneDocument = graphql(
+    `
+        mutation AddMembersToZone($zoneId: ID!, $memberIds: [ID!]!) {
+            addMembersToZone(zoneId: $zoneId, memberIds: $memberIds) {
+                ...Zone
+            }
+        }
+    `,
+    [zoneFragment],
+);
+
+export const removeMembersFromZoneDocument = graphql(
+    `
+        mutation RemoveMembersFromZone($zoneId: ID!, $memberIds: [ID!]!) {
+            removeMembersFromZone(zoneId: $zoneId, memberIds: $memberIds) {
+                ...Zone
+            }
+        }
+    `,
+    [zoneFragment],
+);
+
+export const getProductWithCustomFieldsDocument = graphql(`
+    query GetProductWithCustomFields($id: ID!) {
+        product(id: $id) {
+            id
+            customFields {
+                publicField
+                authenticatedField
+                updateProductField
+                updateProductOrCustomerField
+                superadminField
+            }
+        }
+    }
+`);
+
+export const getProductWithPublicCustomFieldsDocument = graphql(`
+    query GetProductWithPublicCustomFields($id: ID!) {
+        product(id: $id) {
+            id
+            customFields {
+                publicField
+                authenticatedField
+                updateProductField
+            }
+        }
+    }
+`);
+
+export const authenticateDocument = graphql(
+    `
+        mutation Authenticate($input: AuthenticationInput!) {
+            authenticate(input: $input) {
+                ...CurrentUser
+                ... on InvalidCredentialsError {
+                    authenticationError
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [currentUserFragment],
+);
+
+export const getCustomersDocument = graphql(`
+    query GetCustomers {
+        customers {
+            totalItems
+            items {
+                id
+                emailAddress
+            }
+        }
+    }
+`);
+
+export const getCustomerUserAuthDocument = graphql(`
+    query GetCustomerUserAuth($id: ID!) {
+        customer(id: $id) {
+            id
+            user {
+                id
+                verified
+                authenticationMethods {
+                    id
+                    strategy
+                }
+            }
+        }
+    }
+`);
+
+export const updatePromotionDocument = graphql(
+    `
+        mutation UpdatePromotion($input: UpdatePromotionInput!) {
+            updatePromotion(input: $input) {
+                ...Promotion
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+        }
+    `,
+    [promotionFragment],
+);
+
+export const getPromotionListDocument = graphql(
+    `
+        query GetPromotionList($options: PromotionListOptions) {
+            promotions(options: $options) {
+                items {
+                    ...Promotion
+                }
+                totalItems
+            }
+        }
+    `,
+    [promotionFragment],
+);
+
+export const configurableOperationDefFragment = graphql(`
+    fragment ConfigurableOperationDef on ConfigurableOperationDefinition {
+        args {
+            name
+            type
+            ui
+        }
+        code
+        description
+    }
+`);
+
+export const getAdjustmentOperationsDocument = graphql(
+    `
+        query GetAdjustmentOperations {
+            promotionActions {
+                ...ConfigurableOperationDef
+            }
+            promotionConditions {
+                ...ConfigurableOperationDef
+            }
+        }
+    `,
+    [configurableOperationDefFragment],
+);
