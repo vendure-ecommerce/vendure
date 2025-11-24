@@ -13,7 +13,7 @@ export function getApiBaseUrl(): string {
             : `${globalThis.location.protocol}//${globalThis.location.hostname}`;
 
     const locationPortPart = globalThis.location.port ? `:${globalThis.location.port}` : '';
-    const portPart = uiConfig.api.port !== 'auto' ? `:${uiConfig.api.port}` : locationPortPart;
+    const portPart = uiConfig.api.port === 'auto' ? locationPortPart : `:${uiConfig.api.port}`;
 
     return schemeAndHost + portPart;
 }
