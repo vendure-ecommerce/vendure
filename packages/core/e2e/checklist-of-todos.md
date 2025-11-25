@@ -73,7 +73,7 @@
 - [x] product-channel.e2e-spec.ts 680
 - [x] payment-method.e2e-spec.ts 698
 - [x] role.e2e-spec.ts 706
-- [ ] slug.e2e-spec.ts 724
+- [x] slug.e2e-spec.ts 724
 - [ ] settings-store.e2e-spec.ts 832
 - [ ] customer.e2e-spec.ts 835
 - [x] facet.e2e-spec.ts 1043
