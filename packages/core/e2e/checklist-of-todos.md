@@ -38,38 +38,38 @@
 - [x] populate.e2e-spec.ts 266
 - [x] custom-field-default-values.e2e-spec.ts 278
 - [x] entity-id-strategy.e2e-spec.ts 291
-- [ ] shop-customer.e2e-spec.ts 294
+- [x] shop-customer.e2e-spec.ts 294
 - [x] zone.e2e-spec.ts 298
 - [x] custom-field-permissions.e2e-spec.ts 309
-- [ ] customer-group.e2e-spec.ts 310
-- [ ] order-merge.e2e-spec.ts 313
-- [ ] administrator.e2e-spec.ts 314
-- [ ] order-interceptor.e2e-spec.ts 336
-- [ ] shop-catalog.e2e-spec.ts 340
+- [x] customer-group.e2e-spec.ts 310
+- [ ] order-merge.e2e-spec.ts 313 DONE BUT FINNIKY
+- [x] administrator.e2e-spec.ts 314
+- [x] order-interceptor.e2e-spec.ts 336
+- [x] shop-catalog.e2e-spec.ts 340
 - [ ] database-transactions.e2e-spec.ts 354
 - [ ] order-line-custom-fields.e2e-spec.ts 373
 - [ ] order-taxes.e2e-spec.ts 377
 - [ ] stock-location.e2e-spec.ts 388
 - [ ] product-option.e2e-spec.ts 392
-- [ ] customer-channel.e2e-spec.ts 393
-- [ ] asset-channel.e2e-spec.ts 398
-- [ ] payment-process.e2e-spec.ts 415
-- [ ] shipping-method-eligibility.e2e-spec.ts 451
-- [ ] auth.e2e-spec.ts 461
-- [ ] authentication-strategy.e2e-spec.ts 473
-- [ ] promotion.e2e-spec.ts 474
-- [ ] settings-store-rw-permissions.e2e-spec.ts 477
+- [x] customer-channel.e2e-spec.ts 393
+- [x] asset-channel.e2e-spec.ts 398
+- [ ] payment-process.e2e-spec.ts 415 // TODO: USES DEPRECATED STUFF!!
+- [x] shipping-method-eligibility.e2e-spec.ts 451
+- [x] auth.e2e-spec.ts 461
+- [x] authentication-strategy.e2e-spec.ts 473
+- [x] promotion.e2e-spec.ts 474
+- [x] settings-store-rw-permissions.e2e-spec.ts 477
 - [ ] entity-hydrator.e2e-spec.ts 491
-- [ ] channel.e2e-spec.ts 514
+- [x] channel.e2e-spec.ts 514
 - [ ] import.e2e-spec.ts 515
-- [ ] order-process.e2e-spec.ts 528
+- [x] order-process.e2e-spec.ts 528
 - [ ] asset.e2e-spec.ts 579
-- [ ] shipping-method.e2e-spec.ts 579
+- [x] shipping-method.e2e-spec.ts 579
 - [ ] active-order-strategy.e2e-spec.ts 580
-- [ ] custom-field-struct.e2e-spec.ts 584
-- [ ] stock-control-multi-location.e2e-spec.ts 589
-- [ ] product-prices.e2e-spec.ts 599
-- [ ] draft-order.e2e-spec.ts 619
+- [x] custom-field-struct.e2e-spec.ts 584
+- [x] stock-control-multi-location.e2e-spec.ts 589
+- [x] product-prices.e2e-spec.ts 599
+- [x] draft-order.e2e-spec.ts 619
 - [ ] product-channel.e2e-spec.ts 680
 - [ ] payment-method.e2e-spec.ts 698
 - [ ] role.e2e-spec.ts 706
@@ -101,8 +101,12 @@ order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-ship
 
 order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts
 
-fulfillment-process.e2e-spec.ts populate.e2e-spec.ts custom-field-default-values.e2e-spec.ts entity-id-strategy.e2e-spec.ts 
+fulfillment-process.e2e-spec.ts populate.e2e-spec.ts custom-field-default-values.e2e-spec.ts entity-id-strategy.e2e-spec.ts
 
-shop-customer.e2e-spec.ts zone.e2e-spec.ts custom-field-permissions.e2e-spec.ts 
+shop-customer.e2e-spec.ts zone.e2e-spec.ts custom-field-permissions.e2e-spec.ts
 
-customer-group.e2e-spec.ts order-merge.e2e-spec.ts administrator.e2e-spec.ts order-interceptor.e2e-spec.ts 
+customer-group.e2e-spec.ts order-merge.e2e-spec.ts administrator.e2e-spec.ts order-interceptor.e2e-spec.ts shop-catalog.e2e-spec.ts
+
+order-line-custom-fields.e2e-spec.ts order-taxes.e2e-spec.ts customer-channel.e2e-spec.ts asset-channel.e2e-spec.ts payment-process.e2e-spec.ts
+
+active-order-strategy.e2e-spec.ts custom-field-struct.e2e-spec.ts stock-control-multi-location.e2e-spec.ts product-prices.e2e-spec.ts
