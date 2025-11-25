@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { CurrencyCode, DeletionResult, ErrorCode } from '@vendure/common/lib/generated-shop-types';
 import { dummyPaymentHandler, LanguageCode, PaymentMethodEligibilityChecker } from '@vendure/core';
 import {
     createErrorResultGuard,
@@ -12,8 +12,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { CurrencyCode, DeletionResult, ErrorCode } from '@vendure/common/lib/generated-shop-types';
-import { FragmentOf, graphql } from './graphql/graphql-shop';
+import { FragmentOf, graphql } from './graphql/graphql-admin';
+import { FragmentOf as FragmentOfShop, ResultOf as ResultOfShop } from './graphql/graphql-shop';
 import { createChannelDocument } from './graphql/shared-definitions';
 import {
     activePaymentMethodsQueryDocument,
@@ -45,8 +45,20 @@ const minPriceChecker = new PaymentMethodEligibilityChecker({
 });
 
 describe('PaymentMethod resolver', () => {
-    const orderGuard: ErrorResultGuard<FragmentOf<typeof testOrderWithPaymentsFragment>> =
+    const orderGuard: ErrorResultGuard<FragmentOfShop<typeof testOrderWithPaymentsFragment>> =
         createErrorResultGuard(input => !!input.lines);
+
+    type PaymentMethodType = FragmentOf<typeof paymentMethodFragment>;
+    const paymentMethodGuard: ErrorResultGuard<PaymentMethodType> = createErrorResultGuard(
+        input => !!input.id,
+    );
+
+    type ActivePaymentMethodType = NonNullable<
+        ResultOfShop<typeof activePaymentMethodsQueryDocument>['activePaymentMethods'][number]
+    >;
+    const activePaymentMethodGuard: ErrorResultGuard<ActivePaymentMethodType> = createErrorResultGuard(
+        input => !!input && !!input.id,
+    );
 
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
@@ -178,7 +190,8 @@ describe('PaymentMethod resolver', () => {
         expect(updatePaymentMethod.checker).toEqual(null);
 
         const { paymentMethod } = await adminClient.query(getPaymentMethodDocument, { id: 'T_1' });
-        expect(paymentMethod!.checker).toEqual(null);
+        paymentMethodGuard.assertSuccess(paymentMethod);
+        expect(paymentMethod.checker).toEqual(null);
     });
 
     it('paymentMethodEligibilityCheckers', async () => {
@@ -283,7 +296,9 @@ describe('PaymentMethod resolver', () => {
             orderGuard.assertErrorResult(addPaymentToOrder);
 
             expect(addPaymentToOrder.errorCode).toBe(ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR);
-            expect(addPaymentToOrder.eligibilityCheckerMessage).toBe('Order total too low');
+            if ('eligibilityCheckerMessage' in addPaymentToOrder) {
+                expect(addPaymentToOrder.eligibilityCheckerMessage).toBe('Order total too low');
+            }
             expect(checkerSpy).toHaveBeenCalledTimes(1);
         });
     });
@@ -527,9 +542,11 @@ describe('PaymentMethod resolver', () => {
 
         // Assert: Ensure only the active payment method is returned
         expect(activePaymentMethods).toHaveLength(1);
-        expect(activePaymentMethods[0].code).toBe('active-method');
-        expect(activePaymentMethods[0].name).toBe('Active Method');
-        expect(activePaymentMethods[0].description).toBe('This is an active method');
+        const activeMethod = activePaymentMethods[0];
+        activePaymentMethodGuard.assertSuccess(activeMethod);
+        expect(activeMethod.code).toBe('active-method');
+        expect(activeMethod.name).toBe('Active Method');
+        expect(activeMethod.description).toBe('This is an active method');
     });
 });
 
