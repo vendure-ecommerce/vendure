@@ -6,23 +6,21 @@ import {
     E2E_DEFAULT_CHANNEL_TOKEN,
     ErrorResultGuard,
 } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { CurrencyCode, DeletionResult } from './graphql/generated-e2e-admin-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { ErrorCode } from './graphql/generated-e2e-shop-types';
+import { CurrencyCode, DeletionResult, ErrorCode } from '@vendure/common/lib/generated-shop-types';
+import { FragmentOf, graphql } from './graphql/graphql-shop';
 import { createChannelDocument } from './graphql/shared-definitions';
 import {
     activePaymentMethodsQueryDocument,
     addItemToOrderDocument,
     addPaymentDocument,
     getEligiblePaymentMethodsDocument,
+    testOrderWithPaymentsFragment,
 } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -47,9 +45,8 @@ const minPriceChecker = new PaymentMethodEligibilityChecker({
 });
 
 describe('PaymentMethod resolver', () => {
-    const orderGuard: ErrorResultGuard<CodegenShop.TestOrderWithPaymentsFragment> = createErrorResultGuard(
-        input => !!input.lines,
-    );
+    const orderGuard: ErrorResultGuard<FragmentOf<typeof testOrderWithPaymentsFragment>> =
+        createErrorResultGuard(input => !!input.lines);
 
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
@@ -74,10 +71,7 @@ describe('PaymentMethod resolver', () => {
     });
 
     it('create', async () => {
-        const { createPaymentMethod } = await adminClient.query<
-            Codegen.CreatePaymentMethodMutation,
-            Codegen.CreatePaymentMethodMutationVariables
-        >(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query(createPaymentMethodDocument, {
             input: {
                 code: 'no-checks',
                 enabled: true,
@@ -123,10 +117,7 @@ describe('PaymentMethod resolver', () => {
     });
 
     it('update', async () => {
-        const { updatePaymentMethod } = await adminClient.query<
-            Codegen.UpdatePaymentMethodMutation,
-            Codegen.UpdatePaymentMethodMutationVariables
-        >(UPDATE_PAYMENT_METHOD, {
+        const { updatePaymentMethod } = await adminClient.query(updatePaymentMethodDocument, {
             input: {
                 id: 'T_1',
                 checker: {
@@ -177,10 +168,7 @@ describe('PaymentMethod resolver', () => {
     });
 
     it('unset checker', async () => {
-        const { updatePaymentMethod } = await adminClient.query<
-            Codegen.UpdatePaymentMethodMutation,
-            Codegen.UpdatePaymentMethodMutationVariables
-        >(UPDATE_PAYMENT_METHOD, {
+        const { updatePaymentMethod } = await adminClient.query(updatePaymentMethodDocument, {
             input: {
                 id: 'T_1',
                 checker: null,
@@ -189,16 +177,14 @@ describe('PaymentMethod resolver', () => {
 
         expect(updatePaymentMethod.checker).toEqual(null);
 
-        const { paymentMethod } = await adminClient.query<
-            Codegen.GetPaymentMethodQuery,
-            Codegen.GetPaymentMethodQueryVariables
-        >(GET_PAYMENT_METHOD, { id: 'T_1' });
+        const { paymentMethod } = await adminClient.query(getPaymentMethodDocument, { id: 'T_1' });
         expect(paymentMethod!.checker).toEqual(null);
     });
 
     it('paymentMethodEligibilityCheckers', async () => {
-        const { paymentMethodEligibilityCheckers } =
-            await adminClient.query<Codegen.GetPaymentMethodCheckersQuery>(GET_PAYMENT_METHOD_CHECKERS);
+        const { paymentMethodEligibilityCheckers } = await adminClient.query(
+            getPaymentMethodCheckersDocument,
+        );
         expect(paymentMethodEligibilityCheckers).toEqual([
             {
                 code: minPriceChecker.code,
@@ -208,8 +194,7 @@ describe('PaymentMethod resolver', () => {
     });
 
     it('paymentMethodHandlers', async () => {
-        const { paymentMethodHandlers } =
-            await adminClient.query<Codegen.GetPaymentMethodHandlersQuery>(GET_PAYMENT_METHOD_HANDLERS);
+        const { paymentMethodHandlers } = await adminClient.query(getPaymentMethodHandlersDocument);
         expect(paymentMethodHandlers).toEqual([
             {
                 code: dummyPaymentHandler.code,
@@ -220,10 +205,7 @@ describe('PaymentMethod resolver', () => {
 
     describe('eligibility checks', () => {
         beforeAll(async () => {
-            await adminClient.query<
-                Codegen.CreatePaymentMethodMutation,
-                Codegen.CreatePaymentMethodMutationVariables
-            >(CREATE_PAYMENT_METHOD, {
+            await adminClient.query(createPaymentMethodDocument, {
                 input: {
                     code: 'price-check',
                     enabled: true,
@@ -244,10 +226,7 @@ describe('PaymentMethod resolver', () => {
                     ],
                 },
             });
-            await adminClient.query<
-                Codegen.CreatePaymentMethodMutation,
-                Codegen.CreatePaymentMethodMutationVariables
-            >(CREATE_PAYMENT_METHOD, {
+            await adminClient.query(createPaymentMethodDocument, {
                 input: {
                     code: 'disabled-method',
                     enabled: false,
@@ -266,10 +245,7 @@ describe('PaymentMethod resolver', () => {
             });
 
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-            await shopClient.query<
-                CodegenShop.AddItemToOrderMutation,
-                CodegenShop.AddItemToOrderMutationVariables
-            >(addItemToOrderDocument, {
+            await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -278,10 +254,7 @@ describe('PaymentMethod resolver', () => {
         });
 
         it('eligiblePaymentMethods', async () => {
-            const { eligiblePaymentMethods } =
-                await shopClient.query<CodegenShop.GetEligiblePaymentMethodsQuery>(
-                    getEligiblePaymentMethodsDocument,
-                );
+            const { eligiblePaymentMethods } = await shopClient.query(getEligiblePaymentMethodsDocument);
             expect(eligiblePaymentMethods).toEqual([
                 {
                     id: 'T_1',
@@ -300,10 +273,7 @@ describe('PaymentMethod resolver', () => {
 
         it('addPaymentToOrder does not allow ineligible method', async () => {
             checkerSpy.mockClear();
-            const { addPaymentToOrder } = await shopClient.query<
-                CodegenShop.AddPaymentToOrderMutation,
-                CodegenShop.AddPaymentToOrderMutationVariables
-            >(addPaymentDocument, {
+            const { addPaymentToOrder } = await shopClient.query(addPaymentDocument, {
                 input: {
                     method: 'price-check',
                     metadata: {},
@@ -323,42 +293,33 @@ describe('PaymentMethod resolver', () => {
         const THIRD_CHANNEL_TOKEN = 'THIRD_CHANNEL_TOKEN';
 
         beforeAll(async () => {
-            await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-                createChannelDocument,
-                {
-                    input: {
-                        code: 'second-channel',
-                        token: SECOND_CHANNEL_TOKEN,
-                        defaultLanguageCode: LanguageCode.en,
-                        currencyCode: CurrencyCode.GBP,
-                        pricesIncludeTax: true,
-                        defaultShippingZoneId: 'T_1',
-                        defaultTaxZoneId: 'T_1',
-                    },
+            await adminClient.query(createChannelDocument, {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
                 },
-            );
-            await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-                createChannelDocument,
-                {
-                    input: {
-                        code: 'third-channel',
-                        token: THIRD_CHANNEL_TOKEN,
-                        defaultLanguageCode: LanguageCode.en,
-                        currencyCode: CurrencyCode.GBP,
-                        pricesIncludeTax: true,
-                        defaultShippingZoneId: 'T_1',
-                        defaultTaxZoneId: 'T_1',
-                    },
+            });
+            await adminClient.query(createChannelDocument, {
+                input: {
+                    code: 'third-channel',
+                    token: THIRD_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
                 },
-            );
+            });
         });
 
         it('creates a PaymentMethod in channel2', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { createPaymentMethod } = await adminClient.query<
-                Codegen.CreatePaymentMethodMutation,
-                Codegen.CreatePaymentMethodMutationVariables
-            >(CREATE_PAYMENT_METHOD, {
+            const { createPaymentMethod } = await adminClient.query(createPaymentMethodDocument, {
                 input: {
                     code: 'channel-2-method',
                     enabled: true,
@@ -381,8 +342,7 @@ describe('PaymentMethod resolver', () => {
 
         it('method is listed in channel2', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { paymentMethods } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods } = await adminClient.query(getPaymentMethodListDocument);
 
             expect(paymentMethods.totalItems).toBe(1);
             expect(paymentMethods.items[0].code).toBe('channel-2-method');
@@ -390,16 +350,14 @@ describe('PaymentMethod resolver', () => {
 
         it('method is not listed in channel3', async () => {
             adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
-            const { paymentMethods } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods } = await adminClient.query(getPaymentMethodListDocument);
 
             expect(paymentMethods.totalItems).toBe(0);
         });
 
         it('method is listed in default channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { paymentMethods } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods } = await adminClient.query(getPaymentMethodListDocument);
 
             expect(paymentMethods.totalItems).toBe(4);
             expect(paymentMethods.items.map(i => i.code).sort()).toEqual([
@@ -412,36 +370,27 @@ describe('PaymentMethod resolver', () => {
 
         it('delete from channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { paymentMethods } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods } = await adminClient.query(getPaymentMethodListDocument);
 
             expect(paymentMethods.totalItems).toBe(1);
 
-            const { deletePaymentMethod } = await adminClient.query<
-                Codegen.DeletePaymentMethodMutation,
-                Codegen.DeletePaymentMethodMutationVariables
-            >(DELETE_PAYMENT_METHOD, {
+            const { deletePaymentMethod } = await adminClient.query(deletePaymentMethodDocument, {
                 id: paymentMethods.items[0].id,
             });
 
             expect(deletePaymentMethod.result).toBe(DeletionResult.DELETED);
 
-            const { paymentMethods: checkChannel } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods: checkChannel } = await adminClient.query(getPaymentMethodListDocument);
             expect(checkChannel.totalItems).toBe(0);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { paymentMethods: checkDefault } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods: checkDefault } = await adminClient.query(getPaymentMethodListDocument);
             expect(checkDefault.totalItems).toBe(4);
         });
 
         it('delete from default channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { createPaymentMethod } = await adminClient.query<
-                Codegen.CreatePaymentMethodMutation,
-                Codegen.CreatePaymentMethodMutationVariables
-            >(CREATE_PAYMENT_METHOD, {
+            const { createPaymentMethod } = await adminClient.query(createPaymentMethodDocument, {
                 input: {
                     code: 'channel-2-method2',
                     enabled: true,
@@ -460,10 +409,7 @@ describe('PaymentMethod resolver', () => {
             });
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { deletePaymentMethod: delete1 } = await adminClient.query<
-                Codegen.DeletePaymentMethodMutation,
-                Codegen.DeletePaymentMethodMutationVariables
-            >(DELETE_PAYMENT_METHOD, {
+            const { deletePaymentMethod: delete1 } = await adminClient.query(deletePaymentMethodDocument, {
                 id: createPaymentMethod.id,
             });
 
@@ -472,31 +418,23 @@ describe('PaymentMethod resolver', () => {
                 'The selected PaymentMethod is assigned to the following Channels: second-channel. Set "force: true" to delete from all Channels.',
             );
 
-            const { paymentMethods: check1 } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods: check1 } = await adminClient.query(getPaymentMethodListDocument);
             expect(check1.totalItems).toBe(5);
 
-            const { deletePaymentMethod: delete2 } = await adminClient.query<
-                Codegen.DeletePaymentMethodMutation,
-                Codegen.DeletePaymentMethodMutationVariables
-            >(DELETE_PAYMENT_METHOD, {
+            const { deletePaymentMethod: delete2 } = await adminClient.query(deletePaymentMethodDocument, {
                 id: createPaymentMethod.id,
                 force: true,
             });
 
             expect(delete2.result).toBe(DeletionResult.DELETED);
 
-            const { paymentMethods: check2 } =
-                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
+            const { paymentMethods: check2 } = await adminClient.query(getPaymentMethodListDocument);
             expect(check2.totalItems).toBe(4);
         });
     });
 
     it('create without description', async () => {
-        const { createPaymentMethod } = await adminClient.query<
-            Codegen.CreatePaymentMethodMutation,
-            Codegen.CreatePaymentMethodMutationVariables
-        >(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query(createPaymentMethodDocument, {
             input: {
                 code: 'no-description',
                 enabled: true,
@@ -542,13 +480,13 @@ describe('PaymentMethod resolver', () => {
 
     it('returns only active payment methods', async () => {
         // Cleanup: Remove all existing payment methods
-        const { paymentMethods } = await adminClient.query(GET_PAYMENT_METHOD_LIST);
+        const { paymentMethods } = await adminClient.query(getPaymentMethodListDocument);
         for (const method of paymentMethods.items) {
-            await adminClient.query(DELETE_PAYMENT_METHOD, { id: method.id, force: true });
+            await adminClient.query(deletePaymentMethodDocument, { id: method.id, force: true });
         }
 
         // Arrange: Create both enabled and disabled payment methods
-        await adminClient.query(CREATE_PAYMENT_METHOD, {
+        await adminClient.query(createPaymentMethodDocument, {
             input: {
                 code: 'active-method',
                 enabled: true,
@@ -566,7 +504,7 @@ describe('PaymentMethod resolver', () => {
             },
         });
 
-        await adminClient.query(CREATE_PAYMENT_METHOD, {
+        await adminClient.query(createPaymentMethodDocument, {
             input: {
                 code: 'inactive-method',
                 enabled: false,
@@ -595,7 +533,7 @@ describe('PaymentMethod resolver', () => {
     });
 });
 
-export const PAYMENT_METHOD_FRAGMENT = gql`
+export const paymentMethodFragment = graphql(`
     fragment PaymentMethod on PaymentMethod {
         id
         code
@@ -623,27 +561,31 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
             description
         }
     }
-`;
+`);
 
-export const CREATE_PAYMENT_METHOD = gql`
-    mutation CreatePaymentMethod($input: CreatePaymentMethodInput!) {
-        createPaymentMethod(input: $input) {
-            ...PaymentMethod
+export const createPaymentMethodDocument = graphql(
+    `
+        mutation CreatePaymentMethod($input: CreatePaymentMethodInput!) {
+            createPaymentMethod(input: $input) {
+                ...PaymentMethod
+            }
         }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
+    `,
+    [paymentMethodFragment],
+);
 
-export const UPDATE_PAYMENT_METHOD = gql`
-    mutation UpdatePaymentMethod($input: UpdatePaymentMethodInput!) {
-        updatePaymentMethod(input: $input) {
-            ...PaymentMethod
+export const updatePaymentMethodDocument = graphql(
+    `
+        mutation UpdatePaymentMethod($input: UpdatePaymentMethodInput!) {
+            updatePaymentMethod(input: $input) {
+                ...PaymentMethod
+            }
         }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
+    `,
+    [paymentMethodFragment],
+);
 
-export const GET_PAYMENT_METHOD_HANDLERS = gql`
+export const getPaymentMethodHandlersDocument = graphql(`
     query GetPaymentMethodHandlers {
         paymentMethodHandlers {
             code
@@ -653,9 +595,9 @@ export const GET_PAYMENT_METHOD_HANDLERS = gql`
             }
         }
     }
-`;
+`);
 
-export const GET_PAYMENT_METHOD_CHECKERS = gql`
+export const getPaymentMethodCheckersDocument = graphql(`
     query GetPaymentMethodCheckers {
         paymentMethodEligibilityCheckers {
             code
@@ -665,34 +607,38 @@ export const GET_PAYMENT_METHOD_CHECKERS = gql`
             }
         }
     }
-`;
+`);
 
-export const GET_PAYMENT_METHOD = gql`
-    query GetPaymentMethod($id: ID!) {
-        paymentMethod(id: $id) {
-            ...PaymentMethod
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
-
-export const GET_PAYMENT_METHOD_LIST = gql`
-    query GetPaymentMethodList($options: PaymentMethodListOptions) {
-        paymentMethods(options: $options) {
-            items {
+export const getPaymentMethodDocument = graphql(
+    `
+        query GetPaymentMethod($id: ID!) {
+            paymentMethod(id: $id) {
                 ...PaymentMethod
             }
-            totalItems
         }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
+    `,
+    [paymentMethodFragment],
+);
 
-export const DELETE_PAYMENT_METHOD = gql`
+export const getPaymentMethodListDocument = graphql(
+    `
+        query GetPaymentMethodList($options: PaymentMethodListOptions) {
+            paymentMethods(options: $options) {
+                items {
+                    ...PaymentMethod
+                }
+                totalItems
+            }
+        }
+    `,
+    [paymentMethodFragment],
+);
+
+export const deletePaymentMethodDocument = graphql(`
     mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
         deletePaymentMethod(id: $id, force: $force) {
             message
             result
         }
     }
-`;
+`);

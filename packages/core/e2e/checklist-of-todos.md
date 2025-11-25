@@ -70,7 +70,7 @@
 - [x] stock-control-multi-location.e2e-spec.ts 589
 - [x] product-prices.e2e-spec.ts 599
 - [x] draft-order.e2e-spec.ts 619
-- [ ] product-channel.e2e-spec.ts 680
+- [x] product-channel.e2e-spec.ts 680
 - [ ] payment-method.e2e-spec.ts 698
 - [ ] role.e2e-spec.ts 706
 - [ ] slug.e2e-spec.ts 724
