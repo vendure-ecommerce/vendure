@@ -72,7 +72,7 @@
 - [x] draft-order.e2e-spec.ts 619
 - [x] product-channel.e2e-spec.ts 680
 - [x] payment-method.e2e-spec.ts 698
-- [ ] role.e2e-spec.ts 706
+- [x] role.e2e-spec.ts 706
 - [ ] slug.e2e-spec.ts 724
 - [ ] settings-store.e2e-spec.ts 832
 - [ ] customer.e2e-spec.ts 835
