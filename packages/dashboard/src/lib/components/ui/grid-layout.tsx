@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { cn } from "@/vdb/lib/utils";
+import { cn } from "@/vdb/lib/utils.js";
 
 export interface GridLayout {
     x: number;
