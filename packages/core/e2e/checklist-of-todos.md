@@ -48,7 +48,7 @@
 - [x] shop-catalog.e2e-spec.ts 340
 - [ ] database-transactions.e2e-spec.ts 354
 - [ ] order-line-custom-fields.e2e-spec.ts 373
-- [ ] order-taxes.e2e-spec.ts 377
+- [x] order-taxes.e2e-spec.ts 377
 - [ ] stock-location.e2e-spec.ts 388
 - [ ] product-option.e2e-spec.ts 392
 - [x] customer-channel.e2e-spec.ts 393
