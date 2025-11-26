@@ -56,6 +56,9 @@ describe('Product resolver', () => {
     const productQueryGuard: ErrorResultGuard<NonNullable<ResultOf<typeof getProductSimpleDocument>['product']>> =
         createErrorResultGuard(input => !!input && 'id' in input);
 
+    const updateVariantGuard: ErrorResultGuard<NonNullable<ResultOf<typeof updateProductVariantsDocument>['updateProductVariants'][number]>> =
+        createErrorResultGuard(input => !!input && 'id' in input);
+
     beforeAll(async () => {
         await server.init({
             initialData,
@@ -275,10 +278,7 @@ describe('Product resolver', () => {
                 id: 'T_2',
             });
 
-            if (!product) {
-                fail('Product not found');
-                return;
-            }
+            productGuard.assertSuccess(product);
             expect(omit(product, ['variants'])).toMatchSnapshot();
             expect(product.variants.length).toBe(2);
         });
@@ -287,11 +287,7 @@ describe('Product resolver', () => {
             const result = await adminClient.query(getProductWithVariantsDocument, {
                 id: 'T_2',
             });
-
-            if (!result.product) {
-                fail('Product not found');
-                return;
-            }
+            productGuard.assertSuccess(result.product);
             expect(result.product.variants[0].price).toBe(14374);
             expect(result.product.variants[0].taxCategory).toEqual({
                 id: 'T_1',
@@ -350,71 +346,43 @@ describe('Product resolver', () => {
 
             it('en slug without translation arg', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: en_translation.slug });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(en_translation.slug);
             });
 
             it('de slug without translation arg', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: de_translation.slug });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(en_translation.slug);
             });
 
             it('en slug with translation en', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(en_translation.slug);
             });
 
             it('de slug with translation en', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(en_translation.slug);
             });
 
             it('en slug with translation de', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(de_translation.slug);
             });
 
             it('de slug with translation de', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(de_translation.slug);
             });
 
             it('de slug with translation ru', async () => {
                 const { product } = await adminClient.query(getProductSimpleDocument, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
+                productQueryGuard.assertSuccess(product);
                 expect(product.slug).toBe(en_translation.slug);
             });
         });
@@ -1293,10 +1261,7 @@ describe('Product resolver', () => {
                     ],
                 });
                 const updatedVariant = updateProductVariants[0];
-                if (!updatedVariant) {
-                    fail('no updated variant returned.');
-                    return;
-                }
+                updateVariantGuard.assertSuccess(updatedVariant);
                 expect(updatedVariant.sku).toBe('ABC');
                 expect(updatedVariant.price).toBe(432);
             });
@@ -1337,10 +1302,7 @@ describe('Product resolver', () => {
                     ],
                 });
                 const updatedVariant = result.updateProductVariants[0];
-                if (!updatedVariant) {
-                    fail('no updated variant returned.');
-                    return;
-                }
+                updateVariantGuard.assertSuccess(updatedVariant);
                 expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
                 expect(updatedVariant.featuredAsset!.id).toBe('T_2');
             });
@@ -1358,10 +1320,7 @@ describe('Product resolver', () => {
                     ],
                 });
                 const updatedVariant = result.updateProductVariants[0];
-                if (!updatedVariant) {
-                    fail('no updated variant returned.');
-                    return;
-                }
+                updateVariantGuard.assertSuccess(updatedVariant);
                 expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_4', 'T_3']);
                 expect(updatedVariant.featuredAsset!.id).toBe('T_4');
             });
@@ -1378,10 +1337,7 @@ describe('Product resolver', () => {
                     ],
                 });
                 const updatedVariant = result.updateProductVariants[0];
-                if (!updatedVariant) {
-                    fail('no updated variant returned.');
-                    return;
-                }
+                updateVariantGuard.assertSuccess(updatedVariant);
                 expect(updatedVariant.price).toBe(105);
                 expect(updatedVariant.taxCategory.id).toBe('T_2');
             });
@@ -1398,10 +1354,7 @@ describe('Product resolver', () => {
                     ],
                 });
                 const updatedVariant = result.updateProductVariants[0];
-                if (!updatedVariant) {
-                    fail('no updated variant returned.');
-                    return;
-                }
+                updateVariantGuard.assertSuccess(updatedVariant);
                 expect(updatedVariant.facetValues.length).toBe(1);
                 expect(updatedVariant.facetValues[0].id).toBe('T_1');
             });
@@ -1466,10 +1419,7 @@ describe('Product resolver', () => {
                         ],
                     });
                     const updatedVariant = updateProductVariants[0];
-                    if (!updatedVariant) {
-                        fail('no updated variant returned.');
-                        return;
-                    }
+                    updateVariantGuard.assertSuccess(updatedVariant);
                     expect(updatedVariant.sku).toBe('ABC');
                     expect(updatedVariant.price).toBe(432);
                 });
@@ -1874,11 +1824,7 @@ describe('Product resolver', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/800
         it('product can be fetched by slug of a deleted product', async () => {
             const { product } = await adminClient.query(getProductSimpleDocument, { slug: productToDelete.slug });
-
-            if (!product) {
-                fail('Product not found');
-                return;
-            }
+            productQueryGuard.assertSuccess(product);
             expect(product.slug).toBe(productToDelete.slug);
         });
     });
