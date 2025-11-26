@@ -38,7 +38,7 @@ msgstr "Rozšíření dotazu je neplatné: musí obsahovat alespoň jedno pole n
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:47
 msgid "Query extension mismatch: "
-msgstr "Nesoulad rozšíření dotazu:"
+msgstr "Nesoulad rozšíření dotazu: "
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:49
@@ -48,7 +48,7 @@ msgstr "Rozšíření dotazu obsahuje neplatnou syntaxi GraphQL"
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
-msgstr "Chyba rozšíření dotazu:"
+msgstr "Chyba rozšíření dotazu: "
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
