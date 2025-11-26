@@ -4917,7 +4917,7 @@ msgstr "Când este activat, o promoție este disponibilă în magazin"
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
 msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
-msgstr "Când este activat, prețurile introduse în catalogul de produse prețurile din catalogul de produse vor include taxa pentru zona de impozitare implicită."
+msgstr "Când este activat, prețurile introduse în catalogul de produse vor include taxa pentru zona de impozitare implicită."
 
 #: src/app/routes/_authenticated/_global-settings/global-settings.tsx:146
 msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
