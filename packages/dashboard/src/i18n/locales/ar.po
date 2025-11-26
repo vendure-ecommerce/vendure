@@ -38,7 +38,7 @@ msgstr "توسيع الاستعلام غير صالح: يجب أن يحتوي ع
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:47
 msgid "Query extension mismatch: "
-msgstr "عدم تطابق توسيع الاستعلام:"
+msgstr "عدم تطابق توسيع الاستعلام: "
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:49
@@ -48,7 +48,7 @@ msgstr "يحتوي توسيع الاستعلام على صيغة GraphQL غير 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
-msgstr "خطأ في توسيع الاستعلام:"
+msgstr "خطأ في توسيع الاستعلام: "
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
