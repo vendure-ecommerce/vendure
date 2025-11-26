@@ -79,7 +79,7 @@ msgstr "Система"
 
 #. js-lingui-explicit-id
 msgid "Job Queue"
-msgstr "Опашка за работа"
+msgstr "Опашка от задачи"
 
 #. js-lingui-explicit-id
 msgid "Healthchecks"
@@ -159,9 +159,7 @@ msgstr "Неуспешно разширяване на документа за �
 
 #. js-lingui-explicit-id
 msgid "Query extension is invalid: must have at least one top-level field"
-msgstr ""
-"Разширението на заявката е невалидно: трябва да има поне едно поле от най-"
-"високо ниво"
+msgstr "Разширението на заявката е невалидно: трябва да има поне едно поле от най-високо ниво"
 
 #. js-lingui-explicit-id
 msgid "Query extension mismatch: "
@@ -630,12 +628,8 @@ msgstr "<0>Забравена парола?</0><1>Искане за нулира
 msgid "="
 msgstr "="
 
-msgid ""
-"A refund of {formattedDiff} is required. Select payment amounts and enter a "
-"note to proceed."
-msgstr ""
-"Изисква се възстановяване на сума от {formattedDiff}. Изберете суми за "
-"плащане и въведете бележка, за да продължите."
+msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
+msgstr "Изисква се възстановяване на сума от {formattedDiff}. Изберете суми за плащане и въведете бележка, за да продължите."
 
 msgid "Actions"
 msgstr "Действия"
@@ -836,9 +830,7 @@ msgid "Apply filter"
 msgstr "Приложи филтър"
 
 msgid "Apply filters to the table and click \"Save View\" to get started."
-msgstr ""
-"Приложете филтри към таблицата и щракнете върху „Запазване на изгледа“, за "
-"да започнете."
+msgstr "Приложете филтри към таблицата и щракнете върху \"Запазване на изгледа\", за да започнете."
 
 #. placeholder {0}: selection.length
 msgid "Are you sure you want to delete {0} {entityName}?"
@@ -853,40 +845,24 @@ msgstr "Сигурни ли сте, че искате да изтриете то
 msgid "Are you sure you want to delete this draft order?"
 msgstr "Сигурни ли сте, че искате да изтриете тази чернова на поръчка?"
 
-msgid ""
-"Are you sure you want to delete this global view? This action cannot be "
-"undone and will affect all users."
-msgstr ""
-"Сигурни ли сте, че искате да изтриете този глобален изглед? Това действие не"
-" може да бъде отменено и ще засегне всички потребители."
+msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
+msgstr Сигурни ли сте, че искате да изтриете този глобален изглед? Това действие не може да бъде отменено и ще засегне всички потребители."
 
-msgid ""
-"Are you sure you want to delete this item? This action cannot be undone."
-msgstr ""
-"Сигурни ли сте, че искате да изтриете този елемент? Това действие не може да"
-" бъде отменено."
+msgid "Are you sure you want to delete this item? This action cannot be undone."
+msgstr Сигурни ли сте, че искате да изтриете този елемент? Това действие не може да бъде отменено."
 
 msgid "Are you sure you want to delete this variant?"
 msgstr "Сигурни ли сте, че искате да изтриете този вариант?"
 
-msgid ""
-"Are you sure you want to delete this view? This action cannot be undone."
-msgstr ""
-"Сигурни ли сте, че искате да изтриете този изглед? Това действие не може да "
-"бъде отменено."
+msgid "Are you sure you want to delete this view? This action cannot be undone."
+msgstr Сигурни ли сте, че искате да изтриете този изглед? Това действие не може да бъде отменено."
 
-msgid ""
-"Are you sure you want to navigate away from this page? Any unsaved changes "
-"will be lost."
-msgstr ""
-"Сигурни ли сте, че искате да излезете от тази страница? Всички незапазени "
-"промени ще бъдат загубени."
+msgid Are you sure you want to navigate away from this page? Any unsaved changes will be lost."
+msgstr Сигурни ли сте, че искате да излезете от тази страница? Всички незапазени промени ще бъдат загубени."
 
 #. placeholder {0}: selection.length
-msgid ""
-"Are you sure you want to remove {0} {entityType} from the current channel?"
-msgstr ""
-"Сигурни ли сте, че искате да премахнете {0} {entityType} от текущия канал?"
+msgid Are you sure you want to remove {0} {entityType} from the current channel?"
+msgstr Сигурни ли сте, че искате да премахнете {0} {entityType} от текущия канал?"
 
 msgid "Assets"
 msgstr "Медия"
@@ -944,7 +920,7 @@ msgid "Billing address unset for order"
 msgstr "Адресът за фактуриране не е зададен за поръчка"
 
 msgid "Browse facets"
-msgstr "Преглед на фасети"
+msgstr "Преглед на атрибути"
 
 msgid "Calculator"
 msgstr "Калкулатор"
@@ -1098,7 +1074,7 @@ msgid "Current"
 msgstr "Текущ"
 
 msgid "Current facet values"
-msgstr "Текущи фасетни стойности"
+msgstr "Текущи атрибутни стойности"
 
 msgid "Current status"
 msgstr "Текущо състояние"
@@ -1221,7 +1197,7 @@ msgid "Description (alt)"
 msgstr "Описание (алт)"
 
 msgid "Dev Mode"
-msgstr "Режим Dev"
+msgstr "Режим за разработка"
 
 msgid "Disable"
 msgstr "Деактивиране"
@@ -1242,7 +1218,7 @@ msgid "does not contain"
 msgstr "не съдържа"
 
 msgid "Draft order"
-msgstr "Проект на заповед"
+msgstr "Чернова на поръчка"
 
 msgid "Draft order completed"
 msgstr "Проектът на поръчката е завършен"
@@ -1284,7 +1260,7 @@ msgid "Edit asset"
 msgstr "Редакция на актив"
 
 msgid "Edit facet values"
-msgstr "Редактирайте стойностите на фасетите"
+msgstr "Редактирайте стойностите на атрибутите"
 
 msgid "Edit image"
 msgstr "Редакция на изображението"
@@ -1305,7 +1281,7 @@ msgid "Edit or delete existing tags"
 msgstr "Редактирайте или изтрийте съществуващи тагове"
 
 msgid "Edit slug manually"
-msgstr "Редактирайте охлюва ръчно"
+msgstr "Редактирайте slug ръчно"
 
 msgid "Edit the address details below."
 msgstr "Редактирайте подробностите за адреса по-долу."
@@ -1341,9 +1317,7 @@ msgid "Enter slug manually"
 msgstr "Въведете slug ръчно"
 
 msgid "Enter the transaction ID for this refund settlement"
-msgstr ""
-"Въведете идентификатора на транзакцията за това споразумение за "
-"възстановяване"
+msgstr Въведете идентификатора на транзакцията за това споразумение за възстановяване"
 
 msgid "Enter transaction ID"
 msgstr "Въведете ID на транзакцията"
@@ -1387,19 +1361,19 @@ msgid "Explore Enterprise Edition"
 msgstr "Разгледайте Enterprise Edition"
 
 msgid "Facet"
-msgstr "Фасет"
+msgstr "Атрибут"
 
 msgid "Facet values"
-msgstr "Фасетни стойности"
+msgstr "Атрибутни стойности"
 
 msgid "Facet Values"
-msgstr "Фасетни стойности"
+msgstr "Атрибутни стойности"
 
 msgid "Facet values for {facetName}"
 msgstr "Стойности на аспекти за {facetName}"
 
 msgid "Facets"
-msgstr "Фасети"
+msgstr "Атрибути"
 
 msgid "Failed to add customer to group"
 msgstr "Неуспешно добавяне на клиент към групата"
@@ -1534,7 +1508,7 @@ msgid "Failed to remove customer from group"
 msgstr "Неуспешно премахване на клиент от групата"
 
 msgid "Failed to remove facet from channel: {message}"
-msgstr "Неуспешно премахване на фасет от канала: {message}"
+msgstr "Неуспешно премахване на атрибут от канала: {message}"
 
 msgid "Failed to rename global view"
 msgstr "Неуспешно преименуване на глобалния изглед"
@@ -1636,7 +1610,7 @@ msgid "Failed to update zone"
 msgstr "Неуспешно актуализиране на зоната"
 
 msgid "False"
-msgstr "Невярно"
+msgstr "Грешно"
 
 msgid "Filter by {columnId}"
 msgstr "Филтриране по {columnId}"
@@ -1712,10 +1686,10 @@ msgid "Full Name"
 msgstr "Пълно име"
 
 msgid "General"
-msgstr "генерал"
+msgstr "Общи"
 
 msgid "Generate slug automatically"
-msgstr "Автоматично генериране на охлюв"
+msgstr "Автоматично генериране на slug"
 
 msgid "Global Languages"
 msgstr "Глобални езици"
@@ -1739,16 +1713,16 @@ msgid "Global view renamed successfully"
 msgstr "Глобалният изглед е преименуван успешно"
 
 msgid "Go to first page"
-msgstr "Отидете на първа страница"
+msgstr "Към първа страница"
 
 msgid "Go to last page"
-msgstr "Отидете на последната страница"
+msgstr "Към последната страница"
 
 msgid "Go to next page"
-msgstr "Отидете на следващата страница"
+msgstr "Към следващата страница"
 
 msgid "Go to previous page"
-msgstr "Отидете на предишната страница"
+msgstr "Към предишната страница"
 
 msgid "greater than"
 msgstr "по-голямо от"
@@ -1795,12 +1769,8 @@ msgstr "ID"
 msgid "Identifier"
 msgstr "Идентификатор"
 
-msgid ""
-"If enabled, the filters will be inherited from the parent collection and "
-"combined with the filters set on this collection."
-msgstr ""
-"Ако е разрешено, филтрите ще бъдат наследени от родителската колекция и "
-"комбинирани с филтрите, зададени в тази колекция."
+msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
+msgstr "Ако е разрешено, филтрите ще бъдат наследени от родителската колекция и комбинирани с филтрите, зададени в тази колекция."
 
 msgid "Image"
 msgstr "Изображение"
@@ -1821,7 +1791,7 @@ msgid "Insert link"
 msgstr "Вмъкване на връзка"
 
 msgid "Insights"
-msgstr "Прозрения"
+msgstr "Анализи"
 
 msgid "is after"
 msgstr "е след"
@@ -1866,10 +1836,10 @@ msgid "Item added to order"
 msgstr "Артикулът е добавен към поръчката"
 
 msgid "Job Queue"
-msgstr "Опашка за работа"
+msgstr "Опашка от задачи"
 
 msgid "Language"
-msgstr "език"
+msgstr "Език"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
 msgid "Language: {0}"
@@ -1907,7 +1877,7 @@ msgid "less than or equal"
 msgstr "по-малко или равно"
 
 msgid "Light"
-msgstr "светлина"
+msgstr "Светло"
 
 msgid "Link href"
 msgstr "Линк href"
@@ -1919,7 +1889,7 @@ msgid "Link title"
 msgstr "Заглавие на връзката"
 
 msgid "Load more"
-msgstr "Заредете повече"
+msgstr "Зареди още"
 
 msgid "Loading addresses..."
 msgstr "Адресите се зареждат..."
@@ -1931,7 +1901,7 @@ msgid "Loading global settings..."
 msgstr "Глобалните настройки се зареждат..."
 
 msgid "Loading preview…"
-msgstr "Визуализацията се зарежда..."
+msgstr "Зареждане на прегледа..."
 
 msgid "Loading tags..."
 msgstr "Таговете се зареждат..."
@@ -1940,18 +1910,16 @@ msgid "Loading..."
 msgstr "Зареждане..."
 
 msgid "Locale"
-msgstr "локал"
+msgstr "Локализация"
 
 msgid "Log out"
-msgstr "Излезте"
+msgstr "Изход"
 
 msgid "Make Global"
 msgstr "Направи глобален"
 
 msgid "Manage global saved views that are visible to all users"
-msgstr ""
-"Управлявайте глобални запазени изгледи, които са видими за всички "
-"потребители"
+msgstr "Управлявайте глобални запазени изгледи, които са видими за всички потребители"
 
 msgid "Manage global views"
 msgstr "Управлявайте глобалните изгледи"
@@ -2008,7 +1976,7 @@ msgid "More views"
 msgstr "Още гледания"
 
 msgid "Move"
-msgstr "Движи се"
+msgstr "Премести"
 
 msgid "Move Collections"
 msgstr "Преместване на колекции"
@@ -2082,7 +2050,7 @@ msgid "New Facet"
 msgstr "Нов аспект"
 
 msgid "New facet value"
-msgstr "Нова стойност на фасет"
+msgstr "Нова стойност на атрибут"
 
 msgid "New facet values to add:"
 msgstr "Нови стойности на аспекти за добавяне:"
@@ -2193,11 +2161,10 @@ msgid "No duplicator found with code \"{duplicatorCode}\" for {entityName}s"
 msgstr "Не е намерен дубликатор с код „{duplicatorCode}“ за {entityName}s"
 
 msgid "No eligible shipping methods found for this order."
-msgstr ""
-"Не са намерени отговарящи на условията методи за доставка за тази поръчка."
+msgstr "Не са намерени отговарящи на условията методи за доставка за тази поръчка."
 
 msgid "No facet values"
-msgstr "Няма фасетни стойности"
+msgstr "Няма атрибутни стойности"
 
 msgid "No fulfillments"
 msgstr "Без изпълнения"
@@ -2223,12 +2190,8 @@ msgstr "Без повече аспекти"
 msgid "No more items"
 msgstr "Няма повече елементи"
 
-msgid ""
-"No option groups defined yet. Add option groups to create different variants"
-" of your product (e.g., Size, Color, Material)"
-msgstr ""
-"Все още няма дефинирани групи опции. Добавете групи опции, за да създадете "
-"различни варианти на вашия продукт (напр. размер, цвят, материал)"
+msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
+msgstr Все още няма дефинирани групи опции. Добавете групи опции, за да създадете различни варианти на вашия продукт (напр. размер, цвят, материал)"
 
 msgid "No payment or refund is required for these changes."
 msgstr "Не се изисква плащане или възстановяване на средства за тези промени."
@@ -2268,7 +2231,7 @@ msgid "No translation found for {0}"
 msgstr "Няма намерен превод за {0}"
 
 msgid "Normal"
-msgstr "нормално"
+msgstr "Нормално"
 
 msgid "not in"
 msgstr "не в"
@@ -2292,7 +2255,7 @@ msgid "Old email:"
 msgstr "Стар имейл:"
 
 msgid "Option"
-msgstr "опция"
+msgstr "Опция"
 
 #. placeholder {0}: groupIndex + 1
 msgid "Option group {0}"
@@ -2317,7 +2280,7 @@ msgid "Option value name"
 msgstr "Име на стойността на опцията"
 
 msgid "Option values"
-msgstr "Опционални стойности"
+msgstr "Стойности на опциите"
 
 msgid "Option Values"
 msgstr "Стойности на опциите"
@@ -2439,10 +2402,10 @@ msgid "Payment Methods"
 msgstr "Начини на плащане"
 
 msgid "Payment settled"
-msgstr "Плащането е уредено"
+msgstr "Плащането е приключено"
 
 msgid "Payment settled successfully"
-msgstr "Плащането е уредено успешно"
+msgstr "Плащането е приключено успешно"
 
 msgid "Payment state updated successfully"
 msgstr "Състоянието на плащането е актуализирано успешно"
@@ -2457,7 +2420,7 @@ msgid "Permissions"
 msgstr "Разрешения"
 
 msgid "Phone number"
-msgstr "телефонен номер"
+msgstr "Телефонен номер"
 
 msgid "Phone Number"
 msgstr "Телефонен номер"
@@ -2466,9 +2429,7 @@ msgid "Placed At"
 msgstr "Поставен при"
 
 msgid "Please add products and complete the shipping address to run the test."
-msgstr ""
-"Моля, добавете продукти и попълнете адреса за доставка, за да стартирате "
-"теста."
+msgstr "Моля, добавете продукти и попълнете адреса за доставка, за да стартирате теста."
 
 msgid "Please select a target collection"
 msgstr "Моля, изберете целева колекция"
@@ -2483,7 +2444,7 @@ msgid "Preview changes"
 msgstr "Преглед на промените"
 
 msgid "Preview order modifications"
-msgstr "Визуализация на модификациите на поръчката"
+msgstr "Преглед на модификациите на поръчката"
 
 msgid "Price"
 msgstr "Цена"
@@ -2546,7 +2507,7 @@ msgid "Queue"
 msgstr "Опашка"
 
 msgid "Rate"
-msgstr "Оценете"
+msgstr "Ставка"
 
 msgid "Reason"
 msgstr "Причина"
@@ -2575,10 +2536,10 @@ msgid "Refund required"
 msgstr "Изисква се възстановяване"
 
 msgid "Refund settled"
-msgstr "Възстановяването е уредено"
+msgstr "Възстановяването е приключено"
 
 msgid "Refund settled successfully"
-msgstr "Възстановяването е уредено успешно"
+msgstr "Възстановяването е приключено успешно"
 
 msgid "Refund transitioned"
 msgstr "Възстановяването е прехвърлено"
@@ -2588,7 +2549,7 @@ msgid "Refunds ({0})"
 msgstr "Възстановявания на средства ({0})"
 
 msgid "Regenerate slug from source field"
-msgstr "Регенерирайте охлюв от изходното поле"
+msgstr "Регенерирайте slug от изходното поле"
 
 msgid "Regions"
 msgstr "Региони"
@@ -2640,13 +2601,13 @@ msgid "Rows per page"
 msgstr "Редове на страница"
 
 msgid "Run"
-msgstr "Бягай"
+msgstr "Старирай"
 
 msgid "Run Test"
 msgstr "Изпълнете тест"
 
 msgid "Running"
-msgstr "бягане"
+msgstr "В процес"
 
 msgid "Same window"
 msgstr "Същият прозорец"
@@ -2658,9 +2619,7 @@ msgid "Save"
 msgstr "Запазване"
 
 msgid "Save a view as \"Global\" to make it available to all users."
-msgstr ""
-"Запазете изглед като „Глобален“, за да го направите достъпен за всички "
-"потребители."
+msgstr "Запазете изглед като „Глобален“, за да го направите достъпен за всички потребители."
 
 msgid "Save Address"
 msgstr "Запазване на адреса"
@@ -2808,9 +2767,7 @@ msgid "Select next state"
 msgstr "Изберете следващо състояние"
 
 msgid "Select quantities to fulfill and configure the fulfillment handler"
-msgstr ""
-"Изберете количества за изпълнение и конфигурирайте манипулатора за "
-"изпълнение"
+msgstr "Изберете количества за изпълнение и конфигурирайте манипулатора за изпълнение"
 
 msgid "Select seller"
 msgstr "Изберете продавач"
@@ -2847,34 +2804,20 @@ msgid "Set link"
 msgstr "Задайте връзка"
 
 msgid ""
-"Sets the languages that are available for all channels. Individual channels "
-"can then support a subset of these languages."
-msgstr ""
-"Задава езиците, които са налични за всички канали. След това отделните "
-"канали могат да поддържат подгрупа от тези езици."
+"Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
+msgstr "Задава езиците, които са налични за всички канали. След това отделните канали могат да поддържат подгрупа от тези езици."
 
-msgid ""
-"Sets the stock level at which this a variant is considered to be out of "
-"stock. Using a negative value enables backorder support. Can be overridden "
-"by product variants."
-msgstr ""
-"Задава нивото на наличност, при което този вариант се счита за изчерпан. "
-"Използването на отрицателна стойност позволява поддръжка на резервни "
-"поръчки. Може да се замени от варианти на продукта."
+msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
+msgstr "Задава нивото на наличност, при което този вариант се счита за изчерпан. Използването на отрицателна стойност позволява поддръжка на резервни поръчки. Може да се замени от варианти на продукта."
 
-msgid ""
-"Sets the stock level at which this variant is considered to be out of stock."
-" Using a negative value enables backorder support."
-msgstr ""
-"Задава нивото на наличност, при което този вариант се счита за изчерпан. "
-"Използването на отрицателна стойност позволява поддръжка на резервни "
-"поръчки."
+msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
+msgstr "Задава нивото на наличност, при което този вариант се счита за изчерпан. Използването на отрицателна стойност позволява поддръжка на резервни поръчки."
 
 msgid "Settle payment"
-msgstr "Уреди плащане"
+msgstr "Приклюи плащане"
 
 msgid "Settle refund"
-msgstr "Уреждане на възстановяване"
+msgstr "Приключи възстановяване"
 
 msgid "Shipping"
 msgstr "Доставка"
@@ -2910,7 +2853,7 @@ msgid "Shipping Methods"
 msgstr "Методи за доставка"
 
 msgid "Short date"
-msgstr "Кратка среща"
+msgstr "Кратка дата"
 
 msgid "Show password"
 msgstr "Покажи парола"
@@ -2920,7 +2863,7 @@ msgid "Showing all {0} results"
 msgstr "Показани са всички {0} резултати"
 
 msgid "Sign in"
-msgstr "влезте"
+msgstr "Вход"
 
 msgid "Sign in to access the admin dashboard"
 msgstr "Влезте за достъп до администраторското табло"
@@ -2929,10 +2872,10 @@ msgid "SKU"
 msgstr "SKU"
 
 msgid "Slug"
-msgstr "охлюв"
+msgstr "Slug"
 
 msgid "Slug is set"
-msgstr "Охлювът е настроен"
+msgstr "Slug е настроен"
 
 msgid "Slug will be generated automatically..."
 msgstr "Slug ще се генерира автоматично..."
@@ -2947,13 +2890,13 @@ msgid "Starts at"
 msgstr "Започва в"
 
 msgid "State"
-msgstr "състояние"
+msgstr "Състояние"
 
 msgid "State / Province"
-msgstr "Щат / провинция"
+msgstr "Област / провинция"
 
 msgid "State/Province"
-msgstr "Щат/провинция"
+msgstr "Област/провинция"
 
 msgid "Status"
 msgstr "Статус"
@@ -2986,7 +2929,7 @@ msgid "Street Address 2"
 msgstr "Улица 2"
 
 msgid "Sub total"
-msgstr "Междинен сбор"
+msgstr "Междинна сума"
 
 msgid "Subtotal"
 msgstr "Междинна сума"
@@ -3019,7 +2962,7 @@ msgid "Successfully created customer group"
 msgstr "Успешно създадена клиентска група"
 
 msgid "Successfully created facet"
-msgstr "Фасетът е създаден успешно"
+msgstr "Атрибутът е създаден успешно"
 
 msgid "Successfully created facet value"
 msgstr "Успешно създадена стойност на аспекта"
@@ -3079,7 +3022,7 @@ msgid "Successfully removed {selectionLength} {entityType} from channel"
 msgstr "Успешно премахна {selectionLength} {entityType} от канала"
 
 msgid "Successfully removed {successCount} facets from channel"
-msgstr "Успешно премахнати {successCount} фасети от канала"
+msgstr "Успешно премахнати {successCount} атрибути от канала"
 
 msgid "Successfully updated administrator"
 msgstr "Успешно актуализиран администратор"
@@ -3109,8 +3052,7 @@ msgid "Successfully updated facet value"
 msgstr "Успешно актуализирана стойност на аспекта"
 
 msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
-msgstr ""
-"Успешно актуализирани стойности на фасети за {entityIdsLength} {entityType}"
+msgstr "Успешно актуализирани стойности на атрибути за {entityIdsLength} {entityType}"
 
 msgid "Successfully updated global settings"
 msgstr "Успешно актуализирани глобални настройки"
@@ -3203,9 +3145,7 @@ msgid "Test"
 msgstr "Тест"
 
 msgid "Test data has been updated. Click \"Run Test\" to see updated results."
-msgstr ""
-"Данните от теста са актуализирани. Щракнете върху „Изпълни тест“, за да "
-"видите актуализирани резултати."
+msgstr "Данните от теста са актуализирани. Щракнете върху „Изпълни тест“, за да видите актуализирани резултати."
 
 msgid "Test Order"
 msgstr "Тестова поръчка"
@@ -3214,17 +3154,13 @@ msgid "Test Results"
 msgstr "Резултати от теста"
 
 msgid "Test Shipping Method"
-msgstr "Метод на тестване на доставка"
+msgstr "Тестване на метод за доставка"
 
 msgid "Test shipping methods"
-msgstr "Тествайте методите за доставка"
+msgstr "Тестване методите за доставка"
 
-msgid ""
-"Test this shipping method by simulating an order to see if it's eligible and"
-" what the shipping cost would be."
-msgstr ""
-"Тествайте този метод на доставка, като симулирате поръчка, за да видите дали"
-" отговаря на условията и каква ще бъде цената за доставка."
+msgid "Test this shipping method by simulating an order to see if it's eligible and what the shipping cost would be."
+msgstr "Тествайте този метод на доставка, като симулирате поръчка, за да видите дали отговаря на условията и каква ще бъде цената за доставка."
 
 msgid "Test your shipping methods by simulating a new order."
 msgstr "Тествайте вашите методи за доставка, като симулирате нова поръчка."
@@ -3239,29 +3175,25 @@ msgid "The data that has been passed to the job"
 msgstr "Данните, които са предадени на заданието"
 
 msgid "The result of the job"
-msgstr "Резултатът от работата"
+msgstr "Резултатът от задачата"
 
 msgid "The selected permissions will be applied to the these channels."
 msgstr "Избраните разрешения ще бъдат приложени към тези канали."
 
 msgid "The token is used to specify the channel when making API requests."
-msgstr ""
-"Токенът се използва за указване на канала, когато се правят заявки за API."
+msgstr "Токенът се използва за указване на канала, когато се правят заявки за API."
 
 msgid "The variant could not be added. Ensure the parent product is enabled."
-msgstr ""
-"Вариантът не можа да бъде добавен. Уверете се, че родителският продукт е "
-"активиран."
+msgstr "Вариантът не можа да бъде добавен. Уверете се, че родителският продукт е активиран."
 
 msgid "Theme"
 msgstr "Тема"
 
-msgid ""
-"These are the customers in the <0>{customerGroupName}</0> customer group."
+msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
 msgstr "Това са клиентите в групата клиенти <0>{customerGroupName}</0>."
 
 msgid "These are the facet values for the <0>{facetName}</0> facet."
-msgstr "Това са стойностите на фасета за фасета <0>{facetName}</0>."
+msgstr "Това са стойностите на атрибута за атрибута <0>{facetName}</0>."
 
 msgid "These languages will be available for all channels to use"
 msgstr "Тези езици ще бъдат достъпни за използване от всички канали"
@@ -3269,14 +3201,8 @@ msgstr "Тези езици ще бъдат достъпни за използв
 msgid "This is a default Role and cannot be modified"
 msgstr "Това е роля по подразбиране и не може да се променя"
 
-msgid ""
-"This is a preview of the collection contents based on the current filter "
-"settings. Once you save the collection, the contents will be updated to "
-"reflect the new filter settings."
-msgstr ""
-"Това е визуализация на съдържанието на колекцията въз основа на текущите "
-"настройки на филтъра. След като запазите колекцията, съдържанието ще бъде "
-"актуализирано, за да отрази новите настройки на филтъра."
+msgid "This is a preview of the collection contents based on the current filter settings. Once you save the collection, the contents will be updated to reflect the new filter settings."
+msgstr "Това е визуализация на съдържанието на колекцията въз основа на текущите настройки на филтъра. След като запазите колекцията, съдържанието ще бъде актуализирано, за да отрази новите настройки на филтъра."
 
 msgid "This is the contents of the <0>{collectionName}</0> collection."
 msgstr "Това е съдържанието на колекцията <0>{collectionName}</0>."
@@ -3284,19 +3210,11 @@ msgstr "Това е съдържанието на колекцията <0>{colle
 msgid "This month"
 msgstr "Този месец"
 
-msgid ""
-"This product has existing variants but no option groups defined. You need to"
-" add option groups before creating new variants."
-msgstr ""
-"Този продукт има съществуващи варианти, но няма дефинирани групи опции. "
-"Трябва да добавите групи опции, преди да създадете нови варианти."
+msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
+msgstr "Този продукт има съществуващи варианти, но няма дефинирани групи опции. Трябва да добавите групи опции, преди да създадете нови варианти."
 
-msgid ""
-"This shipping method's eligibility checker conditions are not met for the "
-"current order and shipping address."
-msgstr ""
-"Условията за проверка на допустимостта на този метод на доставка не са "
-"изпълнени за текущата поръчка и адрес за доставка."
+msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
+msgstr "Условията за проверка на допустимостта на този метод на доставка не са изпълнени за текущата поръчка и адрес за доставка."
 
 msgid "This week"
 msgstr "Тази седмица"
@@ -3332,7 +3250,7 @@ msgid "Total Revenue"
 msgstr "Общи приходи"
 
 msgid "Track"
-msgstr "Писта"
+msgstr "Проследяване"
 
 msgid "Track inventory by default"
 msgstr "Проследяване на инвентара по подразбиране"
@@ -3359,7 +3277,7 @@ msgid "Transition to selected state"
 msgstr "Преход към избрано състояние"
 
 msgid "True"
-msgstr "вярно"
+msgstr "Вярно"
 
 msgid "Type at least 2 characters to search..."
 msgstr "Въведете поне 2 знака за търсене..."
@@ -3398,12 +3316,10 @@ msgid "Use global out-of-stock threshold"
 msgstr "Използвайте глобалния праг за изчерпване"
 
 msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
-msgstr ""
-"useWidgetDimensions трябва да се използва в рамките на DashboardBaseWidget"
+msgstr "useWidgetDimensions трябва да се използва в рамките на DashboardBaseWidget"
 
 msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
-msgstr ""
-"useWidgetFilters трябва да се използва в рамките на WidgetFiltersProvider"
+msgstr "useWidgetFilters трябва да се използва в рамките на WidgetFiltersProvider"
 
 msgid "Using external authentication strategy: {strategy}"
 msgstr "Използване на външна стратегия за удостоверяване: {strategy}"
@@ -3412,7 +3328,7 @@ msgid "Using native authentication strategy"
 msgstr "Използване на собствена стратегия за удостоверяване"
 
 msgid "Values"
-msgstr "Ценности"
+msgstr "Стойности"
 
 msgid "Variant"
 msgstr "Вариант"
@@ -3433,37 +3349,37 @@ msgid "Verified"
 msgstr "Проверен"
 
 msgid "View changes"
-msgstr "Вижте промените"
+msgstr "Виж промените"
 
 msgid "View converted to global successfully"
 msgstr "Изгледът е успешно преобразуван в глобален"
 
 msgid "View data"
-msgstr "Преглед на данни"
+msgstr "Виж данни"
 
 msgid "View deleted successfully"
 msgstr "Изгледът е изтрит успешно"
 
 msgid "View details"
-msgstr "Вижте подробности"
+msgstr "Виж подробности"
 
 msgid "View duplicated successfully"
 msgstr "Прегледът е дублиран успешно"
 
 msgid "View job data"
-msgstr "Вижте данните за работа"
+msgstr "Виж данните за задачата"
 
 msgid "View job result"
-msgstr "Вижте резултата от работата"
+msgstr "Виж резултата от задачата"
 
 msgid "View renamed successfully"
 msgstr "Изгледът е преименуван успешно"
 
 msgid "View result"
-msgstr "Вижте резултата"
+msgstr "Виж резултата"
 
 msgid "View values"
-msgstr "Преглед на стойности"
+msgstr "Виж стойности"
 
 msgid "Visibility"
 msgstr "Видимост"
@@ -3475,7 +3391,7 @@ msgid "Visible to customer"
 msgstr "Видимо за клиента"
 
 msgid "Welcome to Vendure"
-msgstr "Добре дошли във Vendre"
+msgstr "Добре дошли във Venudre"
 
 msgid "When enabled, a product is available in the shop"
 msgstr "Когато е активирано, даден продукт е наличен в магазина"
@@ -3483,26 +3399,17 @@ msgstr "Когато е активирано, даден продукт е на�
 msgid "When enabled, a promotion is available in the shop"
 msgstr "Когато е активирано, в магазина е налична промоция"
 
-msgid ""
-"When this is enabled, the prices entered in the product catalog will be "
-"included in the tax for the default tax zone."
-msgstr ""
-"Когато това е разрешено, цените, въведени в продуктовия каталог, ще бъдат "
-"включени в данъка за данъчната зона по подразбиране."
+msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
+msgstr "Когато това е разрешено, цените, въведени в продуктовия каталог, ще бъдат включени в данъка за данъчната зона по подразбиране."
 
-msgid ""
-"When tracked, product variant stock levels will be automatically adjusted "
-"when sold. This setting can be overridden by individual product variants."
-msgstr ""
-"Когато се проследяват, нивата на складови наличности на варианти на продукта"
-" ще бъдат автоматично коригирани при продажба. Тази настройка може да бъде "
-"заменена от отделни варианти на продукта."
+msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
+msgstr "Когато се проследяват, нивата на складови наличности на варианти на продукта ще бъдат автоматично коригирани при продажба. Тази настройка може да бъде заменена от отделни варианти на продукта."
 
 msgid "Width"
-msgstr "ширина"
+msgstr "Ширина"
 
 msgid "With selected..."
-msgstr "С избрани..."
+msgstr "С избраните..."
 
 msgid "Yesterday"
 msgstr "Вчера"
