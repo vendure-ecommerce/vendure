@@ -38,7 +38,7 @@ msgstr "گسترش پرس‌وجو نامعتبر است: باید حداقل ی
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:47
 msgid "Query extension mismatch: "
-msgstr "عدم تطابق گسترش پرس‌وجو:"
+msgstr "عدم تطابق گسترش پرس‌وجو: "
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:49
@@ -48,7 +48,7 @@ msgstr "گسترش پرس‌وجو حاوی نحو نامعتبر GraphQL است
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
-msgstr "خطای گسترش پرس‌وجو:"
+msgstr "خطای گسترش پرس‌وجو: "
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
