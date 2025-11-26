@@ -78,20 +78,20 @@ function TargetAlert({
                     selectedCollectionId === topLevelCollectionId ? (
                         <Plural
                             value={collectionsToMove.length}
-                            one={`Moving # collection into top level`}
-                            other={`Moving # collections into top level`}
+                            one="Moving # collection into top level"
+                            other="Moving # collections into top level"
                         />
                     ) : selectedCollectionName ? (
                         <Plural
                             value={collectionsToMove.length}
-                            one={`Moving # collection into ${selectedCollectionName}`}
-                            other={`Moving # collections into ${selectedCollectionName}`}
+                            one={<Trans>Moving # collection into {selectedCollectionName}</Trans>}
+                            other={<Trans>Moving # collections into {selectedCollectionName}</Trans>}
                         />
                     ) : (
                         <Plural
                             value={collectionsToMove.length}
-                            one={`Moving # collection into selected collection`}
-                            other={`Moving # collections into selected collection`}
+                            one="Moving # collection into selected collection"
+                            other="Moving # collections into selected collection"
                         />
                     )
                 ) : (
