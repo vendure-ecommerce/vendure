@@ -857,7 +857,7 @@ msgstr "مطلوب استرداد بقيمة {formattedDiff}. حدد مبالغ 
 msgid "Actions"
 msgstr "الإجراءات"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "نشط"
@@ -1211,7 +1211,7 @@ msgstr "العملات المتاحة"
 msgid "Available languages"
 msgstr "اللغات المتاحة"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "اللغات المتاحة"
 
@@ -1277,7 +1277,7 @@ msgstr "الحاسبة"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "القناة"
 msgid "Channel defaults"
 msgstr "الإعدادات الافتراضية للقناة"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "لغات القناة"
 
@@ -1320,7 +1320,7 @@ msgstr "لغات القناة"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "القنوات"
 
@@ -1399,7 +1399,7 @@ msgstr "إكمال المسودة"
 msgid "Conditions"
 msgstr "الشروط"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "تكوين اللغات المتاحة لمتجرك وقنواتك"
 
@@ -1534,7 +1534,7 @@ msgstr "تم الإنشاء في"
 msgid "Creating..."
 msgstr "جارٍ الإنشاء..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "الحالي"
@@ -1646,7 +1646,7 @@ msgstr "العملة الافتراضية"
 msgid "Default language"
 msgstr "اللغة الافتراضية"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "اللغة الافتراضية"
 
@@ -1748,7 +1748,7 @@ msgstr "معطل"
 msgid "Discount"
 msgstr "الخصم"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "لغة العرض"
 
@@ -2168,7 +2168,7 @@ msgstr "فشل نسخ العرض"
 msgid "Failed to fulfill order"
 msgstr "فشل تنفيذ الطلب"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "فشل تحميل الإعدادات العامة"
 
@@ -2440,7 +2440,7 @@ msgstr "عام"
 msgid "Generate slug automatically"
 msgstr "إنشاء الرابط المختصر تلقائيًا"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "اللغات العامة"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "اللغة"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "اللغة: {0}"
 
@@ -2724,7 +2724,7 @@ msgstr "جارٍ تحميل العناوين..."
 msgid "Loading collections..."
 msgstr "جارٍ تحميل المجموعات..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "جارٍ تحميل الإعدادات العامة..."
 
@@ -2747,7 +2747,7 @@ msgstr "جارٍ تحميل العلامات..."
 msgid "Loading..."
 msgstr "جارٍ التحميل..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "اللغة المحلية"
 
@@ -2771,8 +2771,8 @@ msgstr "إدارة العروض العامة"
 msgid "Manage Global Views"
 msgstr "إدارة العروض العامة"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "إدارة اللغات"
 
@@ -2801,7 +2801,7 @@ msgstr "إدارة عروضك الشخصية المحفوظة لهذا الجد�
 msgid "matches regex"
 msgstr "يطابق التعبير النمطي"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "تاريخ متوسط"
 
@@ -3128,7 +3128,7 @@ msgstr "لا توجد قيم خصائص"
 msgid "No fulfillments"
 msgstr "لا توجد تنفيذات"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "لم يتم تكوين لغات عامة"
 
@@ -3536,7 +3536,7 @@ msgstr "معاينة تعديلات الطلب"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "السعر"
 
@@ -3783,7 +3783,7 @@ msgstr "قيد التشغيل"
 msgid "Same window"
 msgstr "نفس النافذة"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "تنسيق نموذجي"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "حفظ التغييرات"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "حفظ التغييرات"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "حفظ العرض"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "جارٍ الحفظ..."
 
@@ -3873,7 +3873,7 @@ msgstr "تعذر بدء إعادة بناء فهرس البحث"
 msgid "Search index rebuild started"
 msgstr "بدأت إعادة بناء فهرس البحث"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "بحث في اللغات..."
 
@@ -3925,7 +3925,7 @@ msgstr "حدد عملة"
 msgid "Select a destination collection"
 msgstr "حدد مجموعة وجهة"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "حدد لغة"
 
@@ -3953,7 +3953,7 @@ msgstr "حدد عنوانًا"
 msgid "Select an option"
 msgstr "حدد خيارًا"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "تحديد اللغات المتاحة"
 
@@ -3969,11 +3969,11 @@ msgstr "تحديد العميل"
 msgid "Select date range"
 msgstr "اختر نطاق التاريخ"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "حدد لغة العرض"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "حدد من اللغات المتاحة عالميًا لهذه القناة"
 
@@ -4112,7 +4112,7 @@ msgstr "تم تعيين طريقة الشحن للطلب"
 msgid "Shipping Methods"
 msgstr "طرق الشحن"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "تاريخ قصير"
 
@@ -4596,7 +4596,7 @@ msgstr "هؤلاء هم العملاء في مجموعة العملاء <0>{cust
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "هذه هي قيم الخصائص للخاصية <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "ستكون هذه اللغات متاحة لجميع القنوات للاستخدام"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "أمس"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "ليس لديك إذن لعرض إعدادات القناة"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "ليس لديك إذن لعرض إعدادات اللغة العامة"
 

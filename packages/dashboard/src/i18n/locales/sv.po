@@ -857,7 +857,7 @@ msgstr "En återbetalning på {formattedDiff} krävs. Välj betalningsbelopp och
 msgid "Actions"
 msgstr "Åtgärder"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Aktiv"
@@ -1211,7 +1211,7 @@ msgstr "Tillgängliga valutor"
 msgid "Available languages"
 msgstr "Tillgängliga språk"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Tillgängliga språk"
 
@@ -1277,7 +1277,7 @@ msgstr "Kalkylator"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "Kanal"
 msgid "Channel defaults"
 msgstr "Kanalinställningar"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Kanalspråk"
 
@@ -1320,7 +1320,7 @@ msgstr "Kanalspråk"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Kanaler"
 
@@ -1399,7 +1399,7 @@ msgstr "Slutför utkast"
 msgid "Conditions"
 msgstr "Villkor"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Konfigurera tillgängliga språk för din butik och kanaler"
 
@@ -1534,7 +1534,7 @@ msgstr "Skapad den"
 msgid "Creating..."
 msgstr "Skapar..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Aktuell"
@@ -1646,7 +1646,7 @@ msgstr "Standardvaluta"
 msgid "Default language"
 msgstr "Standardspråk"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Standardspråk"
 
@@ -1748,7 +1748,7 @@ msgstr "Inaktiverad"
 msgid "Discount"
 msgstr "Rabatt"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Visningsspråk"
 
@@ -2168,7 +2168,7 @@ msgstr "Misslyckades att duplicera vy"
 msgid "Failed to fulfill order"
 msgstr "Misslyckades att leverera beställning"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Misslyckades att ladda globala inställningar"
 
@@ -2444,7 +2444,7 @@ msgstr "Allmänt"
 msgid "Generate slug automatically"
 msgstr "Generera slug automatiskt"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Globala språk"
 
@@ -2648,7 +2648,7 @@ msgid "Language"
 msgstr "Språk"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Språk: {0}"
 
@@ -2728,7 +2728,7 @@ msgstr "Laddar adresser..."
 msgid "Loading collections..."
 msgstr "Laddar kollektioner..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Laddar globala inställningar..."
 
@@ -2751,7 +2751,7 @@ msgstr "Laddar taggar..."
 msgid "Loading..."
 msgstr "Laddar..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Lokal"
 
@@ -2775,8 +2775,8 @@ msgstr "Hantera globala vyer"
 msgid "Manage Global Views"
 msgstr "Hantera globala vyer"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Hantera språk"
 
@@ -2805,7 +2805,7 @@ msgstr "Hantera dina personliga sparade vyer för denna tabell"
 msgid "matches regex"
 msgstr "matchar regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Medellångt datum"
 
@@ -3132,7 +3132,7 @@ msgstr "Inga facettvärden"
 msgid "No fulfillments"
 msgstr "Inga leveranser"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Inga globala språk konfigurerade"
 
@@ -3540,7 +3540,7 @@ msgstr "Förhandsgranska beställningsändringar"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Pris"
 
@@ -3787,7 +3787,7 @@ msgstr "Körs"
 msgid "Same window"
 msgstr "Samma fönster"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Exempelformatering"
 
@@ -3811,7 +3811,7 @@ msgid "Save changes"
 msgstr "Spara ändringar"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
@@ -3828,7 +3828,7 @@ msgid "Save View"
 msgstr "Spara vy"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Sparar..."
 
@@ -3877,7 +3877,7 @@ msgstr "Återuppbyggnad av sökindex kunde inte startas"
 msgid "Search index rebuild started"
 msgstr "Återuppbyggnad av sökindex startad"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Sök språk..."
 
@@ -3929,7 +3929,7 @@ msgstr "Välj en valuta"
 msgid "Select a destination collection"
 msgstr "Välj en målkollektion"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Välj ett språk"
 
@@ -3957,7 +3957,7 @@ msgstr "Välj en adress"
 msgid "Select an option"
 msgstr "Välj ett alternativ"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Välj tillgängliga språk"
 
@@ -3973,11 +3973,11 @@ msgstr "Välj kund"
 msgid "Select date range"
 msgstr "Välj datumintervall"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Välj visningsspråk"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Välj från globalt tillgängliga språk för denna kanal"
 
@@ -4116,7 +4116,7 @@ msgstr "Leveransmetod angiven för beställning"
 msgid "Shipping Methods"
 msgstr "Fraktmetoder"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Kort datum"
 
@@ -4600,7 +4600,7 @@ msgstr "Detta är kunderna i kundgruppen <0>{customerGroupName}</0>."
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Detta är facettvärdena för facetten <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Dessa språk kommer vara tillgängliga för alla kanaler att använda"
 
@@ -4945,11 +4945,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Igår"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Du har inte behörighet att visa kanalinställningar"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Du har inte behörighet att visa globala språkinställningar"
 

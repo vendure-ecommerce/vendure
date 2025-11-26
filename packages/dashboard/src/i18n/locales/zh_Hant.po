@@ -857,7 +857,7 @@ msgstr "需要退款 {formattedDiff}。選取付款金額並輸入備註以繼�
 msgid "Actions"
 msgstr "動作"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "活躍"
@@ -1211,7 +1211,7 @@ msgstr "可用貨幣"
 msgid "Available languages"
 msgstr "可用語言"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "可用語言"
 
@@ -1277,7 +1277,7 @@ msgstr "計算機"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "通路"
 msgid "Channel defaults"
 msgstr "通路預設值"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "通路語言"
 
@@ -1320,7 +1320,7 @@ msgstr "通路語言"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "通路"
 
@@ -1399,7 +1399,7 @@ msgstr "完成草稿"
 msgid "Conditions"
 msgstr "條件"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "為您的商店和通路設定可用語言"
 
@@ -1534,7 +1534,7 @@ msgstr "建立於"
 msgid "Creating..."
 msgstr "正在建立..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "目前"
@@ -1646,7 +1646,7 @@ msgstr "預設貨幣"
 msgid "Default language"
 msgstr "預設語言"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "預設語言"
 
@@ -1748,7 +1748,7 @@ msgstr "已停用"
 msgid "Discount"
 msgstr "折扣"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "顯示語言"
 
@@ -2168,7 +2168,7 @@ msgstr "複製檢視失敗"
 msgid "Failed to fulfill order"
 msgstr "履行訂單失敗"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "載入全域設定失敗"
 
@@ -2440,7 +2440,7 @@ msgstr "一般"
 msgid "Generate slug automatically"
 msgstr "自動產生 slug"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "全域語言"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "語言"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "語言：{0}"
 
@@ -2724,7 +2724,7 @@ msgstr "正在載入地址..."
 msgid "Loading collections..."
 msgstr "正在載入集合..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "正在載入全域設定..."
 
@@ -2747,7 +2747,7 @@ msgstr "正在載入標籤..."
 msgid "Loading..."
 msgstr "正在載入..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "地區設定"
 
@@ -2771,8 +2771,8 @@ msgstr "管理全域檢視"
 msgid "Manage Global Views"
 msgstr "管理全域檢視"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "管理語言"
 
@@ -2801,7 +2801,7 @@ msgstr "管理此表格的個人儲存檢視"
 msgid "matches regex"
 msgstr "符合正規表示式"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "中等日期"
 
@@ -3128,7 +3128,7 @@ msgstr "無屬性值"
 msgid "No fulfillments"
 msgstr "無履行"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "未設定全域語言"
 
@@ -3536,7 +3536,7 @@ msgstr "預覽訂單修改"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "價格"
 
@@ -3783,7 +3783,7 @@ msgstr "正在執行"
 msgid "Same window"
 msgstr "相同視窗"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "範例格式"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "儲存變更"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "儲存變更"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "儲存檢視"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "正在儲存..."
 
@@ -3873,7 +3873,7 @@ msgstr "無法開始重建搜尋索引"
 msgid "Search index rebuild started"
 msgstr "已開始重建搜尋索引"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "搜尋語言..."
 
@@ -3925,7 +3925,7 @@ msgstr "選取一種貨幣"
 msgid "Select a destination collection"
 msgstr "選取目標集合"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "選取一種語言"
 
@@ -3953,7 +3953,7 @@ msgstr "選取一個地址"
 msgid "Select an option"
 msgstr "選取一個選項"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "選取可用語言"
 
@@ -3969,11 +3969,11 @@ msgstr "選取客戶"
 msgid "Select date range"
 msgstr "選擇日期範圍"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "選取顯示語言"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "從此通路的全域可用語言中選取"
 
@@ -4112,7 +4112,7 @@ msgstr "訂單已設定配送方式"
 msgid "Shipping Methods"
 msgstr "配送方式"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "短日期"
 
@@ -4596,7 +4596,7 @@ msgstr "這些是 <0>{customerGroupName}</0> 客戶群組中的客戶。"
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "這些是 <0>{facetName}</0> 屬性的屬性值。"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "這些語言將可供所有通路使用"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "昨天"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "您沒有檢視通路設定的權限"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "您沒有檢視全域語言設定的權限"
 

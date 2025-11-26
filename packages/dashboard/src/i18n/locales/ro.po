@@ -853,7 +853,7 @@ msgstr "Este necesară o rambursare de {formattedDiff}. Selectează sumele de pl
 msgid "Actions"
 msgstr "Acțiuni"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Activă"
@@ -1207,7 +1207,7 @@ msgstr "Monede disponibile"
 msgid "Available languages"
 msgstr "Limbi disponibile"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Limbi disponibile"
 
@@ -1273,7 +1273,7 @@ msgstr "Calculator"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1308,7 +1308,7 @@ msgstr "Canal"
 msgid "Channel defaults"
 msgstr "Valori implicite canal"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Limbi canal"
 
@@ -1316,7 +1316,7 @@ msgstr "Limbi canal"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Canale"
 
@@ -1395,7 +1395,7 @@ msgstr "Finalizează ciorna"
 msgid "Conditions"
 msgstr "Condiții"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Configurează limbile disponibile pentru magazin și canale"
 
@@ -1530,7 +1530,7 @@ msgstr "Creat la"
 msgid "Creating..."
 msgstr "Se creează..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Curent"
@@ -1642,7 +1642,7 @@ msgstr "Monedă implicită"
 msgid "Default language"
 msgstr "Limbă implicită"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Limbă implicită"
 
@@ -1744,7 +1744,7 @@ msgstr "Dezactivat"
 msgid "Discount"
 msgstr "Reducere"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Limbă afișare"
 
@@ -2164,7 +2164,7 @@ msgstr "Nu s-a putut duplica vizualizarea"
 msgid "Failed to fulfill order"
 msgstr "Nu s-a putut livra comanda"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Nu s-au putut încărca setările globale"
 
@@ -2436,7 +2436,7 @@ msgstr "General"
 msgid "Generate slug automatically"
 msgstr "Generează identificator URL automat"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Limbi globale"
 
@@ -2640,7 +2640,7 @@ msgid "Language"
 msgstr "Limbă"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Limbă: {0}"
 
@@ -2720,7 +2720,7 @@ msgstr "Se încarcă adresele..."
 msgid "Loading collections..."
 msgstr "Se încarcă colecțiile..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Se încarcă setările globale..."
 
@@ -2743,7 +2743,7 @@ msgstr "Se încarcă etichetele..."
 msgid "Loading..."
 msgstr "Se încarcă..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Localizare"
 
@@ -2767,8 +2767,8 @@ msgstr "Gestionează vizualizări globale"
 msgid "Manage Global Views"
 msgstr "Gestionează Vizualizări Globale"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Gestionează limbi"
 
@@ -2797,7 +2797,7 @@ msgstr "Gestionează vizualizările tale personale salvate pentru acest tabel"
 msgid "matches regex"
 msgstr "se potrivește cu regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Dată medie"
 
@@ -3124,7 +3124,7 @@ msgstr "Fără valori atribut"
 msgid "No fulfillments"
 msgstr "Fără livrări"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Nu sunt configurate limbi globale"
 
@@ -3532,7 +3532,7 @@ msgstr "Previzualizează modificările comenzii"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Preț"
 
@@ -3779,7 +3779,7 @@ msgstr "Rulează"
 msgid "Same window"
 msgstr "Aceeași fereastră"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Formatare exemplu"
 
@@ -3803,7 +3803,7 @@ msgid "Save changes"
 msgstr "Salvează modificările"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Salvează modificările"
 
@@ -3820,7 +3820,7 @@ msgid "Save View"
 msgstr "Salvează vizualizarea"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Se salvează..."
 
@@ -3869,7 +3869,7 @@ msgstr "Reconstrucția indexului de căutare nu a putut fi pornită"
 msgid "Search index rebuild started"
 msgstr "Reconstrucția indexului de căutare a fost pornită"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Caută limbi..."
 
@@ -3921,7 +3921,7 @@ msgstr "Selectează o monedă"
 msgid "Select a destination collection"
 msgstr "Selectează o colecție de destinație"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Selectează o limbă"
 
@@ -3949,7 +3949,7 @@ msgstr "Selectează o adresă"
 msgid "Select an option"
 msgstr "Selectează o opțiune"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Selectează limbile disponibile"
 
@@ -3965,11 +3965,11 @@ msgstr "Selectează clientul"
 msgid "Select date range"
 msgstr "Selectează intervalul de date"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Selectează limba de afișare"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Selectează din limbile disponibile global pentru acest canal"
 
@@ -4108,7 +4108,7 @@ msgstr "Metoda de livrare setată pentru comandă"
 msgid "Shipping Methods"
 msgstr "Metode de livrare"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Dată scurtă"
 
@@ -4592,7 +4592,7 @@ msgstr "Aceștia sunt clienții din grupul de clienți <0>{customerGroupName}</0
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Acestea sunt valorile pentru atributul <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Aceste limbi vor fi disponibile pentru toate canalele"
 
@@ -4937,11 +4937,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Ieri"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Nu aveți permisiunea de a vizualiza setările canalului"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Nu aveți permisiunea de a vizualiza setările globale ale limbii"
 

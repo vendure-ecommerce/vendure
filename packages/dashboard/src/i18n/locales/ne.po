@@ -853,7 +853,7 @@ msgstr "{formattedDiff} को फिर्ता आवश्यक छ। भ�
 msgid "Actions"
 msgstr "कार्यहरू"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "सक्रिय"
@@ -1207,7 +1207,7 @@ msgstr "उपलब्ध मुद्राहरू"
 msgid "Available languages"
 msgstr "उपलब्ध भाषाहरू"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "उपलब्ध भाषाहरू"
 
@@ -1273,7 +1273,7 @@ msgstr "क्याल्कुलेटर"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1308,7 +1308,7 @@ msgstr "च्यानल"
 msgid "Channel defaults"
 msgstr "च्यानल पूर्वनिर्धारित"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "च्यानल भाषाहरू"
 
@@ -1316,7 +1316,7 @@ msgstr "च्यानल भाषाहरू"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "च्यानलहरू"
 
@@ -1395,7 +1395,7 @@ msgstr "मस्यौदा पूरा गर्नुहोस्"
 msgid "Conditions"
 msgstr "शर्तहरू"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "तपाईंको स्टोर र च्यानलहरूको लागि उपलब्ध भाषाहरू कन्फिगर गर्नुहोस्"
 
@@ -1530,7 +1530,7 @@ msgstr "सिर्जना मिति"
 msgid "Creating..."
 msgstr "सिर्जना गर्दै..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "हालको"
@@ -1642,7 +1642,7 @@ msgstr "पूर्वनिर्धारित मुद्रा"
 msgid "Default language"
 msgstr "पूर्वनिर्धारित भाषा"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "पूर्वनिर्धारित भाषा"
 
@@ -1744,7 +1744,7 @@ msgstr "असक्षम"
 msgid "Discount"
 msgstr "छुट"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "प्रदर्शन भाषा"
 
@@ -2164,7 +2164,7 @@ msgstr "दृश्य नक्कल गर्न असफल"
 msgid "Failed to fulfill order"
 msgstr "अर्डर पूरा गर्न असफल"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "ग्लोबल सेटिङहरू लोड गर्न असफल"
 
@@ -2436,7 +2436,7 @@ msgstr "सामान्य"
 msgid "Generate slug automatically"
 msgstr "स्लग स्वचालित रूपमा उत्पन्न गर्नुहोस्"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "ग्लोबल भाषाहरू"
 
@@ -2640,7 +2640,7 @@ msgid "Language"
 msgstr "भाषा"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "भाषा: {0}"
 
@@ -2720,7 +2720,7 @@ msgstr "ठेगानाहरू लोड गर्दै..."
 msgid "Loading collections..."
 msgstr "संग्रहहरू लोड गर्दै..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "ग्लोबल सेटिङहरू लोड गर्दै..."
 
@@ -2743,7 +2743,7 @@ msgstr "ट्यागहरू लोड गर्दै..."
 msgid "Loading..."
 msgstr "लोड गर्दै..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "स्थानीय"
 
@@ -2767,8 +2767,8 @@ msgstr "ग्लोबल दृश्यहरू व्यवस्थाप�
 msgid "Manage Global Views"
 msgstr "ग्लोबल दृश्यहरू व्यवस्थापन गर्नुहोस्"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "भाषाहरू व्यवस्थापन गर्नुहोस्"
 
@@ -2797,7 +2797,7 @@ msgstr "यस तालिकाको लागि तपाईंको व�
 msgid "matches regex"
 msgstr "regex सँग मेल खान्छ"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "मध्यम मिति"
 
@@ -3124,7 +3124,7 @@ msgstr "कुनै विशेषता मानहरू छैनन्"
 msgid "No fulfillments"
 msgstr "कुनै पूर्तिहरू छैनन्"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "कुनै ग्लोबल भाषाहरू कन्फिगर गरिएको छैन"
 
@@ -3532,7 +3532,7 @@ msgstr "अर्डर परिमार्जनहरू पूर्वा�
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "मूल्य"
 
@@ -3779,7 +3779,7 @@ msgstr "चलिरहेको"
 msgid "Same window"
 msgstr "एउटै विन्डो"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "नमूना ढाँचा"
 
@@ -3803,7 +3803,7 @@ msgid "Save changes"
 msgstr "परिवर्तनहरू सुरक्षित गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "परिवर्तनहरू सुरक्षित गर्नुहोस्"
 
@@ -3820,7 +3820,7 @@ msgid "Save View"
 msgstr "दृश्य सुरक्षित गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "सुरक्षित गर्दै..."
 
@@ -3869,7 +3869,7 @@ msgstr "खोज सूचकांक पुनर्निर्माण स
 msgid "Search index rebuild started"
 msgstr "खोज सूचकांक पुनर्निर्माण सुरु भयो"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "भाषाहरू खोज्नुहोस्..."
 
@@ -3921,7 +3921,7 @@ msgstr "मुद्रा चयन गर्नुहोस्"
 msgid "Select a destination collection"
 msgstr "गन्तव्य संग्रह चयन गर्नुहोस्"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "भाषा चयन गर्नुहोस्"
 
@@ -3953,7 +3953,7 @@ msgstr "ठेगाना चयन गर्नुहोस्"
 msgid "Select an option"
 msgstr "विकल्प चयन गर्नुहोस्"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "उपलब्ध भाषाहरू चयन गर्नुहोस्"
 
@@ -3969,11 +3969,11 @@ msgstr "ग्राहक चयन गर्नुहोस्"
 msgid "Select date range"
 msgstr "मिति दायरा चयन गर्नुहोस्"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "प्रदर्शन भाषा चयन गर्नुहोस्"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "यस च्यानलको लागि विश्वव्यापी रूपमा उपलब्ध भाषाहरूबाट चयन गर्नुहोस्"
 
@@ -4112,7 +4112,7 @@ msgstr "अर्डरको लागि ढुवानी विधि स�
 msgid "Shipping Methods"
 msgstr "ढुवानी विधिहरू"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "छोटो मिति"
 
@@ -4596,7 +4596,7 @@ msgstr "यी <0>{customerGroupName}</0> ग्राहक समूहका 
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "यी <0>{facetName}</0> विशेषताका विशेषता मानहरू हुन्।"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "यी भाषाहरू सबै च्यानलहरूलाई प्रयोग गर्नको लागि उपलब्ध हुनेछन्"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "हिजो"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "तपाईंसँग च्यानल सेटिङहरू हेर्ने अनुमति छैन"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "तपाईंसँग ग्लोबल भाषा सेटिङहरू हेर्ने अनुमति छैन"
 

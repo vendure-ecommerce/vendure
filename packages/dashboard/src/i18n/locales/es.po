@@ -857,7 +857,7 @@ msgstr "Se requiere un reembolso de {formattedDiff}. Seleccione los importes de 
 msgid "Actions"
 msgstr "Acciones"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Activo"
@@ -1211,7 +1211,7 @@ msgstr "Monedas disponibles"
 msgid "Available languages"
 msgstr "Idiomas disponibles"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Idiomas Disponibles"
 
@@ -1277,7 +1277,7 @@ msgstr "Calculadora"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "Canal"
 msgid "Channel defaults"
 msgstr "Valores predeterminados del canal"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Idiomas del Canal"
 
@@ -1320,7 +1320,7 @@ msgstr "Idiomas del Canal"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Canales"
 
@@ -1399,7 +1399,7 @@ msgstr "Completar borrador"
 msgid "Conditions"
 msgstr "Condiciones"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Configurar idiomas disponibles para su tienda y canales"
 
@@ -1534,7 +1534,7 @@ msgstr "Creado en"
 msgid "Creating..."
 msgstr "Creando..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Actual"
@@ -1646,7 +1646,7 @@ msgstr "Moneda predeterminada"
 msgid "Default language"
 msgstr "Idioma predeterminado"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Idioma Predeterminado"
 
@@ -1748,7 +1748,7 @@ msgstr "Deshabilitado"
 msgid "Discount"
 msgstr "Descuento"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Idioma de visualización"
 
@@ -2168,7 +2168,7 @@ msgstr "Error al duplicar vista"
 msgid "Failed to fulfill order"
 msgstr "Error al cumplir pedido"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Error al cargar configuración global"
 
@@ -2440,7 +2440,7 @@ msgstr "General"
 msgid "Generate slug automatically"
 msgstr "Generar slug automáticamente"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Idiomas Globales"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "Idioma"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Idioma: {0}"
 
@@ -2724,7 +2724,7 @@ msgstr "Cargando direcciones..."
 msgid "Loading collections..."
 msgstr "Cargando colecciones..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Cargando configuración global..."
 
@@ -2747,7 +2747,7 @@ msgstr "Cargando etiquetas..."
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Configuración regional"
 
@@ -2771,8 +2771,8 @@ msgstr "Gestionar vistas globales"
 msgid "Manage Global Views"
 msgstr "Gestionar Vistas Globales"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Gestionar Idiomas"
 
@@ -2801,7 +2801,7 @@ msgstr "Gestionar sus vistas guardadas personales para esta tabla"
 msgid "matches regex"
 msgstr "coincide con regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Fecha media"
 
@@ -3128,7 +3128,7 @@ msgstr "Sin valores de faceta"
 msgid "No fulfillments"
 msgstr "Sin cumplimientos"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Sin idiomas globales configurados"
 
@@ -3536,7 +3536,7 @@ msgstr "Previsualizar modificaciones del pedido"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Precio"
 
@@ -3783,7 +3783,7 @@ msgstr "Ejecutándose"
 msgid "Same window"
 msgstr "Misma ventana"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Formato de ejemplo"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "Guardar cambios"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Guardar cambios"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "Guardar vista"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Guardando..."
 
@@ -3873,7 +3873,7 @@ msgstr "No se pudo iniciar la reconstrucción del índice de búsqueda"
 msgid "Search index rebuild started"
 msgstr "Reconstrucción del índice de búsqueda iniciada"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Buscar idiomas..."
 
@@ -3925,7 +3925,7 @@ msgstr "Seleccione una moneda"
 msgid "Select a destination collection"
 msgstr "Seleccione una colección de destino"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Seleccione un idioma"
 
@@ -3953,7 +3953,7 @@ msgstr "Seleccione una dirección"
 msgid "Select an option"
 msgstr "Seleccione una opción"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Seleccionar idiomas disponibles"
 
@@ -3969,11 +3969,11 @@ msgstr "Seleccionar cliente"
 msgid "Select date range"
 msgstr "Seleccionar rango de fechas"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Seleccione el idioma de visualización"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Seleccione entre los idiomas disponibles globalmente para este canal"
 
@@ -4112,7 +4112,7 @@ msgstr "Método de envío establecido para el pedido"
 msgid "Shipping Methods"
 msgstr "Métodos de envío"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Fecha corta"
 
@@ -4596,7 +4596,7 @@ msgstr "Estos son los clientes del grupo de clientes <0>{customerGroupName}</0>.
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Estos son los valores de la faceta <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Estos idiomas estarán disponibles para que los usen todos los canales"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Ayer"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "No tiene permiso para ver la configuración del canal"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "No tiene permiso para ver la configuración de idioma global"
 

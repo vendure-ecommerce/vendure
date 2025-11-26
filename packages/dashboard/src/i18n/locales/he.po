@@ -857,7 +857,7 @@ msgstr "נדרש החזר כספי של {formattedDiff}. בחר סכומי תש�
 msgid "Actions"
 msgstr "פעולות"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "פעיל"
@@ -1211,7 +1211,7 @@ msgstr "מטבעות זמינים"
 msgid "Available languages"
 msgstr "שפות זמינות"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "שפות זמינות"
 
@@ -1277,7 +1277,7 @@ msgstr "מחשבון"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "ערוץ"
 msgid "Channel defaults"
 msgstr "ברירות מחדל של ערוץ"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "שפות ערוץ"
 
@@ -1320,7 +1320,7 @@ msgstr "שפות ערוץ"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "ערוצים"
 
@@ -1399,7 +1399,7 @@ msgstr "השלם טיוטה"
 msgid "Conditions"
 msgstr "תנאים"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "הגדר שפות זמינות עבור החנות והערוצים שלך"
 
@@ -1534,7 +1534,7 @@ msgstr "נוצר ב"
 msgid "Creating..."
 msgstr "יוצר..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "נוכחי"
@@ -1646,7 +1646,7 @@ msgstr "מטבע ברירת מחדל"
 msgid "Default language"
 msgstr "שפת ברירת מחדל"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "שפת ברירת מחדל"
 
@@ -1748,7 +1748,7 @@ msgstr "מושבת"
 msgid "Discount"
 msgstr "הנחה"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "שפת תצוגה"
 
@@ -2168,7 +2168,7 @@ msgstr "שכפול התצוגה נכשל"
 msgid "Failed to fulfill order"
 msgstr "מילוי ההזמנה נכשל"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "טעינת ההגדרות הגלובליות נכשלה"
 
@@ -2440,7 +2440,7 @@ msgstr "כללי"
 msgid "Generate slug automatically"
 msgstr "צור slug אוטומטית"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "שפות גלובליות"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "שפה"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "שפה: {0}"
 
@@ -2724,7 +2724,7 @@ msgstr "טוען כתובות..."
 msgid "Loading collections..."
 msgstr "טוען אוספים..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "טוען הגדרות גלובליות..."
 
@@ -2747,7 +2747,7 @@ msgstr "טוען תגיות..."
 msgid "Loading..."
 msgstr "טוען..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "אזור"
 
@@ -2771,8 +2771,8 @@ msgstr "נהל תצוגות גלובליות"
 msgid "Manage Global Views"
 msgstr "נהל תצוגות גלובליות"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "נהל שפות"
 
@@ -2801,7 +2801,7 @@ msgstr "נהל את התצוגות השמורות האישיות שלך לטבל
 msgid "matches regex"
 msgstr "תואם ביטוי רגולרי"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "תאריך בינוני"
 
@@ -3128,7 +3128,7 @@ msgstr "אין ערכי מאפיינים"
 msgid "No fulfillments"
 msgstr "אין משלוחים"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "לא הוגדרו שפות גלובליות"
 
@@ -3536,7 +3536,7 @@ msgstr "תצוגה מקדימה של שינויי הזמנה"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "מחיר"
 
@@ -3783,7 +3783,7 @@ msgstr "פועל"
 msgid "Same window"
 msgstr "אותו חלון"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "עיצוב לדוגמה"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "שמור שינויים"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "שמור שינויים"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "שמור תצוגה"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "שומר..."
 
@@ -3873,7 +3873,7 @@ msgstr "לא ניתן היה להתחיל בניית מחדש של אינדקס 
 msgid "Search index rebuild started"
 msgstr "החלה בניית מחדש של אינדקס החיפוש"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "חפש שפות..."
 
@@ -3925,7 +3925,7 @@ msgstr "בחר מטבע"
 msgid "Select a destination collection"
 msgstr "בחר אוסף יעד"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "בחר שפה"
 
@@ -3953,7 +3953,7 @@ msgstr "בחר כתובת"
 msgid "Select an option"
 msgstr "בחר אפשרות"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "בחר שפות זמינות"
 
@@ -3969,11 +3969,11 @@ msgstr "בחר לקוח"
 msgid "Select date range"
 msgstr "בחר טווח תאריכים"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "בחר שפת תצוגה"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "בחר מתוך השפות הזמינות גלובלית עבור ערוץ זה"
 
@@ -4112,7 +4112,7 @@ msgstr "שיטת משלוח הוגדרה להזמנה"
 msgid "Shipping Methods"
 msgstr "שיטות משלוח"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "תאריך קצר"
 
@@ -4596,7 +4596,7 @@ msgstr "אלה הלקוחות בקבוצת הלקוחות <0>{customerGroupName}
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "אלה ערכי המאפיינים עבור המאפיין <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "שפות אלה יהיו זמינות לכל הערוצים לשימוש"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "אתמול"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "אין לך הרשאה לצפות בהגדרות הערוץ"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "אין לך הרשאה לצפות בהגדרות השפה הגלובליות"
 

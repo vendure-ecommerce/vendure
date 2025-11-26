@@ -853,7 +853,7 @@ msgstr "Je vyžadován refund ve výši {formattedDiff}. Vyberte částky plateb
 msgid "Actions"
 msgstr "Akce"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Aktivní"
@@ -1207,7 +1207,7 @@ msgstr "Dostupné měny"
 msgid "Available languages"
 msgstr "Dostupné jazyky"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Dostupné jazyky"
 
@@ -1273,7 +1273,7 @@ msgstr "Kalkulačka"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1308,7 +1308,7 @@ msgstr "Kanál"
 msgid "Channel defaults"
 msgstr "Výchozí nastavení kanálu"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Jazyky kanálu"
 
@@ -1316,7 +1316,7 @@ msgstr "Jazyky kanálu"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Kanály"
 
@@ -1395,7 +1395,7 @@ msgstr "Dokončit koncept"
 msgid "Conditions"
 msgstr "Podmínky"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Nastavte dostupné jazyky pro váš obchod a kanály"
 
@@ -1530,7 +1530,7 @@ msgstr "Vytvořeno"
 msgid "Creating..."
 msgstr "Vytváření..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Aktuální"
@@ -1642,7 +1642,7 @@ msgstr "Výchozí měna"
 msgid "Default language"
 msgstr "Výchozí jazyk"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Výchozí jazyk"
 
@@ -1744,7 +1744,7 @@ msgstr "Zakázáno"
 msgid "Discount"
 msgstr "Sleva"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Jazyk rozhraní"
 
@@ -2164,7 +2164,7 @@ msgstr "Nepodařilo se duplikovat pohled"
 msgid "Failed to fulfill order"
 msgstr "Nepodařilo se expedovat objednávku"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Nepodařilo se načíst globální nastavení"
 
@@ -2436,7 +2436,7 @@ msgstr "Obecné"
 msgid "Generate slug automatically"
 msgstr "Generovat URL segment automaticky"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Globální jazyky"
 
@@ -2640,7 +2640,7 @@ msgid "Language"
 msgstr "Jazyk"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Jazyk: {0}"
 
@@ -2720,7 +2720,7 @@ msgstr "Načítání adres..."
 msgid "Loading collections..."
 msgstr "Načítání kolekcí..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Načítání globálních nastavení..."
 
@@ -2743,7 +2743,7 @@ msgstr "Načítání štítků..."
 msgid "Loading..."
 msgstr "Načítání..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Lokalizace"
 
@@ -2767,8 +2767,8 @@ msgstr "Spravovat globální pohledy"
 msgid "Manage Global Views"
 msgstr "Spravovat globální pohledy"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Spravovat jazyky"
 
@@ -2797,7 +2797,7 @@ msgstr "Spravovat vaše osobní uložené pohledy pro tuto tabulku"
 msgid "matches regex"
 msgstr "odpovídá regulárnímu výrazu"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Střední datum"
 
@@ -3124,7 +3124,7 @@ msgstr "Žádné hodnoty vlastností"
 msgid "No fulfillments"
 msgstr "Žádné expedice"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Nejsou nakonfigurovány žádné globální jazyky"
 
@@ -3532,7 +3532,7 @@ msgstr "Náhled úprav objednávky"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Cena"
 
@@ -3779,7 +3779,7 @@ msgstr "Běží"
 msgid "Same window"
 msgstr "Stejné okno"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Ukázka formátování"
 
@@ -3803,7 +3803,7 @@ msgid "Save changes"
 msgstr "Uložit změny"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Uložit změny"
 
@@ -3820,7 +3820,7 @@ msgid "Save View"
 msgstr "Uložit zobrazení"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Ukládání..."
 
@@ -3869,7 +3869,7 @@ msgstr "Přebudování vyhledávacího indexu nemohlo být spuštěno"
 msgid "Search index rebuild started"
 msgstr "Přebudování vyhledávacího indexu spuštěno"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Hledat jazyky..."
 
@@ -3921,7 +3921,7 @@ msgstr "Vyberte měnu"
 msgid "Select a destination collection"
 msgstr "Vyberte cílovou kolekci"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Vyberte jazyk"
 
@@ -3949,7 +3949,7 @@ msgstr "Vyberte adresu"
 msgid "Select an option"
 msgstr "Vyberte volbu"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Vybrat dostupné jazyky"
 
@@ -3965,11 +3965,11 @@ msgstr "Vybrat zákazníka"
 msgid "Select date range"
 msgstr "Vyberte časové období"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Vyberte jazyk rozhraní"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Vyberte z globálně dostupných jazyků pro tento kanál"
 
@@ -4108,7 +4108,7 @@ msgstr "Způsob dopravy nastaven pro objednávku"
 msgid "Shipping Methods"
 msgstr "Způsoby dopravy"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Krátké datum"
 
@@ -4592,7 +4592,7 @@ msgstr "Toto jsou zákazníci ve skupině zákazníků <0>{customerGroupName}</0
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Toto jsou hodnoty vlastností pro vlastnost <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Tyto jazyky budou k dispozici pro všechny kanály"
 
@@ -4937,11 +4937,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Včera"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Nemáte oprávnění k zobrazení nastavení kanálu"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Nemáte oprávnění k zobrazení globálních nastavení jazyků"
 

@@ -857,7 +857,7 @@ msgstr "Потрібне повернення в розмірі {formattedDiff}.
 msgid "Actions"
 msgstr "Дії"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Активний"
@@ -1211,7 +1211,7 @@ msgstr "Доступні валюти"
 msgid "Available languages"
 msgstr "Доступні мови"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Доступні мови"
 
@@ -1277,7 +1277,7 @@ msgstr "Калькулятор"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "Канал"
 msgid "Channel defaults"
 msgstr "Налаштування каналу за замовчуванням"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Мови каналу"
 
@@ -1320,7 +1320,7 @@ msgstr "Мови каналу"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Канали"
 
@@ -1399,7 +1399,7 @@ msgstr "Завершити чернетку"
 msgid "Conditions"
 msgstr "Умови"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Налаштуйте доступні мови для вашого магазину та каналів"
 
@@ -1534,7 +1534,7 @@ msgstr "Дата створення"
 msgid "Creating..."
 msgstr "Створення..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Поточний"
@@ -1646,7 +1646,7 @@ msgstr "Валюта за замовчуванням"
 msgid "Default language"
 msgstr "Мова за замовчуванням"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Мова за замовчуванням"
 
@@ -1748,7 +1748,7 @@ msgstr "Вимкнено"
 msgid "Discount"
 msgstr "Знижка"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Мова відображення"
 
@@ -2168,7 +2168,7 @@ msgstr "Не вдалося дублювати подання"
 msgid "Failed to fulfill order"
 msgstr "Не вдалося виконати замовлення"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Не вдалося завантажити глобальні налаштування"
 
@@ -2440,7 +2440,7 @@ msgstr "Загальні"
 msgid "Generate slug automatically"
 msgstr "Генерувати slug автоматично"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Глобальні мови"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "Мова"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Мова: {0}"
 
@@ -2724,7 +2724,7 @@ msgstr "Завантаження адрес..."
 msgid "Loading collections..."
 msgstr "Завантаження колекцій..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Завантаження глобальних налаштувань..."
 
@@ -2747,7 +2747,7 @@ msgstr "Завантаження тегів..."
 msgid "Loading..."
 msgstr "Завантаження..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Локаль"
 
@@ -2771,8 +2771,8 @@ msgstr "Керування глобальними поданнями"
 msgid "Manage Global Views"
 msgstr "Керування глобальними поданнями"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Керування мовами"
 
@@ -2801,7 +2801,7 @@ msgstr "Керування вашими особистими збережени�
 msgid "matches regex"
 msgstr "відповідає regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Середня дата"
 
@@ -3128,7 +3128,7 @@ msgstr "Немає значень фасетів"
 msgid "No fulfillments"
 msgstr "Немає виконань"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Глобальні мови не налаштовано"
 
@@ -3536,7 +3536,7 @@ msgstr "Попередній перегляд змін замовлення"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Ціна"
 
@@ -3783,7 +3783,7 @@ msgstr "Виконується"
 msgid "Same window"
 msgstr "Те ж вікно"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Приклад форматування"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "Зберегти зміни"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Зберегти зміни"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "Зберегти вигляд"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Збереження..."
 
@@ -3873,7 +3873,7 @@ msgstr "Не вдалося розпочати перебудову пошуко
 msgid "Search index rebuild started"
 msgstr "Розпочато перебудову пошукового індексу"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Пошук мов..."
 
@@ -3925,7 +3925,7 @@ msgstr "Виберіть валюту"
 msgid "Select a destination collection"
 msgstr "Виберіть цільову колекцію"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Виберіть мову"
 
@@ -3953,7 +3953,7 @@ msgstr "Виберіть адресу"
 msgid "Select an option"
 msgstr "Виберіть опцію"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Вибрати доступні мови"
 
@@ -3969,11 +3969,11 @@ msgstr "Вибрати клієнта"
 msgid "Select date range"
 msgstr "Виберіть період"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Виберіть мову відображення"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Виберіть з глобально доступних мов для цього каналу"
 
@@ -4112,7 +4112,7 @@ msgstr "Спосіб доставки встановлено для замовл
 msgid "Shipping Methods"
 msgstr "Способи доставки"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Коротка дата"
 
@@ -4596,7 +4596,7 @@ msgstr "Це клієнти з групи клієнтів <0>{customerGroupName
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Це значення фасетів для фасету <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Ці мови будуть доступні для використання всіма каналами"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Вчора"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "У вас немає дозволу на перегляд налаштувань каналу"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "У вас немає дозволу на перегляд глобальних мовних налаштувань"
 

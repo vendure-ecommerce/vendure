@@ -857,7 +857,7 @@ msgstr "{formattedDiff} tutarında iade gerekiyor. Ödeme tutarlarını seçin v
 msgid "Actions"
 msgstr "İşlemler"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Etkin"
@@ -1211,7 +1211,7 @@ msgstr "Mevcut para birimleri"
 msgid "Available languages"
 msgstr "Mevcut diller"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Mevcut Diller"
 
@@ -1277,7 +1277,7 @@ msgstr "Hesaplayıcı"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1312,7 +1312,7 @@ msgstr "Kanal"
 msgid "Channel defaults"
 msgstr "Kanal varsayılanları"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Kanal Dilleri"
 
@@ -1320,7 +1320,7 @@ msgstr "Kanal Dilleri"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Kanallar"
 
@@ -1399,7 +1399,7 @@ msgstr "Taslağı tamamla"
 msgid "Conditions"
 msgstr "Koşullar"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Mağazanız ve kanallarınız için mevcut dilleri yapılandırın"
 
@@ -1534,7 +1534,7 @@ msgstr "Oluşturulma tarihi"
 msgid "Creating..."
 msgstr "Oluşturuluyor..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Güncel"
@@ -1646,7 +1646,7 @@ msgstr "Varsayılan para birimi"
 msgid "Default language"
 msgstr "Varsayılan dil"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Varsayılan Dil"
 
@@ -1748,7 +1748,7 @@ msgstr "Devre dışı"
 msgid "Discount"
 msgstr "İndirim"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Görüntüleme dili"
 
@@ -2168,7 +2168,7 @@ msgstr "Görünüm çoğaltılamadı"
 msgid "Failed to fulfill order"
 msgstr "Sipariş teslim edilemedi"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Genel ayarlar yüklenemedi"
 
@@ -2440,7 +2440,7 @@ msgstr "Genel"
 msgid "Generate slug automatically"
 msgstr "Slug'ı otomatik oluştur"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Genel Diller"
 
@@ -2644,7 +2644,7 @@ msgid "Language"
 msgstr "Dil"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Dil: {0}"
 
@@ -2724,7 +2724,7 @@ msgstr "Adresler yükleniyor..."
 msgid "Loading collections..."
 msgstr "Koleksiyonlar yükleniyor..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Genel ayarlar yükleniyor..."
 
@@ -2747,7 +2747,7 @@ msgstr "Etiketler yükleniyor..."
 msgid "Loading..."
 msgstr "Yükleniyor..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Yerel ayar"
 
@@ -2771,8 +2771,8 @@ msgstr "Genel görünümleri yönet"
 msgid "Manage Global Views"
 msgstr "Genel Görünümleri Yönet"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Dilleri Yönet"
 
@@ -2801,7 +2801,7 @@ msgstr "Bu tablo için kişisel kaydedilmiş görünümlerinizi yönetin"
 msgid "matches regex"
 msgstr "regex ile eşleşir"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Orta tarih"
 
@@ -3128,7 +3128,7 @@ msgstr "Özellik değeri yok"
 msgid "No fulfillments"
 msgstr "Teslimat yok"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Genel dil yapılandırılmamış"
 
@@ -3536,7 +3536,7 @@ msgstr "Sipariş değişikliklerini önizle"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Fiyat"
 
@@ -3783,7 +3783,7 @@ msgstr "Çalışıyor"
 msgid "Same window"
 msgstr "Aynı pencere"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Örnek Biçimlendirme"
 
@@ -3807,7 +3807,7 @@ msgid "Save changes"
 msgstr "Değişiklikleri kaydet"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Değişiklikleri Kaydet"
 
@@ -3824,7 +3824,7 @@ msgid "Save View"
 msgstr "Görünümü Kaydet"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Kaydediliyor..."
 
@@ -3873,7 +3873,7 @@ msgstr "Arama indeksi yeniden oluşturma başlatılamadı"
 msgid "Search index rebuild started"
 msgstr "Arama indeksi yeniden oluşturma başlatıldı"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Dilleri ara..."
 
@@ -3925,7 +3925,7 @@ msgstr "Bir para birimi seçin"
 msgid "Select a destination collection"
 msgstr "Bir hedef koleksiyon seçin"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Bir dil seçin"
 
@@ -3953,7 +3953,7 @@ msgstr "Bir adres seçin"
 msgid "Select an option"
 msgstr "Bir seçenek seçin"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Mevcut Dilleri Seç"
 
@@ -3969,11 +3969,11 @@ msgstr "Müşteri seç"
 msgid "Select date range"
 msgstr "Tarih aralığı seçin"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Görüntüleme dili seçin"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Bu kanal için genel olarak kullanılabilir dillerden seçin"
 
@@ -4112,7 +4112,7 @@ msgstr "Sipariş için kargo yöntemi ayarlandı"
 msgid "Shipping Methods"
 msgstr "Kargo Yöntemleri"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Kısa tarih"
 
@@ -4596,7 +4596,7 @@ msgstr "Bunlar <0>{customerGroupName}</0> müşteri grubundaki müşterilerdir."
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Bunlar <0>{facetName}</0> özelliği için özellik değerleridir."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Bu diller tüm kanalların kullanımına açık olacaktır"
 
@@ -4941,11 +4941,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Dün"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Kanal ayarlarını görüntüleme izniniz yok"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Genel dil ayarlarını görüntüleme izniniz yok"
 

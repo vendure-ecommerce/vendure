@@ -853,7 +853,7 @@ msgstr "{formattedDiff} の返金が必要です。支払い金額を選択し�
 msgid "Actions"
 msgstr "アクション"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "アクティブ"
@@ -1207,7 +1207,7 @@ msgstr "利用可能な通貨"
 msgid "Available languages"
 msgstr "利用可能な言語"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "利用可能な言語"
 
@@ -1273,7 +1273,7 @@ msgstr "計算機"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1308,7 +1308,7 @@ msgstr "チャネル"
 msgid "Channel defaults"
 msgstr "チャネルのデフォルト設定"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "チャネル言語"
 
@@ -1316,7 +1316,7 @@ msgstr "チャネル言語"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "チャネル"
 
@@ -1395,7 +1395,7 @@ msgstr "下書きを完了"
 msgid "Conditions"
 msgstr "条件"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "ストアとチャネルで利用可能な言語を設定"
 
@@ -1530,7 +1530,7 @@ msgstr "作成日時"
 msgid "Creating..."
 msgstr "作成中..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "現在"
@@ -1642,7 +1642,7 @@ msgstr "デフォルト通貨"
 msgid "Default language"
 msgstr "デフォルト言語"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "デフォルト言語"
 
@@ -1744,7 +1744,7 @@ msgstr "無効"
 msgid "Discount"
 msgstr "割引"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "表示言語"
 
@@ -2164,7 +2164,7 @@ msgstr "ビューの複製に失敗しました"
 msgid "Failed to fulfill order"
 msgstr "注文のフルフィルメントに失敗しました"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "グローバル設定の読み込みに失敗しました"
 
@@ -2436,7 +2436,7 @@ msgstr "一般"
 msgid "Generate slug automatically"
 msgstr "スラッグを自動生成"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "グローバル言語"
 
@@ -2640,7 +2640,7 @@ msgid "Language"
 msgstr "言語"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "言語: {0}"
 
@@ -2720,7 +2720,7 @@ msgstr "住所を読み込み中..."
 msgid "Loading collections..."
 msgstr "コレクションを読み込み中..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "グローバル設定を読み込み中..."
 
@@ -2743,7 +2743,7 @@ msgstr "タグを読み込み中..."
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "ロケール"
 
@@ -2767,8 +2767,8 @@ msgstr "グローバルビューを管理"
 msgid "Manage Global Views"
 msgstr "グローバルビューを管理"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "言語を管理"
 
@@ -2797,7 +2797,7 @@ msgstr "このテーブルの個人用保存ビューを管理"
 msgid "matches regex"
 msgstr "正規表現に一致"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "中程度の日付"
 
@@ -3124,7 +3124,7 @@ msgstr "ファセット値なし"
 msgid "No fulfillments"
 msgstr "フルフィルメントなし"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "グローバル言語が設定されていません"
 
@@ -3532,7 +3532,7 @@ msgstr "注文の変更をプレビュー"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "価格"
 
@@ -3779,7 +3779,7 @@ msgstr "実行中"
 msgid "Same window"
 msgstr "同じウィンドウ"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "サンプル書式"
 
@@ -3803,7 +3803,7 @@ msgid "Save changes"
 msgstr "変更を保存"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "変更を保存"
 
@@ -3820,7 +3820,7 @@ msgid "Save View"
 msgstr "ビューを保存"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "保存中..."
 
@@ -3869,7 +3869,7 @@ msgstr "検索インデックスの再構築を開始できませんでした"
 msgid "Search index rebuild started"
 msgstr "検索インデックスの再構築を開始しました"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "言語を検索..."
 
@@ -3921,7 +3921,7 @@ msgstr "通貨を選択"
 msgid "Select a destination collection"
 msgstr "移動先のコレクションを選択"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "言語を選択"
 
@@ -3949,7 +3949,7 @@ msgstr "住所を選択"
 msgid "Select an option"
 msgstr "オプションを選択"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "利用可能な言語を選択"
 
@@ -3965,11 +3965,11 @@ msgstr "顧客を選択"
 msgid "Select date range"
 msgstr "期間を選択"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "表示言語を選択"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "このチャネルでグローバルに利用可能な言語から選択"
 
@@ -4108,7 +4108,7 @@ msgstr "注文の配送方法が設定されました"
 msgid "Shipping Methods"
 msgstr "配送方法"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "短い日付"
 
@@ -4592,7 +4592,7 @@ msgstr "<0>{customerGroupName}</0>顧客グループの顧客です。"
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "<0>{facetName}</0>ファセットのファセット値です。"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "これらの言語は、すべてのチャネルで使用できます"
 
@@ -4937,11 +4937,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "昨日"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "チャネル設定を表示する権限がありません"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "グローバル言語設定を表示する権限がありません"
 

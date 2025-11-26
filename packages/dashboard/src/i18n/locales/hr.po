@@ -853,7 +853,7 @@ msgstr "Potreban je povrat novca u iznosu {formattedDiff}. Odaberite iznose pla�
 msgid "Actions"
 msgstr "Radnje"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Aktivan"
@@ -1207,7 +1207,7 @@ msgstr "Dostupne valute"
 msgid "Available languages"
 msgstr "Dostupni jezici"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:341
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Dostupni jezici"
 
@@ -1273,7 +1273,7 @@ msgstr "Kalkulator"
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:397
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
@@ -1308,7 +1308,7 @@ msgstr "Kanal"
 msgid "Channel defaults"
 msgstr "Zadane postavke kanala"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:324
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Jezici kanala"
 
@@ -1316,7 +1316,7 @@ msgstr "Jezici kanala"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Kanali"
 
@@ -1395,7 +1395,7 @@ msgstr "Dovrši skicu"
 msgid "Conditions"
 msgstr "Uvjeti"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:262
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Konfigurirajte dostupne jezike za svoju trgovinu i kanale"
 
@@ -1530,7 +1530,7 @@ msgstr "Stvoreno u"
 msgid "Creating..."
 msgstr "Stvaranje..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Trenutno"
@@ -1642,7 +1642,7 @@ msgstr "Zadana valuta"
 msgid "Default language"
 msgstr "Zadani jezik"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:369
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Zadani jezik"
 
@@ -1744,7 +1744,7 @@ msgstr "Onemogućeno"
 msgid "Discount"
 msgstr "Popust"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Jezik prikaza"
 
@@ -2164,7 +2164,7 @@ msgstr "Dupliciranje prikaza nije uspjelo"
 msgid "Failed to fulfill order"
 msgstr "Izvršenje narudžbe nije uspjelo"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:291
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Učitavanje globalnih postavki nije uspjelo"
 
@@ -2436,7 +2436,7 @@ msgstr "Općenito"
 msgid "Generate slug automatically"
 msgstr "Automatski generiraj URL naziv"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:271
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Globalni jezici"
 
@@ -2640,7 +2640,7 @@ msgid "Language"
 msgstr "Jezik"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Jezik: {0}"
 
@@ -2720,7 +2720,7 @@ msgstr "Učitavanje adresa..."
 msgid "Loading collections..."
 msgstr "Učitavanje kolekcija..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:285
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Učitavanje globalnih postavki..."
 
@@ -2743,7 +2743,7 @@ msgstr "Učitavanje oznaka..."
 msgid "Loading..."
 msgstr "Učitavanje..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Lokalitet"
 
@@ -2767,8 +2767,8 @@ msgstr "Upravljaj globalnim prikazima"
 msgid "Manage Global Views"
 msgstr "Upravljaj globalnim prikazima"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:259
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Upravljaj jezicima"
 
@@ -2797,7 +2797,7 @@ msgstr "Upravljajte svojim osobnim spremljenim prikazima za ovu tablicu"
 msgid "matches regex"
 msgstr "odgovara regex-u"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Srednji datum"
 
@@ -3124,7 +3124,7 @@ msgstr "Nema vrijednosti svojstava"
 msgid "No fulfillments"
 msgstr "Nema izvršenja"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:355
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Nisu konfigurirani globalni jezici"
 
@@ -3532,7 +3532,7 @@ msgstr "Pregled izmjena narudžbe"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
 #: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Cijena"
 
@@ -3779,7 +3779,7 @@ msgstr "Pokrenuto"
 msgid "Same window"
 msgstr "Isti prozor"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Primjer oblikovanja"
 
@@ -3803,7 +3803,7 @@ msgid "Save changes"
 msgstr "Spremi izmjene"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Spremi izmjene"
 
@@ -3820,7 +3820,7 @@ msgid "Save View"
 msgstr "Spremi prikaz"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:400
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Spremanje..."
 
@@ -3869,7 +3869,7 @@ msgstr "Ponovna izgradnja indeksa pretraživanja nije mogla započeti"
 msgid "Search index rebuild started"
 msgstr "Ponovna izgradnja indeksa pretraživanja započela"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Pretraži jezike..."
 
@@ -3921,7 +3921,7 @@ msgstr "Odaberite valute"
 msgid "Select a destination collection"
 msgstr "Odaberite odredišnu kolekciju"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Odaberite jezik"
 
@@ -3949,7 +3949,7 @@ msgstr "Odaberite adresu"
 msgid "Select an option"
 msgstr "Odaberite opciju"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:297
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Odaberi dostupne jezike"
 
@@ -3965,11 +3965,11 @@ msgstr "Odaberi kupca"
 msgid "Select date range"
 msgstr "Odaberite razdoblje"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Odaberite jezik prikaza"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:359
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Odaberite iz globalno dostupnih jezika za ovaj kanal"
 
@@ -4108,7 +4108,7 @@ msgstr "Način dostave postavljen za narudžbu"
 msgid "Shipping Methods"
 msgstr "Načini dostave"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Kratki datum"
 
@@ -4592,7 +4592,7 @@ msgstr "Ovo su kupci u grupi kupaca <0>{customerGroupName}</0>."
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Ovo su vrijednosti svojstava za svojstvo <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:312
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Ovi jezici će biti dostupni za korištenje svim kanalima"
 
@@ -4937,11 +4937,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Jučer"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:334
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Nemate dozvolu za pregled postavki kanala"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:280
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Nemate dozvolu za pregled globalnih postavki jezika"
 
