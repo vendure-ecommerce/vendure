@@ -38,7 +38,7 @@ msgstr "Extensão de consulta inválida: deve ter pelo menos um campo de nível 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:47
 msgid "Query extension mismatch: "
-msgstr "Incompatibilidade de extensão de consulta:"
+msgstr "Incompatibilidade de extensão de consulta: "
 
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:49
@@ -48,7 +48,7 @@ msgstr "Extensão de consulta contém sintaxe GraphQL inválida"
 #. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
-msgstr "Erro de extensão de consulta:"
+msgstr "Erro de extensão de consulta: "
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
