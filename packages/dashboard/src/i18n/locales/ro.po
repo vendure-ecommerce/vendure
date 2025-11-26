@@ -914,7 +914,7 @@ msgstr "Adaugă valoare pentru atribut"
 
 #: src/lib/components/shared/facet-value-selector.tsx:298
 msgid "Add facet values"
-msgstr "Adaugă valori pentru atribut"
+msgstr "Adaugă valori atribute"
 
 #: src/lib/components/data-table/add-filter-menu.tsx:39
 msgid "Add filter"
@@ -1978,7 +1978,7 @@ msgstr "Valori atribut"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:426
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:199
 msgid "Facet Values"
-msgstr "Valori atribut"
+msgstr "Valori atribute"
 
 #: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:32
 msgid "Facet values for {facetName}"
