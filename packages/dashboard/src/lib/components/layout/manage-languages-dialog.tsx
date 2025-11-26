@@ -17,6 +17,7 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Lock } from 'lucide-react';
@@ -114,6 +115,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
     const [globalLanguages, setGlobalLanguages] = useState<string[]>([]);
     const [channelLanguages, setChannelLanguages] = useState<string[]>([]);
     const [channelDefaultLanguage, setChannelDefaultLanguage] = useState<string>('');
+
+    // Map and sort channel languages by their formatted names
+    const sortedChannelLanguages = useSortedLanguages(channelLanguages || []);
 
     // Queries
     const {
@@ -363,7 +367,7 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                                     )}
                                 </div>
 
-                                {channelLanguages.length > 0 && (
+                                {sortedChannelLanguages.length > 0 && (
                                     <div>
                                         <Label className="text-sm font-medium mb-2 block">
                                             <Trans>Default Language</Trans>
@@ -377,10 +381,9 @@ export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogPr
                                                 <SelectValue placeholder="Select default language" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {channelLanguages.map(languageCode => (
-                                                    <SelectItem key={languageCode} value={languageCode}>
-                                                        {formatLanguageName(languageCode)} (
-                                                        {languageCode.toUpperCase()})
+                                                {sortedChannelLanguages.map(({ code, label }) => (
+                                                    <SelectItem key={code} value={code}>
+                                                        {label} ({code.toUpperCase()})
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

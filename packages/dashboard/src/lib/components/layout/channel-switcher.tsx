@@ -17,6 +17,7 @@ import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { Trans } from '@lingui/react/macro';
@@ -64,6 +65,9 @@ export function ChannelSwitcher() {
     const orderedChannels = displayChannel
         ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
         : channels;
+
+    // Sort language codes by their formatted names and map to code and label
+    const sortedLanguages = useSortedLanguages(displayChannel?.availableLanguageCodes);
 
     useEffect(() => {
         if (activeChannel?.availableLanguageCodes) {
@@ -150,7 +154,7 @@ export function ChannelSwitcher() {
                                                 </div>
                                             </DropdownMenuSubTrigger>
                                             <DropdownMenuSubContent>
-                                                {channel.availableLanguageCodes?.map(languageCode => (
+                                                {sortedLanguages?.map(({ code: languageCode, label }) => (
                                                     <DropdownMenuItem
                                                         key={`${channel.code}-${languageCode}`}
                                                         onClick={() => setContentLanguage(languageCode)}
@@ -161,7 +165,7 @@ export function ChannelSwitcher() {
                                                                 {languageCode.toUpperCase()}
                                                             </span>
                                                         </div>
-                                                        <span>{formatLanguageName(languageCode)}</span>
+                                                        <span>{label}</span>
                                                         {contentLanguage === languageCode && (
                                                             <span className="ml-auto text-xs text-muted-foreground">
                                                                 <Trans context="active language">
