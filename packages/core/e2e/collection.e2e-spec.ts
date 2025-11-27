@@ -8,7 +8,12 @@ import {
     variantIdCollectionFilter,
     variantNameCollectionFilter,
 } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, ErrorResultGuard } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -17,7 +22,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import { pick } from '../../common/lib/pick';
 
 import { channelFragment, collectionFragment, facetValueFragment } from './graphql/fragments-admin';
-import { graphql, FragmentOf, ResultOf } from './graphql/graphql-admin';
+import { FragmentOf, graphql, ResultOf } from './graphql/graphql-admin';
 import {
     assignCollectionsToChannelDocument,
     createChannelDocument,
@@ -42,7 +47,7 @@ describe('Collection resolver', () => {
     });
 
     let assets: ResultOf<typeof getAssetListDocument>['assets']['items'];
-    let facetValues: FragmentOf<typeof facetValueFragment>[];
+    let facetValues: Array<FragmentOf<typeof facetValueFragment>>;
     let electronicsCollection: FragmentOf<typeof collectionFragment>;
     let computersCollection: FragmentOf<typeof collectionFragment>;
     let pearCollection: FragmentOf<typeof collectionFragment>;
@@ -55,6 +60,16 @@ describe('Collection resolver', () => {
     const channelGuard: ErrorResultGuard<FragmentOf<typeof channelFragment>> = createErrorResultGuard(
         input => !!input && !('errorCode' in input),
     );
+
+    // Guard for collection query results
+    type CollectionResult = NonNullable<ResultOf<typeof getCollectionProductVariantsDocument>['collection']>;
+    const collectionResultGuard: ErrorResultGuard<CollectionResult> = createErrorResultGuard(
+        input => !!input,
+    );
+
+    // Guard for product query results
+    type ProductResult = NonNullable<ResultOf<typeof getProductCollectionsDocument>['product']>;
+    const productResultGuard: ErrorResultGuard<ProductResult> = createErrorResultGuard(input => !!input);
 
     beforeAll(async () => {
         await server.init({
@@ -71,10 +86,10 @@ describe('Collection resolver', () => {
             },
         });
         assets = assetsResult.assets.items;
-        const facetValuesResult = await adminClient.query(GET_FACET_VALUES);
+        const facetValuesResult = await adminClient.query(getFacetValuesDocument);
         facetValues = facetValuesResult.facets.items.reduce(
             (values, facet) => [...values, ...facet.values],
-            [] as FragmentOf<typeof facetValueFragment>[],
+            [] as Array<FragmentOf<typeof facetValueFragment>>,
         );
         const { createChannel } = await adminClient.query(createChannelDocument, {
             input: {
@@ -99,10 +114,10 @@ describe('Collection resolver', () => {
      * Test case for https://github.com/vendure-ecommerce/vendure/issues/97
      */
     it('collection breadcrumbs works after bootstrap', async () => {
-        const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
+        const result = await adminClient.query(getCollectionBreadcrumbsDocument, {
             id: 'T_1',
         });
-        expect(result.collection!.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
+        expect(result.collection?.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
     });
 
     describe('createCollection', () => {
@@ -480,21 +495,17 @@ describe('Collection resolver', () => {
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(getCollectionDocument,
-                    {},
-                );
+                await adminClient.query(getCollectionDocument, {});
             }, 'Either the Collection id or slug must be provided'),
         );
 
         it(
             'throws if id and slug do not refer to the same Product',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(getCollectionDocument,
-                    {
-                        id: computersCollection.id,
-                        slug: pearCollection.slug,
-                    },
-                );
+                await adminClient.query(getCollectionDocument, {
+                    id: computersCollection.id,
+                    slug: pearCollection.slug,
+                });
             }, 'The provided id and slug refer to different Collections'),
         );
 
@@ -511,7 +522,7 @@ describe('Collection resolver', () => {
 
         // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
         it('parent field resolved by CollectionEntityResolver', async () => {
-            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
+            const { product } = await adminClient.query(getProductCollectionsWithParentDocument, {
                 id: 'T_1',
             });
 
@@ -570,7 +581,7 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/981
         it('nested parent field in shop API', async () => {
-            const { collections } = await shopClient.query(GET_COLLECTION_NESTED_PARENTS);
+            const { collections } = await shopClient.query(getCollectionNestedParentsDocument);
 
             expect(collections.items[0].parent?.name).toBe(ROOT_COLLECTION_NAME);
         });
@@ -588,7 +599,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs', async () => {
-            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(getCollectionBreadcrumbsDocument, {
                 id: pearCollection.id,
             });
             if (!result.collection) {
@@ -612,7 +623,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs for root collection', async () => {
-            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(getCollectionBreadcrumbsDocument, {
                 id: 'T_1',
             });
             if (!result.collection) {
@@ -625,17 +636,19 @@ describe('Collection resolver', () => {
         });
 
         it('collections.assets', async () => {
-            const { collections } = await adminClient.query(graphql(`
-                query GetCollectionsWithAssets {
-                    collections {
-                        items {
-                            assets {
-                                name
+            const { collections } = await adminClient.query(
+                graphql(`
+                    query GetCollectionsWithAssets {
+                        collections {
+                            items {
+                                assets {
+                                    name
+                                }
                             }
                         }
                     }
-                }
-            `));
+                `),
+            );
 
             expect(collections.items[0].assets).toBeDefined();
         });
@@ -650,7 +663,8 @@ describe('Collection resolver', () => {
                     },
                 },
             });
-            expect(collection!.productVariants.items.map(i => i.price)).toEqual([
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.price)).toEqual([
                 3799, 5374, 6900, 7489, 7896, 9299, 13435, 14374, 16994, 93120, 94920, 108720, 109995, 129900,
                 139900, 219900, 229900,
             ]);
@@ -658,7 +672,7 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/3107
         it('collection list with translations, filtered by name', async () => {
-            const { collections } = await adminClient.query(GET_COLLECTION_LIST_WITH_TRANSLATIONS, {
+            const { collections } = await adminClient.query(getCollectionListWithTranslationsDocument, {
                 options: {
                     filter: {
                         name: {
@@ -674,7 +688,7 @@ describe('Collection resolver', () => {
 
     describe('moveCollection', () => {
         it('moves a collection to a new parent', async () => {
-            const result = await adminClient.query(MOVE_COLLECTION, {
+            const result = await adminClient.query(moveCollectionDocument, {
                 input: {
                     collectionId: pearCollection.id,
                     parentId: electronicsCollection.id,
@@ -691,8 +705,11 @@ describe('Collection resolver', () => {
         it('re-evaluates Collection contents on move', async () => {
             await awaitRunningJobs(adminClient, 5000);
 
-            const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+            const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                id: pearCollection.id,
+            });
+            collectionResultGuard.assertSuccess(result.collection);
+            expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -702,7 +719,7 @@ describe('Collection resolver', () => {
         });
 
         it('moves a 1st level collection to a new parent to check breadcrumbs', async () => {
-            const result = await adminClient.query(MOVE_COLLECTION, {
+            const result = await adminClient.query(moveCollectionDocument, {
                 input: {
                     collectionId: computersBreadcrumbsCollection.id,
                     parentId: electronicsBreadcrumbsCollection.id,
@@ -717,7 +734,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs for collection with ids out of order', async () => {
-            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(getCollectionBreadcrumbsDocument, {
                 id: pearBreadcrumbsCollection.id,
             });
             if (!result.collection) {
@@ -745,60 +762,52 @@ describe('Collection resolver', () => {
         });
 
         it('alters the position in the current parent 1', async () => {
-            await adminClient.query(MOVE_COLLECTION,
-                {
-                    input: {
-                        collectionId: computersCollection.id,
-                        parentId: electronicsCollection.id,
-                        index: 0,
-                    },
+            await adminClient.query(moveCollectionDocument, {
+                input: {
+                    collectionId: computersCollection.id,
+                    parentId: electronicsCollection.id,
+                    index: 0,
                 },
-            );
+            });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
             expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it('alters the position in the current parent 2', async () => {
-            await adminClient.query(MOVE_COLLECTION,
-                {
-                    input: {
-                        collectionId: pearCollection.id,
-                        parentId: electronicsCollection.id,
-                        index: 0,
-                    },
+            await adminClient.query(moveCollectionDocument, {
+                input: {
+                    collectionId: pearCollection.id,
+                    parentId: electronicsCollection.id,
+                    index: 0,
                 },
-            );
+            });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
             expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
-            await adminClient.query(MOVE_COLLECTION,
-                {
-                    input: {
-                        collectionId: pearCollection.id,
-                        parentId: electronicsCollection.id,
-                        index: -3,
-                    },
+            await adminClient.query(moveCollectionDocument, {
+                input: {
+                    collectionId: pearCollection.id,
+                    parentId: electronicsCollection.id,
+                    index: -3,
                 },
-            );
+            });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
             expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
-            await adminClient.query(MOVE_COLLECTION,
-                {
-                    input: {
-                        collectionId: pearCollection.id,
-                        parentId: electronicsCollection.id,
-                        index: 10,
-                    },
+            await adminClient.query(moveCollectionDocument, {
+                input: {
+                    collectionId: pearCollection.id,
+                    parentId: electronicsCollection.id,
+                    index: 10,
                 },
-            );
+            });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
             expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
@@ -808,7 +817,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into self',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query(MOVE_COLLECTION, {
+                    adminClient.query(moveCollectionDocument, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -823,7 +832,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into a descendant of self',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query(MOVE_COLLECTION, {
+                    adminClient.query(moveCollectionDocument, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -836,15 +845,13 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1595
         it('children correctly ordered', async () => {
-            await adminClient.query(MOVE_COLLECTION,
-                {
-                    input: {
-                        collectionId: computersCollection.id,
-                        parentId: 'T_1',
-                        index: 4,
-                    },
+            await adminClient.query(moveCollectionDocument, {
+                input: {
+                    collectionId: computersCollection.id,
+                    parentId: 'T_1',
+                    index: 4,
                 },
-            );
+            });
             const result = await adminClient.query(getCollectionDocument, {
                 id: 'T_1',
             });
@@ -919,30 +926,31 @@ describe('Collection resolver', () => {
         it(
             'throws for invalid collection id',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(DELETE_COLLECTION, {
+                await adminClient.query(deleteCollectionDocument, {
                     id: 'T_999',
                 });
             }, 'No Collection with the id "999" could be found'),
         );
 
         it('collection and product related prior to deletion', async () => {
-            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(getCollectionProductVariantsDocument, {
                 id: collectionToDeleteParent.id,
             });
-            expect(collection!.productVariants.items.map(pick(['name']))).toEqual([
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(pick(['name']))).toEqual([
                 { name: 'Laptop 13 inch 8GB' },
                 { name: 'Laptop 15 inch 8GB' },
                 { name: 'Laptop 13 inch 16GB' },
                 { name: 'Laptop 15 inch 16GB' },
             ]);
 
-            laptopProductId = collection!.productVariants.items[0].productId;
+            laptopProductId = collection.productVariants.items[0].productId;
 
-            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await adminClient.query(getProductCollectionsDocument, {
                 id: laptopProductId,
             });
-
-            expect(product!.collections).toEqual([
+            productResultGuard.assertSuccess(product);
+            expect(product.collections).toEqual([
                 {
                     id: 'T_3',
                     name: 'Electronics',
@@ -979,7 +987,7 @@ describe('Collection resolver', () => {
         });
 
         it('deleteCollection works', async () => {
-            const { deleteCollection } = await adminClient.query(DELETE_COLLECTION, {
+            const { deleteCollection } = await adminClient.query(deleteCollectionDocument, {
                 id: collectionToDeleteParent.id,
             });
 
@@ -1001,11 +1009,11 @@ describe('Collection resolver', () => {
         });
 
         it('product no longer lists collection', async () => {
-            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await adminClient.query(getProductCollectionsDocument, {
                 id: laptopProductId,
             });
-
-            expect(product!.collections).toEqual([
+            productResultGuard.assertSuccess(product);
+            expect(product.collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
@@ -1027,7 +1035,7 @@ describe('Collection resolver', () => {
 
     describe('filters', () => {
         it('Collection with no filters has no productVariants', async () => {
-            const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+            const result = await adminClient.query(createCollectionSelectVariantsDocument, {
                 input: {
                     translations: [
                         { languageCode: LanguageCode.en, name: 'Empty', description: '', slug: 'empty' },
@@ -1040,10 +1048,11 @@ describe('Collection resolver', () => {
 
         describe('facetValue filter', () => {
             it('electronics', async () => {
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: electronicsCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1069,10 +1078,11 @@ describe('Collection resolver', () => {
             });
 
             it('computers', async () => {
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: computersCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1094,7 +1104,7 @@ describe('Collection resolver', () => {
             });
 
             it('photo AND pear', async () => {
-                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(createCollectionSelectVariantsDocument, {
                     input: {
                         translations: [
                             {
@@ -1128,12 +1138,12 @@ describe('Collection resolver', () => {
                 const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
-
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual(['Instant Camera']);
+                collectionResultGuard.assertSuccess(collection);
+                expect(collection.productVariants.items.map(i => i.name)).toEqual(['Instant Camera']);
             });
 
             it('photo OR pear', async () => {
-                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(createCollectionSelectVariantsDocument, {
                     input: {
                         translations: [
                             {
@@ -1167,8 +1177,8 @@ describe('Collection resolver', () => {
                 const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
-
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(collection);
+                expect(collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1182,7 +1192,7 @@ describe('Collection resolver', () => {
             });
 
             it('bell OR pear in computers', async () => {
-                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(createCollectionSelectVariantsDocument, {
                     input: {
                         parentId: computersCollection.id,
                         translations: [
@@ -1215,8 +1225,8 @@ describe('Collection resolver', () => {
                 const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
-
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(collection);
+                expect(collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1268,10 +1278,11 @@ describe('Collection resolver', () => {
             it('contains operator', async () => {
                 const collection = await createVariantNameFilteredCollection('contains', 'camera');
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Instant Camera',
                     'Camera Lens',
                     'SLR Camera',
@@ -1281,19 +1292,21 @@ describe('Collection resolver', () => {
             it('startsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('startsWith', 'camera');
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
             });
 
             it('endsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('endsWith', 'camera');
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Instant Camera',
                     'SLR Camera',
                 ]);
@@ -1302,10 +1315,11 @@ describe('Collection resolver', () => {
             it('doesNotContain operator', async () => {
                 const collection = await createVariantNameFilteredCollection('doesNotContain', 'camera');
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1333,7 +1347,7 @@ describe('Collection resolver', () => {
             it('nested variantName filter', async () => {
                 const parent = await createVariantNameFilteredCollection('contains', 'lap');
 
-                const parentResult = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const parentResult = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: parent.id,
                 });
 
@@ -1346,7 +1360,7 @@ describe('Collection resolver', () => {
 
                 const child = await createVariantNameFilteredCollection('contains', 'GB', parent.id);
 
-                const childResult = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const childResult = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: child.id,
                 });
 
@@ -1386,13 +1400,11 @@ describe('Collection resolver', () => {
                 });
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: createCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
-                    'T_1',
-                    'T_4',
-                ]);
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.id).sort()).toEqual(['T_1', 'T_4']);
             });
         });
 
@@ -1423,13 +1435,11 @@ describe('Collection resolver', () => {
                 });
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
                     id: createCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
-                    'T_5',
-                    'T_6',
-                ]);
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.id).sort()).toEqual(['T_5', 'T_6']);
             });
         });
 
@@ -1469,8 +1479,11 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: pearCollection.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1496,8 +1509,11 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: pearCollection.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1524,8 +1540,11 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: pearCollection.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1542,39 +1561,45 @@ describe('Collection resolver', () => {
             let clothesCollectionId: string;
 
             it('filter inheritance of nested collections (issue #158)', async () => {
-                const { createCollection: pearElectronics } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'pear electronics',
-                                description: '',
-                                slug: 'pear-electronics',
-                            },
-                        ],
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: `["${getFacetValueId('pear')}"]`,
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
+                const { createCollection: pearElectronics } = await adminClient.query(
+                    createCollectionSelectVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'pear electronics',
+                                    description: '',
+                                    slug: 'pear-electronics',
+                                },
+                            ],
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: `["${getFacetValueId('pear')}"]`,
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: pearElectronics.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1588,107 +1613,122 @@ describe('Collection resolver', () => {
             });
 
             it('child collection with no inheritance', async () => {
-                const { createCollection: clothesCollection } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'clothes',
-                                description: '',
-                                slug: 'clothes',
-                            },
-                        ],
-                        inheritFilters: false,
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: `["${getFacetValueId('clothing')}"]`,
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
+                const { createCollection: clothesCollection } = await adminClient.query(
+                    createCollectionSelectVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'clothes',
+                                    description: '',
+                                    slug: 'clothes',
+                                },
+                            ],
+                            inheritFilters: false,
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: `["${getFacetValueId('clothing')}"]`,
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
 
                 await awaitRunningJobs(adminClient, 5000);
 
                 clothesCollectionId = clothesCollection.id;
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: clothesCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Hat', 'Boots']);
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: clothesCollection.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual(['Hat', 'Boots']);
             });
 
             it('grandchild collection with inheritance (root -> no inherit -> inherit', async () => {
-                const { createCollection: footwearCollection } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
-                    input: {
-                        parentId: clothesCollectionId,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'footwear',
-                                description: '',
-                                slug: 'footwear',
-                            },
-                        ],
-                        inheritFilters: true,
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: `["${getFacetValueId('footwear')}"]`,
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
+                const { createCollection: footwearCollection } = await adminClient.query(
+                    createCollectionSelectVariantsDocument,
+                    {
+                        input: {
+                            parentId: clothesCollectionId,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'footwear',
+                                    description: '',
+                                    slug: 'footwear',
+                                },
+                            ],
+                            inheritFilters: true,
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: `["${getFacetValueId('footwear')}"]`,
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: footwearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Boots']);
+                const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                    id: footwearCollection.id,
+                });
+                collectionResultGuard.assertSuccess(result.collection);
+                expect(result.collection.productVariants.items.map(i => i.name)).toEqual(['Boots']);
             });
         });
 
         describe('previewCollectionVariants', () => {
             it('returns correct contents', async () => {
-                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.parent?.id,
-                        inheritFilters: true,
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: `["${getFacetValueId('electronics')}","${getFacetValueId(
-                                            'pear',
-                                        )}"]`,
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
+                const { previewCollectionVariants } = await adminClient.query(
+                    previewCollectionVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.parent?.id,
+                            inheritFilters: true,
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: `["${getFacetValueId('electronics')}","${getFacetValueId(
+                                                'pear',
+                                            )}"]`,
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
                 expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
                     'Curvy Monitor 24 inch',
                     'Curvy Monitor 27 inch',
@@ -1702,38 +1742,41 @@ describe('Collection resolver', () => {
             });
 
             it('works with list options', async () => {
-                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.parent?.id,
-                        inheritFilters: true,
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: `["${getFacetValueId('electronics')}"]`,
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    options: {
-                        sort: {
-                            name: SortOrder.ASC,
+                const { previewCollectionVariants } = await adminClient.query(
+                    previewCollectionVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.parent?.id,
+                            inheritFilters: true,
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: `["${getFacetValueId('electronics')}"]`,
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
                         },
-                        filter: {
-                            name: {
-                                contains: 'mon',
+                        options: {
+                            sort: {
+                                name: SortOrder.ASC,
                             },
+                            filter: {
+                                name: {
+                                    contains: 'mon',
+                                },
+                            },
+                            take: 5,
                         },
-                        take: 5,
                     },
-                });
+                );
                 expect(previewCollectionVariants.items).toEqual([
                     { id: 'T_5', name: 'Curvy Monitor 24 inch' },
                     { id: 'T_6', name: 'Curvy Monitor 27 inch' },
@@ -1741,27 +1784,30 @@ describe('Collection resolver', () => {
             });
 
             it('takes parent filters into account', async () => {
-                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.id,
-                        inheritFilters: true,
-                        filters: [
-                            {
-                                code: variantNameCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'operator',
-                                        value: 'startsWith',
-                                    },
-                                    {
-                                        name: 'term',
-                                        value: 'h',
-                                    },
-                                ],
-                            },
-                        ],
+                const { previewCollectionVariants } = await adminClient.query(
+                    previewCollectionVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.id,
+                            inheritFilters: true,
+                            filters: [
+                                {
+                                    code: variantNameCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'operator',
+                                            value: 'startsWith',
+                                        },
+                                        {
+                                            name: 'term',
+                                            value: 'h',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
                 expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
                     'Hard Drive 1TB',
                     'Hard Drive 2TB',
@@ -1772,27 +1818,30 @@ describe('Collection resolver', () => {
             });
 
             it('ignores parent filters id inheritFilters set to false', async () => {
-                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
-                    input: {
-                        parentId: electronicsCollection.id,
-                        inheritFilters: false,
-                        filters: [
-                            {
-                                code: variantNameCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'operator',
-                                        value: 'startsWith',
-                                    },
-                                    {
-                                        name: 'term',
-                                        value: 'h',
-                                    },
-                                ],
-                            },
-                        ],
+                const { previewCollectionVariants } = await adminClient.query(
+                    previewCollectionVariantsDocument,
+                    {
+                        input: {
+                            parentId: electronicsCollection.id,
+                            inheritFilters: false,
+                            filters: [
+                                {
+                                    code: variantNameCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'operator',
+                                            value: 'startsWith',
+                                        },
+                                        {
+                                            name: 'term',
+                                            value: 'h',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
                 expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
                     'Hard Drive 1TB',
                     'Hard Drive 2TB',
@@ -1804,26 +1853,29 @@ describe('Collection resolver', () => {
             });
 
             it('with no parentId, operates at the root level', async () => {
-                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
-                    input: {
-                        inheritFilters: true,
-                        filters: [
-                            {
-                                code: variantNameCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'operator',
-                                        value: 'startsWith',
-                                    },
-                                    {
-                                        name: 'term',
-                                        value: 'h',
-                                    },
-                                ],
-                            },
-                        ],
+                const { previewCollectionVariants } = await adminClient.query(
+                    previewCollectionVariantsDocument,
+                    {
+                        input: {
+                            inheritFilters: true,
+                            filters: [
+                                {
+                                    code: variantNameCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'operator',
+                                            value: 'startsWith',
+                                        },
+                                        {
+                                            name: 'term',
+                                            value: 'h',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
                 expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
                     'Hard Drive 1TB',
                     'Hard Drive 2TB',
@@ -1837,7 +1889,7 @@ describe('Collection resolver', () => {
     });
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
-            const result = await adminClient.query(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+            const result = await adminClient.query(getCollectionsForProductsDocument, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
                 {
                     id: 'T_3',
@@ -1877,16 +1929,15 @@ describe('Collection resolver', () => {
 
     describe('productVariants list', () => {
         it('does not list variants from deleted products', async () => {
-            await adminClient.query(deleteProductDocument,
-                {
-                    id: 'T_2', // curvy monitor
-                },
-            );
+            await adminClient.query(deleteProductDocument, {
+                id: 'T_2', // curvy monitor
+            });
             await awaitRunningJobs(adminClient, 5000);
-            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(getCollectionProductVariantsDocument, {
                 id: pearCollection.id,
             });
-            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -1902,10 +1953,11 @@ describe('Collection resolver', () => {
                 id: 'T_18', // Instant Camera
             });
             await awaitRunningJobs(adminClient, 5000);
-            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(getCollectionProductVariantsDocument, {
                 id: pearCollection.id,
             });
-            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -1921,35 +1973,33 @@ describe('Collection resolver', () => {
             });
             await awaitRunningJobs(adminClient, 5000);
 
-            const { collection } = await shopClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await shopClient.query(getCollectionProductVariantsDocument, {
                 id: pearCollection.id,
             });
-            expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
         });
 
         it('does not list variants of disabled products in Shop API', async () => {
-            await adminClient.query(updateProductDocument,
-                {
-                    input: { id: 'T_1', enabled: false },
-                },
-            );
+            await adminClient.query(updateProductDocument, {
+                input: { id: 'T_1', enabled: false },
+            });
             await awaitRunningJobs(adminClient, 5000);
 
-            const { collection } = await shopClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await shopClient.query(getCollectionProductVariantsDocument, {
                 id: pearCollection.id,
             });
-            expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
-            expect(collection!.productVariants.items.map(i => i.id).includes('T_2')).toBe(false);
-            expect(collection!.productVariants.items.map(i => i.id).includes('T_3')).toBe(false);
-            expect(collection!.productVariants.items.map(i => i.id).includes('T_4')).toBe(false);
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
+            expect(collection.productVariants.items.map(i => i.id).includes('T_2')).toBe(false);
+            expect(collection.productVariants.items.map(i => i.id).includes('T_3')).toBe(false);
+            expect(collection.productVariants.items.map(i => i.id).includes('T_4')).toBe(false);
         });
 
         it('handles other languages', async () => {
-            await adminClient.query(updateProductDocument,
-                {
-                    input: { id: 'T_1', enabled: true },
-                },
-            );
+            await adminClient.query(updateProductDocument, {
+                input: { id: 'T_1', enabled: true },
+            });
             await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
@@ -1959,13 +2009,14 @@ describe('Collection resolver', () => {
                 ],
             });
             const { collection } = await shopClient.query(
-                GET_COLLECTION_PRODUCT_VARIANTS,
+                getCollectionProductVariantsDocument,
                 {
                     id: pearCollection.id,
                 },
                 { languageCode: LanguageCode.de },
             );
-            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+            collectionResultGuard.assertSuccess(collection);
+            expect(collection.productVariants.items.map(i => i.name)).toEqual([
                 'Taschenrechner 15 Zoll',
                 'Laptop 13 inch 16GB',
                 'Laptop 15 inch 16GB',
@@ -2011,39 +2062,45 @@ describe('Collection resolver', () => {
 
         it('assign to channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: before } = await adminClient.query(GET_COLLECTION_LIST);
+            const { collections: before } = await adminClient.query(getCollectionListDocument);
             expect(before.items.length).toBe(1);
             expect(before.items.map(i => i.id).includes(testCollection.id)).toBe(false);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignCollectionsToChannel } = await adminClient.query(assignCollectionsToChannelDocument, {
-                input: {
-                    channelId: secondChannel.id,
-                    collectionIds: [testCollection.id],
+            const { assignCollectionsToChannel } = await adminClient.query(
+                assignCollectionsToChannelDocument,
+                {
+                    input: {
+                        channelId: secondChannel.id,
+                        collectionIds: [testCollection.id],
+                    },
                 },
-            });
+            );
 
             expect(assignCollectionsToChannel.map(c => c.id)).toEqual([testCollection.id]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(getCollectionListDocument);
             expect(after.items.length).toBe(2);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(true);
         });
 
         it('remove from channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { removeCollectionsFromChannel } = await adminClient.query(REMOVE_COLLECTIONS_FROM_CHANNEL, {
-                input: {
-                    channelId: secondChannel.id,
-                    collectionIds: [testCollection.id],
+            const { removeCollectionsFromChannel } = await adminClient.query(
+                removeCollectionsFromChannelDocument,
+                {
+                    input: {
+                        channelId: secondChannel.id,
+                        collectionIds: [testCollection.id],
+                    },
                 },
-            });
+            );
 
             expect(removeCollectionsFromChannel.map(c => c.id)).toEqual([testCollection.id]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(getCollectionListDocument);
             expect(after.items.length).toBe(1);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(false);
         });
@@ -2077,7 +2134,7 @@ describe('Collection resolver', () => {
         });
 
         it('deletes all selected collections', async () => {
-            const { collections: before } = await adminClient.query(GET_COLLECTION_LIST);
+            const { collections: before } = await adminClient.query(getCollectionListDocument);
 
             expect(before.items.sort(sortById).map(pick(['name']))).toEqual([
                 { name: 'top' },
@@ -2086,7 +2143,7 @@ describe('Collection resolver', () => {
                 { name: 'Accessories' },
             ]);
 
-            const { deleteCollections } = await adminClient.query(DELETE_COLLECTIONS_BULK, {
+            const { deleteCollections } = await adminClient.query(deleteCollectionsBulkDocument, {
                 ids: [top.id, child.id, grandchild.id],
             });
 
@@ -2096,7 +2153,7 @@ describe('Collection resolver', () => {
                 { result: DeletionResult.DELETED, message: null },
             ]);
 
-            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(getCollectionListDocument);
 
             expect(after.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
                 { id: 'T_8', name: 'Accessories' },
@@ -2113,7 +2170,7 @@ describe('Collection resolver', () => {
     }
 });
 
-export const GET_COLLECTION_LIST = graphql(
+export const getCollectionListDocument = graphql(
     `
         query GetCollectionListAdmin($options: CollectionListOptions) {
             collections(options: $options) {
@@ -2127,7 +2184,7 @@ export const GET_COLLECTION_LIST = graphql(
     [collectionFragment],
 );
 
-export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = graphql(`
+export const getCollectionListWithTranslationsDocument = graphql(`
     query GetCollectionListWithTranslations($options: CollectionListOptions) {
         collections(options: $options) {
             items {
@@ -2142,7 +2199,7 @@ export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = graphql(`
     }
 `);
 
-export const MOVE_COLLECTION = graphql(
+export const moveCollectionDocument = graphql(
     `
         mutation MoveCollection($input: MoveCollectionInput!) {
             moveCollection(input: $input) {
@@ -2153,7 +2210,7 @@ export const MOVE_COLLECTION = graphql(
     [collectionFragment],
 );
 
-const GET_FACET_VALUES = graphql(
+const getFacetValuesDocument = graphql(
     `
         query GetFacetWithFacetValues {
             facets {
@@ -2168,7 +2225,7 @@ const GET_FACET_VALUES = graphql(
     [facetValueFragment],
 );
 
-const GET_COLLECTION_PRODUCT_VARIANTS = graphql(`
+const getCollectionProductVariantsDocument = graphql(`
     query GetCollectionProducts($id: ID!) {
         collection(id: $id) {
             productVariants(options: { sort: { id: ASC } }) {
@@ -2185,7 +2242,7 @@ const GET_COLLECTION_PRODUCT_VARIANTS = graphql(`
     }
 `);
 
-const CREATE_COLLECTION_SELECT_VARIANTS = graphql(`
+const createCollectionSelectVariantsDocument = graphql(`
     mutation CreateCollectionSelectVariants($input: CreateCollectionInput!) {
         createCollection(input: $input) {
             id
@@ -2199,7 +2256,7 @@ const CREATE_COLLECTION_SELECT_VARIANTS = graphql(`
     }
 `);
 
-const GET_COLLECTION_BREADCRUMBS = graphql(`
+const getCollectionBreadcrumbsDocument = graphql(`
     query GetCollectionBreadcrumbs($id: ID!) {
         collection(id: $id) {
             breadcrumbs {
@@ -2211,7 +2268,7 @@ const GET_COLLECTION_BREADCRUMBS = graphql(`
     }
 `);
 
-const GET_COLLECTIONS_FOR_PRODUCTS = graphql(`
+const getCollectionsForProductsDocument = graphql(`
     query GetCollectionsForProducts($term: String!) {
         products(options: { filter: { name: { contains: $term } } }) {
             items {
@@ -2226,7 +2283,7 @@ const GET_COLLECTIONS_FOR_PRODUCTS = graphql(`
     }
 `);
 
-const DELETE_COLLECTION = graphql(`
+const deleteCollectionDocument = graphql(`
     mutation DeleteCollection($id: ID!) {
         deleteCollection(id: $id) {
             result
@@ -2235,7 +2292,7 @@ const DELETE_COLLECTION = graphql(`
     }
 `);
 
-const GET_PRODUCT_COLLECTIONS = graphql(`
+const getProductCollectionsDocument = graphql(`
     query GetProductCollections($id: ID!) {
         product(id: $id) {
             id
@@ -2247,7 +2304,7 @@ const GET_PRODUCT_COLLECTIONS = graphql(`
     }
 `);
 
-const GET_PRODUCT_COLLECTIONS_WITH_PARENT = graphql(`
+const getProductCollectionsWithParentDocument = graphql(`
     query GetProductCollectionsWithParent($id: ID!) {
         product(id: $id) {
             id
@@ -2263,7 +2320,7 @@ const GET_PRODUCT_COLLECTIONS_WITH_PARENT = graphql(`
     }
 `);
 
-const GET_COLLECTION_NESTED_PARENTS = graphql(`
+const getCollectionNestedParentsDocument = graphql(`
     query GetCollectionNestedParents {
         collections {
             items {
@@ -2283,7 +2340,7 @@ const GET_COLLECTION_NESTED_PARENTS = graphql(`
     }
 `);
 
-const PREVIEW_COLLECTION_VARIANTS = graphql(`
+const previewCollectionVariantsDocument = graphql(`
     query PreviewCollectionVariants(
         $input: PreviewCollectionVariantsInput!
         $options: ProductVariantListOptions
@@ -2298,7 +2355,7 @@ const PREVIEW_COLLECTION_VARIANTS = graphql(`
     }
 `);
 
-const REMOVE_COLLECTIONS_FROM_CHANNEL = graphql(
+const removeCollectionsFromChannelDocument = graphql(
     `
         mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
             removeCollectionsFromChannel(input: $input) {
@@ -2309,7 +2366,7 @@ const REMOVE_COLLECTIONS_FROM_CHANNEL = graphql(
     [collectionFragment],
 );
 
-const DELETE_COLLECTIONS_BULK = graphql(`
+const deleteCollectionsBulkDocument = graphql(`
     mutation DeleteCollectionsBulk($ids: [ID!]!) {
         deleteCollections(ids: $ids) {
             message
