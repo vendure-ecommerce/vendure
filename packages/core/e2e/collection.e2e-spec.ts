@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { CurrencyCode, DeletionResult, LanguageCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     DefaultJobQueuePlugin,
@@ -7,8 +8,7 @@ import {
     variantIdCollectionFilter,
     variantNameCollectionFilter,
 } from '@vendure/core';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
-import gql from 'graphql-tag';
+import { createErrorResultGuard, createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -16,17 +16,21 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { pick } from '../../common/lib/pick';
 
-import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import { channelFragment, collectionFragment, facetValueFragment } from './graphql/fragments-admin';
+import { graphql, FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
-    ChannelFragment,
-    CollectionFragment,
-    CurrencyCode,
-    DeletionResult,
-    FacetValueFragment,
-    LanguageCode,
-    SortOrder,
-} from './graphql/generated-e2e-admin-types';
+    assignCollectionsToChannelDocument,
+    createChannelDocument,
+    createCollectionDocument,
+    deleteProductDocument,
+    deleteProductVariantDocument,
+    getAssetListDocument,
+    getCollectionDocument,
+    getCollectionsDocument,
+    updateCollectionDocument,
+    updateProductDocument,
+    updateProductVariantsDocument,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 import { sortById } from './utils/test-order-utils';
@@ -37,16 +41,20 @@ describe('Collection resolver', () => {
         plugins: [DefaultJobQueuePlugin],
     });
 
-    let assets: Codegen.GetAssetListQuery['assets']['items'];
-    let facetValues: FacetValueFragment[];
-    let electronicsCollection: CollectionFragment;
-    let computersCollection: CollectionFragment;
-    let pearCollection: CollectionFragment;
-    let electronicsBreadcrumbsCollection: CollectionFragment;
-    let computersBreadcrumbsCollection: CollectionFragment;
-    let pearBreadcrumbsCollection: CollectionFragment;
+    let assets: ResultOf<typeof getAssetListDocument>['assets']['items'];
+    let facetValues: FragmentOf<typeof facetValueFragment>[];
+    let electronicsCollection: FragmentOf<typeof collectionFragment>;
+    let computersCollection: FragmentOf<typeof collectionFragment>;
+    let pearCollection: FragmentOf<typeof collectionFragment>;
+    let electronicsBreadcrumbsCollection: FragmentOf<typeof collectionFragment>;
+    let computersBreadcrumbsCollection: FragmentOf<typeof collectionFragment>;
+    let pearBreadcrumbsCollection: FragmentOf<typeof collectionFragment>;
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
-    let secondChannel: ChannelFragment;
+    let secondChannel: FragmentOf<typeof channelFragment>;
+
+    const channelGuard: ErrorResultGuard<FragmentOf<typeof channelFragment>> = createErrorResultGuard(
+        input => !!input && !('errorCode' in input),
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -55,10 +63,7 @@ describe('Collection resolver', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        const assetsResult = await adminClient.query<
-            Codegen.GetAssetListQuery,
-            Codegen.GetAssetListQueryVariables
-        >(GET_ASSET_LIST, {
+        const assetsResult = await adminClient.query(getAssetListDocument, {
             options: {
                 sort: {
                     name: SortOrder.ASC,
@@ -66,16 +71,12 @@ describe('Collection resolver', () => {
             },
         });
         assets = assetsResult.assets.items;
-        const facetValuesResult =
-            await adminClient.query<Codegen.GetFacetWithFacetValuesQuery>(GET_FACET_VALUES);
+        const facetValuesResult = await adminClient.query(GET_FACET_VALUES);
         facetValues = facetValuesResult.facets.items.reduce(
             (values, facet) => [...values, ...facet.values],
-            [] as FacetValueFragment[],
+            [] as FragmentOf<typeof facetValueFragment>[],
         );
-        const { createChannel } = await adminClient.query<
-            Codegen.CreateChannelMutation,
-            Codegen.CreateChannelMutationVariables
-        >(CREATE_CHANNEL, {
+        const { createChannel } = await adminClient.query(createChannelDocument, {
             input: {
                 code: 'second-channel',
                 token: SECOND_CHANNEL_TOKEN,
@@ -86,6 +87,7 @@ describe('Collection resolver', () => {
                 defaultTaxZoneId: 'T_1',
             },
         });
+        channelGuard.assertSuccess(createChannel);
         secondChannel = createChannel;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -97,21 +99,15 @@ describe('Collection resolver', () => {
      * Test case for https://github.com/vendure-ecommerce/vendure/issues/97
      */
     it('collection breadcrumbs works after bootstrap', async () => {
-        const result = await adminClient.query<Codegen.GetCollectionBreadcrumbsQuery>(
-            GET_COLLECTION_BREADCRUMBS,
-            {
-                id: 'T_1',
-            },
-        );
+        const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
+            id: 'T_1',
+        });
         expect(result.collection!.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
     });
 
     describe('createCollection', () => {
         it('creates a root collection', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     assetIds: [assets[0].id, assets[1].id],
                     featuredAssetId: assets[1].id,
@@ -147,10 +143,7 @@ describe('Collection resolver', () => {
         });
 
         it('creates a nested collection', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     parentId: electronicsCollection.id,
                     translations: [
@@ -183,10 +176,7 @@ describe('Collection resolver', () => {
         });
 
         it('creates a 2nd level nested collection', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     parentId: computersCollection.id,
                     translations: [
@@ -214,10 +204,7 @@ describe('Collection resolver', () => {
         });
 
         it('slug is normalized to be url-safe', async () => {
-            const { createCollection } = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
                 input: {
                     translations: [
                         {
@@ -247,10 +234,7 @@ describe('Collection resolver', () => {
         });
 
         it('create with duplicate slug is renamed to be unique', async () => {
-            const { createCollection } = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
                 input: {
                     translations: [
                         {
@@ -280,10 +264,7 @@ describe('Collection resolver', () => {
 
         it('creates the duplicate slug without suffix in another channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { createCollection } = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
                 input: {
                     translations: [
                         {
@@ -312,10 +293,7 @@ describe('Collection resolver', () => {
 
         it('creates a root collection to become a 1st level collection later #779', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     assetIds: [assets[0].id, assets[1].id],
                     featuredAssetId: assets[1].id,
@@ -349,10 +327,7 @@ describe('Collection resolver', () => {
             expect(computersBreadcrumbsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
         });
         it('creates a root collection to be a parent collection for 1st level collection with id greater than child collection #779', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     assetIds: [assets[0].id, assets[1].id],
                     featuredAssetId: assets[1].id,
@@ -386,10 +361,7 @@ describe('Collection resolver', () => {
             expect(electronicsBreadcrumbsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
         });
         it('creates a 2nd level nested collection #779', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result = await adminClient.query(createCollectionDocument, {
                 input: {
                     parentId: computersBreadcrumbsCollection.id,
                     translations: [
@@ -424,10 +396,7 @@ describe('Collection resolver', () => {
 
     describe('updateCollection', () => {
         it('updates with assets', async () => {
-            const { updateCollection } = await adminClient.query<
-                Codegen.UpdateCollectionMutation,
-                Codegen.UpdateCollectionMutationVariables
-            >(UPDATE_COLLECTION, {
+            const { updateCollection } = await adminClient.query(updateCollectionDocument, {
                 input: {
                     id: pearCollection.id,
                     assetIds: [assets[1].id, assets[2].id],
@@ -445,10 +414,7 @@ describe('Collection resolver', () => {
         });
 
         it('updating existing assets', async () => {
-            const { updateCollection } = await adminClient.query<
-                Codegen.UpdateCollectionMutation,
-                Codegen.UpdateCollectionMutationVariables
-            >(UPDATE_COLLECTION, {
+            const { updateCollection } = await adminClient.query(updateCollectionDocument, {
                 input: {
                     id: pearCollection.id,
                     assetIds: [assets[3].id, assets[0].id],
@@ -460,10 +426,7 @@ describe('Collection resolver', () => {
         });
 
         it('removes all assets', async () => {
-            const { updateCollection } = await adminClient.query<
-                Codegen.UpdateCollectionMutation,
-                Codegen.UpdateCollectionMutationVariables
-            >(UPDATE_COLLECTION, {
+            const { updateCollection } = await adminClient.query(updateCollectionDocument, {
                 input: {
                     id: pearCollection.id,
                     assetIds: [],
@@ -477,10 +440,7 @@ describe('Collection resolver', () => {
 
     describe('querying', () => {
         it('collection by id', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const result = await adminClient.query(getCollectionDocument, {
                 id: computersCollection.id,
             });
             if (!result.collection) {
@@ -491,10 +451,7 @@ describe('Collection resolver', () => {
         });
 
         it('collection by slug', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const result = await adminClient.query(getCollectionDocument, {
                 slug: computersCollection.slug,
             });
             if (!result.collection) {
@@ -506,11 +463,8 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/538
         it('falls back to default language slug', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(
-                GET_COLLECTION,
+            const result = await adminClient.query(
+                getCollectionDocument,
                 {
                     slug: computersCollection.slug,
                 },
@@ -526,8 +480,7 @@ describe('Collection resolver', () => {
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<Codegen.GetCollectionQuery, Codegen.GetCollectionQueryVariables>(
-                    GET_COLLECTION,
+                await adminClient.query(getCollectionDocument,
                     {},
                 );
             }, 'Either the Collection id or slug must be provided'),
@@ -536,8 +489,7 @@ describe('Collection resolver', () => {
         it(
             'throws if id and slug do not refer to the same Product',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<Codegen.GetCollectionQuery, Codegen.GetCollectionQueryVariables>(
-                    GET_COLLECTION,
+                await adminClient.query(getCollectionDocument,
                     {
                         id: computersCollection.id,
                         slug: pearCollection.slug,
@@ -547,10 +499,7 @@ describe('Collection resolver', () => {
         );
 
         it('parent field', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const result = await adminClient.query(getCollectionDocument, {
                 id: computersCollection.id,
             });
             if (!result.collection) {
@@ -562,10 +511,7 @@ describe('Collection resolver', () => {
 
         // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
         it('parent field resolved by CollectionEntityResolver', async () => {
-            const { product } = await adminClient.query<
-                Codegen.GetProductCollectionsWithParentQuery,
-                Codegen.GetProductCollectionsWithParentQueryVariables
-            >(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
+            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
                 id: 'T_1',
             });
 
@@ -624,18 +570,13 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/981
         it('nested parent field in shop API', async () => {
-            const { collections } = await shopClient.query<Codegen.GetCollectionNestedParentsQuery>(
-                GET_COLLECTION_NESTED_PARENTS,
-            );
+            const { collections } = await shopClient.query(GET_COLLECTION_NESTED_PARENTS);
 
             expect(collections.items[0].parent?.name).toBe(ROOT_COLLECTION_NAME);
         });
 
         it('children field', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const result = await adminClient.query(getCollectionDocument, {
                 id: electronicsCollection.id,
             });
             if (!result.collection) {
@@ -647,10 +588,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionBreadcrumbsQuery,
-                Codegen.GetCollectionBreadcrumbsQueryVariables
-            >(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
                 id: pearCollection.id,
             });
             if (!result.collection) {
@@ -674,10 +612,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs for root collection', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionBreadcrumbsQuery,
-                Codegen.GetCollectionBreadcrumbsQueryVariables
-            >(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
                 id: 'T_1',
             });
             if (!result.collection) {
@@ -690,7 +625,7 @@ describe('Collection resolver', () => {
         });
 
         it('collections.assets', async () => {
-            const { collections } = await adminClient.query<Codegen.GetCollectionsWithAssetsQuery>(gql`
+            const { collections } = await adminClient.query(graphql(`
                 query GetCollectionsWithAssets {
                     collections {
                         items {
@@ -700,17 +635,14 @@ describe('Collection resolver', () => {
                         }
                     }
                 }
-            `);
+            `));
 
             expect(collections.items[0].assets).toBeDefined();
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/642
         it('sorting on Collection.productVariants.price', async () => {
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const { collection } = await adminClient.query(getCollectionDocument, {
                 id: computersCollection.id,
                 variantListOptions: {
                     sort: {
@@ -742,10 +674,7 @@ describe('Collection resolver', () => {
 
     describe('moveCollection', () => {
         it('moves a collection to a new parent', async () => {
-            const result = await adminClient.query<
-                Codegen.MoveCollectionMutation,
-                Codegen.MoveCollectionMutationVariables
-            >(MOVE_COLLECTION, {
+            const result = await adminClient.query(MOVE_COLLECTION, {
                 input: {
                     collectionId: pearCollection.id,
                     parentId: electronicsCollection.id,
@@ -762,10 +691,7 @@ describe('Collection resolver', () => {
         it('re-evaluates Collection contents on move', async () => {
             await awaitRunningJobs(adminClient, 5000);
 
-            const result = await adminClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+            const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
             expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
@@ -776,10 +702,7 @@ describe('Collection resolver', () => {
         });
 
         it('moves a 1st level collection to a new parent to check breadcrumbs', async () => {
-            const result = await adminClient.query<
-                Codegen.MoveCollectionMutation,
-                Codegen.MoveCollectionMutationVariables
-            >(MOVE_COLLECTION, {
+            const result = await adminClient.query(MOVE_COLLECTION, {
                 input: {
                     collectionId: computersBreadcrumbsCollection.id,
                     parentId: electronicsBreadcrumbsCollection.id,
@@ -794,10 +717,7 @@ describe('Collection resolver', () => {
         });
 
         it('breadcrumbs for collection with ids out of order', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionBreadcrumbsQuery,
-                Codegen.GetCollectionBreadcrumbsQueryVariables
-            >(GET_COLLECTION_BREADCRUMBS, {
+            const result = await adminClient.query(GET_COLLECTION_BREADCRUMBS, {
                 id: pearBreadcrumbsCollection.id,
             });
             if (!result.collection) {
@@ -825,8 +745,7 @@ describe('Collection resolver', () => {
         });
 
         it('alters the position in the current parent 1', async () => {
-            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
-                MOVE_COLLECTION,
+            await adminClient.query(MOVE_COLLECTION,
                 {
                     input: {
                         collectionId: computersCollection.id,
@@ -841,8 +760,7 @@ describe('Collection resolver', () => {
         });
 
         it('alters the position in the current parent 2', async () => {
-            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
-                MOVE_COLLECTION,
+            await adminClient.query(MOVE_COLLECTION,
                 {
                     input: {
                         collectionId: pearCollection.id,
@@ -857,8 +775,7 @@ describe('Collection resolver', () => {
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
-            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
-                MOVE_COLLECTION,
+            await adminClient.query(MOVE_COLLECTION,
                 {
                     input: {
                         collectionId: pearCollection.id,
@@ -873,8 +790,7 @@ describe('Collection resolver', () => {
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
-            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
-                MOVE_COLLECTION,
+            await adminClient.query(MOVE_COLLECTION,
                 {
                     input: {
                         collectionId: pearCollection.id,
@@ -892,10 +808,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into self',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<
-                        Codegen.MoveCollectionMutation,
-                        Codegen.MoveCollectionMutationVariables
-                    >(MOVE_COLLECTION, {
+                    adminClient.query(MOVE_COLLECTION, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -910,10 +823,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into a descendant of self',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<
-                        Codegen.MoveCollectionMutation,
-                        Codegen.MoveCollectionMutationVariables
-                    >(MOVE_COLLECTION, {
+                    adminClient.query(MOVE_COLLECTION, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -926,8 +836,7 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1595
         it('children correctly ordered', async () => {
-            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
-                MOVE_COLLECTION,
+            await adminClient.query(MOVE_COLLECTION,
                 {
                     input: {
                         collectionId: computersCollection.id,
@@ -936,10 +845,7 @@ describe('Collection resolver', () => {
                     },
                 },
             );
-            const result = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const result = await adminClient.query(getCollectionDocument, {
                 id: 'T_1',
             });
             if (!result.collection) {
@@ -950,21 +856,18 @@ describe('Collection resolver', () => {
         });
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
-            const result = await adminClient.query<Codegen.GetCollectionsQuery>(GET_COLLECTIONS);
+            const result = await adminClient.query(getCollectionsDocument);
             return result.collections.items.filter(i => i.parent!.id === parentId);
         }
     });
 
     describe('deleteCollection', () => {
-        let collectionToDeleteParent: Codegen.CreateCollectionMutation['createCollection'];
-        let collectionToDeleteChild: Codegen.CreateCollectionMutation['createCollection'];
+        let collectionToDeleteParent: ResultOf<typeof createCollectionDocument>['createCollection'];
+        let collectionToDeleteChild: ResultOf<typeof createCollectionDocument>['createCollection'];
         let laptopProductId: string;
 
         beforeAll(async () => {
-            const result1 = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result1 = await adminClient.query(createCollectionDocument, {
                 input: {
                     filters: [
                         {
@@ -994,10 +897,7 @@ describe('Collection resolver', () => {
             });
             collectionToDeleteParent = result1.createCollection;
 
-            const result2 = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const result2 = await adminClient.query(createCollectionDocument, {
                 input: {
                     filters: [],
                     translations: [
@@ -1019,20 +919,14 @@ describe('Collection resolver', () => {
         it(
             'throws for invalid collection id',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.DeleteCollectionMutation,
-                    Codegen.DeleteCollectionMutationVariables
-                >(DELETE_COLLECTION, {
+                await adminClient.query(DELETE_COLLECTION, {
                     id: 'T_999',
                 });
             }, 'No Collection with the id "999" could be found'),
         );
 
         it('collection and product related prior to deletion', async () => {
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: collectionToDeleteParent.id,
             });
             expect(collection!.productVariants.items.map(pick(['name']))).toEqual([
@@ -1044,10 +938,7 @@ describe('Collection resolver', () => {
 
             laptopProductId = collection!.productVariants.items[0].productId;
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductCollectionsQuery,
-                Codegen.GetProductCollectionsQueryVariables
-            >(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS, {
                 id: laptopProductId,
             });
 
@@ -1088,10 +979,7 @@ describe('Collection resolver', () => {
         });
 
         it('deleteCollection works', async () => {
-            const { deleteCollection } = await adminClient.query<
-                Codegen.DeleteCollectionMutation,
-                Codegen.DeleteCollectionMutationVariables
-            >(DELETE_COLLECTION, {
+            const { deleteCollection } = await adminClient.query(DELETE_COLLECTION, {
                 id: collectionToDeleteParent.id,
             });
 
@@ -1099,30 +987,21 @@ describe('Collection resolver', () => {
         });
 
         it('deleted parent collection is null', async () => {
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const { collection } = await adminClient.query(getCollectionDocument, {
                 id: collectionToDeleteParent.id,
             });
             expect(collection).toBeNull();
         });
 
         it('deleted child collection is null', async () => {
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionQuery,
-                Codegen.GetCollectionQueryVariables
-            >(GET_COLLECTION, {
+            const { collection } = await adminClient.query(getCollectionDocument, {
                 id: collectionToDeleteChild.id,
             });
             expect(collection).toBeNull();
         });
 
         it('product no longer lists collection', async () => {
-            const { product } = await adminClient.query<
-                Codegen.GetProductCollectionsQuery,
-                Codegen.GetProductCollectionsQueryVariables
-            >(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await adminClient.query(GET_PRODUCT_COLLECTIONS, {
                 id: laptopProductId,
             });
 
@@ -1148,26 +1027,20 @@ describe('Collection resolver', () => {
 
     describe('filters', () => {
         it('Collection with no filters has no productVariants', async () => {
-            const result = await adminClient.query<
-                Codegen.CreateCollectionSelectVariantsMutation,
-                Codegen.CreateCollectionSelectVariantsMutationVariables
-            >(CREATE_COLLECTION_SELECT_VARIANTS, {
+            const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
                     translations: [
                         { languageCode: LanguageCode.en, name: 'Empty', description: '', slug: 'empty' },
                     ],
                     filters: [],
-                } as Codegen.CreateCollectionInput,
+                },
             });
             expect(result.createCollection.productVariants.totalItems).toBe(0);
         });
 
         describe('facetValue filter', () => {
             it('electronics', async () => {
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -1196,10 +1069,7 @@ describe('Collection resolver', () => {
             });
 
             it('computers', async () => {
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -1224,10 +1094,7 @@ describe('Collection resolver', () => {
             });
 
             it('photo AND pear', async () => {
-                const result = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
                             {
@@ -1254,14 +1121,11 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
-                const { collection } = await adminClient.query<
-                    Codegen.GetCollectionQuery,
-                    Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
 
@@ -1269,10 +1133,7 @@ describe('Collection resolver', () => {
             });
 
             it('photo OR pear', async () => {
-                const result = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
                             {
@@ -1299,14 +1160,11 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
-                const { collection } = await adminClient.query<
-                    Codegen.GetCollectionQuery,
-                    Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
 
@@ -1324,10 +1182,7 @@ describe('Collection resolver', () => {
             });
 
             it('bell OR pear in computers', async () => {
-                const result = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         parentId: computersCollection.id,
                         translations: [
@@ -1353,14 +1208,11 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
-                const { collection } = await adminClient.query<
-                    Codegen.GetCollectionQuery,
-                    Codegen.GetCollectionQueryVariables
-                >(GET_COLLECTION, {
+                const { collection } = await adminClient.query(getCollectionDocument, {
                     id: result.createCollection.id,
                 });
 
@@ -1380,11 +1232,8 @@ describe('Collection resolver', () => {
                 operator: string,
                 term: string,
                 parentId?: string,
-            ): Promise<CollectionFragment> {
-                const { createCollection } = await adminClient.query<
-                    Codegen.CreateCollectionMutation,
-                    Codegen.CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+            ): Promise<FragmentOf<typeof collectionFragment>> {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
                     input: {
                         parentId,
                         translations: [
@@ -1419,10 +1268,7 @@ describe('Collection resolver', () => {
             it('contains operator', async () => {
                 const collection = await createVariantNameFilteredCollection('contains', 'camera');
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -1435,10 +1281,7 @@ describe('Collection resolver', () => {
             it('startsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('startsWith', 'camera');
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
@@ -1447,10 +1290,7 @@ describe('Collection resolver', () => {
             it('endsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('endsWith', 'camera');
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -1462,10 +1302,7 @@ describe('Collection resolver', () => {
             it('doesNotContain operator', async () => {
                 const collection = await createVariantNameFilteredCollection('doesNotContain', 'camera');
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -1496,10 +1333,7 @@ describe('Collection resolver', () => {
             it('nested variantName filter', async () => {
                 const parent = await createVariantNameFilteredCollection('contains', 'lap');
 
-                const parentResult = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const parentResult = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: parent.id,
                 });
 
@@ -1512,10 +1346,7 @@ describe('Collection resolver', () => {
 
                 const child = await createVariantNameFilteredCollection('contains', 'GB', parent.id);
 
-                const childResult = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const childResult = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: child.id,
                 });
 
@@ -1530,10 +1361,7 @@ describe('Collection resolver', () => {
 
         describe('variantId filter', () => {
             it('contains expects variants', async () => {
-                const { createCollection } = await adminClient.query<
-                    Codegen.CreateCollectionMutation,
-                    Codegen.CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
                     input: {
                         translations: [
                             {
@@ -1558,10 +1386,7 @@ describe('Collection resolver', () => {
                 });
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: createCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
@@ -1573,10 +1398,7 @@ describe('Collection resolver', () => {
 
         describe('productId filter', () => {
             it('contains expects variants', async () => {
-                const { createCollection } = await adminClient.query<
-                    Codegen.CreateCollectionMutation,
-                    Codegen.CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
                     input: {
                         translations: [
                             {
@@ -1601,10 +1423,7 @@ describe('Collection resolver', () => {
                 });
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: createCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
@@ -1615,31 +1434,29 @@ describe('Collection resolver', () => {
         });
 
         describe('re-evaluation of contents on changes', () => {
-            let products: Codegen.GetProductsWithVariantIdsQuery['products']['items'];
-
-            beforeAll(async () => {
-                const result = await adminClient.query<Codegen.GetProductsWithVariantIdsQuery>(gql`
-                    query GetProductsWithVariantIds {
-                        products(options: { sort: { id: ASC } }) {
-                            items {
+            const getProductsWithVariantIdsDocument = graphql(`
+                query GetProductsWithVariantIds {
+                    products(options: { sort: { id: ASC } }) {
+                        items {
+                            id
+                            name
+                            variants {
                                 id
                                 name
-                                variants {
-                                    id
-                                    name
-                                }
                             }
                         }
                     }
-                `);
+                }
+            `);
+            let products: ResultOf<typeof getProductsWithVariantIdsDocument>['products']['items'];
+
+            beforeAll(async () => {
+                const result = await adminClient.query(getProductsWithVariantIdsDocument);
                 products = result.products.items;
             });
 
             it('updates contents when Product is updated', async () => {
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
+                await adminClient.query(updateProductDocument, {
                     input: {
                         id: products[1].id,
                         facetValueIds: [
@@ -1652,10 +1469,7 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -1671,10 +1485,7 @@ describe('Collection resolver', () => {
                 const gamingPc240GB = products
                     .find(p => p.name === 'Gaming PC')!
                     .variants.find(v => v.name.includes('240GB'))!;
-                await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                await adminClient.query(updateProductVariantsDocument, {
                     input: [
                         {
                             id: gamingPc240GB.id,
@@ -1685,10 +1496,7 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -1705,10 +1513,7 @@ describe('Collection resolver', () => {
                 const gamingPc240GB = products
                     .find(p => p.name === 'Gaming PC')!
                     .variants.find(v => v.name.includes('240GB'))!;
-                await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                await adminClient.query(updateProductVariantsDocument, {
                     input: [
                         {
                             id: gamingPc240GB.id,
@@ -1719,10 +1524,7 @@ describe('Collection resolver', () => {
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -1740,10 +1542,7 @@ describe('Collection resolver', () => {
             let clothesCollectionId: string;
 
             it('filter inheritance of nested collections (issue #158)', async () => {
-                const { createCollection: pearElectronics } = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const { createCollection: pearElectronics } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.id,
                         translations: [
@@ -1769,15 +1568,12 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -1792,10 +1588,7 @@ describe('Collection resolver', () => {
             });
 
             it('child collection with no inheritance', async () => {
-                const { createCollection: clothesCollection } = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const { createCollection: clothesCollection } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.id,
                         translations: [
@@ -1822,25 +1615,19 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
 
                 clothesCollectionId = clothesCollection.id;
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: clothesCollection.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: clothesCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Hat', 'Boots']);
             });
 
             it('grandchild collection with inheritance (root -> no inherit -> inherit', async () => {
-                const { createCollection: footwearCollection } = await adminClient.query<
-                    Codegen.CreateCollectionSelectVariantsMutation,
-                    Codegen.CreateCollectionSelectVariantsMutationVariables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const { createCollection: footwearCollection } = await adminClient.query(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         parentId: clothesCollectionId,
                         translations: [
@@ -1867,25 +1654,19 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as Codegen.CreateCollectionInput,
+                    },
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
 
-                const result = await adminClient.query<
-                    Codegen.GetCollectionProductsQuery,
-                    Codegen.GetCollectionProductsQueryVariables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: footwearCollection.id });
+                const result = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: footwearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Boots']);
             });
         });
 
         describe('previewCollectionVariants', () => {
             it('returns correct contents', async () => {
-                const { previewCollectionVariants } = await adminClient.query<
-                    Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables
-                >(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.parent?.id,
                         inheritFilters: true,
@@ -1921,10 +1702,7 @@ describe('Collection resolver', () => {
             });
 
             it('works with list options', async () => {
-                const { previewCollectionVariants } = await adminClient.query<
-                    Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables
-                >(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.parent?.id,
                         inheritFilters: true,
@@ -1963,10 +1741,7 @@ describe('Collection resolver', () => {
             });
 
             it('takes parent filters into account', async () => {
-                const { previewCollectionVariants } = await adminClient.query<
-                    Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables
-                >(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.id,
                         inheritFilters: true,
@@ -1997,10 +1772,7 @@ describe('Collection resolver', () => {
             });
 
             it('ignores parent filters id inheritFilters set to false', async () => {
-                const { previewCollectionVariants } = await adminClient.query<
-                    Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables
-                >(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.id,
                         inheritFilters: false,
@@ -2032,10 +1804,7 @@ describe('Collection resolver', () => {
             });
 
             it('with no parentId, operates at the root level', async () => {
-                const { previewCollectionVariants } = await adminClient.query<
-                    Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables
-                >(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         inheritFilters: true,
                         filters: [
@@ -2068,10 +1837,7 @@ describe('Collection resolver', () => {
     });
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
-            const result = await adminClient.query<
-                Codegen.GetCollectionsForProductsQuery,
-                Codegen.GetCollectionsForProductsQueryVariables
-            >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+            const result = await adminClient.query(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
                 {
                     id: 'T_3',
@@ -2111,17 +1877,13 @@ describe('Collection resolver', () => {
 
     describe('productVariants list', () => {
         it('does not list variants from deleted products', async () => {
-            await adminClient.query<Codegen.DeleteProductMutation, Codegen.DeleteProductMutationVariables>(
-                DELETE_PRODUCT,
+            await adminClient.query(deleteProductDocument,
                 {
                     id: 'T_2', // curvy monitor
                 },
             );
             await awaitRunningJobs(adminClient, 5000);
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: pearCollection.id,
             });
             expect(collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -2136,17 +1898,11 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1213
         it('does not list deleted variants', async () => {
-            await adminClient.query<
-                Codegen.DeleteProductVariantMutation,
-                Codegen.DeleteProductVariantMutationVariables
-            >(DELETE_PRODUCT_VARIANT, {
+            await adminClient.query(deleteProductVariantDocument, {
                 id: 'T_18', // Instant Camera
             });
             await awaitRunningJobs(adminClient, 5000);
-            const { collection } = await adminClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await adminClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: pearCollection.id,
             });
             expect(collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -2160,36 +1916,26 @@ describe('Collection resolver', () => {
         });
 
         it('does not list disabled variants in Shop API', async () => {
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [{ id: 'T_1', enabled: false }],
             });
             await awaitRunningJobs(adminClient, 5000);
 
-            const { collection } = await shopClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await shopClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: pearCollection.id,
             });
             expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
         });
 
         it('does not list variants of disabled products in Shop API', async () => {
-            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-                UPDATE_PRODUCT,
+            await adminClient.query(updateProductDocument,
                 {
                     input: { id: 'T_1', enabled: false },
                 },
             );
             await awaitRunningJobs(adminClient, 5000);
 
-            const { collection } = await shopClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await shopClient.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: pearCollection.id,
             });
             expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
@@ -2199,16 +1945,12 @@ describe('Collection resolver', () => {
         });
 
         it('handles other languages', async () => {
-            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-                UPDATE_PRODUCT,
+            await adminClient.query(updateProductDocument,
                 {
                     input: { id: 'T_1', enabled: true },
                 },
             );
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
+            await adminClient.query(updateProductVariantsDocument, {
                 input: [
                     {
                         id: 'T_2',
@@ -2216,10 +1958,7 @@ describe('Collection resolver', () => {
                     },
                 ],
             });
-            const { collection } = await shopClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(
+            const { collection } = await shopClient.query(
                 GET_COLLECTION_PRODUCT_VARIANTS,
                 {
                     id: pearCollection.id,
@@ -2236,13 +1975,10 @@ describe('Collection resolver', () => {
     });
 
     describe('channel assignment & removal', () => {
-        let testCollection: CollectionFragment;
+        let testCollection: FragmentOf<typeof collectionFragment>;
 
         beforeAll(async () => {
-            const { createCollection } = await adminClient.query<
-                Codegen.CreateCollectionMutation,
-                Codegen.CreateCollectionMutationVariables
-            >(CREATE_COLLECTION, {
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
                 input: {
                     filters: [
                         {
@@ -2275,18 +2011,12 @@ describe('Collection resolver', () => {
 
         it('assign to channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: before } = await adminClient.query<
-                Codegen.GetCollectionListAdminQuery,
-                Codegen.GetCollectionListAdminQueryVariables
-            >(GET_COLLECTION_LIST);
+            const { collections: before } = await adminClient.query(GET_COLLECTION_LIST);
             expect(before.items.length).toBe(1);
             expect(before.items.map(i => i.id).includes(testCollection.id)).toBe(false);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignCollectionsToChannel } = await adminClient.query<
-                Codegen.AssignCollectionsToChannelMutation,
-                Codegen.AssignCollectionsToChannelMutationVariables
-            >(ASSIGN_COLLECTIONS_TO_CHANNEL, {
+            const { assignCollectionsToChannel } = await adminClient.query(assignCollectionsToChannelDocument, {
                 input: {
                     channelId: secondChannel.id,
                     collectionIds: [testCollection.id],
@@ -2296,20 +2026,14 @@ describe('Collection resolver', () => {
             expect(assignCollectionsToChannel.map(c => c.id)).toEqual([testCollection.id]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: after } = await adminClient.query<
-                Codegen.GetCollectionListAdminQuery,
-                Codegen.GetCollectionListAdminQueryVariables
-            >(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
             expect(after.items.length).toBe(2);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(true);
         });
 
         it('remove from channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { removeCollectionsFromChannel } = await adminClient.query<
-                Codegen.RemoveCollectionsFromChannelMutation,
-                Codegen.RemoveCollectionsFromChannelMutationVariables
-            >(REMOVE_COLLECTIONS_FROM_CHANNEL, {
+            const { removeCollectionsFromChannel } = await adminClient.query(REMOVE_COLLECTIONS_FROM_CHANNEL, {
                 input: {
                     channelId: secondChannel.id,
                     collectionIds: [testCollection.id],
@@ -2319,25 +2043,19 @@ describe('Collection resolver', () => {
             expect(removeCollectionsFromChannel.map(c => c.id)).toEqual([testCollection.id]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { collections: after } = await adminClient.query<
-                Codegen.GetCollectionListAdminQuery,
-                Codegen.GetCollectionListAdminQueryVariables
-            >(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
             expect(after.items.length).toBe(1);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(false);
         });
     });
 
     describe('deleteCollections (multiple)', () => {
-        let top: CollectionFragment;
-        let child: CollectionFragment;
-        let grandchild: CollectionFragment;
+        let top: FragmentOf<typeof collectionFragment>;
+        let child: FragmentOf<typeof collectionFragment>;
+        let grandchild: FragmentOf<typeof collectionFragment>;
         beforeAll(async () => {
             async function createNewCollection(name: string, parentId?: string) {
-                const { createCollection } = await adminClient.query<
-                    Codegen.CreateCollectionMutation,
-                    Codegen.CreateCollectionMutationVariables
-                >(CREATE_COLLECTION, {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
                     input: {
                         translations: [
                             {
@@ -2359,10 +2077,7 @@ describe('Collection resolver', () => {
         });
 
         it('deletes all selected collections', async () => {
-            const { collections: before } = await adminClient.query<
-                Codegen.GetCollectionListQuery,
-                Codegen.GetCollectionListQueryVariables
-            >(GET_COLLECTION_LIST);
+            const { collections: before } = await adminClient.query(GET_COLLECTION_LIST);
 
             expect(before.items.sort(sortById).map(pick(['name']))).toEqual([
                 { name: 'top' },
@@ -2371,10 +2086,7 @@ describe('Collection resolver', () => {
                 { name: 'Accessories' },
             ]);
 
-            const { deleteCollections } = await adminClient.query<
-                Codegen.DeleteCollectionsBulkMutation,
-                Codegen.DeleteCollectionsBulkMutationVariables
-            >(DELETE_COLLECTIONS_BULK, {
+            const { deleteCollections } = await adminClient.query(DELETE_COLLECTIONS_BULK, {
                 ids: [top.id, child.id, grandchild.id],
             });
 
@@ -2384,10 +2096,7 @@ describe('Collection resolver', () => {
                 { result: DeletionResult.DELETED, message: null },
             ]);
 
-            const { collections: after } = await adminClient.query<
-                Codegen.GetCollectionListQuery,
-                Codegen.GetCollectionListQueryVariables
-            >(GET_COLLECTION_LIST);
+            const { collections: after } = await adminClient.query(GET_COLLECTION_LIST);
 
             expect(after.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
                 { id: 'T_8', name: 'Accessories' },
@@ -2404,19 +2113,21 @@ describe('Collection resolver', () => {
     }
 });
 
-export const GET_COLLECTION_LIST = gql`
-    query GetCollectionListAdmin($options: CollectionListOptions) {
-        collections(options: $options) {
-            items {
-                ...Collection
+export const GET_COLLECTION_LIST = graphql(
+    `
+        query GetCollectionListAdmin($options: CollectionListOptions) {
+            collections(options: $options) {
+                items {
+                    ...Collection
+                }
+                totalItems
             }
-            totalItems
         }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
+    `,
+    [collectionFragment],
+);
 
-export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = gql`
+export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = graphql(`
     query GetCollectionListWithTranslations($options: CollectionListOptions) {
         collections(options: $options) {
             items {
@@ -2429,31 +2140,35 @@ export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = gql`
             }
         }
     }
-`;
+`);
 
-export const MOVE_COLLECTION = gql`
-    mutation MoveCollection($input: MoveCollectionInput!) {
-        moveCollection(input: $input) {
-            ...Collection
+export const MOVE_COLLECTION = graphql(
+    `
+        mutation MoveCollection($input: MoveCollectionInput!) {
+            moveCollection(input: $input) {
+                ...Collection
+            }
         }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
+    `,
+    [collectionFragment],
+);
 
-const GET_FACET_VALUES = gql`
-    query GetFacetWithFacetValues {
-        facets {
-            items {
-                values {
-                    ...FacetValue
+const GET_FACET_VALUES = graphql(
+    `
+        query GetFacetWithFacetValues {
+            facets {
+                items {
+                    values {
+                        ...FacetValue
+                    }
                 }
             }
         }
-    }
-    ${FACET_VALUE_FRAGMENT}
-`;
+    `,
+    [facetValueFragment],
+);
 
-const GET_COLLECTION_PRODUCT_VARIANTS = gql`
+const GET_COLLECTION_PRODUCT_VARIANTS = graphql(`
     query GetCollectionProducts($id: ID!) {
         collection(id: $id) {
             productVariants(options: { sort: { id: ASC } }) {
@@ -2468,9 +2183,9 @@ const GET_COLLECTION_PRODUCT_VARIANTS = gql`
             }
         }
     }
-`;
+`);
 
-const CREATE_COLLECTION_SELECT_VARIANTS = gql`
+const CREATE_COLLECTION_SELECT_VARIANTS = graphql(`
     mutation CreateCollectionSelectVariants($input: CreateCollectionInput!) {
         createCollection(input: $input) {
             id
@@ -2482,9 +2197,9 @@ const CREATE_COLLECTION_SELECT_VARIANTS = gql`
             }
         }
     }
-`;
+`);
 
-const GET_COLLECTION_BREADCRUMBS = gql`
+const GET_COLLECTION_BREADCRUMBS = graphql(`
     query GetCollectionBreadcrumbs($id: ID!) {
         collection(id: $id) {
             breadcrumbs {
@@ -2494,9 +2209,9 @@ const GET_COLLECTION_BREADCRUMBS = gql`
             }
         }
     }
-`;
+`);
 
-const GET_COLLECTIONS_FOR_PRODUCTS = gql`
+const GET_COLLECTIONS_FOR_PRODUCTS = graphql(`
     query GetCollectionsForProducts($term: String!) {
         products(options: { filter: { name: { contains: $term } } }) {
             items {
@@ -2509,18 +2224,18 @@ const GET_COLLECTIONS_FOR_PRODUCTS = gql`
             }
         }
     }
-`;
+`);
 
-const DELETE_COLLECTION = gql`
+const DELETE_COLLECTION = graphql(`
     mutation DeleteCollection($id: ID!) {
         deleteCollection(id: $id) {
             result
             message
         }
     }
-`;
+`);
 
-const GET_PRODUCT_COLLECTIONS = gql`
+const GET_PRODUCT_COLLECTIONS = graphql(`
     query GetProductCollections($id: ID!) {
         product(id: $id) {
             id
@@ -2530,9 +2245,9 @@ const GET_PRODUCT_COLLECTIONS = gql`
             }
         }
     }
-`;
+`);
 
-const GET_PRODUCT_COLLECTIONS_WITH_PARENT = gql`
+const GET_PRODUCT_COLLECTIONS_WITH_PARENT = graphql(`
     query GetProductCollectionsWithParent($id: ID!) {
         product(id: $id) {
             id
@@ -2546,9 +2261,9 @@ const GET_PRODUCT_COLLECTIONS_WITH_PARENT = gql`
             }
         }
     }
-`;
+`);
 
-const GET_COLLECTION_NESTED_PARENTS = gql`
+const GET_COLLECTION_NESTED_PARENTS = graphql(`
     query GetCollectionNestedParents {
         collections {
             items {
@@ -2566,9 +2281,9 @@ const GET_COLLECTION_NESTED_PARENTS = gql`
             }
         }
     }
-`;
+`);
 
-const PREVIEW_COLLECTION_VARIANTS = gql`
+const PREVIEW_COLLECTION_VARIANTS = graphql(`
     query PreviewCollectionVariants(
         $input: PreviewCollectionVariantsInput!
         $options: ProductVariantListOptions
@@ -2581,22 +2296,24 @@ const PREVIEW_COLLECTION_VARIANTS = gql`
             totalItems
         }
     }
-`;
+`);
 
-const REMOVE_COLLECTIONS_FROM_CHANNEL = gql`
-    mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
-        removeCollectionsFromChannel(input: $input) {
-            ...Collection
+const REMOVE_COLLECTIONS_FROM_CHANNEL = graphql(
+    `
+        mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
+            removeCollectionsFromChannel(input: $input) {
+                ...Collection
+            }
         }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
+    `,
+    [collectionFragment],
+);
 
-const DELETE_COLLECTIONS_BULK = gql`
+const DELETE_COLLECTIONS_BULK = graphql(`
     mutation DeleteCollectionsBulk($ids: [ID!]!) {
         deleteCollections(ids: $ids) {
             message
             result
         }
     }
-`;
+`);

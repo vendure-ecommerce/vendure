@@ -79,15 +79,15 @@
 - [x] facet.e2e-spec.ts 1043
 - [x] duplicate-entity.e2e-spec.ts 1085
 - [x] shop-auth.e2e-spec.ts 1085
-- [ ] custom-fields.e2e-spec.ts 1351
+- [x] custom-fields.e2e-spec.ts 1351
 - [ ] custom-field-relations.e2e-spec.ts 1465
 - [ ] list-query-builder.e2e-spec.ts 1546
 - [x] stock-control.e2e-spec.ts 1581
       KIND OF DONE WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
-- [ ] product.e2e-spec.ts 2311
-- [ ] order-promotion.e2e-spec.ts 2357
+- [x] product.e2e-spec.ts 2311
+- [x] order-promotion.e2e-spec.ts 2357
 - [ ] collection.e2e-spec.ts 2602
-KIND OF DONE WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
+      KIND OF DONE WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
 - [x] shop-order.e2e-spec.ts 2893
 - [x] order.e2e-spec.ts 3156
 

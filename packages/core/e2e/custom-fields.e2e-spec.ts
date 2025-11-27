@@ -9,15 +9,16 @@ import {
     RequestContextService,
     TransactionalConnection,
 } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { fail } from 'assert';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import { graphql } from './graphql/graphql-admin';
+import { graphql as graphqlShop } from './graphql/graphql-shop';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
@@ -218,6 +219,21 @@ const customConfig = mergeConfig(testConfig(), {
 describe('Custom fields', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(customConfig);
 
+    // Guard for nullable product result
+    const productGuard: ErrorResultGuard<{ customFields: any }> = createErrorResultGuard(
+        input => input !== null && 'customFields' in input,
+    );
+
+    // Guard for nullable collection result
+    const collectionGuard: ErrorResultGuard<{ customFields: any }> = createErrorResultGuard(
+        input => input !== null,
+    );
+
+    // Guard for nullable product variant result
+    const productVariantGuard: ErrorResultGuard<{ prices: any[] }> = createErrorResultGuard(
+        input => input !== null && 'prices' in input,
+    );
+
     beforeAll(async () => {
         await server.init({
             initialData,
@@ -232,26 +248,28 @@ describe('Custom fields', () => {
     });
 
     it('globalSettings.serverConfig.customFieldConfig', async () => {
-        const { globalSettings } = await adminClient.query(gql`
-            query {
-                globalSettings {
-                    serverConfig {
-                        customFieldConfig {
-                            Product {
-                                ... on CustomField {
-                                    name
-                                    type
-                                    list
-                                }
-                                ... on RelationCustomFieldConfig {
-                                    scalarFields
+        const { globalSettings } = await adminClient.query(
+            graphql(`
+                query {
+                    globalSettings {
+                        serverConfig {
+                            customFieldConfig {
+                                Product {
+                                    ... on CustomField {
+                                        name
+                                        type
+                                        list
+                                    }
+                                    ... on RelationCustomFieldConfig {
+                                        scalarFields
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        `);
+            `),
+        );
 
         expect(globalSettings.serverConfig.customFieldConfig).toEqual({
             Product: [
@@ -310,27 +328,29 @@ describe('Custom fields', () => {
     });
 
     it('globalSettings.serverConfig.entityCustomFields', async () => {
-        const { globalSettings } = await adminClient.query(gql`
-            query {
-                globalSettings {
-                    serverConfig {
-                        entityCustomFields {
-                            entityName
-                            customFields {
-                                ... on CustomField {
-                                    name
-                                    type
-                                    list
-                                }
-                                ... on RelationCustomFieldConfig {
-                                    scalarFields
+        const { globalSettings } = await adminClient.query(
+            graphql(`
+                query {
+                    globalSettings {
+                        serverConfig {
+                            entityCustomFields {
+                                entityName
+                                customFields {
+                                    ... on CustomField {
+                                        name
+                                        type
+                                        list
+                                    }
+                                    ... on RelationCustomFieldConfig {
+                                        scalarFields
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        `);
+            `),
+        );
 
         const productCustomFields = globalSettings.serverConfig.entityCustomFields.find(
             e => e.entityName === 'Product',
@@ -393,17 +413,19 @@ describe('Custom fields', () => {
     });
 
     it('get nullable with no default', async () => {
-        const { product } = await adminClient.query(gql`
-            query {
-                product(id: "T_1") {
-                    id
-                    name
-                    customFields {
-                        nullable
+        const { product } = await adminClient.query(
+            graphql(`
+                query {
+                    product(id: "T_1") {
+                        id
+                        name
+                        customFields {
+                            nullable
+                        }
                     }
                 }
-            }
-        `);
+            `),
+        );
 
         expect(product).toEqual({
             id: 'T_1',
@@ -415,17 +437,19 @@ describe('Custom fields', () => {
     });
 
     it('get entity with localeString only', async () => {
-        const { facet } = await adminClient.query(gql`
-            query {
-                facet(id: "T_1") {
-                    id
-                    name
-                    customFields {
-                        translated
+        const { facet } = await adminClient.query(
+            graphql(`
+                query {
+                    facet(id: "T_1") {
+                        id
+                        name
+                        customFields {
+                            translated
+                        }
                     }
                 }
-            }
-        `);
+            `),
+        );
 
         expect(facet).toEqual({
             id: 'T_1',
@@ -437,23 +461,25 @@ describe('Custom fields', () => {
     });
 
     it('get fields with default values', async () => {
-        const { product } = await adminClient.query(gql`
-            query {
-                product(id: "T_1") {
-                    id
-                    name
-                    customFields {
-                        stringWithDefault
-                        localeStringWithDefault
-                        intWithDefault
-                        floatWithDefault
-                        booleanWithDefault
-                        dateTimeWithDefault
-                        stringListWithDefault
+        const { product } = await adminClient.query(
+            graphql(`
+                query {
+                    product(id: "T_1") {
+                        id
+                        name
+                        customFields {
+                            stringWithDefault
+                            localeStringWithDefault
+                            intWithDefault
+                            floatWithDefault
+                            booleanWithDefault
+                            dateTimeWithDefault
+                            stringListWithDefault
+                        }
                     }
                 }
-            }
-        `);
+            `),
+        );
 
         const customFields = {
             stringWithDefault: 'hello',
@@ -477,66 +503,74 @@ describe('Custom fields', () => {
     it(
         'update non-nullable field',
         assertThrowsWithMessage(async () => {
-            await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { notNullable: null } }) {
-                        id
+            await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { notNullable: null } }) {
+                            id
+                        }
                     }
-                }
-            `);
+                `),
+            );
         }, 'The custom field "notNullable" value cannot be set to null'),
     );
 
     it(
         'throws on attempt to update readonly field',
         assertThrowsWithMessage(async () => {
-            await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { readonlyString: "hello" } }) {
-                        id
+            await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { readonlyString: "hello" } }) {
+                            id
+                        }
                     }
-                }
-            `);
+                `),
+            );
         }, 'Field "readonlyString" is not defined by type "UpdateProductCustomFieldsInput"'),
     );
 
     it(
         'throws on attempt to update readonly field when no other custom fields defined',
         assertThrowsWithMessage(async () => {
-            await adminClient.query(gql`
-                mutation {
-                    updateCustomer(input: { id: "T_1", customFields: { score: 5 } }) {
-                        ... on Customer {
-                            id
+            await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateCustomer(input: { id: "T_1", customFields: { score: 5 } }) {
+                            ... on Customer {
+                                id
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
         }, 'The custom field "score" is readonly'),
     );
 
     it(
         'throws on attempt to create readonly field',
         assertThrowsWithMessage(async () => {
-            await adminClient.query(gql`
-                mutation {
-                    createProduct(
-                        input: {
-                            translations: [{ languageCode: en, name: "test" }]
-                            customFields: { readonlyString: "hello" }
+            await adminClient.query(
+                graphql(`
+                    mutation {
+                        createProduct(
+                            input: {
+                                translations: [{ languageCode: en, name: "test" }]
+                                customFields: { readonlyString: "hello" }
+                            }
+                        ) {
+                            id
                         }
-                    ) {
-                        id
                     }
-                }
-            `);
+                `),
+            );
         }, 'Field "readonlyString" is not defined by type "CreateProductCustomFieldsInput"'),
     );
 
     it('string length allows long strings', async () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
-            gql`
+            graphql(`
                 mutation ($stringValue: String!) {
                     updateProduct(input: { id: "T_1", customFields: { longString: $stringValue } }) {
                         id
@@ -545,7 +579,7 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `,
+            `),
             { stringValue: longString },
         );
 
@@ -555,7 +589,7 @@ describe('Custom fields', () => {
     it('string length allows long localeStrings', async () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
-            gql`
+            graphql(`
                 mutation ($stringValue: String!) {
                     updateProduct(
                         input: {
@@ -571,7 +605,7 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `,
+            `),
             { stringValue: longString },
         );
 
@@ -582,191 +616,221 @@ describe('Custom fields', () => {
         it(
             'invalid string',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateString: "hello" } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateString: "hello" } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'The custom field "validateString" value ["hello"] does not match the pattern [^[0-9][a-z]+$]'),
         );
 
         it(
             'invalid string option',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "tiny" } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "tiny" } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, "The custom field \"stringWithOptions\" value [\"tiny\"] is invalid. Valid options are ['small', 'medium', 'large']"),
         );
 
         it('valid string option', async () => {
-            const { updateProduct } = await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "medium" } }) {
-                        id
-                        customFields {
-                            stringWithOptions
+            const { updateProduct } = await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "medium" } }) {
+                            id
+                            customFields {
+                                stringWithOptions
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
             expect(updateProduct.customFields.stringWithOptions).toBe('medium');
         });
 
         it('nullable string option with null', async () => {
-            const { updateProduct } = await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { nullableStringWithOptions: null } }) {
-                        id
-                        customFields {
-                            nullableStringWithOptions
+            const { updateProduct } = await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(
+                            input: { id: "T_1", customFields: { nullableStringWithOptions: null } }
+                        ) {
+                            id
+                            customFields {
+                                nullableStringWithOptions
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
             expect(updateProduct.customFields.nullableStringWithOptions).toBeNull();
         });
 
         it(
             'invalid localeString',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(
-                            input: {
-                                id: "T_1"
-                                translations: [
-                                    {
-                                        id: "T_1"
-                                        languageCode: en
-                                        customFields: { validateLocaleString: "servus" }
-                                    }
-                                ]
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(
+                                input: {
+                                    id: "T_1"
+                                    translations: [
+                                        {
+                                            id: "T_1"
+                                            languageCode: en
+                                            customFields: { validateLocaleString: "servus" }
+                                        }
+                                    ]
+                                }
+                            ) {
+                                id
                             }
-                        ) {
-                            id
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'The custom field "validateLocaleString" value ["servus"] does not match the pattern [^[0-9][a-z]+$]'),
         );
 
         it(
             'invalid int',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateInt: 12 } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateInt: 12 } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'The custom field "validateInt" value [12] is greater than the maximum [10]'),
         );
 
         it(
             'invalid float',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateFloat: 10.6 } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateFloat: 10.6 } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'The custom field "validateFloat" value [10.6] is greater than the maximum [10.5]'),
         );
 
         it(
             'invalid datetime',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(
-                            input: {
-                                id: "T_1"
-                                customFields: { validateDateTime: "2019-01-01T05:25:00.000Z" }
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(
+                                input: {
+                                    id: "T_1"
+                                    customFields: { validateDateTime: "2019-01-01T05:25:00.000Z" }
+                                }
+                            ) {
+                                id
                             }
-                        ) {
-                            id
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'The custom field "validateDateTime" value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]'),
         );
 
         it(
             'invalid validate function with string',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateFn1: "invalid" } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateFn1: "invalid" } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, "The value ['invalid'] is not valid"),
         );
 
         it(
             'invalid validate function with localized string',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateFn2: "invalid" } }) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateFn2: "invalid" } }) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, "The value ['invalid'] is not valid"),
         );
 
         it(
             'invalid list field',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(
-                            input: { id: "T_1", customFields: { intListWithValidation: [1, 2, 3] } }
-                        ) {
-                            id
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(
+                                input: { id: "T_1", customFields: { intListWithValidation: [1, 2, 3] } }
+                            ) {
+                                id
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'Must include the number 42!'),
         );
 
         it('valid list field', async () => {
-            const { updateProduct } = await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { intListWithValidation: [1, 42, 3] } }) {
-                        id
-                        customFields {
-                            intListWithValidation
+            const { updateProduct } = await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(
+                            input: { id: "T_1", customFields: { intListWithValidation: [1, 42, 3] } }
+                        ) {
+                            id
+                            customFields {
+                                intListWithValidation
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
             expect(updateProduct.customFields.intListWithValidation).toEqual([1, 42, 3]);
         });
 
         it('can inject providers into validation fn', async () => {
-            const { updateProduct } = await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { validateFn3: "some value" } }) {
-                        id
-                        customFields {
-                            validateFn3
+            const { updateProduct } = await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { validateFn3: "some value" } }) {
+                            id
+                            customFields {
+                                validateFn3
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
             expect(updateProduct.customFields.validateFn3).toBe('some value');
             expect(validateInjectorSpy).toHaveBeenCalledTimes(1);
             expect(validateInjectorSpy.mock.calls[0][0] instanceof TransactionalConnection).toBe(true);
@@ -775,16 +839,18 @@ describe('Custom fields', () => {
         it(
             'supports async validation fn',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateFn4: "some value" } }) {
-                            id
-                            customFields {
-                                validateFn4
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateFn4: "some value" } }) {
+                                id
+                                customFields {
+                                    validateFn4
+                                }
                             }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'async error'),
         );
 
@@ -792,42 +858,47 @@ describe('Custom fields', () => {
         it(
             'supports validation of relation types',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { validateRelationId: "T_1" } }) {
-                            id
-                            customFields {
-                                validateFn4
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            updateProduct(input: { id: "T_1", customFields: { validateRelationId: "T_1" } }) {
+                                id
+                                customFields {
+                                    validateFn4
+                                }
                             }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'relation error'),
         );
 
         // https://github.com/vendure-ecommerce/vendure/issues/1091
         it('handles well graphql internal fields', async () => {
             // throws "Cannot read property 'args' of undefined" if broken
-            await adminClient.query(gql`
-                mutation {
-                    __typename
-                    updateProduct(input: { id: "T_1", customFields: { nullable: "some value" } }) {
+            await adminClient.query(
+                graphql(`
+                    mutation {
                         __typename
-                        id
-                        customFields {
+                        updateProduct(input: { id: "T_1", customFields: { nullable: "some value" } }) {
                             __typename
-                            nullable
+                            id
+                            customFields {
+                                __typename
+                                nullable
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1953
         describe('validation of OrderLine custom fields', () => {
             it('addItemToOrder', async () => {
                 try {
-                    const { addItemToOrder } = await shopClient.query(gql`
+                    const { addItemToOrder } = await shopClient.query(
+                        graphqlShop(`
                         mutation {
                             addItemToOrder(
                                 productVariantId: 1
@@ -839,7 +910,8 @@ describe('Custom fields', () => {
                                 }
                             }
                         }
-                    `);
+                    `),
+                    );
                     fail('Should have thrown');
                 } catch (e) {
                     expect(e.message).toContain(
@@ -847,7 +919,8 @@ describe('Custom fields', () => {
                     );
                 }
 
-                const { addItemToOrder: result } = await shopClient.query(gql`
+                const { addItemToOrder: result } = await shopClient.query(
+                    graphqlShop(`
                     mutation {
                         addItemToOrder(productVariantId: 1, quantity: 1, customFields: { validateInt: 9 }) {
                             ... on Order {
@@ -860,14 +933,16 @@ describe('Custom fields', () => {
                             }
                         }
                     }
-                `);
+                `),
+                );
 
                 expect(result.lines[0].customFields).toEqual({ validateInt: 9 });
             });
 
             it('adjustOrderLine', async () => {
                 try {
-                    const { adjustOrderLine } = await shopClient.query(gql`
+                    const { adjustOrderLine } = await shopClient.query(
+                        graphqlShop(`
                         mutation {
                             adjustOrderLine(
                                 orderLineId: "T_1"
@@ -879,7 +954,8 @@ describe('Custom fields', () => {
                                 }
                             }
                         }
-                    `);
+                    `),
+                    );
                     fail('Should have thrown');
                 } catch (e) {
                     expect(e.message).toContain(
@@ -887,7 +963,8 @@ describe('Custom fields', () => {
                     );
                 }
 
-                const { adjustOrderLine: result } = await shopClient.query(gql`
+                const { adjustOrderLine: result } = await shopClient.query(
+                    graphqlShop(`
                     mutation {
                         adjustOrderLine(orderLineId: "T_1", quantity: 1, customFields: { validateInt: 2 }) {
                             ... on Order {
@@ -900,7 +977,8 @@ describe('Custom fields', () => {
                             }
                         }
                     }
-                `);
+                `),
+                );
 
                 expect(result.lines[0].customFields).toEqual({ validateInt: 2 });
             });
@@ -911,7 +989,8 @@ describe('Custom fields', () => {
         it(
             'non-public throws for Shop API',
             assertThrowsWithMessage(async () => {
-                await shopClient.query(gql`
+                await shopClient.query(
+                    graphqlShop(`
                     query {
                         product(id: "T_1") {
                             id
@@ -920,12 +999,14 @@ describe('Custom fields', () => {
                             }
                         }
                     }
-                `);
+                `),
+                );
             }, 'Cannot query field "nonPublic" on type "ProductCustomFields"'),
         );
 
         it('publicly accessible via Shop API', async () => {
-            const { product } = await shopClient.query(gql`
+            const { product } = await shopClient.query(
+                graphqlShop(`
                 query {
                     product(id: "T_1") {
                         id
@@ -934,15 +1015,18 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `);
+            `),
+            );
 
+            productGuard.assertSuccess(product);
             expect(product.customFields.public).toBe('ho!');
         });
 
         it(
             'internal throws for Shop API',
             assertThrowsWithMessage(async () => {
-                await shopClient.query(gql`
+                await shopClient.query(
+                    graphqlShop(`
                     query {
                         product(id: "T_1") {
                             id
@@ -951,108 +1035,126 @@ describe('Custom fields', () => {
                             }
                         }
                     }
-                `);
+                `),
+                );
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
 
         it(
             'internal throws for Admin API',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    query {
-                        product(id: "T_1") {
-                            id
-                            customFields {
-                                internalString
+                await adminClient.query(
+                    graphql(`
+                        query {
+                            product(id: "T_1") {
+                                id
+                                customFields {
+                                    internalString
+                                }
                             }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
 
         // https://github.com/vendure-ecommerce/vendure/issues/3049
         it('does not leak private fields via JSON type', async () => {
-            const { collection } = await shopClient.query(gql`
+            const { collection } = await shopClient.query(
+                graphqlShop(`
                 query {
                     collection(id: "T_1") {
                         id
                         customFields
                     }
                 }
-            `);
+            `),
+            );
 
+            collectionGuard.assertSuccess(collection);
             expect(collection.customFields).toBe(null);
         });
     });
 
     describe('sort & filter', () => {
         it('can sort by custom fields', async () => {
-            const { products } = await adminClient.query(gql`
-                query {
-                    products(options: { sort: { nullable: ASC } }) {
-                        totalItems
+            const { products } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { sort: { nullable: ASC } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(products.totalItems).toBe(1);
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1581
         it('can sort by localeString custom fields', async () => {
-            const { products } = await adminClient.query(gql`
-                query {
-                    products(options: { sort: { localeStringWithDefault: ASC } }) {
-                        totalItems
+            const { products } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { sort: { localeStringWithDefault: ASC } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(products.totalItems).toBe(1);
         });
 
         it('can filter by custom fields', async () => {
-            const { products } = await adminClient.query(gql`
-                query {
-                    products(options: { filter: { stringWithDefault: { contains: "hello" } } }) {
-                        totalItems
+            const { products } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { filter: { stringWithDefault: { contains: "hello" } } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(products.totalItems).toBe(1);
         });
 
         it('can filter by localeString custom fields', async () => {
-            const { products } = await adminClient.query(gql`
-                query {
-                    products(options: { filter: { localeStringWithDefault: { contains: "hola" } } }) {
-                        totalItems
+            const { products } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { filter: { localeStringWithDefault: { contains: "hola" } } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(products.totalItems).toBe(1);
         });
 
         it('can filter by custom list fields', async () => {
-            const { products: result1 } = await adminClient.query(gql`
-                query {
-                    products(options: { filter: { intListWithValidation: { inList: 42 } } }) {
-                        totalItems
+            const { products: result1 } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { filter: { intListWithValidation: { inList: 42 } } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(result1.totalItems).toBe(1);
-            const { products: result2 } = await adminClient.query(gql`
-                query {
-                    products(options: { filter: { intListWithValidation: { inList: 43 } } }) {
-                        totalItems
+            const { products: result2 } = await adminClient.query(
+                graphql(`
+                    query {
+                        products(options: { filter: { intListWithValidation: { inList: 43 } } }) {
+                            totalItems
+                        }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(result2.totalItems).toBe(0);
         });
@@ -1060,61 +1162,69 @@ describe('Custom fields', () => {
         it(
             'cannot sort by custom list fields',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    query {
-                        products(options: { sort: { intListWithValidation: ASC } }) {
-                            totalItems
+                await adminClient.query(
+                    graphql(`
+                        query {
+                            products(options: { sort: { intListWithValidation: ASC } }) {
+                                totalItems
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'Field "intListWithValidation" is not defined by type "ProductSortParameter".'),
         );
 
         it(
             'cannot filter by internal field in Admin API',
             assertThrowsWithMessage(async () => {
-                await adminClient.query(gql`
-                    query {
-                        products(options: { filter: { internalString: { contains: "hello" } } }) {
-                            totalItems
+                await adminClient.query(
+                    graphql(`
+                        query {
+                            products(options: { filter: { internalString: { contains: "hello" } } }) {
+                                totalItems
+                            }
                         }
-                    }
-                `);
+                    `),
+                );
             }, 'Field "internalString" is not defined by type "ProductFilterParameter"'),
         );
 
         it(
             'cannot filter by internal field in Shop API',
             assertThrowsWithMessage(async () => {
-                await shopClient.query(gql`
+                await shopClient.query(
+                    graphqlShop(`
                     query {
                         products(options: { filter: { internalString: { contains: "hello" } } }) {
                             totalItems
                         }
                     }
-                `);
+                `),
+                );
             }, 'Field "internalString" is not defined by type "ProductFilterParameter"'),
         );
     });
 
     describe('product on productVariant entity', () => {
         it('is translated', async () => {
-            const { productVariants } = await adminClient.query(gql`
-                query {
-                    productVariants(productId: "T_1") {
-                        items {
-                            product {
-                                name
-                                id
-                                customFields {
-                                    localeStringWithDefault
-                                    stringWithDefault
+            const { productVariants } = await adminClient.query(
+                graphql(`
+                    query {
+                        productVariants(productId: "T_1") {
+                            items {
+                                product {
+                                    name
+                                    id
+                                    customFields {
+                                        localeStringWithDefault
+                                        stringWithDefault
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(productVariants.items[0].product).toEqual({
                 id: 'T_1',
@@ -1129,36 +1239,40 @@ describe('Custom fields', () => {
 
     describe('unique constraint', () => {
         it('setting unique value works', async () => {
-            const result = await adminClient.query(gql`
-                mutation {
-                    updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
-                        id
-                        customFields {
-                            uniqueString
+            const result = await adminClient.query(
+                graphql(`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
+                            id
+                            customFields {
+                                uniqueString
+                            }
                         }
                     }
-                }
-            `);
+                `),
+            );
 
             expect(result.updateProduct.customFields.uniqueString).toBe('foo');
         });
 
         it('setting conflicting value fails', async () => {
             try {
-                await adminClient.query(gql`
-                    mutation {
-                        createProduct(
-                            input: {
-                                translations: [
-                                    { languageCode: en, name: "test 2", slug: "test-2", description: "" }
-                                ]
-                                customFields: { uniqueString: "foo" }
+                await adminClient.query(
+                    graphql(`
+                        mutation {
+                            createProduct(
+                                input: {
+                                    translations: [
+                                        { languageCode: en, name: "test 2", slug: "test-2", description: "" }
+                                    ]
+                                    customFields: { uniqueString: "foo" }
+                                }
+                            ) {
+                                id
                             }
-                        ) {
-                            id
                         }
-                    }
-                `);
+                    `),
+                );
                 fail('Should have thrown');
             } catch (e: any) {
                 let duplicateKeyErrMessage = 'unassigned';
@@ -1182,7 +1296,7 @@ describe('Custom fields', () => {
 
     it('on ProductVariantPrice', async () => {
         const { updateProductVariants } = await adminClient.query(
-            gql`
+            graphql(`
                 mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
                     updateProductVariants(input: $input) {
                         id
@@ -1195,7 +1309,7 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `,
+            `),
             {
                 input: [
                     {
@@ -1214,6 +1328,7 @@ describe('Custom fields', () => {
             },
         );
 
+        productVariantGuard.assertSuccess(updateProductVariants[0]);
         expect(updateProductVariants[0].prices).toEqual([
             {
                 currencyCode: 'USD',
