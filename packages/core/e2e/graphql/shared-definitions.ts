@@ -1208,6 +1208,66 @@ export const addOptionGroupToProductDocument = graphql(
     [productWithOptionsFragment],
 );
 
+export const removeOptionGroupFromProductDocument = graphql(
+    `
+        mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!, $force: Boolean) {
+            removeOptionGroupFromProduct(
+                productId: $productId
+                optionGroupId: $optionGroupId
+                force: $force
+            ) {
+                ...ProductWithOptions
+                ... on ProductOptionInUseError {
+                    errorCode
+                    message
+                    optionGroupCode
+                    productVariantCount
+                }
+            }
+        }
+    `,
+    [productWithOptionsFragment],
+);
+
+export const getOptionGroupDocument = graphql(`
+    query GetOptionGroup($id: ID!) {
+        productOptionGroup(id: $id) {
+            id
+            code
+            options {
+                id
+                code
+            }
+        }
+    }
+`);
+
+export const getProductVariantDocument = graphql(`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
+        }
+    }
+`);
+
+export const getProductWithVariantListDocument = graphql(
+    `
+        query GetProductWithVariantList($id: ID, $variantListOptions: ProductVariantListOptions) {
+            product(id: $id) {
+                id
+                variantList(options: $variantListOptions) {
+                    items {
+                        ...ProductVariant
+                    }
+                    totalItems
+                }
+            }
+        }
+    `,
+    [productVariantFragment],
+);
+
 export const createShippingMethodDocument = graphql(
     `
         mutation CreateShippingMethod($input: CreateShippingMethodInput!) {
@@ -2141,3 +2201,48 @@ export const getAdjustmentOperationsDocument = graphql(
     `,
     [configurableOperationDefFragment],
 );
+
+export const getCustomerWithUserDocument = graphql(`
+    query GetCustomerWithUser($id: ID!) {
+        customer(id: $id) {
+            id
+            user {
+                id
+                identifier
+                verified
+            }
+        }
+    }
+`);
+
+export const getCustomerOrdersDocument = graphql(`
+    query GetCustomerOrders($id: ID!) {
+        customer(id: $id) {
+            orders {
+                items {
+                    id
+                }
+                totalItems
+            }
+        }
+    }
+`);
+
+export const addNoteToCustomerDocument = graphql(
+    `
+        mutation AddNoteToCustomer($input: AddNoteToCustomerInput!) {
+            addNoteToCustomer(input: $input) {
+                ...Customer
+            }
+        }
+    `,
+    [customerFragment],
+);
+
+export const deleteCustomerAddressDocument = graphql(`
+    mutation DeleteCustomerAddress($id: ID!) {
+        deleteCustomerAddress(id: $id) {
+            success
+        }
+    }
+`);

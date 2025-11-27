@@ -145,7 +145,6 @@ describe('Order merging', () => {
 
         await shopClient.asUserWithCredentials(customerEmailAddress, 'test');
         for (const line of existingOrderLines) {
-            // TODO: Ask Michael whether this is a valid type assertion
             await shopClient.query(
                 addItemToOrderCustomFieldsDocument,
                 line as VariablesOf<typeof addItemToOrderCustomFieldsDocument>,
@@ -154,7 +153,6 @@ describe('Order merging', () => {
 
         await shopClient.asAnonymousUser();
         for (const line of guestOrderLines) {
-            // TODO: Ask Michael whether this is a valid type assertion
             await shopClient.query(
                 addItemToOrderCustomFieldsDocument,
                 line as VariablesOf<typeof addItemToOrderCustomFieldsDocument>,
@@ -166,6 +164,10 @@ describe('Order merging', () => {
             password: 'test',
         });
         const { activeOrder } = await shopClient.query(getActiveOrderWithCustomFieldsDocument);
+
+        if (!activeOrder) {
+            throw new Error('Active order not found');
+        }
 
         return activeOrder;
     }
