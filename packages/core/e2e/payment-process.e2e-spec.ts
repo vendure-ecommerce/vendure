@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+import { ErrorCode } from '@vendure/common/lib/generated-types';
 import {
-    CustomOrderProcess,
-    CustomPaymentProcess,
+    type CustomOrderProcess,
+    type CustomPaymentProcess,
     defaultOrderProcess,
     LanguageCode,
     mergeConfig,
-    Order,
-    OrderPlacedStrategy,
-    OrderState,
+    type Order,
+    type OrderPlacedStrategy,
+    type OrderState,
     PaymentMethodHandler,
-    RequestContext,
+    type RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
-import gql from 'graphql-tag';
+import { createErrorResultGuard, createTestEnvironment, type ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import type { FragmentOf as ShopFragmentOf } from './graphql/graphql-shop';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { ErrorCode } from './graphql/generated-e2e-admin-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { type orderFragment, orderWithLinesFragment, type paymentFragment } from './graphql/fragments-admin';
+import { FragmentOf, graphql } from './graphql/graphql-admin';
 import {
     adminTransitionToStateDocument,
     getOrderDocument,
@@ -33,6 +33,7 @@ import {
     addItemToOrderDocument,
     addPaymentDocument,
     getActiveOrderDocument,
+    type testOrderWithPaymentsFragment,
 } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -118,10 +119,20 @@ describe('Payment process', () => {
         }
     }
 
-    const orderGuard: ErrorResultGuard<CodegenShop.TestOrderFragmentFragment | Codegen.OrderFragment> =
+    // Guard for adminTransitionToStateDocument (uses Order fragment)
+    const orderGuard: ErrorResultGuard<FragmentOf<typeof orderFragment>> = createErrorResultGuard(
+        input => !!input.total,
+    );
+
+    // Guard for addPaymentDocument (uses TestOrderWithPayments fragment)
+    const shopOrderGuard: ErrorResultGuard<ShopFragmentOf<typeof testOrderWithPaymentsFragment>> =
         createErrorResultGuard(input => !!input.total);
 
-    const paymentGuard: ErrorResultGuard<Codegen.PaymentFragment> = createErrorResultGuard(
+    // Guard for addManualPaymentDocument (returns inline Order with payments)
+    const orderWithLinesGuard: ErrorResultGuard<FragmentOf<typeof orderWithLinesFragment>> =
+        createErrorResultGuard(input => !!input.total);
+
+    const paymentGuard: ErrorResultGuard<FragmentOf<typeof paymentFragment>> = createErrorResultGuard(
         input => !!input.id,
     );
 
@@ -156,10 +167,7 @@ describe('Payment process', () => {
         await adminClient.asSuperAdmin();
 
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-        await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(addItemToOrderDocument, {
+        await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_1',
             quantity: 1,
         });
@@ -176,10 +184,7 @@ describe('Payment process', () => {
     });
 
     it('creates Payment in custom state', async () => {
-        const { addPaymentToOrder } = await shopClient.query<
-            CodegenShop.AddPaymentToOrderMutation,
-            CodegenShop.AddPaymentToOrderMutationVariables
-        >(addPaymentDocument, {
+        const { addPaymentToOrder } = await shopClient.query(addPaymentDocument, {
             input: {
                 method: testPaymentHandler.code,
                 metadata: {
@@ -188,14 +193,11 @@ describe('Payment process', () => {
             },
         });
 
-        orderGuard.assertSuccess(addPaymentToOrder);
+        shopOrderGuard.assertSuccess(addPaymentToOrder);
 
-        const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            getOrderDocument,
-            {
-                id: orderId,
-            },
-        );
+        const { order } = await adminClient.query(getOrderDocument, {
+            id: orderId,
+        });
 
         expect(order?.state).toBe('ArrangingPayment');
         expect(order?.payments?.length).toBe(1);
@@ -210,43 +212,33 @@ describe('Payment process', () => {
     });
 
     it('Payment next states', async () => {
-        const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            getOrderDocument,
-            {
-                id: orderId,
-            },
-        );
+        const { order } = await adminClient.query(getOrderDocument, {
+            id: orderId,
+        });
         expect(order?.payments?.[0].nextStates).toEqual(['Settled', 'Declined', 'Cancelled']);
     });
 
     it('transition Order to custom state, custom OrderPlacedStrategy sets as placed', async () => {
-        const { activeOrder: activeOrderPre } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder: activeOrderPre } = await shopClient.query(getActiveOrderDocument);
         expect(activeOrderPre).not.toBeNull();
 
-        const { transitionOrderToState } = await adminClient.query<
-            Codegen.AdminTransitionMutation,
-            Codegen.AdminTransitionMutationVariables
-        >(adminTransitionToStateDocument, {
+        const { transitionOrderToState } = await adminClient.query(adminTransitionToStateDocument, {
             id: orderId,
             state: 'ValidatingPayment',
         });
 
-        orderGuard.assertSuccess(transitionOrderToState);
+        const transitionedOrder = transitionOrderToState as FragmentOf<typeof orderFragment>;
+        orderGuard.assertSuccess(transitionedOrder);
 
-        expect(transitionOrderToState.state).toBe('ValidatingPayment');
-        expect(transitionOrderToState?.active).toBe(false);
+        expect(transitionedOrder.state).toBe('ValidatingPayment');
+        expect(transitionedOrder.active).toBe(false);
 
-        const { activeOrder: activeOrderPost } =
-            await shopClient.query<CodegenShop.GetActiveOrderQuery>(getActiveOrderDocument);
+        const { activeOrder: activeOrderPost } = await shopClient.query(getActiveOrderDocument);
         expect(activeOrderPost).toBeNull();
     });
 
     it('transitionPaymentToState succeeds', async () => {
-        const { transitionPaymentToState } = await adminClient.query<
-            Codegen.TransitionPaymentToStateMutation,
-            Codegen.TransitionPaymentToStateMutationVariables
-        >(transitionPaymentToStateDocument, {
+        const { transitionPaymentToState } = await adminClient.query(transitionPaymentToStateDocument, {
             id: payment1Id,
             state: 'Settled',
         });
@@ -254,12 +246,9 @@ describe('Payment process', () => {
         paymentGuard.assertSuccess(transitionPaymentToState);
         expect(transitionPaymentToState.state).toBe('Settled');
 
-        const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-            getOrderDocument,
-            {
-                id: orderId,
-            },
-        );
+        const { order } = await adminClient.query(getOrderDocument, {
+            id: orderId,
+        });
         expect(order?.state).toBe('PaymentSettled');
         expect(settlePaymentSpy).toHaveBeenCalled();
     });
@@ -270,18 +259,12 @@ describe('Payment process', () => {
 
         beforeAll(async () => {
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-            await shopClient.query<
-                CodegenShop.AddItemToOrderMutation,
-                CodegenShop.AddItemToOrderMutationVariables
-            >(addItemToOrderDocument, {
+            await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
             order2Id = (await proceedToArrangingPayment(shopClient)) as string;
-            const { addPaymentToOrder } = await shopClient.query<
-                CodegenShop.AddPaymentToOrderMutation,
-                CodegenShop.AddPaymentToOrderMutationVariables
-            >(addPaymentDocument, {
+            const { addPaymentToOrder } = await shopClient.query(addPaymentDocument, {
                 input: {
                     method: testPaymentHandler.code,
                     metadata: {
@@ -290,23 +273,17 @@ describe('Payment process', () => {
                 },
             });
 
-            orderGuard.assertSuccess(addPaymentToOrder);
+            shopOrderGuard.assertSuccess(addPaymentToOrder);
             payment2Id = addPaymentToOrder.payments![0].id;
 
-            await adminClient.query<
-                Codegen.AdminTransitionMutation,
-                Codegen.AdminTransitionMutationVariables
-            >(adminTransitionToStateDocument, {
+            await adminClient.query(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'ValidatingPayment',
             });
         });
 
         it('attempting to transition payment to settled fails', async () => {
-            const { transitionPaymentToState } = await adminClient.query<
-                Codegen.TransitionPaymentToStateMutation,
-                Codegen.TransitionPaymentToStateMutationVariables
-            >(transitionPaymentToStateDocument, {
+            const { transitionPaymentToState } = await adminClient.query(transitionPaymentToStateDocument, {
                 id: payment2Id,
                 state: 'Settled',
             });
@@ -315,20 +292,14 @@ describe('Payment process', () => {
             expect(transitionPaymentToState.errorCode).toBe(ErrorCode.PAYMENT_STATE_TRANSITION_ERROR);
             expect((transitionPaymentToState as any).transitionError).toBe(PAYMENT_ERROR_MESSAGE);
 
-            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                getOrderDocument,
-                {
-                    id: order2Id,
-                },
-            );
+            const { order } = await adminClient.query(getOrderDocument, {
+                id: order2Id,
+            });
             expect(order?.state).toBe('ValidatingPayment');
         });
 
         it('cancel failed payment', async () => {
-            const { transitionPaymentToState } = await adminClient.query<
-                Codegen.TransitionPaymentToStateMutation,
-                Codegen.TransitionPaymentToStateMutationVariables
-            >(transitionPaymentToStateDocument, {
+            const { transitionPaymentToState } = await adminClient.query(transitionPaymentToStateDocument, {
                 id: payment2Id,
                 state: 'Cancelled',
             });
@@ -336,30 +307,21 @@ describe('Payment process', () => {
             paymentGuard.assertSuccess(transitionPaymentToState);
             expect(transitionPaymentToState.state).toBe('Cancelled');
 
-            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                getOrderDocument,
-                {
-                    id: order2Id,
-                },
-            );
+            const { order } = await adminClient.query(getOrderDocument, {
+                id: order2Id,
+            });
             expect(order?.state).toBe('ValidatingPayment');
         });
 
         it('manually adds payment', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                Codegen.AdminTransitionMutation,
-                Codegen.AdminTransitionMutationVariables
-            >(adminTransitionToStateDocument, {
+            const { transitionOrderToState } = await adminClient.query(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'ArrangingAdditionalPayment',
             });
 
-            orderGuard.assertSuccess(transitionOrderToState);
+            orderGuard.assertSuccess(transitionOrderToState as FragmentOf<typeof orderFragment>);
 
-            const { addManualPaymentToOrder } = await adminClient.query<
-                Codegen.AddManualPayment2Mutation,
-                Codegen.AddManualPayment2MutationVariables
-            >(ADD_MANUAL_PAYMENT, {
+            const { addManualPaymentToOrder } = await adminClient.query(addManualPaymentDocument, {
                 input: {
                     orderId: order2Id,
                     metadata: {},
@@ -368,30 +330,25 @@ describe('Payment process', () => {
                 },
             });
 
-            orderGuard.assertSuccess(addManualPaymentToOrder);
+            orderWithLinesGuard.assertSuccess(addManualPaymentToOrder);
             expect(addManualPaymentToOrder.state).toBe('ArrangingAdditionalPayment');
             expect(addManualPaymentToOrder.payments![1].state).toBe('Settled');
             expect(addManualPaymentToOrder.payments![1].amount).toBe(addManualPaymentToOrder.totalWithTax);
         });
 
         it('transitions Order to PaymentSettled', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                Codegen.AdminTransitionMutation,
-                Codegen.AdminTransitionMutationVariables
-            >(adminTransitionToStateDocument, {
+            const { transitionOrderToState } = await adminClient.query(adminTransitionToStateDocument, {
                 id: order2Id,
                 state: 'PaymentSettled',
             });
 
-            orderGuard.assertSuccess(transitionOrderToState);
-            expect(transitionOrderToState.state).toBe('PaymentSettled');
+            const transitionedOrder = transitionOrderToState as FragmentOf<typeof orderFragment>;
+            orderGuard.assertSuccess(transitionedOrder);
+            expect(transitionedOrder.state).toBe('PaymentSettled');
 
-            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-                getOrderDocument,
-                {
-                    id: order2Id,
-                },
-            );
+            const { order } = await adminClient.query(getOrderDocument, {
+                id: order2Id,
+            });
             const settledPaymentAmount = order?.payments
                 ?.filter(p => p.state === 'Settled')
                 .reduce((sum, p) => sum + p.amount, 0);
@@ -401,15 +358,17 @@ describe('Payment process', () => {
     });
 });
 
-export const ADD_MANUAL_PAYMENT = gql`
-    mutation AddManualPayment2($input: ManualPaymentInput!) {
-        addManualPaymentToOrder(input: $input) {
-            ...OrderWithLines
-            ... on ErrorResult {
-                errorCode
-                message
+export const addManualPaymentDocument = graphql(
+    `
+        mutation AddManualPayment2($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                ...OrderWithLines
+                ... on ErrorResult {
+                    errorCode
+                    message
+                }
             }
         }
-    }
-    ${ORDER_WITH_LINES_FRAGMENT}
-`;
+    `,
+    [orderWithLinesFragment],
+);
