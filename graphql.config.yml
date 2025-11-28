@@ -9,3 +9,5 @@ projects:
     schema: ./schema-shop.json
     documents:
       - 'packages/**/graphql/shop-definitions.ts'
+      - 'packages/core/e2e/order-merge.e2e-spec.ts'
+      - 'packages/core/e2e/product-option.e2e-spec.ts'

@@ -50,10 +50,10 @@
 - [x] order-line-custom-fields.e2e-spec.ts 373
 - [x] order-taxes.e2e-spec.ts 377
 - [ ] stock-location.e2e-spec.ts 388
-- [ ] product-option.e2e-spec.ts 392
+- [x] product-option.e2e-spec.ts 392
 - [x] customer-channel.e2e-spec.ts 393
 - [x] asset-channel.e2e-spec.ts 398
-- [ ] payment-process.e2e-spec.ts 415 // TODO: USES DEPRECATED STUFF!!
+- [x] payment-process.e2e-spec.ts 415 // TODO: USES DEPRECATED STUFF!!
 - [x] shipping-method-eligibility.e2e-spec.ts 451
 - [x] auth.e2e-spec.ts 461
 - [x] authentication-strategy.e2e-spec.ts 473
@@ -89,25 +89,3 @@
 - [ ] collection.e2e-spec.ts 2602
       KIND OF DONE WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
 - [x] shop-order.e2e-spec.ts 2893 - [x] order.e2e-spec.ts 3156
-
-fast-importer.e2e-spec.ts entity-prefix.e2e-spec.ts entity-uuid-strategy.e2e-spec.ts cache-service-default.e2e-spec.ts cache-service-in-memory.e2e-spec.ts translations.e2e-spec.ts apollo-server-plugin.e2e-spec.ts lifecycle.e2e-spec.ts default-search-plugin-uuids.e2e-spec.ts tax-rate.e2e-spec.ts parallel-transactions.e2e-spec.ts cache-service-redis.e2e-spec.ts global-settings.e2e-spec.ts default-scheduler-plugin.e2e-spec.ts
-
-error-handler-strategy.e2e-spec.ts configurable-operation.e2e-spec.ts order-item-price-calculation-strategy.e2e-spec.ts localization.e2e-spec.ts relations-decorator.e2e-spec.ts plugin.e2e-spec.ts session-management.e2e-spec.ts job-queue.e2e-spec.ts order-channel.e2e-spec.ts
-
-custom-permissions.e2e-spec.ts tax-category.e2e-spec.ts order-changed-price-handling.e2e-spec.ts entity-serialization.e2e-spec.ts
-
-order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts
-
-order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts
-
-fulfillment-process.e2e-spec.ts populate.e2e-spec.ts custom-field-default-values.e2e-spec.ts entity-id-strategy.e2e-spec.ts
-
-shop-customer.e2e-spec.ts zone.e2e-spec.ts custom-field-permissions.e2e-spec.ts
-
-customer-group.e2e-spec.ts order-merge.e2e-spec.ts administrator.e2e-spec.ts order-interceptor.e2e-spec.ts shop-catalog.e2e-spec.ts
-
-order-line-custom-fields.e2e-spec.ts order-taxes.e2e-spec.ts customer-channel.e2e-spec.ts asset-channel.e2e-spec.ts payment-process.e2e-spec.ts
-
-active-order-strategy.e2e-spec.ts custom-field-struct.e2e-spec.ts stock-control-multi-location.e2e-spec.ts product-prices.e2e-spec.ts
-
-fast-importer.e2e-spec.ts entity-prefix.e2e-spec.ts entity-uuid-strategy.e2e-spec.ts cache-service-default.e2e-spec.ts cache-service-in-memory.e2e-spec.ts translations.e2e-spec.ts apollo-server-plugin.e2e-spec.ts lifecycle.e2e-spec.ts default-search-plugin-uuids.e2e-spec.ts tax-rate.e2e-spec.ts parallel-transactions.e2e-spec.ts cache-service-redis.e2e-spec.ts global-settings.e2e-spec.ts default-scheduler-plugin.e2e-spec.ts money-strategy.e2e-spec.ts country.e2e-spec.ts tag.e2e-spec.ts error-handler-strategy.e2e-spec.ts configurable-operation.e2e-spec.ts order-item-price-calculation-strategy.e2e-spec.ts localization.e2e-spec.ts relations-decorator.e2e-spec.ts plugin.e2e-spec.ts session-management.e2e-spec.ts job-queue.e2e-spec.ts order-channel.e2e-spec.ts custom-permissions.e2e-spec.ts tax-category.e2e-spec.ts order-changed-price-handling.e2e-spec.ts entity-serialization.e2e-spec.ts order-fulfillment.e2e-spec.ts order-multi-vendor.e2e-spec.ts order-multiple-shipping.e2e-spec.ts guest-checkout-strategy.e2e-spec.ts fulfillment-process.e2e-spec.ts populate.e2e-spec.ts custom-field-default-values.e2e-spec.ts entity-id-strategy.e2e-spec.ts shop-customer.e2e-spec.ts zone.e2e-spec.ts custom-field-permissions.e2e-spec.ts customer-group.e2e-spec.ts administrator.e2e-spec.ts order-interceptor.e2e-spec.ts shop-catalog.e2e-spec.ts order-taxes.e2e-spec.ts customer-channel.e2e-spec.ts asset-channel.e2e-spec.ts shipping-method-eligibility.e2e-spec.ts auth.e2e-spec.ts authentication-strategy.e2e-spec.ts promotion.e2e-spec.ts settings-store-rw-permissions.e2e-spec.ts channel.e2e-spec.ts order-process.e2e-spec.ts shipping-method.e2e-spec.ts custom-field-struct.e2e-spec.ts stock-control-multi-location.e2e-spec.ts product-prices.e2e-spec.ts draft-order.e2e-spec.ts product-channel.e2e-spec.ts payment-method.e2e-spec.ts role.e2e-spec.ts slug.e2e-spec.ts settings-store.e2e-spec.ts customer.e2e-spec.ts facet.e2e-spec.ts duplicate-entity.e2e-spec.ts shop-auth.e2e-spec.ts custom-fields.e2e-spec.ts stock-control.e2e-spec.ts product.e2e-spec.ts order-promotion.e2e-spec.ts shop-order.e2e-spec.ts order.e2e-spec.ts
