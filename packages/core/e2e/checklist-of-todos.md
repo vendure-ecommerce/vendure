@@ -63,9 +63,9 @@
 - [x] channel.e2e-spec.ts 514
 - [ ] import.e2e-spec.ts 515
 - [x] order-process.e2e-spec.ts 528
-- [ ] asset.e2e-spec.ts 579
+- [x] asset.e2e-spec.ts 579
 - [x] shipping-method.e2e-spec.ts 579
-- [ ] active-order-strategy.e2e-spec.ts 580
+- [x] active-order-strategy.e2e-spec.ts 580
 - [x] custom-field-struct.e2e-spec.ts 584
 - [x] stock-control-multi-location.e2e-spec.ts 589
 - [x] product-prices.e2e-spec.ts 599

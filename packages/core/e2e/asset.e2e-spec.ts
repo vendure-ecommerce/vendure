@@ -4,7 +4,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -120,6 +120,7 @@ describe('Asset resolver', () => {
             id: firstAssetId,
         });
 
+        // @ts-expect-error
         expect(result.asset?.preview).toBe(
             'test-url/test-assets/alexandru-acea-686569-unsplash__preview.jpg',
         );
