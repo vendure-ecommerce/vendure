@@ -13,7 +13,10 @@ import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
 } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import { SETTLE_PAYMENT } from '@vendure/core/e2e/graphql/shared-definitions';
+import {
+    settlePaymentDocument,
+    updateProductVariantsDocument,
+} from '@vendure/core/e2e/graphql/shared-definitions';
 import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
@@ -27,7 +30,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -187,7 +189,7 @@ describe('Mollie payments', () => {
         });
 
         it('Should fail to get payment url when items are out of stock', async () => {
-            let { updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            let { updateProductVariants } = await adminClient.query(updateProductVariantsDocument, {
                 input: {
                     id: 'T_5',
                     trackInventory: 'TRUE',
@@ -208,7 +210,7 @@ describe('Mollie payments', () => {
             );
             expect(result.message).toContain('insufficient stock of Pinelab stickers');
             // Set stock back to not tracking
-            ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            ({ updateProductVariants } = await adminClient.query(updateProductVariantsDocument, {
                 input: {
                     id: 'T_5',
                     trackInventory: 'FALSE',
@@ -629,10 +631,13 @@ describe('Mollie payments', () => {
             nock('https://api.mollie.com/')
                 .get(`/v2/payments/tr_mockPayment/captures/cpt_mockCapture`)
                 .reply(200, { status: 'succeeded', id: 'cpt_mockCapture', resource: 'capture' });
-            await adminClient.query<SettlePaymentMutation, SettlePaymentMutationVariables>(SETTLE_PAYMENT, {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                id: order.payments![0].id,
-            });
+            await adminClient.query<SettlePaymentMutation, SettlePaymentMutationVariables>(
+                settlePaymentDocument,
+                {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    id: order.payments![0].id,
+                },
+            );
             const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
                 GET_ORDER_BY_CODE,
                 {
