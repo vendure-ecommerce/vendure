@@ -2,7 +2,7 @@
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig, UuidIdStrategy } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import path from 'path';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -79,7 +79,7 @@ describe('Default search plugin with UUIDs', () => {
     });
 
     it('can filter by facetValueFilters', async () => {
-        const { facets } = await adminClient.query(getFacetListDocument);
+        await adminClient.query(getFacetListDocument);
         const result = await shopClient.query(searchProductsShopDocument, {
             input: {
                 facetValueFilters: [

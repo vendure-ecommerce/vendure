@@ -8,7 +8,7 @@
 - [x] translations.e2e-spec.ts 94
 - [x] apollo-server-plugin.e2e-spec.ts 106
 - [x] lifecycle.e2e-spec.ts 106
-- [ ] default-search-plugin-uuids.e2e-spec.ts 118
+- [x] default-search-plugin-uuids.e2e-spec.ts 118
 - [x] tax-rate.e2e-spec.ts 129
 - [x] parallel-transactions.e2e-spec.ts 133
 - [x] cache-service-redis.e2e-spec.ts 134
