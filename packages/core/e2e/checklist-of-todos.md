@@ -83,9 +83,9 @@
 - [x] custom-field-relations.e2e-spec.ts 1465
 - [x] list-query-builder.e2e-spec.ts 1546
 - [x] stock-control.e2e-spec.ts 1581
-      KIND OF DONE WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
+- [x] default-search-plugin.e2e-spec.ts 2143
 - [x] product.e2e-spec.ts 2311
 - [x] order-promotion.e2e-spec.ts 2357
-- [ ] collection.e2e-spec.ts 2602
-      KIND OF DONE WEIRD ERROR- [ ] order-modification.e2e-spec.ts 2865
+- [x] collection.e2e-spec.ts 2602
+- [x] order-modification.e2e-spec.ts 2865
 - [x] shop-order.e2e-spec.ts 2893 - [x] order.e2e-spec.ts 3156
