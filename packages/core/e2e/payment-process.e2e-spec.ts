@@ -2,20 +2,20 @@
 
 import { ErrorCode } from '@vendure/common/lib/generated-types';
 import {
-    type CustomOrderProcess,
-    type CustomPaymentProcess,
     defaultOrderProcess,
     LanguageCode,
     mergeConfig,
     type Order,
     type OrderPlacedStrategy,
+    type OrderProcess,
     type OrderState,
     PaymentMethodHandler,
+    type PaymentProcess,
     type RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, type ErrorResultGuard } from '@vendure/testing';
-import path from 'path';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { FragmentOf as ShopFragmentOf } from './graphql/graphql-shop';
 
@@ -23,7 +23,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { type orderFragment, orderWithLinesFragment, type paymentFragment } from './graphql/fragments-admin';
-import { FragmentOf, graphql } from './graphql/graphql-admin';
+import { type FragmentOf, graphql } from './graphql/graphql-admin';
 import {
     adminTransitionToStateDocument,
     getOrderDocument,
@@ -48,7 +48,7 @@ describe('Payment process', () => {
     let payment1Id: string;
 
     const PAYMENT_ERROR_MESSAGE = 'Payment is not valid';
-    const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
+    const customPaymentProcess: PaymentProcess<'Validating'> = {
         init(injector) {
             initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
@@ -77,7 +77,7 @@ describe('Payment process', () => {
         },
     };
 
-    const customOrderProcess: CustomOrderProcess<'ValidatingPayment'> = {
+    const customOrderProcess: OrderProcess<'ValidatingPayment'> = {
         transitions: {
             ArrangingPayment: {
                 to: ['ValidatingPayment'],
@@ -110,12 +110,12 @@ describe('Payment process', () => {
 
     class TestOrderPlacedStrategy implements OrderPlacedStrategy {
         shouldSetAsPlaced(
-            ctx: RequestContext,
+            _ctx: RequestContext,
             fromState: OrderState,
             toState: OrderState,
-            order: Order,
+            _order: Order,
         ): boolean | Promise<boolean> {
-            return fromState === 'ArrangingPayment' && toState === ('ValidatingPayment' as any);
+            return fromState === 'ArrangingPayment' && toState === ('ValidatingPayment' as OrderState);
         }
     }
 
@@ -140,12 +140,12 @@ describe('Payment process', () => {
         mergeConfig(testConfig(), {
             // logger: new DefaultLogger(),
             orderOptions: {
-                process: [defaultOrderProcess, customOrderProcess] as any,
+                process: [defaultOrderProcess, customOrderProcess],
                 orderPlacedStrategy: new TestOrderPlacedStrategy(),
             },
             paymentOptions: {
                 paymentMethodHandlers: [testPaymentHandler],
-                customPaymentProcess: [customPaymentProcess as any],
+                customPaymentProcess: [customPaymentProcess],
             },
         }),
     );
@@ -290,7 +290,7 @@ describe('Payment process', () => {
 
             paymentGuard.assertErrorResult(transitionPaymentToState);
             expect(transitionPaymentToState.errorCode).toBe(ErrorCode.PAYMENT_STATE_TRANSITION_ERROR);
-            expect((transitionPaymentToState as any).transitionError).toBe(PAYMENT_ERROR_MESSAGE);
+            expect(transitionPaymentToState.transitionError).toBe(PAYMENT_ERROR_MESSAGE);
 
             const { order } = await adminClient.query(getOrderDocument, {
                 id: order2Id,
