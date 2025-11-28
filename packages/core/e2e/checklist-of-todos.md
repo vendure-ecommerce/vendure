@@ -49,7 +49,7 @@
 - [x] database-transactions.e2e-spec.ts 354
 - [x] order-line-custom-fields.e2e-spec.ts 373
 - [x] order-taxes.e2e-spec.ts 377
-- [ ] stock-location.e2e-spec.ts 388
+- [x] stock-location.e2e-spec.ts 388
 - [x] product-option.e2e-spec.ts 392
 - [x] customer-channel.e2e-spec.ts 393
 - [x] asset-channel.e2e-spec.ts 398

@@ -1,5 +1,3 @@
-import gql from 'graphql-tag';
-
 import {
     assetFragment,
     collectionFragment,
@@ -26,7 +24,7 @@ export const searchProductsAdminDocument = graphql(`
     }
 `);
 
-export const getOrderWithSellerOrdersDocument = gql`
+export const getOrderWithSellerOrdersDocument = graphql(`
     query GetOrderWithSellerOrders($id: ID!) {
         order(id: $id) {
             id
@@ -66,7 +64,7 @@ export const getOrderWithSellerOrdersDocument = gql`
             }
         }
     }
-`;
+`);
 
 export const disableProductDocument = graphql(`
     mutation DisableProduct($id: ID!) {
@@ -408,5 +406,91 @@ export const issue2097QueryDocument = graphql(`
     query Issue2097 {
         ownerProtectedThing
         publicThing
+    }
+`);
+
+export const testGetStockLocationsListDocument = graphql(`
+    query TestGetStockLocationsList($options: StockLocationListOptions) {
+        stockLocations(options: $options) {
+            items {
+                id
+                name
+                description
+            }
+            totalItems
+        }
+    }
+`);
+
+export const testCreateStockLocationDocument = graphql(`
+    mutation TestCreateStockLocation($input: CreateStockLocationInput!) {
+        createStockLocation(input: $input) {
+            id
+            name
+            description
+        }
+    }
+`);
+
+export const testUpdateStockLocationDocument = graphql(`
+    mutation TestUpdateStockLocation($input: UpdateStockLocationInput!) {
+        updateStockLocation(input: $input) {
+            id
+            name
+            description
+        }
+    }
+`);
+
+export const testDeleteStockLocationDocument = graphql(`
+    mutation TestDeleteStockLocation($input: DeleteStockLocationInput!) {
+        deleteStockLocation(input: $input) {
+            result
+            message
+        }
+    }
+`);
+
+export const testGetStockLevelsForVariantDocument = graphql(`
+    query TestGetStockLevelsForVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            stockLevels {
+                stockOnHand
+                stockAllocated
+                stockLocationId
+            }
+        }
+    }
+`);
+
+export const testSetStockLevelInLocationDocument = graphql(`
+    mutation TestSetStockLevelInLocation($input: UpdateProductVariantInput!) {
+        updateProductVariants(input: [$input]) {
+            id
+            stockLevels {
+                stockOnHand
+                stockAllocated
+                stockLocationId
+            }
+        }
+    }
+`);
+
+export const testAssignStockLocationToChannelDocument = graphql(`
+    mutation TestAssignStockLocationToChannel($input: AssignStockLocationsToChannelInput!) {
+        assignStockLocationsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const testRemoveStockLocationsFromChannelDocument = graphql(`
+    mutation TestRemoveStockLocationsFromChannel($input: RemoveStockLocationsFromChannelInput!) {
+        removeStockLocationsFromChannel(input: $input) {
+            id
+            name
+        }
     }
 `);
