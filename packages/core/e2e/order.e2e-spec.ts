@@ -2018,6 +2018,7 @@ describe('Orders resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/847
         it('manual call to settlePayment works with multiple payments', async () => {
+            await createTestOrder(adminClient, shopClient, customers[1].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
             await shopClient.query(addPaymentDocument, {
                 input: {
