@@ -47,7 +47,7 @@
 - [x] order-interceptor.e2e-spec.ts 336
 - [x] shop-catalog.e2e-spec.ts 340
 - [x] database-transactions.e2e-spec.ts 354
-- [ ] order-line-custom-fields.e2e-spec.ts 373
+- [x] order-line-custom-fields.e2e-spec.ts 373
 - [x] order-taxes.e2e-spec.ts 377
 - [ ] stock-location.e2e-spec.ts 388
 - [ ] product-option.e2e-spec.ts 392
