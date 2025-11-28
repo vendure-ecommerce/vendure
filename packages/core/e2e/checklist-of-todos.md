@@ -80,8 +80,8 @@
 - [x] duplicate-entity.e2e-spec.ts 1085
 - [x] shop-auth.e2e-spec.ts 1085
 - [x] custom-fields.e2e-spec.ts 1351
-- [ ] custom-field-relations.e2e-spec.ts 1465
-- [ ] list-query-builder.e2e-spec.ts 1546
+- [x] custom-field-relations.e2e-spec.ts 1465
+- [x] list-query-builder.e2e-spec.ts 1546
 - [x] stock-control.e2e-spec.ts 1581
       KIND OF DONE WEIRD ERROR- - [ ] default-search-plugin.e2e-spec.ts 2143
 - [x] product.e2e-spec.ts 2311
