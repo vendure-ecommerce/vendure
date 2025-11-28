@@ -59,7 +59,7 @@
 - [x] authentication-strategy.e2e-spec.ts 473
 - [x] promotion.e2e-spec.ts 474
 - [x] settings-store-rw-permissions.e2e-spec.ts 477
-- [ ] entity-hydrator.e2e-spec.ts 491
+- [x] entity-hydrator.e2e-spec.ts 491
 - [x] channel.e2e-spec.ts 514
 - [ ] import.e2e-spec.ts 515
 - [x] order-process.e2e-spec.ts 528
