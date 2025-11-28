@@ -95,6 +95,7 @@ describe('custom ActiveOrderStrategy', () => {
 
         await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
         const { activeOrder } = await shopClient.query(activeOrderByTokenDocument, {
+            // @ts-expect-error
             input: {
                 orderToken: { token: 'token-2' },
             },
@@ -109,6 +110,7 @@ describe('custom ActiveOrderStrategy', () => {
     it('activeOrder with invalid input', async () => {
         await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
         const { activeOrder } = await shopClient.query(activeOrderByTokenDocument, {
+            // @ts-expect-error
             input: {
                 orderToken: { token: 'invalid' },
             },
@@ -121,6 +123,7 @@ describe('custom ActiveOrderStrategy', () => {
         // wrong customer logged in
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         const { activeOrder } = await shopClient.query(activeOrderByTokenDocument, {
+            // @ts-expect-error
             input: {
                 orderToken: { token: 'token-2' },
             },
@@ -170,6 +173,9 @@ describe('custom ActiveOrderStrategy', () => {
                     },
                 ],
             });
+            if (!addItemToOrder.lines) {
+                throw new Error('No lines found');
+            }
             firstOrderLineId = addItemToOrder.lines[0].id;
         });
 
@@ -248,6 +254,9 @@ describe('custom ActiveOrderStrategy', () => {
                 couponCode: TEST_COUPON_CODE,
                 activeOrderInput: { orderToken: { token: 'token-2' } } as any,
             });
+            if (!removeCouponCode) {
+                throw new Error('No removeCouponCode found');
+            }
             orderResultGuard.assertSuccess(removeCouponCode);
 
             expect(removeCouponCode).toEqual({
@@ -267,7 +276,7 @@ describe('custom ActiveOrderStrategy', () => {
                         countryCode: 'AT',
                     },
                     activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                },
             );
             orderResultGuard.assertSuccess(setOrderShippingAddress);
 
@@ -290,7 +299,7 @@ describe('custom ActiveOrderStrategy', () => {
                         countryCode: 'AT',
                     },
                     activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                },
             );
             orderResultGuard.assertSuccess(setOrderBillingAddress);
 
@@ -308,8 +317,9 @@ describe('custom ActiveOrderStrategy', () => {
             const { unsetOrderShippingAddress } = await shopClient.query(
                 unsetOrderShippingAddressWithTokenDocument,
                 {
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
             orderResultGuard.assertSuccess(unsetOrderShippingAddress);
 
@@ -327,8 +337,9 @@ describe('custom ActiveOrderStrategy', () => {
             const { unsetOrderBillingAddress } = await shopClient.query(
                 unsetOrderBillingAddressWithTokenDocument,
                 {
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
             orderResultGuard.assertSuccess(unsetOrderBillingAddress);
 
@@ -346,8 +357,9 @@ describe('custom ActiveOrderStrategy', () => {
             const { eligibleShippingMethods } = await shopClient.query(
                 eligibleShippingMethodsWithTokenDocument,
                 {
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
             expect(eligibleShippingMethods).toEqual([
                 {
@@ -373,8 +385,9 @@ describe('custom ActiveOrderStrategy', () => {
                 setOrderShippingMethodWithTokenDocument,
                 {
                     shippingMethodId: ['T_1'],
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
             orderResultGuard.assertSuccess(setOrderShippingMethod);
 
@@ -388,7 +401,8 @@ describe('custom ActiveOrderStrategy', () => {
         it('setOrderCustomFields', async () => {
             const { setOrderCustomFields } = await shopClient.query(setOrderCustomFieldsWithTokenDocument, {
                 input: { customFields: { message: 'foo' } },
-                activeOrderInput: { orderToken: { token: 'token-2' } } as any,
+                // @ts-expect-error
+                activeOrderInput: { orderToken: { token: 'token-2' } },
             });
             orderResultGuard.assertSuccess(setOrderCustomFields);
 
@@ -403,8 +417,9 @@ describe('custom ActiveOrderStrategy', () => {
             const { eligiblePaymentMethods } = await shopClient.query(
                 eligiblePaymentMethodsWithTokenDocument,
                 {
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
             expect(eligiblePaymentMethods).toEqual([
                 {
@@ -417,7 +432,8 @@ describe('custom ActiveOrderStrategy', () => {
 
         it('nextOrderStates', async () => {
             const { nextOrderStates } = await shopClient.query(nextOrderStatesWithTokenDocument, {
-                activeOrderInput: { orderToken: { token: 'token-2' } } as any,
+                // @ts-expect-error
+                activeOrderInput: { orderToken: { token: 'token-2' } },
             });
             expect(nextOrderStates).toEqual(['ArrangingPayment', 'Cancelled']);
         });
@@ -427,9 +443,13 @@ describe('custom ActiveOrderStrategy', () => {
                 transitionOrderToStateWithTokenDocument,
                 {
                     state: 'ArrangingPayment',
-                    activeOrderInput: { orderToken: { token: 'token-2' } } as any,
-                }
+                    // @ts-expect-error
+                    activeOrderInput: { orderToken: { token: 'token-2' } },
+                },
             );
+            if (!transitionOrderToState) {
+                throw new Error('No transitionOrderToState found');
+            }
             orderResultGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionOrderToState).toEqual({
@@ -442,8 +462,12 @@ describe('custom ActiveOrderStrategy', () => {
         it('addPaymentToOrder', async () => {
             const { addPaymentToOrder } = await shopClient.query(addPaymentToOrderWithTokenDocument, {
                 input: { method: 'test-payment-method', metadata: {} },
-                activeOrderInput: { orderToken: { token: 'token-2' } } as any,
+                // @ts-expect-error
+                activeOrderInput: { orderToken: { token: 'token-2' } },
             });
+            if (!addPaymentToOrder) {
+                throw new Error('No addPaymentToOrder found');
+            }
             orderResultGuard.assertSuccess(addPaymentToOrder);
 
             expect(addPaymentToOrder).toEqual({
@@ -479,14 +503,24 @@ export const createCustomOrderDocument = graphql(`
 `);
 
 const addItemToOrderWithTokenDocument = graphql(`
-    mutation AddItemToOrderWithToken($productVariantId: ID!, $quantity: Int!, $activeOrderInput: ActiveOrderInput) {
-        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+    mutation AddItemToOrderWithToken(
+        $productVariantId: ID!
+        $quantity: Int!
+        $activeOrderInput: ActiveOrderInput
+    ) {
+        addItemToOrder(
+            productVariantId: $productVariantId
+            quantity: $quantity
+            activeOrderInput: $activeOrderInput
+        ) {
+            ... on Order {
                 id
                 orderToken
                 lines {
                     id
-                    productVariant { id }
+                    productVariant {
+                        id
+                    }
                 }
             }
         }
@@ -494,14 +528,20 @@ const addItemToOrderWithTokenDocument = graphql(`
 `);
 
 const adjustOrderLineWithTokenDocument = graphql(`
-    mutation AdjustOrderLineWithToken($orderLineId: ID!, $quantity: Int!, $activeOrderInput: ActiveOrderInput) {
+    mutation AdjustOrderLineWithToken(
+        $orderLineId: ID!
+        $quantity: Int!
+        $activeOrderInput: ActiveOrderInput
+    ) {
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 lines {
                     quantity
-                    productVariant { id }
+                    productVariant {
+                        id
+                    }
                 }
             }
         }
@@ -511,7 +551,7 @@ const adjustOrderLineWithTokenDocument = graphql(`
 const removeOrderLineWithTokenDocument = graphql(`
     mutation RemoveOrderLineWithToken($orderLineId: ID!, $activeOrderInput: ActiveOrderInput) {
         removeOrderLine(orderLineId: $orderLineId, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 lines {
@@ -525,10 +565,12 @@ const removeOrderLineWithTokenDocument = graphql(`
 const removeAllOrderLinesWithTokenDocument = graphql(`
     mutation RemoveAllOrderLinesWithToken($activeOrderInput: ActiveOrderInput) {
         removeAllOrderLines(activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
-                lines { id }
+                lines {
+                    id
+                }
             }
         }
     }
@@ -537,7 +579,7 @@ const removeAllOrderLinesWithTokenDocument = graphql(`
 const applyCouponCodeWithTokenDocument = graphql(`
     mutation ApplyCouponCodeWithToken($couponCode: String!, $activeOrderInput: ActiveOrderInput) {
         applyCouponCode(couponCode: $couponCode, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 couponCodes
@@ -552,7 +594,7 @@ const applyCouponCodeWithTokenDocument = graphql(`
 const removeCouponCodeWithTokenDocument = graphql(`
     mutation RemoveCouponCodeWithToken($couponCode: String!, $activeOrderInput: ActiveOrderInput) {
         removeCouponCode(couponCode: $couponCode, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 couponCodes
@@ -565,9 +607,12 @@ const removeCouponCodeWithTokenDocument = graphql(`
 `);
 
 const setOrderShippingAddressWithTokenDocument = graphql(`
-    mutation SetOrderShippingAddressWithToken($input: CreateAddressInput!, $activeOrderInput: ActiveOrderInput) {
+    mutation SetOrderShippingAddressWithToken(
+        $input: CreateAddressInput!
+        $activeOrderInput: ActiveOrderInput
+    ) {
         setOrderShippingAddress(input: $input, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 shippingAddress {
@@ -580,9 +625,12 @@ const setOrderShippingAddressWithTokenDocument = graphql(`
 `);
 
 const setOrderBillingAddressWithTokenDocument = graphql(`
-    mutation SetOrderBillingAddressWithToken($input: CreateAddressInput!, $activeOrderInput: ActiveOrderInput) {
+    mutation SetOrderBillingAddressWithToken(
+        $input: CreateAddressInput!
+        $activeOrderInput: ActiveOrderInput
+    ) {
         setOrderBillingAddress(input: $input, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 billingAddress {
@@ -597,7 +645,7 @@ const setOrderBillingAddressWithTokenDocument = graphql(`
 const unsetOrderShippingAddressWithTokenDocument = graphql(`
     mutation UnsetOrderShippingAddressWithToken($activeOrderInput: ActiveOrderInput) {
         unsetOrderShippingAddress(activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 shippingAddress {
@@ -612,7 +660,7 @@ const unsetOrderShippingAddressWithTokenDocument = graphql(`
 const unsetOrderBillingAddressWithTokenDocument = graphql(`
     mutation UnsetOrderBillingAddressWithToken($activeOrderInput: ActiveOrderInput) {
         unsetOrderBillingAddress(activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 billingAddress {
@@ -637,7 +685,7 @@ const eligibleShippingMethodsWithTokenDocument = graphql(`
 const setOrderShippingMethodWithTokenDocument = graphql(`
     mutation SetOrderShippingMethodWithToken($shippingMethodId: [ID!]!, $activeOrderInput: ActiveOrderInput) {
         setOrderShippingMethod(shippingMethodId: $shippingMethodId, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 shippingLines {
@@ -651,10 +699,12 @@ const setOrderShippingMethodWithTokenDocument = graphql(`
 const setOrderCustomFieldsWithTokenDocument = graphql(`
     mutation SetOrderCustomFieldsWithToken($input: UpdateOrderInput!, $activeOrderInput: ActiveOrderInput) {
         setOrderCustomFields(input: $input, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
-                customFields { message }
+                customFields {
+                    message
+                }
             }
         }
     }
@@ -679,7 +729,7 @@ const nextOrderStatesWithTokenDocument = graphql(`
 const transitionOrderToStateWithTokenDocument = graphql(`
     mutation TransitionOrderToStateWithToken($state: String!, $activeOrderInput: ActiveOrderInput) {
         transitionOrderToState(state: $state, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 state
@@ -691,7 +741,7 @@ const transitionOrderToStateWithTokenDocument = graphql(`
 const addPaymentToOrderWithTokenDocument = graphql(`
     mutation AddPaymentToOrderWithToken($input: PaymentInput!, $activeOrderInput: ActiveOrderInput) {
         addPaymentToOrder(input: $input, activeOrderInput: $activeOrderInput) {
-            ...on Order {
+            ... on Order {
                 id
                 orderToken
                 state
