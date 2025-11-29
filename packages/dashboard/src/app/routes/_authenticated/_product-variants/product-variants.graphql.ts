@@ -92,6 +92,7 @@ export const productVariantDetailDocument = graphql(
                 }
                 trackInventory
                 outOfStockThreshold
+                useGlobalOutOfStockThreshold
                 stockLevels {
                     id
                     stockOnHand
