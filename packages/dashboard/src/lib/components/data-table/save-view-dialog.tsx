@@ -27,11 +27,8 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
     const [scope, setScope] = useState<'user' | 'global'>('user');
     const [saving, setSaving] = useState(false);
     const { saveView, userViews, globalViews, canManageGlobalViews } = useSavedViews();
-
     const { pageId } = usePage();
     const { settings } = useUserSettings();
-
-
 
     const defaultVisibility = {
         id: false,
@@ -40,15 +37,11 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
         type: false,
         currencyCode: false,
     }
-
-    
     const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
-
     const columnVisibility = pageId
         ? (tableSettings?.columnVisibility ?? defaultVisibility)
         : defaultVisibility;
     const columnOrder = pageId ? (tableSettings?.columnOrder ?? []) : [];
-
 
     const handleSave = async () => {
         if (!name.trim()) {

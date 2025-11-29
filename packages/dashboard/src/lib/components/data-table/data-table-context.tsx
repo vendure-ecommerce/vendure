@@ -3,6 +3,9 @@ import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import React, { createContext, ReactNode, useContext } from 'react';
 
+
+export type ColumnConfig = { columnOrder: string[], columnVisibility: Record<string, boolean> };
+
 interface DataTableContextValue {
     columnFilters: ColumnFiltersState;
     setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
@@ -18,7 +21,7 @@ interface DataTableContextValue {
     table?: Table<any>;
     handleApplyView: (
         filters: ColumnFiltersState,
-        columnConfig: { columnOrder: string[], columnVisibility: Record<string, boolean> },
+        columnConfig: ColumnConfig,
         searchTerm?: string) => void;
 }
 
@@ -57,7 +60,7 @@ export function DataTableProvider({
 }: DataTableProviderProps) {
     const { setTableSettings } = useUserSettings();
 
-    const handleApplyView = (filters: ColumnFiltersState, columnConfig: { columnOrder: string[], columnVisibility: Record<string, boolean> }, viewSearchTerm?: string) => {
+    const handleApplyView = (filters: ColumnFiltersState, columnConfig: ColumnConfig, viewSearchTerm?: string) => {
         setColumnFilters(filters);
         if (viewSearchTerm !== undefined && onSearchTermChange) {
             setSearchTerm(viewSearchTerm);
@@ -70,9 +73,6 @@ export function DataTableProvider({
         if (pageId) {
             setTableSettings(pageId, 'columnOrder', columnConfig.columnOrder);
             setTableSettings(pageId, 'columnVisibility', columnConfig.columnVisibility);
-        }
-        else {
-            console.warn('Cannot persist column settings: pageId is undefined');
         }
     };
 
