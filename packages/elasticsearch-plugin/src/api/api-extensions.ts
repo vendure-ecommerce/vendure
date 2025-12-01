@@ -1,5 +1,5 @@
-import { gql } from 'graphql-tag';
 import { DocumentNode } from 'graphql';
+import { gql } from 'graphql-tag';
 
 import { ElasticsearchOptions } from '../options';
 
@@ -39,7 +39,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             priceRangeWithTax: PriceRangeInput
             inStock: Boolean
             groupBySKU: Boolean
-            ${inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ')}
+            ${inputExtensions.length > 0 ? inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ') : ''}
         }
 
         ${sortExtensions.length > 0 ? sortExtensionGql : ''}
