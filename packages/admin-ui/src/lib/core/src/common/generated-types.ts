@@ -14,13 +14,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: { input: any; output: any; }
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any; }
-  /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
   Money: { input: number; output: number; }
-  /** The `Upload` scalar type represents a file upload. */
   Upload: { input: any; output: any; }
 };
 
@@ -769,8 +765,6 @@ export type CreateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code: Scalars['String']['input'];
-  /** @deprecated Use defaultCurrencyCode instead */
-  currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode: LanguageCode;
@@ -5707,19 +5701,13 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
-  /** @deprecated Use the `amount` field instead */
-  adjustment?: InputMaybe<Scalars['Money']['input']>;
   /**
    * The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
    * Can be as much as the total amount of the payment minus the sum of all previous refunds.
    */
   amount?: InputMaybe<Scalars['Money']['input']>;
-  /** @deprecated Use the `amount` field instead */
-  lines?: InputMaybe<Array<OrderLineInput>>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
-  /** @deprecated Use the `amount` field instead */
-  shipping?: InputMaybe<Scalars['Money']['input']>;
 };
 
 export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundAmountError | RefundOrderStateError | RefundStateTransitionError;
@@ -5940,10 +5928,6 @@ export type SearchInput = {
   collectionSlug?: InputMaybe<Scalars['String']['input']>;
   collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
-  /** @deprecated Use `facetValueFilters` instead */
-  facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  /** @deprecated Use `facetValueFilters` instead */
-  facetValueOperator?: InputMaybe<LogicalOperator>;
   groupByProduct?: InputMaybe<Scalars['Boolean']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<SearchResultSortParameter>;
@@ -6712,8 +6696,6 @@ export type UpdateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code?: InputMaybe<Scalars['String']['input']>;
-  /** @deprecated Use defaultCurrencyCode instead */
-  currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode?: InputMaybe<LanguageCode>;

@@ -1353,7 +1353,7 @@ export const getOrderWithOrderLineCustomFieldsDocument = graphql(`
 `);
 
 export const localUpdatedOrderFragment = graphql(`
-    fragment UpdatedOrder on Order {
+    fragment UpdatedOrderMinimal on Order {
         id
         code
         state
@@ -1371,9 +1371,9 @@ export const localUpdatedOrderFragment = graphql(`
 
 export const localAddItemToOrderDocument = graphql(
     `
-        mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+        mutation AddItemToOrderMinimal($productVariantId: ID!, $quantity: Int!) {
             addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
-                ...UpdatedOrder
+                ...UpdatedOrderMinimal
                 ... on ErrorResult {
                     errorCode
                     message
@@ -1381,7 +1381,7 @@ export const localAddItemToOrderDocument = graphql(
                 ... on InsufficientStockError {
                     quantityAvailable
                     order {
-                        ...UpdatedOrder
+                        ...UpdatedOrderMinimal
                     }
                 }
             }

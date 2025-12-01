@@ -930,7 +930,7 @@ export const getOrderFulfillmentsDocument = graphql(`
 
 export const getOrdersListDocument = graphql(
     `
-        query GetOrderList($options: OrderListOptions) {
+        query GetOrderListFull($options: OrderListOptions) {
             orders(options: $options) {
                 items {
                     ...Order

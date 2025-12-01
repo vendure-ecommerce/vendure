@@ -15,13 +15,9 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: { input: any; output: any };
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: { input: any; output: any };
-    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
     Money: { input: number; output: number };
-    /** The `Upload` scalar type represents a file upload. */
     Upload: { input: any; output: any };
 };
 
@@ -3248,10 +3244,6 @@ export type SearchInput = {
     collectionSlug?: InputMaybe<Scalars['String']['input']>;
     collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
-    /** @deprecated Use `facetValueFilters` instead */
-    facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-    /** @deprecated Use `facetValueFilters` instead */
-    facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']['input']>;
     skip?: InputMaybe<Scalars['Int']['input']>;
     sort?: InputMaybe<SearchResultSortParameter>;
