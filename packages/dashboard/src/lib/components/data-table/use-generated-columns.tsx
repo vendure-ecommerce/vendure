@@ -1,10 +1,22 @@
-import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
-import { FieldInfo, getTypeFieldInfo, getOperationVariablesFields } from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useAllBulkActions } from '@/vdb/components/data-table/use-all-bulk-actions.js';
+import { DisplayComponent } from '@/vdb/framework/component-registry/display-component.js';
+import {
+    FieldInfo,
+    getOperationVariablesFields,
+    getTypeFieldInfo,
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
+import {
+    generateDisplayComponentKey,
+    getDisplayComponent,
+} from '@/vdb/framework/extension-api/display-component-extensions.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
+import { AccessorFnColumnDef, AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -30,7 +42,12 @@ import {
 } from '../ui/alert-dialog.js';
 import { Button } from '../ui/button.js';
 import { Checkbox } from '../ui/checkbox.js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu.js';
 import { DataTableColumnHeader } from './data-table-column-header.js';
 
 /**
@@ -47,6 +64,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     fields,
     customizeColumns,
     rowActions,
+    bulkActions,
     deleteMutation,
     additionalColumns,
     defaultColumnOrder,
@@ -58,6 +76,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     fields: FieldInfo[];
     customizeColumns?: CustomizeColumnConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    bulkActions?: BulkAction[];
     deleteMutation?: TypedDocumentNode<any, any>;
     additionalColumns?: AdditionalColumns<T>;
     defaultColumnOrder?: Array<string | number | symbol>;
@@ -65,8 +84,14 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
     includeSelectionColumn?: boolean;
     includeActionsColumn?: boolean;
     enableSorting?: boolean;
-}>) {
+}>): {
+    columns: Array<AccessorKeyColumnDef<any> | AccessorFnColumnDef<any>>;
+    customFieldColumnNames: string[];
+} {
+    const { pageId } = usePage();
+    const pageBlock = usePageBlock();
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
+    const allBulkActions = useAllBulkActions(bulkActions ?? []);
 
     const { columns, customFieldColumnNames } = useMemo(() => {
         const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
@@ -89,47 +114,39 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
+            const { header, meta, cell: customCell, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
             return columnHelper.accessor(fieldInfo.name as any, {
                 id: fieldInfo.name,
-                meta: { fieldInfo, isCustomField },
+                meta: { fieldInfo, isCustomField, ...(meta ?? {}) },
                 enableColumnFilter,
-                enableSorting: fieldInfo.isScalar && enableSorting,
+                enableSorting: fieldInfo.isScalar && fieldInfo.type !== 'Boolean' && enableSorting,
                 // Filtering is done on the server side, but we set this to 'equalsString' because
                 // otherwise the TanStack Table with apply an "auto" function which somehow
                 // prevents certain filters from working.
                 filterFn: 'equalsString',
-                cell: ({ cell, row }) => {
+                cell: cellContext => {
+                    const { cell, row } = cellContext;
                     const cellValue = cell.getValue();
                     const value =
                         cellValue ??
                         (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
+                    const displayComponentId =
+                        pageId && pageBlock?.blockId
+                            ? generateDisplayComponentKey(pageId, pageBlock.blockId, fieldInfo.name)
+                            : undefined;
 
-                    if (fieldInfo.list && Array.isArray(value)) {
-                        return value.join(', ');
+                    const CustomDisplayComponent =
+                        displayComponentId && getDisplayComponent(displayComponentId);
+
+                    if (CustomDisplayComponent) {
+                        return <CustomDisplayComponent value={value} {...cellContext} />;
                     }
-                    if (
-                        (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
-                        value instanceof Date
-                    ) {
-                        return <DisplayComponent id="vendure:dateTime" value={value} />;
+                    if (typeof customCell === 'function') {
+                        return customCell(cellContext);
                     }
-                    if (fieldInfo.type === 'Boolean') {
-                        if (cell.column.id === 'enabled') {
-                            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
-                        } else {
-                            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
-                        }
-                    }
-                    if (fieldInfo.type === 'Asset') {
-                        return <DisplayComponent id="vendure:asset" value={value} />;
-                    }
-                    if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
-                    }
-                    return value;
+                    return <DefaultDisplayComponent value={value} fieldInfo={fieldInfo} />;
                 },
                 header: headerContext => {
                     return (
@@ -146,7 +163,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
+            finalColumns.push(columnHelper.accessor(id as any, { ...column, id, enableColumnFilter: false }));
         }
 
         if (defaultColumnOrder) {
@@ -165,8 +182,8 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             finalColumns = [...orderedColumns, ...remainingColumns];
         }
 
-        if (includeActionsColumn && (rowActions || deleteMutation)) {
-            const rowActionColumn = getRowActions(rowActions, deleteMutation);
+        if (includeActionsColumn && (rowActions || deleteMutation || bulkActions)) {
+            const rowActionColumn = getRowActions(rowActions, deleteMutation, allBulkActions);
             if (rowActionColumn) {
                 finalColumns.push(rowActionColumn);
             }
@@ -187,6 +204,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                     />
                 ),
                 enableColumnFilter: false,
+                enableHiding: false,
                 cell: ({ row }) => {
                     return (
                         <Checkbox
@@ -208,13 +226,15 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 function getRowActions(
     rowActions?: RowAction<any>[],
     deleteMutation?: TypedDocumentNode<any, any>,
+    bulkActions?: BulkAction[],
 ): AccessorKeyColumnDef<any> | undefined {
     return {
         id: 'actions',
         accessorKey: 'actions',
         header: () => <Trans>Actions</Trans>,
         enableColumnFilter: false,
-        cell: ({ row }) => {
+        enableHiding: false,
+        cell: ({ row, table }) => {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -231,6 +251,13 @@ function getRowActions(
                                 {action.label}
                             </DropdownMenuItem>
                         ))}
+                        {bulkActions?.map((action, index) => (
+                            <action.component
+                                key={`bulk-action-${index}`}
+                                selection={[row.original]}
+                                table={table}
+                            />
+                        ))}
                         {deleteMutation && (
                             <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
                         )}
@@ -241,6 +268,29 @@ function getRowActions(
     };
 }
 
+function DefaultDisplayComponent({ value, fieldInfo }: { value: any; fieldInfo: FieldInfo }) {
+    if (fieldInfo.list && Array.isArray(value)) {
+        return value.join(', ');
+    }
+    if ((fieldInfo.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+        return <DisplayComponent id="vendure:dateTime" value={value} />;
+    }
+    if (fieldInfo.type === 'Boolean') {
+        if (fieldInfo.name === 'enabled') {
+            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
+        } else {
+            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
+        }
+    }
+    if (fieldInfo.type === 'Asset') {
+        return <DisplayComponent id="vendure:asset" value={value} />;
+    }
+    if (value !== null && typeof value === 'object') {
+        return <DisplayComponent id="vendure:json" value={value} />;
+    }
+    return value;
+}
+
 function DeleteMutationRowAction({
     deleteMutation,
     row,
@@ -249,29 +299,36 @@ function DeleteMutationRowAction({
     row: Row<{ id: string }>;
 }>) {
     const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    
+    const { t } = useLingui();
+
     // Inspect the mutation variables to determine if it expects 'id' or 'ids'
     const mutationVariables = getOperationVariablesFields(deleteMutation);
     const hasIdsParameter = mutationVariables.some(field => field.name === 'ids');
-    
+
     const { mutate: deleteMutationFn } = useMutation({
         mutationFn: api.mutate(deleteMutation),
-        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } | { result: 'DELETED' | 'NOT_DELETED'; message: string }[] }) => {
+        onSuccess: (result: {
+            [key: string]:
+                | { result: 'DELETED' | 'NOT_DELETED'; message: string }
+                | {
+                      result: 'DELETED' | 'NOT_DELETED';
+                      message: string;
+                  }[];
+        }) => {
             const unwrappedResult = Object.values(result)[0];
             // Handle both single result and array of results
             const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;
             if (resultToCheck.result === 'DELETED') {
                 refetchPaginatedList();
-                toast.success(i18n.t('Deleted successfully'));
+                toast.success(t`Deleted successfully`);
             } else {
-                toast.error(i18n.t('Failed to delete'), {
+                toast.error(t`Failed to delete`, {
                     description: resultToCheck.message,
                 });
             }
         },
         onError: (err: Error) => {
-            toast.error(i18n.t('Failed to delete'), {
+            toast.error(t`Failed to delete`, {
                 description: err.message,
             });
         },

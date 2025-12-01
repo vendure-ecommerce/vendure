@@ -82,7 +82,7 @@ export function MyComponent() {
     });
 
 
-   // ... 
+   // ...
 
    function handleClick() {
         // variables are passed here
@@ -145,7 +145,7 @@ Please prefer this form over the raw Shadcn components where possible.
 Any labels or user-facing messages should use localization following this example:
 
 ```tsx
-import { Trans, useLingui } from '@/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 
 export function MyComponent() {

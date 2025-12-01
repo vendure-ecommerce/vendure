@@ -29,6 +29,7 @@ import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-str
 import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
+import { DefaultSlugStrategy } from './entity/default-slug-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
@@ -147,6 +148,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,
         metadataModifiers: [],
+        slugStrategy: new DefaultSlugStrategy(),
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,

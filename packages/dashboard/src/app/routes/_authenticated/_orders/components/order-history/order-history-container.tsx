@@ -1,7 +1,7 @@
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { TriangleAlert } from 'lucide-react';
 import { OrderHistory } from './order-history.js';
 import { useOrderHistory } from './use-order-history.js';
@@ -61,13 +61,15 @@ export function OrderHistoryContainer({ orderId }: Readonly<OrderHistoryContaine
 
     return (
         <>
-            <OrderHistory
-                order={order}
-                historyEntries={historyEntries ?? []}
-                onAddNote={addNote}
-                onUpdateNote={updateNote}
-                onDeleteNote={deleteNote}
-            />
+            {order ? (
+                <OrderHistory
+                    order={order}
+                    historyEntries={historyEntries ?? []}
+                    onAddNote={addNote}
+                    onUpdateNote={updateNote}
+                    onDeleteNote={deleteNote}
+                />
+            ) : null}
             {hasNextPage && (
                 <Button type="button" variant="outline" onClick={() => fetchNextPage()}>
                     <Trans>Load more</Trans>

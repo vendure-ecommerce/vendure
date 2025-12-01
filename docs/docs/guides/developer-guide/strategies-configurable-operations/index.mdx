@@ -123,7 +123,7 @@ export class MyStockLocationStrategy implements StockLocationStrategy {
 ## Configurable Operations
 
 Configurable operations are similar to strategies in that they allow certain aspects of the system to be customized. However,
-the main difference is that they can also be _configured_ via the Admin UI. This allows the store owner to make changes to the
+the main difference is that they can also be _configured_ via the Dashboard. This allows the store owner to make changes to the
 behavior of the system without having to restart the server.
 
 So they are typically used to supply some custom logic that needs to accept configurable arguments which can change
@@ -194,14 +194,14 @@ Here are the important parts:
 - Configurable operations are **instances** of a pre-defined class, and are instantiated before being passed to your config.
 - They must have a `code` property which is a unique string identifier.
 - They must have a `description` property which is a localizable, human-readable description of the operation.
-- They must have an `args` property which defines the arguments which can be configured via the Admin UI. If the operation has no arguments,
+- They must have an `args` property which defines the arguments which can be configured via the Dashboard. If the operation has no arguments,
 then this would be an empty object.
 - They will have one or more methods that need to be implemented, depending on the type of operation. In this case, the `apply()` method
 is used to apply the filter to the query builder.
 
 ### Configurable operation args
 
-The `args` property is an object which defines the arguments which can be configured via the Admin UI. Each property of the `args`
+The `args` property is an object which defines the arguments which can be configured via the Dashboard. Each property of the `args`
 object is a key-value pair, where the key is the name of the argument, and the value is an object which defines the type of the argument
 and any additional configuration.
 
@@ -260,7 +260,7 @@ The following types are available: `string`, `int`, `float`, `boolean`, `datetim
 
 [`LocalizedStringArray`](/reference/typescript-api/configurable-operation-def/localized-string-array/)
 
-A human-readable label for the argument. This is used in the Admin UI.
+A human-readable label for the argument. This is used in the Dashboard.
 
 #### description
 
@@ -268,7 +268,7 @@ A human-readable label for the argument. This is used in the Admin UI.
 
 [`LocalizedStringArray`](/reference/typescript-api/configurable-operation-def/localized-string-array/)
 
-A human-readable description for the argument. This is used in the Admin UI as a tooltip.
+A human-readable description for the argument. This is used in the Dashboard as a tooltip.
 
 #### required
 
@@ -276,7 +276,7 @@ A human-readable description for the argument. This is used in the Admin UI as a
 
 `boolean`
 
-Whether the argument is required. If `true`, then the Admin UI will not allow the user to save the configuration
+Whether the argument is required. If `true`, then the Dashboard will not allow the user to save the configuration
 unless a value has been provided for this argument.
 
 #### defaultValue
@@ -293,14 +293,14 @@ The default value for the argument. If not provided, then the argument will be `
 
 `boolean`
 
-Whether the argument is a list of values. If `true`, then the Admin UI will allow the user to add multiple values
+Whether the argument is a list of values. If `true`, then the Dashboard will allow the user to add multiple values
 for this argument. Defaults to `false`.
 
 #### ui
 
 <span class="badge badge--secondary">Optional</span>
 
-Allows you to specify the UI component that will be used to render the argument in the Admin UI, by specifying
+Allows you to specify the UI component that will be used to render the argument in the Dashboard, by specifying
 a `component` property, and optional properties to configure that component.
 
 ```ts

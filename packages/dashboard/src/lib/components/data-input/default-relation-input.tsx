@@ -1,9 +1,15 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { ControllerRenderProps } from 'react-hook-form';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useMemo } from 'react';
 import { MultiRelationInput, SingleRelationInput } from './relation-input.js';
 import { createRelationSelectorConfig } from './relation-selector.js';
+
+import {
+    DashboardFormComponentMetadata,
+    DashboardFormComponentProps,
+    RelationCustomFieldConfig,
+} from '@/vdb/framework/form-engine/form-engine-types.js';
+import { isRelationCustomFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 
 interface PlaceholderIconProps {
     letter: string;
@@ -97,10 +103,11 @@ function createBaseEntityConfig(
     labelKey: 'name' | 'code' | 'emailAddress' = 'name',
     searchField: string = 'name',
 ) {
+    const entityNameLower = entityName.toLowerCase();
     return {
         idKey: 'id',
         labelKey,
-        placeholder: i18n.t(`Search ${entityName.toLowerCase()}s...`),
+        placeholder: i18n`Search ${entityNameLower}...`,
         buildSearchFilter: (term: string) => ({
             [searchField]: { contains: term },
         }),
@@ -545,16 +552,26 @@ const createEntityConfigs = (i18n: any) => ({
     }),
 });
 
-interface DefaultRelationInputProps {
-    fieldDef: RelationCustomFieldConfig;
-    field: ControllerRenderProps<any, any>;
-    disabled?: boolean;
-}
+type DefaultRelationInputProps = DashboardFormComponentProps & {
+    entityType?: keyof ReturnType<typeof createEntityConfigs>;
+};
 
-export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<DefaultRelationInputProps>) {
-    const { i18n } = useLingui();
-    const entityName = fieldDef.entity;
-    const ENTITY_CONFIGS = createEntityConfigs(i18n);
+export function DefaultRelationInput({
+    fieldDef,
+    value,
+    onChange,
+    onBlur,
+    name,
+    ref,
+    disabled,
+    entityType,
+}: Readonly<DefaultRelationInputProps>) {
+    const { t } = useLingui();
+    if (!fieldDef || (!isRelationCustomFieldConfig(fieldDef) && !entityType)) {
+        return null;
+    }
+    const entityName = entityType ?? (fieldDef as RelationCustomFieldConfig).entity;
+    const ENTITY_CONFIGS = useMemo(() => createEntityConfigs(t), [t]);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {
@@ -562,10 +579,10 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
         console.warn(`No relation selector config found for entity: ${entityName}`);
         return (
             <input
-                value={field.value ?? ''}
-                onChange={e => field.onChange(e.target.value)}
-                onBlur={field.onBlur}
-                name={field.name}
+                value={value ?? ''}
+                onChange={e => onChange(e.target.value)}
+                onBlur={onBlur}
+                name={name}
                 disabled={disabled}
                 placeholder={`Enter ${entityName} ID`}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -578,8 +595,11 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
     if (isList) {
         return (
             <MultiRelationInput
-                value={field.value ?? []}
-                onChange={field.onChange}
+                onBlur={onBlur}
+                name={name}
+                ref={ref}
+                value={value ?? []}
+                onChange={onChange}
                 config={config}
                 disabled={disabled}
                 selectorLabel={<Trans>Select {entityName.toLowerCase()}s</Trans>}
@@ -588,8 +608,11 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
     } else {
         return (
             <SingleRelationInput
-                value={field.value ?? ''}
-                onChange={field.onChange}
+                onBlur={onBlur}
+                name={name}
+                ref={ref}
+                value={value}
+                onChange={onChange}
                 config={config}
                 disabled={disabled}
                 selectorLabel={<Trans>Select {entityName.toLowerCase()}</Trans>}
@@ -597,3 +620,7 @@ export function DefaultRelationInput({ fieldDef, field, disabled }: Readonly<Def
         );
     }
 }
+
+DefaultRelationInput.metadata = {
+    isListInput: 'dynamic',
+} as DashboardFormComponentMetadata;

@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from '@/vdb/components/ui/table.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { Order } from '../utils/order-types.js';
 import { MoneyGrossNet } from './money-gross-net.js';
 
@@ -10,9 +10,24 @@ export interface OrderTableTotalsProps {
 
 export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTotalsProps>) {
     const currencyCode = order.currencyCode;
-
     return (
         <>
+            {order.surcharges?.length > 0
+                ? order.surcharges.map((surcharge, index) => (
+                      <TableRow key={`${surcharge.description}-${index}`}>
+                          <TableCell colSpan={columnCount - 1} className="h-12">
+                              <Trans>Surcharge</Trans>: {surcharge.description}
+                          </TableCell>
+                          <TableCell colSpan={1} className="h-12">
+                              <MoneyGrossNet
+                                  priceWithTax={surcharge.priceWithTax}
+                                  price={surcharge.price}
+                                  currencyCode={currencyCode}
+                              />
+                          </TableCell>
+                      </TableRow>
+                  ))
+                : null}
             {order.discounts?.length > 0
                 ? order.discounts.map((discount, index) => (
                       <TableRow key={`${discount.description}-${index}`}>

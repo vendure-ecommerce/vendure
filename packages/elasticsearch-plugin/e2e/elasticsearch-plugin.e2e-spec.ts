@@ -3,11 +3,9 @@ import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
-    DefaultLogger,
     FacetValue,
     facetValueCollectionFilter,
     LanguageCode,
-    LogLevel,
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
@@ -17,15 +15,15 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import * as Codegen from '../../core/e2e/graphql/generated-e2e-admin-types';
 import {
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
 } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -34,8 +32,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -49,10 +47,14 @@ import { ElasticsearchPlugin } from '../src/plugin';
 import {
     doAdminSearchQuery,
     dropElasticIndices,
+    testCollectionIdsEdgeCases,
+    testCollectionSlugsEdgeCases,
     testGroupByProduct,
     testGroupBySKU,
     testMatchCollectionId,
+    testMatchCollectionIds,
     testMatchCollectionSlug,
+    testMatchCollectionSlugs,
     testMatchFacetIdsAnd,
     testMatchFacetIdsOr,
     testMatchFacetValueFiltersAnd,
@@ -192,6 +194,39 @@ describe('Elasticsearch plugin', () => {
         // We have extra time here because a lot of jobs are
         // triggered from all the product updates
         await awaitRunningJobs(adminClient, 10_000, 1000);
+
+        // Create an Electronics collection for testing multi-collection filters
+        await adminClient.query<Codegen.CreateCollectionMutation, Codegen.CreateCollectionMutationVariables>(
+            CREATE_COLLECTION,
+            {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Electronics',
+                            description: 'Electronics products',
+                            slug: 'electronics',
+                        },
+                    ],
+                    filters: [
+                        {
+                            code: facetValueCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: '["T_1"]',
+                                },
+                                {
+                                    name: 'containsAny',
+                                    value: 'false',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+        );
+
         await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
@@ -229,6 +264,14 @@ describe('Elasticsearch plugin', () => {
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
         it('matches by collectionSlug', () => testMatchCollectionSlug(shopClient));
+
+        it('matches by multiple collectionIds', () => testMatchCollectionIds(shopClient));
+
+        it('matches by multiple collectionSlugs', () => testMatchCollectionSlugs(shopClient));
+
+        it('handles collectionIds edge cases', () => testCollectionIdsEdgeCases(shopClient));
+
+        it('handles collectionSlugs edge cases', () => testCollectionSlugsEdgeCases(shopClient));
 
         it('single prices', () => testSinglePrices(shopClient));
 
@@ -331,6 +374,7 @@ describe('Elasticsearch plugin', () => {
             });
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
+                { collection: { id: 'T_3', name: 'Electronics' }, count: 21 },
             ]);
         });
 
@@ -345,6 +389,7 @@ describe('Elasticsearch plugin', () => {
             });
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
+                { collection: { id: 'T_3', name: 'Electronics' }, count: 10 },
             ]);
         });
 
@@ -507,6 +552,14 @@ describe('Elasticsearch plugin', () => {
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
         it('matches by collectionSlug', () => testMatchCollectionSlug(adminClient));
+
+        it('matches by multiple collectionIds', () => testMatchCollectionIds(adminClient));
+
+        it('matches by multiple collectionSlugs', () => testMatchCollectionSlugs(adminClient));
+
+        it('handles collectionIds edge cases', () => testCollectionIdsEdgeCases(adminClient));
+
+        it('handles collectionSlugs edge cases', () => testCollectionSlugsEdgeCases(adminClient));
 
         it('single prices', () => testSinglePrices(adminClient));
 

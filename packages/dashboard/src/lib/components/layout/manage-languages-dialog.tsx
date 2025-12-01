@@ -17,7 +17,7 @@ import { graphql } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -96,11 +96,11 @@ interface ManageLanguagesDialogProps {
 
 export function ManageLanguagesDialog({ open, onClose }: ManageLanguagesDialogProps) {
     const { formatLanguageName } = useLocalFormat();
-    const { activeChannel, selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
     const { hasPermissions } = usePermissions();
     const queryClient = useQueryClient();
 
-    const displayChannel = selectedChannel || activeChannel;
+    const displayChannel = activeChannel;
 
     // Permission checks
     const canReadGlobalSettings = hasPermissions(['ReadSettings']) || hasPermissions(['ReadGlobalSettings']);

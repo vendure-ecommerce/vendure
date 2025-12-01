@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { omit } from '../../common/lib/omit';
 
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
@@ -134,6 +134,51 @@ describe('ProductOption resolver', () => {
             name: 'Medium',
         });
         mediumOption = createProductOption;
+    });
+
+    it('getProductOption', async () => {
+        const { productOption } = await adminClient.query<
+            Codegen.GetProductOptionQuery,
+            Codegen.GetProductOptionQueryVariables
+        >(GET_PRODUCT_OPTION, {
+            id: 'T_7',
+        });
+
+        expect(productOption?.name).toBe('Medium');
+    });
+
+    it('productOptions query without groupId', async () => {
+        const { productOptions } = await adminClient.query<
+            Codegen.GetProductOptionsQuery,
+            Codegen.GetProductOptionsQueryVariables
+        >(GET_PRODUCT_OPTIONS, {});
+
+        expect(productOptions.items).toBeDefined();
+        expect(productOptions.totalItems).toBe(7);
+        // Should return all product options
+        const foundMediumOption = productOptions.items.find((o: any) => o.code === 'medium');
+        expect(foundMediumOption).toBeDefined();
+        expect(foundMediumOption?.name).toBe('Medium');
+        expect(foundMediumOption?.groupId).toBe(sizeGroup.id);
+    });
+
+    it('productOptions query with groupId', async () => {
+        const { productOptions } = await adminClient.query<
+            Codegen.GetProductOptionsQuery,
+            Codegen.GetProductOptionsQueryVariables
+        >(GET_PRODUCT_OPTIONS, {
+            groupId: sizeGroup.id,
+        });
+
+        expect(productOptions.items).toBeDefined();
+        expect(productOptions.totalItems).toBe(3);
+        // Should only return options from the specified group
+        productOptions.items.forEach((option: any) => {
+            expect(option.groupId).toBe(sizeGroup.id);
+        });
+        const foundMediumOption = productOptions.items.find((o: any) => o.code === 'medium');
+        expect(foundMediumOption).toBeDefined();
+        expect(foundMediumOption?.name).toBe('Medium');
     });
 
     it('updateProductOption', async () => {
@@ -309,6 +354,16 @@ const CREATE_PRODUCT_OPTION = gql`
     }
 `;
 
+const GET_PRODUCT_OPTION = gql`
+    query GetProductOption($id: ID!) {
+        productOption(id: $id) {
+            id
+            name
+            code
+        }
+    }
+`;
+
 const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {
@@ -325,6 +380,20 @@ const DELETE_PRODUCT_OPTION = gql`
         deleteProductOption(id: $id) {
             result
             message
+        }
+    }
+`;
+
+const GET_PRODUCT_OPTIONS = gql`
+    query GetProductOptions($groupId: ID, $options: ProductOptionListOptions) {
+        productOptions(groupId: $groupId, options: $options) {
+            items {
+                id
+                code
+                name
+                groupId
+            }
+            totalItems
         }
     }
 `;

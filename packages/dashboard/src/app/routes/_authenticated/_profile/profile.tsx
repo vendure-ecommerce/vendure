@@ -14,7 +14,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { activeAdministratorDocument, updateAdministratorDocument } from './profile.graphql.js';
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_profile/profile')({
 });
 
 function ProfilePage() {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, isPending } = useDetailPage({
         queryDocument: activeAdministratorDocument,
@@ -58,11 +58,11 @@ function ProfilePage() {
         },
         params: { id: 'undefined' },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated profile'));
+            toast(t`Successfully updated profile`);
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update profile'), {
+            toast(t`Failed to update profile`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

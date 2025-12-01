@@ -1,15 +1,18 @@
-import { Money } from '@/vdb/components/data-display/money.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
+import {
+    CustomerCell,
+    OrderMoneyCell,
+    OrderStateCell,
+} from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { createDraftOrderDocument, orderListDocument } from './orders.graphql.js';
 
@@ -21,6 +24,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 function OrderListPage() {
     const serverConfig = useServerConfig();
     const navigate = useNavigate();
+    const { t } = useLingui();
     const { mutate: createDraftOrder } = useMutation({
         mutationFn: api.mutate(createDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof createDraftOrderDocument>) => {
@@ -30,7 +34,7 @@ function OrderListPage() {
     return (
         <ListPage
             pageId="order-list"
-            title="Orders"
+            title={<Trans>Orders</Trans>}
             onSearchTermChange={searchTerm => {
                 return {
                     _or: [
@@ -57,30 +61,17 @@ function OrderListPage() {
             route={Route}
             customizeColumns={{
                 total: {
-                    header: 'Total',
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currency={currencyCode} />;
-                    },
+                    meta: { dependencies: ['currencyCode'] },
+                    cell: OrderMoneyCell,
                 },
                 totalWithTax: {
-                    header: 'Total with Tax',
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currency={currencyCode} />;
-                    },
+                    meta: { dependencies: ['currencyCode'] },
+                    cell: OrderMoneyCell,
                 },
                 state: {
-                    header: 'State',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue() as string;
-                        return <Badge variant="outline">{value}</Badge>;
-                    },
+                    cell: OrderStateCell,
                 },
                 code: {
-                    header: 'Code',
                     cell: ({ cell, row }) => {
                         const value = cell.getValue() as string;
                         const id = row.original.id;
@@ -88,26 +79,13 @@ function OrderListPage() {
                     },
                 },
                 customer: {
-                    header: 'Customer',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
-                        if (!value) {
-                            return null;
-                        }
-                        return (
-                            <Button asChild variant="ghost">
-                                <Link to={`/customers/${value.id}`}>
-                                    {value.firstName} {value.lastName}
-                                </Link>
-                            </Button>
-                        );
-                    },
+                    cell: CustomerCell,
                 },
                 shippingLines: {
-                    header: 'Shipping',
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
-                        return <div>{value.map(line => line.shippingMethod.name).join(', ')}</div>;
+                    header: () => <Trans>Shipping</Trans>,
+                    cell: ({ row }) => {
+                        const value = row.original.shippingLines;
+                        return <div>{value?.map(line => line.shippingMethod.name).join(', ')}</div>;
                     },
                 },
             }}
@@ -120,7 +98,7 @@ function OrderListPage() {
             }}
             facetedFilters={{
                 state: {
-                    title: 'State',
+                    title: t`State`,
                     options:
                         serverConfig?.orderProcess.map(state => {
                             return {

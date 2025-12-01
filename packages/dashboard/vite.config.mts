@@ -10,7 +10,7 @@ import { vendureDashboardPlugin } from './vite/vite-plugin-vendure-dashboard.js'
 export default ({ mode }: { mode: string }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
-    const adminApiHost = process.env.VITE_ADMIN_API_HOST ?? 'http://localhost:3000';
+    const adminApiHost = process.env.VITE_ADMIN_API_HOST ?? 'http://localhost';
     const adminApiPort = process.env.VITE_ADMIN_API_PORT ? +process.env.VITE_ADMIN_API_PORT : 'auto';
 
     process.env.IS_LOCAL_DEV = adminApiHost.includes('localhost') ? 'true' : 'false';
@@ -31,7 +31,6 @@ export default ({ mode }: { mode: string }) => {
             vendureDashboardPlugin({
                 vendureConfigPath: pathToFileURL(vendureConfigPath),
                 api: { host: adminApiHost, port: adminApiPort },
-                gqlOutputPath: path.resolve(__dirname, './src/lib/graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
             }) as any,
         ],

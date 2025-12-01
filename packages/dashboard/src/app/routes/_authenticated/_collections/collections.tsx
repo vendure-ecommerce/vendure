@@ -4,16 +4,18 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
-import { Folder, FolderOpen, FolderTreeIcon, PlusIcon } from 'lucide-react';
+import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { collectionListDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
@@ -22,7 +24,6 @@ import {
     RemoveCollectionsFromChannelBulkAction,
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
-import { useMoveSingleCollection } from './components/move-single-collection.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
     component: CollectionListPage,
@@ -33,7 +34,6 @@ type Collection = ResultOf<typeof collectionListDocument>['collections']['items'
 
 function CollectionListPage() {
     const [expanded, setExpanded] = useState<ExpandedState>({});
-    const { handleMoveClick, MoveDialog } = useMoveSingleCollection();
     const childrenQueries = useQueries({
         queries: Object.entries(expanded).map(([collectionId, isExpanded]) => {
             return {
@@ -83,7 +83,7 @@ function CollectionListPage() {
         <>
             <ListPage
                 pageId="collection-list"
-                title="Collections"
+                title={<Trans>Collections</Trans>}
                 listQuery={collectionListDocument}
                 transformVariables={input => {
                     const filterTerm = input.options?.filter?.name?.contains;
@@ -95,16 +95,19 @@ function CollectionListPage() {
                         },
                     };
                 }}
-                deleteMutation={deleteCollectionDocument}
                 customizeColumns={{
                     name: {
-                        header: 'Collection Name',
+                        meta: {
+                            // This column needs the following fields to always be available
+                            // in order to correctly render.
+                            dependencies: ['children', 'breadcrumbs'],
+                        },
                         cell: ({ row }) => {
                             const isExpanded = row.getIsExpanded();
                             const hasChildren = !!row.original.children?.length;
                             return (
                                 <div
-                                    style={{ marginLeft: (row.original.breadcrumbs.length - 2) * 20 + 'px' }}
+                                    style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
                                     className="flex gap-2 items-center"
                                 >
                                     <Button
@@ -120,6 +123,9 @@ function CollectionListPage() {
                                 </div>
                             );
                         },
+                    },
+                    description: {
+                        cell: RichTextDescriptionCell,
                     },
                     breadcrumbs: {
                         cell: ({ cell }) => {
@@ -138,15 +144,35 @@ function CollectionListPage() {
                         },
                     },
                     productVariants: {
-                        header: 'Contents',
+                        header: () => <Trans>Contents</Trans>,
                         cell: ({ row }) => {
                             return (
                                 <CollectionContentsSheet
                                     collectionId={row.original.id}
                                     collectionName={row.original.name}
                                 >
-                                    <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                                    <Trans>{row.original.productVariants?.totalItems} variants</Trans>
                                 </CollectionContentsSheet>
+                            );
+                        },
+                    },
+                    children: {
+                        cell: ({ row }) => {
+                            const children = row.original.children ?? [];
+                            const count = children.length;
+                            const maxDisplay = 5;
+                            const leftOver = Math.max(count - maxDisplay, 0);
+                            return (
+                                <div className="flex flex-wrap gap-2">
+                                    {children.slice(0, maxDisplay).map(child => (
+                                        <Badge variant="outline">{child.name}</Badge>
+                                    ))}
+                                    {leftOver > 0 ? (
+                                        <Badge variant="outline">
+                                            <Trans>+ {leftOver} more</Trans>
+                                        </Badge>
+                                    ) : null}
+                                </div>
                             );
                         },
                     },
@@ -182,6 +208,7 @@ function CollectionListPage() {
                     position: false,
                     parentId: false,
                     children: false,
+                    description: false,
                 }}
                 onSearchTermChange={searchTerm => {
                     return {
@@ -189,16 +216,6 @@ function CollectionListPage() {
                     };
                 }}
                 route={Route}
-                rowActions={[
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <FolderTreeIcon className="w-4 h-4" /> <Trans>Move</Trans>
-                            </div>
-                        ),
-                        onClick: row => handleMoveClick(row.original),
-                    },
-                ]}
                 bulkActions={[
                     {
                         component: AssignCollectionsToChannelBulkAction,
@@ -233,7 +250,6 @@ function CollectionListPage() {
                     </PermissionGuard>
                 </PageActionBarRight>
             </ListPage>
-            <MoveDialog />
         </>
     );
 }

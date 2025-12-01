@@ -31,7 +31,6 @@ export const facetWithValuesFragment = graphql(
             updatedAt
             name
             code
-            languageCode
             isPrivate
             valueList(options: $facetValueListOptions) {
                 totalItems

@@ -12,8 +12,8 @@ export const taxCategoryItemFragment = graphql(`
 
 export const taxCategoryListQuery = graphql(
     `
-        query TaxCategoryList {
-            taxCategories {
+        query TaxCategoryList($options: TaxCategoryListOptions) {
+            taxCategories(options: $options) {
                 items {
                     ...TaxCategoryItem
                 }

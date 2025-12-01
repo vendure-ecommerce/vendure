@@ -15,6 +15,7 @@ export const productListDocument = graphql(`
                 name
                 slug
                 enabled
+                description
             }
             totalItems
         }
@@ -44,7 +45,11 @@ export const productDetailFragment = graphql(
                 slug
                 description
             }
-
+            optionGroups {
+                id
+                code
+                name
+            }
             facetValues {
                 id
                 name
@@ -55,31 +60,39 @@ export const productDetailFragment = graphql(
                     code
                 }
             }
-            customFields
         }
     `,
     [assetFragment],
 );
 
-export const productVariantListDocument = graphql(`
-    query ProductVariantList($options: ProductVariantListOptions, $productId: ID) {
-        productVariants(options: $options, productId: $productId) {
-            items {
-                id
-                name
-                sku
-                currencyCode
-                price
-                priceWithTax
-                stockLevels {
-                    stockOnHand
-                    stockAllocated
+export const productVariantListDocument = graphql(
+    `
+        query ProductVariantList($options: ProductVariantListOptions, $productId: ID) {
+            productVariants(options: $options, productId: $productId) {
+                items {
+                    id
+                    createdAt
+                    updatedAt
+                    featuredAsset {
+                        ...Asset
+                    }
+                    name
+                    sku
+                    enabled
+                    currencyCode
+                    price
+                    priceWithTax
+                    stockLevels {
+                        stockOnHand
+                        stockAllocated
+                    }
                 }
+                totalItems
             }
-            totalItems
         }
-    }
-`);
+    `,
+    [assetFragment],
+);
 
 export const productDetailDocument = graphql(
     `
@@ -94,6 +107,46 @@ export const productDetailDocument = graphql(
     `,
     [productDetailFragment],
 );
+
+export const productDetailWithVariantsDocument = graphql(`
+    query ProductDetailWithVariants($id: ID!) {
+        product(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            variantList {
+                totalItems
+            }
+            optionGroups {
+                id
+                code
+                name
+                options {
+                    id
+                    code
+                    name
+                }
+            }
+            variants {
+                id
+                name
+                sku
+                price
+                currencyCode
+                priceWithTax
+                createdAt
+                updatedAt
+                options {
+                    id
+                    code
+                    name
+                    groupId
+                }
+            }
+        }
+    }
+`);
 
 export const createProductDocument = graphql(`
     mutation CreateProduct($input: CreateProductInput!) {
@@ -184,6 +237,110 @@ export const getProductsWithFacetValuesByIdsDocument = graphql(`
                     }
                 }
             }
+        }
+    }
+`);
+
+export const addOptionGroupToProductDocument = graphql(`
+    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            id
+            optionGroups {
+                id
+                code
+                name
+                options {
+                    id
+                    code
+                    name
+                }
+            }
+        }
+    }
+`);
+
+export const updateProductVariantDocument = graphql(`
+    mutation UpdateProductVariant($input: UpdateProductVariantInput!) {
+        updateProductVariant(input: $input) {
+            id
+            name
+            options {
+                id
+                code
+                name
+                groupId
+            }
+        }
+    }
+`);
+
+export const deleteProductVariantDocument = graphql(`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const removeOptionGroupFromProductDocument = graphql(`
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            ... on Product {
+                id
+                optionGroups {
+                    id
+                    code
+                    name
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+`);
+
+export const createProductOptionGroupDocument = graphql(`
+    mutation CreateOptionGroups($input: CreateProductOptionGroupInput!) {
+        createProductOptionGroup(input: $input) {
+            id
+            name
+            code
+            options {
+                id
+                code
+                name
+            }
+        }
+    }
+`);
+
+export const createProductOptionDocument = graphql(`
+    mutation CreateProductOption($input: CreateProductOptionInput!) {
+        createProductOption(input: $input) {
+            id
+            code
+            name
+            groupId
+        }
+    }
+`);
+
+export const createProductVariantsDocument = graphql(`
+    mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
+        createProductVariants(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const reindexDocument = graphql(`
+    mutation Reindex {
+        reindex {
+            id
         }
     }
 `);

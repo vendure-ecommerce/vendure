@@ -20,6 +20,7 @@ export const collectionListDocument = graphql(
                     }
                     name
                     slug
+                    description
                     breadcrumbs {
                         id
                         name
@@ -27,6 +28,7 @@ export const collectionListDocument = graphql(
                     }
                     children {
                         id
+                        name
                     }
                     position
                     isPrivate

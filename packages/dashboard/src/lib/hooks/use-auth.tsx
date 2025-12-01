@@ -3,9 +3,7 @@ import * as React from 'react';
 
 /**
  * @description
- * **Status: Developer Preview**
- *
- * Provides access to the {@link ChannelContext} which contains information
+ * Provides access to the {@link AuthContext} which contains information
  * about the active channel.
  *
  *

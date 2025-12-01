@@ -7,7 +7,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -41,19 +41,19 @@ type QueryData = {
 
 /**
  * ConfigurableOperationSelector - A reusable component for selecting a single configurable operation
- * 
+ *
  * This component provides a standardized interface for selecting configurable operations such as:
  * - Payment method handlers
- * - Payment eligibility checkers  
+ * - Payment eligibility checkers
  * - Shipping calculators
  * - Shipping eligibility checkers
- * 
+ *
  * Features:
  * - Displays the selected operation with its configuration form
  * - Provides a dropdown to select from available operations
  * - Handles operation selection with default argument values
  * - Supports removal of selected operations
- * 
+ *
  * @example
  * ```tsx
  * <ConfigurableOperationSelector
@@ -122,7 +122,7 @@ export function ConfigurableOperationSelector({
                     <ConfigurableOperationInput
                         operationDefinition={operationDef}
                         value={value}
-                        onChange={value => onOperationValueChange(value)}
+                        onChange={v => onOperationValueChange(v)}
                         onRemove={() => onOperationRemove()}
                     />
                 </div>

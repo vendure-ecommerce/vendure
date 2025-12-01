@@ -1,10 +1,4 @@
-import {
-    Button,
-    DataTableBulkActionItem,
-    defineDashboardExtension,
-    LogoMark,
-    usePage,
-} from '@vendure/dashboard';
+import { Button, DataTableBulkActionItem, defineDashboardExtension, usePage } from '@vendure/dashboard';
 import { InfoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,16 +13,11 @@ import {
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
+import { ReviewSelectWithCreate } from './review-select-with-create';
+import { routeWithoutAuth } from './route-without-auth';
 
 defineDashboardExtension({
     login: {
-        logo: {
-            component: () => (
-                <div className="text-red-500 italic">
-                    <LogoMark className="text-red-500 h-6 w-auto" />
-                </div>
-            ),
-        },
         afterForm: {
             component: () => (
                 <div>
@@ -38,15 +27,8 @@ defineDashboardExtension({
                 </div>
             ),
         },
-        loginImage: {
-            component: () => (
-                <div className="h-full w-full bg-red-500 flex items-center justify-center text-white text-2xl font-bold">
-                    Custom Login Image
-                </div>
-            ),
-        },
     },
-    routes: [reviewList, reviewDetail],
+    routes: [reviewList, reviewDetail, routeWithoutAuth],
     widgets: [
         {
             id: 'custom-widget',
@@ -101,6 +83,10 @@ defineDashboardExtension({
                 id: 'review-multi-select',
                 component: ReviewMultiSelect,
             },
+            {
+                id: 'review-multi-select-with-create',
+                component: ReviewSelectWithCreate,
+            },
         ],
     },
     detailForms: [
@@ -148,8 +134,6 @@ defineDashboardExtension({
                     field: 'state',
                     component: ReviewStateSelect,
                 },
-            ],
-            displays: [
                 {
                     blockId: 'main-form',
                     field: 'response',

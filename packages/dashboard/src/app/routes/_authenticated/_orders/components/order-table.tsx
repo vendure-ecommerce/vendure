@@ -10,7 +10,7 @@ import { addCustomFields } from '@/vdb/framework/document-introspection/add-cust
 import { getFieldsFromDocumentNode } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { JsonEditor } from 'json-edit-react';
 import { EllipsisVertical } from 'lucide-react';
 import { useMemo } from 'react';
@@ -34,7 +34,10 @@ function createCustomizeColumns(currencyCode: string) {
             accessorKey: 'featuredAsset',
             cell: ({ row }: { row: any }) => {
                 const asset = row.original.featuredAsset;
-                return <VendureImage asset={asset} preset="tiny" />;
+                const fallbackAsset =
+                    row.original.productVariant?.featuredAsset ??
+                    row.original.productVariant?.product?.featuredAsset;
+                return <VendureImage asset={asset ?? fallbackAsset} preset="tiny" />;
             },
         },
         productVariant: {
@@ -154,14 +157,13 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
         customizeColumns: customizeColumns as any,
         deleteMutation: undefined,
         defaultColumnOrder: columnOrder,
-        additionalColumns: {},
         includeSelectionColumn: false,
         includeActionsColumn: false,
         enableSorting: false,
     });
 
-    const columnVisibility = getColumnVisibility(fields, defaultColumnVisibility, customFieldColumnNames);
-    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+    const columnVisibility = getColumnVisibility(columns, defaultColumnVisibility, customFieldColumnNames);
+    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length - 2; // -2 for "actions" and "selection" cols
     const data = order.lines;
 
     return (

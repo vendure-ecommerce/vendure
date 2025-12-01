@@ -266,6 +266,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
@@ -1019,6 +1023,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">max: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
@@ -1370,6 +1378,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#float">Float</a></div>
 
 <div class="graphql-code-line ">max: <a href="/reference/graphql-api/admin/object-types#float">Float</a></div>
@@ -1663,6 +1675,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
 
 <div class="graphql-code-line ">max: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
@@ -1870,6 +1886,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
@@ -1899,6 +1919,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
@@ -2935,6 +2959,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## ProductOptionList
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductOptionList</span> &#123;</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
+
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/admin/object-types#productoption">ProductOption</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## ProductOptionTranslation
 
 <div class="graphql-code-block">
@@ -3390,6 +3426,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">entity: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
@@ -4023,6 +4063,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
+
 <div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">options: [<a href="/reference/graphql-api/admin/object-types#stringfieldoption">StringFieldOption</a>!]</div>
@@ -4094,6 +4138,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
@@ -4306,6 +4354,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">deprecated: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">deprecationReason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 

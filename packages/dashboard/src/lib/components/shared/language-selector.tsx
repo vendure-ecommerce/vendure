@@ -1,7 +1,7 @@
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { MultiSelect } from './multi-select.js';
 
@@ -28,7 +28,7 @@ export function LanguageSelector<T extends boolean>(props: LanguageSelectorProps
     });
     const { formatLanguageName } = useLocalFormat();
     const { value, onChange, multiple, availableLanguageCodes } = props;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const items = (availableLanguageCodes ?? data?.globalSettings.availableLanguages ?? []).map(language => ({
         value: language,
@@ -41,8 +41,8 @@ export function LanguageSelector<T extends boolean>(props: LanguageSelectorProps
             onChange={onChange}
             multiple={multiple}
             items={items}
-            placeholder={i18n.t('Select a language')}
-            searchPlaceholder={i18n.t('Search languages...')}
+            placeholder={t`Select a language`}
+            searchPlaceholder={t`Search languages...`}
         />
     );
 }

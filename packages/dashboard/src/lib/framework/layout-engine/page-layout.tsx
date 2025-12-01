@@ -6,22 +6,42 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { useMediaQuery } from '@uidotdev/usehooks';
-import { EllipsisVerticalIcon } from 'lucide-react';
-import React, { ComponentProps, useMemo } from 'react';
+import { useCopyToClipboard, useMediaQuery } from '@uidotdev/usehooks';
+import { CheckIcon, CopyIcon, EllipsisVerticalIcon, InfoIcon } from 'lucide-react';
+import React, { ComponentProps, useMemo, useState } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
 import { Button } from '@/vdb/components/ui/button.js';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/vdb/components/ui/dropdown-menu.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/vdb/components/ui/dropdown-menu.js';
 import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
 import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
+import { Trans } from '@lingui/react/macro';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
+/**
+ * @description
+ * The props used to configure the {@link Page} component.
+ *
+ * @docsCategory page-layout
+ * @docsPage Page
+ * @since 3.3.0
+ */
 export interface PageProps extends ComponentProps<'div'> {
+    /**
+     * @description
+     * A string identifier for the page, e.g. "product-list", "review-detail", etc.
+     */
     pageId?: string;
+
     entity?: any;
     form?: UseFormReturn<any>;
     submitHandler?: any;
@@ -29,8 +49,6 @@ export interface PageProps extends ComponentProps<'div'> {
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * This component should be used to wrap _all_ pages in the dashboard. It provides
  * a consistent layout as well as a context for the slot-based PageBlock system.
  *
@@ -40,7 +58,32 @@ export interface PageProps extends ComponentProps<'div'> {
  *  - {@link PageActionBar}
  *  - {@link PageLayout}
  *
- * @docsCategory components
+ * @example
+ * ```tsx
+ * import { Page, PageTitle, PageActionBar, PageLayout, PageBlock, Button } from '\@vendure/dashboard';
+ *
+ * const pageId = 'my-page';
+ *
+ * export function MyPage() {
+ *  return (
+ *    <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
+ *      <PageTitle>My Page</PageTitle>
+ *      <PageActionBar>
+ *        <PageActionBarRight>
+ *          <Button>Save</Button>
+ *        </PageActionBarRight>
+ *      </PageActionBar>
+ *      <PageLayout>
+ *        <PageBlock column="main" blockId="my-block">
+ *          <div>My Block</div>
+ *        </PageBlock>
+ *      </PageLayout>
+ *    </Page>
+ *  )
+ * }
+ * ```
+ *
+ * @docsCategory page-layout
  * @docsPage Page
  * @docsWeight 0
  * @since 3.3.0
@@ -133,7 +176,7 @@ export function PageContentWithOptionalForm({
  * @description
  * **Status: Developer Preview**
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageLayout
  * @since 3.3.0
  */
@@ -156,13 +199,11 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * This component governs the layout of the contents of a {@link Page} component.
  * It should contain all the {@link PageBlock} components that are to be displayed on the page.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageLayout
  * @docsWeight 0
  * @since 3.3.0
@@ -194,22 +235,32 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                 childBlock.props.blockId ??
                 (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
+
             if (extensionBlock) {
-                const ExtensionBlock = (
-                    <PageBlock
-                        key={childBlock.key}
-                        column={extensionBlock.location.column}
-                        blockId={extensionBlock.id}
-                        title={extensionBlock.title}
-                    >
-                        {<extensionBlock.component context={page} />}
-                    </PageBlock>
-                );
+                let extensionBlockShouldRender = true;
+                if (typeof extensionBlock?.shouldRender === 'function') {
+                    extensionBlockShouldRender = extensionBlock.shouldRender(page);
+                }
+                const ExtensionBlock =
+                    extensionBlock.component && extensionBlockShouldRender ? (
+                        <PageBlock
+                            key={childBlock.key}
+                            column={extensionBlock.location.column}
+                            blockId={extensionBlock.id}
+                            title={extensionBlock.title}
+                        >
+                            {<extensionBlock.component context={page} />}
+                        </PageBlock>
+                    ) : undefined;
                 if (extensionBlock.location.position.order === 'before') {
-                    finalChildArray.push(ExtensionBlock, childBlock);
+                    finalChildArray.push(...[ExtensionBlock, childBlock].filter(x => !!x));
                 } else if (extensionBlock.location.position.order === 'after') {
-                    finalChildArray.push(childBlock, ExtensionBlock);
-                } else if (extensionBlock.location.position.order === 'replace') {
+                    finalChildArray.push(...[childBlock, ExtensionBlock].filter(x => !!x));
+                } else if (
+                    extensionBlock.location.position.order === 'replace' &&
+                    extensionBlockShouldRender &&
+                    ExtensionBlock
+                ) {
                     finalChildArray.push(ExtensionBlock);
                 }
             } else {
@@ -225,17 +276,17 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
     return (
-        <div className={cn('w-full space-y-4', className)}>
+        <div className={cn('w-full space-y-4', className, '@container/layout')}>
             {isDesktop ? (
-                <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-4 md:gap-4">
+                <div className="grid grid-cols-1 gap-4 @3xl/layout:grid-cols-4">
                     {fullWidthBlocks.length > 0 && (
-                        <div className="md:col-span-5 space-y-4">{fullWidthBlocks}</div>
+                        <div className="@md/layout:col-span-5 space-y-4">{fullWidthBlocks}</div>
                     )}
-                    <div className="md:col-span-3 space-y-4">{mainBlocks}</div>
-                    <div className="md:col-span-2 lg:col-span-1 space-y-4">{sideBlocks}</div>
+                    <div className="@3xl/layout:col-span-3 space-y-4">{mainBlocks}</div>
+                    <div className="@3xl/layout:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
             ) : (
-                <div className="md:hidden space-y-4">{children}</div>
+                <div className="space-y-4">{children}</div>
             )}
         </div>
     );
@@ -247,11 +298,9 @@ export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNod
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * A component for displaying the title of a page. This should be used inside the {@link Page} component.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageTitle
  * @since 3.3.0
  */
@@ -260,14 +309,12 @@ export function PageTitle({ children }: Readonly<{ children: React.ReactNode }>)
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying the main actions for a page. This should be used inside the {@link Page} component.
  * It should be used in conjunction with the {@link PageActionBarLeft} and {@link PageActionBarRight} components
  * as direct children.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @docsWeight 0
  * @since 3.3.0
@@ -288,9 +335,9 @@ export function PageActionBar({ children }: Readonly<{ children: React.ReactNode
 
 /**
  * @description
- * **Status: Developer Preview**
+ * The PageActionBarLeft component should be used to display the left content of the action bar.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
  */
@@ -300,11 +347,90 @@ export function PageActionBarLeft({ children }: Readonly<{ children: React.React
 
 type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
 
+function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
+    const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [, copy] = useCopyToClipboard();
+
+    const handleCopy = async (text: string, field: string) => {
+        await copy(text);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString();
+    };
+
+    if (!entity || !entity.id) {
+        return null;
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-muted-foreground">
+                    <InfoIcon className="w-4 h-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>
+                    <Trans>Entity Information</Trans>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="px-3 py-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">ID</span>
+                        <div className="flex items-center gap-1">
+                            <span className="text-sm font-mono">{entity.id}</span>
+                            <button
+                                onClick={() => handleCopy(entity.id, 'id')}
+                                className="p-1 hover:bg-muted rounded-sm transition-colors"
+                            >
+                                {copiedField === 'id' ? (
+                                    <CheckIcon className="h-3 w-3 text-green-500" />
+                                ) : (
+                                    <CopyIcon className="h-3 w-3" />
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {entity.createdAt && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <div className="px-3 py-2">
+                            <div className="text-sm">
+                                <div className="font-medium text-muted-foreground">
+                                    <Trans>Created</Trans>
+                                </div>
+                                <div className="text-xs">{formatDate(entity.createdAt)}</div>
+                            </div>
+                        </div>
+                    </>
+                )}
+                {entity.updatedAt && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <div className="px-3 py-2">
+                            <div className="text-sm">
+                                <div className="font-medium text-muted-foreground">
+                                    <Trans>Updated</Trans>
+                                </div>
+                                <div className="text-xs">{formatDate(entity.updatedAt)}</div>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
 /**
  * @description
- * **Status: Developer Preview**
+ * The PageActionBarRight component should be used to display the right content of the action bar.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
  */
@@ -336,6 +462,7 @@ export function PageActionBarRight({
             {actionBarDropdownItems.length > 0 && (
                 <PageActionBarDropdown items={actionBarDropdownItems} page={page} />
             )}
+            <EntityInfoDropdown entity={page.entity} />
         </div>
     );
 }
@@ -375,31 +502,59 @@ function PageActionBarDropdown({
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Props used to configure the {@link PageBlock} component.
  *
- * @docsCategory components
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @since 3.3.0
  */
 export type PageBlockProps = {
+    /**
+     * @description
+     * The content of the block.
+     */
     children?: React.ReactNode;
-    /** Which column this block should appear in */
+    /**
+     * @description
+     * Which column this block should appear in
+     */
     column: 'main' | 'side';
+    /**
+     * @description
+     * The ID of the block, e.g. "gift-cards" or "related-products".
+     */
     blockId?: string;
+    /**
+     * @description
+     * The title of the block, e.g. "Gift Cards" or "Related Products".
+     */
     title?: React.ReactNode | string;
+    /**
+     * @description
+     * An optional description of the block.
+     */
     description?: React.ReactNode | string;
+    /**
+     * @description
+     * An optional set of CSS classes to apply to the block.
+     */
     className?: string;
 };
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying a block of content on a page. This should be used inside the {@link PageLayout} component.
  * It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
  * to identify the block.
  *
- * @docsCategory components
+ * @example
+ * ```tsx
+ * <PageBlock column="main" blockId="my-block">
+ *  <div>My Block</div>
+ * </PageBlock>
+ * ```
+ *
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @docsWeight 0
  * @since 3.3.0
@@ -424,14 +579,16 @@ export function PageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <Card className={cn('@container  w-full', className)}>
+                <Card className={cn('@container  w-full', className, 'animate-in fade-in duration-300')}>
                     {title || description ? (
                         <CardHeader>
                             {title && <CardTitle>{title}</CardTitle>}
                             {description && <CardDescription>{description}</CardDescription>}
                         </CardHeader>
                     ) : null}
-                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                    <CardContent className={cn(!title ? 'pt-6' : '', 'overflow-auto')}>
+                        {children}
+                    </CardContent>
                 </Card>
             </LocationWrapper>
         </PageBlockContext.Provider>
@@ -458,19 +615,24 @@ export function FullWidthPageBlock({
     return (
         <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
-                <div className={cn('w-full', className)}>{children}</div>
+                <div className={cn('w-full', className, 'animate-in fade-in duration-300')}>{children}</div>
             </LocationWrapper>
         </PageBlockContext.Provider>
     );
 }
 
 /**
- * @description
- * **Status: Developer Preview**
- *
+ * @description *
  * A component for displaying an auto-generated form for custom fields on a page.
+ * This is a special form of {@link PageBlock} that automatically generates
+ * a form corresponding to the custom fields for the given entity type.
  *
- * @docsCategory components
+ * @example
+ * ```tsx
+ * <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
+ * ```
+ *
+ * @docsCategory page-layout
  * @docsPage PageBlock
  * @since 3.3.0
  */

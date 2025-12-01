@@ -15,7 +15,7 @@ import {
 import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 
@@ -54,22 +54,23 @@ export function AssignToChannelDialog({
     additionalFields,
     additionalData = {},
 }: Readonly<AssignToChannelDialogProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
-    const { channels, selectedChannel } = useChannel();
+    const { channels, activeChannel } = useChannel();
+    const entityIdsLength = entityIds.length;
 
     // Filter out the currently selected channel from available options
-    const availableChannels = channels.filter(channel => channel.id !== selectedChannel?.id);
+    const availableChannels = channels.filter(channel => channel.id !== activeChannel?.id);
 
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(i18n.t(`Successfully assigned ${entityIds.length} ${entityType} to channel`));
+            toast.success(t`Successfully assigned ${entityIdsLength} ${entityType} to channel`);
             onSuccess?.();
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${entityIds.length} ${entityType} to channel`);
+            toast.error(`Failed to assign ${entityIdsLength} ${entityType} to channel`);
         },
     });
 
@@ -103,7 +104,7 @@ export function AssignToChannelDialog({
                         </label>
                         <Select value={selectedChannelId} onValueChange={setSelectedChannelId}>
                             <SelectTrigger>
-                                <SelectValue placeholder={i18n.t('Select a channel')} />
+                                <SelectValue placeholder={t`Select a channel`} />
                             </SelectTrigger>
                             <SelectContent>
                                 {availableChannels.map(channel => (

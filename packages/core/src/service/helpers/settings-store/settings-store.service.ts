@@ -99,13 +99,17 @@ export class SettingsStoreService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns The stored value or undefined if not found or access denied
      */
-    async get<T = JsonCompatible<any>>(key: string, ctx: RequestContext): Promise<T | undefined> {
+    async get<T = JsonCompatible<any>>(ctx: RequestContext, key: string): Promise<T | undefined>;
+    /**
+     * @deprecated Use the `ctx` arg in the first position
+     */
+    async get<T = JsonCompatible<any>>(key: string, ctx: RequestContext): Promise<T | undefined>;
+    async get<T = JsonCompatible<any>>(
+        keyOrCtx: string | RequestContext,
+        ctxOrKey: RequestContext | string,
+    ): Promise<T | undefined> {
+        const { ctx, other: key } = this.determineCtx(keyOrCtx, ctxOrKey);
         const fieldConfig = this.getFieldConfig(key);
-
-        if (!this.hasPermission(ctx, fieldConfig)) {
-            return undefined;
-        }
-
         const scope = this.generateScope(key, undefined, ctx, fieldConfig);
 
         const entry = await this.connection.getRepository(ctx, SettingsStoreEntry).findOne({
@@ -124,7 +128,16 @@ export class SettingsStoreService implements OnModuleInit {
      * @param ctx - Request context for scoping and permissions
      * @returns Object mapping keys to their values
      */
-    async getMany(keys: string[], ctx: RequestContext): Promise<Record<string, JsonCompatible<any>>> {
+    async getMany(ctx: RequestContext, keys: string[]): Promise<Record<string, JsonCompatible<any>>>;
+    /**
+     * @deprecated Use `ctx` as the first argument
+     */
+    async getMany(keys: string[], ctx: RequestContext): Promise<Record<string, JsonCompatible<any>>>;
+    async getMany(
+        keysOrCtx: string[] | RequestContext,
+        ctxOrKeys: RequestContext | string[],
+    ): Promise<Record<string, JsonCompatible<any>>> {
+        const { ctx, other: keys } = this.determineCtx(keysOrCtx, ctxOrKeys);
         const result: Record<string, any> = {};
 
         // Build array of key/scopeKey pairs for authorized keys
@@ -132,11 +145,8 @@ export class SettingsStoreService implements OnModuleInit {
 
         for (const key of keys) {
             const fieldConfig = this.getFieldConfig(key);
-
-            if (this.hasPermission(ctx, fieldConfig)) {
-                const scope = this.generateScope(key, undefined, ctx, fieldConfig);
-                queries.push({ key, scope });
-            }
+            const scope = this.generateScope(key, undefined, ctx, fieldConfig);
+            queries.push({ key, scope });
         }
 
         if (queries.length === 0) {
@@ -182,29 +192,30 @@ export class SettingsStoreService implements OnModuleInit {
      * @returns SetSettingsStoreValueResult with operation status and error details
      */
     async set<T extends JsonCompatible<any> = JsonCompatible<any>>(
+        ctx: RequestContext,
+        key: string,
+        value: T,
+    ): Promise<SetSettingsStoreValueResult>;
+    /**
+     * @deprecated Use `ctx` as the first argument
+     */
+    async set<T extends JsonCompatible<any> = JsonCompatible<any>>(
         key: string,
         value: T,
         ctx: RequestContext,
+    ): Promise<SetSettingsStoreValueResult>;
+    async set<T extends JsonCompatible<any> = JsonCompatible<any>>(
+        keyOrCtx: string | RequestContext,
+        keyOrValue: string | T,
+        ctxOrValue: RequestContext | T,
     ): Promise<SetSettingsStoreValueResult> {
+        // Sort out the overloaded signatures
+        const ctx = keyOrCtx instanceof RequestContext ? keyOrCtx : (ctxOrValue as RequestContext);
+        const key = keyOrCtx instanceof RequestContext ? (keyOrValue as string) : keyOrCtx;
+        const value = ctxOrValue instanceof RequestContext ? (keyOrValue as T) : ctxOrValue;
+
         try {
             const fieldConfig = this.getFieldConfig(key);
-
-            if (!this.hasPermission(ctx, fieldConfig)) {
-                return {
-                    key,
-                    result: false,
-                    error: 'Insufficient permissions to set settings store value',
-                };
-            }
-
-            if (fieldConfig.readonly) {
-                return {
-                    key,
-                    result: false,
-                    error: 'Cannot modify readonly settings store field via API',
-                };
-            }
-
             // Validate the value
             await this.validateValue(key, value, ctx);
 
@@ -245,19 +256,27 @@ export class SettingsStoreService implements OnModuleInit {
      * Set multiple values with structured result feedback for each operation.
      * This method will not throw errors but will return
      * detailed results for each key-value pair.
-     *
-     * @param values - Object mapping keys to their values
-     * @param ctx - Request context for scoping and permissions
-     * @returns Array of SetSettingsStoreValueResult with operation status for each key
+     */
+    async setMany(
+        ctx: RequestContext,
+        values: Record<string, JsonCompatible<any>>,
+    ): Promise<SetSettingsStoreValueResult[]>;
+    /**
+     * @deprecated Use `ctx` as the first argument
      */
     async setMany(
         values: Record<string, JsonCompatible<any>>,
         ctx: RequestContext,
+    ): Promise<SetSettingsStoreValueResult[]>;
+    async setMany(
+        valuesOrCtx: Record<string, JsonCompatible<any>> | RequestContext,
+        ctxOrValues: RequestContext | Record<string, JsonCompatible<any>>,
     ): Promise<SetSettingsStoreValueResult[]> {
+        const { ctx, other: values } = this.determineCtx(valuesOrCtx, ctxOrValues);
         const results: SetSettingsStoreValueResult[] = [];
 
         for (const [key, value] of Object.entries(values)) {
-            const result = await this.set(key, value, ctx);
+            const result = await this.set(ctx, key, value);
             results.push(result);
         }
 
@@ -438,18 +457,141 @@ export class SettingsStoreService implements OnModuleInit {
     /**
      * @description
      * Check if the current user has permission to access a field.
+     * This is not called internally in the get and set methods, so should
+     * be used by any methods which are exposing these methods via the GraphQL
+     * APIs.
+     * @deprecated Use `hasReadPermission` or `hasWritePermission` for granular control
      */
-    private hasPermission(ctx: RequestContext, fieldConfig: SettingsStoreFieldConfig): boolean {
-        // Admin API: check required permissions
-        const requiredPermissions = fieldConfig.requiresPermission;
-        if (requiredPermissions) {
-            const permissions = Array.isArray(requiredPermissions)
-                ? requiredPermissions
-                : [requiredPermissions];
-            return ctx.userHasPermissions(permissions as any);
-        }
+    hasPermission(ctx: RequestContext, key: string): boolean {
+        // For backwards compatibility, check both read and write permissions
+        return this.hasReadPermission(ctx, key) && this.hasWritePermission(ctx, key);
+    }
 
-        // Default: require authentication
-        return ctx.userHasPermissions([Permission.Authenticated]);
+    /**
+     * @description
+     * Check if the current user has permission to read a field.
+     * @since 3.5.0
+     */
+    hasReadPermission(ctx: RequestContext, key: string): boolean {
+        // Get field config first - let validation errors (like unregistered keys) bubble up
+        const fieldConfig = this.getFieldConfig(key);
+
+        try {
+            const requiredPermissions = fieldConfig.requiresPermission;
+
+            if (requiredPermissions) {
+                if (this.isReadWritePermissionObject(requiredPermissions)) {
+                    const readPerms = requiredPermissions.read;
+                    if (readPerms) {
+                        return this.checkSimplePermissions(ctx, readPerms);
+                    }
+                    // If no read permission specified but write is, fall back to authenticated
+                    if (requiredPermissions.write) {
+                        return ctx.userHasPermissions([Permission.Authenticated]);
+                    }
+                } else {
+                    return this.checkSimplePermissions(ctx, requiredPermissions);
+                }
+            }
+
+            return ctx.userHasPermissions([Permission.Authenticated]);
+        } catch (error) {
+            // Only catch permission evaluation errors, not field validation errors
+            Logger.error(
+                `Error evaluating read permissions for settings store key "${key}": ${JSON.stringify(error)}`,
+            );
+            return false;
+        }
+    }
+
+    /**
+     * @description
+     * Check if the current user has permission to write a field.
+     * @since 3.5.0
+     */
+    hasWritePermission(ctx: RequestContext, key: string): boolean {
+        const fieldConfig = this.getFieldConfig(key); // Let validation errors bubble up
+        try {
+            const requiredPermissions = fieldConfig.requiresPermission;
+
+            if (requiredPermissions) {
+                if (this.isReadWritePermissionObject(requiredPermissions)) {
+                    const writePerms = requiredPermissions.write;
+                    if (writePerms) {
+                        return this.checkSimplePermissions(ctx, writePerms);
+                    }
+                    // If no write permission specified but read is, fall back to authenticated
+                    if (requiredPermissions.read) {
+                        return ctx.userHasPermissions([Permission.Authenticated]);
+                    }
+                } else {
+                    return this.checkSimplePermissions(ctx, requiredPermissions);
+                }
+            }
+
+            return ctx.userHasPermissions([Permission.Authenticated]);
+        } catch (error) {
+            Logger.error(
+                `Error evaluating write permissions for settings store key "${key}": ${JSON.stringify(error)}`,
+            );
+            return false;
+        }
+    }
+
+    /**
+     * @description
+     * Helper method to check if a permission configuration is a read/write object.
+     */
+    private isReadWritePermissionObject(permissions: any): permissions is {
+        read?: Array<Permission | string> | Permission | string;
+        write?: Array<Permission | string> | Permission | string;
+    } {
+        return (
+            typeof permissions === 'object' &&
+            !Array.isArray(permissions) &&
+            ('read' in permissions || 'write' in permissions)
+        );
+    }
+
+    /**
+     * @description
+     * Helper method to check simple permissions (single permission, array, or string).
+     */
+    private checkSimplePermissions(
+        ctx: RequestContext,
+        permissions: Array<Permission | string> | Permission | string,
+    ): boolean {
+        const permissionArray = Array.isArray(permissions) ? permissions : [permissions];
+        return ctx.userHasPermissions(permissionArray as Permission[]);
+    }
+
+    /**
+     * @description
+     * Returns true if the settings field has the `readonly: true` configuration.
+     */
+    isReadonly(key: string): boolean {
+        try {
+            const fieldConfig = this.getFieldConfig(key);
+            return fieldConfig.readonly === true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * This unfortunate workaround is here because in the first version of the SettingsStore we have the
+     * ctx arg last, which goes against all patterns in the rest of the code base. In v3.4.2 we overload
+     * the methods to allow the correct ordering, and deprecate the original order.
+     */
+    private determineCtx<K>(
+        a: K | RequestContext,
+        b: K | RequestContext,
+    ): {
+        other: K;
+        ctx: RequestContext;
+    } {
+        const ctx = a instanceof RequestContext ? a : (b as RequestContext);
+        const other = a instanceof RequestContext ? (b as K) : a;
+        return { other, ctx };
     }
 }

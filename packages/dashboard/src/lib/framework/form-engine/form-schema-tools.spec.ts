@@ -434,6 +434,144 @@ describe('form-schema-tools', () => {
         });
     });
 
+    describe('createFormSchemaFromFields - null constraint handling', () => {
+        it('should handle int custom fields with null min constraint from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are null instead of undefined
+            const customFields = [
+                createMockCustomField('quantity', 'int', {
+                    intMin: null as any, // This comes as null from GraphQL API
+                    intMax: 100,
+                }),
+            ];
+
+            // This test should fail if the bug exists - the schema creation should work
+            // but validation with null constraints should fail
+            expect(() => {
+                const _schema = createFormSchemaFromFields(fields, customFields, false);
+
+                // If the bug exists, this will try to validate against null min value
+                // which would always be false since no number can be >= null
+                const _validData = { customFields: { quantity: 50 } };
+                _schema.parse(_validData);
+            }).not.toThrow();
+
+            // Let's also test that we can create the schema without errors
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should not apply min validation since intMin is null (if bug is fixed)
+            const validData = { customFields: { quantity: -50 } };
+            expect(() => schema.parse(validData)).not.toThrow();
+
+            // Should still apply max validation since intMax is 100
+            const aboveMaxData = { customFields: { quantity: 101 } };
+            expect(() => schema.parse(aboveMaxData)).toThrow();
+        });
+
+        it('should handle int custom fields with null max constraint from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are null instead of undefined
+            const customFields = [
+                createMockCustomField('quantity', 'int', {
+                    intMin: 1,
+                    intMax: null as any, // This comes as null from GraphQL API
+                }),
+            ];
+
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should still apply min validation since intMin is 1
+            const belowMinData = { customFields: { quantity: 0 } };
+            expect(() => schema.parse(belowMinData)).toThrow();
+
+            // Should not apply max validation since intMax is null
+            const validData = { customFields: { quantity: 999999 } };
+            expect(() => schema.parse(validData)).not.toThrow();
+        });
+
+        it('should handle int custom fields with both null min and max constraints from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are both null
+            const customFields = [
+                createMockCustomField('quantity', 'int', {
+                    intMin: null as any, // This comes as null from GraphQL API
+                    intMax: null as any, // This comes as null from GraphQL API
+                }),
+            ];
+
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should not apply any validation since both are null
+            const negativeData = { customFields: { quantity: -999 } };
+            expect(() => schema.parse(negativeData)).not.toThrow();
+
+            const largeData = { customFields: { quantity: 999999 } };
+            expect(() => schema.parse(largeData)).not.toThrow();
+        });
+
+        it('should handle float custom fields with null min constraint from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are null instead of undefined
+            const customFields = [
+                createMockCustomField('weight', 'float', {
+                    floatMin: null as any, // This comes as null from GraphQL API
+                    floatMax: 999.9,
+                }),
+            ];
+
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should not apply min validation since floatMin is null
+            const validData = { customFields: { weight: -50.5 } };
+            expect(() => schema.parse(validData)).not.toThrow();
+
+            // Should still apply max validation since floatMax is 999.9
+            const aboveMaxData = { customFields: { weight: 1000.0 } };
+            expect(() => schema.parse(aboveMaxData)).toThrow();
+        });
+
+        it('should handle float custom fields with null max constraint from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are null instead of undefined
+            const customFields = [
+                createMockCustomField('weight', 'float', {
+                    floatMin: 0.1,
+                    floatMax: null as any, // This comes as null from GraphQL API
+                }),
+            ];
+
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should still apply min validation since floatMin is 0.1
+            const belowMinData = { customFields: { weight: 0.05 } };
+            expect(() => schema.parse(belowMinData)).toThrow();
+
+            // Should not apply max validation since floatMax is null
+            const validData = { customFields: { weight: 999999.99 } };
+            expect(() => schema.parse(validData)).not.toThrow();
+        });
+
+        it('should handle float custom fields with both null min and max constraints from GraphQL API', () => {
+            const fields = [createMockField('customFields', 'Object', false, false, [])];
+            // Simulate GraphQL API response where min/max are both null
+            const customFields = [
+                createMockCustomField('weight', 'float', {
+                    floatMin: null as any, // This comes as null from GraphQL API
+                    floatMax: null as any, // This comes as null from GraphQL API
+                }),
+            ];
+
+            const schema = createFormSchemaFromFields(fields, customFields, false);
+
+            // Should not apply any validation since both are null
+            const negativeData = { customFields: { weight: -999.99 } };
+            expect(() => schema.parse(negativeData)).not.toThrow();
+
+            const largeData = { customFields: { weight: 999999.99 } };
+            expect(() => schema.parse(largeData)).not.toThrow();
+        });
+    });
+
     describe('createFormSchemaFromFields - edge cases', () => {
         it('should handle empty custom field config', () => {
             const fields = [

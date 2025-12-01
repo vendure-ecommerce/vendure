@@ -14,14 +14,15 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf, VariablesOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { createProductOptionDocument } from '../products.graphql.js';
 import { CreateProductOptionsDialog } from './create-product-options-dialog.js';
 import { ProductOptionSelect } from './product-option-select.js';
 
@@ -63,43 +64,6 @@ const createProductVariantDocument = graphql(`
     }
 `);
 
-const createProductOptionDocument = graphql(`
-    mutation CreateProductOption($input: CreateProductOptionInput!) {
-        createProductOption(input: $input) {
-            id
-            code
-            name
-            groupId
-        }
-    }
-`);
-
-const createProductOptionGroupDocument = graphql(`
-    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-        createProductOptionGroup(input: $input) {
-            id
-        }
-    }
-`);
-
-const addOptionGroupToProductDocument = graphql(`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
-            optionGroups {
-                id
-                code
-                name
-                options {
-                    id
-                    code
-                    name
-                }
-            }
-        }
-    }
-`);
-
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     sku: z.string().min(1, 'SKU is required'),
@@ -119,7 +83,7 @@ export function AddProductVariantDialog({
 }) {
     const [open, setOpen] = useState(false);
     const { activeChannel } = useChannel();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const [duplicateVariantError, setDuplicateVariantError] = useState<string | null>(null);
     const [nameTouched, setNameTouched] = useState(false);
 
@@ -202,13 +166,13 @@ export function AddProductVariantDialog({
     const createProductVariantMutation = useMutation({
         mutationFn: api.mutate(createProductVariantDocument),
         onSuccess: (result: ResultOf<typeof createProductVariantDocument>) => {
-            toast.success(i18n.t('Successfully created product variant'));
+            toast.success(t`Successfully created product variant`);
             setOpen(false);
             onSuccess?.();
         },
         onError: error => {
-            toast.error(i18n.t('Failed to create product variant'), {
-                description: error instanceof Error ? error.message : i18n.t('Unknown error'),
+            toast.error(t`Failed to create product variant`, {
+                description: error instanceof Error ? error.message : t`Unknown error`,
             });
         },
     });
@@ -256,8 +220,8 @@ export function AddProductVariantDialog({
         [createProductVariantMutation, productData?.product, duplicateVariantError, productId],
     );
 
-    // If there are no option groups, show the create options dialog instead
-    if (productData?.product?.optionGroups.length === 0) {
+    // If there are no option groups and no variants, show the create options dialog instead
+    if (productData?.product?.optionGroups.length === 0 && productData?.product?.variants.length === 0) {
         return (
             <CreateProductOptionsDialog
                 productId={productId}
@@ -266,6 +230,35 @@ export function AddProductVariantDialog({
                     onSuccess?.();
                 }}
             />
+        );
+    }
+
+    // If there are no option groups but there are existing variants, show a different UI
+    if (productData?.product?.optionGroups.length === 0 && productData?.product?.variants.length > 0) {
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline">
+                        <Plus className="mr-2 h-4 w-4" />
+                        <Trans>Add variant</Trans>
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            <Trans>Add product options first</Trans>
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                            <Trans>
+                                This product has existing variants but no option groups defined. You need to
+                                add option groups before creating new variants.
+                            </Trans>
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
         );
     }
 
@@ -291,6 +284,15 @@ export function AddProductVariantDialog({
                         }}
                         className="space-y-4"
                     >
+                        {productData?.product?.optionGroups.length && (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-medium">
+                                        <Trans>Product options</Trans>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                         <div className="grid grid-cols-2 gap-4">
                             {productData?.product?.optionGroups.map(group => (
                                 <ProductOptionSelect
@@ -338,9 +340,10 @@ export function AddProductVariantDialog({
                             label={<Trans>Price</Trans>}
                             render={({ field }) => (
                                 <MoneyInput
+                                    {...field}
                                     value={Number(field.value) || 0}
                                     onChange={value => field.onChange(value.toString())}
-                                    currency={activeChannel?.defaultCurrencyCode ?? 'USD'}
+                                    currency={activeChannel?.defaultCurrencyCode}
                                 />
                             )}
                         />

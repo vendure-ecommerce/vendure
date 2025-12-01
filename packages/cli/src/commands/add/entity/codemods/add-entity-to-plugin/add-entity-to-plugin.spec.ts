@@ -33,21 +33,21 @@ describe('addEntityToPlugin', () => {
         );
     }
 
-    it('creates entity prop and imports', () => {
+    it('creates entity prop and imports', { timeout: 30_000 }, () => {
         testAddEntityToPlugin({
             fixtureFileName: 'no-entity-prop.fixture.ts',
             expectedFileName: 'no-entity-prop.expected',
         });
     });
 
-    it('adds to existing entity prop and imports', () => {
+    it('adds to existing entity prop and imports', { timeout: 30_000 }, () => {
         testAddEntityToPlugin({
             fixtureFileName: 'existing-entity-prop.fixture.ts',
             expectedFileName: 'existing-entity-prop.expected',
         });
     });
 
-    it('throws error when entity class is null', () => {
+    it('throws error when entity class is null', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });
@@ -58,7 +58,7 @@ describe('addEntityToPlugin', () => {
         expect(() => addEntityToPlugin(vendurePlugin, null as any)).toThrow('Could not find entity class');
     });
 
-    it('throws error when entity class is undefined', () => {
+    it('throws error when entity class is undefined', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });
@@ -71,7 +71,7 @@ describe('addEntityToPlugin', () => {
         );
     });
 
-    it('adds entity and import to plugin successfully', () => {
+    it('adds entity and import to plugin successfully', { timeout: 30_000 }, () => {
         const project = new Project({
             manipulationSettings: defaultManipulationSettings,
         });

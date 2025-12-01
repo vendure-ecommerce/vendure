@@ -1,7 +1,7 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { Page, PageActionBar, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';
@@ -10,6 +10,7 @@ import { uiConfig } from 'virtual:vendure-ui-config';
 
 export const Route = createFileRoute('/_authenticated/_system/healthchecks')({
     component: HealthchecksPage,
+    loader: () => ({ breadcrumb: () => <Trans>Healthchecks</Trans> }),
 });
 
 interface HealthcheckItem {
@@ -38,15 +39,21 @@ function HealthchecksPage() {
 
     return (
         <Page>
-            <PageTitle>Healthchecks</PageTitle>
+            <PageTitle>
+                <Trans>Health checks</Trans>
+            </PageTitle>
             <PageActionBar>
-                <Button onClick={() => refetch()}>Refresh</Button>
+                <Button onClick={() => refetch()}>
+                    <Trans>Refresh</Trans>
+                </Button>
             </PageActionBar>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <span> Current status</span>
+                            <span>
+                                <Trans>Current status</Trans>
+                            </span>
                             <span className="text-sm font-normal text-muted-foreground">
                                 <Trans>Last updated {formatRelative(dataUpdatedAt, new Date())}</Trans>
                             </span>

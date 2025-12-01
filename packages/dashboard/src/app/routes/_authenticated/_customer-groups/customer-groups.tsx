@@ -3,12 +3,12 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { DeleteCustomerGroupsBulkAction } from './components/customer-group-bulk-actions.js';
 import { CustomerGroupMembersSheet } from './components/customer-group-members-sheet.js';
-import { customerGroupListDocument, deleteCustomerGroupDocument } from './customer-groups.graphql.js';
+import { customerGroupListDocument } from './customer-groups.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_customer-groups/customer-groups')({
     component: CustomerGroupListPage,
@@ -19,17 +19,14 @@ function CustomerGroupListPage() {
     return (
         <ListPage
             pageId="customer-group-list"
-            title="Customer Groups"
+            title={<Trans>Customer Groups</Trans>}
             listQuery={customerGroupListDocument}
-            deleteMutation={deleteCustomerGroupDocument}
             route={Route}
             customizeColumns={{
                 name: {
-                    header: 'Name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 customers: {
-                    header: () => <Trans>Values</Trans>,
                     cell: ({ cell }) => {
                         const value = cell.getValue();
                         if (!value) {

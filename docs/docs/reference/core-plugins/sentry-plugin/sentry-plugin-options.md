@@ -11,38 +11,26 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SentryPluginOptions
 
-<GenerationInfo sourceFile="packages/sentry-plugin/src/types.ts" sourceLine="12" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/types.ts" sourceLine="7" packageName="@vendure/sentry-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/sentry-plugin/#sentryplugin'>SentryPlugin</a>.
 
 ```ts title="Signature"
-interface SentryPluginOptions extends NodeOptions {
-    dsn: string;
-    enableTracing?: boolean;
+interface SentryPluginOptions {
     includeErrorTestMutation?: boolean;
 }
 ```
-* Extends: <code>NodeOptions</code>
-
-
 
 <div className="members-wrapper">
 
-### dsn
-
-<MemberInfo kind="property" type={`string`}   />
-
-The [Data Source Name](https://docs.sentry.io/product/sentry-basics/concepts/dsn-explainer/) for your Sentry instance.
-### enableTracing
-
-<MemberInfo kind="property" type={`boolean`}   />
-
-
 ### includeErrorTestMutation
 
-<MemberInfo kind="property" type={`boolean`}   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
-
+Whether to include the error test mutation in the admin API.
+When enabled, a `createTestError` mutation becomes available in
+the Admin API, which can be used to create different types of error
+to check that the integration is working correctly.
 
 
 </div>

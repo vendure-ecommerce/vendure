@@ -13,19 +13,22 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
             // directory if the user did not provide one already).
             config.root = packageRoot;
 
+            config.publicDir = config.publicDir ?? path.join(packageRoot, 'public');
+
             // If we are building and no explicit outDir has been provided (or it is a relative path),
             // set it to an **absolute** path relative to the cwd so that the output never ends up in
             // `node_modules`.
             if (env.command === 'build') {
                 const buildConfig = config.build ?? {};
+                const outDir = buildConfig.outDir;
 
-                const hasOutDir = typeof buildConfig.outDir === 'string' && buildConfig.outDir.length > 0;
-                const outDirIsAbsolute = hasOutDir && path.isAbsolute(buildConfig.outDir as string);
+                const hasOutDir = typeof outDir === 'string' && outDir.length > 0;
+                const outDirIsAbsolute = hasOutDir && path.isAbsolute(outDir);
 
                 const normalizedOutDir = hasOutDir
                     ? outDirIsAbsolute
-                        ? (buildConfig.outDir as string)
-                        : path.resolve(process.cwd(), buildConfig.outDir as string)
+                        ? outDir
+                        : path.resolve(process.cwd(), outDir)
                     : path.resolve(process.cwd(), 'dist');
 
                 config.build = {
@@ -61,7 +64,10 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
                     ...(config.optimizeDeps?.include || []),
                     '@/components > recharts',
                     '@/components > react-dropzone',
+                    '@/components > @tiptap/react', // https://github.com/fawmi/vue-google-maps/issues/148#issuecomment-1235143844
                     '@vendure/common/lib/generated-types',
+                    '@radix-ui/react-portal > react-dom',
+                    '@messageformat/parser',
                 ],
             };
             return config;

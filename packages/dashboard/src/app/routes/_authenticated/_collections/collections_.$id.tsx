@@ -1,3 +1,4 @@
+import { SlugInput } from '@/vdb/components/data-input/index.js';
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -21,7 +22,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -41,7 +42,7 @@ export const Route = createFileRoute('/_authenticated/_collections/collections_/
         pageId,
         queryDocument: collectionDetailDocument,
         breadcrumb: (isNew, entity) => [
-            { path: '/collections', label: 'Collections' },
+            { path: '/collections', label: <Trans>Collections</Trans> },
             isNew ? <Trans>New collection</Trans> : entity?.name,
         ],
     }),
@@ -52,7 +53,7 @@ function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -89,14 +90,16 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated collection'));
+            toast(
+                creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update collection'), {
+            toast(creatingNewEntity ? t`Failed to create collection` : t`Failed to update collection`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -118,7 +121,7 @@ function CollectionDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -147,7 +150,15 @@ function CollectionDetailPage() {
                             control={form.control}
                             name="slug"
                             label={<Trans>Slug</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    fieldName="slug"
+                                    watchFieldName="name"
+                                    entityName="Collection"
+                                    entityId={entity?.id}
+                                    {...field}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
                     <TranslatableFormFieldWrapper

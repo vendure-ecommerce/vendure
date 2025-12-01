@@ -16,15 +16,12 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import {
-    addManualPaymentToOrderDocument,
-    paymentMethodsDocument
-} from '../orders.graphql.js';
+import { addManualPaymentToOrderDocument, paymentMethodsDocument } from '../orders.graphql.js';
 import { Order } from '../utils/order-types.js';
 import { calculateOutstandingPaymentAmount } from '../utils/order-utils.js';
 
@@ -39,7 +36,7 @@ interface FormData {
 }
 
 export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualPaymentDialogProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { formatCurrency } = useLocalFormat();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [open, setOpen] = useState(false);
@@ -49,16 +46,16 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
         onSuccess: (result: any) => {
             const { addManualPaymentToOrder } = result;
             if (addManualPaymentToOrder.__typename === 'Order') {
-                toast(i18n.t('Successfully added payment to order'));
+                toast(t`Successfully added payment to order`);
                 onSuccess?.();
             } else {
-                toast(i18n.t('Failed to add payment'), {
+                toast(t`Failed to add payment`, {
                     description: addManualPaymentToOrder.message,
                 });
             }
         },
         onError: error => {
-            toast(i18n.t('Failed to add payment'), {
+            toast(t`Failed to add payment`, {
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         },
@@ -86,7 +83,7 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
             setOpen(false);
             form.reset();
         } catch (error) {
-            toast(i18n.t('Failed to add payment'), {
+            toast(t`Failed to add payment`, {
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         } finally {
@@ -107,7 +104,7 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
         listQuery: paymentMethodsDocument,
         idKey: 'code',
         labelKey: 'name',
-        placeholder: i18n.t('Search payment methods...'),
+        placeholder: t`Search payment methods...`,
         multiple: false,
         label: (method: any) => `${method.name} (${method.code})`,
     });
@@ -136,15 +133,18 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
-                        <form onSubmit={e => {
-                            e.stopPropagation();
-                            form.handleSubmit(handleSubmit)(e);
-                        }} className="space-y-4">
+                        <form
+                            onSubmit={e => {
+                                e.stopPropagation();
+                                form.handleSubmit(handleSubmit)(e);
+                            }}
+                            className="space-y-4"
+                        >
                             <FormFieldWrapper
                                 control={form.control}
                                 name="method"
                                 label={<Trans>Payment method</Trans>}
-                                rules={{ required: i18n.t('Payment method is required') }}
+                                rules={{ required: t`Payment method is required` }}
                                 render={({ field }) => (
                                     <RelationSelector
                                         config={paymentMethodSelectorConfig}
@@ -158,9 +158,9 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
                                 control={form.control}
                                 name="transactionId"
                                 label={<Trans>Transaction ID</Trans>}
-                                rules={{ required: i18n.t('Transaction ID is required') }}
+                                rules={{ required: t`Transaction ID is required` }}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder={i18n.t('Enter transaction ID')} />
+                                    <Input {...field} placeholder={t`Enter transaction ID`} />
                                 )}
                             />
                             <DialogFooter>
@@ -169,9 +169,7 @@ export function AddManualPaymentDialog({ order, onSuccess }: Readonly<AddManualP
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={
-                                        !form.formState.isValid || isSubmitting || !method
-                                    }
+                                    disabled={!form.formState.isValid || isSubmitting || !method}
                                 >
                                     {isSubmitting ? (
                                         <Trans>Adding...</Trans>

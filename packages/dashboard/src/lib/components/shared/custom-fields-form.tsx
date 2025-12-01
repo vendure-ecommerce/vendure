@@ -12,14 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/ta
 import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
-import { useLingui } from '@/vdb/lib/trans.js';
 import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
+import { useLingui } from '@lingui/react/macro';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
 import { Control } from 'react-hook-form';
+import { FormControlAdapter } from '../../framework/form-engine/form-control-adapter.js';
 import { TranslatableFormField } from './translatable-form-field.js';
-import { customFieldToUniversal } from './universal-field-definition.js';
-import { UniversalFormInput } from './universal-form-input.js';
 
 type CustomFieldConfig = ResultOf<typeof customFieldConfigFragment>;
 
@@ -30,15 +29,7 @@ interface CustomFieldsFormProps {
 }
 
 export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readonly<CustomFieldsFormProps>) {
-    const {
-        settings: { displayLanguage },
-    } = useUserSettings();
-    const { i18n } = useLingui();
-
-    const getTranslation = (input: Array<{ languageCode: string; value: string }> | null | undefined) => {
-        return input?.find(t => t.languageCode === displayLanguage)?.value;
-    };
-
+    const { t } = useLingui();
     const customFields = useCustomFieldConfig(entityType);
 
     const getCustomFieldBaseName = (fieldDef: CustomFieldConfig) => {
@@ -94,7 +85,6 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
                         fieldDef={fieldDef}
                         control={control}
                         fieldName={getFieldName(fieldDef)}
-                        getTranslation={getTranslation}
                     />
                 ))}
             </div>
@@ -107,7 +97,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
             <TabsList>
                 {groupedFields.map(group => (
                     <TabsTrigger key={group.tabName} value={group.tabName}>
-                        {group.tabName === 'general' ? i18n.t('General') : group.tabName}
+                        {group.tabName === 'general' ? t`General` : group.tabName}
                     </TabsTrigger>
                 ))}
             </TabsList>
@@ -120,7 +110,6 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
                                 fieldDef={fieldDef}
                                 control={control}
                                 fieldName={getFieldName(fieldDef)}
-                                getTranslation={getTranslation}
                             />
                         ))}
                     </div>
@@ -134,12 +123,16 @@ interface CustomFieldItemProps {
     fieldDef: CustomFieldConfig;
     control: Control<any, any>;
     fieldName: string;
-    getTranslation: (
-        input: Array<{ languageCode: string; value: string }> | null | undefined,
-    ) => string | undefined;
 }
 
-function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Readonly<CustomFieldItemProps>) {
+function CustomFieldItem({ fieldDef, control, fieldName }: Readonly<CustomFieldItemProps>) {
+    const {
+        settings: { displayLanguage },
+    } = useUserSettings();
+
+    const getTranslation = (input: Array<{ languageCode: string; value: string }> | null | undefined) => {
+        return input?.find(t => t.languageCode === displayLanguage)?.value;
+    };
     const hasCustomFormComponent = fieldDef.ui?.component;
     const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
     const shouldBeFullWidth = fieldDef.ui?.fullWidth === true;
@@ -158,24 +151,12 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                             <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
                             <FormControl>
                                 {hasCustomFormComponent ? (
-                                    <CustomFormComponent
-                                        fieldDef={fieldDef}
-                                        fieldProps={{
-                                            ...props,
-                                            field: {
-                                                ...field,
-                                                disabled: fieldDef.readonly ?? false,
-                                            },
-                                        }}
-                                    />
+                                    <CustomFormComponent fieldDef={fieldDef} {...field} />
                                 ) : (
-                                    <UniversalFormInput
-                                        fieldDef={customFieldToUniversal(fieldDef)}
+                                    <FormControlAdapter
+                                        fieldDef={fieldDef}
                                         field={field}
                                         valueMode="native"
-                                        disabled={fieldDef.readonly ?? false}
-                                        control={control}
-                                        getTranslation={getTranslation}
                                     />
                                 )}
                             </FormControl>
@@ -201,16 +182,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                             getTranslation={getTranslation}
                             fieldName={fieldProps.field.name}
                         >
-                            <CustomFormComponent
-                                fieldDef={fieldDef}
-                                fieldProps={{
-                                    ...fieldProps,
-                                    field: {
-                                        ...fieldProps.field,
-                                        disabled: fieldDef.readonly ?? false,
-                                    },
-                                }}
-                            />
+                            <CustomFormComponent fieldDef={fieldDef} {...fieldProps.field} />
                         </CustomFieldFormItem>
                     )}
                 />
@@ -234,15 +206,10 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                                 <FormLabel>{getTranslation(fieldDef.label) ?? fieldDef.name}</FormLabel>
                                 <FormControl>
                                     <CustomFieldListInput
-                                        field={field}
+                                        {...field}
                                         disabled={isReadonly}
                                         renderInput={(index, inputField) => (
-                                            <StructFormInput
-                                                field={inputField}
-                                                fieldDef={fieldDef as any}
-                                                control={control}
-                                                getTranslation={getTranslation}
-                                            />
+                                            <StructFormInput {...inputField} fieldDef={fieldDef} />
                                         )}
                                         defaultValue={{}} // Empty struct object as default
                                         isFullWidth={true} // Structs should always be full-width
@@ -267,12 +234,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                         <FormItem>
                             <FormLabel>{getTranslation(fieldDef.label) ?? fieldDef.name}</FormLabel>
                             <FormControl>
-                                <StructFormInput
-                                    field={field}
-                                    fieldDef={fieldDef as any}
-                                    control={control}
-                                    getTranslation={getTranslation}
-                                />
+                                <StructFormInput {...field} fieldDef={fieldDef} />
                             </FormControl>
                             <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
                             <FormMessage />
@@ -295,14 +257,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Reado
                         getTranslation={getTranslation}
                         fieldName={fieldDef.name}
                     >
-                        <UniversalFormInput
-                            fieldDef={customFieldToUniversal(fieldDef)}
-                            field={field}
-                            valueMode="native"
-                            disabled={fieldDef.readonly ?? false}
-                            control={control}
-                            getTranslation={getTranslation}
-                        />
+                        <FormControlAdapter fieldDef={fieldDef} field={field} valueMode="native" />
                     </CustomFieldFormItem>
                 )}
             />

@@ -1,3 +1,4 @@
+import { CombinationModeInput } from '@/vdb/components/data-input/combination-mode-input.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
@@ -5,10 +6,9 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { InputComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { DefinedInitialDataOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -94,17 +94,17 @@ type QueryData = {
  * ```
  */
 export function ConfigurableOperationMultiSelector({
-    value,
-    onChange,
-    queryDocument,
-    queryOptions,
-    queryKey,
-    dataPath,
-    buttonText,
-    dropdownTitle,
-    emptyText = 'No options found',
-    showEnhancedDropdown = true,
-}: Readonly<ConfigurableOperationMultiSelectorProps>) {
+                                                       value,
+                                                       onChange,
+                                                       queryDocument,
+                                                       queryOptions,
+                                                       queryKey,
+                                                       dataPath,
+                                                       buttonText,
+                                                       dropdownTitle,
+                                                       emptyText = 'No options found',
+                                                       showEnhancedDropdown = true,
+                                                   }: Readonly<ConfigurableOperationMultiSelectorProps>) {
     const { data } = useQuery<QueryData>(
         queryOptions || {
             queryKey: [queryKey],
@@ -179,13 +179,14 @@ export function ConfigurableOperationMultiSelector({
                         if (!operationDef) {
                             return null;
                         }
-                        const hasCombinationMode = operation.arguments.find(arg => arg.name === 'combineWithAnd');
+                        const hasCombinationMode = operation.arguments.find(
+                            arg => arg.name === 'combineWithAnd',
+                        );
                         return (
                             <div key={index + operation.code}>
                                 {index > 0 && hasCombinationMode ? (
                                     <div className="my-2">
-                                        <InputComponent
-                                            id="vendure:combinationModeInput"
+                                        <CombinationModeInput
                                             value={
                                                 operation.arguments.find(arg => arg.name === 'combineWithAnd')
                                                     ?.value ?? 'true'
@@ -193,6 +194,11 @@ export function ConfigurableOperationMultiSelector({
                                             onChange={(newValue: boolean | string) =>
                                                 onCombinationModeChange(index, newValue)
                                             }
+                                            name={''}
+                                            ref={() => {
+                                            }}
+                                            onBlur={() => {
+                                            }}
                                             position={index}
                                         />
                                     </div>
@@ -204,7 +210,6 @@ export function ConfigurableOperationMultiSelector({
                                     value={operation}
                                     onChange={value => onOperationValueChange(operation, value)}
                                     onRemove={() => onOperationRemove(index)}
-                                    position={index}
                                 />
                             </div>
                         );

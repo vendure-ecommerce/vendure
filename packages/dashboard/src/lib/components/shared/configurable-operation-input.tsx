@@ -22,7 +22,6 @@ export function ConfigurableOperationInput({
     operationDefinition,
     readonly,
     removable,
-    position,
     hideDescription,
     value,
     onChange,
@@ -90,10 +89,7 @@ export function ConfigurableOperationInput({
                                     className={`grid gap-4 ${operationDefinition.args.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}
                                 >
                                     {operationDefinition.args
-                                        .filter(
-                                            arg =>
-                                                arg.ui?.component !== 'combination-mode-form-input',
-                                        )
+                                        .filter(arg => arg.ui?.component !== 'combination-mode-form-input')
                                         .map(arg => {
                                             const argValue =
                                                 value.arguments.find(a => a.name === arg.name)?.value || '';
@@ -114,7 +110,6 @@ export function ConfigurableOperationInput({
                                                                         handleInputChange(arg.name, value)
                                                                     }
                                                                     readOnly={readonly}
-                                                                    position={position}
                                                                 />
                                                             </FormControl>
                                                         </FormItem>
@@ -149,7 +144,7 @@ export function interpolateDescription(
         (substring: string, argName: string) => {
             const normalizedArgName = argName.toLowerCase();
             const value = values.find(v => v.name === normalizedArgName)?.value;
-            if (value == null) {
+            if (value == null || value === '') {
                 return '_';
             }
             let formatted = value;

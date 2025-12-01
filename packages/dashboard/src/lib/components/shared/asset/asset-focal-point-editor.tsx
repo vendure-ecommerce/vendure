@@ -1,5 +1,5 @@
 import { Button } from '@/vdb/components/ui/button.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
 import { DndContext, useDraggable } from '@dnd-kit/core';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
@@ -17,7 +17,7 @@ export interface AssetFocalPointEditorProps {
     children?: React.ReactNode;
 }
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }

@@ -1,7 +1,7 @@
 import { RequestContext } from '@vendure/core';
 
 import { MetricData } from '../service/metrics.service.js';
-import { MetricInterval, MetricSummaryEntry, MetricType } from '../types.js';
+import { DashboardMetricSummaryEntry, DashboardMetricType } from '../types.js';
 
 /**
  * Calculate your metric data based on the given input.
@@ -10,11 +10,11 @@ import { MetricInterval, MetricSummaryEntry, MetricType } from '../types.js';
  *
  */
 export interface MetricCalculation {
-    type: MetricType;
+    type: DashboardMetricType;
 
     getTitle(ctx: RequestContext): string;
 
-    calculateEntry(ctx: RequestContext, interval: MetricInterval, data: MetricData): MetricSummaryEntry;
+    calculateEntry(ctx: RequestContext, data: MetricData): DashboardMetricSummaryEntry;
 }
 
 export function getMonthName(monthNr: number): string {
@@ -26,13 +26,13 @@ export function getMonthName(monthNr: number): string {
  * Calculates the average order value per month/week
  */
 export class AverageOrderValueMetric implements MetricCalculation {
-    readonly type = MetricType.AverageOrderValue;
+    readonly type = DashboardMetricType.AverageOrderValue;
 
     getTitle(ctx: RequestContext): string {
         return 'average-order-value';
     }
 
-    calculateEntry(ctx: RequestContext, interval: MetricInterval, data: MetricData): MetricSummaryEntry {
+    calculateEntry(ctx: RequestContext, data: MetricData): DashboardMetricSummaryEntry {
         const label = data.date.toISOString();
         if (!data.orders.length) {
             return {
@@ -40,7 +40,7 @@ export class AverageOrderValueMetric implements MetricCalculation {
                 value: 0,
             };
         }
-        const total = data.orders.map(o => o.totalWithTax).reduce((_total, current) => _total + current);
+        const total = data.orders.map(o => o.totalWithTax).reduce((_total, current) => _total + current, 0);
         const average = Math.round(total / data.orders.length);
         return {
             label,
@@ -53,13 +53,13 @@ export class AverageOrderValueMetric implements MetricCalculation {
  * Calculates number of orders
  */
 export class OrderCountMetric implements MetricCalculation {
-    readonly type = MetricType.OrderCount;
+    readonly type = DashboardMetricType.OrderCount;
 
     getTitle(ctx: RequestContext): string {
         return 'order-count';
     }
 
-    calculateEntry(ctx: RequestContext, interval: MetricInterval, data: MetricData): MetricSummaryEntry {
+    calculateEntry(ctx: RequestContext, data: MetricData): DashboardMetricSummaryEntry {
         const label = data.date.toISOString();
         return {
             label,
@@ -72,13 +72,13 @@ export class OrderCountMetric implements MetricCalculation {
  * Calculates order total
  */
 export class OrderTotalMetric implements MetricCalculation {
-    readonly type = MetricType.OrderTotal;
+    readonly type = DashboardMetricType.OrderTotal;
 
     getTitle(ctx: RequestContext): string {
         return 'order-totals';
     }
 
-    calculateEntry(ctx: RequestContext, interval: MetricInterval, data: MetricData): MetricSummaryEntry {
+    calculateEntry(ctx: RequestContext, data: MetricData): DashboardMetricSummaryEntry {
         const label = data.date.toISOString();
         return {
             label,
