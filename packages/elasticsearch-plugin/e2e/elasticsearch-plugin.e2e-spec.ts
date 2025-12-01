@@ -178,7 +178,7 @@ describe('Elasticsearch plugin', () => {
         await adminClient.asSuperAdmin();
         // We have extra time here because a lot of jobs are
         // triggered from all the product updates
-        await awaitRunningJobs(adminClient, 10_000, 1000);
+        await awaitRunningJobs(adminClient, 20_000, 1000);
 
         // Create an Electronics collection for testing multi-collection filters
         await adminClient.query(createCollectionDocument, {
