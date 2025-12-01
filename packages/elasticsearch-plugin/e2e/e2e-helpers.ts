@@ -305,6 +305,7 @@ async function testMatchCollections(client: SimpleGraphQLClient, searchInput: Pa
             input: {
                 groupByProduct: true,
                 ...searchInput,
+                sort: { name: SortOrder.ASC },
             },
         },
     );
