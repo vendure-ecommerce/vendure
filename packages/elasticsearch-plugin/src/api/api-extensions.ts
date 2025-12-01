@@ -39,7 +39,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             priceRangeWithTax: PriceRangeInput
             inStock: Boolean
             groupBySKU: Boolean
-            ${inputExtensions.length > 0 ? inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ') : ''}
+            ${inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ')}
         }
 
         ${sortExtensions.length > 0 ? sortExtensionGql : ''}
