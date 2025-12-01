@@ -209,6 +209,7 @@ describe('Elasticsearch plugin', () => {
             },
         });
 
+        await awaitRunningJobs(adminClient);
         await adminClient.query(reindexDocument);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);

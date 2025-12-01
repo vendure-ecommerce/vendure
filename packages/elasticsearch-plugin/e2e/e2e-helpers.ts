@@ -252,6 +252,7 @@ async function testMatchCollections(client: SimpleGraphQLClient, searchInput: Pa
         input: {
             groupByProduct: true,
             ...searchInput,
+            sort: { name: SortOrder.ASC },
         },
     });
     // Should return products from both Plants (T_2) and Electronics (T_3) collections

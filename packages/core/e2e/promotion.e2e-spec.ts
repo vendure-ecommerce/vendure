@@ -389,7 +389,6 @@ function generateTestCondition(code: string): PromotionCondition {
     return new PromotionCondition({
         code,
         description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
-        // TODO: why did we have unsed args here?
         args: { arg: { type: 'int' } },
         check: () => true,
     });
@@ -400,7 +399,6 @@ function generateTestAction(code: string): PromotionAction<any> {
         code,
         description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
         args: { facetValueIds: { type: 'ID', list: true } },
-        // TODO: why did we have unsed args here? execture (order, args) => { return 42; }
         execute: () => {
             return 42;
         },
