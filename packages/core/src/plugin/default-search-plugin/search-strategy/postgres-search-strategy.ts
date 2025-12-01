@@ -159,8 +159,16 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } =
-            input;
+        const {
+            term,
+            facetValueFilters,
+            facetValueIds,
+            facetValueOperator,
+            collectionId,
+            collectionSlug,
+            collectionIds,
+            collectionSlugs,
+        } = input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term
             ? term
@@ -256,6 +264,36 @@ export class PostgresSearchStrategy implements SearchStrategy {
             qb.andWhere(":collectionSlug::varchar = ANY (string_to_array(si.collectionSlugs, ','))", {
                 collectionSlug,
             });
+        }
+        if (collectionIds?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const id of Array.from(new Set(collectionIds))) {
+                        const placeholder = createPlaceholderFromId(id);
+                        qb1.orWhere(
+                            `:${placeholder}::varchar = ANY (string_to_array(si.collectionIds, ','))`,
+                            {
+                                [placeholder]: id,
+                            },
+                        );
+                    }
+                }),
+            );
+        }
+        if (collectionSlugs?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const slug of Array.from(new Set(collectionSlugs))) {
+                        const placeholder = createPlaceholderFromId(slug);
+                        qb1.orWhere(
+                            `:${placeholder}::varchar = ANY (string_to_array(si.collectionSlugs, ','))`,
+                            {
+                                [placeholder]: slug,
+                            },
+                        );
+                    }
+                }),
+            );
         }
 
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });

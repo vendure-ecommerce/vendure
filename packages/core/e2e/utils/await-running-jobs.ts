@@ -34,4 +34,9 @@ export async function awaitRunningJobs(
         runningJobs = jobs.totalItems;
         timedOut = timeout < +new Date() - startTime;
     } while (runningJobs > 0 && !timedOut);
+
+    if (runningJobs > 0) {
+        /* eslint-disable no-console */
+        console.log(`awaitRunningJobs time out with ${runningJobs} jobs still running`);
+    }
 }
