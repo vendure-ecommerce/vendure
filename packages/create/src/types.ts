@@ -16,6 +16,7 @@ export interface UserResponses extends FileSources {
     populateProducts: boolean;
     superadminIdentifier: string;
     superadminPassword: string;
+    includeStorefront: boolean;
 }
 
 export type PackageManager = 'npm';

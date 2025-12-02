@@ -74,12 +74,27 @@ export async function getQuickStartConfiguration(
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
     };
 
+    const includeStorefront = await select({
+        message: 'Would you like to include the Next.js storefront?',
+        options: [
+            { label: 'No', value: false },
+            {
+                label: 'Yes',
+                value: true,
+                hint: 'Adds a ready-to-use Next.js storefront connected to your Vendure server',
+            },
+        ],
+        initialValue: false,
+    });
+    checkCancel(includeStorefront);
+
     const responses = {
         ...(await generateSources(root, quickStartAnswers, packageManager)),
         dbType: quickStartAnswers.dbType,
         populateProducts: quickStartAnswers.populateProducts as boolean,
         superadminIdentifier: quickStartAnswers.superadminIdentifier as string,
         superadminPassword: quickStartAnswers.superadminPassword as string,
+        includeStorefront: includeStorefront as boolean,
     };
 
     return responses;
@@ -180,6 +195,20 @@ export async function getManualConfiguration(
     });
     checkCancel(populateProducts);
 
+    const includeStorefront = await select({
+        message: 'Would you like to include the Next.js storefront?',
+        options: [
+            { label: 'No', value: false },
+            {
+                label: 'Yes',
+                value: true,
+                hint: 'Adds a ready-to-use Next.js storefront connected to your Vendure server',
+            },
+        ],
+        initialValue: false,
+    });
+    checkCancel(includeStorefront);
+
     const answers: PromptAnswers = {
         dbType,
         dbHost,
@@ -200,6 +229,7 @@ export async function getManualConfiguration(
         populateProducts: answers.populateProducts as boolean,
         superadminIdentifier: answers.superadminIdentifier as string,
         superadminPassword: answers.superadminPassword as string,
+        includeStorefront: includeStorefront as boolean,
     };
 }
 
@@ -209,6 +239,7 @@ export async function getManualConfiguration(
 export async function getCiConfiguration(
     root: string,
     packageManager: PackageManager,
+    includeStorefront: boolean = false,
 ): Promise<UserResponses> {
     const ciAnswers = {
         dbType: 'sqlite' as const,
@@ -228,6 +259,7 @@ export async function getCiConfiguration(
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
         superadminPassword: ciAnswers.superadminPassword,
+        includeStorefront,
     };
 }
 

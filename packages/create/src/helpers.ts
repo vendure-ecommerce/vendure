@@ -2,13 +2,17 @@ import { cancel, isCancel, spinner } from '@clack/prompts';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import { execFile, execFileSync, execSync } from 'node:child_process';
+import { createWriteStream } from 'node:fs';
 import { platform } from 'node:os';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { promisify } from 'node:util';
 import path from 'path';
 import pc from 'picocolors';
 import semver from 'semver';
+import * as tar from 'tar';
 
-import { TYPESCRIPT_VERSION } from './constants';
+import { STOREFRONT_BRANCH, STOREFRONT_REPO, TYPESCRIPT_VERSION } from './constants';
 import { log } from './logger';
 import { CliLogLevel, DbType } from './types';
 
@@ -560,4 +564,68 @@ export function resolvePackageRootDir(packageName: string, rootDir: string) {
         dir = next;
     }
     return dir;
+}
+
+/**
+ * Downloads the Next.js storefront starter from GitHub and extracts it to the target directory.
+ * Uses the GitHub API tarball endpoint to avoid requiring git.
+ */
+export async function downloadAndExtractStorefront(targetDir: string): Promise<void> {
+    const tarballUrl = `https://api.github.com/repos/${STOREFRONT_REPO}/tarball/${STOREFRONT_BRANCH}`;
+    const tempTarPath = path.join(targetDir, '..', 'storefront-temp.tar.gz');
+
+    try {
+        // Fetch the tarball from GitHub
+        const response = await fetch(tarballUrl, {
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'User-Agent': 'vendure-create',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to download storefront: ${response.status} ${response.statusText}`);
+        }
+
+        // Save the tarball to a temp file
+        const fileStream = createWriteStream(tempTarPath);
+        // Convert the web ReadableStream to a Node.js Readable stream
+        const nodeReadable = Readable.fromWeb(response.body as import('stream/web').ReadableStream);
+        await pipeline(nodeReadable, fileStream);
+
+        // Create target directory
+        await fs.ensureDir(targetDir);
+
+        // Extract the tarball
+        await tar.extract({
+            file: tempTarPath,
+            cwd: targetDir,
+            strip: 1, // Remove the top-level directory from the archive
+        });
+
+        // Clean up temp file
+        await fs.remove(tempTarPath);
+    } catch (error) {
+        // Clean up on error
+        await fs.remove(tempTarPath).catch(() => {
+            // eslint-disable-next-line
+            console.error(error);
+        });
+        throw error;
+    }
+}
+
+/**
+ * Finds an available port starting from the given port.
+ * Returns the first available port within the specified range.
+ */
+export async function findAvailablePort(startPort: number, range: number = 20): Promise<number> {
+    let port = startPort;
+    while (await isServerPortInUse(port)) {
+        port++;
+        if (port > startPort + range) {
+            throw new Error(`Could not find an available port between ${startPort} and ${startPort + range}`);
+        }
+    }
+    return port;
 }
