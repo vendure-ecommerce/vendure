@@ -102,38 +102,6 @@ Promise.all([downloadIntrospectionSchema('admin'), downloadIntrospectionSchema('
                         maybeValue: 'T',
                     },
                 },
-                [path.join(__dirname, '../../packages/payments-plugin/e2e/graphql/generated-admin-types.ts')]:
-                    {
-                        schema: [
-                            ADMIN_SCHEMA_OUTPUT_FILE,
-                            path.join(
-                                __dirname,
-                                '../../packages/payments-plugin/src/mollie/api-extensions.ts',
-                            ),
-                        ],
-                        documents: path.join(
-                            __dirname,
-                            '../../packages/payments-plugin/e2e/graphql/admin-queries.ts',
-                        ),
-                        plugins: clientPlugins,
-                        config: e2eConfig,
-                    },
-                [path.join(__dirname, '../../packages/payments-plugin/e2e/graphql/generated-shop-types.ts')]:
-                    {
-                        schema: [
-                            SHOP_SCHEMA_OUTPUT_FILE,
-                            path.join(
-                                __dirname,
-                                '../../packages/payments-plugin/src/mollie/api-extensions.ts',
-                            ),
-                        ],
-                        documents: path.join(
-                            __dirname,
-                            '../../packages/payments-plugin/e2e/graphql/shop-queries.ts',
-                        ),
-                        plugins: clientPlugins,
-                        config: e2eConfig,
-                    },
                 [path.join(
                     __dirname,
                     '../../packages/payments-plugin/src/mollie/graphql/generated-shop-types.ts',
