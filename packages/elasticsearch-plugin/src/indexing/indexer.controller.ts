@@ -30,12 +30,11 @@ import {
 import { Observable } from 'rxjs';
 import { In, IsNull } from 'typeorm';
 
-import { ELASTIC_SEARCH_OPTIONS, VARIANT_INDEX_NAME, loggerCtx } from '../constants';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from '../constants';
 import { ElasticsearchOptions } from '../options';
 import {
     BulkOperation,
     BulkOperationDoc,
-    BulkResponseBody,
     ProductChannelMessageData,
     ProductIndexItem,
     ReindexMessageData,
@@ -377,9 +376,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         updateProductScript: { source: string; params?: any },
         updateVariantScript: { source: string; params?: any },
     ): Promise<boolean> {
-        const result1 = await this.client.update_by_query({
-            index: this.options.indexPrefix + indexName,
-            body: {
+        const result1 = await this.client.updateByQuery(
+            {
+                index: this.options.indexPrefix + indexName,
                 script: updateProductScript,
                 query: {
                     term: {
@@ -387,13 +386,18 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     },
                 },
             },
-        });
-        for (const failure of result1.body.failures) {
-            Logger.error(`${failure.cause.type as string}: ${failure.cause.reason as string}`, loggerCtx);
+            { meta: true },
+        );
+
+        if (result1.body.failures) {
+            for (const failure of result1.body.failures) {
+                Logger.error(`${failure.cause.type}: ${failure.cause.reason as string}`, loggerCtx);
+            }
         }
-        const result2 = await this.client.update_by_query({
-            index: this.options.indexPrefix + indexName,
-            body: {
+
+        const result2 = await this.client.updateByQuery(
+            {
+                index: this.options.indexPrefix + indexName,
                 script: updateVariantScript,
                 query: {
                     term: {
@@ -401,11 +405,18 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     },
                 },
             },
-        });
-        for (const failure of result1.body.failures) {
-            Logger.error(`${failure.cause.type as string}: ${failure.cause.reason as string}`, loggerCtx);
+            { meta: true },
+        );
+
+        if (result2.body.failures) {
+            for (const failure of result2.body.failures) {
+                Logger.error(`${failure.cause.type}: ${failure.cause.reason as string}`, loggerCtx);
+            }
         }
-        return result1.body.failures.length === 0 && result2.body.failures === 0;
+
+        const failures1 = result1.body.failures ?? [];
+        const failures2 = result2.body.failures ?? [];
+        return failures1.length === 0 && failures2.length === 0;
     }
 
     private async updateProductsInternal(ctx: MutableRequestContext, productIds: ID[]) {
@@ -414,20 +425,29 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
     private async switchAlias(reindexVariantAliasName: string, variantIndexName: string): Promise<void> {
         try {
-            const reindexVariantAliasExist = await this.client.indices.existsAlias({
-                name: reindexVariantAliasName,
-            });
+            const reindexVariantAliasExist = await this.client.indices.existsAlias(
+                {
+                    name: reindexVariantAliasName,
+                },
+                { meta: true },
+            );
             if (reindexVariantAliasExist) {
                 const reindexVariantIndexName = await getIndexNameByAlias(
                     this.client,
                     reindexVariantAliasName,
                 );
-                const originalVariantAliasExist = await this.client.indices.existsAlias({
-                    name: variantIndexName,
-                });
-                const originalVariantIndexExist = await this.client.indices.exists({
-                    index: variantIndexName,
-                });
+                const originalVariantAliasExist = await this.client.indices.existsAlias(
+                    {
+                        name: variantIndexName,
+                    },
+                    { meta: true },
+                );
+                const originalVariantIndexExist = await this.client.indices.exists(
+                    {
+                        index: variantIndexName,
+                    },
+                    { meta: true },
+                );
 
                 const originalVariantIndexName = await getIndexNameByAlias(this.client, variantIndexName);
 
@@ -460,12 +480,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 }
 
                 await this.client.indices.updateAliases({
-                    body: {
-                        actions,
-                    },
+                    actions,
                 });
 
-                if (originalVariantAliasExist.body) {
+                if (originalVariantAliasExist.body && originalVariantIndexName) {
                     await this.client.indices.delete({
                         index: [originalVariantIndexName],
                     });
@@ -474,13 +492,17 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         } catch (e: any) {
             Logger.error('Could not switch indexes');
         } finally {
-            const reindexVariantAliasExist = await this.client.indices.existsAlias({
-                name: reindexVariantAliasName,
-            });
-            if (reindexVariantAliasExist.body) {
-                const reindexVariantAliasResult = await this.client.indices.getAlias({
+            const reindexVariantAliasExist = await this.client.indices.existsAlias(
+                {
                     name: reindexVariantAliasName,
-                });
+                },
+                { meta: true },
+            );
+            if (reindexVariantAliasExist.body) {
+                const reindexVariantAliasResult = await this.client.indices.getAlias(
+                    { name: reindexVariantAliasName },
+                    { meta: true },
+                );
                 const reindexVariantIndexName = Object.keys(reindexVariantAliasResult.body)[0];
                 await this.client.indices.delete({
                     index: [reindexVariantIndexName],
@@ -835,11 +857,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
         try {
             const fullIndexName = this.options.indexPrefix + indexName;
-            const { body }: { body: BulkResponseBody } = await this.client.bulk({
-                refresh: true,
-                index: fullIndexName,
-                body: operations,
-            });
+            const { body } = await this.client.bulk(
+                {
+                    refresh: true,
+                    index: fullIndexName,
+                    body: operations,
+                },
+                { meta: true },
+            );
 
             if (body.errors) {
                 Logger.error(
