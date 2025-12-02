@@ -1337,9 +1337,9 @@ type DeepPartialSimple<T> = {
     [P in keyof T]?:
         | null
         | (T[P] extends Array<infer U>
-              ? Array<DeepPartialSimple<U>>
+              ? U[]
               : T[P] extends ReadonlyArray<infer X>
-                ? ReadonlyArray<DeepPartialSimple<X>>
+                ? readonly X[]
                 : T[P] extends Type<any>
                   ? T[P]
                   : DeepPartialSimple<T[P]>);
