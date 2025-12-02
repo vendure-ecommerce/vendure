@@ -3244,6 +3244,10 @@ export type SearchInput = {
     collectionSlug?: InputMaybe<Scalars['String']['input']>;
     collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+    /** @deprecated Use `facetValueFilters` instead */
+    facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+    /** @deprecated Use `facetValueFilters` instead */
+    facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']['input']>;
     skip?: InputMaybe<Scalars['Int']['input']>;
     sort?: InputMaybe<SearchResultSortParameter>;

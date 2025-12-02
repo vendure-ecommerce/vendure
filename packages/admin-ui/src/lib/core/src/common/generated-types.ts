@@ -765,6 +765,8 @@ export type CreateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code: Scalars['String']['input'];
+  /** @deprecated Use defaultCurrencyCode instead */
+  currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode: LanguageCode;
@@ -5701,13 +5703,19 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
+  /** @deprecated Use the `amount` field instead */
+  adjustment?: InputMaybe<Scalars['Money']['input']>;
   /**
    * The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
    * Can be as much as the total amount of the payment minus the sum of all previous refunds.
    */
   amount?: InputMaybe<Scalars['Money']['input']>;
+  /** @deprecated Use the `amount` field instead */
+  lines?: InputMaybe<Array<OrderLineInput>>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
+  /** @deprecated Use the `amount` field instead */
+  shipping?: InputMaybe<Scalars['Money']['input']>;
 };
 
 export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundAmountError | RefundOrderStateError | RefundStateTransitionError;
@@ -5928,6 +5936,10 @@ export type SearchInput = {
   collectionSlug?: InputMaybe<Scalars['String']['input']>;
   collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+  /** @deprecated Use `facetValueFilters` instead */
+  facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** @deprecated Use `facetValueFilters` instead */
+  facetValueOperator?: InputMaybe<LogicalOperator>;
   groupByProduct?: InputMaybe<Scalars['Boolean']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<SearchResultSortParameter>;
@@ -6696,6 +6708,8 @@ export type UpdateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code?: InputMaybe<Scalars['String']['input']>;
+  /** @deprecated Use defaultCurrencyCode instead */
+  currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode?: InputMaybe<LanguageCode>;
