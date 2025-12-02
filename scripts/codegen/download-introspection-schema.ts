@@ -8,13 +8,19 @@ import {
     LogLevel,
     runPluginConfigurations,
     setConfig,
-    VENDURE_ADMIN_API_TYPE_PATHS,
-    VENDURE_SHOP_API_TYPE_PATHS,
     VendureConfig,
 } from '@vendure/core';
 import { writeFileSync } from 'fs';
 import { getIntrospectionQuery, graphqlSync } from 'graphql';
 import path from 'path';
+
+const VENDURE_SHOP_API_TYPE_PATHS = ['shop-api', 'common'].map(p =>
+    path.join(__dirname, '../../packages/core/src/api/schema', p, '*.graphql'),
+);
+
+const VENDURE_ADMIN_API_TYPE_PATHS = ['admin-api', 'common'].map(p =>
+    path.join(__dirname, '../../packages/core/src/api/schema', p, '*.graphql'),
+);
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -62,7 +68,7 @@ export async function downloadIntrospectionSchema(apiType: 'shop' | 'admin'): Pr
         const outFile = path.join(process.cwd(), fileName);
         const jsonSchema = graphqlSync({
             schema,
-            source: getIntrospectionQuery(),
+            source: getIntrospectionQuery({ inputValueDeprecation: true }),
         });
         writeFileSync(outFile, JSON.stringify(jsonSchema));
         console.log(`Generated schema: ${outFile}`);
