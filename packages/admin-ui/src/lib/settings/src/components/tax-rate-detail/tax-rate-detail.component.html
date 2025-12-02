@@ -59,15 +59,11 @@
                         />
                     </vdr-form-field>
                     <vdr-form-field [label]="'settings.rate' | translate" for="value">
-                        <vdr-affixed-input suffix="%">
-                            <input
-                                id="value"
-                                type="number"
-                                step="0.1"
-                                formControlName="value"
-                                [readonly]="!(updatePermission | hasPermission)"
-                            />
-                        </vdr-affixed-input>
+                        <vdr-percentage-suffix-input
+                            inputId="value"
+                            formControlName="value"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        ></vdr-percentage-suffix-input>
                     </vdr-form-field>
                     <vdr-form-field [label]="'settings.tax-category' | translate" for="taxCategoryId">
                         <select
