@@ -20,6 +20,7 @@ interface PromptAnswers {
     superadminIdentifier: string | symbol;
     superadminPassword: string | symbol;
     populateProducts: boolean | symbol;
+    includeStorefront: boolean | symbol;
 }
 
 /* eslint-disable no-console */
@@ -27,6 +28,7 @@ interface PromptAnswers {
 export async function getQuickStartConfiguration(
     root: string,
     packageManager: PackageManager,
+    port: number,
 ): Promise<UserResponses> {
     // First we want to detect whether Docker is running
     const { result: dockerStatus } = await isDockerAvailable();
@@ -61,6 +63,21 @@ export async function getQuickStartConfiguration(
             break;
         }
     }
+
+    const includeStorefront = await select({
+        message: 'Would you like to include the Next.js storefront?',
+        options: [
+            { label: 'No', value: false },
+            {
+                label: 'Yes',
+                value: true,
+                hint: 'Adds a ready-to-use Next.js storefront connected to your Vendure server',
+            },
+        ],
+        initialValue: false,
+    });
+    checkCancel(includeStorefront);
+
     const quickStartAnswers: PromptAnswers = {
         dbType: usePostgres ? 'postgres' : 'sqlite',
         dbHost: usePostgres ? 'localhost' : '',
@@ -72,14 +89,16 @@ export async function getQuickStartConfiguration(
         populateProducts: true,
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
+        includeStorefront,
     };
 
     const responses = {
-        ...(await generateSources(root, quickStartAnswers, packageManager)),
+        ...(await generateSources(root, quickStartAnswers, packageManager, port)),
         dbType: quickStartAnswers.dbType,
         populateProducts: quickStartAnswers.populateProducts as boolean,
         superadminIdentifier: quickStartAnswers.superadminIdentifier as string,
         superadminPassword: quickStartAnswers.superadminPassword as string,
+        includeStorefront: includeStorefront as boolean,
     };
 
     return responses;
@@ -91,6 +110,7 @@ export async function getQuickStartConfiguration(
 export async function getManualConfiguration(
     root: string,
     packageManager: PackageManager,
+    port: number,
 ): Promise<UserResponses> {
     const dbType = (await select({
         message: 'Which database are you using?',
@@ -180,6 +200,20 @@ export async function getManualConfiguration(
     });
     checkCancel(populateProducts);
 
+    const includeStorefront = await select({
+        message: 'Would you like to include the Next.js storefront?',
+        options: [
+            { label: 'No', value: false },
+            {
+                label: 'Yes',
+                value: true,
+                hint: 'Adds a ready-to-use Next.js storefront connected to your Vendure server',
+            },
+        ],
+        initialValue: false,
+    });
+    checkCancel(includeStorefront);
+
     const answers: PromptAnswers = {
         dbType,
         dbHost,
@@ -192,14 +226,16 @@ export async function getManualConfiguration(
         superadminIdentifier,
         superadminPassword,
         populateProducts,
+        includeStorefront,
     };
 
     return {
-        ...(await generateSources(root, answers, packageManager)),
+        ...(await generateSources(root, answers, packageManager, port)),
         dbType,
         populateProducts: answers.populateProducts as boolean,
         superadminIdentifier: answers.superadminIdentifier as string,
         superadminPassword: answers.superadminPassword as string,
+        includeStorefront: includeStorefront as boolean,
     };
 }
 
@@ -209,6 +245,8 @@ export async function getManualConfiguration(
 export async function getCiConfiguration(
     root: string,
     packageManager: PackageManager,
+    port: number,
+    includeStorefront: boolean = false,
 ): Promise<UserResponses> {
     const ciAnswers = {
         dbType: 'sqlite' as const,
@@ -220,14 +258,16 @@ export async function getCiConfiguration(
         populateProducts: true,
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
+        includeStorefront,
     };
 
     return {
-        ...(await generateSources(root, ciAnswers, packageManager)),
+        ...(await generateSources(root, ciAnswers, packageManager, port)),
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
         superadminPassword: ciAnswers.superadminPassword,
+        includeStorefront,
     };
 }
 
@@ -238,6 +278,7 @@ async function generateSources(
     root: string,
     answers: PromptAnswers,
     packageManager: PackageManager,
+    port: number,
 ): Promise<FileSources> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
@@ -257,6 +298,8 @@ async function generateSources(
         isSQLite: answers.dbType === 'sqlite',
         requiresConnection: answers.dbType !== 'sqlite',
         cookieSecret: randomBytes(16).toString('base64url'),
+        port,
+        isMonorepo: answers.includeStorefront,
     };
 
     async function createSourceFile(filename: string, noEscape = false): Promise<string> {
@@ -273,6 +316,7 @@ async function generateSources(
         readmeSource: await createSourceFile('readme.hbs'),
         dockerfileSource: await createSourceFile('Dockerfile.hbs'),
         dockerComposeSource: await createSourceFile('docker-compose.hbs'),
+        tsconfigDashboardSource: await createSourceFile('tsconfig.dashboard.hbs'),
     };
 }
 
