@@ -324,14 +324,14 @@ export async function createVendureApp(
         storefrontInstallSpinner.start(`Installing storefront dependencies...`);
         try {
             await installPackages({ dependencies: [], logLevel }); // npm install with no specific deps
+            storefrontInstallSpinner.stop(`Installed storefront dependencies`);
         } catch (e) {
             storefrontInstallSpinner.stop(pc.yellow(`Warning: Failed to install storefront dependencies`));
             log('You may need to run npm install in the storefront directory manually.', { level: 'info' });
+        } finally {
+            // Change back to root for the rest of the setup
+            process.chdir(root);
         }
-        storefrontInstallSpinner.stop(`Installed storefront dependencies`);
-
-        // Change back to root for the rest of the setup
-        process.chdir(root);
     }
 
     const scaffoldSpinner = spinner();
