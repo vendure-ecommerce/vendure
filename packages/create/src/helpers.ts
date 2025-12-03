@@ -271,7 +271,9 @@ export function checkDbConnection(options: any, root: string): Promise<true> {
 }
 
 async function checkMysqlDbExists(options: any, root: string): Promise<true> {
-    const mysql = await import(path.join(root, 'node_modules/mysql2/promise'));
+    // Use require.resolve to find the package, which handles npm workspace hoisting
+    const mysqlPath = require.resolve('mysql2/promise', { paths: [root] });
+    const mysql = await import(mysqlPath);
     const connectionOptions = {
         host: options.host,
         user: options.username,
@@ -301,7 +303,9 @@ async function checkMysqlDbExists(options: any, root: string): Promise<true> {
 }
 
 async function checkPostgresDbExists(options: any, root: string): Promise<true> {
-    const { Client } = await import(path.join(root, 'node_modules/pg'));
+    // Use require.resolve to find the package, which handles npm workspace hoisting
+    const pgPath = require.resolve('pg', { paths: [root] });
+    const { Client } = await import(pgPath);
     const connectionOptions = {
         host: options.host,
         user: options.username,

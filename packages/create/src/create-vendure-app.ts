@@ -155,14 +155,15 @@ export async function createVendureApp(
         readmeSource,
         dockerfileSource,
         dockerComposeSource,
+        tsconfigDashboardSource,
         populateProducts,
         includeStorefront,
     } =
         mode === 'ci'
-            ? await getCiConfiguration(root, packageManager, withStorefront)
+            ? await getCiConfiguration(root, packageManager, port, withStorefront)
             : mode === 'manual'
-              ? await getManualConfiguration(root, packageManager)
-              : await getQuickStartConfiguration(root, packageManager);
+              ? await getManualConfiguration(root, packageManager, port)
+              : await getQuickStartConfiguration(root, packageManager, port);
     // Determine the server root directory (either root or apps/server for monorepo)
     const serverRoot = includeStorefront ? path.join(root, 'apps', 'server') : root;
     const storefrontRoot = path.join(root, 'apps', 'storefront');
@@ -209,9 +210,12 @@ export async function createVendureApp(
         });
         fs.writeFileSync(path.join(root, 'README.md'), rootReadmeContent);
 
+        // Copy root .gitignore
+        await fs.copyFile(templatePath('root-gitignore.template'), path.join(root, '.gitignore'));
+
         // Create server package.json
         const serverPackageJsonContents = {
-            name: `@${appName}/server`,
+            name: 'server',
             version: '0.1.0',
             private: true,
             scripts: {
@@ -265,6 +269,12 @@ export async function createVendureApp(
             if (fs.existsSync(bunLockPath)) {
                 fs.unlinkSync(bunLockPath);
             }
+
+            // Update storefront package.json name
+            const storefrontPackageJsonPath = path.join(storefrontRoot, 'package.json');
+            const storefrontPackageJson = await fs.readJson(storefrontPackageJsonPath);
+            storefrontPackageJson.name = 'storefront';
+            await fs.writeJson(storefrontPackageJsonPath, storefrontPackageJson, { spaces: 2 });
 
             // Generate storefront .env.local from template
             const storefrontEnvTemplate = await fs.readFile(templatePath('storefront-env.hbs'), 'utf-8');
@@ -370,10 +380,7 @@ export async function createVendureApp(
                 fs.copyFile(assetPath('tsconfig.template.json'), path.join(serverRoot, 'tsconfig.json')),
             )
             .then(() =>
-                fs.copyFile(
-                    assetPath('tsconfig.dashboard.template.json'),
-                    path.join(serverRoot, 'tsconfig.dashboard.json'),
-                ),
+                fs.writeFile(path.join(serverRoot, 'tsconfig.dashboard.json'), tsconfigDashboardSource),
             )
             .then(() =>
                 fs.copyFile(assetPath('vite.config.template.mts'), path.join(serverRoot, 'vite.config.mts')),
@@ -440,9 +447,22 @@ export async function createVendureApp(
 
     timer = setTimeout(displayTip, tipInterval);
 
+    // Change to serverRoot so that ts-node can correctly resolve modules.
+    // In monorepo mode, dependencies are hoisted to the root node_modules,
+    // but ts-node needs to be anchored in the server directory for proper
+    // module resolution and to find the tsconfig.json.
+    process.chdir(serverRoot);
+
     // register ts-node so that the config file can be loaded
+    // We use transpileOnly to skip type checking during bootstrap, as the
+    // complex module resolution with npm workspaces and ESM packages can
+    // cause false TypeScript errors. Type checking happens when users run
+    // their own build/dev commands.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(resolvePackageRootDir('ts-node', serverRoot)).register();
+    require(resolvePackageRootDir('ts-node', serverRoot)).register({
+        project: path.join(serverRoot, 'tsconfig.json'),
+        transpileOnly: true,
+    });
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
