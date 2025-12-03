@@ -623,7 +623,7 @@ function displayOutro(options: OutroOptions) {
         superAdminCredentials,
         includeStorefront,
         serverPort = 3000,
-        storefrontPort = 4000,
+        storefrontPort = 3001,
     } = options;
     const startCommand = 'npm run dev';
 
