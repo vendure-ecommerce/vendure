@@ -260,6 +260,12 @@ export async function createVendureApp(
         try {
             await downloadAndExtractStorefront(storefrontRoot);
 
+            // Remove bun.lock since we use npm for installation
+            const bunLockPath = path.join(storefrontRoot, 'bun.lock');
+            if (fs.existsSync(bunLockPath)) {
+                fs.unlinkSync(bunLockPath);
+            }
+
             // Generate storefront .env.local from template
             const storefrontEnvTemplate = await fs.readFile(templatePath('storefront-env.hbs'), 'utf-8');
             const storefrontEnvContent = Handlebars.compile(storefrontEnvTemplate)({
