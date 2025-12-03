@@ -7,8 +7,7 @@ import { VendureEntity } from '../../../entity';
 
 /**
  * @description
- * Check if the current entity has one or more self-referencing relations
- * to determine if it is a tree type or has tree relations.
+ * Check if the current entity uses TypeORM tree decorators (@Tree, @TreeParent, @TreeChildren).
  * @param metadata
  * @private
  */
@@ -19,9 +18,6 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
 
     for (const relation of metadata.relations) {
         if (relation.isTreeParent || relation.isTreeChildren) {
-            return true;
-        }
-        if (relation.inverseEntityMetadata === metadata) {
             return true;
         }
     }
@@ -81,11 +77,6 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
             return;
         }
         parentPath = parentPath?.filter(p => p !== '');
-        const currentMetadataIsTree =
-            isTreeEntityMetadata(currentMetadata) || sourceMetadataIsTree || parentMetadataIsTree;
-        if (!currentMetadataIsTree) {
-            return;
-        }
 
         const parts = currentPath.split('.');
         let part = parts.shift();
@@ -101,6 +92,18 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         const relationMetadata = currentMetadata.findRelationWithPropertyPath(part);
 
         if (!relationMetadata) {
+            return;
+        }
+
+        const currentMetadataIsTree =
+            isTreeEntityMetadata(currentMetadata) || sourceMetadataIsTree || parentMetadataIsTree;
+
+        const relationIsSelfReferencing = relationMetadata.inverseEntityMetadata === currentMetadata;
+
+        // Only proceed with manual joining if:
+        // 1. We're in a tree entity context (using @Tree, @TreeParent, @TreeChildren), OR
+        // 2. This specific relation is self-referencing (either the relation is self-referencing or the relation is a custom field relation)
+        if (!currentMetadataIsTree && !relationIsSelfReferencing) {
             return;
         }
 
@@ -123,13 +126,18 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
 
         const inverseEntityMetadataIsTree = isTreeEntityMetadata(relationMetadata.inverseEntityMetadata);
 
-        if (!currentMetadataIsTree && !inverseEntityMetadataIsTree) {
+        const shouldProcessSubRelations =
+            currentMetadataIsTree || inverseEntityMetadataIsTree || relationIsSelfReferencing;
+
+        if (!shouldProcessSubRelations) {
             return;
         }
 
         const newEagerDepth = relationMetadata.isEager ? eagerDepth + 1 : eagerDepth;
 
-        if (newEagerDepth <= maxEagerDepth) {
+        // Only process eager sub-relations for actual tree entities (not just self-referencing)
+        // to avoid the performance issue of loading all eager relations unnecessarily
+        if ((currentMetadataIsTree || inverseEntityMetadataIsTree) && newEagerDepth <= maxEagerDepth) {
             relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
                 if (subRelation.isEager) {
                     processRelation(
@@ -147,7 +155,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         if (nextPath) {
             processRelation(
                 relationMetadata.inverseEntityMetadata,
-                currentMetadataIsTree,
+                currentMetadataIsTree || relationIsSelfReferencing,
                 nextPath,
                 nextAlias,
                 [fullPath],
