@@ -254,6 +254,7 @@ export function DataTable<TData>({
                                     title={filter?.title}
                                     options={filter?.options}
                                     optionsFn={filter?.optionsFn}
+                                    icon={filter?.icon}
                                 />
                             ))}
                         </Suspense>
