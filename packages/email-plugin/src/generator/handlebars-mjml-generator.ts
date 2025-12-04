@@ -32,9 +32,9 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         // This is needed because some Vendure entities use getters on the entity
         // prototype (e.g. Order.total) which may need to be interpolated.
         const templateOptions: RuntimeOptions = { allowProtoPropertiesByDefault: true };
-        const fromResult = compiledFrom(templateVars, { allowProtoPropertiesByDefault: true });
-        const subjectResult = compiledSubject(templateVars, { allowProtoPropertiesByDefault: true });
-        const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
+        const fromResult = compiledFrom(templateVars, templateOptions);
+        const subjectResult = compiledSubject(templateVars, templateOptions);
+        const mjml = compiledTemplate(templateVars, templateOptions);
         const body = mjml2html(mjml).html;
         return { from: fromResult, subject: subjectResult, body };
     }
