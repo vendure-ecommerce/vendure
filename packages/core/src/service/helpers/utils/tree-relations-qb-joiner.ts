@@ -135,14 +135,14 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
 
         const newEagerDepth = relationMetadata.isEager ? eagerDepth + 1 : eagerDepth;
 
-        // Only process eager sub-relations for actual tree entities (not just self-referencing)
-        // to avoid the performance issue of loading all eager relations unnecessarily
-        if ((currentMetadataIsTree || inverseEntityMetadataIsTree) && newEagerDepth <= maxEagerDepth) {
+        const propagatedTreeContext = currentMetadataIsTree || relationIsSelfReferencing;
+
+        if (newEagerDepth <= maxEagerDepth) {
             relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
                 if (subRelation.isEager) {
                     processRelation(
                         relationMetadata.inverseEntityMetadata,
-                        currentMetadataIsTree,
+                        propagatedTreeContext,
                         subRelation.propertyPath,
                         nextAlias,
                         [fullPath],
@@ -155,7 +155,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         if (nextPath) {
             processRelation(
                 relationMetadata.inverseEntityMetadata,
-                currentMetadataIsTree || relationIsSelfReferencing,
+                propagatedTreeContext,
                 nextPath,
                 nextAlias,
                 [fullPath],
