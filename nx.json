@@ -1,4 +1,5 @@
 {
+  "neverConnectToCloud": true,
   "namedInputs": {
     "prod": [
       "!{projectRoot}/**/*.spec.ts",
