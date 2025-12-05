@@ -1,14 +1,14 @@
 import { useLingui } from '@lingui/react/macro';
 import { PlusIcon } from 'lucide-react';
 
-import { Button } from '@/vdb/components/ui/button';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/vdb/components/ui/dropdown-menu';
-import { useLocalFormat } from '@/vdb/hooks/use-local-format';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 interface AddCurrencyDropdownProps {
     unusedCurrencies: string[];

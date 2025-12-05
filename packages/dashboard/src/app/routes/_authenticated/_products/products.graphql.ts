@@ -44,6 +44,7 @@ export const productDetailFragment = graphql(
                 name
                 slug
                 description
+                customFields
             }
             optionGroups {
                 id
@@ -60,6 +61,7 @@ export const productDetailFragment = graphql(
                     code
                 }
             }
+            customFields
         }
     `,
     [assetFragment],

@@ -185,7 +185,7 @@ function bcpTagToDatePickerLocale(
         case 'pt-BR':
             return module.ptBR;
         default: {
-            const lang = tag.split('-').at(0);
+            const lang = tag.split('-')[0];
             return lang ? module[lang as keyof typeof module] : undefined;
         }
     }

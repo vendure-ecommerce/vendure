@@ -19,7 +19,7 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
         country,
         countryCode,
         phoneNumber,
-    } = address;
+    } = address || {};
 
     const countryName = typeof country === 'string' ? country : country?.name;
     const countryCodeString = country && typeof country !== 'string' ? country?.code : countryCode;

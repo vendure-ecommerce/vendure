@@ -1,13 +1,13 @@
 import { useLingui } from '@lingui/react/macro';
 import { PlusIcon } from 'lucide-react';
 
-import { Button } from '@/vdb/components/ui/button';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/vdb/components/ui/dropdown-menu';
+} from '@/vdb/components/ui/dropdown-menu.js';
 import { ResultOf } from 'gql.tada';
 
 import { stockLocationsQueryDocument } from '../product-variants.graphql.js';

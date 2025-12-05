@@ -13,7 +13,7 @@ export type NavMenuSectionPlacement = 'top' | 'bottom';
  * @docsPage Navigation
  * @since 3.4.0
  */
-interface NavMenuItem {
+export interface NavMenuItem {
     /**
      * @description
      * A unique ID for this nav menu item
