@@ -92,15 +92,20 @@ function TaxRateDetailPage() {
 
     const [rateInput, setRateInput] = useState('');
     const rateValue = form.watch('value');
+    const [isUserTyping, setIsUserTyping] = useState(false);
 
     useEffect(() => {
+        if (isUserTyping) {
+            return;
+        }
         if (rateValue == null || Number.isNaN(rateValue)) {
             setRateInput('');
         } else {
             const asString = String(rateValue);
             setRateInput(asString.replace('.', decimalSeparator));
         }
-    }, [rateValue, decimalSeparator]);
+    }, [rateValue, decimalSeparator, isUserTyping]);
+
     // ===========================
 
     return (
@@ -146,14 +151,15 @@ function TaxRateDetailPage() {
                                     {...field}
                                     type="text"
                                     suffix="%"
-                                    min={0}
                                     value={rateInput}
                                     onChange={e => {
+                                        setIsUserTyping(true);
                                         const input = e.target.value;
                                         setRateInput(input);
 
                                         if (input === '') {
                                             field.onChange(undefined);
+
                                             return;
                                         }
 
@@ -165,6 +171,10 @@ function TaxRateDetailPage() {
                                             // 非法输入时，不向表单写入 NaN，避免 "Expected number, received nan"
                                             field.onChange(numeric);
                                         }
+                                    }}
+                                    onBlur={() => {
+                                        setIsUserTyping(false);
+                                        field.onBlur();
                                     }}
                                 />
                             )}
