@@ -26,6 +26,31 @@ msgid "The page will continue with the default query."
 msgstr "A página continuará com a consulta predefinida."
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "Falha ao estender documento de consulta"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "Extensão de consulta inválida: deve ter pelo menos um campo de nível superior"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "Incompatibilidade de extensão de consulta:"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "Extensão de consulta contém sintaxe GraphQL inválida"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "Erro de extensão de consulta:"
+
+#. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
 msgid "Insights"
 msgstr "Estatísticas"
@@ -192,34 +217,14 @@ msgid "Orders Summary Widget"
 msgstr "Widget de resumo de encomendas"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:41
-msgid "Failed to extend query document"
-msgstr "Falha ao estender documento de consulta"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:43
-msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "Extensão de consulta inválida: deve ter pelo menos um campo de nível superior"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:47
-msgid "Query extension mismatch: "
-msgstr "Incompatibilidade de extensão de consulta:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:49
-msgid "Query extension contains invalid GraphQL syntax"
-msgstr "Extensão de consulta contém sintaxe GraphQL inválida"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:51
-msgid "Query extension error: "
-msgstr "Erro de extensão de consulta:"
-
-#. js-lingui-explicit-id
 #: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "A executar atualizações pendentes do índice de pesquisa"
+
+#. js-lingui-explicit-id
+#: src/lib/components/data-input/string-list-input.tsx:237
+msgid "Type and press Enter or comma to add..."
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -750,7 +755,7 @@ msgid "{0} customers"
 msgstr "{0} clientes"
 
 #. placeholder {0}: selectedIds.length
-#: src/lib/components/data-input/product-multi-selector-input.tsx:401
+#: src/lib/components/data-input/product-multi-selector-input.tsx:398
 msgid "{0} items selected"
 msgstr "{0} itens selecionados"
 
@@ -771,14 +776,14 @@ msgstr "{0} selecionados"
 msgid "{0} variants"
 msgstr "{0} variantes"
 
-#: src/lib/components/data-input/product-multi-selector-input.tsx:396
-#: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
+#: src/lib/components/data-input/product-multi-selector-input.tsx:393
+#: src/lib/components/shared/configurable-operation-multi-selector.tsx:223
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:109
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:137
 msgid "{label}"
 msgstr "{label}"
 
@@ -817,7 +822,7 @@ msgstr "É necessário um reembolso de {formattedDiff}. Selecione os valores de 
 msgid "Actions"
 msgstr "Ações"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Ativo"
@@ -846,6 +851,10 @@ msgstr "Adicionar outro grupo de opções"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:132
 msgid "Add asset"
 msgstr "Adicionar recurso"
+
+#: src/lib/components/layout/channel-switcher.tsx:204
+msgid "Add channel"
+msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
 msgid "Add column after"
@@ -968,7 +977,7 @@ msgstr "Adicionar linha antes"
 msgid "Add stock level for another location"
 msgstr "Adicionar nível de stock para outra localização"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:182
 msgid "Add Stock to Location"
 msgstr "Adicionar stock à localização"
 
@@ -1045,7 +1054,11 @@ msgstr "Administradores"
 msgid "after"
 msgstr "depois"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:67
+#: src/lib/components/shared/alerts.tsx:33
+msgid "Alerts"
+msgstr ""
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:66
 msgid "All resources are up and running"
 msgstr "Todos os recursos estão operacionais"
 
@@ -1065,8 +1078,8 @@ msgstr "Será necessário um pagamento adicional de {formattedDiff}."
 msgid "AND"
 msgstr "E"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
-#: src/lib/components/shared/customer-address-form.tsx:154
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:164
+#: src/lib/components/shared/customer-address-form.tsx:155
 msgid "Apartment, suite, etc."
 msgstr "Apartamento, suite, etc."
 
@@ -1128,6 +1141,12 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "Tem a certeza de que deseja sair desta página? Quaisquer alterações não guardadas serão perdidas."
 
 #. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:51
+msgid "Are you sure you want to remove {0} {1} from this zone?"
+msgstr ""
+
+#. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "Tem a certeza de que deseja remover {0} {entityType} do canal atual?"
@@ -1171,7 +1190,7 @@ msgstr "Moedas disponíveis"
 msgid "Available languages"
 msgstr "Idiomas disponíveis"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:340
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Idiomas disponíveis"
 
@@ -1195,7 +1214,7 @@ msgstr "antes"
 msgid "between"
 msgstr "entre"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:270
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:260
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:450
 msgid "Billing address"
@@ -1226,22 +1245,22 @@ msgstr "Calculadora"
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:337
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:350
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:396
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
-#: src/lib/components/shared/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:328
 #: src/lib/components/shared/navigation-confirmation.tsx:55
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
@@ -1272,7 +1291,7 @@ msgstr "Canal"
 msgid "Channel defaults"
 msgstr "Predefinições do canal"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:323
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Idiomas do canal"
 
@@ -1280,13 +1299,13 @@ msgstr "Idiomas do canal"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Canais"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:196
-#: src/lib/components/shared/customer-address-form.tsx:175
+#: src/lib/components/shared/customer-address-form.tsx:176
 msgid "City"
 msgstr "Cidade"
 
@@ -1295,7 +1314,7 @@ msgid "Clear"
 msgstr "Limpar"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "Limpar tudo"
 
@@ -1321,6 +1340,7 @@ msgstr "Clique em \"Executar teste\" para testar este método de envio."
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:61
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
 msgid "Code"
 msgstr "Código"
@@ -1343,9 +1363,9 @@ msgstr "Coleções movidas com sucesso"
 msgid "Column settings"
 msgstr "Definições de coluna"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:126
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:165
-#: src/lib/components/shared/customer-address-form.tsx:116
+#: src/lib/components/shared/customer-address-form.tsx:117
 msgid "Company"
 msgstr "Empresa"
 
@@ -1358,7 +1378,7 @@ msgstr "Concluir rascunho"
 msgid "Conditions"
 msgstr "Condições"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:261
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Configure os idiomas disponíveis para a sua loja e canais"
 
@@ -1367,7 +1387,7 @@ msgstr "Configure os idiomas disponíveis para a sua loja e canais"
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:116
 msgid "Confirm Action"
 msgstr "Confirmar ação"
 
@@ -1388,7 +1408,7 @@ msgstr "contém"
 msgid "Contents"
 msgstr "Conteúdo"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:125
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "Continuar"
@@ -1404,9 +1424,10 @@ msgstr "Copiar para pessoal"
 msgid "Countries"
 msgstr "Países"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:240
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:217
-#: src/lib/components/shared/customer-address-form.tsx:230
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:53
+#: src/lib/components/shared/customer-address-form.tsx:231
 msgid "Country"
 msgstr "País"
 
@@ -1432,7 +1453,7 @@ msgstr "Código de cupão definido para a encomenda"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:200
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
@@ -1453,7 +1474,7 @@ msgstr "Criar"
 msgid "Create \"{0}\""
 msgstr "Criar \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:182
 msgid "Create {createCount} variants"
 msgstr "Criar {createCount} variantes"
 
@@ -1470,16 +1491,16 @@ msgstr "Criar opções de produto"
 msgid "Create variant"
 msgstr "Criar variante"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
 msgid "Create Variants"
 msgstr "Criar variantes"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"
 msgstr "Crie variantes para o seu produto"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
-#: src/lib/framework/layout-engine/page-layout.tsx:404
+#: src/lib/framework/layout-engine/page-layout.tsx:433
 msgid "Created"
 msgstr "Criada"
 
@@ -1488,11 +1509,11 @@ msgstr "Criada"
 msgid "Created at"
 msgstr "Criada em"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:180
 msgid "Creating..."
 msgstr "A criar..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Atual"
@@ -1501,7 +1522,7 @@ msgstr "Atual"
 msgid "Current facet values"
 msgstr "Valores de faceta atuais"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:55
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:54
 msgid "Current status"
 msgstr "Estado atual"
 
@@ -1517,7 +1538,7 @@ msgstr "Campos personalizados"
 msgid "Custom fields changed"
 msgstr "Campos personalizados alterados"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:245
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:217
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
 #: src/lib/components/shared/role-code-label.tsx:8
@@ -1587,8 +1608,8 @@ msgctxt "theme"
 msgid "Dark"
 msgstr "Escuro"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
-#: src/lib/components/shared/customer-address-form.tsx:310
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
+#: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Default Billing Address"
 msgstr "Morada de faturação predefinida"
 
@@ -1604,12 +1625,12 @@ msgstr "Moeda predefinida"
 msgid "Default language"
 msgstr "Idioma predefinido"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:368
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Idioma predefinido"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
-#: src/lib/components/shared/customer-address-form.tsx:290
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
+#: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Default Shipping Address"
 msgstr "Morada de envio predefinida"
 
@@ -1706,7 +1727,7 @@ msgstr "Desativado"
 msgid "Discount"
 msgstr "Desconto"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Idioma de apresentação"
 
@@ -1854,6 +1875,7 @@ msgstr "Ativar"
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:57
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "Ativado"
@@ -1878,7 +1900,7 @@ msgstr "Introduza o ID da transação para esta liquidação de reembolso"
 msgid "Enter transaction ID"
 msgstr "Introduza ID da transação"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:377
+#: src/lib/framework/layout-engine/page-layout.tsx:406
 msgid "Entity Information"
 msgstr "Informações da entidade"
 
@@ -1900,7 +1922,7 @@ msgstr "Erro ao carregar histórico de encomendas: {0}"
 msgid "Error message"
 msgstr "Mensagem de erro"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:124
 msgid "Error transitioning to state"
 msgstr "Erro ao fazer transição para estado"
 
@@ -2125,17 +2147,21 @@ msgstr "Falha ao duplicar vista"
 msgid "Failed to fulfill order"
 msgstr "Falha ao atender encomenda"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:290
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Falha ao carregar definições globais"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:139
 msgid "Failed to modify order"
 msgstr "Falha ao modificar encomenda"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
 msgid "Failed to move collections"
 msgstr "Falha ao mover coleções"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:36
+msgid "Failed to remove countries from zone"
+msgstr ""
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
 msgid "Failed to remove customer from group"
@@ -2163,7 +2189,7 @@ msgstr "Falha ao liquidar pagamento"
 msgid "Failed to settle refund"
 msgstr "Falha ao liquidar reembolso"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:115
 msgid "Failed to transition order to state"
 msgstr "Falha ao fazer transição da encomenda para estado"
 
@@ -2219,7 +2245,7 @@ msgstr "Falha ao atualizar estado de atendimento"
 msgid "Failed to update global settings"
 msgstr "Falha ao atualizar definições globais"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:92
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:59
 msgid "Failed to update order"
 msgstr "Falha ao atualizar encomenda"
@@ -2302,7 +2328,7 @@ msgstr "Filtrar por nome de coleção"
 msgid "Filter by tags"
 msgstr "Filtrar por etiquetas"
 
-#: src/lib/components/data-table/data-table.tsx:244
+#: src/lib/components/data-table/data-table.tsx:243
 msgid "Filter..."
 msgstr "Filtrar..."
 
@@ -2363,7 +2389,7 @@ msgstr "Atendimento #{0} de {1} para {2}"
 msgid "Fulfillment created"
 msgstr "Atendimento criado"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:280
 msgid "Fulfillment details"
 msgstr "Detalhes do atendimento"
 
@@ -2384,9 +2410,9 @@ msgstr "Estado de atendimento atualizado com sucesso"
 msgid "Fulfillment transitioned"
 msgstr "Atendimento transitado"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:109
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:159
-#: src/lib/components/shared/customer-address-form.tsx:99
+#: src/lib/components/shared/customer-address-form.tsx:100
 msgid "Full Name"
 msgstr "Nome completo"
 
@@ -2399,7 +2425,7 @@ msgstr "Geral"
 msgid "Generate slug automatically"
 msgstr "Gerar slug automaticamente"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:270
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Idiomas globais"
 
@@ -2480,7 +2506,7 @@ msgstr "Título 5"
 msgid "Heading 6"
 msgstr "Título 6"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:43
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:42
 msgid "Health checks"
 msgstr "Verificações de saúde"
 
@@ -2603,7 +2629,7 @@ msgid "Language"
 msgstr "Idioma"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Idioma: {0}"
 
@@ -2637,7 +2663,7 @@ msgid "Last Result"
 msgstr "Último resultado"
 
 #. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:58
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:57
 msgid "Last updated {0}"
 msgstr "Última atualização {0}"
 
@@ -2683,7 +2709,7 @@ msgstr "A carregar moradas..."
 msgid "Loading collections..."
 msgstr "A carregar coleções..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:284
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "A carregar definições globais..."
 
@@ -2706,7 +2732,7 @@ msgstr "A carregar etiquetas..."
 msgid "Loading..."
 msgstr "A carregar..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Localidade"
 
@@ -2730,8 +2756,8 @@ msgstr "Gerir vistas globais"
 msgid "Manage Global Views"
 msgstr "Gerir vistas globais"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:258
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Gerir idiomas"
 
@@ -2760,7 +2786,7 @@ msgstr "Gerir as suas vistas guardadas pessoais para esta tabela"
 msgid "matches regex"
 msgstr "corresponde a regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Data média"
 
@@ -2776,7 +2802,7 @@ msgstr "Método"
 msgid "Metrics"
 msgstr "Métricas"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:169
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
 msgid "Modify"
 msgstr "Modificar"
@@ -2785,7 +2811,7 @@ msgstr "Modificar"
 msgid "Modify order"
 msgstr "Modificar encomenda"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:83
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:82
 msgid "Monitored Resources"
 msgstr "Recursos monitorizados"
 
@@ -3057,7 +3083,7 @@ msgstr "Nenhuma morada"
 msgid "No addresses found"
 msgstr "Nenhuma morada encontrada"
 
-#: src/lib/components/shared/alerts.tsx:43
+#: src/lib/components/shared/alerts.tsx:45
 msgid "No alerts"
 msgstr "Sem alertas"
 
@@ -3069,7 +3095,7 @@ msgstr "Nenhuma morada de faturação"
 msgid "No countries found"
 msgstr "Nenhum país encontrado"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:255
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:227
 msgid "No customer"
 msgstr "Nenhum cliente"
@@ -3090,11 +3116,11 @@ msgstr "Nenhum método de envio elegível encontrado para esta encomenda."
 msgid "No facet values"
 msgstr "Nenhum valor de faceta"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:300
 msgid "No fulfillments"
 msgstr "Nenhum atendimento"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:354
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Nenhum idioma global configurado"
 
@@ -3140,7 +3166,7 @@ msgstr "Nenhum pagamento ou reembolso necessário"
 msgid "No result yet"
 msgstr "Nenhum resultado ainda"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Nenhum resultado"
@@ -3162,7 +3188,7 @@ msgstr "Nenhuma morada de envio"
 msgid "No shipping methods available"
 msgstr "Nenhum método de envio disponível"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:174
 msgid "No stock locations available on current channel"
 msgstr "Nenhuma localização de stock disponível no canal atual"
 
@@ -3283,7 +3309,7 @@ msgstr "Encomenda entregue"
 msgid "Order fulfilled"
 msgstr "Encomenda atendida"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:233
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
 msgid "Order history"
 msgstr "Histórico de encomendas"
@@ -3398,7 +3424,7 @@ msgstr "Pagamento autorizado"
 msgid "Payment cancelled successfully"
 msgstr "Pagamento cancelado com sucesso"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:221
 msgid "Payment details"
 msgstr "Detalhes do pagamento"
 
@@ -3457,9 +3483,9 @@ msgstr "Permissões"
 msgid "Phone number"
 msgstr "Número de telefone"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:273
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:241
-#: src/lib/components/shared/customer-address-form.tsx:263
+#: src/lib/components/shared/customer-address-form.tsx:264
 msgid "Phone Number"
 msgstr "Número de telefone"
 
@@ -3475,9 +3501,9 @@ msgstr "Adicione produtos e complete a morada de envio para executar o teste."
 msgid "Please select a target collection"
 msgstr "Selecione uma coleção de destino"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:223
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:208
-#: src/lib/components/shared/customer-address-form.tsx:213
+#: src/lib/components/shared/customer-address-form.tsx:214
 msgid "Postal Code"
 msgstr "Código postal"
 
@@ -3497,8 +3523,8 @@ msgstr "Pré-visualizar modificações da encomenda"
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Preço"
 
@@ -3607,7 +3633,7 @@ msgstr "Motivo"
 msgid "Rebuild search index"
 msgstr "Reconstruir índice de pesquisa"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:47
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:46
 msgid "Refresh"
 msgstr "Atualizar"
 
@@ -3675,6 +3701,10 @@ msgstr "Remover"
 msgid "Remove from current channel"
 msgstr "Remover do canal atual"
 
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:49
+msgid "Remove from zone"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
 msgstr "Remover grupo"
@@ -3686,6 +3716,12 @@ msgstr "Remover item"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "Remover ligação"
+
+#. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:31
+msgid "Removed {0} {1} from zone"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:200
 msgid "Removed coupon codes"
@@ -3741,11 +3777,11 @@ msgstr "Em execução"
 msgid "Same window"
 msgstr "Mesma janela"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Formatação de exemplo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:216
 #: src/lib/components/data-table/views-sheet.tsx:210
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
 msgid "Save"
@@ -3755,8 +3791,8 @@ msgstr "Guardar"
 msgid "Save a view as \"Global\" to make it available to all users."
 msgstr "Guarde uma vista como \"Global\" para a disponibilizar a todos os utilizadores."
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
-#: src/lib/components/shared/customer-address-form.tsx:329
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:341
+#: src/lib/components/shared/customer-address-form.tsx:332
 msgid "Save Address"
 msgstr "Guardar morada"
 
@@ -3765,7 +3801,7 @@ msgid "Save changes"
 msgstr "Guardar alterações"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Guardar alterações"
 
@@ -3782,7 +3818,7 @@ msgid "Save View"
 msgstr "Guardar vista"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "A guardar..."
 
@@ -3831,7 +3867,7 @@ msgstr "Reconstrução do índice de pesquisa não pôde ser iniciada"
 msgid "Search index rebuild started"
 msgstr "Reconstrução do índice de pesquisa iniciada"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Pesquisar idiomas..."
 
@@ -3870,8 +3906,8 @@ msgstr "Selecione um canal"
 msgid "Select a channel to assign {0} {entityType} to"
 msgstr "Selecione um canal para atribuir {0} {entityType}"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
-#: src/lib/components/shared/customer-address-form.tsx:240
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:250
+#: src/lib/components/shared/customer-address-form.tsx:241
 msgid "Select a country"
 msgstr "Selecione um país"
 
@@ -3883,7 +3919,7 @@ msgstr "Selecione uma moeda"
 msgid "Select a destination collection"
 msgstr "Selecione uma coleção de destino"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Selecione um idioma"
 
@@ -3916,7 +3952,7 @@ msgstr "Selecione uma morada"
 msgid "Select an option"
 msgstr "Selecione uma opção"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:296
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Selecionar idiomas disponíveis"
 
@@ -3932,11 +3968,11 @@ msgstr "Selecionar cliente"
 msgid "Select date range"
 msgstr "Selecionar intervalo de datas"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Selecionar idioma de apresentação"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:358
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Selecione entre os idiomas disponíveis globalmente para este canal"
 
@@ -3948,7 +3984,7 @@ msgstr "Selecionar item"
 msgid "Select items"
 msgstr "Selecionar itens"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:103
 msgid "Select next state"
 msgstr "Selecionar próximo estado"
 
@@ -3960,7 +3996,7 @@ msgstr "Selecione quantidades a atender e configure o manipulador de atendimento
 msgid "Select seller"
 msgstr "Selecionar vendedor"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:107
 msgid "Select the next state for the order"
 msgstr "Selecione o próximo estado para a encomenda"
 
@@ -4031,7 +4067,7 @@ msgstr "Liquidar reembolso"
 msgid "Shipping"
 msgstr "Envio"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:262
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:234
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:418
 msgid "Shipping address"
@@ -4075,7 +4111,7 @@ msgstr "Método de envio definido para a encomenda"
 msgid "Shipping Methods"
 msgstr "Métodos de envio"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Data curta"
 
@@ -4100,7 +4136,7 @@ msgstr "Inicie sessão para aceder ao painel de administração"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:306
 msgid "SKU"
 msgstr "SKU"
@@ -4118,7 +4154,7 @@ msgstr "Slug está definido"
 msgid "Slug will be generated automatically..."
 msgstr "Slug será gerado automaticamente..."
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:74
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:73
 msgid "Some resources are down"
 msgstr "Alguns recursos estão inativos"
 
@@ -4141,8 +4177,8 @@ msgstr "Estado"
 msgid "State / Province"
 msgstr "Estado / Província"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
-#: src/lib/components/shared/customer-address-form.tsx:192
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:202
+#: src/lib/components/shared/customer-address-form.tsx:193
 msgid "State/Province"
 msgstr "Estado/Província"
 
@@ -4178,13 +4214,13 @@ msgstr "Localizações de stock"
 msgid "Stock on hand"
 msgstr "Stock disponível"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:215
 msgid "Stock on Hand"
 msgstr "Stock disponível"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:147
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:175
-#: src/lib/components/shared/customer-address-form.tsx:137
+#: src/lib/components/shared/customer-address-form.tsx:138
 msgid "Street Address"
 msgstr "Morada"
 
@@ -4365,7 +4401,7 @@ msgstr "Valores de faceta atualizados com sucesso para {entityIdsLength} {entity
 msgid "Successfully updated global settings"
 msgstr "Definições globais atualizadas com sucesso"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:88
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:55
 msgid "Successfully updated order"
 msgstr "Encomenda atualizada com sucesso"
@@ -4476,7 +4512,7 @@ msgstr "Taxa fiscal: {taxRate}%"
 msgid "Tax Rates"
 msgstr "Taxas fiscais"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:205
 msgid "Tax summary"
 msgstr "Resumo fiscal"
 
@@ -4559,7 +4595,7 @@ msgstr "Estes são os clientes do grupo de clientes <0>{customerGroupName}</0>."
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Estes são os valores de faceta para a faceta <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:311
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Estes idiomas estarão disponíveis para todos os canais usarem"
 
@@ -4667,7 +4703,7 @@ msgstr "ID da transação é obrigatório"
 #. placeholder {0}: getTranslatedOrderState(state)
 #. placeholder {0}: getTranslatedPaymentState(state)
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:92
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:110
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
 msgstr "Transitar para {0}"
@@ -4676,7 +4712,7 @@ msgstr "Transitar para {0}"
 msgid "Transition to {suggestedState}"
 msgstr "Transitar para {suggestedState}"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:130
 msgid "Transition to selected state"
 msgstr "Transitar para estado selecionado"
 
@@ -4740,7 +4776,7 @@ msgstr "Atualizar"
 msgid "Update the note content or visibility"
 msgstr "Atualizar conteúdo ou visibilidade da nota"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:417
+#: src/lib/framework/layout-engine/page-layout.tsx:446
 msgid "Updated"
 msgstr "Atualizado"
 
@@ -4752,13 +4788,13 @@ msgstr "Carregar"
 msgid "Usage limit"
 msgstr "Limite de utilização"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
-#: src/lib/components/shared/customer-address-form.tsx:313
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:316
 msgid "Use as the default billing address"
 msgstr "Usar como morada de faturação predefinida"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
-#: src/lib/components/shared/customer-address-form.tsx:293
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:305
+#: src/lib/components/shared/customer-address-form.tsx:296
 msgid "Use as the default shipping address"
 msgstr "Usar como morada de envio predefinida"
 
@@ -4786,7 +4822,7 @@ msgstr "A usar estratégia de autenticação nativa"
 msgid "Values"
 msgstr "Valores"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:205
 msgid "Variant"
 msgstr "Variante"
 
@@ -4904,11 +4940,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Ontem"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:333
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Não tem permissão para visualizar definições do canal"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:279
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Não tem permissão para visualizar definições de idioma global"
 

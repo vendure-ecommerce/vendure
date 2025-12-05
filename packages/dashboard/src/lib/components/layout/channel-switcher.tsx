@@ -138,7 +138,7 @@ export function ChannelSwitcher() {
                                         </div>
                                         <ChannelCodeLabel code={channel.code} />
                                         {channel.id === displayChannel?.id && (
-                                            <span className="ml-auto text-xs text-muted-foreground">
+                                            <span className="ms-auto text-xs text-muted-foreground">
                                                 <Trans context="current channel">Current</Trans>
                                             </span>
                                         )}
@@ -146,9 +146,9 @@ export function ChannelSwitcher() {
                                     {/* Show language sub-menu for the current channel */}
                                     {channel.id === displayChannel?.id && (
                                         <DropdownMenuSub>
-                                            <DropdownMenuSubTrigger className="gap-2 p-2 pl-4">
+                                            <DropdownMenuSubTrigger className="gap-2 p-2 ps-4">
                                                 <Languages className="w-4 h-4" />
-                                                <div className="flex gap-1 ml-2">
+                                                <div className="flex gap-1 ms-2">
                                                     <span className="text-muted-foreground">Content: </span>
                                                     {formatLanguageName(contentLanguage)}
                                                 </div>
@@ -167,7 +167,7 @@ export function ChannelSwitcher() {
                                                         </div>
                                                         <span>{label}</span>
                                                         {contentLanguage === languageCode && (
-                                                            <span className="ml-auto text-xs text-muted-foreground">
+                                                            <span className="ms-auto text-xs text-muted-foreground">
                                                                 <Trans context="active language">
                                                                     Active
                                                                 </Trans>
@@ -200,7 +200,9 @@ export function ChannelSwitcher() {
                                     <div className="bg-background flex size-6 items-center justify-center rounded-md border">
                                         <Plus className="size-4" />
                                     </div>
-                                    <div className="text-muted-foreground font-medium">Add channel</div>
+                                    <div className="text-muted-foreground font-medium">
+                                        <Trans>Add channel</Trans>
+                                    </div>
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
