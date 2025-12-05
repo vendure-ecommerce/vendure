@@ -10,7 +10,7 @@
     "lineEnding": "lf",
     "lineWidth": 110,
     "attributePosition": "auto",
-    "bracketSameLine": false,
+    "bracketSameLine": true,
     "bracketSpacing": true,
     "expand": "auto",
     "useEditorconfig": true,
