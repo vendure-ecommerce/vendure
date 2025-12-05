@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": false },
+  "files": { "ignoreUnknown": false, "maxSize": 2097152 },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -12,7 +12,6 @@
     "attributePosition": "auto",
     "bracketSameLine": true,
     "bracketSpacing": true,
-    "expand": "auto",
     "useEditorconfig": true,
     "includes": [
       "**",
@@ -20,7 +19,9 @@
       "!**/lazy-extensions.module.ts",
       "!**/shared-extensions.module.ts",
       "!**/generated-graphql-shop-errors.ts",
-      "!**/generated-graphql-admin-errors.ts"
+      "!**/generated-graphql-admin-errors.ts",
+      "!**/tailwindcss-animate.css",
+      "!**/*.graphql"
     ]
   },
   "linter": {
@@ -39,24 +40,21 @@
     ]
   },
   "javascript": {
+    "parser": { "unsafeParameterDecoratorsEnabled": true },
     "formatter": {
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
       "trailingCommas": "all",
       "semicolons": "always",
       "arrowParentheses": "asNeeded",
-      "bracketSameLine": false,
+      "bracketSameLine": true,
       "quoteStyle": "single",
       "attributePosition": "auto",
       "bracketSpacing": true
     }
   },
-  "html": {
-    "formatter": {
-      "indentScriptAndStyle": false,
-      "selfCloseVoidElements": "always"
-    }
-  },
+  "html": { "formatter": { "indentScriptAndStyle": false, "selfCloseVoidElements": "always" } },
+  "css": { "parser": { "tailwindDirectives": true } },
   "overrides": [
     { "includes": ["**/*.ts", "**/*.tsx"], "javascript": { "globals": [] } },
     {
@@ -199,10 +197,7 @@
             "noNonNullAssertion": "error",
             "useArrayLiterals": "error",
             "useAsConstAssertion": "error",
-            "useConsistentArrayType": {
-              "level": "error",
-              "options": { "syntax": "shorthand" }
-            },
+            "useConsistentArrayType": { "level": "error", "options": { "syntax": "shorthand" } },
             "useConsistentBuiltinInstantiation": "error",
             "useConsistentMemberAccessibility": {
               "level": "off",
@@ -235,17 +230,8 @@
         }
       }
     },
-    {
-      "includes": ["packages/ui-devkit/src/client/**/*"],
-      "javascript": { "globals": [] }
-    },
-    {
-      "includes": ["packages/ui-devkit/src/compiler/**/*"],
-      "javascript": { "globals": [] }
-    }
+    { "includes": ["packages/ui-devkit/src/client/**/*"], "javascript": { "globals": [] } },
+    { "includes": ["packages/ui-devkit/src/compiler/**/*"], "javascript": { "globals": [] } }
   ],
-  "assist": {
-    "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
-  }
+  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }
 }
