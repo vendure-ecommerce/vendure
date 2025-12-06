@@ -1,0 +1,3436 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-20 14:18+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: @lingui/cli\n"
+
+#. js-lingui-explicit-id
+msgid "Query extension error"
+msgstr "Грешка в разширението на заявката"
+
+#. js-lingui-explicit-id
+msgid "The page will continue with the default query."
+msgstr "Страницата ще продължи със заявката по подразбиране."
+
+#. js-lingui-explicit-id
+msgid "Insights"
+msgstr "Анализи"
+
+#. js-lingui-explicit-id
+msgid "Catalog"
+msgstr "Каталог"
+
+#. js-lingui-explicit-id
+msgid "Products"
+msgstr "Продукти"
+
+#. js-lingui-explicit-id
+msgid "Product Variants"
+msgstr "Варианти"
+
+#. js-lingui-explicit-id
+msgid "Facets"
+msgstr "Атрибути"
+
+#. js-lingui-explicit-id
+msgid "Collections"
+msgstr "Колекции"
+
+#. js-lingui-explicit-id
+msgid "Assets"
+msgstr "Медия"
+
+#. js-lingui-explicit-id
+msgid "Sales"
+msgstr "Продажби"
+
+#. js-lingui-explicit-id
+msgid "Orders"
+msgstr "Поръчки"
+
+#. js-lingui-explicit-id
+msgid "Customers"
+msgstr "Клиенти"
+
+#. js-lingui-explicit-id
+msgid "Customer Groups"
+msgstr "Групи клиенти"
+
+#. js-lingui-explicit-id
+msgid "Marketing"
+msgstr "Маркетинг"
+
+#. js-lingui-explicit-id
+msgid "Promotions"
+msgstr "Промоции"
+
+#. js-lingui-explicit-id
+msgid "System"
+msgstr "Система"
+
+#. js-lingui-explicit-id
+msgid "Job Queue"
+msgstr "Опашка от задачи"
+
+#. js-lingui-explicit-id
+msgid "Healthchecks"
+msgstr "Здравни проверки"
+
+#. js-lingui-explicit-id
+msgid "Scheduled Tasks"
+msgstr "Планирани задачи"
+
+#. js-lingui-explicit-id
+msgid "Settings"
+msgstr "Настройки"
+
+#. js-lingui-explicit-id
+msgid "Sellers"
+msgstr "Продавачи"
+
+#. js-lingui-explicit-id
+msgid "Channels"
+msgstr "Канали"
+
+#. js-lingui-explicit-id
+msgid "Stock Locations"
+msgstr "Складови местоположения"
+
+#. js-lingui-explicit-id
+msgid "Administrators"
+msgstr "Администратори"
+
+#. js-lingui-explicit-id
+msgid "Roles"
+msgstr "Роли"
+
+#. js-lingui-explicit-id
+msgid "Shipping Methods"
+msgstr "Методи за доставка"
+
+#. js-lingui-explicit-id
+msgid "Payment Methods"
+msgstr "Начини на плащане"
+
+#. js-lingui-explicit-id
+msgid "Tax Categories"
+msgstr "Данъчни категории"
+
+#. js-lingui-explicit-id
+msgid "Tax Rates"
+msgstr "Данъчни ставки"
+
+#. js-lingui-explicit-id
+msgid "Countries"
+msgstr "Държави"
+
+#. js-lingui-explicit-id
+msgid "Zones"
+msgstr "Зони"
+
+#. js-lingui-explicit-id
+msgid "Global Settings"
+msgstr "Глобални настройки"
+
+#. js-lingui-explicit-id
+msgid "Metrics Widget"
+msgstr "Уиджет за показатели"
+
+#. js-lingui-explicit-id
+msgid "Latest Orders Widget"
+msgstr "Уиджет за най-нови поръчки"
+
+#. js-lingui-explicit-id
+msgid "Orders Summary Widget"
+msgstr "Уиджет за обобщение на поръчките"
+
+#. js-lingui-explicit-id
+msgid "Failed to extend query document"
+msgstr "Неуспешно разширяване на документа за заявка"
+
+#. js-lingui-explicit-id
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "Разширението на заявката е невалидно: трябва да има поне едно поле от най-високо ниво"
+
+#. js-lingui-explicit-id
+msgid "Query extension mismatch: "
+msgstr "Несъответствие на разширението на заявката:"
+
+#. js-lingui-explicit-id
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "Разширението на заявката съдържа невалиден синтаксис на GraphQL"
+
+#. js-lingui-explicit-id
+msgid "Query extension error: "
+msgstr "Грешка в разширението на заявката:"
+
+#. js-lingui-explicit-id
+msgid "Running pending search index updates"
+msgstr "Изпълнение на чакащи актуализации на индекса за търсене"
+
+#. js-lingui-explicit-id
+msgid "fulfillmentState.Created"
+msgstr "Създадено"
+
+#. js-lingui-explicit-id
+msgid "fulfillmentState.Pending"
+msgstr "Изчакващо"
+
+#. js-lingui-explicit-id
+msgid "fulfillmentState.Cancelled"
+msgstr "Отменено"
+
+#. js-lingui-explicit-id
+msgid "fulfillmentState.Shipped"
+msgstr "Изпратено"
+
+#. js-lingui-explicit-id
+msgid "fulfillmentState.Delivered"
+msgstr "Доставено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Created"
+msgstr "Създадено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Authorized"
+msgstr "Разрешено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Settled"
+msgstr "Приключено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Declined"
+msgstr "Отхвърлено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Error"
+msgstr "Грешка"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Cancelled"
+msgstr "Отменено"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Pending"
+msgstr "Изчаква"
+
+#. js-lingui-explicit-id
+msgid "paymentState.Failed"
+msgstr "Неуспешно"
+
+#. js-lingui-explicit-id
+msgid "orderState.Created"
+msgstr "Създадена"
+
+#. js-lingui-explicit-id
+msgid "orderState.Draft"
+msgstr "Чернова"
+
+#. js-lingui-explicit-id
+msgid "orderState.AddingItems"
+msgstr "Добавяне на артикули"
+
+#. js-lingui-explicit-id
+msgid "orderState.Cancelled"
+msgstr "Отменена"
+
+#. js-lingui-explicit-id
+msgid "orderState.ArrangingPayment"
+msgstr "Уреждане на плащане"
+
+#. js-lingui-explicit-id
+msgid "orderState.PaymentAuthorized"
+msgstr "Плащането е разрешено"
+
+#. js-lingui-explicit-id
+msgid "orderState.PaymentSettled"
+msgstr "Плащането е приключено"
+
+#. js-lingui-explicit-id
+msgid "orderState.PartiallyShipped"
+msgstr "Частично изпратена"
+
+#. js-lingui-explicit-id
+msgid "orderState.Shipped"
+msgstr "Изпратена"
+
+#. js-lingui-explicit-id
+msgid "orderState.PartiallyDelivered"
+msgstr "Частично доставена"
+
+#. js-lingui-explicit-id
+msgid "orderState.Delivered"
+msgstr "Доставена"
+
+#. js-lingui-explicit-id
+msgid "orderState.Modifying"
+msgstr "Променя се"
+
+#. js-lingui-explicit-id
+msgid "orderState.ArrangingAdditionalPayment"
+msgstr "Уреждане на допълнително плащане"
+
+#. js-lingui-explicit-id
+msgid "fieldName.attempts"
+msgstr "Опити"
+
+#. js-lingui-explicit-id
+msgid "fieldName.availableCurrencyCodes"
+msgstr "Налични валутни кодове"
+
+#. js-lingui-explicit-id
+msgid "fieldName.availableLanguageCodes"
+msgstr "Налични езикови кодове"
+
+#. js-lingui-explicit-id
+msgid "fieldName.breadcrumbs"
+msgstr "Навигационни пътеки"
+
+#. js-lingui-explicit-id
+msgid "fieldName.category"
+msgstr "Категория"
+
+#. js-lingui-explicit-id
+msgid "fieldName.channels"
+msgstr "Канали"
+
+#. js-lingui-explicit-id
+msgid "fieldName.children"
+msgstr "Дъщерни елементи"
+
+#. js-lingui-explicit-id
+msgid "fieldName.code"
+msgstr "Код"
+
+#. js-lingui-explicit-id
+msgid "fieldName.couponCode"
+msgstr "Код на купон"
+
+#. js-lingui-explicit-id
+msgid "fieldName.createdAt"
+msgstr "Създаден на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.currencyCode"
+msgstr "Валутен код"
+
+#. js-lingui-explicit-id
+msgid "fieldName.customer"
+msgstr "Клиент"
+
+#. js-lingui-explicit-id
+msgid "fieldName.customerGroup"
+msgstr "Група клиенти"
+
+#. js-lingui-explicit-id
+msgid "fieldName.customers"
+msgstr "Клиенти"
+
+#. js-lingui-explicit-id
+msgid "fieldName.customFields"
+msgstr "Потребителски полета"
+
+#. js-lingui-explicit-id
+msgid "fieldName.data"
+msgstr "Данни"
+
+#. js-lingui-explicit-id
+msgid "fieldName.defaultCurrencyCode"
+msgstr "Валутен код по подразбиране"
+
+#. js-lingui-explicit-id
+msgid "fieldName.defaultLanguageCode"
+msgstr "Езиков код по подразбиране"
+
+#. js-lingui-explicit-id
+msgid "fieldName.defaultShippingZone"
+msgstr "Зона за доставка по подразбиране"
+
+#. js-lingui-explicit-id
+msgid "fieldName.defaultTaxZone"
+msgstr "Данъчна зона по подразбиране"
+
+#. js-lingui-explicit-id
+msgid "fieldName.description"
+msgstr "Описание"
+
+#. js-lingui-explicit-id
+msgid "fieldName.duration"
+msgstr "Продължителност"
+
+#. js-lingui-explicit-id
+msgid "fieldName.emailAddress"
+msgstr "Имейл адрес"
+
+#. js-lingui-explicit-id
+msgid "fieldName.enabled"
+msgstr "Активирано"
+
+#. js-lingui-explicit-id
+msgid "fieldName.endsAt"
+msgstr "Приключва на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.error"
+msgstr "Грешка"
+
+#. js-lingui-explicit-id
+msgid "fieldName.featuredAsset"
+msgstr "Основно изображение"
+
+#. js-lingui-explicit-id
+msgid "fieldName.firstName"
+msgstr "Име"
+
+#. js-lingui-explicit-id
+msgid "fieldName.fulfillmentHandlerCode"
+msgstr "Код на обработчика на изпълнение"
+
+#. js-lingui-explicit-id
+msgid "fieldName.id"
+msgstr "ID"
+
+#. js-lingui-explicit-id
+msgid "fieldName.isDefault"
+msgstr "По подразбиране"
+
+#. js-lingui-explicit-id
+msgid "fieldName.isPrivate"
+msgstr "Частен"
+
+#. js-lingui-explicit-id
+msgid "fieldName.isSettled"
+msgstr "Приключен"
+
+#. js-lingui-explicit-id
+msgid "fieldName.lastName"
+msgstr "Фамилия"
+
+#. js-lingui-explicit-id
+msgid "fieldName.name"
+msgstr "Име"
+
+#. js-lingui-explicit-id
+msgid "fieldName.orderPlacedAt"
+msgstr "Поръчката е направена на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.parentId"
+msgstr "Родителско ID"
+
+#. js-lingui-explicit-id
+msgid "fieldName.perCustomerUsageLimit"
+msgstr "Лимит на използване на клиент"
+
+#. js-lingui-explicit-id
+msgid "fieldName.permissions"
+msgstr "Права"
+
+#. js-lingui-explicit-id
+msgid "fieldName.position"
+msgstr "Позиция"
+
+#. js-lingui-explicit-id
+msgid "fieldName.price"
+msgstr "Цена"
+
+#. js-lingui-explicit-id
+msgid "fieldName.priceWithTax"
+msgstr "Цена с данък"
+
+#. js-lingui-explicit-id
+msgid "fieldName.pricesIncludeTax"
+msgstr "Цените включват данък"
+
+#. js-lingui-explicit-id
+msgid "fieldName.productVariants"
+msgstr "Варианти"
+
+#. js-lingui-explicit-id
+msgid "fieldName.progress"
+msgstr "Напредък"
+
+#. js-lingui-explicit-id
+msgid "fieldName.queueName"
+msgstr "Име на опашката"
+
+#. js-lingui-explicit-id
+msgid "fieldName.result"
+msgstr "Резултат"
+
+#. js-lingui-explicit-id
+msgid "fieldName.retries"
+msgstr "Опити"
+
+#. js-lingui-explicit-id
+msgid "fieldName.seller"
+msgstr "Продавач"
+
+#. js-lingui-explicit-id
+msgid "fieldName.settledAt"
+msgstr "Приключено на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.shippingLines"
+msgstr "Доставни позиции"
+
+#. js-lingui-explicit-id
+msgid "fieldName.sku"
+msgstr "SKU"
+
+#. js-lingui-explicit-id
+msgid "fieldName.slug"
+msgstr "Slug"
+
+#. js-lingui-explicit-id
+msgid "fieldName.startedAt"
+msgstr "Започнало на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.startsAt"
+msgstr "Започва на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.state"
+msgstr "Състояние"
+
+#. js-lingui-explicit-id
+msgid "fieldName.stockLevels"
+msgstr "Нива на наличност"
+
+#. js-lingui-explicit-id
+msgid "fieldName.token"
+msgstr "Токен"
+
+#. js-lingui-explicit-id
+msgid "fieldName.total"
+msgstr "Общо"
+
+#. js-lingui-explicit-id
+msgid "fieldName.totalWithTax"
+msgstr "Общо с данък"
+
+#. js-lingui-explicit-id
+msgid "fieldName.type"
+msgstr "Тип"
+
+#. js-lingui-explicit-id
+msgid "fieldName.updatedAt"
+msgstr "Актуализирано на"
+
+#. js-lingui-explicit-id
+msgid "fieldName.usageLimit"
+msgstr "Лимит на използване"
+
+#. js-lingui-explicit-id
+msgid "fieldName.user"
+msgstr "Потребител"
+
+#. js-lingui-explicit-id
+msgid "fieldName.value"
+msgstr "Стойност"
+
+#. js-lingui-explicit-id
+msgid "fieldName.valueList"
+msgstr "Списък със стойности"
+
+#. js-lingui-explicit-id
+msgid "fieldName.zone"
+msgstr "Зона"
+
+#. js-lingui-explicit-id
+msgid "Note added successfully"
+msgstr "Бележката е добавена успешно"
+
+#. js-lingui-explicit-id
+msgid "Failed to add note"
+msgstr "Неуспешно добавяне на бележка"
+
+#. js-lingui-explicit-id
+msgid "Note updated successfully"
+msgstr "Бележката е актуализирана успешно"
+
+#. js-lingui-explicit-id
+msgid "Failed to update note"
+msgstr "Актуализирането на бележката не бе успешно"
+
+#. js-lingui-explicit-id
+msgid "Note deleted successfully"
+msgstr "Бележката е изтрита успешно"
+
+#. js-lingui-explicit-id
+msgid "Failed to delete note"
+msgstr "Неуспешно изтриване на бележка"
+
+msgid "!="
+msgstr "!="
+
+#. placeholder {0}: action.label
+#. placeholder {0}: entityType === 'products' ? 'Product' : 'Variant'
+#. placeholder {0}: entry.type.replace(/_/g, ' ').toLowerCase()
+msgid "{0}"
+msgstr "{0}"
+
+#. placeholder {0}: value.totalItems
+msgid "{0} customers"
+msgstr "{0} клиенти"
+
+#. placeholder {0}: selectedIds.length
+msgid "{0} items selected"
+msgstr "{0} избрани елемента"
+
+#. placeholder {0}: quantity.max
+#. placeholder {1}: line.quantity
+msgid "{0} of {1} available to fulfill"
+msgstr "{0} от {1} налични за изпълнение"
+
+#. placeholder {0}: selection.length
+msgid "{0} selected"
+msgstr "{0} избрани"
+
+#. placeholder {0}: row.original.productVariants?.totalItems
+msgid "{0} variants"
+msgstr "{0} варианта"
+
+msgid "{buttonText}"
+msgstr "{buttonText}"
+
+msgid "{label}"
+msgstr "{label}"
+
+msgid "{operator}"
+msgstr "{operator}"
+
+msgid "{title}"
+msgstr "{title}"
+
+#. placeholder {0}: list.totalItems - 3
+msgid "+ {0} more"
+msgstr "+ още {0}"
+
+msgid "+ {leftOver} more"
+msgstr "+ още {leftOver}"
+
+msgid "<0>Forgot password?</0><1>Request reset</1>"
+msgstr "<0>Забравена парола?</0><1>Искане за нулиране</1>"
+
+msgid "="
+msgstr "="
+
+msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
+msgstr "Изисква се възстановяване на сума от {formattedDiff}. Изберете суми за плащане и въведете бележка, за да продължите."
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "Add \"{newOptionInput}\""
+msgstr "Добавете „{newOptionInput}“"
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+msgid "Add a manual payment of {0}"
+msgstr "Добавете ръчно плащане на {0}"
+
+msgid "Add a new address to the customer."
+msgstr "Добавете нов адрес към клиента."
+
+msgid "Add a price in another currency"
+msgstr "Добавете цена в друга валута"
+
+msgid "Add another option group"
+msgstr "Добавете друга група опции"
+
+msgid "Add asset"
+msgstr "Добавете актив"
+
+msgid "Add column after"
+msgstr "Добавете колона след"
+
+msgid "Add column before"
+msgstr "Добавете колона преди"
+
+msgid "Add Country"
+msgstr "Добавете държава"
+
+msgid "Add coupon code"
+msgstr "Добавете код на купон"
+
+msgid "Add customer"
+msgstr "Добавете клиент"
+
+msgid "Add customer groups"
+msgstr "Добавете групи клиенти"
+
+msgid "Add facet value"
+msgstr "Добавете стойност на аспекта"
+
+msgid "Add facet values"
+msgstr "Добавете стойности на аспекти"
+
+msgid "Add filter"
+msgstr "Добавете филтър"
+
+msgid "Add filters to preview the collection contents."
+msgstr "Добавете филтри, за да прегледате съдържанието на колекцията."
+
+msgid "Add item"
+msgstr "Добавете елемент"
+
+msgid "Add new address"
+msgstr "Добавете нов адрес"
+
+msgid "Add option"
+msgstr "Добавяне на опция"
+
+msgid "Add Option"
+msgstr "Добавяне на опция"
+
+msgid "Add option group"
+msgstr "Добавете група опции"
+
+msgid "Add option group to product"
+msgstr "Добавете група опции към продукта"
+
+msgid "Add option value"
+msgstr "Добавете стойност на опцията"
+
+msgid "Add option value to {groupName}"
+msgstr "Добавете стойност на опция към {groupName}"
+
+#. placeholder {0}: entityIds.length
+msgid "Add or remove facet values for {0} {entityType}"
+msgstr "Добавяне или премахване на стойности на аспект за {0} {entityType}"
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+msgid "Add payment ({0})"
+msgstr "Добавяне на плащане ({0})"
+
+msgid "Add payment to order"
+msgstr "Добавете плащане към поръчката"
+
+#. placeholder {0}: formatCurrency(outstandingAmount, currencyCode)
+msgid "Add payment to order ({0})"
+msgstr "Добавете плащане към поръчката ({0})"
+
+msgid "Add product option"
+msgstr "Добавете опция за продукт"
+
+msgid "Add product options first"
+msgstr "Първо добавете опции за продукта"
+
+msgid "Add product variant"
+msgstr "Добавяне на вариант на продукта"
+
+msgid "Add products to create a test order"
+msgstr "Добавете продукти, за да създадете тестова поръчка"
+
+msgid "Add row after"
+msgstr "Добавете ред след"
+
+msgid "Add row before"
+msgstr "Добавете ред преди"
+
+msgid "Add stock level for another location"
+msgstr "Добавете ниво на наличност за друго местоположение"
+
+msgid "Add Stock to Location"
+msgstr "Добавете склад към местоположение"
+
+msgid "Add tags..."
+msgstr "Добавете тагове..."
+
+msgid "Add variant"
+msgstr "Добавяне на вариант"
+
+msgid "Added coupon codes"
+msgstr "Добавени кодове на купони"
+
+msgid "Added to group"
+msgstr "Добавен към групата"
+
+#. placeholder {0}: addedLines.length
+msgid "Adding {0} item(s)"
+msgstr "Добавяне на {0} елемент(а)"
+
+msgid "Adding..."
+msgstr "Добавяне..."
+
+msgid "Additional payment required"
+msgstr "Изисква се допълнително заплащане"
+
+msgid "Address created"
+msgstr "Адресът е създаден"
+
+msgid "Address deleted"
+msgstr "Адресът е изтрит"
+
+msgid "Address deleted successfully"
+msgstr "Адресът е изтрит успешно"
+
+msgid "Address updated"
+msgstr "Адресът е актуализиран"
+
+msgid "Address updated successfully"
+msgstr "Адресът е актуализиран успешно"
+
+msgid "Addresses"
+msgstr "Адреси"
+
+#. placeholder {0}: adjustedLines.length
+msgid "Adjusting {0} lines"
+msgstr "Коригиране на {0} линии"
+
+msgid "Administrators"
+msgstr "Администратори"
+
+msgid "after"
+msgstr "след"
+
+msgid "All resources are up and running"
+msgstr "Всички ресурси работят"
+
+msgid "Allocated"
+msgstr "Разпределени"
+
+msgid "Amount"
+msgstr "Сума"
+
+msgid "An additional payment of {formattedDiff} will be required."
+msgstr "Ще бъде необходимо допълнително плащане от {formattedDiff}."
+
+msgid "AND"
+msgstr "И"
+
+msgid "Apartment, suite, etc."
+msgstr "Апартамент, офис и др."
+
+msgid "Applied global view \"{viewName}\""
+msgstr "Приложен е глобален изглед „{viewName}“"
+
+msgid "Applied view \"{viewName}\""
+msgstr "Приложен изглед „{viewName}“"
+
+msgid "Apply"
+msgstr "Приложи"
+
+msgid "Apply filter"
+msgstr "Приложи филтър"
+
+msgid "Apply filters to the table and click \"Save View\" to get started."
+msgstr "Приложете филтри към таблицата и щракнете върху \"Запазване на изгледа\", за да започнете."
+
+#. placeholder {0}: selection.length
+msgid "Are you sure you want to delete {0} {entityName}?"
+msgstr "Сигурни ли сте, че искате да изтриете {0} {entityName}?"
+
+msgid "Are you sure you want to delete {selectionLength} assets?"
+msgstr "Сигурни ли сте, че искате да изтриете {selectionLength} медийни файла?"
+
+msgid "Are you sure you want to delete this address?"
+msgstr "Сигурни ли сте, че искате да изтриете този адрес?"
+
+msgid "Are you sure you want to delete this draft order?"
+msgstr "Сигурни ли сте, че искате да изтриете тази чернова на поръчка?"
+
+msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
+msgstr Сигурни ли сте, че искате да изтриете този глобален изглед? Това действие не може да бъде отменено и ще засегне всички потребители."
+
+msgid "Are you sure you want to delete this item? This action cannot be undone."
+msgstr Сигурни ли сте, че искате да изтриете този елемент? Това действие не може да бъде отменено."
+
+msgid "Are you sure you want to delete this variant?"
+msgstr "Сигурни ли сте, че искате да изтриете този вариант?"
+
+msgid "Are you sure you want to delete this view? This action cannot be undone."
+msgstr Сигурни ли сте, че искате да изтриете този изглед? Това действие не може да бъде отменено."
+
+msgid Are you sure you want to navigate away from this page? Any unsaved changes will be lost."
+msgstr Сигурни ли сте, че искате да излезете от тази страница? Всички незапазени промени ще бъдат загубени."
+
+#. placeholder {0}: selection.length
+msgid Are you sure you want to remove {0} {entityType} from the current channel?"
+msgstr Сигурни ли сте, че искате да премахнете {0} {entityType} от текущия канал?"
+
+msgid "Assets"
+msgstr "Медия"
+
+msgid "Assign"
+msgstr "Присвояване"
+
+msgid "Assign {entityType} to channel"
+msgstr "Присвоете {entityType} към канала"
+
+msgid "Assign options to existing variant"
+msgstr "Присвояване на опции към съществуващ вариант"
+
+msgid "Assign to channel"
+msgstr "Присвояване на канал"
+
+#. placeholder {0}: currentInterval?.label
+msgid "Auto refresh: {0}"
+msgstr "Автоматично опресняване: {0}"
+
+msgid "Available currencies"
+msgstr "Налични валути"
+
+msgid "Available languages"
+msgstr "Налични езици"
+
+msgid "Available Languages"
+msgstr "Налични езици"
+
+msgid "Available:"
+msgstr "Наличен:"
+
+msgid "Average Order Value"
+msgstr "Средна стойност на поръчката"
+
+msgid "Back to search"
+msgstr "Назад към търсенето"
+
+msgid "before"
+msgstr "преди"
+
+msgid "between"
+msgstr "между"
+
+msgid "Billing address"
+msgstr "Адрес за фактуриране"
+
+msgid "Billing address changed"
+msgstr "Адресът за фактуриране е променен"
+
+msgid "Billing address set for order"
+msgstr "Адресът за фактуриране е зададен за поръчка"
+
+msgid "Billing address unset for order"
+msgstr "Адресът за фактуриране не е зададен за поръчка"
+
+msgid "Browse facets"
+msgstr "Преглед на атрибути"
+
+msgid "Calculator"
+msgstr "Калкулатор"
+
+msgid "Cancel"
+msgstr "Отказ"
+
+msgid "Cancel Job"
+msgstr "Отмени задание"
+
+msgid "Cancel modification"
+msgstr "Отмяна на модификацията"
+
+msgid "Cancel payment"
+msgstr "Отказ от плащането"
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Channel"
+msgstr "Канал"
+
+msgid "Channel defaults"
+msgstr "Стандартни настройки на канала"
+
+msgid "Channel Languages"
+msgstr "Езици на канала"
+
+msgid "Channels"
+msgstr "Канали"
+
+msgid "City"
+msgstr "Град"
+
+msgid "Clear"
+msgstr "Изчисти"
+
+msgid "Clear all"
+msgstr "Изчисти всички"
+
+msgid "Clear filter"
+msgstr "Изчистване на филтъра"
+
+msgid "Clear filters"
+msgstr "Изчистване на филтрите"
+
+msgid "Click \"Run Test\" to test this shipping method."
+msgstr "Щракнете върху „Изпълни тест“, за да тествате този метод на доставка."
+
+msgid "Code"
+msgstr "Код"
+
+msgid "Collection contents for {collectionName}"
+msgstr "Съдържание на колекция за {collectionName}"
+
+msgid "Collections"
+msgstr "Колекции"
+
+msgid "Collections moved successfully"
+msgstr "Колекциите са преместени успешно"
+
+msgid "Column settings"
+msgstr "Настройки на колони"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Complete draft"
+msgstr "Приключи черновата"
+
+msgid "Conditions"
+msgstr "Условия"
+
+msgid "Configure available languages for your store and channels"
+msgstr "Конфигурирайте наличните езици за вашия магазин и канали"
+
+msgid "Confirm"
+msgstr "Потвърдете"
+
+msgid "Confirm Action"
+msgstr "Потвърдете действие"
+
+msgid "Confirm deletion"
+msgstr "Потвърдете изтриването"
+
+msgid "Confirm navigation"
+msgstr "Потвърдете навигацията"
+
+msgid "contains"
+msgstr "съдържа"
+
+msgid "Contents"
+msgstr "Съдържание"
+
+msgid "Continue"
+msgstr "Продължи"
+
+msgid "Copy to Personal"
+msgstr "Копиране в лични"
+
+msgid "Countries"
+msgstr "Държави"
+
+msgid "Country"
+msgstr "Държава"
+
+msgid "Coupon code"
+msgstr "Код на купон"
+
+msgid "Coupon code removed from order"
+msgstr "Кодът на купона е премахнат от поръчката"
+
+msgid "Coupon code set for order"
+msgstr "Кодът на купона е зададен за поръчка"
+
+msgid "Create"
+msgstr "Създай"
+
+#. placeholder {0}: searchValue.trim()
+msgid "Create \"{0}\""
+msgstr "Създаване на „{0}“"
+
+msgid "Create {createCount} variants"
+msgstr "Създай {createCount} варианта"
+
+msgid "Create options"
+msgstr "Създай опции"
+
+msgid "Create product options"
+msgstr "Създай опции за продукти"
+
+msgid "Create variant"
+msgstr "Създай вариант"
+
+msgid "Create Variants"
+msgstr "Създаване на варианти"
+
+msgid "Create variants for your product"
+msgstr "Създай варианти за вашия продукт"
+
+msgid "Created"
+msgstr "Създаден"
+
+msgid "Created at"
+msgstr "Създаден на"
+
+msgid "Creating..."
+msgstr "Създава се..."
+
+msgid "Current"
+msgstr "Текущ"
+
+msgid "Current facet values"
+msgstr "Текущи атрибутни стойности"
+
+msgid "Current status"
+msgstr "Текущо състояние"
+
+msgid "Custom fields"
+msgstr "Персонализирани полета"
+
+msgid "Custom Fields"
+msgstr "Персонализирани полета"
+
+msgid "Custom fields changed"
+msgstr "Персонализираните полета са променени"
+
+msgid "Customer"
+msgstr "Клиент"
+
+msgid "Customer added to group"
+msgstr "Клиентът е добавен към групата"
+
+msgid "Customer details updated"
+msgstr "Данните за клиента са актуализирани"
+
+msgid "Customer group members for {customerGroupName}"
+msgstr "Членове на клиентска група за {customerGroupName}"
+
+msgid "Customer groups"
+msgstr "Групи клиенти"
+
+msgid "Customer Groups"
+msgstr "Групи клиенти"
+
+msgid "Customer history"
+msgstr "История на клиента"
+
+msgid "Customer information updated"
+msgstr "Информацията за клиента е актуализирана"
+
+msgid "Customer not found"
+msgstr "Клиентът не е намерен"
+
+msgid "Customer registered"
+msgstr "Регистриран клиент"
+
+msgid "Customer set for order"
+msgstr "Клиентът е настроен за поръчка"
+
+msgid "Customer updated"
+msgstr "Клиентът е актуализиран"
+
+msgid "Customer verified"
+msgstr "Проверен от клиента"
+
+msgid "Customers"
+msgstr "Клиенти"
+
+msgid "Dark"
+msgstr "Тъмно"
+
+msgid "Default Billing Address"
+msgstr "Адрес за фактуриране по подразбиране"
+
+msgid "Default channel"
+msgstr "Канал по подразбиране"
+
+msgid "Default currency"
+msgstr "Валута по подразбиране"
+
+msgid "Default language"
+msgstr "Език по подразбиране"
+
+msgid "Default Language"
+msgstr "Език по подразбиране"
+
+msgid "Default Shipping Address"
+msgstr "Адрес за доставка по подразбиране"
+
+msgid "Default shipping zone"
+msgstr "Зона за доставка по подразбиране"
+
+msgid "Default tax zone"
+msgstr "Данъчна зона по подразбиране"
+
+msgid "Delete"
+msgstr "Изтриване"
+
+msgid "Delete Address"
+msgstr "Изтриване на адрес"
+
+msgid "Delete column"
+msgstr "Изтриване на колона"
+
+msgid "Delete draft"
+msgstr "Изтриване на чернова"
+
+msgid "Delete draft order"
+msgstr "Изтриване на чернова на поръчка"
+
+msgid "Delete Global View"
+msgstr "Изтриване на глобалния изглед"
+
+msgid "Delete row"
+msgstr "Изтриване на ред"
+
+msgid "Delete View"
+msgstr "Изтриване на изглед"
+
+msgid "Deleted {deleted} {entityName}"
+msgstr "Изтрито {deleted} {entityName}"
+
+msgid "Deleted {selectionLength} assets"
+msgstr "Изтрити {selectionLength} медийни файла"
+
+msgid "Deleted successfully"
+msgstr "Изтрито успешно"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Description (alt)"
+msgstr "Описание (алт)"
+
+msgid "Dev Mode"
+msgstr "Режим за разработка"
+
+msgid "Disable"
+msgstr "Деактивиране"
+
+msgid "Disabled"
+msgstr "Забранено"
+
+msgid "Discount"
+msgstr "Отстъпка"
+
+msgid "Display language"
+msgstr "Език на дисплея"
+
+msgid "Do not track"
+msgstr "Не проследявайте"
+
+msgid "does not contain"
+msgstr "не съдържа"
+
+msgid "Draft order"
+msgstr "Чернова на поръчка"
+
+msgid "Draft order completed"
+msgstr "Проектът на поръчката е завършен"
+
+msgid "Draft order deleted"
+msgstr "Черновата на поръчката е изтрита"
+
+msgid "Drag to reorder"
+msgstr "Плъзнете, за да пренаредите"
+
+msgid "Duplicate"
+msgstr "Дубликат"
+
+#. placeholder {0}: entityName.toLowerCase()
+msgid "Duplicate {0}s"
+msgstr "Дублиране на {0}"
+
+#. placeholder {0}: progress.completed
+#. placeholder {1}: progress.total
+msgid "Duplicating... ({0}/{1})"
+msgstr "Дублиране... ({0}/{1})"
+
+msgid "e.g. Size"
+msgstr "напр. Размер"
+
+msgid "e.g. Small"
+msgstr "напр. малък"
+
+msgid "e.g., Red, Large, Cotton"
+msgstr "напр. Червено, Голямо, Памук"
+
+msgid "Edit"
+msgstr "Редакция"
+
+msgid "Edit Address"
+msgstr "Редакция на адрес"
+
+msgid "Edit asset"
+msgstr "Редакция на актив"
+
+msgid "Edit facet values"
+msgstr "Редактирайте стойностите на атрибутите"
+
+msgid "Edit image"
+msgstr "Редакция на изображението"
+
+msgid "Edit Layout"
+msgstr "Редакция на оформлението"
+
+msgid "Edit link"
+msgstr "Редакция на връзката"
+
+msgid "Edit members"
+msgstr "Редакция на членове"
+
+msgid "Edit Note"
+msgstr "Редакция на бележка"
+
+msgid "Edit or delete existing tags"
+msgstr "Редактирайте или изтрийте съществуващи тагове"
+
+msgid "Edit slug manually"
+msgstr "Редактирайте slug ръчно"
+
+msgid "Edit the address details below."
+msgstr "Редактирайте подробностите за адреса по-долу."
+
+msgid "Email"
+msgstr "Имейл"
+
+msgid "Email address"
+msgstr "Имейл адрес"
+
+msgid "Email Address or identifier"
+msgstr "Имейл адрес или идентификатор"
+
+msgid "Email update requested"
+msgstr "Изискана е актуализация по имейл"
+
+msgid "Email update verified"
+msgstr "Имейл актуализацията е потвърдена"
+
+msgid "Enable"
+msgstr "Активиране"
+
+msgid "Enabled"
+msgstr "Активирано"
+
+msgid "Ends at"
+msgstr "Завършва в"
+
+msgid "Enter refund note"
+msgstr "Въведете бележка за възстановяване"
+
+msgid "Enter slug manually"
+msgstr "Въведете slug ръчно"
+
+msgid "Enter the transaction ID for this refund settlement"
+msgstr Въведете идентификатора на транзакцията за това споразумение за възстановяване"
+
+msgid "Enter transaction ID"
+msgstr "Въведете ID на транзакцията"
+
+msgid "Entity Information"
+msgstr "Информация за обекта"
+
+msgid "Error"
+msgstr "Грешка"
+
+#. placeholder {0}: error.message
+msgid "Error loading customer history: {0}"
+msgstr "Грешка при зареждането на клиентската история: {0}"
+
+#. placeholder {0}: error.message
+msgid "Error loading order history: {0}"
+msgstr "Грешка при зареждането на хронологията на поръчките: {0}"
+
+msgid "Error message"
+msgstr "Съобщение за грешка"
+
+msgid "Error transitioning to state"
+msgstr "Грешка при преминаване към състояние"
+
+msgid "Every 10 seconds"
+msgstr "На всеки 10 секунди"
+
+msgid "Every 30 seconds"
+msgstr "На всеки 30 секунди"
+
+msgid "Every 5 seconds"
+msgstr "На всеки 5 секунди"
+
+msgid "Every 60 seconds"
+msgstr "На всеки 60 секунди"
+
+msgid "ex. tax:"
+msgstr "пр. данък:"
+
+msgid "Explore Enterprise Edition"
+msgstr "Разгледайте Enterprise Edition"
+
+msgid "Facet"
+msgstr "Атрибут"
+
+msgid "Facet values"
+msgstr "Атрибутни стойности"
+
+msgid "Facet Values"
+msgstr "Атрибутни стойности"
+
+msgid "Facet values for {facetName}"
+msgstr "Стойности на аспекти за {facetName}"
+
+msgid "Facets"
+msgstr "Атрибути"
+
+msgid "Failed to add customer to group"
+msgstr "Неуспешно добавяне на клиент към групата"
+
+msgid "Failed to add option value"
+msgstr "Неуспешно добавяне на стойност на опцията"
+
+msgid "Failed to add payment"
+msgstr "Неуспешно добавяне на плащане"
+
+msgid "Failed to cancel payment"
+msgstr "Неуспешно анулиране на плащането"
+
+msgid "Failed to convert global view to personal view"
+msgstr "Неуспешно преобразуване на глобален изглед в личен изглед"
+
+msgid "Failed to convert view to global"
+msgstr "Неуспешно преобразуване на изгледа в глобален"
+
+msgid "Failed to create address"
+msgstr "Неуспешно създаване на адрес"
+
+msgid "Failed to create administrator"
+msgstr "Неуспешно създаване на администратор"
+
+msgid "Failed to create channel"
+msgstr "Неуспешно създаване на канал"
+
+msgid "Failed to create collection"
+msgstr "Неуспешно създаване на колекция"
+
+msgid "Failed to create country"
+msgstr "Неуспешно създаване на държава"
+
+msgid "Failed to create customer"
+msgstr "Неуспешно създаване на клиент"
+
+msgid "Failed to create customer group"
+msgstr "Неуспешно създаване на клиентска група"
+
+msgid "Failed to create facet"
+msgstr "Неуспешно създаване на аспект"
+
+msgid "Failed to create facet value"
+msgstr "Неуспешно създаване на стойност на аспекта"
+
+msgid "Failed to create option group"
+msgstr "Неуспешно създаване на група опции"
+
+msgid "Failed to create payment method"
+msgstr "Неуспешно създаване на метод на плащане"
+
+msgid "Failed to create product"
+msgstr "Неуспешно създаване на продукт"
+
+msgid "Failed to create product option"
+msgstr "Неуспешно създаване на опция за продукт"
+
+msgid "Failed to create product option group"
+msgstr "Неуспешно създаване на група опции за продукти"
+
+msgid "Failed to create product options"
+msgstr "Неуспешно създаване на продуктови опции"
+
+msgid "Failed to create product variant"
+msgstr "Неуспешно създаване на вариант на продукта"
+
+msgid "Failed to create promotion"
+msgstr "Неуспешно създаване на промоция"
+
+msgid "Failed to create role"
+msgstr "Неуспешно създаване на роля"
+
+msgid "Failed to create seller"
+msgstr "Неуспешно създаване на продавач"
+
+msgid "Failed to create shipping method"
+msgstr "Неуспешно създаване на метод за доставка"
+
+msgid "Failed to create stock location"
+msgstr "Неуспешно създаване на складово местоположение"
+
+msgid "Failed to create tax category"
+msgstr "Неуспешно създаване на данъчна категория"
+
+msgid "Failed to create tax rate"
+msgstr "Неуспешно създаване на данъчна ставка"
+
+msgid "Failed to create zone"
+msgstr "Неуспешно създаване на зона"
+
+msgid "Failed to delete"
+msgstr "Неуспешно изтриване"
+
+msgid "Failed to delete {failed} {entityName}"
+msgstr "Неуспешно изтриване на {failed} {entityName}"
+
+msgid "Failed to delete {failed} {entityName}: {allErrors}"
+msgstr "Неуспешно изтриване на {failed} {entityName}: {allErrors}"
+
+msgid "Failed to delete address"
+msgstr "Неуспешно изтриване на адреса"
+
+msgid "Failed to delete assets: {message}"
+msgstr "Неуспешно изтриване на медийни файлове: {message}"
+
+msgid "Failed to delete global view"
+msgstr "Неуспешно изтриване на глобалния изглед"
+
+msgid "Failed to delete view"
+msgstr "Неуспешно изтриване на изглед"
+
+msgid "Failed to duplicate global view"
+msgstr "Неуспешно дублиране на глобален изглед"
+
+msgid "Failed to duplicate view"
+msgstr "Неуспешно дублиране на изглед"
+
+msgid "Failed to fulfill order"
+msgstr "Неуспешно изпълнение на поръчката"
+
+msgid "Failed to load global settings"
+msgstr "Неуспешно зареждане на глобалните настройки"
+
+msgid "Failed to modify order"
+msgstr "Неуспешна промяна на поръчката"
+
+msgid "Failed to move collections"
+msgstr "Неуспешно преместване на колекции"
+
+msgid "Failed to remove customer from group"
+msgstr "Неуспешно премахване на клиент от групата"
+
+msgid "Failed to remove facet from channel: {message}"
+msgstr "Неуспешно премахване на атрибут от канала: {message}"
+
+msgid "Failed to rename global view"
+msgstr "Неуспешно преименуване на глобалния изглед"
+
+msgid "Failed to rename view"
+msgstr "Неуспешно преименуване на изглед"
+
+msgid "Failed to settle payment"
+msgstr "Неуспешно плащане"
+
+msgid "Failed to settle refund"
+msgstr "Неуспешно възстановяване на сумата"
+
+msgid "Failed to transition order to state"
+msgstr "Неуспешно прехвърляне на поръчка към състояние"
+
+msgid "Failed to update address"
+msgstr "Неуспешно актуализиране на адреса"
+
+msgid "Failed to update administrator"
+msgstr "Неуспешно актуализиране на администратора"
+
+msgid "Failed to update asset"
+msgstr "Неуспешно актуализиране на актива"
+
+msgid "Failed to update channel"
+msgstr "Неуспешно актуализиране на канала"
+
+msgid "Failed to update collection"
+msgstr "Неуспешно актуализиране на колекцията"
+
+msgid "Failed to update country"
+msgstr "Неуспешно актуализиране на държавата"
+
+msgid "Failed to update customer"
+msgstr "Неуспешно актуализиране на клиента"
+
+msgid "Failed to update customer group"
+msgstr "Неуспешно актуализиране на клиентска група"
+
+msgid "Failed to update facet"
+msgstr "Неуспешно актуализиране на аспекта"
+
+msgid "Failed to update facet value"
+msgstr "Неуспешно актуализиране на стойността на аспекта"
+
+msgid "Failed to update fulfillment state"
+msgstr "Неуспешно актуализиране на състоянието на изпълнение"
+
+msgid "Failed to update global settings"
+msgstr "Неуспешно актуализиране на глобалните настройки"
+
+msgid "Failed to update order"
+msgstr "Неуспешно актуализиране на поръчката"
+
+msgid "Failed to update payment method"
+msgstr "Неуспешно актуализиране на начина на плащане"
+
+msgid "Failed to update payment state"
+msgstr "Неуспешно актуализиране на състоянието на плащането"
+
+msgid "Failed to update product"
+msgstr "Неуспешно актуализиране на продукта"
+
+msgid "Failed to update product option"
+msgstr "Неуспешно актуализиране на опцията за продукта"
+
+msgid "Failed to update product option group"
+msgstr "Неуспешно актуализиране на групата опции за продукти"
+
+msgid "Failed to update product variant"
+msgstr "Неуспешно актуализиране на варианта на продукта"
+
+msgid "Failed to update profile"
+msgstr "Неуспешно актуализиране на профила"
+
+msgid "Failed to update promotion"
+msgstr "Неуспешно актуализиране на промоцията"
+
+msgid "Failed to update role"
+msgstr "Неуспешно актуализиране на ролята"
+
+msgid "Failed to update seller"
+msgstr "Неуспешно актуализиране на продавача"
+
+msgid "Failed to update shipping method"
+msgstr "Неуспешно актуализиране на метода на доставка"
+
+msgid "Failed to update stock location"
+msgstr "Неуспешно актуализиране на складовото местоположение"
+
+msgid "Failed to update tax category"
+msgstr "Неуспешно актуализиране на данъчната категория"
+
+msgid "Failed to update tax rate"
+msgstr "Неуспешно актуализиране на данъчната ставка"
+
+msgid "Failed to update zone"
+msgstr "Неуспешно актуализиране на зоната"
+
+msgid "False"
+msgstr "Грешно"
+
+msgid "Filter by {columnId}"
+msgstr "Филтриране по {columnId}"
+
+msgid "Filter by collection name"
+msgstr "Филтриране по име на колекция"
+
+msgid "Filter by tags"
+msgstr "Филтриране по тагове"
+
+msgid "Filter..."
+msgstr "Филтър..."
+
+msgid "Filters"
+msgstr "Филтри"
+
+msgid "First name"
+msgstr "Първо име"
+
+msgid "Focal Point"
+msgstr "Фокусна точка"
+
+#. placeholder {0}: testResult.length
+#. placeholder {1}: testResult.length !== 1 ? 's' : ''
+msgid "Found {0} eligible shipping method{1}"
+msgstr "Намерен е {0} отговарящ на условията метод за доставка{1}"
+
+#. placeholder {0}: entry.data.from
+#. placeholder {1}: entry.data.to
+msgid "From {0} to {1}"
+msgstr "От {0} до {1}"
+
+msgid "Fulfill order"
+msgstr "Изпълнете поръчката"
+
+#. placeholder {0}: fulfillment.lines.reduce((acc, line) => acc +
+#. line.quantity, 0)
+msgid "Fulfilled items ({0})"
+msgstr "Изпълнени елементи ({0})"
+
+msgid "Fulfilling..."
+msgstr "Изпълнение..."
+
+#. placeholder {0}: entry.data.fulfillmentId
+msgid "Fulfillment #{0} created"
+msgstr "Изпълнение №{0} е създадено"
+
+#. placeholder {0}: entry.data.fulfillmentId
+#. placeholder {1}: entry.data.from
+#. placeholder {2}: entry.data.to
+msgid "Fulfillment #{0} from {1} to {2}"
+msgstr "Изпълнение №{0} от {1} до {2}"
+
+msgid "Fulfillment created"
+msgstr "Създадено изпълнение"
+
+msgid "Fulfillment details"
+msgstr "Подробности за изпълнението"
+
+msgid "Fulfillment handler"
+msgstr "Манипулатор на изпълнение"
+
+msgid "Fulfillment ID"
+msgstr "ID на изпълнение"
+
+msgid "Fulfillment state updated successfully"
+msgstr "Състоянието на изпълнение е актуализирано успешно"
+
+msgid "Fulfillment transitioned"
+msgstr "Изпълнението е прехвърлено"
+
+msgid "Full Name"
+msgstr "Пълно име"
+
+msgid "General"
+msgstr "Общи"
+
+msgid "Generate slug automatically"
+msgstr "Автоматично генериране на slug"
+
+msgid "Global Languages"
+msgstr "Глобални езици"
+
+msgid "Global out of stock threshold"
+msgstr "Глобален праг за изчерпване"
+
+msgid "Global Settings"
+msgstr "Глобални настройки"
+
+msgid "Global view converted to personal view successfully"
+msgstr "Глобалният изглед е преобразуван успешно в личен изглед"
+
+msgid "Global view deleted successfully"
+msgstr "Глобалният изглед е изтрит успешно"
+
+msgid "Global view duplicated successfully"
+msgstr "Глобалният изглед е дублиран успешно"
+
+msgid "Global view renamed successfully"
+msgstr "Глобалният изглед е преименуван успешно"
+
+msgid "Go to first page"
+msgstr "Към първа страница"
+
+msgid "Go to last page"
+msgstr "Към последната страница"
+
+msgid "Go to next page"
+msgstr "Към следващата страница"
+
+msgid "Go to previous page"
+msgstr "Към предишната страница"
+
+msgid "greater than"
+msgstr "по-голямо от"
+
+msgid "greater than or equal"
+msgstr "по-голямо или равно"
+
+msgid "Gross price: <0/>"
+msgstr "Цена бруто: <0/>"
+
+msgid "Heading 1"
+msgstr "Заглавие 1"
+
+msgid "Heading 2"
+msgstr "Заглавие 2"
+
+msgid "Heading 3"
+msgstr "Заглавие 3"
+
+msgid "Heading 4"
+msgstr "Заглавие 4"
+
+msgid "Heading 5"
+msgstr "Заглавие 5"
+
+msgid "Heading 6"
+msgstr "Заглавие 6"
+
+msgid "Health checks"
+msgstr "Здравни проверки"
+
+msgid "Healthchecks"
+msgstr "Здравни проверки"
+
+msgid "Height"
+msgstr "Височина"
+
+msgid "Hide password"
+msgstr "Скриване на паролата"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Identifier"
+msgstr "Идентификатор"
+
+msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
+msgstr "Ако е разрешено, филтрите ще бъдат наследени от родителската колекция и комбинирани с филтрите, зададени в тази колекция."
+
+msgid "Image"
+msgstr "Изображение"
+
+msgid "in"
+msgstr "в"
+
+msgid "Inherit filters"
+msgstr "Наследяване на филтри"
+
+msgid "Inherit from global settings"
+msgstr "Наследяване от глобалните настройки"
+
+msgid "Insert image"
+msgstr "Вмъкване на изображение"
+
+msgid "Insert link"
+msgstr "Вмъкване на връзка"
+
+msgid "Insights"
+msgstr "Анализи"
+
+msgid "is after"
+msgstr "е след"
+
+msgid "is before"
+msgstr "е преди"
+
+msgid "is between"
+msgstr "е между"
+
+msgid "Is default tax category"
+msgstr "Това е данъчна категория по подразбиране"
+
+msgid "is equal to"
+msgstr "е равно на"
+
+msgid "is greater than"
+msgstr "е по-голямо от"
+
+msgid "is greater than or equal to"
+msgstr "е по-голямо или равно на"
+
+msgid "is in"
+msgstr "е в"
+
+msgid "is less than"
+msgstr "е по-малко от"
+
+msgid "is less than or equal to"
+msgstr "е по-малко или равно на"
+
+msgid "is not equal to"
+msgstr "не е равно на"
+
+msgid "is not in"
+msgstr "не е в"
+
+msgid "is null"
+msgstr "е нула"
+
+msgid "Item added to order"
+msgstr "Артикулът е добавен към поръчката"
+
+msgid "Job Queue"
+msgstr "Опашка от задачи"
+
+msgid "Language"
+msgstr "Език"
+
+#. placeholder {0}: formatLanguageName(contentLanguage)
+msgid "Language: {0}"
+msgstr "Език: {0}"
+
+msgid "Last 30 days"
+msgstr "Последните 30 дни"
+
+msgid "Last 7 days"
+msgstr "Последните 7 дни"
+
+msgid "Last Executed"
+msgstr "Последно изпълнено"
+
+msgid "Last month"
+msgstr "Миналия месец"
+
+msgid "Last name"
+msgstr "Фамилия"
+
+msgid "Last Result"
+msgstr "Последен резултат"
+
+#. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
+msgid "Last updated {0}"
+msgstr "Последна актуализация {0}"
+
+msgid "Latest Orders"
+msgstr "Последни поръчки"
+
+msgid "less than"
+msgstr "по-малко от"
+
+msgid "less than or equal"
+msgstr "по-малко или равно"
+
+msgid "Light"
+msgstr "Светло"
+
+msgid "Link href"
+msgstr "Линк href"
+
+msgid "Link target"
+msgstr "Цел за връзка"
+
+msgid "Link title"
+msgstr "Заглавие на връзката"
+
+msgid "Load more"
+msgstr "Зареди още"
+
+msgid "Loading addresses..."
+msgstr "Адресите се зареждат..."
+
+msgid "Loading collections..."
+msgstr "Колекциите се зареждат..."
+
+msgid "Loading global settings..."
+msgstr "Глобалните настройки се зареждат..."
+
+msgid "Loading preview…"
+msgstr "Зареждане на прегледа..."
+
+msgid "Loading tags..."
+msgstr "Таговете се зареждат..."
+
+msgid "Loading..."
+msgstr "Зареждане..."
+
+msgid "Locale"
+msgstr "Локализация"
+
+msgid "Log out"
+msgstr "Изход"
+
+msgid "Make Global"
+msgstr "Направи глобален"
+
+msgid "Manage global saved views that are visible to all users"
+msgstr "Управлявайте глобални запазени изгледи, които са видими за всички потребители"
+
+msgid "Manage global views"
+msgstr "Управлявайте глобалните изгледи"
+
+msgid "Manage Global Views"
+msgstr "Управление на глобалните изгледи"
+
+msgid "Manage Languages"
+msgstr "Управление на езици"
+
+msgid "Manage tags"
+msgstr "Управление на етикети"
+
+msgid "Manage Tags"
+msgstr "Управление на етикети"
+
+msgid "Manage variants"
+msgstr "Управление на варианти"
+
+msgid "Manage Variants"
+msgstr "Управление на варианти"
+
+msgid "Manage your personal saved views for this table"
+msgstr "Управлявайте личните си запазени изгледи за тази таблица"
+
+msgid "matches regex"
+msgstr "съответства на регулярен израз"
+
+msgid "Medium date"
+msgstr "Средна дата"
+
+msgid "Metadata"
+msgstr "Метаданни"
+
+msgid "Method"
+msgstr "Метод"
+
+msgid "Metrics"
+msgstr "Метрики"
+
+msgid "Modify"
+msgstr "Променете"
+
+msgid "Modify order"
+msgstr "Промяна на реда"
+
+msgid "Monitored Resources"
+msgstr "Наблюдавани ресурси"
+
+msgid "Month to date"
+msgstr "Месец до днес"
+
+msgid "More views"
+msgstr "Още гледания"
+
+msgid "Move"
+msgstr "Премести"
+
+msgid "Move Collections"
+msgstr "Преместване на колекции"
+
+msgid "Move to the top level"
+msgstr "Преминете към най-горното ниво"
+
+#. placeholder {0}: collectionsToMove.length
+#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
+#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top
+#. level' : collectionNameCache.current.get(selectedCollectionId) || 'selected
+#. collection'
+msgid "Moving {0} collection{1} into {2}"
+msgstr "Преместване на {0} колекция{1} в {2}"
+
+msgid "Moving..."
+msgstr "Преместване..."
+
+msgid "My saved views"
+msgstr "Моите запазени изгледи"
+
+msgid "My Saved Views"
+msgstr "Моите запазени изгледи"
+
+msgid "Name"
+msgstr "Име"
+
+msgid "Never"
+msgstr "Никога"
+
+msgid "New administrator"
+msgstr "Нов администратор"
+
+msgid "New asset"
+msgstr "Нов актив"
+
+msgid "New channel"
+msgstr "Нов канал"
+
+msgid "New Channel"
+msgstr "Нов канал"
+
+msgid "New collection"
+msgstr "Нова колекция"
+
+msgid "New Collection"
+msgstr "Нова колекция"
+
+msgid "New country"
+msgstr "Нова държава"
+
+msgid "New customer"
+msgstr "Нов клиент"
+
+msgid "New Customer"
+msgstr "Нов клиент"
+
+msgid "New customer group"
+msgstr "Нова клиентска група"
+
+msgid "New Customer Group"
+msgstr "Нова клиентска група"
+
+msgid "New email:"
+msgstr "Нов имейл:"
+
+msgid "New facet"
+msgstr "Нов аспект"
+
+msgid "New Facet"
+msgstr "Нов аспект"
+
+msgid "New facet value"
+msgstr "Нова стойност на атрибут"
+
+msgid "New facet values to add:"
+msgstr "Нови стойности на аспекти за добавяне:"
+
+msgid "New option"
+msgstr "Нова опция"
+
+msgid "New payment method"
+msgstr "Нов начин на плащане"
+
+msgid "New Payment Method"
+msgstr "Нов метод на плащане"
+
+msgid "New product"
+msgstr "Нов продукт"
+
+msgid "New Product"
+msgstr "Нов продукт"
+
+msgid "New product option"
+msgstr "Опция за нов продукт"
+
+msgid "New product option group"
+msgstr "Нова група продуктови опции"
+
+msgid "New product variant"
+msgstr "Нов вариант на продукта"
+
+msgid "New promotion"
+msgstr "Нова промоция"
+
+msgid "New Promotion"
+msgstr "Нова промоция"
+
+msgid "New role"
+msgstr "Нова роля"
+
+msgid "New Role"
+msgstr "Нова роля"
+
+msgid "New seller"
+msgstr "Нов продавач"
+
+msgid "New Seller"
+msgstr "Нов продавач"
+
+msgid "New shipping method"
+msgstr "Нов метод на доставка"
+
+msgid "New Shipping Method"
+msgstr "Нов метод на доставка"
+
+msgid "New stock location"
+msgstr "Ново складово местоположение"
+
+msgid "New Stock Location"
+msgstr "Ново складово местоположение"
+
+msgid "New tax category"
+msgstr "Нова данъчна категория"
+
+msgid "New Tax Category"
+msgstr "Нова данъчна категория"
+
+msgid "New tax rate"
+msgstr "Нова данъчна ставка"
+
+msgid "New Tax Rate"
+msgstr "Нова данъчна ставка"
+
+msgid "New window"
+msgstr "Нов прозорец"
+
+msgid "New zone"
+msgstr "Нова зона"
+
+msgid "New Zone"
+msgstr "Нова зона"
+
+msgid "Next Execution"
+msgstr "Следващо изпълнение"
+
+msgid "No actions available"
+msgstr "Няма налични действия"
+
+msgid "No address"
+msgstr "Без адрес"
+
+msgid "No addresses found"
+msgstr "Няма намерени адреси"
+
+msgid "No alerts"
+msgstr "Няма сигнали"
+
+msgid "No billing address"
+msgstr "Няма адрес за фактуриране"
+
+msgid "No countries found"
+msgstr "Няма намерени държави"
+
+msgid "No customer"
+msgstr "Няма клиент"
+
+msgid "No customers found"
+msgstr "Няма намерени клиенти"
+
+msgid "No duplicator found with code \"{duplicatorCode}\" for {entityName}s"
+msgstr "Не е намерен дубликатор с код „{duplicatorCode}“ за {entityName}s"
+
+msgid "No eligible shipping methods found for this order."
+msgstr "Не са намерени отговарящи на условията методи за доставка за тази поръчка."
+
+msgid "No facet values"
+msgstr "Няма атрибутни стойности"
+
+msgid "No fulfillments"
+msgstr "Без изпълнения"
+
+msgid "No global languages configured"
+msgstr "Няма конфигурирани глобални езици"
+
+msgid "No global views have been created yet."
+msgstr "Все още не са създадени глобални изгледи."
+
+msgid "No items found"
+msgstr "Няма намерени елементи"
+
+msgid "No items selected"
+msgstr "Няма избрани елементи"
+
+msgid "No modifications made"
+msgstr "Няма направени модификации"
+
+msgid "No more facets"
+msgstr "Без повече аспекти"
+
+msgid "No more items"
+msgstr "Няма повече елементи"
+
+msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
+msgstr Все още няма дефинирани групи опции. Добавете групи опции, за да създадете различни варианти на вашия продукт (напр. размер, цвят, материал)"
+
+msgid "No payment or refund is required for these changes."
+msgstr "Не се изисква плащане или възстановяване на средства за тези промени."
+
+msgid "No payment or refund required"
+msgstr "Не се изисква плащане или възстановяване"
+
+msgid "No result yet"
+msgstr "Все още няма резултат"
+
+msgid "No results"
+msgstr "Няма резултати"
+
+msgid "No results found"
+msgstr "Няма намерени резултати"
+
+msgid "No sellers found"
+msgstr "Няма намерени продавачи"
+
+msgid "No shipping address"
+msgstr "Няма адрес за доставка"
+
+msgid "No shipping methods available"
+msgstr "Няма налични методи за доставка"
+
+msgid "No stock locations available on current channel"
+msgstr "Няма налични складови местоположения за текущия канал"
+
+msgid "No tags found"
+msgstr "Няма намерени етикети"
+
+msgid "No tags selected"
+msgstr "Няма избрани етикети"
+
+#. placeholder {0}: formatLanguageName(contentLanguage)
+msgid "No translation found for {0}"
+msgstr "Няма намерен превод за {0}"
+
+msgid "Normal"
+msgstr "Нормално"
+
+msgid "not in"
+msgstr "не в"
+
+msgid "Not Running"
+msgstr "Не работи"
+
+msgid "Not set"
+msgstr "Не е зададено"
+
+msgid "Note added"
+msgstr "Добавена е бележка"
+
+msgid "Note is private"
+msgstr "Бележката е лична"
+
+msgid "Off"
+msgstr "Изкл"
+
+msgid "Old email:"
+msgstr "Стар имейл:"
+
+msgid "Option"
+msgstr "Опция"
+
+#. placeholder {0}: groupIndex + 1
+msgid "Option group {0}"
+msgstr "Група опции {0}"
+
+msgid "Option group name"
+msgstr "Име на група опции"
+
+msgid "Option Group Name"
+msgstr "Име на група опции"
+
+msgid "Option group removed"
+msgstr "Групата опции е премахната"
+
+msgid "Option Groups"
+msgstr "Групи опции"
+
+msgid "Option name"
+msgstr "Име на опцията"
+
+msgid "Option value name"
+msgstr "Име на стойността на опцията"
+
+msgid "Option values"
+msgstr "Стойности на опциите"
+
+msgid "Option Values"
+msgstr "Стойности на опциите"
+
+msgid "OR"
+msgstr "ИЛИ"
+
+msgid "Order cancelled"
+msgstr "Поръчката е отменена"
+
+msgid "Order Count"
+msgstr "Брой поръчки"
+
+msgid "Order custom fields updated"
+msgstr "Персонализираните полета на поръчката са актуализирани"
+
+msgid "Order delivered"
+msgstr "Поръчката е доставена"
+
+msgid "Order fulfilled"
+msgstr "Поръчката е изпълнена"
+
+msgid "Order history"
+msgstr "История на поръчките"
+
+msgid "Order line removed"
+msgstr "Редът за поръчка е премахнат"
+
+msgid "Order line updated"
+msgstr "Редът за поръчка е актуализиран"
+
+msgid "Order lines"
+msgstr "Редове за поръчки"
+
+msgid "Order metrics"
+msgstr "Метрики за поръчка"
+
+#. placeholder {0}: entry.data.modificationId
+msgid "Order modification #{0}"
+msgstr "Модификация на поръчката №{0}"
+
+msgid "Order modified"
+msgstr "Поръчката е променена"
+
+msgid "Order not found"
+msgstr "Поръчката не е намерена"
+
+msgid "Order placed"
+msgstr "Поръчката е направена"
+
+msgid "Order shipped"
+msgstr "Поръчката е изпратена"
+
+msgid "Order Total"
+msgstr "Общо за поръчката"
+
+msgid "Order transitioned"
+msgstr "Поръчката е прехвърлена"
+
+msgid "Orders"
+msgstr "Поръчки"
+
+msgid "Orders Summary"
+msgstr "Резюме на поръчките"
+
+msgid "Out-of-stock threshold"
+msgstr "Праг за изчерпани количества"
+
+#. placeholder {0}: table.getState().pagination.pageIndex + 1
+#. placeholder {1}: table.getPageCount() || 1
+msgid "Page {0} of {1}"
+msgstr "Страница {0} от {1}"
+
+msgid "Parent product"
+msgstr "Основен продукт"
+
+msgid "Password"
+msgstr "Парола"
+
+msgid "Password reset requested"
+msgstr "Изисква се повторно задаване на парола"
+
+msgid "Password reset verified"
+msgstr "Новата парола е потвърдена"
+
+msgid "Password updated"
+msgstr "Паролата е актуализирана"
+
+#. placeholder {0}: entry.data.paymentId
+#. placeholder {1}: entry.data.to
+msgid "Payment #{0} transitioned to {1}"
+msgstr "Плащане №{0} е прехвърлено на {1}"
+
+msgid "Payment authorized"
+msgstr "Разрешено плащане"
+
+msgid "Payment cancelled successfully"
+msgstr "Плащането е отменено успешно"
+
+msgid "Payment details"
+msgstr "Данни за плащане"
+
+msgid "Payment eligibility checker"
+msgstr "Проверка на допустимостта на плащанията"
+
+msgid "Payment failed"
+msgstr "Неуспешно плащане"
+
+msgid "Payment metadata"
+msgstr "Метаданни за плащане"
+
+msgid "Payment method"
+msgstr "Начин на плащане"
+
+msgid "Payment method is required"
+msgstr "Изисква се начин на плащане"
+
+msgid "Payment Methods"
+msgstr "Начини на плащане"
+
+msgid "Payment settled"
+msgstr "Плащането е приключено"
+
+msgid "Payment settled successfully"
+msgstr "Плащането е приключено успешно"
+
+msgid "Payment state updated successfully"
+msgstr "Състоянието на плащането е актуализирано успешно"
+
+msgid "Payment transitioned"
+msgstr "Плащането е прехвърлено"
+
+msgid "Per customer usage limit"
+msgstr "Лимит за използване на клиент"
+
+msgid "Permissions"
+msgstr "Разрешения"
+
+msgid "Phone number"
+msgstr "Телефонен номер"
+
+msgid "Phone Number"
+msgstr "Телефонен номер"
+
+msgid "Placed At"
+msgstr "Поставен при"
+
+msgid "Please add products and complete the shipping address to run the test."
+msgstr "Моля, добавете продукти и попълнете адреса за доставка, за да стартирате теста."
+
+msgid "Please select a target collection"
+msgstr "Моля, изберете целева колекция"
+
+msgid "Postal Code"
+msgstr "Пощенски код"
+
+msgid "Preview"
+msgstr "Преглед"
+
+msgid "Preview changes"
+msgstr "Преглед на промените"
+
+msgid "Preview order modifications"
+msgstr "Преглед на модификациите на поръчката"
+
+msgid "Price"
+msgstr "Цена"
+
+msgid "Price and tax"
+msgstr "Цена и данък"
+
+msgid "Price conversion factor"
+msgstr "Коефициент на преобразуване на цената"
+
+msgid "Prices include tax for default tax zone"
+msgstr "Цените включват данък за данъчна зона по подразбиране"
+
+msgid "private"
+msgstr "частен"
+
+msgid "Private"
+msgstr "Частно"
+
+msgid "Private collections are not visible in the shop"
+msgstr "В магазина не се виждат частни колекции"
+
+msgid "Private facets are not visible in the shop"
+msgstr "Частните аспекти не се виждат в магазина"
+
+msgid "Product"
+msgstr "Продукт"
+
+msgid "Product name"
+msgstr "Име на продукта"
+
+msgid "Product Option Group"
+msgstr "Група продуктови опции"
+
+msgid "Product options"
+msgstr "Продуктови опции"
+
+msgid "Product Options"
+msgstr "Опции на продукта"
+
+msgid "Product Variants"
+msgstr "Варианти"
+
+msgid "Products"
+msgstr "Продукти"
+
+msgid "Profile"
+msgstr "Профил"
+
+msgid "Promotions"
+msgstr "Промоции"
+
+msgid "public"
+msgstr "публичен"
+
+msgid "Quantity"
+msgstr "Количество"
+
+msgid "Queue"
+msgstr "Опашка"
+
+msgid "Rate"
+msgstr "Ставка"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgid "Rebuild search index"
+msgstr "Възстановете индекса за търсене"
+
+msgid "Refresh"
+msgstr "Опресняване"
+
+msgid "Refresh data"
+msgstr "Обновяване на данните"
+
+#. placeholder {0}: entry.data.refundId
+#. placeholder {1}: entry.data.to
+msgid "Refund #{0} transitioned to {1}"
+msgstr "Възстановената сума №{0} е прехвърлена към {1}"
+
+msgid "Refund from this method"
+msgstr "Възстановяване от този метод"
+
+msgid "Refund ID"
+msgstr "ID за възстановяване"
+
+msgid "Refund required"
+msgstr "Изисква се възстановяване"
+
+msgid "Refund settled"
+msgstr "Възстановяването е приключено"
+
+msgid "Refund settled successfully"
+msgstr "Възстановяването е приключено успешно"
+
+msgid "Refund transitioned"
+msgstr "Възстановяването е прехвърлено"
+
+#. placeholder {0}: payment.refunds.length
+msgid "Refunds ({0})"
+msgstr "Възстановявания на средства ({0})"
+
+msgid "Regenerate slug from source field"
+msgstr "Регенерирайте slug от изходното поле"
+
+msgid "Regions"
+msgstr "Региони"
+
+msgid "Registered"
+msgstr "Регистриран"
+
+msgid "Remaining:"
+msgstr "Остават:"
+
+msgid "Remove"
+msgstr "Премахнете"
+
+msgid "Remove from current channel"
+msgstr "Премахване от текущия канал"
+
+msgid "Remove group"
+msgstr "Премахване на групата"
+
+msgid "Remove item"
+msgstr "Премахване на елемент"
+
+msgid "Remove link"
+msgstr "Премахване на връзката"
+
+msgid "Removed coupon codes"
+msgstr "Премахнати кодове на купони"
+
+msgid "Removed from group"
+msgstr "Премахнат от групата"
+
+#. placeholder {0}: removedLines.length
+msgid "Removing {0} item(s)"
+msgstr "Премахване на {0} елемент(а)"
+
+msgid "Rename"
+msgstr "Преименуване"
+
+msgid "Reset"
+msgstr "Нулиране"
+
+msgid "Review the changes before applying them to the order."
+msgstr "Прегледайте промените, преди да ги приложите към поръчката."
+
+msgid "Roles"
+msgstr "Роли"
+
+msgid "Rows per page"
+msgstr "Редове на страница"
+
+msgid "Run"
+msgstr "Старирай"
+
+msgid "Run Test"
+msgstr "Изпълнете тест"
+
+msgid "Running"
+msgstr "В процес"
+
+msgid "Same window"
+msgstr "Същият прозорец"
+
+msgid "Sample Formatting"
+msgstr "Примерно форматиране"
+
+msgid "Save"
+msgstr "Запазване"
+
+msgid "Save a view as \"Global\" to make it available to all users."
+msgstr "Запазете изглед като „Глобален“, за да го направите достъпен за всички потребители."
+
+msgid "Save Address"
+msgstr "Запазване на адреса"
+
+msgid "Save changes"
+msgstr "Запазете промените"
+
+msgid "Save Changes"
+msgstr "Запазване на промените"
+
+msgid "Save Layout"
+msgstr "Запазване на оформлението"
+
+msgid "Save option group"
+msgstr "Запазете група опции"
+
+msgid "Save View"
+msgstr "Запазване на изгледа"
+
+msgid "Saving..."
+msgstr "Запазва се..."
+
+msgid "Schedule"
+msgstr "График"
+
+msgid "Schedule Pattern"
+msgstr "Образец на график"
+
+msgid "Scheduled task could not be executed"
+msgstr "Планираната задача не можа да бъде изпълнена"
+
+msgid "Scheduled task will be executed"
+msgstr "Планираната задача ще бъде изпълнена"
+
+msgid "Scheduled Tasks"
+msgstr "Планирани задачи"
+
+msgid "Search {name}..."
+msgstr "Търсене на {name}..."
+
+msgid "Search channels..."
+msgstr "Търсене на канали..."
+
+msgid "Search currencies..."
+msgstr "Търсене на валути..."
+
+msgid "Search facet values..."
+msgstr "Търсене на стойности на аспекти..."
+
+msgid "Search index rebuild could not be started"
+msgstr "Възстановяването на индекса за търсене не можа да бъде стартирано"
+
+msgid "Search index rebuild started"
+msgstr "Стартира възстановяването на индекса за търсене"
+
+msgid "Search languages..."
+msgstr "Търсене на езици..."
+
+msgid "Search payment methods..."
+msgstr "Търсете начини на плащане..."
+
+msgid "Search roles..."
+msgstr "Търсене на роли..."
+
+#. placeholder {0}: entityName.toLowerCase()
+#. placeholder {0}: group.name
+msgid "Select {0}"
+msgstr "Изберете {0}"
+
+#. placeholder {0}: selectedItems.length
+msgid "Select {0} Items"
+msgstr "Изберете {0} елементи"
+
+#. placeholder {0}: entityName.toLowerCase()
+msgid "Select {0}s"
+msgstr "Изберете {0}s"
+
+msgid "Select a channel"
+msgstr "Изберете канал"
+
+#. placeholder {0}: entityIds.length
+msgid "Select a channel to assign {0} {entityType} to"
+msgstr "Изберете канал, към който да присвоите {0} {entityType}"
+
+msgid "Select a country"
+msgstr "Изберете държава"
+
+msgid "Select a currency"
+msgstr "Изберете валута"
+
+msgid "Select a destination collection"
+msgstr "Изберете целева колекция"
+
+msgid "Select a language"
+msgstr "Изберете език"
+
+msgid "Select a role"
+msgstr "Изберете роля"
+
+#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' :
+#. `${collectionsToMove.length} collections`
+msgid "Select a target collection to move {0} to."
+msgstr "Изберете целева колекция, към която да преместите {0}."
+
+msgid "Select a tax category"
+msgstr "Изберете данъчна категория"
+
+msgid "Select a zone"
+msgstr "Изберете зона"
+
+msgid "Select address"
+msgstr "Изберете адрес"
+
+msgid "Select an address"
+msgstr "Изберете адрес"
+
+msgid "Select an option"
+msgstr "Изберете опция"
+
+msgid "Select Available Languages"
+msgstr "Изберете Налични езици"
+
+msgid "Select country"
+msgstr "Изберете държава"
+
+msgid "Select customer"
+msgstr "Изберете клиент"
+
+msgid "Select date range"
+msgstr "Изберете период от време"
+
+msgid "Select display language"
+msgstr "Изберете език на дисплея"
+
+msgid "Select from globally available languages for this channel"
+msgstr "Изберете от глобално наличните езици за този канал"
+
+msgid "Select item"
+msgstr "Изберете елемент"
+
+msgid "Select items"
+msgstr "Изберете елементи"
+
+msgid "Select next state"
+msgstr "Изберете следващо състояние"
+
+msgid "Select quantities to fulfill and configure the fulfillment handler"
+msgstr "Изберете количества за изпълнение и конфигурирайте манипулатора за изпълнение"
+
+msgid "Select seller"
+msgstr "Изберете продавач"
+
+msgid "Select the next state for the order"
+msgstr "Изберете следващото състояние за поръчката"
+
+#. placeholder {0}: productData.product.variants[0].name
+msgid "Select which options should apply to the existing variant \"{0}\""
+msgstr "Изберете кои опции да се прилагат към съществуващия вариант „{0}“"
+
+msgid "Selected Items"
+msgstr "Избрани елементи"
+
+msgid "Seller"
+msgstr "Продавач"
+
+msgid "Seller order"
+msgstr "Поръчка на продавача"
+
+msgid "Seller orders"
+msgstr "Поръчки на продавача"
+
+msgid "Sellers"
+msgstr "Продавачи"
+
+msgid "Set custom fields"
+msgstr "Задайте потребителски полета"
+
+msgid "Set Focal Point"
+msgstr "Задаване на фокусна точка"
+
+msgid "Set link"
+msgstr "Задайте връзка"
+
+msgid ""
+"Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
+msgstr "Задава езиците, които са налични за всички канали. След това отделните канали могат да поддържат подгрупа от тези езици."
+
+msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
+msgstr "Задава нивото на наличност, при което този вариант се счита за изчерпан. Използването на отрицателна стойност позволява поддръжка на резервни поръчки. Може да се замени от варианти на продукта."
+
+msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
+msgstr "Задава нивото на наличност, при което този вариант се счита за изчерпан. Използването на отрицателна стойност позволява поддръжка на резервни поръчки."
+
+msgid "Settle payment"
+msgstr "Приклюи плащане"
+
+msgid "Settle refund"
+msgstr "Приключи възстановяване"
+
+msgid "Shipping"
+msgstr "Доставка"
+
+msgid "Shipping address"
+msgstr "Адрес за доставка"
+
+msgid "Shipping Address"
+msgstr "Адрес за доставка"
+
+msgid "Shipping address changed"
+msgstr "Адресът за доставка е променен"
+
+msgid "Shipping address set for order"
+msgstr "Зададен адрес за доставка за поръчка"
+
+msgid "Shipping address unset for order"
+msgstr "Адресът за доставка не е зададен за поръчка"
+
+msgid "Shipping method changed"
+msgstr "Методът на доставка е променен"
+
+msgid "Shipping method is eligible for this order"
+msgstr "Методът на доставка отговаря на условията за тази поръчка"
+
+msgid "Shipping method is not eligible for this order"
+msgstr "Методът на доставка не отговаря на условията за тази поръчка"
+
+msgid "Shipping method set for order"
+msgstr "Начин на доставка, зададен за поръчка"
+
+msgid "Shipping Methods"
+msgstr "Методи за доставка"
+
+msgid "Short date"
+msgstr "Кратка дата"
+
+msgid "Show password"
+msgstr "Покажи парола"
+
+#. placeholder {0}: filteredTags.length
+msgid "Showing all {0} results"
+msgstr "Показани са всички {0} резултати"
+
+msgid "Sign in"
+msgstr "Вход"
+
+msgid "Sign in to access the admin dashboard"
+msgstr "Влезте за достъп до администраторското табло"
+
+msgid "SKU"
+msgstr "SKU"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Slug is set"
+msgstr "Slug е настроен"
+
+msgid "Slug will be generated automatically..."
+msgstr "Slug ще се генерира автоматично..."
+
+msgid "Some resources are down"
+msgstr "Някои ресурси не работят"
+
+msgid "Source"
+msgstr "Източник"
+
+msgid "Starts at"
+msgstr "Започва в"
+
+msgid "State"
+msgstr "Състояние"
+
+msgid "State / Province"
+msgstr "Област / провинция"
+
+msgid "State/Province"
+msgstr "Област/провинция"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Stock"
+msgstr "Наличност"
+
+msgid "Stock allocated"
+msgstr "Разпределени запаси"
+
+msgid "Stock level"
+msgstr "Ниво на склад"
+
+msgid "Stock levels"
+msgstr "Нива на склад"
+
+msgid "Stock Locations"
+msgstr "Складови местоположения"
+
+msgid "Stock on hand"
+msgstr "Склад на ръка"
+
+msgid "Stock on Hand"
+msgstr "Склад на ръка"
+
+msgid "Street Address"
+msgstr "Улица"
+
+msgid "Street Address 2"
+msgstr "Улица 2"
+
+msgid "Sub total"
+msgstr "Междинна сума"
+
+msgid "Subtotal"
+msgstr "Междинна сума"
+
+msgid "Successfully added option value"
+msgstr "Успешно добавена стойност на опцията"
+
+msgid "Successfully added payment to order"
+msgstr "Успешно добавено плащане към поръчката"
+
+msgid "Successfully assigned {entityIdsLength} {entityType} to channel"
+msgstr "{entityIdsLength} {entityType} успешно присвоен на канал"
+
+msgid "Successfully created administrator"
+msgstr "Успешно създаден администратор"
+
+msgid "Successfully created channel"
+msgstr "Успешно създаден канал"
+
+msgid "Successfully created collection"
+msgstr "Успешно създадена колекция"
+
+msgid "Successfully created country"
+msgstr "Успешно създадена държава"
+
+msgid "Successfully created customer"
+msgstr "Успешно създаден клиент"
+
+msgid "Successfully created customer group"
+msgstr "Успешно създадена клиентска група"
+
+msgid "Successfully created facet"
+msgstr "Атрибутът е създаден успешно"
+
+msgid "Successfully created facet value"
+msgstr "Успешно създадена стойност на аспекта"
+
+msgid "Successfully created option group"
+msgstr "Успешно създадена група опции"
+
+msgid "Successfully created payment method"
+msgstr "Успешно създаден начин на плащане"
+
+msgid "Successfully created product"
+msgstr "Успешно създаден продукт"
+
+msgid "Successfully created product option"
+msgstr "Успешно създадена продуктова опция"
+
+msgid "Successfully created product option group"
+msgstr "Успешно създадена група продуктови опции"
+
+msgid "Successfully created product options"
+msgstr "Успешно създадени продуктови опции"
+
+msgid "Successfully created product variant"
+msgstr "Успешно създаден вариант на продукта"
+
+msgid "Successfully created promotion"
+msgstr "Успешно създадена промоция"
+
+msgid "Successfully created role"
+msgstr "Успешно създадена роля"
+
+msgid "Successfully created seller"
+msgstr "Успешно създаден продавач"
+
+msgid "Successfully created shipping method"
+msgstr "Методът на доставка е създаден успешно"
+
+msgid "Successfully created stock location"
+msgstr "Успешно създадено складово местоположение"
+
+msgid "Successfully created tax category"
+msgstr "Успешно създадена данъчна категория"
+
+msgid "Successfully created tax rate"
+msgstr "Успешно създадена данъчна ставка"
+
+msgid "Successfully created zone"
+msgstr "Успешно създадена зона"
+
+msgid "Successfully duplicated {count} {entityName}"
+msgstr "Успешно дублирани {count} {entityName}"
+
+msgid "Successfully fulfilled order"
+msgstr "Успешно изпълнена поръчка"
+
+msgid "Successfully removed {selectionLength} {entityType} from channel"
+msgstr "Успешно премахна {selectionLength} {entityType} от канала"
+
+msgid "Successfully removed {successCount} facets from channel"
+msgstr "Успешно премахнати {successCount} атрибути от канала"
+
+msgid "Successfully updated administrator"
+msgstr "Успешно актуализиран администратор"
+
+msgid "Successfully updated asset"
+msgstr "Успешно актуализиран актив"
+
+msgid "Successfully updated channel"
+msgstr "Каналът е актуализиран успешно"
+
+msgid "Successfully updated collection"
+msgstr "Успешно актуализирана колекция"
+
+msgid "Successfully updated country"
+msgstr "Успешно актуализирана държава"
+
+msgid "Successfully updated customer"
+msgstr "Успешно актуализиран клиент"
+
+msgid "Successfully updated customer group"
+msgstr "Успешно актуализирана клиентска група"
+
+msgid "Successfully updated facet"
+msgstr "Успешно актуализиран аспект"
+
+msgid "Successfully updated facet value"
+msgstr "Успешно актуализирана стойност на аспекта"
+
+msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
+msgstr "Успешно актуализирани стойности на атрибути за {entityIdsLength} {entityType}"
+
+msgid "Successfully updated global settings"
+msgstr "Успешно актуализирани глобални настройки"
+
+msgid "Successfully updated order"
+msgstr "Успешно актуализирана поръчка"
+
+msgid "Successfully updated payment method"
+msgstr "Методът на плащане е актуализиран успешно"
+
+msgid "Successfully updated product"
+msgstr "Успешно актуализиран продукт"
+
+msgid "Successfully updated product option"
+msgstr "Успешно актуализирана продуктова опция"
+
+msgid "Successfully updated product option group"
+msgstr "Успешно актуализирана група продуктови опции"
+
+msgid "Successfully updated product variant"
+msgstr "Успешно актуализиран вариант на продукта"
+
+msgid "Successfully updated profile"
+msgstr "Профилът е актуализиран успешно"
+
+msgid "Successfully updated promotion"
+msgstr "Успешно актуализирана промоция"
+
+msgid "Successfully updated role"
+msgstr "Успешно актуализирана роля"
+
+msgid "Successfully updated seller"
+msgstr "Успешно актуализиран продавач"
+
+msgid "Successfully updated shipping method"
+msgstr "Методът на доставка бе актуализиран успешно"
+
+msgid "Successfully updated stock location"
+msgstr "Успешно актуализирано складово местоположение"
+
+msgid "Successfully updated tax category"
+msgstr "Успешно актуализирана данъчна категория"
+
+msgid "Successfully updated tax rate"
+msgstr "Успешно актуализирана данъчна ставка"
+
+msgid "Successfully updated zone"
+msgstr "Успешно актуализирана зона"
+
+msgid "Summary of modifications"
+msgstr "Резюме на модификациите"
+
+msgid "Super Admin"
+msgstr "Супер администратор"
+
+msgid "Surcharge"
+msgstr "Доплащане"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Tags"
+msgstr "Етикети"
+
+msgid "Tax base"
+msgstr "Данъчна основа"
+
+msgid "Tax Categories"
+msgstr "Данъчни категории"
+
+msgid "Tax category"
+msgstr "Данъчна категория"
+
+msgid "Tax rate"
+msgstr "Данъчна ставка"
+
+msgid "Tax rate: {taxRate}%"
+msgstr "Данъчна ставка: {taxRate}%"
+
+msgid "Tax Rates"
+msgstr "Данъчни ставки"
+
+msgid "Tax summary"
+msgstr "Данъчно резюме"
+
+msgid "Tax total"
+msgstr "Данък общо"
+
+msgid "Test"
+msgstr "Тест"
+
+msgid "Test data has been updated. Click \"Run Test\" to see updated results."
+msgstr "Данните от теста са актуализирани. Щракнете върху „Изпълни тест“, за да видите актуализирани резултати."
+
+msgid "Test Order"
+msgstr "Тестова поръчка"
+
+msgid "Test Results"
+msgstr "Резултати от теста"
+
+msgid "Test Shipping Method"
+msgstr "Тестване на метод за доставка"
+
+msgid "Test shipping methods"
+msgstr "Тестване методите за доставка"
+
+msgid "Test this shipping method by simulating an order to see if it's eligible and what the shipping cost would be."
+msgstr "Тествайте този метод на доставка, като симулирате поръчка, за да видите дали отговаря на условията и каква ще бъде цената за доставка."
+
+msgid "Test your shipping methods by simulating a new order."
+msgstr "Тествайте вашите методи за доставка, като симулирате нова поръчка."
+
+msgid "Testing shipping method..."
+msgstr "Тестване на метода на доставка..."
+
+msgid "Testing shipping methods..."
+msgstr "Тестване на методите за доставка..."
+
+msgid "The data that has been passed to the job"
+msgstr "Данните, които са предадени на заданието"
+
+msgid "The result of the job"
+msgstr "Резултатът от задачата"
+
+msgid "The selected permissions will be applied to the these channels."
+msgstr "Избраните разрешения ще бъдат приложени към тези канали."
+
+msgid "The token is used to specify the channel when making API requests."
+msgstr "Токенът се използва за указване на канала, когато се правят заявки за API."
+
+msgid "The variant could not be added. Ensure the parent product is enabled."
+msgstr "Вариантът не можа да бъде добавен. Уверете се, че родителският продукт е активиран."
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
+msgstr "Това са клиентите в групата клиенти <0>{customerGroupName}</0>."
+
+msgid "These are the facet values for the <0>{facetName}</0> facet."
+msgstr "Това са стойностите на атрибута за атрибута <0>{facetName}</0>."
+
+msgid "These languages will be available for all channels to use"
+msgstr "Тези езици ще бъдат достъпни за използване от всички канали"
+
+msgid "This is a default Role and cannot be modified"
+msgstr "Това е роля по подразбиране и не може да се променя"
+
+msgid "This is a preview of the collection contents based on the current filter settings. Once you save the collection, the contents will be updated to reflect the new filter settings."
+msgstr "Това е визуализация на съдържанието на колекцията въз основа на текущите настройки на филтъра. След като запазите колекцията, съдържанието ще бъде актуализирано, за да отрази новите настройки на филтъра."
+
+msgid "This is the contents of the <0>{collectionName}</0> collection."
+msgstr "Това е съдържанието на колекцията <0>{collectionName}</0>."
+
+msgid "This month"
+msgstr "Този месец"
+
+msgid "This product has existing variants but no option groups defined. You need to add option groups before creating new variants."
+msgstr "Този продукт има съществуващи варианти, но няма дефинирани групи опции. Трябва да добавите групи опции, преди да създадете нови варианти."
+
+msgid "This shipping method's eligibility checker conditions are not met for the current order and shipping address."
+msgstr "Условията за проверка на допустимостта на този метод на доставка не са изпълнени за текущата поръчка и адрес за доставка."
+
+msgid "This week"
+msgstr "Тази седмица"
+
+msgid "Title"
+msgstr "Заглавие"
+
+msgid "Today"
+msgstr "Днес"
+
+msgid "Toggle all"
+msgstr "Превключване на всички"
+
+msgid "Toggle header column"
+msgstr "Превключване на заглавната колона"
+
+msgid "Toggle header row"
+msgstr "Превключване на заглавния ред"
+
+msgid "Token"
+msgstr "Токен"
+
+msgid "Total"
+msgstr "Общо"
+
+msgid "Total Orders"
+msgstr "Общ брой поръчки"
+
+msgid "Total refund:"
+msgstr "Общо възстановяване:"
+
+msgid "Total Revenue"
+msgstr "Общи приходи"
+
+msgid "Track"
+msgstr "Проследяване"
+
+msgid "Track inventory by default"
+msgstr "Проследяване на инвентара по подразбиране"
+
+msgid "Tracking code"
+msgstr "Проследяващ код"
+
+msgid "Transaction ID"
+msgstr "ID на транзакцията"
+
+msgid "Transaction ID is required"
+msgstr "Изисква се ID на транзакцията"
+
+#. placeholder {0}: getTranslatedFulfillmentState(state)
+#. placeholder {0}: getTranslatedOrderState(state)
+#. placeholder {0}: getTranslatedPaymentState(state)
+msgid "Transition to {0}"
+msgstr "Преход към {0}"
+
+msgid "Transition to {suggestedState}"
+msgstr "Преход към {suggestedState}"
+
+msgid "Transition to selected state"
+msgstr "Преход към избрано състояние"
+
+msgid "True"
+msgstr "Вярно"
+
+msgid "Type at least 2 characters to search..."
+msgstr "Въведете поне 2 знака за търсене..."
+
+msgid "Unit price"
+msgstr "Единична цена"
+
+msgid "Unknown error"
+msgstr "Неизвестна грешка"
+
+msgid "Unverified"
+msgstr "Непроверено"
+
+msgid "Update"
+msgstr "Актуализация"
+
+msgid "Update the note content or visibility"
+msgstr "Актуализирайте съдържанието или видимостта на бележката"
+
+msgid "Updated"
+msgstr "Актуализиран"
+
+msgid "Upload"
+msgstr "Качване"
+
+msgid "Usage limit"
+msgstr "Ограничение за използване"
+
+msgid "Use as the default billing address"
+msgstr "Използвайте като адрес за фактуриране по подразбиране"
+
+msgid "Use as the default shipping address"
+msgstr "Използвайте като адрес за доставка по подразбиране"
+
+msgid "Use global out-of-stock threshold"
+msgstr "Използвайте глобалния праг за изчерпване"
+
+msgid "useWidgetDimensions must be used within a DashboardBaseWidget"
+msgstr "useWidgetDimensions трябва да се използва в рамките на DashboardBaseWidget"
+
+msgid "useWidgetFilters must be used within a WidgetFiltersProvider"
+msgstr "useWidgetFilters трябва да се използва в рамките на WidgetFiltersProvider"
+
+msgid "Using external authentication strategy: {strategy}"
+msgstr "Използване на външна стратегия за удостоверяване: {strategy}"
+
+msgid "Using native authentication strategy"
+msgstr "Използване на собствена стратегия за удостоверяване"
+
+msgid "Values"
+msgstr "Стойности"
+
+msgid "Variant"
+msgstr "Вариант"
+
+msgid "Variant deleted successfully"
+msgstr "Вариантът е изтрит успешно"
+
+msgid "Variant name"
+msgstr "Име на варианта"
+
+msgid "Variant updated successfully"
+msgstr "Вариантът е актуализиран успешно"
+
+msgid "Variants"
+msgstr "Варианти"
+
+msgid "Verified"
+msgstr "Проверен"
+
+msgid "View changes"
+msgstr "Виж промените"
+
+msgid "View converted to global successfully"
+msgstr "Изгледът е успешно преобразуван в глобален"
+
+msgid "View data"
+msgstr "Виж данни"
+
+msgid "View deleted successfully"
+msgstr "Изгледът е изтрит успешно"
+
+msgid "View details"
+msgstr "Виж подробности"
+
+msgid "View duplicated successfully"
+msgstr "Прегледът е дублиран успешно"
+
+msgid "View job data"
+msgstr "Виж данните за задачата"
+
+msgid "View job result"
+msgstr "Виж резултата от задачата"
+
+msgid "View renamed successfully"
+msgstr "Изгледът е преименуван успешно"
+
+msgid "View result"
+msgstr "Виж резултата"
+
+msgid "View values"
+msgstr "Виж стойности"
+
+msgid "Visibility"
+msgstr "Видимост"
+
+msgid "Visible to admins only"
+msgstr "Вижда се само от администратори"
+
+msgid "Visible to customer"
+msgstr "Видимо за клиента"
+
+msgid "Welcome to Vendure"
+msgstr "Добре дошли във Venudre"
+
+msgid "When enabled, a product is available in the shop"
+msgstr "Когато е активирано, даден продукт е наличен в магазина"
+
+msgid "When enabled, a promotion is available in the shop"
+msgstr "Когато е активирано, в магазина е налична промоция"
+
+msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
+msgstr "Когато това е разрешено, цените, въведени в продуктовия каталог, ще бъдат включени в данъка за данъчната зона по подразбиране."
+
+msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
+msgstr "Когато се проследяват, нивата на складови наличности на варианти на продукта ще бъдат автоматично коригирани при продажба. Тази настройка може да бъде заменена от отделни варианти на продукта."
+
+msgid "Width"
+msgstr "Ширина"
+
+msgid "With selected..."
+msgstr "С избраните..."
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "You don't have permission to view channel settings"
+msgstr "Нямате разрешение да видите настройките на канала"
+
+msgid "You don't have permission to view global language settings"
+msgstr "Нямате разрешение да видите глобалните езикови настройки"
+
+msgid "You haven't saved any views yet."
+msgstr "Все още не сте запазили изгледи."
+
+msgid "Your latest orders"
+msgstr "Вашите най-нови поръчки"
+
+msgid "Your orders summary"
+msgstr "Резюме на вашите поръчки"
+
+msgid "Zone"
+msgstr "Зона"
+
+msgid "Zones"
+msgstr "Зони"
