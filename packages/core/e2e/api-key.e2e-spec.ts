@@ -1,21 +1,13 @@
 import { DeletionResult, LanguageCode } from '@vendure/common/lib/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import {
-    ApiKeyDocument,
-    ApiKeysDocument,
-    CreateApiKeyDocument,
-    DeleteApiKeyDocument,
-    RotateApiKeyDocument,
-    UpdateApiKeyDocument,
-} from './graphql/generated-e2e-admin-types';
+import { graphql } from './graphql/graphql-admin';
 
 describe('ApiKey resolver', () => {
     const config = testConfig();
@@ -40,7 +32,7 @@ describe('ApiKey resolver', () => {
     });
 
     it('createApiKey', async ({ expect }) => {
-        const result = await adminClient.query(CreateApiKeyDocument, {
+        const result = await adminClient.query(CREATE_API_KEY, {
             input: {
                 roleIds: ['1'],
                 translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
@@ -51,7 +43,7 @@ describe('ApiKey resolver', () => {
     });
 
     it('apiKey', async ({ expect }) => {
-        const result = await adminClient.query(ApiKeyDocument, { id: createdApiKeyId });
+        const result = await adminClient.query(API_KEY, { id: createdApiKeyId });
         expect(result.apiKey).toBeDefined();
         expect(result.apiKey?.id).toBe(createdApiKeyId);
         expect(result.apiKey?.name).toBe('Test API Key');
@@ -59,13 +51,13 @@ describe('ApiKey resolver', () => {
     });
 
     it('apiKeys', async ({ expect }) => {
-        const result = await adminClient.query(ApiKeysDocument);
+        const result = await adminClient.query(API_KEYS);
         expect(result.apiKeys.items.length).toBeGreaterThan(0);
         expect(result.apiKeys.items.some((k: any) => k.id === createdApiKeyId)).toBe(true);
     });
 
     it('updateApiKey', async ({ expect }) => {
-        const result = await adminClient.query(UpdateApiKeyDocument, {
+        const result = await adminClient.query(UPDATE_API_KEY, {
             input: {
                 id: createdApiKeyId,
                 // TODO roles
@@ -83,28 +75,28 @@ describe('ApiKey resolver', () => {
     });
 
     it('deleteApiKey', async ({ expect }) => {
-        const result = await adminClient.query(DeleteApiKeyDocument, { ids: [createdApiKeyId] });
+        const result = await adminClient.query(DELETE_API_KEY, { ids: [createdApiKeyId] });
         expect(result.deleteApiKeys?.[0]?.result).toBe(DeletionResult.DELETED);
         // Should not be found anymore
-        const { apiKey } = await adminClient.query(ApiKeyDocument, { id: createdApiKeyId });
+        const { apiKey } = await adminClient.query(API_KEY, { id: createdApiKeyId });
         expect(apiKey).toBeNull();
     });
 
     it('rotateApiKey', async ({ expect }) => {
-        const apiKey = await adminClient.query(CreateApiKeyDocument, {
+        const apiKey = await adminClient.query(CREATE_API_KEY, {
             input: {
                 roleIds: ['1'],
                 translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
             },
         });
-        const result = await adminClient.query(RotateApiKeyDocument, { id: apiKey.createApiKey.entityId });
+        const result = await adminClient.query(ROTATE_API_KEY, { id: apiKey.createApiKey.entityId });
         expect(result.rotateApiKey.apiKey).toBeDefined();
         expect(apiKey.createApiKey.apiKey).not.toBe(result.rotateApiKey.apiKey);
     });
 
     it('API-Key usage life cycle: Read, Rotate, Delete', async ({ expect }) => {
         const { apiKey, entityId } = (
-            await adminClient.query(CreateApiKeyDocument, {
+            await adminClient.query(CREATE_API_KEY, {
                 input: {
                     roleIds: ['1'],
                     translations: [{ languageCode: LanguageCode.en, name: 'Test API Key' }],
@@ -135,7 +127,7 @@ describe('ApiKey resolver', () => {
 
         // (2/4): Fail to read due to rotation of key
 
-        const rotate = await adminClient.query(RotateApiKeyDocument, { id: entityId });
+        const rotate = await adminClient.query(ROTATE_API_KEY, { id: entityId });
         const readErr01 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
         expect(readErr01?.errors).toBeDefined();
         expect(readErr01?.data?.administrator?.user?.identifier).toBeUndefined();
@@ -148,7 +140,7 @@ describe('ApiKey resolver', () => {
 
         // (4/4): Fail to read due to deletion
 
-        const deletion = await adminClient.query(DeleteApiKeyDocument, { ids: [entityId] });
+        const deletion = await adminClient.query(DELETE_API_KEY, { ids: [entityId] });
         expect(deletion.deleteApiKeys?.[0]?.result).toBe(DeletionResult.DELETED);
 
         const readErr02 = (await fetch(adminApiUrl, fetchConfig).then(res => res.json())) as _fetchResponse;
@@ -157,16 +149,16 @@ describe('ApiKey resolver', () => {
     });
 });
 
-export const CREATE_API_KEY = gql`
+export const CREATE_API_KEY = graphql(`
     mutation CreateApiKey($input: CreateApiKeyInput!) {
         createApiKey(input: $input) {
             apiKey
             entityId
         }
     }
-`;
+`);
 
-export const API_KEY = gql`
+export const API_KEY = graphql(`
     query ApiKey($id: ID!) {
         apiKey(id: $id) {
             id
@@ -178,9 +170,9 @@ export const API_KEY = gql`
             }
         }
     }
-`;
+`);
 
-export const API_KEYS = gql`
+export const API_KEYS = graphql(`
     query ApiKeys($options: ApiKeyListOptions) {
         apiKeys(options: $options) {
             items {
@@ -190,9 +182,9 @@ export const API_KEYS = gql`
             totalItems
         }
     }
-`;
+`);
 
-export const UPDATE_API_KEY = gql`
+export const UPDATE_API_KEY = graphql(`
     mutation UpdateApiKey($input: UpdateApiKeyInput!) {
         updateApiKey(input: $input) {
             id
@@ -204,21 +196,21 @@ export const UPDATE_API_KEY = gql`
             }
         }
     }
-`;
+`);
 
-export const DELETE_API_KEY = gql`
+export const DELETE_API_KEY = graphql(`
     mutation DeleteApiKey($ids: [ID!]!) {
         deleteApiKeys(ids: $ids) {
             result
             message
         }
     }
-`;
+`);
 
-export const ROTATE_API_KEY = gql`
+export const ROTATE_API_KEY = graphql(`
     mutation RotateApiKey($id: ID!) {
         rotateApiKey(id: $id) {
             apiKey
         }
     }
-`;
+`);
