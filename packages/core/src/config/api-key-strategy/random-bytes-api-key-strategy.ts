@@ -8,6 +8,7 @@ import { ApiKeyStrategy, BaseApiKeyStrategy } from './api-key-strategy';
 
 export const DEFAULT_SIZE_RANDOM_BYTES_SECRET = 32;
 export const DEFAULT_SIZE_RANDOM_BYTES_LOOKUP = 12;
+export const DEFAULT_LAST_USED_AT_UPDATE_INTERVAL = 0;
 
 /**
  * @see {@link RandomBytesApiKeyStrategy}
@@ -40,6 +41,24 @@ export interface RandomBytesApiKeyStrategyOptions {
      * @default {BcryptPasswordHashingStrategy}
      */
     hashingStrategy?: PasswordHashingStrategy;
+    /**
+     * @description
+     * The main use of the `lastUsedAt`-field is enabling the detection and invalidation of unused API-Keys.
+     * By default, every request which gets authorized by an API-Key persists the usage date. This might not
+     * be desirable for larger instances, due to the cost of frequent database writes.
+     *
+     * Defining a longer duration, for example 15 minutes, means that the `lastUsedAt` field will only be
+     * written to in 15 minute intervals, resulting in considerably fewer database writes. This technically
+     * reduces the accuracy of the `lastUsedAt`-field but keep in mind that when looking for unused keys,
+     * what often matters is that a key has been used at all in the last days or weeks and not the specific second.
+     *
+     * If passed as a number should represent milliseconds and if passed as a string describes a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `5m`, `'1 hour'`, `'10h'`
+     *
+     * @default 0
+     * @see {@link DEFAULT_LAST_USED_AT_UPDATE_INTERVAL}
+     */
+    lastUsedAtUpdateInterval?: string | number;
 }
 
 /**
@@ -66,6 +85,8 @@ export class RandomBytesApiKeyStrategy extends BaseApiKeyStrategy {
         super();
         this.secretSize = input?.secretSize ?? DEFAULT_SIZE_RANDOM_BYTES_SECRET;
         this.lookupSize = input?.lookupSize ?? DEFAULT_SIZE_RANDOM_BYTES_LOOKUP;
+        this.lastUsedAtUpdateInterval =
+            input?.lastUsedAtUpdateInterval ?? DEFAULT_LAST_USED_AT_UPDATE_INTERVAL;
         this.hashingStrategy = input?.hashingStrategy ?? new BcryptPasswordHashingStrategy();
     }
 

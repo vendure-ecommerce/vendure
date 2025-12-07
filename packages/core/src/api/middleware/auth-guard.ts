@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
+import ms from 'ms';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { API_KEY_AUTH_STRATEGY_NAME } from '../../config';
@@ -212,16 +213,24 @@ export class AuthGuard implements CanActivate {
             return;
         }
 
-        this.apiKeyService
-            .updateLastUsedAtByLookupId(apiKey.lookupId)
-            // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
-            .catch(err =>
-                Logger.error(
-                    `Failed to update lastUsedAt for ApiKey with lookupId ${parseResult.lookupId}`,
-                    undefined,
-                    err?.stack,
-                ),
-            );
+        const lastUsedThreshold = new Date(
+            Date.now() -
+                (typeof strategy.lastUsedAtUpdateInterval === 'string'
+                    ? ms(strategy.lastUsedAtUpdateInterval)
+                    : strategy.lastUsedAtUpdateInterval),
+        );
+        if (!apiKey.lastUsedAt || apiKey.lastUsedAt < lastUsedThreshold) {
+            this.apiKeyService
+                .updateLastUsedAtByLookupId(apiKey.lookupId)
+                // Update the lastUsedAt timestamp in the background, we don't want to hold up the request
+                .catch(err =>
+                    Logger.error(
+                        `Failed to update lastUsedAt for ApiKey with lookupId ${parseResult.lookupId}`,
+                        undefined,
+                        err?.stack,
+                    ),
+                );
+        }
 
         const session = await this.sessionService.getSessionFromToken(apiKey.apiKeyHash);
         if (session) {
