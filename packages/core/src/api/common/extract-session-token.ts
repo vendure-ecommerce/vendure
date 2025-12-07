@@ -36,13 +36,9 @@ export function extractSessionToken(
         }
     }
 
-    // TODO: For some reason `apiKeyHeaderKey` seems to be undefined on CI Server Smoke tests...
-    // Simply cannot reproduce it locally, at all.
-    // Let's try something quickly:
-    // eslint-disable-next-line no-console
-    console.log('-------- TOKEN METH: --:', tokenMethod, typeof tokenMethod);
-    // eslint-disable-next-line no-console
-    console.log('-------- HEADER KEY: --:', apiKeyHeaderKey, typeof apiKeyHeaderKey);
+    // TODO: For some reason `apiKeyHeaderKey` is undefined on CI Server Smoke tests... (confirmed on 2025-12-07)
+    // Maybe it has something to do with the package versions that get installed by the CI, I do not know.
+    // Anyway, this simple check fixes this for now, let's try removing this again when versions change.
     if (!apiKeyHeaderKey) return;
     const apiKeyHeader = req.get(apiKeyHeaderKey)?.trim();
     if (apiKeyHeader && tokenMethod.includes('api-key')) {
