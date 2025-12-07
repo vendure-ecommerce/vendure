@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { omit } from '@vendure/common/lib/omit';
 import { User } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import * as fs from 'fs';
-import gql from 'graphql-tag';
-import http from 'http';
-import path from 'path';
+import * as fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+
+import { graphql } from './graphql/graphql-admin';
 
 describe('Import resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -72,15 +75,7 @@ describe('Import resolver', () => {
 
         const csvFile = path.join(__dirname, 'fixtures', 'product-import.csv');
         const result = await adminClient.fileUploadMutation({
-            mutation: gql`
-                mutation ImportProducts($csvFile: Upload!) {
-                    importProducts(csvFile: $csvFile) {
-                        imported
-                        processed
-                        errors
-                    }
-                }
-            `,
+            mutation: importProductsDocument1,
             filePaths: [csvFile],
             mapVariables: () => ({ csvFile: null }),
         });
@@ -91,107 +86,9 @@ describe('Import resolver', () => {
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
 
-        const productResult = await adminClient.query(
-            gql`
-                query GetProducts($options: ProductListOptions) {
-                    products(options: $options) {
-                        totalItems
-                        items {
-                            id
-                            name
-                            slug
-                            description
-                            featuredAsset {
-                                id
-                                name
-                                preview
-                                source
-                            }
-                            assets {
-                                id
-                                name
-                                preview
-                                source
-                            }
-                            optionGroups {
-                                id
-                                code
-                                name
-                            }
-                            facetValues {
-                                id
-                                name
-                                facet {
-                                    id
-                                    name
-                                }
-                            }
-                            customFields {
-                                pageType
-                                owner {
-                                    id
-                                }
-                                keywords
-                                localName
-                            }
-                            variants {
-                                id
-                                name
-                                sku
-                                price
-                                taxCategory {
-                                    id
-                                    name
-                                }
-                                options {
-                                    id
-                                    code
-                                }
-                                assets {
-                                    id
-                                    name
-                                    preview
-                                    source
-                                }
-                                featuredAsset {
-                                    id
-                                    name
-                                    preview
-                                    source
-                                }
-                                facetValues {
-                                    id
-                                    code
-                                    name
-                                    facet {
-                                        id
-                                        name
-                                    }
-                                }
-                                stockOnHand
-                                trackInventory
-                                stockMovements {
-                                    items {
-                                        ... on StockMovement {
-                                            id
-                                            type
-                                            quantity
-                                        }
-                                    }
-                                }
-                                customFields {
-                                    valid
-                                    weight
-                                }
-                            }
-                        }
-                    }
-                }
-            `,
-            {
-                options: {},
-            },
-        );
+        const productResult = await adminClient.query(getProductsDocument1, {
+            options: {},
+        });
 
         expect(productResult.products.totalItems).toBe(4);
 
@@ -201,6 +98,10 @@ describe('Import resolver', () => {
         const easel = productResult.products.items.find((p: any) => p.name === 'Mabef M/02 Studio Easel');
         const pencils = productResult.products.items.find((p: any) => p.name === 'Giotto Mega Pencils');
         const smock = productResult.products.items.find((p: any) => p.name === 'Artists Smock');
+
+        if (!paperStretcher || !easel || !pencils || !smock) {
+            throw new Error('Expected all products to be found');
+        }
 
         // Omit FacetValues & options due to variations in the ordering between different DB engines
         expect(omit(paperStretcher, ['facetValues', 'options'], true)).toMatchSnapshot();
@@ -276,15 +177,7 @@ describe('Import resolver', () => {
 
         const csvFile = path.join(__dirname, 'fixtures', 'e2e-product-import-multi-languages.csv');
         const result = await adminClient.fileUploadMutation({
-            mutation: gql`
-                mutation ImportProducts($csvFile: Upload!) {
-                    importProducts(csvFile: $csvFile) {
-                        imported
-                        processed
-                        errors
-                    }
-                }
-            `,
+            mutation: importProductsDocument2,
             filePaths: [csvFile],
             mapVariables: () => ({ csvFile: null }),
         });
@@ -294,102 +187,7 @@ describe('Import resolver', () => {
         expect(result.importProducts.processed).toBe(1);
 
         const productResult = await adminClient.query(
-            gql`
-                query GetProducts($options: ProductListOptions) {
-                    products(options: $options) {
-                        totalItems
-                        items {
-                            id
-                            name
-                            slug
-                            description
-                            featuredAsset {
-                                id
-                                name
-                                preview
-                                source
-                            }
-                            assets {
-                                id
-                                name
-                                preview
-                                source
-                            }
-                            optionGroups {
-                                id
-                                code
-                                name
-                            }
-                            facetValues {
-                                id
-                                name
-                                facet {
-                                    id
-                                    name
-                                }
-                            }
-                            customFields {
-                                pageType
-                                owner {
-                                    id
-                                }
-                                keywords
-                                localName
-                            }
-                            variants {
-                                id
-                                name
-                                sku
-                                price
-                                taxCategory {
-                                    id
-                                    name
-                                }
-                                options {
-                                    id
-                                    code
-                                    name
-                                }
-                                assets {
-                                    id
-                                    name
-                                    preview
-                                    source
-                                }
-                                featuredAsset {
-                                    id
-                                    name
-                                    preview
-                                    source
-                                }
-                                facetValues {
-                                    id
-                                    code
-                                    name
-                                    facet {
-                                        id
-                                        name
-                                    }
-                                }
-                                stockOnHand
-                                trackInventory
-                                stockMovements {
-                                    items {
-                                        ... on StockMovement {
-                                            id
-                                            type
-                                            quantity
-                                        }
-                                    }
-                                }
-                                customFields {
-                                    weight
-                                }
-                            }
-                        }
-                    }
-                }
-            `,
+            getProductsDocument2,
             {
                 options: {},
             },
@@ -401,6 +199,10 @@ describe('Import resolver', () => {
         expect(productResult.products.totalItems).toBe(5);
 
         const paperStretcher = productResult.products.items.find((p: any) => p.name === '奇妙的纸张拉伸器');
+
+        if (!paperStretcher) {
+            throw new Error('Expected paperStretcher to be found');
+        }
 
         // Omit FacetValues & options due to variations in the ordering between different DB engines
         expect(omit(paperStretcher, ['facetValues', 'options'], true)).toMatchSnapshot();
@@ -463,15 +265,7 @@ describe('Import resolver', () => {
 
             const csvFile = path.join(__dirname, 'fixtures', 'e2e-product-import-asset-urls.csv');
             const result = await adminClient.fileUploadMutation({
-                mutation: gql`
-                    mutation ImportProducts($csvFile: Upload!) {
-                        importProducts(csvFile: $csvFile) {
-                            imported
-                            processed
-                            errors
-                        }
-                    }
-                `,
+                mutation: importProductsDocument3,
                 filePaths: [csvFile],
                 mapVariables: () => ({ csvFile: null }),
             });
@@ -480,36 +274,259 @@ describe('Import resolver', () => {
             expect(result.importProducts.imported).toBe(1);
             expect(result.importProducts.processed).toBe(1);
 
-            const productResult = await adminClient.query(
-                gql`
-                    query GetProducts($options: ProductListOptions) {
-                        products(options: $options) {
-                            totalItems
-                            items {
-                                id
-                                name
-                                featuredAsset {
-                                    id
-                                    name
-                                    preview
-                                }
-                            }
-                        }
-                    }
-                `,
-                {
-                    options: {
-                        filter: {
-                            name: { contains: 'guitar' },
-                        },
+            const productResult = await adminClient.query(getProductsDocument3, {
+                options: {
+                    filter: {
+                        name: { contains: 'guitar' },
                     },
                 },
-            );
+            });
 
             expect(productResult.products.items.length).toBe(1);
-            expect(productResult.products.items[0].featuredAsset.preview).toBe(
+            expect(productResult.products.items[0].featuredAsset!.preview).toBe(
                 'test-url/test-assets/guitar__preview.jpg',
             );
         });
     });
 });
+
+const importProductsDocument1 = graphql(`
+    mutation ImportProducts($csvFile: Upload!) {
+        importProducts(csvFile: $csvFile) {
+            imported
+            processed
+            errors
+        }
+    }
+`);
+
+const getProductsDocument1 = graphql(`
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            totalItems
+            items {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    id
+                    name
+                    preview
+                    source
+                }
+                assets {
+                    id
+                    name
+                    preview
+                    source
+                }
+                optionGroups {
+                    id
+                    code
+                    name
+                }
+                facetValues {
+                    id
+                    name
+                    facet {
+                        id
+                        name
+                    }
+                }
+                customFields {
+                    pageType
+                    owner {
+                        id
+                    }
+                    keywords
+                    localName
+                }
+                variants {
+                    id
+                    name
+                    sku
+                    price
+                    taxCategory {
+                        id
+                        name
+                    }
+                    options {
+                        id
+                        code
+                    }
+                    assets {
+                        id
+                        name
+                        preview
+                        source
+                    }
+                    featuredAsset {
+                        id
+                        name
+                        preview
+                        source
+                    }
+                    facetValues {
+                        id
+                        code
+                        name
+                        facet {
+                            id
+                            name
+                        }
+                    }
+                    stockOnHand
+                    trackInventory
+                    stockMovements {
+                        items {
+                            ... on StockMovement {
+                                id
+                                type
+                                quantity
+                            }
+                        }
+                    }
+                    customFields {
+                        valid
+                        weight
+                    }
+                }
+            }
+        }
+    }
+`);
+
+const importProductsDocument2 = graphql(`
+    mutation ImportProducts($csvFile: Upload!) {
+        importProducts(csvFile: $csvFile) {
+            imported
+            processed
+            errors
+        }
+    }
+`);
+
+const getProductsDocument2 = graphql(`
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            totalItems
+            items {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    id
+                    name
+                    preview
+                    source
+                }
+                assets {
+                    id
+                    name
+                    preview
+                    source
+                }
+                optionGroups {
+                    id
+                    code
+                    name
+                }
+                facetValues {
+                    id
+                    name
+                    facet {
+                        id
+                        name
+                    }
+                }
+                customFields {
+                    pageType
+                    owner {
+                        id
+                    }
+                    keywords
+                    localName
+                }
+                variants {
+                    id
+                    name
+                    sku
+                    price
+                    taxCategory {
+                        id
+                        name
+                    }
+                    options {
+                        id
+                        code
+                        name
+                    }
+                    assets {
+                        id
+                        name
+                        preview
+                        source
+                    }
+                    featuredAsset {
+                        id
+                        name
+                        preview
+                        source
+                    }
+                    facetValues {
+                        id
+                        code
+                        name
+                        facet {
+                            id
+                            name
+                        }
+                    }
+                    stockOnHand
+                    trackInventory
+                    stockMovements {
+                        items {
+                            ... on StockMovement {
+                                id
+                                type
+                                quantity
+                            }
+                        }
+                    }
+                    customFields {
+                        weight
+                    }
+                }
+            }
+        }
+    }
+`);
+
+const importProductsDocument3 = graphql(`
+    mutation ImportProducts($csvFile: Upload!) {
+        importProducts(csvFile: $csvFile) {
+            imported
+            processed
+            errors
+        }
+    }
+`);
+
+const getProductsDocument3 = graphql(`
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            totalItems
+            items {
+                id
+                name
+                featuredAsset {
+                    id
+                    name
+                    preview
+                }
+            }
+        }
+    }
+`);

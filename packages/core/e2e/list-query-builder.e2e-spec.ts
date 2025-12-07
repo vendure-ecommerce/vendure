@@ -1,15 +1,14 @@
-import { LogicalOperator } from '@vendure/common/lib/generated-types';
+import { LanguageCode, LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
-import path from 'path';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
-import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 import { sortById } from './utils/test-order-utils';
