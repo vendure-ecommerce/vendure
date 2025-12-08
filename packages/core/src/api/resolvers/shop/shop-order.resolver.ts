@@ -9,6 +9,7 @@ import {
     MutationAdjustOrderLineArgs,
     MutationApplyCouponCodeArgs,
     MutationRemoveOrderLineArgs,
+    MutationSetCurrencyCodeForOrderArgs,
     MutationSetCustomerForOrderArgs,
     MutationSetOrderBillingAddressArgs,
     MutationSetOrderCustomFieldsArgs,
@@ -27,7 +28,7 @@ import {
     UpdateMultipleOrderItemsResult,
     UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
-import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, QueryCountriesArgs } from '@vendure/common/lib/generated-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
@@ -358,9 +359,9 @@ export class ShopOrderResolver {
     async addItemsToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemsToOrderArgs & ActiveOrderArgs,
-    ): Promise<{ 
-        order: Order; 
-        errorResults: UpdateMultipleOrderItemsResult['errorResults'] 
+    ): Promise<{
+        order: Order;
+        errorResults: UpdateMultipleOrderItemsResult['errorResults'];
     }> {
         const order = await this.activeOrderService.getActiveOrder(
             ctx,
@@ -372,6 +373,28 @@ export class ShopOrderResolver {
             order: result.order,
             errorResults: result.errorResults,
         };
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async setCurrencyCodeForOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSetCurrencyCodeForOrderArgs & ActiveOrderArgs,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
+    ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
+        const order = await this.activeOrderService.getActiveOrder(
+            ctx,
+            args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            true,
+        );
+        return this.orderService.setCurrencyCodeForOrder(
+            ctx,
+            order.id,
+            args.currencyCode as CurrencyCode,
+            relations,
+        );
     }
 
     @Transaction()
