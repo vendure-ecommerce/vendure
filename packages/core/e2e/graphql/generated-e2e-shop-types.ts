@@ -3693,6 +3693,45 @@ export type AddItemsToOrderMutation = {
     };
 };
 
+export type setCurrencyCodeForOrderVariables = Exact<{
+    currencyCode: CurrencyCode;
+}>;
+
+export type setCurrencyCodeForOrderMutation = {
+    setCurrencyCodeForOrder: {
+        __typename: 'Order' | 'OrderModificationError' | 'InsufficientStockError';
+        id?: string;
+        code?: string;
+        currencyCode?: CurrencyCode;
+        lines?: Array<{
+            id: string;
+            quantity: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            linePrice: number;
+            linePriceWithTax: number;
+            productVariant: { id: string };
+            featuredAsset?: { id: string } | null;
+            discounts: Array<{
+                adjustmentSource: string;
+                amount: number;
+                amountWithTax: number;
+                description: string;
+                type: AdjustmentType;
+            }>;
+        }>;
+        discounts?: Array<{
+            adjustmentSource: string;
+            amount: number;
+            amountWithTax: number;
+            description: string;
+            type: AdjustmentType;
+        }>;
+        errorCode?: ErrorCode;
+        message?: string;
+    };
+};
+
 export type SearchProductsShopQueryVariables = Exact<{
     input: SearchInput;
 }>;

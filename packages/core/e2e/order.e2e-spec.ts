@@ -2,6 +2,7 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
+    CurrencyCode,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     manualFulfillmentHandler,
@@ -72,6 +73,7 @@ import {
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
     TRANSIT_FULFILLMENT,
+    UPDATE_CHANNEL,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
@@ -79,10 +81,12 @@ import {
     ADD_MULTIPLE_ITEMS_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
+    ASSIGN_PRODUCT_VARIANTS_TO_CHANNEL,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
+    SET_CURRENCY_CODE_FOR_ORDER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
@@ -90,6 +94,8 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
+    const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             paymentOptions: {
@@ -146,7 +152,19 @@ describe('Orders resolver', () => {
                         handler: { code: partialPaymentMethod.code, arguments: [] },
                     },
                 ],
+
+                // channels: [
+                //     {
+                //         token: 'default',
+                //         defaultLanguageCode: LanguageCode.en,
+                //         // Set the base currency ()
+                //         currencyCode: CurrencyCode.USD,
+                //         availableLanguageCodes: [LanguageCode.en],
+                //         availableCurrencyCodes: [CurrencyCode.USD, CurrencyCode.EGP],
+                //     },
+                // ],
             },
+
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });
@@ -593,7 +611,7 @@ describe('Orders resolver', () => {
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
-            expect(order.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(order?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
@@ -2897,6 +2915,86 @@ describe('Orders resolver', () => {
             expect(addItemsToOrder.errorResults.length).toBe(1);
             expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR');
             expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR');
+        });
+    });
+
+    describe('update order currency', async () => {
+        let product1: Codegen.GetProductWithVariantsQuery['product'];
+
+        beforeAll(async () => {
+            product1 = (
+                await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_1' })
+            ).product!;
+
+            // Make "EGP" available in the channel for testing
+            await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
+                UPDATE_CHANNEL,
+                {
+                    input: {
+                        id: 'T_1',
+                        availableCurrencyCodes: [CurrencyCode.USD, CurrencyCode.EGP],
+                    },
+                },
+            );
+
+            // Add 1st varinat of product 1 to the channel
+            await adminClient.query<
+                Codegen.AssignProductVariantsToChannelMutation,
+                { input: Codegen.AssignProductVariantsToChannelInput }
+            >(ASSIGN_PRODUCT_VARIANTS_TO_CHANNEL, {
+                input: {
+                    channelId: 'T_1',
+                    productVariantIds: product1.variants.map(v => v.id),
+                    priceFactor: 1,
+                },
+            });
+        });
+
+        it('should throw UserInputError if new currency is not available in the channel', async () => {
+            await shopClient.asAnonymousUser();
+
+            const result = await shopClient.query<
+                CodegenShop.setCurrencyCodeForOrderMutation,
+                CodegenShop.setCurrencyCodeForOrderVariables
+            >(SET_CURRENCY_CODE_FOR_ORDER, {
+                currencyCode: CurrencyCode.USD,
+            });
+
+            await expect(
+                shopClient.query(SET_CURRENCY_CODE_FOR_ORDER, { currencyCode: CurrencyCode.AUD }),
+            ).rejects.toThrow('error.currency-not-available');
+        });
+
+        it('Should update the order currency and return the updated order', async () => {
+            await shopClient.asAnonymousUser();
+            // create simple order usig the available varinat
+            const { addItemsToOrder } = await shopClient.query<
+                CodegenShop.AddItemsToOrderMutation,
+                CodegenShop.AddItemsToOrderMutationVariables
+            >(ADD_MULTIPLE_ITEMS_TO_ORDER, {
+                inputs: [
+                    {
+                        productVariantId: product1!.variants[0].id,
+                        quantity: 1,
+                    },
+                ],
+            });
+
+            expect(addItemsToOrder.order.currencyCode).toBe(CurrencyCode.USD);
+            expect(addItemsToOrder.order.lines.length).toBe(1);
+
+            const response = await shopClient.query<
+                CodegenShop.setCurrencyCodeForOrderMutation,
+                CodegenShop.setCurrencyCodeForOrderVariables
+            >(SET_CURRENCY_CODE_FOR_ORDER, { currencyCode: CurrencyCode.EGP });
+
+            const setCurrencyCodeForOrder = response.setCurrencyCodeForOrder;
+
+            expect(setCurrencyCodeForOrder.currencyCode).toBe(CurrencyCode.EGP);
+            expect(setCurrencyCodeForOrder.lines?.length).toBe(1);
         });
     });
 });

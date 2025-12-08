@@ -130,6 +130,22 @@ export const ADD_ITEM_TO_ORDER = gql`
     ${UPDATED_ORDER_FRAGMENT}
 `;
 
+export const ASSIGN_PRODUCT_VARIANTS_TO_CHANNEL = gql`
+    mutation AssignProductVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            id
+            name
+            sku
+            currencyCode
+            price
+            priceWithTax
+            channels {
+                id
+                code
+            }
+        }
+    }
+`;
 export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
     mutation AddItemsToOrder($inputs: [AddItemInput!]!) {
         addItemsToOrder(inputs: $inputs) {
@@ -137,14 +153,34 @@ export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
                 ...UpdatedOrder
             }
             errorResults {
-                ...on ErrorResult {
+                ... on ErrorResult {
                     errorCode
                     message
                 }
             }
-            
         }
     }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
+export const SET_CURRENCY_CODE_FOR_ORDER = gql`
+    mutation ChangeOrderCurrency($currencyCode: CurrencyCode!) {
+        setCurrencyCodeForOrder(currencyCode: $currencyCode) {
+            __typename
+            ... on Order {
+                ...UpdatedOrder
+            }
+            ... on OrderModificationError {
+                errorCode
+                message
+            }
+            ... on InsufficientStockError {
+                errorCode
+                message
+            }
+        }
+    }
+
     ${UPDATED_ORDER_FRAGMENT}
 `;
 
