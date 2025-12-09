@@ -102,7 +102,6 @@ export * from './components/shared/customer-group-chip.js';
 export * from './components/shared/customer-group-selector.js';
 export * from './components/shared/customer-selector.js';
 export * from './components/shared/detail-page-button.js';
-export * from './components/shared/draggable-paginated-list-data-table.js';
 export * from './components/shared/entity-assets.js';
 export * from './components/shared/error-page.js';
 export * from './components/shared/facet-value-chip.js';
