@@ -32,6 +32,9 @@
 
 ## What is Vendure 
 
+[![Run in Smithery](https://smithery.ai/badge/skills/vendure-ecommerce)](https://smithery.ai/skills?ns=vendure-ecommerce&utm_source=github&utm_medium=badge)
+
+
 Vendure is an open-source headless commerce platform built with _TypeScript_ and _Node.js_. It provides a robust foundation for building enterprise-grade digital commerce applications with exceptional scalability and maintainability.
 
 - **Built for heavy customization**: Extensible plugin architecture allows you to tailor every aspect of your commerce solution
