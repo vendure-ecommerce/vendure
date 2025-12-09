@@ -1,22 +1,31 @@
+/**
+ * Example implementation of collections page with drag-and-drop reordering.
+ *
+ * This file demonstrates how to use the DraggableListPage component with the collections table.
+ * To use this implementation:
+ * 1. Replace the contents of collections.tsx with this file
+ * 2. Rename this file to collections.tsx
+ * 3. Implement the mutation for updating collection positions
+ */
+
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { DraggableListPage } from '@/vdb/framework/page/draggable-list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@lingui/react/macro';
-import { FetchQueryOptions, useQueries, useQueryClient } from '@tanstack/react-query';
+import { Trans } from '@lingui/react/macro';
+import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
 import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
-import { collectionListDocument, moveCollectionDocument } from './collections.graphql.js';
+import { collectionListDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
@@ -26,18 +35,25 @@ import {
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
 
-
-export const Route = createFileRoute('/_authenticated/_collections/collections')({
+export const Route = createFileRoute('/_authenticated/_collections/collections-draggable/example')({
     component: CollectionListPage,
     loader: () => ({ breadcrumb: () => <Trans>Collections</Trans> }),
 });
 
-
 type Collection = ResultOf<typeof collectionListDocument>['collections']['items'][number];
 
+// TODO: Create this mutation in collections.graphql.ts
+// Example mutation:
+// export const updateCollectionPositionDocument = graphql(`
+//     mutation UpdateCollectionPosition($id: ID!, $position: Int!) {
+//         updateCollection(input: { id: $id, position: $position }) {
+//             id
+//             position
+//         }
+//     }
+// `);
+
 function CollectionListPage() {
-    const { t } = useLingui();
-    const queryClient = useQueryClient();
     const [expanded, setExpanded] = useState<ExpandedState>({});
     const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -87,30 +103,23 @@ function CollectionListPage() {
         return allRows;
     };
 
+    // Callback to handle collection reordering
     const handleReorder = async (oldIndex: number, newIndex: number, item: Collection) => {
-        try {
-            // Use the first breadcrumb (root collection)
-            const parentId = item.breadcrumbs?.[0]?.id;
-            
-            if (!parentId) {
-                throw new Error('Unable to determine parent collection ID');
-            }
+        console.log('Reordering collection:', { oldIndex, newIndex, item });
 
-            const result = await api.mutate(moveCollectionDocument, {
-                input: {
-                    collectionId: item.id,
-                    parentId: parentId,
-                    index: newIndex,
-                },
-            });
-            await queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
-            
-            toast.success(t`Collection position updated`);
-        } catch (error) {
-            console.error('Failed to reorder collection:', error);
-            toast.error(t`Failed to update collection position`);
-            throw error; // Re-throw to trigger the revert in DraggableDataTable
-        }
+        // TODO: Implement the actual mutation to update the collection position
+        // Example:
+        // try {
+        //     await api.mutate(updateCollectionPositionDocument, {
+        //         id: item.id,
+        //         position: newIndex,
+        //     });
+        //     // Optionally show a success toast
+        // } catch (error) {
+        //     console.error('Failed to reorder collection:', error);
+        //     // Optionally show an error toast
+        //     throw error; // Re-throw to trigger the revert in DraggableDataTable
+        // }
     };
 
     // Determine if drag-and-drop should be disabled
@@ -219,6 +228,7 @@ function CollectionListPage() {
                 }}
                 defaultColumnOrder={[
                     'featuredAsset',
+                    'children',
                     'name',
                     'slug',
                     'breadcrumbs',
@@ -248,7 +258,6 @@ function CollectionListPage() {
                     parentId: false,
                     children: false,
                     description: false,
-                    isPrivate: false,
                 }}
                 onSearchTermChange={searchTerm => {
                     setSearchTerm(searchTerm);
@@ -279,6 +288,7 @@ function CollectionListPage() {
                         order: 500,
                     },
                 ]}
+                // Drag and drop configuration
                 onReorder={handleReorder}
                 disableDragAndDrop={isDragDisabled}
             >
@@ -296,4 +306,3 @@ function CollectionListPage() {
         </>
     );
 }
-

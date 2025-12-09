@@ -2,21 +2,20 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
-import { DraggableListPage } from '@/vdb/framework/page/draggable-list-page.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans, useLingui } from '@lingui/react/macro';
-import { FetchQueryOptions, useQueries, useQueryClient } from '@tanstack/react-query';
+import { Trans } from '@lingui/react/macro';
+import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
 import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
-import { collectionListDocument, moveCollectionDocument } from './collections.graphql.js';
+import { collectionListDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
@@ -26,21 +25,15 @@ import {
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
 
-
-export const Route = createFileRoute('/_authenticated/_collections/collections')({
+export const Route = createFileRoute('/_authenticated/_collections/collections-old')({
     component: CollectionListPage,
     loader: () => ({ breadcrumb: () => <Trans>Collections</Trans> }),
 });
 
-
 type Collection = ResultOf<typeof collectionListDocument>['collections']['items'][number];
 
 function CollectionListPage() {
-    const { t } = useLingui();
-    const queryClient = useQueryClient();
     const [expanded, setExpanded] = useState<ExpandedState>({});
-    const [searchTerm, setSearchTerm] = useState<string>('');
-
     const childrenQueries = useQueries({
         queries: Object.entries(expanded).map(([collectionId, isExpanded]) => {
             return {
@@ -57,7 +50,6 @@ function CollectionListPage() {
             } satisfies FetchQueryOptions;
         }),
     });
-
     const childCollectionsByParentId = childrenQueries.reduce(
         (acc, query, index) => {
             const collectionId = Object.keys(expanded)[index];
@@ -87,43 +79,9 @@ function CollectionListPage() {
         return allRows;
     };
 
-    const handleReorder = async (oldIndex: number, newIndex: number, item: Collection) => {
-        try {
-            // Use the first breadcrumb (root collection)
-            const parentId = item.breadcrumbs?.[0]?.id;
-            
-            if (!parentId) {
-                throw new Error('Unable to determine parent collection ID');
-            }
-
-            const result = await api.mutate(moveCollectionDocument, {
-                input: {
-                    collectionId: item.id,
-                    parentId: parentId,
-                    index: newIndex,
-                },
-            });
-            await queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
-            
-            toast.success(t`Collection position updated`);
-        } catch (error) {
-            console.error('Failed to reorder collection:', error);
-            toast.error(t`Failed to update collection position`);
-            throw error; // Re-throw to trigger the revert in DraggableDataTable
-        }
-    };
-
-    // Determine if drag-and-drop should be disabled
-    // We disable it when:
-    // 1. There's a search term (which shows nested items)
-    // 2. Any rows are expanded (showing nested items)
-    const isFiltering = !!searchTerm;
-    const hasExpandedRows = Object.keys(expanded).length > 0;
-    const isDragDisabled = isFiltering || hasExpandedRows;
-
     return (
         <>
-            <DraggableListPage
+            <ListPage
                 pageId="collection-list"
                 title={<Trans>Collections</Trans>}
                 listQuery={collectionListDocument}
@@ -140,6 +98,8 @@ function CollectionListPage() {
                 customizeColumns={{
                     name: {
                         meta: {
+                            // This column needs the following fields to always be available
+                            // in order to correctly render.
                             dependencies: ['children', 'breadcrumbs'],
                         },
                         cell: ({ row }) => {
@@ -205,7 +165,7 @@ function CollectionListPage() {
                             return (
                                 <div className="flex flex-wrap gap-2">
                                     {children.slice(0, maxDisplay).map(child => (
-                                        <Badge key={child.id} variant="outline">{child.name}</Badge>
+                                        <Badge variant="outline">{child.name}</Badge>
                                     ))}
                                     {leftOver > 0 ? (
                                         <Badge variant="outline">
@@ -219,6 +179,7 @@ function CollectionListPage() {
                 }}
                 defaultColumnOrder={[
                     'featuredAsset',
+                    'children',
                     'name',
                     'slug',
                     'breadcrumbs',
@@ -248,10 +209,8 @@ function CollectionListPage() {
                     parentId: false,
                     children: false,
                     description: false,
-                    isPrivate: false,
                 }}
                 onSearchTermChange={searchTerm => {
-                    setSearchTerm(searchTerm);
                     return {
                         name: { contains: searchTerm },
                     };
@@ -279,8 +238,6 @@ function CollectionListPage() {
                         order: 500,
                     },
                 ]}
-                onReorder={handleReorder}
-                disableDragAndDrop={isDragDisabled}
             >
                 <PageActionBarRight>
                     <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
@@ -292,8 +249,7 @@ function CollectionListPage() {
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
-            </DraggableListPage>
+            </ListPage>
         </>
     );
 }
-
