@@ -61,7 +61,7 @@ interface DraggableRowProps<TData> {
     isDragDisabled: boolean;
 }
 
-function DraggableRow<TData>({ row, isDragDisabled }: DraggableRowProps<TData>) {
+function DraggableRow<TData>({ row, isDragDisabled }: Readonly<DraggableRowProps<TData>>) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: row.id,
         disabled: isDragDisabled,
@@ -234,8 +234,8 @@ export function DataTable<TData>({
                 return;
             }
 
-            const oldIndex = localData.findIndex(item => (item as any).id === active.id);
-            const newIndex = localData.findIndex(item => (item as any).id === over.id);
+            const oldIndex = localData.findIndex(item => (item as { id: string }).id === active.id);
+            const newIndex = localData.findIndex(item => (item as { id: string }).id === over.id);
 
             if (oldIndex === -1 || newIndex === -1) {
                 return;
@@ -261,7 +261,7 @@ export function DataTable<TData>({
         [localData, onReorder],
     );
 
-    const itemIds = useMemo(() => localData.map(item => (item as any).id), [localData]);
+    const itemIds = useMemo(() => localData.map(item => (item as { id: string }).id), [localData]);
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -508,14 +508,17 @@ export function DataTable<TData>({
                                             </TableRow>
                                         ))
                                     ) : table.getRowModel().rows?.length ? (
-                                        onReorder && !isDragDisabled ? (
-                                            table
-                                                .getRowModel()
-                                                .rows.map(row => (
+                                        (() => {
+                                            const isDraggableEnabled = onReorder && !isDragDisabled;
+                                            const rows = table.getRowModel().rows;
+                                            
+                                            if (isDraggableEnabled) {
+                                                return rows.map(row => (
                                                     <DraggableRow key={row.id} row={row} isDragDisabled={isDragDisabled} />
-                                                ))
-                                        ) : (
-                                            table.getRowModel().rows.map(row => (
+                                                ));
+                                            }
+                                            
+                                            return rows.map(row => (
                                                 <TableRow
                                                     key={row.id}
                                                     data-state={row.getIsSelected() && 'selected'}
@@ -527,12 +530,12 @@ export function DataTable<TData>({
                                                         </TableCell>
                                                     ))}
                                                 </TableRow>
-                                            ))
-                                        )
+                                            ));
+                                        })()
                                     ) : (
                                         <TableRow className="animate-in fade-in duration-100">
                                             <TableCell
-                                                colSpan={enhancedColumns.length + (!isDragDisabled ? 1 : 0)}
+                                                colSpan={enhancedColumns.length + (isDragDisabled ? 0 : 1)}
                                                 className="h-24 text-center"
                                             >
                                                 <Trans>No results</Trans>
