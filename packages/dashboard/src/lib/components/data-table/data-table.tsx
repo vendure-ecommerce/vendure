@@ -242,6 +242,7 @@ export function DataTable<TData>({
             }
 
             // Optimistically update the UI
+            const originalState = [...localData];
             const newData = arrayMove(localData, oldIndex, newIndex);
             setLocalData(newData);
             setIsReordering(true);
@@ -251,7 +252,7 @@ export function DataTable<TData>({
                 await onReorder(oldIndex, newIndex, localData[oldIndex]);
             } catch (error) {
                 // Revert on error
-                setLocalData(localData);
+                setLocalData(originalState);
                 console.error('Failed to reorder items:', error);
             } finally {
                 setIsReordering(false);
