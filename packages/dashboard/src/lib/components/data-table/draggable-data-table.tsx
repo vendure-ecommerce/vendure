@@ -53,7 +53,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } fr
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
-import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
+import { DataTableFacetedFilter } from './data-table-faceted-filter.js';
 import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
 import { FacetedFilter } from './data-table.js';
 

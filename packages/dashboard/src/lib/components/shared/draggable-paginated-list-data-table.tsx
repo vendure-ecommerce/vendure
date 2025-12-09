@@ -4,7 +4,6 @@ import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks
 import { includeOnlySelectedListFields } from '@/vdb/framework/document-introspection/include-only-selected-list-fields.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
-import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
