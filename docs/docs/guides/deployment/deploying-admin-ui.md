@@ -43,7 +43,7 @@ const config: VendureConfig = {
 
 ## Deploying a stand-alone Admin UI
 
-Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. However, you may wish to deploy the Admin UI app elsewhere. Since it is just a static Angular app, it can be deployed to any static hosting service such as Vercel or Netlify.
+Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. However, you may wish to deploy the Admin UI app elsewhere. Since it is just a static web app, it can be deployed to any static hosting service such as Vercel or Netlify.
 
 #### Metrics
 
