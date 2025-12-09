@@ -2,7 +2,7 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
-import { DraggableListPage } from '@/vdb/framework/page/draggable-list-page.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { FetchQueryOptions, useQueries, useQueryClient } from '@tanstack/react-query';
@@ -122,7 +122,7 @@ function CollectionListPage() {
     const isDragDisabled = isFiltering || hasExpandedRows;
 
     return (
-        <DraggableListPage
+        <ListPage
             pageId="collection-list"
             title={<Trans>Collections</Trans>}
             listQuery={collectionListDocument}
@@ -291,7 +291,7 @@ function CollectionListPage() {
                     </Button>
                 </PermissionGuard>
             </PageActionBarRight>
-        </DraggableListPage>
+        </ListPage>
     );
 }
 

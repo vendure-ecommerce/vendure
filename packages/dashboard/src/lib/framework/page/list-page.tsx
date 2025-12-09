@@ -10,6 +10,7 @@ import {
     PaginatedListRefresherRegisterFn,
     RowAction,
 } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { DraggablePaginatedListDataTable } from '@/vdb/components/shared/draggable-paginated-list-data-table.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
@@ -361,6 +362,22 @@ export interface ListPageProps<
      * the list needs to be refreshed.
      */
     registerRefresher?: PaginatedListRefresherRegisterFn;
+    /**
+     * @description
+     * Callback when items are reordered via drag and drop.
+     * Only applies to top-level items. When provided, enables drag-and-drop functionality.
+     *
+     * @param oldIndex - The original index of the dragged item
+     * @param newIndex - The new index where the item was dropped
+     * @param item - The data of the item that was moved
+     */
+    onReorder?: (oldIndex: number, newIndex: number, item: any) => void | Promise<void>;
+    /**
+     * @description
+     * When true, drag and drop will be disabled. Useful when filtering or searching.
+     * Defaults to false. Only relevant when `onReorder` is provided.
+     */
+    disableDragAndDrop?: boolean;
 }
 
 /**
@@ -481,6 +498,8 @@ export function ListPage<
     setTableOptions,
     bulkActions,
     registerRefresher,
+    onReorder,
+    disableDragAndDrop = false,
 }: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -536,52 +555,62 @@ export function ListPage<
         });
     }
 
+    const commonTableProps = {
+        listQuery,
+        deleteMutation,
+        transformVariables,
+        customizeColumns: customizeColumns as any,
+        additionalColumns: additionalColumns as any,
+        defaultColumnOrder: columnOrder as any,
+        defaultVisibility: columnVisibility as any,
+        onSearchTermChange,
+        page: pagination.page,
+        itemsPerPage: pagination.itemsPerPage,
+        sorting,
+        columnFilters,
+        onPageChange: (table: Table<any>, page: number, perPage: number) => {
+            persistListStateToUrl(table, { page, perPage });
+            if (pageId) {
+                setTableSettings(pageId, 'pageSize', perPage);
+            }
+        },
+        onSortChange: (table: Table<any>, sorting: SortingState) => {
+            persistListStateToUrl(table, { sort: sorting });
+        },
+        onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => {
+            persistListStateToUrl(table, { filters });
+            if (pageId) {
+                setTableSettings(pageId, 'columnFilters', filters);
+            }
+        },
+        onColumnVisibilityChange: (table: Table<any>, columnVisibility: any) => {
+            if (pageId) {
+                setTableSettings(pageId, 'columnVisibility', columnVisibility);
+            }
+        },
+        facetedFilters,
+        rowActions,
+        bulkActions,
+        setTableOptions,
+        transformData,
+        registerRefresher,
+    };
+
     return (
         <Page pageId={pageId}>
             <PageTitle>{title}</PageTitle>
             <PageActionBar>{children}</PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
-                    <PaginatedListDataTable
-                        listQuery={listQuery}
-                        deleteMutation={deleteMutation}
-                        transformVariables={transformVariables}
-                        customizeColumns={customizeColumns as any}
-                        additionalColumns={additionalColumns as any}
-                        defaultColumnOrder={columnOrder as any}
-                        defaultVisibility={columnVisibility as any}
-                        onSearchTermChange={onSearchTermChange}
-                        page={pagination.page}
-                        itemsPerPage={pagination.itemsPerPage}
-                        sorting={sorting}
-                        columnFilters={columnFilters}
-                        onPageChange={(table, page, perPage) => {
-                            persistListStateToUrl(table, { page, perPage });
-                            if (pageId) {
-                                setTableSettings(pageId, 'pageSize', perPage);
-                            }
-                        }}
-                        onSortChange={(table, sorting) => {
-                            persistListStateToUrl(table, { sort: sorting });
-                        }}
-                        onFilterChange={(table, filters) => {
-                            persistListStateToUrl(table, { filters });
-                            if (pageId) {
-                                setTableSettings(pageId, 'columnFilters', filters);
-                            }
-                        }}
-                        onColumnVisibilityChange={(table, columnVisibility) => {
-                            if (pageId) {
-                                setTableSettings(pageId, 'columnVisibility', columnVisibility);
-                            }
-                        }}
-                        facetedFilters={facetedFilters}
-                        rowActions={rowActions}
-                        bulkActions={bulkActions}
-                        setTableOptions={setTableOptions}
-                        transformData={transformData}
-                        registerRefresher={registerRefresher}
-                    />
+                    {onReorder ? (
+                        <DraggablePaginatedListDataTable
+                            {...commonTableProps}
+                            onReorder={onReorder}
+                            disableDragAndDrop={disableDragAndDrop}
+                        />
+                    ) : (
+                        <PaginatedListDataTable {...commonTableProps} />
+                    )}
                 </FullWidthPageBlock>
             </PageLayout>
         </Page>

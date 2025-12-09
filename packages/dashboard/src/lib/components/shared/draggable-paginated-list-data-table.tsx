@@ -12,7 +12,7 @@ import { TableOptions, VisibilityState } from '@tanstack/table-core';
 import { useDebounce } from '@uidotdev/usehooks';
 import React from 'react';
 import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
-import { DraggableDataTable } from '../data-table/draggable-data-table.js';
+import { DataTable } from '../data-table/data-table.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
 import {
     AdditionalColumns,
@@ -87,7 +87,7 @@ export const DraggablePaginatedListDataTableKey = 'DraggablePaginatedListDataTab
 
 /**
  * @description
- * A wrapper around the {@link DraggableDataTable} component, which automatically configures functionality common to
+ * A wrapper around the {@link DataTable} component, which automatically configures functionality common to
  * list queries that implement the `PaginatedList` interface, with drag-and-drop reordering capabilities.
  *
  * @docsCategory list-views
@@ -223,7 +223,7 @@ export function DraggablePaginatedListDataTable<
         typeof transformData === 'function' ? transformData(listData?.items ?? []) : (listData?.items ?? []);
     return (
         <PaginatedListContext.Provider value={{ refetchPaginatedList }}>
-            <DraggableDataTable
+            <DataTable
                 columns={columns}
                 data={transformedData}
                 isLoading={isFetching}

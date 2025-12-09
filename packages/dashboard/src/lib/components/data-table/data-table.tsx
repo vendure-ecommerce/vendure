@@ -16,6 +16,24 @@ import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import {
+    closestCenter,
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
     ColumnDef,
     ColumnFilter,
     ColumnFiltersState,
@@ -23,18 +41,64 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     PaginationState,
+    Row,
     SortingState,
     Table as TableType,
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
-import React, { Suspense, useEffect, useRef } from 'react';
+import { GripVertical } from 'lucide-react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
+
+interface DraggableRowProps<TData> {
+    row: Row<TData>;
+    isDragDisabled: boolean;
+}
+
+function DraggableRow<TData>({ row, isDragDisabled }: DraggableRowProps<TData>) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: row.id,
+        disabled: isDragDisabled,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <TableRow
+            ref={setNodeRef}
+            style={style}
+            data-state={row.getIsSelected() && 'selected'}
+            className="animate-in fade-in duration-100"
+        >
+            {!isDragDisabled && (
+                <TableCell className="w-[40px] h-12">
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <GripVertical className="h-4 w-4" />
+                    </div>
+                </TableCell>
+            )}
+            {row.getVisibleCells().filter(cell => cell.column.id !== '__drag_handle__').map(cell => (
+                <TableCell key={cell.id} className="h-12">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+            ))}
+        </TableRow>
+    );
+}
 
 export interface FacetedFilter {
     title: string;
@@ -77,6 +141,17 @@ interface DataTableProps<TData> {
      */
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
     onRefresh?: () => void;
+    /**
+     * @description
+     * Callback when items are reordered via drag and drop.
+     * When provided, enables drag-and-drop functionality.
+     */
+    onReorder?: (oldIndex: number, newIndex: number, item: TData) => void | Promise<void>;
+    /**
+     * @description
+     * When true, drag and drop will be disabled.
+     */
+    disableDragAndDrop?: boolean;
 }
 
 /**
@@ -111,6 +186,8 @@ export function DataTable<TData>({
     bulkActions,
     setTableOptions,
     onRefresh,
+    onReorder,
+    disableDragAndDrop = false,
 }: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
@@ -131,6 +208,60 @@ export function DataTable<TData>({
     const prevSearchTermRef = useRef(searchTerm);
     const prevColumnFiltersRef = useRef(columnFilters);
 
+    // Drag and drop setup
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    const [localData, setLocalData] = useState<TData[]>(data);
+    const [isReordering, setIsReordering] = useState(false);
+
+    // Update local data when data prop changes (but not during reordering)
+    useEffect(() => {
+        if (!isReordering) {
+            setLocalData(data);
+        }
+    }, [data, isReordering]);
+
+    const handleDragEnd = useCallback(
+        async (event: DragEndEvent) => {
+            const { active, over } = event;
+
+            if (!over || active.id === over.id || !onReorder) {
+                return;
+            }
+
+            const oldIndex = localData.findIndex(item => (item as any).id === active.id);
+            const newIndex = localData.findIndex(item => (item as any).id === over.id);
+
+            if (oldIndex === -1 || newIndex === -1) {
+                return;
+            }
+
+            // Optimistically update the UI
+            const newData = arrayMove(localData, oldIndex, newIndex);
+            setLocalData(newData);
+            setIsReordering(true);
+
+            try {
+                // Call the user's onReorder callback
+                await onReorder(oldIndex, newIndex, localData[oldIndex]);
+            } catch (error) {
+                // Revert on error
+                setLocalData(localData);
+                console.error('Failed to reorder items:', error);
+            } finally {
+                setIsReordering(false);
+            }
+        },
+        [localData, onReorder],
+    );
+
+    const itemIds = useMemo(() => localData.map(item => (item as any).id), [localData]);
+
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
         // we want to reset the column visibility to the default.
@@ -143,9 +274,25 @@ export function DataTable<TData>({
         // We intentionally do not include `columnVisibility` in the dependency array
     }, [defaultColumnVisibility]);
 
+    // Add drag handle column if drag and drop is enabled
+    const enhancedColumns = useMemo(() => {
+        if (!disableDragAndDrop && onReorder) {
+            const dragHandleColumn: ColumnDef<TData, any> = {
+                id: '__drag_handle__',
+                header: '',
+                cell: () => null, // Rendered by DraggableRow
+                size: 40,
+                enableSorting: false,
+                enableHiding: false,
+            };
+            return [dragHandleColumn, ...columns];
+        }
+        return columns;
+    }, [columns, disableDragAndDrop, onReorder]);
+
     let tableOptions: TableOptions<TData> = {
-        data,
-        columns,
+        data: localData,
+        columns: enhancedColumns,
         getRowId: row => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -219,6 +366,8 @@ export function DataTable<TData>({
     };
 
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+
+    const isDragDisabled = disableDragAndDrop || !onReorder;
 
     return (
         <DataTableProvider
@@ -309,66 +458,91 @@ export function DataTable<TData>({
                 ) : null}
 
                 <div className="rounded-md border my-2 relative shadow-sm">
-                    <Table>
-                        <TableHeader className="bg-muted/50">
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                          header.column.columnDef.header,
-                                                          header.getContext(),
-                                                      )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {isLoading && !data?.length ? (
-                                Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
-                                    <TableRow
-                                        key={`skeleton-${index}`}
-                                        className="animate-in fade-in duration-100"
-                                    >
-                                        {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
-                                            <TableCell
-                                                key={`skeleton-cell-${index}-${cellIndex}`}
-                                                className="h-12"
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        modifiers={[restrictToVerticalAxis]}
+                    >
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                {table.getHeaderGroups().map(headerGroup => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map(header => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                              header.column.columnDef.header,
+                                                              header.getContext(),
+                                                          )}
+                                                </TableHead>
+                                            );
+                                        })}
+                                    </TableRow>
+                                ))}
+                            </TableHeader>
+                            <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+                                <TableBody>
+                                    {isLoading && !localData?.length ? (
+                                        Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
+                                            <TableRow
+                                                key={`skeleton-${index}`}
+                                                className="animate-in fade-in duration-100"
                                             >
-                                                <Skeleton className="h-4 my-2 w-full" />
+                                                {!isDragDisabled && (
+                                                    <TableCell className="w-[40px] h-12">
+                                                        <Skeleton className="h-4 w-4" />
+                                                    </TableCell>
+                                                )}
+                                                {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
+                                                    <TableCell
+                                                        key={`skeleton-cell-${index}-${cellIndex}`}
+                                                        className="h-12"
+                                                    >
+                                                        <Skeleton className="h-4 my-2 w-full" />
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : table.getRowModel().rows?.length ? (
+                                        onReorder && !isDragDisabled ? (
+                                            table
+                                                .getRowModel()
+                                                .rows.map(row => (
+                                                    <DraggableRow key={row.id} row={row} isDragDisabled={isDragDisabled} />
+                                                ))
+                                        ) : (
+                                            table.getRowModel().rows.map(row => (
+                                                <TableRow
+                                                    key={row.id}
+                                                    data-state={row.getIsSelected() && 'selected'}
+                                                    className="animate-in fade-in duration-100"
+                                                >
+                                                    {row.getVisibleCells().map(cell => (
+                                                        <TableCell key={cell.id} className="h-12">
+                                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))
+                                        )
+                                    ) : (
+                                        <TableRow className="animate-in fade-in duration-100">
+                                            <TableCell
+                                                colSpan={enhancedColumns.length + (!isDragDisabled ? 1 : 0)}
+                                                className="h-24 text-center"
+                                            >
+                                                <Trans>No results</Trans>
                                             </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map(row => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && 'selected'}
-                                        className="animate-in fade-in duration-100"
-                                    >
-                                        {row.getVisibleCells().map(cell => (
-                                            <TableCell key={cell.id} className="h-12">
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow className="animate-in fade-in duration-100">
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        <Trans>No results</Trans>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                            {children}
-                        </TableBody>
-                    </Table>
+                                        </TableRow>
+                                    )}
+                                    {children}
+                                </TableBody>
+                            </SortableContext>
+                        </Table>
+                    </DndContext>
                     <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
                 </div>
                 {onPageChange && totalItems != null && <DataTablePagination table={table} />}
