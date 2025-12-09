@@ -10,7 +10,6 @@ import {
     PaginatedListRefresherRegisterFn,
     RowAction,
 } from '@/vdb/components/shared/paginated-list-data-table.js';
-import { DraggablePaginatedListDataTable } from '@/vdb/components/shared/draggable-paginated-list-data-table.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
@@ -602,15 +601,11 @@ export function ListPage<
             <PageActionBar>{children}</PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
-                    {onReorder ? (
-                        <DraggablePaginatedListDataTable
-                            {...commonTableProps}
-                            onReorder={onReorder}
-                            disableDragAndDrop={disableDragAndDrop}
-                        />
-                    ) : (
-                        <PaginatedListDataTable {...commonTableProps} />
-                    )}
+                    <PaginatedListDataTable
+                        {...commonTableProps}
+                        onReorder={onReorder}
+                        disableDragAndDrop={disableDragAndDrop}
+                    />
                 </FullWidthPageBlock>
             </PageLayout>
         </Page>
