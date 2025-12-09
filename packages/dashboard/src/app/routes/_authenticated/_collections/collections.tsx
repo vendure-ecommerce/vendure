@@ -237,6 +237,10 @@ function CollectionListPage() {
                 options.getRowId = row => {
                     return row.id;
                 };
+                options.meta = {
+                    ...options.meta,
+                    resetExpanded: () => setExpanded({}),
+                };
                 return options;
             }}
             defaultVisibility={{
