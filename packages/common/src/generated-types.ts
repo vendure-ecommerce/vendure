@@ -5858,9 +5858,7 @@ export type ScheduledTask = {
 
 export type SearchInput = {
   collectionId?: InputMaybe<Scalars['ID']['input']>;
-  collectionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   collectionSlug?: InputMaybe<Scalars['String']['input']>;
-  collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
   /** @deprecated Use `facetValueFilters` instead */
   facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
