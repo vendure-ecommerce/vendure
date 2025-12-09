@@ -104,7 +104,7 @@ export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection,
     };
 
     const handleResetExpanded = () => {
-        const resetExpanded = (table.options.meta as any)?.resetExpanded;
+        const resetExpanded = (table.options.meta as { resetExpanded: () => void })?.resetExpanded;
         if (resetExpanded) {
             resetExpanded();
         }
