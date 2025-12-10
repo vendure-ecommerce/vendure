@@ -18,15 +18,8 @@ Community contributions will always be merged and released.
 A recommended approach to migrating is to run both the Admin UI _and_ the new Dashboard in parallel. This allows you to start building
 new features right away with the new Dashboard while maintaining access to existing features that have not yet been migrated.
 
-To do so, follow the instructions to [set up the Dashboard](/guides/extending-the-dashboard/getting-started/#installation--setup),
-and then make sure you set the [AdminUiPlugin compatibilityMode](/reference/core-plugins/admin-ui-plugin/admin-ui-plugin-options#compatibilitymode) option to `true`:
-
-```ts
-AdminUiPlugin.init({
-    // ... existing config
-    compatibilityMode: true,
-}),
-```
+To do so, follow the instructions to [set up the Dashboard](/guides/extending-the-dashboard/getting-started/#installation--setup).
+Both plugins can now be used simultaneously without any special configuration.
 
 ## AI-Assisted Migration
 

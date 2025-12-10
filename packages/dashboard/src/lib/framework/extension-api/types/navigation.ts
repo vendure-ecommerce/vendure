@@ -97,4 +97,9 @@ export interface DashboardNavSectionDefinition {
      * Optional order number to control the position of this section in the sidebar.
      */
     order?: number;
+    /**
+     * @description
+     * Optional placement to control the position of this section in the sidebar.
+     */
+    placement?: 'top' | 'bottom';
 }

@@ -20,7 +20,7 @@ export function DataTableFilterBadge({
     const [operator, value] = Object.entries(filter.value as Record<string, unknown>)[0];
     return (
         <Badge key={filter.id} className="flex gap-2 flex-wrap items-center" variant="outline">
-            <div
+            <button
                 className="flex gap-1 flex-wrap items-center cursor-pointer flex-1"
                 onClick={() => onClick?.(filter)}
             >
@@ -37,7 +37,7 @@ export function DataTableFilterBadge({
                 <div className="@xs:overflow-hidden @xs:text-ellipsis @xs:whitespace-nowrap flex flex-col @xl:flex-row @2xl:gap-1">
                     <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
                 </div>
-            </div>
+            </button>
             <button className="border-l -mr-2" onClick={() => onRemove(filter)}>
                 <XIcon className="h-4 flex-shrink-0 cursor-pointer" />
             </button>

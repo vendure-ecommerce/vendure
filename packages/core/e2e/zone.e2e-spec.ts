@@ -1,4 +1,5 @@
 import { DeletionResult } from '@vendure/common/lib/generated-types';
+import { Facet, LanguageCode, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -6,9 +7,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { ResultOf } from './graphql/graphql-admin';
+import { graphql, ResultOf, VariablesOf } from './graphql/graphql-admin';
 import {
     addMembersToZoneDocument,
+    createFacetDocument,
     createZoneDocument,
     deleteZoneDocument,
     getActiveChannelWithZoneMembersDocument,
@@ -23,7 +25,19 @@ import {
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Zone resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig());
+    const { server, adminClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            customFields: {
+                Zone: [
+                    {
+                        name: 'relatedFacet',
+                        type: 'relation',
+                        entity: Facet,
+                    },
+                ],
+            },
+        }),
+    );
     let countries: ResultOf<typeof getCountryListDocument>['countries']['items'];
     let zones: Array<{ id: string; name: string }>;
     let oceania: { id: string; name: string };
@@ -189,4 +203,111 @@ describe('Zone resolver', () => {
             expect(result2.zones.items.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
     });
+
+    describe('Zone custom fields', () => {
+        let testFacet: ResultOf<typeof createFacetDocument>['createFacet'];
+
+        // Create a target entity (Facet) to link the Zone to
+        it('create a target Facet', async () => {
+            const result = await adminClient.query(createFacetDocument, {
+                input: {
+                    code: 'test-relation-facet',
+                    isPrivate: false,
+                    translations: [{ languageCode: LanguageCode.en, name: 'Test Relation Facet' }],
+                },
+            });
+
+            testFacet = result.createFacet;
+            expect(testFacet.name).toBe('Test Relation Facet');
+        });
+
+        // Test createZone with a custom relation field
+        it('createZone persists custom relation field', async () => {
+            const input: VariablesOf<typeof createZoneDocument>['input'] = {
+                name: 'Zone with Custom Relation',
+                memberIds: [],
+                customFields: {
+                    relatedFacetId: testFacet.id,
+                },
+            };
+
+            const result = await adminClient.query(createZoneWithCustomFieldsDocument, { input });
+
+            //  Verify the return value
+            expect(result.createZone.customFields.relatedFacet.id).toBe(testFacet.id);
+            //  Verify by querying it again from the database
+            const result2 = await adminClient.query(getZoneWithCustomFieldsDocument, {
+                id: result.createZone.id,
+            });
+            expect(result2.zone?.customFields.relatedFacet.id).toBe(testFacet.id);
+        });
+
+        // Test updateZone with a custom relation field
+        it('updateZone persists custom relation field', async () => {
+            const result = await adminClient.query(updateZoneWithCustomFieldsDocument, {
+                input: {
+                    id: zones[1].id,
+                    customFields: {
+                        relatedFacetId: testFacet.id,
+                    },
+                },
+            });
+
+            // Verify the return value
+            expect(result.updateZone.customFields.relatedFacet.id).toBe(testFacet.id);
+
+            // Verify by querying it again from the database
+            const result2 = await adminClient.query(getZoneWithCustomFieldsDocument, { id: zones[1].id });
+            expect(result2.zone?.customFields.relatedFacet.id).toBe(testFacet.id);
+        });
+    });
 });
+
+const zoneWithCustomFieldsFragment = graphql(`
+    fragment ZoneCustomFields on Zone {
+        customFields {
+            relatedFacet {
+                id
+            }
+        }
+    }
+`);
+
+const createZoneWithCustomFieldsDocument = graphql(
+    `
+        mutation CreateZoneWithCF($input: CreateZoneInput!) {
+            createZone(input: $input) {
+                id
+                name
+                ...ZoneCustomFields
+            }
+        }
+    `,
+    [zoneWithCustomFieldsFragment],
+);
+
+const updateZoneWithCustomFieldsDocument = graphql(
+    `
+        mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
+            updateZone(input: $input) {
+                id
+                name
+                ...ZoneCustomFields
+            }
+        }
+    `,
+    [zoneWithCustomFieldsFragment],
+);
+
+const getZoneWithCustomFieldsDocument = graphql(
+    `
+        query GetZoneWithCustomFields($id: ID!) {
+            zone(id: $id) {
+                id
+                name
+                ...ZoneCustomFields
+            }
+        }
+    `,
+    [zoneWithCustomFieldsFragment],
+);

@@ -5,6 +5,9 @@ declare module 'virtual:admin-api-schema' {
 declare module 'virtual:dashboard-extensions' {
     export const runDashboardExtensions: () => Promise<void>;
 }
+declare module 'virtual:plugin-translations' {
+    export default translations = Record<string, any>;
+}
 
 declare module 'virtual:vendure-ui-config' {
     import { LanguageCode } from '@vendure/core';

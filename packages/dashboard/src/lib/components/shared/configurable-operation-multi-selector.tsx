@@ -94,17 +94,17 @@ type QueryData = {
  * ```
  */
 export function ConfigurableOperationMultiSelector({
-                                                       value,
-                                                       onChange,
-                                                       queryDocument,
-                                                       queryOptions,
-                                                       queryKey,
-                                                       dataPath,
-                                                       buttonText,
-                                                       dropdownTitle,
-                                                       emptyText = 'No options found',
-                                                       showEnhancedDropdown = true,
-                                                   }: Readonly<ConfigurableOperationMultiSelectorProps>) {
+    value,
+    onChange,
+    queryDocument,
+    queryOptions,
+    queryKey,
+    dataPath,
+    buttonText,
+    dropdownTitle,
+    emptyText = 'No options found',
+    showEnhancedDropdown = true,
+}: Readonly<ConfigurableOperationMultiSelectorProps>) {
     const { data } = useQuery<QueryData>(
         queryOptions || {
             queryKey: [queryKey],
@@ -134,7 +134,7 @@ export function ConfigurableOperationMultiSelector({
                 code: operation.code,
                 arguments: operationDef.args.map(arg => ({
                     name: arg.name,
-                    value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
+                    value: arg.defaultValue != null ? arg.defaultValue.toString() : arg.list ? '[]' : '',
                 })),
             },
         ]);
@@ -195,10 +195,8 @@ export function ConfigurableOperationMultiSelector({
                                                 onCombinationModeChange(index, newValue)
                                             }
                                             name={''}
-                                            ref={() => {
-                                            }}
-                                            onBlur={() => {
-                                            }}
+                                            ref={() => {}}
+                                            onBlur={() => {}}
                                             position={index}
                                         />
                                     </div>

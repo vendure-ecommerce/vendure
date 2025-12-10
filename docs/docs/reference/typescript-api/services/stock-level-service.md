@@ -32,7 +32,7 @@ class StockLevelService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, stockLocationService: StockLocationService, configService: ConfigService) => StockLevelService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, stockLocationService: <a href='/reference/typescript-api/services/stock-location-service#stocklocationservice'>StockLocationService</a>, configService: ConfigService) => StockLevelService`}   />
 
 
 ### getStockLevel

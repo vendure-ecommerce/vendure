@@ -1,3 +1,46 @@
+## <small>3.5.1 (2025-11-14)</small>
+
+
+#### Fixes
+
+* **admin-ui-plugin** Deprecate `compatibilityMode` option (#3953) ([e62fce2](https://github.com/vendure-ecommerce/vendure/commit/e62fce2)), closes [#3953](https://github.com/vendure-ecommerce/vendure/issues/3953)
+* **cli** Fix schema command "dir" option ([785ccf1](https://github.com/vendure-ecommerce/vendure/commit/785ccf1)), closes [#3896](https://github.com/vendure-ecommerce/vendure/issues/3896)
+* **core** Correctly persist relation custom fields on Zone entity (#3951) ([c68120a](https://github.com/vendure-ecommerce/vendure/commit/c68120a)), closes [#3951](https://github.com/vendure-ecommerce/vendure/issues/3951)
+* **core** Prevent duplicate GraphQL custom field input type definitions (#3889) ([f16f790](https://github.com/vendure-ecommerce/vendure/commit/f16f790)), closes [#3889](https://github.com/vendure-ecommerce/vendure/issues/3889)
+* **core** Roles query pagination (#3826) ([2d1c98d](https://github.com/vendure-ecommerce/vendure/commit/2d1c98d)), closes [#3826](https://github.com/vendure-ecommerce/vendure/issues/3826)
+* **create** Fix dev mode path to static dashboard files ([d0a3206](https://github.com/vendure-ecommerce/vendure/commit/d0a3206))
+* **create** Update CLI instructions to reflect the new Dashboard (#3957) ([dba8f44](https://github.com/vendure-ecommerce/vendure/commit/dba8f44)), closes [#3957](https://github.com/vendure-ecommerce/vendure/issues/3957)
+* **dashboard** add optional chaining to shipping lines to prevent UI from crashing (#3930) ([5e5ef68](https://github.com/vendure-ecommerce/vendure/commit/5e5ef68)), closes [#3930](https://github.com/vendure-ecommerce/vendure/issues/3930)
+* **dashboard** Allow rendering multiple blocks in same location (#3937) ([1206605](https://github.com/vendure-ecommerce/vendure/commit/1206605)), closes [#3937](https://github.com/vendure-ecommerce/vendure/issues/3937)
+* **dashboard** Allow the option "enableColumnFilter" for additionalColumns in ListPage (#3968) ([b9bc533](https://github.com/vendure-ecommerce/vendure/commit/b9bc533)), closes [#3968](https://github.com/vendure-ecommerce/vendure/issues/3968)
+* **dashboard** Copy requiresPermission to nav menu items (#3938) ([a2057de](https://github.com/vendure-ecommerce/vendure/commit/a2057de)), closes [#3938](https://github.com/vendure-ecommerce/vendure/issues/3938)
+* **dashboard** Do not block reload for pristine forms ([9a364f4](https://github.com/vendure-ecommerce/vendure/commit/9a364f4)), closes [#3964](https://github.com/vendure-ecommerce/vendure/issues/3964)
+* **dashboard** Fix custom field tab display logic ([504fa9b](https://github.com/vendure-ecommerce/vendure/commit/504fa9b))
+* **dashboard** Fix empty state of list type config args ([c95a00b](https://github.com/vendure-ecommerce/vendure/commit/c95a00b)), closes [#3969](https://github.com/vendure-ecommerce/vendure/issues/3969)
+* **dashboard** Fix healthcheck view when api endpoint is auto (#3919) ([62d5ddb](https://github.com/vendure-ecommerce/vendure/commit/62d5ddb)), closes [#3919](https://github.com/vendure-ecommerce/vendure/issues/3919)
+* **dashboard** Fix history entry item destructive icon color (#3954) ([e31e4cb](https://github.com/vendure-ecommerce/vendure/commit/e31e4cb)), closes [#3954](https://github.com/vendure-ecommerce/vendure/issues/3954)
+* **dashboard** Fix incorrect currency being displayed in product variant listing (#3906) ([b2077fa](https://github.com/vendure-ecommerce/vendure/commit/b2077fa)), closes [#3906](https://github.com/vendure-ecommerce/vendure/issues/3906)
+* **dashboard** Fix relation selector null/undefined handling (#3942) ([715b905](https://github.com/vendure-ecommerce/vendure/commit/715b905)), closes [#3942](https://github.com/vendure-ecommerce/vendure/issues/3942)
+* **dashboard** Fix saving global languages when selecting Norwegian (#3967) ([33071cc](https://github.com/vendure-ecommerce/vendure/commit/33071cc)), closes [#3967](https://github.com/vendure-ecommerce/vendure/issues/3967)
+* **dashboard** get the right vite __status on the starting page (#3891) ([521808b](https://github.com/vendure-ecommerce/vendure/commit/521808b)), closes [#3891](https://github.com/vendure-ecommerce/vendure/issues/3891)
+* **dashboard** Implement bulk actions for the zone members table (#3966) ([26997d3](https://github.com/vendure-ecommerce/vendure/commit/26997d3)), closes [#3966](https://github.com/vendure-ecommerce/vendure/issues/3966) [#3927](https://github.com/vendure-ecommerce/vendure/issues/3927)
+* **dashboard** Improve default string list component ([79fd8a4](https://github.com/vendure-ecommerce/vendure/commit/79fd8a4)), closes [#3916](https://github.com/vendure-ecommerce/vendure/issues/3916)
+* **dashboard** Improve security of html sanitization ([4fb3bb0](https://github.com/vendure-ecommerce/vendure/commit/4fb3bb0))
+* **dashboard** Include OrderLine custom fields in detail view (#3958) ([d314a6c](https://github.com/vendure-ecommerce/vendure/commit/d314a6c)), closes [#3958](https://github.com/vendure-ecommerce/vendure/issues/3958)
+* **dashboard** incorrect extension import path generation on windows (#3915) ([14cd5b4](https://github.com/vendure-ecommerce/vendure/commit/14cd5b4)), closes [#3915](https://github.com/vendure-ecommerce/vendure/issues/3915)
+* **dashboard** Increase rate limit for dev mode ([999d3e1](https://github.com/vendure-ecommerce/vendure/commit/999d3e1))
+* **dashboard** Introduce experimental support for ESM projects ([3881d46](https://github.com/vendure-ecommerce/vendure/commit/3881d46)), closes [#3727](https://github.com/vendure-ecommerce/vendure/issues/3727) [#3533](https://github.com/vendure-ecommerce/vendure/issues/3533)
+* **dashboard** Page block fixes (#3955) ([9c28eff](https://github.com/vendure-ecommerce/vendure/commit/9c28eff)), closes [#3955](https://github.com/vendure-ecommerce/vendure/issues/3955)
+* **dashboard** Properly convert price to minor units before saving product variants (#3907) ([7274b23](https://github.com/vendure-ecommerce/vendure/commit/7274b23)), closes [#3907](https://github.com/vendure-ecommerce/vendure/issues/3907)
+* **dashboard** Respect authTokenHeaderKey config (#3935) ([7324584](https://github.com/vendure-ecommerce/vendure/commit/7324584)), closes [#3935](https://github.com/vendure-ecommerce/vendure/issues/3935)
+* **dashboard** Show customFields on address forms (#3900) ([66b2568](https://github.com/vendure-ecommerce/vendure/commit/66b2568)), closes [#3900](https://github.com/vendure-ecommerce/vendure/issues/3900)
+* **payments-plugin** Support more payment flows by checking ArrangingAdditionalPayment state ([9ca67e9](https://github.com/vendure-ecommerce/vendure/commit/9ca67e9))
+
+#### Features
+
+* **dashboard** Support localization for dashboard extensions (#3962) ([112cb9d](https://github.com/vendure-ecommerce/vendure/commit/112cb9d)), closes [#3962](https://github.com/vendure-ecommerce/vendure/issues/3962)
+* **dashboard** Tag-based input for string list custom fields (#3934) ([3fb2786](https://github.com/vendure-ecommerce/vendure/commit/3fb2786)), closes [#3934](https://github.com/vendure-ecommerce/vendure/issues/3934)
+
 ## 3.5.0 (2025-10-22)
 
 #### Fixes
