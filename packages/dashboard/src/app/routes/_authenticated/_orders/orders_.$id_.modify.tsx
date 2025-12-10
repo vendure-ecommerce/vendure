@@ -16,6 +16,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { AddSurchargeForm } from './components/add-surcharge-form.js';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
 import { OrderAddress } from './components/order-address.js';
@@ -83,6 +84,7 @@ function ModifyOrderPage() {
         removeCouponCode,
         updateShippingAddress: updateShippingAddressInInput,
         updateBillingAddress: updateBillingAddressInInput,
+        addSurcharge,
         hasModifications,
     } = useModifyOrder(entity);
 
@@ -181,6 +183,11 @@ function ModifyOrderPage() {
                         displayTotals={false}
                     />
                 </PageBlock>
+
+                <PageBlock column="main" blockId="add-surcharge" title={<Trans>Add surcharge</Trans>}>
+                    <AddSurchargeForm onAddSurcharge={addSurcharge} />
+                </PageBlock>
+
                 <PageBlock
                     column="side"
                     blockId="modification-summary"

@@ -1,3 +1,4 @@
+import { Money } from '@/vdb/components/data-display/money.js';
 import { Trans } from '@lingui/react/macro';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { modifyOrderDocument, orderDetailDocument } from '../orders.graphql.js';
@@ -100,6 +101,9 @@ export function OrderModificationSummary({
             eligibleShippingMethods.find(m => m.id === modifiedShippingMethodId)?.name ||
             modifiedShippingMethodId;
     }
+
+    // Added surcharges
+    const addedSurcharges = modifyOrderInput.surcharges ?? [];
 
     return (
         <div className="text-sm">
@@ -206,11 +210,29 @@ export function OrderModificationSummary({
                     </ul>
                 </div>
             )}
+            {addedSurcharges.length > 0 && (
+                <div className="mb-2">
+                    <div className="font-medium">
+                        <Trans>Adding {addedSurcharges.length} surcharge(s)</Trans>
+                    </div>
+                    <ul className="list-disc ml-4">
+                        {addedSurcharges.map((surcharge, index) => (
+                            <li key={index}>
+                                <div className="flex items-center gap-1">
+                                    <span>{surcharge.description}:</span>
+                                    <Money value={surcharge.price} currency={originalOrder.currencyCode} />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             {adjustedLines.length === 0 &&
                 addedLines.length === 0 &&
                 removedLines.length === 0 &&
                 addedCouponCodes.length === 0 &&
                 removedCouponCodes.length === 0 &&
+                addedSurcharges.length === 0 &&
                 !modifyOrderInput.updateShippingAddress &&
                 !modifyOrderInput.updateBillingAddress &&
                 !shippingMethodChanged && (
