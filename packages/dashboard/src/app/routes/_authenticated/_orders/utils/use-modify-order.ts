@@ -36,6 +36,7 @@ export interface UseModifyOrderReturn {
     updateShippingAddress: (address: AddressFragment) => void;
     updateBillingAddress: (address: AddressFragment) => void;
     addSurcharge: (surcharge: SurchargeInput) => void;
+    setNote: (note: string) => void;
     hasModifications: boolean;
 }
 
@@ -295,6 +296,14 @@ export function useModifyOrder(order: Order | null | undefined): UseModifyOrderR
         }));
     }, []);
 
+    // Set note
+    const setNote = useCallback((note: string) => {
+        setModifyOrderInput(prev => ({
+            ...prev,
+            note: note || '',
+        }));
+    }, []);
+
     // Check if there are modifications
     const hasModifications = useMemo(() => {
         return (
@@ -320,6 +329,7 @@ export function useModifyOrder(order: Order | null | undefined): UseModifyOrderR
         updateShippingAddress,
         updateBillingAddress,
         addSurcharge,
+        setNote,
         hasModifications,
     };
 }

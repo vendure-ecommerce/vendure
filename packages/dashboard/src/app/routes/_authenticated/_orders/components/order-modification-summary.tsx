@@ -1,4 +1,5 @@
 import { Money } from '@/vdb/components/data-display/money.js';
+import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { Trans } from '@lingui/react/macro';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { modifyOrderDocument, orderDetailDocument } from '../orders.graphql.js';
@@ -16,6 +17,7 @@ interface OrderModificationSummaryProps {
         id: string;
         name: string;
     }>;
+    onNoteChange?: (note: string) => void;
 }
 
 interface LineAdjustment {
@@ -32,6 +34,7 @@ export function OrderModificationSummary({
     modifyOrderInput,
     addedVariants,
     eligibleShippingMethods,
+    onNoteChange,
 }: Readonly<OrderModificationSummaryProps>) {
     // Map by line id for quick lookup
     const originalLineMap = new Map(originalOrder.lines.map(line => [line.id, line]));
@@ -104,6 +107,17 @@ export function OrderModificationSummary({
 
     // Added surcharges
     const addedSurcharges = modifyOrderInput.surcharges ?? [];
+
+    const hasBeenModified =
+        adjustedLines.length === 0 &&
+        addedLines.length === 0 &&
+        removedLines.length === 0 &&
+        addedCouponCodes.length === 0 &&
+        removedCouponCodes.length === 0 &&
+        addedSurcharges.length === 0 &&
+        !modifyOrderInput.updateShippingAddress &&
+        !modifyOrderInput.updateBillingAddress &&
+        !shippingMethodChanged;
 
     return (
         <div className="text-sm">
@@ -227,19 +241,21 @@ export function OrderModificationSummary({
                     </ul>
                 </div>
             )}
-            {adjustedLines.length === 0 &&
-                addedLines.length === 0 &&
-                removedLines.length === 0 &&
-                addedCouponCodes.length === 0 &&
-                removedCouponCodes.length === 0 &&
-                addedSurcharges.length === 0 &&
-                !modifyOrderInput.updateShippingAddress &&
-                !modifyOrderInput.updateBillingAddress &&
-                !shippingMethodChanged && (
-                    <div className="text-muted-foreground">
-                        <Trans>No modifications made</Trans>
-                    </div>
-                )}
+            {hasBeenModified && (
+                <div className="text-muted-foreground">
+                    <Trans>No modifications made</Trans>
+                </div>
+            )}
+            <div className="mb-4 mt-4">
+                <div className="font-medium mb-2">
+                    <Trans>Note</Trans>
+                </div>
+                <Textarea
+                    disabled={hasBeenModified}
+                    value={modifyOrderInput.note ?? ''}
+                    onChange={e => onNoteChange?.(e.target.value)}
+                />
+            </div>
         </div>
     );
 }
