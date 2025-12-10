@@ -1,5 +1,5 @@
-import { Facet, LanguageCode, mergeConfig } from '@vendure/core';
 import { DeletionResult } from '@vendure/common/lib/generated-types';
+import { Facet, LanguageCode, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -7,9 +7,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { ResultOf, VariablesOf, graphql } from './graphql/graphql-admin';
+import { graphql, ResultOf, VariablesOf } from './graphql/graphql-admin';
 import {
     addMembersToZoneDocument,
+    createFacetDocument,
     createZoneDocument,
     deleteZoneDocument,
     getActiveChannelWithZoneMembersDocument,
@@ -19,7 +20,6 @@ import {
     removeMembersFromZoneDocument,
     updateChannelDocument,
     updateZoneDocument,
-    createFacetDocument,
 } from './graphql/shared-definitions';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -206,6 +206,7 @@ describe('Zone resolver', () => {
 
     describe('Zone custom fields', () => {
         let testFacet: ResultOf<typeof createFacetDocument>['createFacet'];
+
         // Create a target entity (Facet) to link the Zone to
         it('create a target Facet', async () => {
             const result = await adminClient.query(createFacetDocument, {
@@ -230,21 +231,20 @@ describe('Zone resolver', () => {
                 },
             };
 
-            const result = await adminClient.query(CREATE_ZONE_WITH_CF, { input });
+            const result = await adminClient.query(createZoneWithCustomFieldsDocument, { input });
 
             //  Verify the return value
             expect(result.createZone.customFields.relatedFacet.id).toBe(testFacet.id);
             //  Verify by querying it again from the database
-            const result2 = await adminClient.query(
-                GET_ZONE_WITH_CUSTOM_FIELDS,
-                { id: result.createZone.id },
-            );
+            const result2 = await adminClient.query(getZoneWithCustomFieldsDocument, {
+                id: result.createZone.id,
+            });
             expect(result2.zone?.customFields.relatedFacet.id).toBe(testFacet.id);
         });
 
         // Test updateZone with a custom relation field
         it('updateZone persists custom relation field', async () => {
-            const result = await adminClient.query(UPDATE_ZONE_WITH_CF, {
+            const result = await adminClient.query(updateZoneWithCustomFieldsDocument, {
                 input: {
                     id: zones[1].id,
                     customFields: {
@@ -257,46 +257,13 @@ describe('Zone resolver', () => {
             expect(result.updateZone.customFields.relatedFacet.id).toBe(testFacet.id);
 
             // Verify by querying it again from the database
-            const result2 = await adminClient.query(
-                GET_ZONE_WITH_CUSTOM_FIELDS,
-                { id: zones[1].id },
-            );
+            const result2 = await adminClient.query(getZoneWithCustomFieldsDocument, { id: zones[1].id });
             expect(result2.zone?.customFields.relatedFacet.id).toBe(testFacet.id);
         });
     });
 });
 
-type ZoneWithCustomFields = Omit<ResultOf<typeof getZoneDocument>['zone'], 'customFields'> & {
-    customFields: {
-        relatedFacet: {
-            id: string;
-        };
-    };
-};
-
-type CreateZoneMutationWithCF = Omit<ResultOf<typeof updateZoneDocument>, 'createZone'> & {
-    createZone: ZoneWithCustomFields;
-};
-
-type UpdateZoneMutationWithCF = Omit<ResultOf<typeof updateZoneDocument>, 'updateZone'> & {
-    updateZone: ZoneWithCustomFields;
-};
-
-type GetZoneQueryWithCF = Omit<ResultOf<typeof getZoneDocument>, 'zone'> & {
-    zone: ZoneWithCustomFields;
-};
-
-const CREATE_FACET_WITH_VALUE = graphql(`
-    mutation CreateFacetWithValue($input: CreateFacetInput!) {
-        createFacet(input: $input) {
-            id
-            name
-        }
-    }
-`);
-
-// A new fragment to include the custom fields
-const ZONE_CUSTOM_FIELDS_FRAGMENT = graphql(`
+const zoneWithCustomFieldsFragment = graphql(`
     fragment ZoneCustomFields on Zone {
         customFields {
             relatedFacet {
@@ -306,35 +273,41 @@ const ZONE_CUSTOM_FIELDS_FRAGMENT = graphql(`
     }
 `);
 
-// A new mutation to create a Zone with custom fields
-const CREATE_ZONE_WITH_CF = graphql(`
-    mutation CreateZoneWithCF($input: CreateZoneInput!) {
-        createZone(input: $input) {
-            id
-            name
-            ...ZoneCustomFields
+const createZoneWithCustomFieldsDocument = graphql(
+    `
+        mutation CreateZoneWithCF($input: CreateZoneInput!) {
+            createZone(input: $input) {
+                id
+                name
+                ...ZoneCustomFields
+            }
         }
-    }
-`, [ZONE_CUSTOM_FIELDS_FRAGMENT]);
+    `,
+    [zoneWithCustomFieldsFragment],
+);
 
-// A new mutation to update a Zone with custom fields
-const UPDATE_ZONE_WITH_CF = graphql(`
-    mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
-        updateZone(input: $input) {
-            id
-            name
-            ...ZoneCustomFields
+const updateZoneWithCustomFieldsDocument = graphql(
+    `
+        mutation UpdateZoneWithCF($input: UpdateZoneInput!) {
+            updateZone(input: $input) {
+                id
+                name
+                ...ZoneCustomFields
+            }
         }
-    }
-`, [ZONE_CUSTOM_FIELDS_FRAGMENT]);
+    `,
+    [zoneWithCustomFieldsFragment],
+);
 
-// A new query to fetch the Zone with its custom fields
-const GET_ZONE_WITH_CUSTOM_FIELDS = graphql(`
-    query GetZoneWithCustomFields($id: ID!) {
-        zone(id: $id) {
-            id
-            name
-            ...ZoneCustomFields
+const getZoneWithCustomFieldsDocument = graphql(
+    `
+        query GetZoneWithCustomFields($id: ID!) {
+            zone(id: $id) {
+                id
+                name
+                ...ZoneCustomFields
+            }
         }
-    }
-`, [ZONE_CUSTOM_FIELDS_FRAGMENT]);
+    `,
+    [zoneWithCustomFieldsFragment],
+);
