@@ -1,8 +1,10 @@
-import { DataDisplayComponentProps } from '@/vdb/framework/component-registry/component-registry.js';
+import { DataDisplayComponent } from '@/vdb/framework/component-registry/component-registry.js';
 import { Table } from '@tanstack/react-table';
 import { CellContext } from '@tanstack/table-core';
 import { DocumentNode } from 'graphql';
 import React from 'react';
+
+export type DataTableDisplayComponent = DataDisplayComponent<CellContext<any, any>>;
 
 /**
  * @description
@@ -24,7 +26,7 @@ export interface DashboardDataTableDisplayComponent {
      * The React component that will be rendered as the display.
      * It should accept `value` and other standard display props.
      */
-    component: React.ComponentType<DataDisplayComponentProps<CellContext<any, any>>>;
+    component: DataTableDisplayComponent;
 }
 
 export type BulkActionContext<Item extends { id: string } & Record<string, any>> = {

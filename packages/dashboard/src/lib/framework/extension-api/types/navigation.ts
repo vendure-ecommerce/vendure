@@ -39,7 +39,7 @@ export interface DashboardRouteDefinition {
      * The value is a Tanstack Router
      * [loader function](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#route-loaders)
      */
-    loader?: RouteOptions['loader'];
+    loader?: RouteOptions<any>['loader'];
 
     /**
      * @description
@@ -47,7 +47,7 @@ export interface DashboardRouteDefinition {
      * The value is a Tanstack Router
      * [validateSearch function](https://tanstack.com/router/latest/docs/framework/react/guide/search-params#search-param-validation)
      */
-    validateSearch?: RouteOptions['validateSearch'];
+    validateSearch?: RouteOptions<any>['validateSearch'];
 
     /**
      * @description

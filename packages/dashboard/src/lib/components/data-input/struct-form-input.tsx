@@ -20,7 +20,7 @@ import {
     StructCustomFieldConfig,
     StructField,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
+import { isReadonlyField, isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { CustomFieldListInput } from './custom-field-list-input.js';
 import { DateTimeInput } from './datetime-input.js';
@@ -98,185 +98,61 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         return input?.find(t => t.languageCode === displayLanguage)?.value;
     };
 
-    const isReadonly = fieldDef?.readonly === true;
-
-    // Helper function to render individual struct field inputs
-    const renderStructFieldInput = (
-        structField: StructField,
-        inputField: ControllerRenderProps<any, any>,
-    ) => {
-        const isList = structField.list ?? false;
-
-        // Helper function to render single input for a struct field
-        const renderSingleStructInput = (singleField: ControllerRenderProps<any, any>) => {
-            switch (structField.type) {
-                case 'string': {
-                    // Check if the field has options (dropdown)
-                    const stringField = structField as any; // GraphQL union types need casting
-                    if (stringField.options && stringField.options.length > 0) {
-                        return (
-                            <SelectWithOptions {...singleField} fieldDef={stringField} isListField={false} />
-                        );
-                    }
-                    return (
-                        <Input
-                            value={singleField.value ?? ''}
-                            onChange={e => singleField.onChange(e.target.value)}
-                            onBlur={singleField.onBlur}
-                            name={singleField.name}
-                            disabled={isReadonly}
-                        />
-                    );
-                }
-                case 'int':
-                case 'float': {
-                    const isFloat = structField.type === 'float';
-                    const numericField = structField as any; // GraphQL union types need casting
-                    const min = isFloat ? numericField.floatMin : numericField.intMin;
-                    const max = isFloat ? numericField.floatMax : numericField.intMax;
-                    const step = isFloat ? numericField.floatStep : numericField.intStep;
-
-                    return (
-                        <Input
-                            type="number"
-                            value={singleField.value ?? ''}
-                            onChange={e => {
-                                const value = e.target.valueAsNumber;
-                                singleField.onChange(isNaN(value) ? undefined : value);
-                            }}
-                            onBlur={singleField.onBlur}
-                            name={singleField.name}
-                            disabled={isReadonly}
-                            min={min}
-                            max={max}
-                            step={step}
-                        />
-                    );
-                }
-                case 'boolean':
-                    return (
-                        <Switch
-                            checked={singleField.value}
-                            onCheckedChange={singleField.onChange}
-                            disabled={isReadonly}
-                        />
-                    );
-                case 'datetime':
-                    return <DateTimeInput {...singleField} />;
-                default:
-                    return (
-                        <Input
-                            value={singleField.value ?? ''}
-                            onChange={e => singleField.onChange(e.target.value)}
-                            onBlur={singleField.onBlur}
-                            name={singleField.name}
-                            disabled={isReadonly}
-                        />
-                    );
-            }
-        };
-
-        // Handle string fields with options (dropdown) - already handles list case with multi-select
-        if (structField.type === 'string') {
-            const stringField = structField as any; // GraphQL union types need casting
-            if (stringField.options && stringField.options.length > 0) {
-                return (
-                    <SelectWithOptions
-                        {...inputField}
-                        fieldDef={stringField}
-                        disabled={isReadonly}
-                        isListField={isList}
-                    />
-                );
-            }
-        }
-
-        // For list struct fields, wrap with list input
-        if (isList) {
-            const getDefaultValue = () => {
-                switch (structField.type) {
-                    case 'string':
-                        return '';
-                    case 'int':
-                    case 'float':
-                        return 0;
-                    case 'boolean':
-                        return false;
-                    case 'datetime':
-                        return '';
-                    default:
-                        return '';
-                }
-            };
-
-            // Determine if the field type needs full width
-            const needsFullWidth = structField.type === 'text' || structField.type === 'localeText';
-
-            return (
-                <CustomFieldListInput
-                    {...inputField}
-                    disabled={isReadonly}
-                    renderInput={(index, listItemField) => renderSingleStructInput(listItemField)}
-                    defaultValue={getDefaultValue()}
-                />
-            );
-        }
-
-        // For non-list fields, render directly
-        return renderSingleStructInput(inputField);
-    };
+    const isReadonly = isReadonlyField(fieldDef);
 
     // Edit mode - memoized to prevent focus loss from re-renders
     const EditMode = useMemo(
-        () => (
-            <div className="space-y-4 border rounded-md p-4">
-                {!isReadonly && (
-                    <div className="flex justify-end">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setIsEditing(false)}
-                            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                        >
-                            <CheckIcon className="h-4 w-4" />
-                            <span className="sr-only">Done</span>
-                        </Button>
-                    </div>
-                )}
-                {fieldDef?.fields?.map(structField => (
-                    <FormField
-                        key={structField.name}
-                        control={control}
-                        name={`${field.name}.${structField.name}`}
-                        render={({ field: structInputField }) => (
-                            <FormItem>
-                                <div className="flex items-baseline gap-4">
-                                    <div className="flex-1">
-                                        <FormLabel>
-                                            {getTranslation(structField.label) ?? structField.name}
-                                        </FormLabel>
-                                        {getTranslation(structField.description) && (
-                                            <FormDescription>
-                                                {getTranslation(structField.description)}
-                                            </FormDescription>
-                                        )}
+        () =>
+            fieldDef && isStructFieldConfig(fieldDef) ? (
+                <div className="space-y-4 border rounded-md p-4">
+                    {!isReadonly && (
+                        <div className="flex justify-end">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsEditing(false)}
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                            >
+                                <CheckIcon className="h-4 w-4" />
+                                <span className="sr-only">Done</span>
+                            </Button>
+                        </div>
+                    )}
+                    {fieldDef?.fields.map(structField => (
+                        <FormField
+                            key={structField.name}
+                            control={control}
+                            name={`${field.name}.${structField.name}`}
+                            render={({ field: structInputField }) => (
+                                <FormItem>
+                                    <div className="flex items-baseline gap-4">
+                                        <div className="flex-1">
+                                            <FormLabel>
+                                                {getTranslation(structField.label) ?? structField.name}
+                                            </FormLabel>
+                                            {getTranslation(structField.description) && (
+                                                <FormDescription>
+                                                    {getTranslation(structField.description)}
+                                                </FormDescription>
+                                            )}
+                                        </div>
+                                        <div className="flex-[2]">
+                                            <FormControl>
+                                                {renderStructFieldInput(structField, structInputField)}
+                                            </FormControl>
+                                            <FormMessage />
+                                        </div>
                                     </div>
-                                    <div className="flex-[2]">
-                                        <FormControl>
-                                            {renderStructFieldInput(structField, structInputField)}
-                                        </FormControl>
-                                        <FormMessage />
-                                    </div>
-                                </div>
-                            </FormItem>
-                        )}
-                    />
-                ))}
-            </div>
-        ),
-        [fieldDef, control, field.name, getTranslation, renderStructFieldInput, isReadonly],
+                                </FormItem>
+                            )}
+                        />
+                    ))}
+                </div>
+            ) : null,
+        [fieldDef, control, field.name, getTranslation, isReadonly],
     );
 
+    // Early return if not a struct field config
     if (!fieldDef || !isStructFieldConfig(fieldDef)) {
         return null;
     }
@@ -317,3 +193,128 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
         />
     );
 }
+
+// Helper function to render individual struct field inputs
+const renderStructFieldInput = (
+    structField: StructField,
+    inputField: ControllerRenderProps<any, any>,
+    isReadonly: boolean = false,
+) => {
+    const isList = structField.list ?? false;
+
+    // Helper function to render single input for a struct field
+    const renderSingleStructInput = (singleField: ControllerRenderProps<any, any>) => {
+        switch (structField.type) {
+            case 'string': {
+                // Check if the field has options (dropdown)
+                const stringField = structField as any; // GraphQL union types need casting
+                if (stringField.options && stringField.options.length > 0) {
+                    return <SelectWithOptions {...singleField} fieldDef={stringField} isListField={false} />;
+                }
+                return (
+                    <Input
+                        value={singleField.value ?? ''}
+                        onChange={e => singleField.onChange(e.target.value)}
+                        onBlur={singleField.onBlur}
+                        name={singleField.name}
+                        disabled={isReadonly}
+                    />
+                );
+            }
+            case 'int':
+            case 'float': {
+                const isFloat = structField.type === 'float';
+                const numericField = structField as any; // GraphQL union types need casting
+                const min = isFloat ? numericField.floatMin : numericField.intMin;
+                const max = isFloat ? numericField.floatMax : numericField.intMax;
+                const step = isFloat ? numericField.floatStep : numericField.intStep;
+
+                return (
+                    <Input
+                        type="number"
+                        value={singleField.value ?? ''}
+                        onChange={e => {
+                            const value = e.target.valueAsNumber;
+                            singleField.onChange(isNaN(value) ? undefined : value);
+                        }}
+                        onBlur={singleField.onBlur}
+                        name={singleField.name}
+                        disabled={isReadonly}
+                        min={min}
+                        max={max}
+                        step={step}
+                    />
+                );
+            }
+            case 'boolean':
+                return (
+                    <Switch
+                        checked={singleField.value}
+                        onCheckedChange={singleField.onChange}
+                        disabled={isReadonly}
+                    />
+                );
+            case 'datetime':
+                return <DateTimeInput {...singleField} />;
+            default:
+                return (
+                    <Input
+                        value={singleField.value ?? ''}
+                        onChange={e => singleField.onChange(e.target.value)}
+                        onBlur={singleField.onBlur}
+                        name={singleField.name}
+                        disabled={isReadonly}
+                    />
+                );
+        }
+    };
+
+    // Handle string fields with options (dropdown) - already handles list case with multi-select
+    if (structField.type === 'string') {
+        const stringField = structField as any; // GraphQL union types need casting
+        if (stringField.options && stringField.options.length > 0) {
+            return (
+                <SelectWithOptions
+                    {...inputField}
+                    fieldDef={stringField}
+                    disabled={isReadonly}
+                    isListField={isList}
+                />
+            );
+        }
+    }
+
+    // For list struct fields, wrap with list input
+    if (isList) {
+        const getDefaultValue = () => {
+            switch (structField.type) {
+                case 'string':
+                    return '';
+                case 'int':
+                case 'float':
+                    return 0;
+                case 'boolean':
+                    return false;
+                case 'datetime':
+                    return '';
+                default:
+                    return '';
+            }
+        };
+
+        // Determine if the field type needs full width
+        const needsFullWidth = structField.type === 'text' || structField.type === 'localeText';
+
+        return (
+            <CustomFieldListInput
+                {...inputField}
+                disabled={isReadonly}
+                renderInput={(index, listItemField) => renderSingleStructInput(listItemField)}
+                defaultValue={getDefaultValue()}
+            />
+        );
+    }
+
+    // For non-list fields, render directly
+    return renderSingleStructInput(inputField);
+};

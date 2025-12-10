@@ -28,7 +28,7 @@ export interface RelationSelectorConfig<T = any> {
     /** Number of items to load per page */
     pageSize?: number;
     /** Placeholder text for the search input */
-    placeholder?: React.ReactNode;
+    placeholder?: string;
     /** Whether to enable multi-select mode */
     multiple?: boolean;
     /** Custom filter function for search */

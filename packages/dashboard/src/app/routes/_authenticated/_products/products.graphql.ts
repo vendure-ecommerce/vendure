@@ -60,6 +60,7 @@ export const productDetailFragment = graphql(
                     code
                 }
             }
+            customFields
         }
     `,
     [assetFragment],
