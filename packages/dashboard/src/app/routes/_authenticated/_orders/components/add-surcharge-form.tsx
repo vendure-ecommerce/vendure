@@ -1,8 +1,10 @@
+import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { DetailFormGrid } from '@/vdb/framework/layout-engine/page-layout.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans } from '@lingui/react/macro';
@@ -42,10 +44,12 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
             sku: '',
             price: '0',
             priceIncludesTax: false,
-            taxRate: null,
+            taxRate: 0,
             taxDescription: '',
         },
     });
+
+    const taxRate = surchargeForm.watch('taxRate') ?? 0;
 
     const handleAddSurcharge = () => {
         surchargeForm.handleSubmit(values => {
@@ -63,7 +67,7 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <DetailFormGrid>
                 <FormFieldWrapper
                     control={surchargeForm.control}
                     name="description"
@@ -92,27 +96,21 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
                 <FormFieldWrapper
                     control={surchargeForm.control}
                     name="priceIncludesTax"
-                    label={<Trans>Price includes tax</Trans>}
-                    render={({ field }) => (
-                        <div className="flex items-center space-x-2">
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                        </div>
-                    )}
+                    label={<Trans>Includes tax at {taxRate || 0}%</Trans>}
+                    render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
                 />
                 <FormFieldWrapper
                     control={surchargeForm.control}
                     name="taxRate"
-                    label={<Trans>Tax rate (%)</Trans>}
+                    label={<Trans>Tax rate</Trans>}
                     render={({ field }) => (
-                        <Input
-                            type="number"
-                            step="0.01"
+                        <AffixedInput
                             {...field}
-                            value={field.value ?? ''}
-                            onChange={e => {
-                                const value = e.target.value === '' ? null : parseFloat(e.target.value);
-                                field.onChange(isNaN(value as number) ? null : value);
-                            }}
+                            type="number"
+                            suffix="%"
+                            min={0}
+                            value={field.value}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
                         />
                     )}
                 />
@@ -122,7 +120,7 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
                     label={<Trans>Tax description</Trans>}
                     render={({ field }) => <Input {...field} />}
                 />
-            </div>
+            </DetailFormGrid>
             <Button type="button" onClick={handleAddSurcharge} disabled={!surchargeForm.formState.isValid}>
                 <Plus className="w-4 h-4 mr-2" />
                 <Trans>Add surcharge</Trans>
