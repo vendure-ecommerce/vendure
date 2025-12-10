@@ -16,6 +16,12 @@ import { toast } from 'sonner';
 
 import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
+import {
+    calculateDragTargetPosition,
+    calculateSiblingIndex,
+    getItemParentId,
+    isCircularReference,
+} from '@/vdb/components/data-table/data-table-utils.js';
 import { collectionListDocument, moveCollectionDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
@@ -87,39 +93,75 @@ function CollectionListPage() {
         return allRows;
     };
 
-    const handleReorder = async (oldIndex: number, newIndex: number, item: Collection) => {
+    const handleReorder = async (oldIndex: number, newIndex: number, item: Collection, allItems?: Collection[]) => {
         try {
-            // Use the first breadcrumb (root collection)
-            const parentId = item.breadcrumbs?.[0]?.id;
-            
-            if (!parentId) {
+            const items = allItems || [];
+            const sourceParentId = getItemParentId(item);
+
+            if (!sourceParentId) {
                 throw new Error('Unable to determine parent collection ID');
             }
 
+            // Calculate target position (parent and index)
+            const { targetParentId, adjustedIndex: initialIndex } = calculateDragTargetPosition({
+                item,
+                oldIndex,
+                newIndex,
+                items,
+                sourceParentId,
+                expanded,
+            });
+
+            // Validate no circular references when moving to different parent
+            if (targetParentId !== sourceParentId && isCircularReference(item, targetParentId, items)) {
+                toast.error(t`Cannot move a collection into its own descendant`);
+                throw new Error('Circular reference detected');
+            }
+
+            // Calculate final index (adjust for same-parent moves)
+            const adjustedIndex = targetParentId === sourceParentId
+                ? calculateSiblingIndex({ item, oldIndex, newIndex, items, parentId: sourceParentId })
+                : initialIndex;
+
+            // Perform the move
             await api.mutate(moveCollectionDocument, {
                 input: {
                     collectionId: item.id,
-                    parentId: parentId,
-                    index: newIndex,
+                    parentId: targetParentId,
+                    index: adjustedIndex,
                 },
             });
-            await queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
-            
-            toast.success(t`Collection position updated`);
+
+            // Invalidate queries and show success message
+            const queriesToInvalidate = [
+                queryClient.invalidateQueries({ queryKey: ['childCollections', sourceParentId] }),
+                queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
+            ];
+
+            if (targetParentId !== sourceParentId) {
+                queriesToInvalidate.push(
+                    queryClient.invalidateQueries({ queryKey: ['childCollections', targetParentId] })
+                );
+                await Promise.all(queriesToInvalidate);
+                toast.success(t`Collection moved to new parent`);
+            } else {
+                await Promise.all(queriesToInvalidate);
+                toast.success(t`Collection position updated`);
+            }
         } catch (error) {
             console.error('Failed to reorder collection:', error);
-            toast.error(t`Failed to update collection position`);
-            throw error; 
+            if (error instanceof Error && error.message !== 'Circular reference detected') {
+                toast.error(t`Failed to update collection position`);
+            }
+            throw error;
         }
     };
 
     // Determine if drag-and-drop should be disabled
-    // We disable it when:
-    // 1. There's a search term (which shows nested items)
-    // 2. Any rows are expanded (showing nested items)
+    // We disable it when there's a search term (which shows all nested items flattened)
+    // We now ALLOW dragging when rows are expanded to enable nested reordering
     const isFiltering = !!searchTerm;
-    const hasExpandedRows = Object.keys(expanded).length > 0;
-    const isDragDisabled = isFiltering || hasExpandedRows;
+    const isDragDisabled = isFiltering;
 
     return (
         <ListPage

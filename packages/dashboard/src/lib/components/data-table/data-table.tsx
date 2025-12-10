@@ -145,8 +145,9 @@ interface DataTableProps<TData> {
      * @description
      * Callback when items are reordered via drag and drop.
      * When provided, enables drag-and-drop functionality.
+     * The fourth parameter provides all items for context-aware reordering.
      */
-    onReorder?: (oldIndex: number, newIndex: number, item: TData) => void | Promise<void>;
+    onReorder?: (oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) => void | Promise<void>;
     /**
      * @description
      * When true, drag and drop will be disabled.
@@ -248,8 +249,8 @@ export function DataTable<TData>({
             setIsReordering(true);
 
             try {
-                // Call the user's onReorder callback
-                await onReorder(oldIndex, newIndex, localData[oldIndex]);
+                // Call the user's onReorder callback with all items for context
+                await onReorder(oldIndex, newIndex, localData[oldIndex], localData);
             } catch (error) {
                 // Revert on error
                 setLocalData(originalState);

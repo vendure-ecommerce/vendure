@@ -1,4 +1,4 @@
-import { AccessorFnColumnDef } from '@tanstack/react-table';
+import { AccessorFnColumnDef, ExpandedState } from '@tanstack/react-table';
 import { AccessorKeyColumnDef } from '@tanstack/table-core';
 
 /**
@@ -48,4 +48,149 @@ export function getStandardizedDefaultColumnOrder<T extends string | number | sy
     }
     const rest = defaultColumnOrder.filter(c => !standardFirstColumns.has(c as string));
     return [...standardFirstColumns, ...rest] as T[];
+}
+
+/**
+ * Hierarchical item type with parent-child relationships
+ */
+export interface HierarchicalItem {
+    id: string;
+    parentId?: string | null;
+    breadcrumbs?: Array<{ id: string }>;
+    children?: Array<{ id: string }> | null;
+}
+
+/**
+ * Gets the parent ID of a hierarchical item
+ */
+export function getItemParentId<T extends HierarchicalItem>(
+    item: T | null | undefined,
+): string | null | undefined {
+    return item?.parentId || item?.breadcrumbs?.[0]?.id;
+}
+
+/**
+ * Gets all siblings (items with the same parent) for a given parent ID
+ */
+export function getItemSiblings<T extends HierarchicalItem>(
+    items: T[],
+    parentId: string | null | undefined,
+): T[] {
+    return items.filter(item => getItemParentId(item) === parentId);
+}
+
+/**
+ * Checks if moving an item to a new parent would create a circular reference
+ */
+export function isCircularReference<T extends HierarchicalItem>(
+    item: T,
+    targetParentId: string,
+    items: T[],
+): boolean {
+    const targetParentItem = items.find(i => i.id === targetParentId);
+    return (
+        item.children?.some(child => {
+            if (child.id === targetParentId) return true;
+            const targetBreadcrumbIds = targetParentItem?.breadcrumbs?.map(b => b.id) || [];
+            return targetBreadcrumbIds.includes(item.id);
+        }) ?? false
+    );
+}
+
+/**
+ * Result of calculating the target position for a drag and drop operation
+ */
+export interface TargetPosition {
+    targetParentId: string;
+    adjustedIndex: number;
+}
+
+/**
+ * Determines the target parent and index for a hierarchical drag and drop operation
+ */
+export function calculateDragTargetPosition<T extends HierarchicalItem>(params: {
+    item: T;
+    oldIndex: number;
+    newIndex: number;
+    items: T[];
+    sourceParentId: string;
+    expanded: ExpandedState;
+}): TargetPosition {
+    const { item, oldIndex, newIndex, items, sourceParentId, expanded } = params;
+
+    const targetItem = items[newIndex];
+    const previousItem = newIndex > 0 ? items[newIndex - 1] : null;
+    const isDraggingDown = oldIndex < newIndex;
+
+    let targetParentId = sourceParentId;
+    let adjustedIndex = 0;
+
+    // Check if dropping INTO an expanded collection
+    if (isDraggingDown && targetItem?.id !== item.id && expanded[targetItem.id as keyof ExpandedState]) {
+        // Dragging down onto expanded collection → make first child
+        targetParentId = targetItem.id;
+        adjustedIndex = 0;
+    } else if (
+        isDraggingDown &&
+        previousItem &&
+        targetItem?.id !== item.id &&
+        expanded[previousItem.id as keyof ExpandedState] &&
+        targetItem.parentId === previousItem.id
+    ) {
+        // Dragging down into expanded collection's children → make first child
+        targetParentId = previousItem.id;
+        adjustedIndex = 0;
+    } else if (!isDraggingDown && previousItem && expanded[previousItem.id as keyof ExpandedState]) {
+        // Dragging up into expanded collection → make first child
+        targetParentId = previousItem.id;
+        adjustedIndex = 0;
+    } else if (targetItem?.id !== item.id) {
+        // Normal reordering - determine target parent from targetItem
+        const targetItemParentId = getItemParentId(targetItem);
+
+        if (targetItemParentId && targetItemParentId !== sourceParentId) {
+            // Cross-parent move
+            targetParentId = targetItemParentId;
+            const targetSiblings = getItemSiblings(items, targetParentId);
+            adjustedIndex = targetSiblings.findIndex(i => i.id === targetItem.id);
+        }
+    } else if (!targetItem && previousItem) {
+        // Dropping at end - join previous item's parent
+        const previousItemParentId = getItemParentId(previousItem);
+
+        if (previousItemParentId && previousItemParentId !== sourceParentId) {
+            targetParentId = previousItemParentId;
+            adjustedIndex = getItemSiblings(items, targetParentId).length;
+        }
+    }
+
+    return { targetParentId, adjustedIndex };
+}
+
+/**
+ * Calculates the adjusted sibling index when reordering within the same parent
+ */
+export function calculateSiblingIndex<T extends HierarchicalItem>(params: {
+    item: T;
+    oldIndex: number;
+    newIndex: number;
+    items: T[];
+    parentId: string;
+}): number {
+    const { item, oldIndex, newIndex, items, parentId } = params;
+
+    const siblings = getItemSiblings(items, parentId);
+    const oldSiblingIndex = siblings.findIndex(i => i.id === item.id);
+    const isDraggingDown = oldIndex < newIndex;
+
+    let newSiblingIndex = oldSiblingIndex;
+    const [start, end] = isDraggingDown ? [oldIndex + 1, newIndex] : [newIndex, oldIndex - 1];
+
+    for (let i = start; i <= end; i++) {
+        if (getItemParentId(items[i]) === parentId) {
+            newSiblingIndex += isDraggingDown ? 1 : -1;
+        }
+    }
+
+    return newSiblingIndex;
 }
