@@ -22,7 +22,7 @@ import {
     getMutationName,
     getQueryName,
 } from '../document-introspection/get-document-structure.js';
-import { useGeneratedForm } from '../form-engine/use-generated-form.js';
+import { useGeneratedForm, WithLooseCustomFields } from '../form-engine/use-generated-form.js';
 
 import { DetailEntityPath } from './page-types.js';
 
@@ -95,7 +95,9 @@ export interface DetailPageOptions<
      * @description
      * The function to set the values for the update document.
      */
-    setValuesForUpdate: (entity: NonNullable<ResultOf<T>[EntityField]>) => VariablesOf<U>[VarNameUpdate];
+    setValuesForUpdate: (
+        entity: NonNullable<ResultOf<T>[EntityField]>,
+    ) => WithLooseCustomFields<VariablesOf<U>[VarNameUpdate]>;
     transformCreateInput?: (input: VariablesOf<C>[VarNameCreate]) => VariablesOf<C>[VarNameCreate];
     transformUpdateInput?: (input: VariablesOf<U>[VarNameUpdate]) => VariablesOf<U>[VarNameUpdate];
     /**

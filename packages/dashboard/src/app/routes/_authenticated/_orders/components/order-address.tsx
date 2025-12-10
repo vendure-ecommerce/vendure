@@ -3,8 +3,8 @@ import { ResultOf } from 'gql.tada';
 import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
 
-type OrderAddress = Omit<ResultOf<typeof orderAddressFragment>, 'country'> & {
-    country: string | { code: string; name: string } | null;
+type OrderAddress = Partial<Omit<ResultOf<typeof orderAddressFragment>, 'country'>> & {
+    country?: string | { code: string; name: string } | null;
 };
 
 export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {

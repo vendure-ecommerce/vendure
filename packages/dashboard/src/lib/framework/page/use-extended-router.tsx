@@ -21,10 +21,7 @@ export const useExtendedRouter = (
 
         // Only extend if extensions are loaded
         if (!extensionsLoaded) {
-            return createRouter({
-                ...routerOptions,
-                routeTree,
-            });
+            return createExtendedRouter(routerOptions, routeTree);
         }
 
         const authenticatedRouteIndex = routeTree.children.findIndex(
@@ -33,10 +30,7 @@ export const useExtendedRouter = (
 
         if (authenticatedRouteIndex === -1) {
             // No authenticated route found, return router with base tree
-            return createRouter({
-                ...routerOptions,
-                routeTree,
-            });
+            return createExtendedRouter(routerOptions, routeTree);
         }
 
         let authenticatedRoute: AnyRoute = routeTree.children[authenticatedRouteIndex];
@@ -106,10 +100,7 @@ export const useExtendedRouter = (
 
         // Only extend the tree if we have new routes to add
         if (newAuthenticatedRoutes.length === 0 && newRootRoutes.length === 0) {
-            return createRouter({
-                ...routerOptions,
-                routeTree,
-            });
+            return createExtendedRouter(routerOptions, routeTree);
         }
 
         const childrenWithoutAuthenticated = routeTree.children.filter(
@@ -127,9 +118,22 @@ export const useExtendedRouter = (
             ...newRootRoutes,
         ]);
 
-        return createRouter({
-            ...routerOptions,
-            routeTree: extendedRouteTree,
-        });
+        return createExtendedRouter(routerOptions, extendedRouteTree);
     }, [baseRouteTree, routerOptions, extensionsLoaded]);
 };
+
+/**
+ * Helper to create a router with extended route tree, handling some
+ * type issues with hydrate/dehydrate functions.
+ */
+function createExtendedRouter(
+    routerOptions: Omit<RouterOptions<AnyRoute, any>, 'routeTree'>,
+    extendedRouteTree: AnyRoute,
+) {
+    return createRouter({
+        ...routerOptions,
+        dehydrate: routerOptions.dehydrate as any,
+        hydrate: routerOptions.hydrate as any,
+        routeTree: extendedRouteTree,
+    });
+}
