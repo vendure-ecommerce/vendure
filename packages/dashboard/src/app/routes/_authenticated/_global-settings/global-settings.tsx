@@ -131,9 +131,9 @@ function GlobalSettingsPage() {
                             label={<Trans>Global out of stock threshold</Trans>}
                             description={
                                 <Trans>
-                                    Sets the stock level at which this a variant is considered to be out of
-                                    stock. Using a negative value enables backorder support. Can be overridden
-                                    by product variants.
+                                    Sets the stock level at which a variant is considered to be out of stock.
+                                    Using a negative value enables backorder support. Can be overridden by
+                                    product variants.
                                 </Trans>
                             }
                             render={({ field }) => <NumberInput {...field} />}
