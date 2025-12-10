@@ -64,7 +64,7 @@
         "@lingui/cli": "^5.5.0",
         "@lingui/core": "^5.5.0",
         "@lingui/react": "^5.5.0",
-        "@lingui/swc-plugin": "^5.6.1",
+        "@lingui/swc-plugin": "5.6.1",
         "@lingui/vite-plugin": "^5.5.0",
         "@radix-ui/react-accordion": "^1.2.11",
         "@radix-ui/react-alert-dialog": "^1.1.14",
