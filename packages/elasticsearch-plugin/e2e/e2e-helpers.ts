@@ -53,7 +53,7 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             term: 'camera',
             groupByProduct: true,
         },
-    );
+    });
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Camera Lens',
         'Instant Camera',
