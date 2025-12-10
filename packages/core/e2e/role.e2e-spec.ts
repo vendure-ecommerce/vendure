@@ -590,6 +590,76 @@ describe('Role resolver', () => {
             }, 'Active user does not have sufficient permissions'),
         );
     });
+
+    describe('roles query', () => {
+        let limitedChannelAdmin: FragmentOf<typeof administratorFragment>
+
+        beforeAll(async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await adminClient.asSuperAdmin();
+
+            // Create roles that will be hidden from limited admin
+            await adminClient.query(
+                createRoleDocument,
+                {
+                    input: {
+                        code: 'hidden-role',
+                        description: 'Hidden role',
+                        // Some permission the limited admin user doesn't have, so the role is hidden
+                        permissions: [Permission.ReadOrder],
+                    },
+                },
+            );
+
+            // Create a role to assign to the limited admin user
+            const visibleRole = await adminClient.query(createRoleDocument, {
+                input: {
+                    code: 'visible-role',
+                    description: 'Visible role',
+                    permissions: [Permission.ReadAdministrator],
+                },
+            });
+
+            const { createAdministrator } = await adminClient.query(createAdministratorDocument, {
+                input: {
+                    firstName: 'Limited',
+                    lastName: 'Admin',
+                    emailAddress: 'limited@test.com',
+                    roleIds: [visibleRole.createRole.id],
+                    password: 'test',
+                },
+            });
+            limitedChannelAdmin = createAdministrator;
+        });
+
+        it('should return only visible roles with correct pagination', async () => {
+            // Login as limited admin
+            await adminClient.asUserWithCredentials(limitedChannelAdmin.emailAddress, 'test');
+
+            // Query first page with pagination, sorted by createdAt ASC
+            const result = await adminClient.query(
+                getRolesDocument,
+                {
+                    options: {
+                        take: 2,
+                    },
+                },
+            );
+
+            // Should have at least visible role and test role created earlier
+            expect(result.roles.items).toHaveLength(2);
+            expect(result.roles.totalItems).toBe(2);
+
+            // The returned role should be one that the limited admin can see
+            const roleCodes = result.roles.items.map(r => r.code);
+            expect(roleCodes).toContain('visible-role');
+            expect(roleCodes).not.toContain('hidden-role');
+        });
+
+        afterAll(async () => {
+            await adminClient.asSuperAdmin();
+        });
+    });
 });
 
 export const getRolesDocument = graphql(

@@ -8,14 +8,9 @@ import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
-const host =
-    uiConfig.api.host !== 'auto'
-        ? uiConfig.api.host
-        : `${window.location.protocol}//${window.location.hostname}`;
-const API_URL =
-    host +
-    `:${uiConfig.api.port !== 'auto' ? uiConfig.api.port : window.location.port}` +
-    `/${uiConfig.api.adminApiPath}`;
+import { getApiBaseUrl } from '../utils/config-utils.js';
+
+const API_URL = getApiBaseUrl() + `/${uiConfig.api.adminApiPath}`;
 
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;

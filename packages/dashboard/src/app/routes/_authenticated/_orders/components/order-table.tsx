@@ -147,7 +147,10 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
     ];
     const currencyCode = order.currencyCode;
 
-    const fields = getFieldsFromDocumentNode(addCustomFields(orderDetailDocument), ['order', 'lines']);
+    const fields = getFieldsFromDocumentNode(
+        addCustomFields(orderDetailDocument, { includeNestedFragments: ['OrderLine'] }),
+        ['order', 'lines'],
+    );
 
     const customizeColumns = useMemo(() => createCustomizeColumns(currencyCode), [currencyCode]);
 

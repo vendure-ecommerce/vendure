@@ -64,3 +64,66 @@ defineDashboardExtension({
     ],
 });
 ```
+
+## Interacting with the detail page form
+
+Sometimes you want to define a [page block](./page-blocks.md) that needs to interact with the detail page's form:
+
+- To take some action when the form is submitted
+- To mark the form as dirty from inside your page block
+
+These advanced use-cases can be achieved by using the `useFormContext` hook from `react-hook-form`.
+
+### Reacting to form submission
+
+Here's how you can use the `formState` to react to a form submission:
+
+```tsx
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
+
+export function MyPageBlock() {
+    const { formState: { isSubmitSuccessful } } = useFormContext();
+
+    useEffect(() => {
+        if (isSubmitSuccessful) {
+            console.log('The detail page form was submitted');
+        }
+    }, [isSubmitSuccessful]);
+}
+```
+
+### Setting the form as dirty
+
+Let's say you have a page block that interacts with a custom mutation to set some
+data related to a Product. You want to fire your custom mutation when the form is submitted -
+this is done using the pattern above.
+
+However, you need to somehow signal to the form that it is now dirty and can be save, even though
+no property of the Product itself may have changed.
+
+Here's a work-around to allow this:
+
+```tsx
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { Button } from '@vendure/dashboard';
+
+export function MyPageBlock() {
+    const { register } = useFormContext();
+
+    useEffect(() => {
+        // We register a "fake" field on the form that we only use
+        // to track the dirty state of this page block component
+        register('my-page-block-dirty-tracker')
+    }, [register]);
+    
+    return (
+        <Button onClick={() => {
+            // We set that "fake" field to a random value to mark the whole
+            // form as dirty, so the "save" button becomes enabled.
+            setValue('dirty-tracker', Math.random(), { shouldDirty: true });
+        }}>Set dirty</Button>
+    );
+}
+```
