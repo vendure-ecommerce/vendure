@@ -22,8 +22,7 @@ import { orderHistoryDocument, transitionOrderToStateDocument } from '../orders.
  */
 export function useTransitionOrderToState(orderId: string | undefined) {
     const [selectStateOpen, setSelectStateOpen] = useState(false);
-    const [onSuccessFn, setOnSuccessFn] = useState<() => void>(() => {
-    });
+    const [onSuccessFn, setOnSuccessFn] = useState<() => void>(() => {});
     const { data, isLoading, error } = useQuery({
         queryKey: ['orderPreModifyingState', orderId],
         queryFn: async () => {
@@ -142,7 +141,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
         transitionToPreModifyingState,
         transitionToState,
         ManuallySelectNextState,
-        selectNextState: ({ onSuccess }: { onSuccess?: () => void }) => {
+        selectNextState: ({ onSuccess }: { onSuccess?: () => void | Promise<void> }) => {
             setSelectStateOpen(true);
             if (onSuccess) {
                 setOnSuccessFn(() => onSuccess);

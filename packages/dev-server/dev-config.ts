@@ -10,7 +10,7 @@ import {
     dummyPaymentHandler,
     LogLevel,
     SettingsStoreScopes,
-    VendureConfig,
+    VendureConfig
 } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -47,7 +47,7 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
-        tokenMethod: ['bearer', 'cookie'] as const,
+        tokenMethod: ['bearer', 'cookie', 'api-key'] as const,
         requireVerification: true,
         customPermissions: [],
         cookieOptions: {
@@ -116,10 +116,10 @@ export const devConfig: VendureConfig = {
         ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
         ...(process.env.ENABLE_SENTRY === 'true' && process.env.SENTRY_DSN
             ? [
-                  SentryPlugin.init({
-                      includeErrorTestMutation: true,
-                  }),
-              ]
+                SentryPlugin.init({
+                    includeErrorTestMutation: true,
+                }),
+            ]
             : []),
         // AdminUiPlugin.init({
         //     route: 'admin',
@@ -148,7 +148,6 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
-            compatibilityMode: true,
             adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({

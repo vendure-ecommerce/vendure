@@ -54,9 +54,11 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             groupByProduct: true,
         },
     });
-    expect(result.search.items.map(i => i.productName).sort((a, b) => a.localeCompare(b))).toEqual(
-        ['Camera Lens', 'Instant Camera', 'SLR Camera'].sort((a, b) => a.localeCompare(b)),
-    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Camera Lens',
+        'Instant Camera',
+        'SLR Camera',
+    ]);
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {

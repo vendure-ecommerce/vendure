@@ -44,7 +44,7 @@ class StockMovementService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, stockLocationService: StockLocationService) => StockMovementService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, stockLocationService: <a href='/reference/typescript-api/services/stock-location-service#stocklocationservice'>StockLocationService</a>) => StockMovementService`}   />
 
 
 ### getStockMovementsByProductVariantId

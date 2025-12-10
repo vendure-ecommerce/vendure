@@ -72,7 +72,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readon
     const shouldShowTabs = useMemo(() => {
         if (!customFields) return false;
         const hasTabbedFields = customFields.some(field => field.ui?.tab);
-        return hasTabbedFields || groupedFields.length > 1;
+        return hasTabbedFields && groupedFields.length > 1;
     }, [customFields, groupedFields.length]);
 
     if (!shouldShowTabs) {
