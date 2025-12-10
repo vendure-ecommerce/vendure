@@ -414,11 +414,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             }
         }
 
-        if (result1.body.failures && result2.body.failures) {
-            return result1.body.failures.length === 0 && result2.body.failures.length === 0;
-        }
-
-        return false;
+        const failures1 = result1.body.failures ?? [];
+        const failures2 = result2.body.failures ?? [];
+        return failures1.length === 0 && failures2.length === 0;
     }
 
     private async updateProductsInternal(ctx: MutableRequestContext, productIds: ID[]) {
@@ -501,9 +499,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 { meta: true },
             );
             if (reindexVariantAliasExist.body) {
-                const reindexVariantAliasResult = await this.client.indices.getAlias({
-                    name: reindexVariantAliasName,
-                });
+                const reindexVariantAliasResult = await this.client.indices.getAlias(
+                    { name: reindexVariantAliasName },
+                    { meta: true },
+                );
                 const reindexVariantIndexName = Object.keys(reindexVariantAliasResult.body)[0];
                 await this.client.indices.delete({
                     index: [reindexVariantIndexName],
