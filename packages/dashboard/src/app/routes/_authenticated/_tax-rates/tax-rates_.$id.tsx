@@ -1,4 +1,4 @@
-import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -22,7 +22,6 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { createTaxRateDocument, taxRateDetailDocument, updateTaxRateDocument } from './tax-rates.graphql.js';
 
@@ -47,7 +46,7 @@ function TaxRateDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { t, i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -82,31 +81,6 @@ function TaxRateDetailPage() {
             });
         },
     });
-
-    // === Localized decimal input logic ===
-    const locale = i18n.locale.replace(/_/g, '-');
-    const decimalSeparator = useMemo(() => {
-        const parts = new Intl.NumberFormat(locale).formatToParts(1.1);
-        return parts.find(p => p.type === 'decimal')?.value ?? '.';
-    }, [locale]);
-
-    const [rateInput, setRateInput] = useState('');
-    const rateValue = form.watch('value');
-    const [isUserTyping, setIsUserTyping] = useState(false);
-
-    useEffect(() => {
-        if (isUserTyping) {
-            return;
-        }
-        if (rateValue == null || Number.isNaN(rateValue)) {
-            setRateInput('');
-        } else {
-            const asString = String(rateValue);
-            setRateInput(asString.replace('.', decimalSeparator));
-        }
-    }, [rateValue, decimalSeparator, isUserTyping]);
-
-    // ===========================
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -147,35 +121,12 @@ function TaxRateDetailPage() {
                             name="value"
                             label={<Trans>Rate</Trans>}
                             render={({ field }) => (
-                                <AffixedInput
+                                <NumberInput
                                     {...field}
-                                    type="text"
+                                    value={field.value}
+                                    min={0}
+                                    step={0.01}
                                     suffix="%"
-                                    value={rateInput}
-                                    onChange={e => {
-                                        setIsUserTyping(true);
-                                        const input = e.target.value;
-                                        setRateInput(input);
-
-                                        if (input === '') {
-                                            field.onChange(undefined);
-
-                                            return;
-                                        }
-
-                                        // 使用当前 locale 的小数分隔符解析为标准小数
-                                        const normalized = input.split(decimalSeparator).join('.');
-                                        const numeric = parseFloat(normalized);
-
-                                        if (!Number.isNaN(numeric)) {
-                                            // 非法输入时，不向表单写入 NaN，避免 "Expected number, received nan"
-                                            field.onChange(numeric);
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        setIsUserTyping(false);
-                                        field.onBlur();
-                                    }}
                                 />
                             )}
                         />
