@@ -1,7 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import {
     ChannelService,
-    ErrorResult,
     LanguageCode,
     OrderService,
     PaymentMethodEligibilityChecker,
@@ -10,31 +9,19 @@ import {
     assertFound,
 } from '@vendure/core';
 import { SimpleGraphQLClient, TestServer } from '@vendure/testing';
-import gql from 'graphql-tag';
 
-import { CREATE_COUPON, REFUND_ORDER } from './graphql/admin-queries';
+import { createCouponDocument, refundOrderDocument } from './graphql/admin-definitions';
+import { refundFragment } from './graphql/fragments-admin';
+import { FragmentOf } from './graphql/graphql-admin';
 import {
-    RefundFragment,
-    RefundOrderMutation,
-    RefundOrderMutationVariables,
-} from './graphql/generated-admin-types';
-import {
-    GetShippingMethodsQuery,
-    SetShippingMethodMutation,
-    SetShippingMethodMutationVariables,
-    TestOrderFragmentFragment,
-    TransitionToStateMutation,
-    TransitionToStateMutationVariables,
-} from './graphql/generated-shop-types';
-import {
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
-} from './graphql/shop-queries';
+    getEligibleShippingMethodsDocument,
+    setShippingAddressDocument,
+    setShippingMethodDocument,
+    transitionToStateDocument,
+} from './graphql/shop-definitions';
 
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
-    const { setOrderShippingAddress: order } = await shopClient.query(SET_SHIPPING_ADDRESS, {
+    const { setOrderShippingAddress } = await shopClient.query(setShippingAddressDocument, {
         input: {
             fullName: 'name',
             streetLine1: '12 the street',
@@ -43,30 +30,30 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
             countryCode: 'AT',
         },
     });
-    const { eligibleShippingMethods } = await shopClient.query<GetShippingMethodsQuery>(
-        GET_ELIGIBLE_SHIPPING_METHODS,
-    );
+    if (!setOrderShippingAddress || 'errorCode' in setOrderShippingAddress) {
+        throw Error('Failed to set shipping address');
+    }
+    const order = setOrderShippingAddress;
+    const { eligibleShippingMethods } = await shopClient.query(getEligibleShippingMethodsDocument);
     if (!eligibleShippingMethods?.length) {
         throw Error(
             `No eligible shipping methods found for order '${String(order.code)}' with a total of '${String(order.totalWithTax)}'`,
         );
     }
-    await shopClient.query<SetShippingMethodMutation, SetShippingMethodMutationVariables>(
-        SET_SHIPPING_METHOD,
-        {
-            id: eligibleShippingMethods[1].id,
-        },
-    );
+    await shopClient.query(setShippingMethodDocument, {
+        id: [eligibleShippingMethods[1].id],
+    });
 }
 
 export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
     await setShipping(shopClient);
-    const { transitionOrderToState } = await shopClient.query<
-        TransitionToStateMutation,
-        TransitionToStateMutationVariables
-    >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return (transitionOrderToState as TestOrderFragmentFragment)!.id;
+    const { transitionOrderToState } = await shopClient.query(transitionToStateDocument, {
+        state: 'ArrangingPayment',
+    });
+    if (!transitionOrderToState || 'errorCode' in transitionOrderToState) {
+        throw Error('Failed to transition to ArrangingPayment');
+    }
+    return transitionOrderToState.id;
 }
 
 export async function refundOrderLine(
@@ -75,19 +62,19 @@ export async function refundOrderLine(
     quantity: number,
     paymentId: string,
     adjustment: number,
-): Promise<RefundFragment> {
-    const { refundOrder } = await adminClient.query<RefundOrderMutation, RefundOrderMutationVariables>(
-        REFUND_ORDER,
-        {
-            input: {
-                lines: [{ orderLineId, quantity }],
-                shipping: 0,
-                adjustment,
-                paymentId,
-            },
+): Promise<FragmentOf<typeof refundFragment>> {
+    const { refundOrder } = await adminClient.query(refundOrderDocument, {
+        input: {
+            lines: [{ orderLineId, quantity }],
+            shipping: 0,
+            adjustment,
+            paymentId,
         },
-    );
-    return refundOrder as RefundFragment;
+    });
+    if (!refundOrder || 'errorCode' in refundOrder) {
+        throw Error('Failed to refund order');
+    }
+    return refundOrder;
 }
 /**
  * Add a partial payment to an order. This happens, for example, when using Gift cards
@@ -118,7 +105,7 @@ export async function createFixedDiscountCoupon(
     amount: number,
     couponCode: string,
 ): Promise<void> {
-    const { createPromotion } = await adminClient.query(CREATE_COUPON, {
+    const { createPromotion } = await adminClient.query(createCouponDocument, {
         input: {
             conditions: [],
             actions: [
@@ -149,8 +136,8 @@ export async function createFixedDiscountCoupon(
             customFields: {},
         },
     });
-    if (createPromotion.__typename === 'ErrorResult') {
-        throw new Error(`Error creating coupon: ${(createPromotion as ErrorResult).errorCode}`);
+    if (createPromotion.__typename !== 'Promotion') {
+        throw new Error(`Error creating coupon: ${createPromotion.errorCode}`);
     }
 }
 /**
@@ -160,7 +147,7 @@ export async function createFreeShippingCoupon(
     adminClient: SimpleGraphQLClient,
     couponCode: string,
 ): Promise<void> {
-    const { createPromotion } = await adminClient.query(CREATE_COUPON, {
+    const { createPromotion } = await adminClient.query(createCouponDocument, {
         input: {
             conditions: [],
             actions: [
@@ -186,8 +173,8 @@ export async function createFreeShippingCoupon(
             customFields: {},
         },
     });
-    if (createPromotion.__typename === 'ErrorResult') {
-        throw new Error(`Error creating coupon: ${(createPromotion as ErrorResult).errorCode}`);
+    if (createPromotion.__typename !== 'Promotion') {
+        throw new Error(`Error creating coupon: ${createPromotion.errorCode}`);
     }
 }
 
@@ -208,52 +195,3 @@ export const testPaymentEligibilityChecker = new PaymentMethodEligibilityChecker
         }
     },
 });
-
-export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
-    mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
-        createMolliePaymentIntent(input: $input) {
-            ... on MolliePaymentIntent {
-                url
-            }
-            ... on MolliePaymentIntentError {
-                errorCode
-                message
-            }
-        }
-    }
-`;
-
-export const CREATE_STRIPE_PAYMENT_INTENT = gql`
-    mutation createStripePaymentIntent {
-        createStripePaymentIntent
-    }
-`;
-
-export const CREATE_CUSTOM_STRIPE_PAYMENT_INTENT = gql`
-    mutation createCustomStripePaymentIntent {
-        createCustomStripePaymentIntent
-    }
-`;
-
-export const GET_MOLLIE_PAYMENT_METHODS = gql`
-    query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
-        molliePaymentMethods(input: $input) {
-            id
-            code
-            description
-            minimumAmount {
-                value
-                currency
-            }
-            maximumAmount {
-                value
-                currency
-            }
-            image {
-                size1x
-                size2x
-                svg
-            }
-        }
-    }
-`;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OrderStatus } from '@mollie/api-client';
 import {
     ChannelService,
@@ -10,10 +11,9 @@ import {
     RequestContext,
 } from '@vendure/core';
 import {
-    SettlePaymentMutation,
-    SettlePaymentMutationVariables,
-} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import { SETTLE_PAYMENT } from '@vendure/core/e2e/graphql/shared-definitions';
+    settlePaymentDocument,
+    updateProductVariantsDocument,
+} from '@vendure/core/e2e/graphql/shared-definitions';
 import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
@@ -22,44 +22,36 @@ import {
 } from '@vendure/testing';
 import nock from 'nock';
 import fetch from 'node-fetch';
-import path from 'path';
+import path from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
 import { mollieMockData } from './fixtures/mollie-mock-data';
-import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, GET_ORDER_PAYMENTS } from './graphql/admin-queries';
 import {
-    CreatePaymentMethodMutation,
-    CreatePaymentMethodMutationVariables,
-    GetCustomerListQuery,
-    GetCustomerListQueryVariables,
-} from './graphql/generated-admin-types';
+    createPaymentMethodDocument,
+    getCustomerListDocument,
+    getOrderPaymentsDocument,
+} from './graphql/admin-definitions';
+import { testOrderFragment } from './graphql/fragments-shop';
+import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
-    AddItemToOrderMutation,
-    AddItemToOrderMutationVariables,
-    AdjustOrderLineMutation,
-    AdjustOrderLineMutationVariables,
-    GetOrderByCodeQuery,
-    GetOrderByCodeQueryVariables,
-    TestOrderFragmentFragment,
-} from './graphql/generated-shop-types';
+    createMolliePaymentIntentDocument,
+    getMolliePaymentMethodsDocument,
+} from './graphql/shared-definitions';
 import {
-    ADD_ITEM_TO_ORDER,
-    ADJUST_ORDER_LINE,
-    APPLY_COUPON_CODE,
-    GET_ORDER_BY_CODE,
-} from './graphql/shop-queries';
+    addItemToOrderDocument,
+    adjustOrderLineDocument,
+    applyCouponCodeDocument,
+    getOrderByCodeDocument,
+} from './graphql/shop-definitions';
 import {
     addManualPayment,
-    CREATE_MOLLIE_PAYMENT_INTENT,
     createFixedDiscountCoupon,
     createFreeShippingCoupon,
-    GET_MOLLIE_PAYMENT_METHODS,
     refundOrderLine,
     setShipping,
     testPaymentEligibilityChecker,
@@ -69,8 +61,8 @@ let shopClient: SimpleGraphQLClient;
 let adminClient: SimpleGraphQLClient;
 let server: TestServer;
 let started = false;
-let customers: GetCustomerListQuery['customers']['items'];
-let order: TestOrderFragmentFragment;
+let customers: ResultOf<typeof getCustomerListDocument>['customers']['items'];
+let order: FragmentOf<typeof testOrderFragment>;
 let serverPort: number;
 const SURCHARGE_AMOUNT = -20000;
 
@@ -96,7 +88,7 @@ describe('Mollie payments', () => {
         await adminClient.asSuperAdmin();
         ({
             customers: { items: customers },
-        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
+        } = await adminClient.query(getCustomerListDocument, {
             options: {
                 take: 2,
             },
@@ -117,10 +109,7 @@ describe('Mollie payments', () => {
     });
 
     it('Should create a Mollie paymentMethod', async () => {
-        const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethodMutation,
-            CreatePaymentMethodMutationVariables
-        >(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query(createPaymentMethodDocument, {
             input: {
                 code: mollieMockData.methodCode,
                 enabled: true,
@@ -151,14 +140,11 @@ describe('Mollie payments', () => {
     describe('Payment intent creation', () => {
         it('Should prepare an order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { addItemToOrder } = await shopClient.query<
-                AddItemToOrderMutation,
-                AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_5',
                 quantity: 10,
             });
-            order = addItemToOrder as TestOrderFragmentFragment;
+            order = addItemToOrder as FragmentOf<typeof testOrderFragment>;
             // Add surcharge
             const ctx = new RequestContext({
                 apiType: 'admin',
@@ -176,7 +162,7 @@ describe('Mollie payments', () => {
         it('Should fail to create payment intent without shippingmethod', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { createMolliePaymentIntent: result } = await shopClient.query(
-                CREATE_MOLLIE_PAYMENT_INTENT,
+                createMolliePaymentIntentDocument,
                 {
                     input: {
                         paymentMethodCode: mollieMockData.methodCode,
@@ -187,7 +173,7 @@ describe('Mollie payments', () => {
         });
 
         it('Should fail to get payment url when items are out of stock', async () => {
-            let { updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            let { updateProductVariants } = await adminClient.query(updateProductVariantsDocument, {
                 input: {
                     id: 'T_5',
                     trackInventory: 'TRUE',
@@ -199,7 +185,7 @@ describe('Mollie payments', () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             await setShipping(shopClient);
             const { createMolliePaymentIntent: result } = await shopClient.query(
-                CREATE_MOLLIE_PAYMENT_INTENT,
+                createMolliePaymentIntentDocument,
                 {
                     input: {
                         paymentMethodCode: mollieMockData.methodCode,
@@ -208,7 +194,7 @@ describe('Mollie payments', () => {
             );
             expect(result.message).toContain('insufficient stock of Pinelab stickers');
             // Set stock back to not tracking
-            ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            ({ updateProductVariants } = await adminClient.query(updateProductVariantsDocument, {
                 input: {
                     id: 'T_5',
                     trackInventory: 'FALSE',
@@ -225,7 +211,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            const { createMolliePaymentIntent } = await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                     redirectUrl: 'given-storefront-redirect-url',
@@ -262,7 +248,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                 },
@@ -276,7 +262,7 @@ describe('Mollie payments', () => {
                 .reply(200, mollieMockData.molliePaymentResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             await setShipping(shopClient);
-            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            const { createMolliePaymentIntent } = await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                     molliePaymentMethodCode: 'ideal',
@@ -289,13 +275,10 @@ describe('Mollie payments', () => {
 
         it('Should not allow creating intent if payment method is not eligible', async () => {
             // Set quantity to 9, which is not allowe by our test eligibility checker
-            await shopClient.query<AdjustOrderLineMutation, AdjustOrderLineMutationVariables>(
-                ADJUST_ORDER_LINE,
-                {
-                    orderLineId: order.lines[0].id,
-                    quantity: 9,
-                },
-            );
+            await shopClient.query(adjustOrderLineDocument, {
+                orderLineId: order.lines[0].id,
+                quantity: 9,
+            });
             let mollieRequest: any | undefined;
             nock('https://api.mollie.com/')
                 .post('/v2/payments', body => {
@@ -303,7 +286,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            const { createMolliePaymentIntent } = await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                     redirectUrl: 'given-storefront-redirect-url',
@@ -315,13 +298,10 @@ describe('Mollie payments', () => {
 
         it('Should get payment url with deducted amount if a payment is already made', async () => {
             // Change quantity back to 10
-            await shopClient.query<AdjustOrderLineMutation, AdjustOrderLineMutationVariables>(
-                ADJUST_ORDER_LINE,
-                {
-                    orderLineId: order.lines[0].id,
-                    quantity: 10,
-                },
-            );
+            await shopClient.query(adjustOrderLineDocument, {
+                orderLineId: order.lines[0].id,
+                quantity: 10,
+            });
             let mollieRequest: any | undefined;
             nock('https://api.mollie.com/')
                 .post('/v2/payments', body => {
@@ -330,7 +310,7 @@ describe('Mollie payments', () => {
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
             await addManualPayment(server, 1, 10000);
-            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                 },
@@ -354,7 +334,7 @@ describe('Mollie payments', () => {
                 .reply(200, mollieMockData.molliePaymentResponse);
             // Admin API passes order ID, and no payment method code
             const { createMolliePaymentIntent: intent } = await adminClient.query(
-                CREATE_MOLLIE_PAYMENT_INTENT,
+                createMolliePaymentIntentDocument,
                 {
                     input: {
                         orderId: '1',
@@ -369,7 +349,7 @@ describe('Mollie payments', () => {
                 .get('/v2/methods?resource=orders')
                 .reply(200, mollieMockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
+            const { molliePaymentMethods } = await shopClient.query(getMolliePaymentMethodsDocument, {
                 input: {
                     paymentMethodCode: mollieMockData.methodCode,
                 },
@@ -383,7 +363,7 @@ describe('Mollie payments', () => {
 
         it('Transitions to PaymentSettled for orders with a total of $0', async () => {
             await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
-            const { addItemToOrder } = await shopClient.query(ADD_ITEM_TO_ORDER, {
+            const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -391,11 +371,11 @@ describe('Mollie payments', () => {
             // Discount the order so it has a total of $0
             await createFixedDiscountCoupon(adminClient, 156880, 'DISCOUNT_ORDER');
             await createFreeShippingCoupon(adminClient, 'FREE_SHIPPING');
-            await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'DISCOUNT_ORDER' });
-            await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'FREE_SHIPPING' });
+            await shopClient.query(applyCouponCodeDocument, { couponCode: 'DISCOUNT_ORDER' });
+            await shopClient.query(applyCouponCodeDocument, { couponCode: 'FREE_SHIPPING' });
             // Create payment intent
             const { createMolliePaymentIntent: intent } = await shopClient.query(
-                CREATE_MOLLIE_PAYMENT_INTENT,
+                createMolliePaymentIntentDocument,
                 {
                     input: {
                         paymentMethodCode: mollieMockData.methodCode,
@@ -403,7 +383,9 @@ describe('Mollie payments', () => {
                     },
                 },
             );
-            const { orderByCode } = await shopClient.query(GET_ORDER_BY_CODE, { code: addItemToOrder.code });
+            const { orderByCode } = await shopClient.query(getOrderByCodeDocument, {
+                code: addItemToOrder.code,
+            });
             expect(intent.url).toBe('https://my-storefront.io/order-confirmation');
             expect(orderByCode.totalWithTax).toBe(0);
             expect(orderByCode.state).toBe('PaymentSettled');
@@ -426,7 +408,9 @@ describe('Mollie payments', () => {
                 body: JSON.stringify({ id: mollieMockData.molliePaymentResponse.id }),
                 headers: { 'Content-Type': 'application/json' },
             });
-            const { order: adminOrder } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order?.id });
+            const { order: adminOrder } = await adminClient.query(getOrderPaymentsDocument, {
+                id: order?.id,
+            });
             expect(adminOrder.state).toBe('ArrangingPayment');
         });
 
@@ -454,12 +438,9 @@ describe('Mollie payments', () => {
                 headers: { 'Content-Type': 'application/json' },
             });
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
-                GET_ORDER_BY_CODE,
-                {
-                    code: order.code,
-                },
-            );
+            const { orderByCode } = await shopClient.query(getOrderByCodeDocument, {
+                code: order.code,
+            });
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             order = orderByCode!;
             expect(order.state).toBe('PaymentSettled');
@@ -500,7 +481,7 @@ describe('Mollie payments', () => {
         it('Should have Mollie metadata on payment', async () => {
             const {
                 order: { payments },
-            } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order.id });
+            } = await adminClient.query(getOrderPaymentsDocument, { id: order.id });
             const metadata = payments[1].metadata;
             expect(metadata.mode).toBe(mollieMockData.molliePaymentResponse.mode);
             expect(metadata.profileId).toBe(mollieMockData.molliePaymentResponse.profileId);
@@ -554,14 +535,11 @@ describe('Mollie payments', () => {
     describe('Handle pay-later with manual capture', () => {
         it('Should prepare a new order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { addItemToOrder } = await shopClient.query<
-                AddItemToOrderMutation,
-                AddItemToOrderMutationVariables
-            >(ADD_ITEM_TO_ORDER, {
+            const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
                 productVariantId: 'T_1',
                 quantity: 2,
             });
-            order = addItemToOrder as TestOrderFragmentFragment;
+            order = addItemToOrder as FragmentOf<typeof testOrderFragment>;
             await setShipping(shopClient);
             expect(order.code).toBeDefined();
         });
@@ -574,7 +552,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     immediateCapture: false,
                 },
@@ -596,13 +574,9 @@ describe('Mollie payments', () => {
                 body: JSON.stringify({ id: mollieMockData.molliePaymentResponse.id }),
                 headers: { 'Content-Type': 'application/json' },
             });
-            const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
-                GET_ORDER_BY_CODE,
-                {
-                    code: order.code,
-                },
-            );
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const { orderByCode } = await shopClient.query(getOrderByCodeDocument, {
+                code: order.code,
+            });
             order = orderByCode!;
             expect(order.state).toBe('PaymentAuthorized');
         });
@@ -629,17 +603,12 @@ describe('Mollie payments', () => {
             nock('https://api.mollie.com/')
                 .get(`/v2/payments/tr_mockPayment/captures/cpt_mockCapture`)
                 .reply(200, { status: 'succeeded', id: 'cpt_mockCapture', resource: 'capture' });
-            await adminClient.query<SettlePaymentMutation, SettlePaymentMutationVariables>(SETTLE_PAYMENT, {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await adminClient.query(settlePaymentDocument, {
                 id: order.payments![0].id,
             });
-            const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
-                GET_ORDER_BY_CODE,
-                {
-                    code: order.code,
-                },
-            );
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const { orderByCode } = await shopClient.query(getOrderByCodeDocument, {
+                code: order.code,
+            });
             order = orderByCode!;
             expect(createCaptureRequest.amount.value).toBe('3127.60'); // Full amount
             expect(order.state).toBe('PaymentSettled');
