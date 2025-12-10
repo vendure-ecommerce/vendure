@@ -14,10 +14,11 @@
     },
     "scripts": {
         "dev": "vite",
+        "check-types": "tsc --project tsconfig.check.json --noEmit",
         "build:standalone": "vite build",
         "build:vite": "tsc --project tsconfig.vite.json",
         "build:plugin": "tsc --project tsconfig.plugin.json && node scripts/build-plugin.js",
-        "build": "npm run build:vite && npm run build:plugin",
+        "build": "npm run check-types && npm run build:vite && npm run build:plugin",
         "watch": "tsc --project tsconfig.vite.json --watch",
         "test": "vitest run",
         "lint": "eslint .",
