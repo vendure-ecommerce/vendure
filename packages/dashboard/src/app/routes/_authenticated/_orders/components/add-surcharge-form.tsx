@@ -44,7 +44,7 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
             sku: '',
             price: '0',
             priceIncludesTax: false,
-            taxRate: 0,
+            taxRate: null,
             taxDescription: '',
         },
     });
@@ -108,7 +108,6 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
                             {...field}
                             type="number"
                             suffix="%"
-                            min={0}
                             value={field.value}
                             onChange={e => field.onChange(e.target.valueAsNumber)}
                         />

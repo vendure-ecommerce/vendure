@@ -108,7 +108,7 @@ export function OrderModificationSummary({
     // Added surcharges
     const addedSurcharges = modifyOrderInput.surcharges ?? [];
 
-    const hasBeenModified =
+    const hasNoModifications =
         adjustedLines.length === 0 &&
         addedLines.length === 0 &&
         removedLines.length === 0 &&
@@ -241,7 +241,7 @@ export function OrderModificationSummary({
                     </ul>
                 </div>
             )}
-            {hasBeenModified && (
+            {hasNoModifications && (
                 <div className="text-muted-foreground">
                     <Trans>No modifications made</Trans>
                 </div>
@@ -251,7 +251,7 @@ export function OrderModificationSummary({
                     <Trans>Note</Trans>
                 </div>
                 <Textarea
-                    disabled={hasBeenModified}
+                    disabled={hasNoModifications}
                     value={modifyOrderInput.note ?? ''}
                     onChange={e => onNoteChange?.(e.target.value)}
                 />
