@@ -92,6 +92,8 @@ export function addGraphQLCustomFields(
         );
         const writeableLocalizedFields = localizedFields.filter(field => !field.readonly);
         const writeableNonLocalizedFields = nonLocalizedFields.filter(field => !field.readonly);
+        // Scalar fields are non-localized fields excluding relations (which are handled separately via IDs)
+        const writeableScalarFields = writeableNonLocalizedFields.filter(field => field.type !== 'relation');
         const sortableFields = customEntityFields.filter(
             field => field.list !== true && field.type !== 'struct',
         );
@@ -145,7 +147,7 @@ export function addGraphQLCustomFields(
         const hasCreateInputType = schema.getType(`Create${entityName}Input`);
         const hasUpdateInputType = schema.getType(`Update${entityName}Input`);
 
-        if ((hasCreateInputType || hasUpdateInputType) && writeableNonLocalizedFields.length) {
+        if ((hasCreateInputType || hasUpdateInputType) && writeableScalarFields.length) {
             // Define any Struct input types that are required by
             // the create and/or update input types.
             for (const structCustomField of structCustomFields) {
@@ -158,7 +160,7 @@ export function addGraphQLCustomFields(
         }
 
         if (hasCreateInputType) {
-            if (writeableNonLocalizedFields.length) {
+            if (writeableScalarFields.length) {
                 const createCustomFieldsInputType = `Create${entityName}CustomFieldsInput`;
                 if (!schema.getType(createCustomFieldsInputType)) {
                     customFieldTypeDefs += `
@@ -196,7 +198,7 @@ export function addGraphQLCustomFields(
         }
 
         if (hasUpdateInputType) {
-            if (writeableNonLocalizedFields.length) {
+            if (writeableScalarFields.length) {
                 const updateCustomFieldsInputType = `Update${entityName}CustomFieldsInput`;
                 if (!schema.getType(updateCustomFieldsInputType)) {
                     customFieldTypeDefs += `
