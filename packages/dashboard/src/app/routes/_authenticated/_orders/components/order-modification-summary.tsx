@@ -231,7 +231,7 @@ export function OrderModificationSummary({
                     </div>
                     <ul className="list-disc ml-4">
                         {addedSurcharges.map((surcharge, index) => (
-                            <li key={index}>
+                            <li key={`surcharge-${index}`}>
                                 <div className="flex items-center gap-1">
                                     <span>{surcharge.description}:</span>
                                     <Money value={surcharge.price} currency={originalOrder.currencyCode} />
