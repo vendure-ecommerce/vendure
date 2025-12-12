@@ -29,7 +29,9 @@ export function Alerts() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="max-w-[800px] min-w-96">
-                <DropdownMenuLabel>Alerts</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                    <Trans>Alerts</Trans>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <ScrollArea className="max-h-[500px]">
                     {activeCount > 0 ? (

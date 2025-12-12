@@ -215,7 +215,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuButton tooltip={item.title}>
                                 {item.icon && <item.icon />}
                                 <span>{i18n.t(item.title)}</span>
-                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                <ChevronRight className="ms-auto transition-transform duration-200 rtl:rotate-180 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
@@ -280,7 +280,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                             <SidebarMenuButton tooltip={i18n.t(item.title)}>
                                 {item.icon && <item.icon />}
                                 <span>{i18n.t(item.title)}</span>
-                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                <ChevronRight className="ms-auto transition-transform duration-200 rtl:rotate-180 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
