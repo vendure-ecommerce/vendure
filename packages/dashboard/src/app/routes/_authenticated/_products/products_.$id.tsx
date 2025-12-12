@@ -16,7 +16,6 @@ import {
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -102,25 +101,14 @@ function ProductDetailPage() {
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="save-button" requiresPermission={['UpdateProduct', 'UpdateCatalog']}>
                     <Button
                         type="submit"
                         disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                     >
-                        Some other button
+                        {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                     </Button>
-                    <ActionBarItem
-                        itemId="save-button"
-                        requiresPermission={['UpdateProduct', 'UpdateCatalog']}
-                    >
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
-                        </Button>
-                    </ActionBarItem>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="side" blockId="enabled-toggle">
