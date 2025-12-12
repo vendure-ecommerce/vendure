@@ -163,6 +163,7 @@ export const moveCollectionDocument = graphql(`
     mutation MoveCollection($input: MoveCollectionInput!) {
         moveCollection(input: $input) {
             id
+            position
         }
     }
 `);
