@@ -282,6 +282,36 @@ type ProductCustomFields {
 }"
 `;
 
+exports[`addGraphQLCustomFields() > uses JSON scalar for input when entity has only relation custom fields 1`] = `
+"scalar JSON
+
+type Promotion {
+  id: ID
+  customFields: PromotionCustomFields
+}
+
+type Customer {
+  id: ID
+}
+
+input CreatePromotionInput {
+  name: String
+  customFields: JSON
+}
+
+input UpdatePromotionInput {
+  id: ID!
+  name: String
+  customFields: JSON
+}
+
+scalar DateTime
+
+type PromotionCustomFields {
+  customer: Customer
+}"
+`;
+
 exports[`addGraphQLCustomFields() > uses JSON scalar if no custom fields defined 1`] = `
 "type Product {
   id: ID

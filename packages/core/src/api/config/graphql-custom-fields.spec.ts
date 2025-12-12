@@ -284,6 +284,42 @@ describe('addGraphQLCustomFields()', () => {
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
+
+    // regression test for
+    // https://github.com/vendure-ecommerce/vendure/issues/3990
+    it('uses JSON scalar for input when entity has only relation custom fields', () => {
+        const input = `
+            scalar JSON
+
+            type Promotion {
+                id: ID
+            }
+
+            type Customer {
+                id: ID
+            }
+
+            input CreatePromotionInput {
+                name: String
+            }
+
+            input UpdatePromotionInput {
+                id: ID!
+                name: String
+            }
+        `;
+        const customFieldConfig: CustomFields = {
+            Promotion: [
+                {
+                    name: 'customer',
+                    type: 'relation',
+                    entity: { name: 'Customer' } as any,
+                },
+            ],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
 });
 
 describe('addOrderLineCustomFieldsInput()', () => {
