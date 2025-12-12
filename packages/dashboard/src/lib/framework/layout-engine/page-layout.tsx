@@ -809,9 +809,7 @@ export function PageBlock({
                             {description && <CardDescription>{description}</CardDescription>}
                         </CardHeader>
                     ) : null}
-                    <CardContent className={cn(!title ? 'pt-6' : '', 'overflow-auto')}>
-                        {children}
-                    </CardContent>
+                    <CardContent className={cn(!title ? 'pt-6' : '', '')}>{children}</CardContent>
                 </Card>
             </LocationWrapper>
         </PageBlockContext.Provider>
