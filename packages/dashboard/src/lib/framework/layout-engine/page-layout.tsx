@@ -11,7 +11,8 @@ import { CheckIcon, CopyIcon, EllipsisVerticalIcon, InfoIcon } from 'lucide-reac
 import React, { ComponentProps, useMemo, useState } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
-import { DashboardActionBarItem } from '../extension-api/types/layout.js';
+import { ActionBarItemPosition, DashboardActionBarItem } from '../extension-api/types/layout.js';
+import { ActionBarItem, ActionBarItemProps, ActionBarItemWrapper } from './action-bar-item-wrapper.js';
 
 import { Button } from '@/vdb/components/ui/button.js';
 import {
@@ -91,7 +92,7 @@ export interface PageProps extends ComponentProps<'div'> {
 export function Page({ children, pageId, entity, form, submitHandler, ...props }: Readonly<PageProps>) {
     const childArray = React.Children.toArray(children);
 
-    const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
+    const pageTitle = childArray.find(child => isOfType(child, PageTitle));
     const pageActionBar = childArray.find(child => isOfType(child, PageActionBar));
 
     const pageContent = childArray.filter(
@@ -100,7 +101,7 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 
     const pageHeader = (
         <div className="flex items-center justify-between">
-            {pageTitle}
+            {pageTitle ?? <div />}
             {pageActionBar}
         </div>
     );
@@ -376,6 +377,73 @@ export function PageActionBarLeft({ children }: Readonly<{ children: React.React
 
 type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
 
+/**
+ * Checks if a React child is an ActionBarItem component.
+ */
+function isActionBarItem(child: unknown): child is React.ReactElement<ActionBarItemProps> {
+    return React.isValidElement(child) && isOfType(child, ActionBarItem);
+}
+
+/**
+ * Represents a merged action bar item that can be either inline (ActionBarItem child) or from an extension.
+ * Used internally for sorting and rendering.
+ */
+type MergedActionBarItem =
+    | { type: 'inline'; element: React.ReactElement<ActionBarItemProps> }
+    | { type: 'extension'; item: DashboardActionBarItem };
+
+/**
+ * Merges inline ActionBarItem children with extension items, applying position-based ordering.
+ * Uses the same priority sorting as page blocks: before=1, replace=2, after=3.
+ */
+function mergeAndSortActionBarItems(
+    inlineElements: React.ReactElement<ActionBarItemProps>[],
+    extensionItems: DashboardActionBarItem[],
+): MergedActionBarItem[] {
+    const result: MergedActionBarItem[] = [];
+
+    // First, add extension items WITHOUT a position (they go first, preserving current behavior)
+    const unpositionedExtensions = extensionItems.filter(ext => !ext.position);
+    for (const ext of unpositionedExtensions) {
+        result.push({ type: 'extension', item: ext });
+    }
+
+    // Process each inline element and find extension items targeting it
+    for (const inlineElement of inlineElements) {
+        const itemId = inlineElement.props.itemId;
+        const matchingExtensions = extensionItems.filter(ext => ext.position?.itemId === itemId);
+
+        // Sort by order priority: before=1, replace=2, after=3
+        const sortedExtensions = matchingExtensions.sort((a, b) => {
+            const orderPriority: Record<ActionBarItemPosition['order'], number> = {
+                before: 1,
+                replace: 2,
+                after: 3,
+            };
+            return orderPriority[a.position!.order] - orderPriority[b.position!.order];
+        });
+
+        const hasReplacement = sortedExtensions.some(ext => ext.position?.order === 'replace');
+
+        let inlineInserted = false;
+        for (const ext of sortedExtensions) {
+            // Insert inline element before the first non-"before" extension (if not replaced)
+            if (!inlineInserted && !hasReplacement && ext.position?.order !== 'before') {
+                result.push({ type: 'inline', element: inlineElement });
+                inlineInserted = true;
+            }
+            result.push({ type: 'extension', item: ext });
+        }
+
+        // If all extensions were "before" or there were no extensions, add inline at the end
+        if (!inlineInserted && !hasReplacement) {
+            result.push({ type: 'inline', element: inlineElement });
+        }
+    }
+
+    return result;
+}
+
 function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
     const [copiedField, setCopiedField] = useState<string | null>(null);
     const [, copy] = useCopyToClipboard();
@@ -459,6 +527,19 @@ function EntityInfoDropdown({ entity }: Readonly<{ entity: any }>) {
  * @description
  * The PageActionBarRight component should be used to display the right content of the action bar.
  *
+ * Children should be {@link ActionBarItem} components, each with a unique `itemId`. This allows
+ * extensions to position their items relative to yours using `position.itemId` with
+ * `'before'`, `'after'`, or `'replace'`.
+ *
+ * @example
+ * ```tsx
+ * <PageActionBarRight>
+ *     <ActionBarItem itemId="save-button" requiresPermission={['UpdateProduct']}>
+ *         <Button type="submit">Update</Button>
+ *     </ActionBarItem>
+ * </PageActionBarRight>
+ * ```
+ *
  * @docsCategory page-layout
  * @docsPage PageActionBar
  * @since 3.3.0
@@ -467,12 +548,27 @@ export function PageActionBarRight({
     children,
     dropdownMenuItems,
 }: Readonly<{
-    children: React.ReactNode;
+    /**
+     * @description
+     * ActionBarItem components that will be rendered in the action bar.
+     * Each item should have a unique `itemId` for extension targeting.
+     */
+    children?: React.ReactNode;
     dropdownMenuItems?: InlineDropdownItem[];
 }>) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
-    const actionBarButtonItems = actionBarItems.filter(item => item.type !== 'dropdown');
+
+    // Extract ActionBarItem children
+    const actionBarItemChildren: React.ReactElement<ActionBarItemProps>[] = [];
+    React.Children.forEach(children, child => {
+        if (isActionBarItem(child)) {
+            actionBarItemChildren.push(child);
+        }
+    });
+
+    // Separate button items from dropdown items
+    const extensionButtonItems = actionBarItems.filter(item => item.type !== 'dropdown');
     const actionBarDropdownItems = [
         ...(dropdownMenuItems ?? []).map(item => ({
             ...item,
@@ -482,12 +578,30 @@ export function PageActionBarRight({
         ...actionBarItems.filter(item => item.type === 'dropdown'),
     ];
 
+    // Merge and sort inline items with extension items
+    const mergedItems = mergeAndSortActionBarItems(actionBarItemChildren, extensionButtonItems);
+
     return (
         <div className="flex justify-end gap-2">
-            {actionBarButtonItems.map((item, index) => (
-                <PageActionBarItem key={item.pageId + index} item={item} page={page} />
-            ))}
-            {children}
+            {mergedItems.map((mergedItem, index) => {
+                if (mergedItem.type === 'inline') {
+                    // Render the ActionBarItem element directly (it handles its own dev-mode wrapper)
+                    return React.cloneElement(mergedItem.element, {
+                        key: `inline-${mergedItem.element.props.itemId}`,
+                    });
+                } else {
+                    const extItem = mergedItem.item;
+                    const itemId = extItem.id ?? `extension-${extItem.component.name || index}`;
+                    return (
+                        <ActionBarItemWrapper
+                            key={`ext-${extItem.id ?? extItem.pageId}-${index}`}
+                            itemId={itemId}
+                        >
+                            <PageActionBarItem item={extItem} page={page} />
+                        </ActionBarItemWrapper>
+                    );
+                }
+            })}
             {actionBarDropdownItems.length > 0 && (
                 <PageActionBarDropdown items={actionBarDropdownItems} page={page} />
             )}
@@ -698,3 +812,7 @@ export function isOfType(el: unknown, type: React.FunctionComponent<any>): boole
     }
     return false;
 }
+
+// Re-export ActionBarItem for convenience alongside other page layout components
+export { ActionBarItem } from './action-bar-item-wrapper.js';
+export type { ActionBarItemProps } from './action-bar-item-wrapper.js';
