@@ -59,6 +59,7 @@ import {
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     CREATE_SHIPPING_METHOD,
@@ -81,7 +82,6 @@ import {
     ADD_MULTIPLE_ITEMS_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
-    ASSIGN_PRODUCT_VARIANTS_TO_CHANNEL,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
@@ -94,8 +94,6 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
-    const SECOND_CHANNEL_TOKEN = 'second_channel_token';
-
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             paymentOptions: {
@@ -611,7 +609,7 @@ describe('Orders resolver', () => {
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
-            expect(order?.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
@@ -2918,7 +2916,7 @@ describe('Orders resolver', () => {
         });
     });
 
-    describe('update order currency', async () => {
+    describe('update order currency', () => {
         let product1: Codegen.GetProductWithVariantsQuery['product'];
 
         beforeAll(async () => {
@@ -2944,7 +2942,7 @@ describe('Orders resolver', () => {
             await adminClient.query<
                 Codegen.AssignProductVariantsToChannelMutation,
                 { input: Codegen.AssignProductVariantsToChannelInput }
-            >(ASSIGN_PRODUCT_VARIANTS_TO_CHANNEL, {
+            >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
                 input: {
                     channelId: 'T_1',
                     productVariantIds: product1.variants.map(v => v.id),
@@ -2955,16 +2953,11 @@ describe('Orders resolver', () => {
 
         it('should throw UserInputError if new currency is not available in the channel', async () => {
             await shopClient.asAnonymousUser();
-
-            const result = await shopClient.query<
-                CodegenShop.setCurrencyCodeForOrderMutation,
-                CodegenShop.setCurrencyCodeForOrderVariables
-            >(SET_CURRENCY_CODE_FOR_ORDER, {
-                currencyCode: CurrencyCode.USD,
-            });
-
             await expect(
-                shopClient.query(SET_CURRENCY_CODE_FOR_ORDER, { currencyCode: CurrencyCode.AUD }),
+                shopClient.query<
+                    CodegenShop.SetCurrencyCodeForOrderMutation,
+                    CodegenShop.SetCurrencyCodeForOrderMutationVariables
+                >(SET_CURRENCY_CODE_FOR_ORDER, { currencyCode: CurrencyCode.AUD }),
             ).rejects.toThrow('error.currency-not-available');
         });
 
@@ -2987,14 +2980,14 @@ describe('Orders resolver', () => {
             expect(addItemsToOrder.order.lines.length).toBe(1);
 
             const response = await shopClient.query<
-                CodegenShop.setCurrencyCodeForOrderMutation,
-                CodegenShop.setCurrencyCodeForOrderVariables
+                CodegenShop.SetCurrencyCodeForOrderMutation,
+                CodegenShop.SetCurrencyCodeForOrderMutationVariables
             >(SET_CURRENCY_CODE_FOR_ORDER, { currencyCode: CurrencyCode.EGP });
 
             const setCurrencyCodeForOrder = response.setCurrencyCodeForOrder;
 
-            expect(setCurrencyCodeForOrder.currencyCode).toBe(CurrencyCode.EGP);
-            expect(setCurrencyCodeForOrder.lines?.length).toBe(1);
+            expect((setCurrencyCodeForOrder as UpdatedOrderFragment).currencyCode).toBe(CurrencyCode.EGP);
+            expect((setCurrencyCodeForOrder as UpdatedOrderFragment).lines?.length).toBe(1);
         });
     });
 });

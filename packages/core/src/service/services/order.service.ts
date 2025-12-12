@@ -167,7 +167,7 @@ export class OrderService {
         private requestCache: RequestContextCacheService,
         private translator: TranslatorService,
         private stockLevelService: StockLevelService,
-        private requestContextService: RequestContextService,
+        private readonly requestContextService: RequestContextService,
     ) {}
 
     /**
@@ -605,7 +605,11 @@ export class OrderService {
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         //  Check if order can be modified
-        this.assertAddingItemsState(order);
+        const validationError = this.assertAddingItemsState(order);
+        if (validationError) {
+            return validationError;
+        }
+
         //  Check if currency is actually changing
         if (order.currencyCode === currencyCode) {
             return order;
@@ -615,7 +619,9 @@ export class OrderService {
         if (!channel.availableCurrencyCodes.includes(currencyCode)) {
             throw new UserInputError('error.currency-not-available', { currencyCode });
         }
-        const previousCurrencyCode = ctx.currencyCode;
+
+        const previousCurrencyCode = order.currencyCode;
+
         const newCurrencyCtx = await this.requestContextService.create({
             req: ctx.req,
             apiType: ctx.apiType,

@@ -119,7 +119,7 @@ export interface OrderHistoryEntryData {
     };
     [HistoryEntryType.ORDER_CURRENCY_UPDATED]: {
         previousCurrency?: CurrencyCode;
-        newCurrency?: ID;
+        newCurrency?: CurrencyCode;
     };
 }
 
