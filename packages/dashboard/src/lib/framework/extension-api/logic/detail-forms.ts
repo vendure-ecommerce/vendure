@@ -1,7 +1,6 @@
 import { addDetailQueryDocument } from '@/vdb/framework/form-engine/custom-form-component-extensions.js';
 import { parse } from 'graphql';
 
-import { addDisplayComponent } from '../display-component-extensions.js';
 import { addInputComponent } from '../input-component-extensions.js';
 import { DashboardDetailFormExtensionDefinition } from '../types/detail-forms.js';
 
@@ -28,18 +27,6 @@ export function registerDetailFormExtensions(detailForms?: DashboardDetailFormEx
                         blockId: inputComponent.blockId,
                         field: inputComponent.field,
                         component: inputComponent.component,
-                    });
-                }
-            }
-
-            // Register display components for this detail form
-            if (detailForm.displays) {
-                for (const displayComponent of detailForm.displays) {
-                    addDisplayComponent({
-                        pageId: detailForm.pageId,
-                        blockId: displayComponent.blockId,
-                        field: displayComponent.field,
-                        component: displayComponent.component,
                     });
                 }
             }
