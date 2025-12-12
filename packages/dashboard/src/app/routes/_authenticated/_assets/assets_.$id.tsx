@@ -3,15 +3,14 @@ import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-previe
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Label } from '@/vdb/components/ui/label.js';
 import {
+    ActionBarItem,
     CustomFieldsPageBlock,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -95,13 +94,11 @@ function AssetDetailPage() {
                 <Trans>Edit asset</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['UpdateChannel']}>
-                        <Button type="submit" disabled={!form.formState.isDirty || isPending}>
-                            <Trans>Update</Trans>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                <ActionBarItem itemId="save-button" requiresPermission={['UpdateChannel']}>
+                    <Button type="submit" disabled={!form.formState.isDirty || isPending}>
+                        <Trans>Update</Trans>
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="asset-preview">

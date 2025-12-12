@@ -1,7 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans } from '@lingui/react/macro';
@@ -239,16 +238,14 @@ function CollectionListPage() {
                     },
                 ]}
             >
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
-                        <Button asChild>
-                            <Link to="./new">
-                                <PlusIcon className="mr-2 h-4 w-4" />
-                                <Trans>New Collection</Trans>
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                <ActionBarItem itemId="create-button" requiresPermission={['CreateCollection', 'CreateCatalog']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            <Trans>New Collection</Trans>
+                        </Link>
+                    </Button>
+                </ActionBarItem>
             </ListPage>
         </>
     );

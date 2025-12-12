@@ -6,7 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -227,7 +227,7 @@ function JobQueuePage() {
                 refreshRef.current = refresher;
             }}
         >
-            <PageActionBarRight>
+            <ActionBarItem itemId="auto-refresh-button">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm" className="gap-2">
@@ -250,7 +250,7 @@ function JobQueuePage() {
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-            </PageActionBarRight>
+            </ActionBarItem>
         </ListPage>
     );
 }

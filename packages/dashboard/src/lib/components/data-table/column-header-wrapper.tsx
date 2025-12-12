@@ -72,7 +72,7 @@ export function ColumnHeaderWrapper({ children, columnId }: Readonly<ColumnHeade
                 >
                     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                         <PopoverTrigger asChild>
-                            <DevModeButton className={`h-5 w-5`} />
+                            <DevModeButton className={`h-5 w-5 end-1 top-1`} />
                         </PopoverTrigger>
                         <PopoverContent className="w-48 p-3">
                             <div className="space-y-2">

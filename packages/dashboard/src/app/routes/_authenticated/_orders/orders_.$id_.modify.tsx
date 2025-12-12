@@ -1,9 +1,9 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
+    ActionBarItem,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -159,11 +159,11 @@ function ModifyOrderPage() {
                 <Trans>Modify order</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="cancel-modification-button">
                     <Button type="button" variant="secondary" onClick={handleCancelModificationClick}>
                         <Trans>Cancel modification</Trans>
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="order-lines" title={<Trans>Order lines</Trans>}>
