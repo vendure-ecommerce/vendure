@@ -1,10 +1,12 @@
 import { ColumnFiltersState } from '@tanstack/react-table';
+import { ColumnConfig } from '../components/data-table/data-table-context.js';
 
 export interface SavedView {
     id: string;
     name: string;
     scope: 'user' | 'global';
     filters: ColumnFiltersState;
+    columnConfig: ColumnConfig;
     searchTerm?: string;
     pageId?: string;
     blockId?: string;
@@ -28,6 +30,7 @@ export interface SaveViewInput {
     name: string;
     scope: 'user' | 'global';
     filters: ColumnFiltersState;
+    columnConfig: ColumnConfig;
     searchTerm?: string;
 }
 
