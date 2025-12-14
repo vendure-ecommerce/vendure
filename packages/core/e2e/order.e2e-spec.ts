@@ -150,17 +150,6 @@ describe('Orders resolver', () => {
                         handler: { code: partialPaymentMethod.code, arguments: [] },
                     },
                 ],
-
-                // channels: [
-                //     {
-                //         token: 'default',
-                //         defaultLanguageCode: LanguageCode.en,
-                //         // Set the base currency ()
-                //         currencyCode: CurrencyCode.USD,
-                //         availableLanguageCodes: [LanguageCode.en],
-                //         availableCurrencyCodes: [CurrencyCode.USD, CurrencyCode.EGP],
-                //     },
-                // ],
             },
 
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
