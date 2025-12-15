@@ -2927,7 +2927,7 @@ describe('Orders resolver', () => {
                 },
             );
 
-            // Add 1st varinat of product 1 to the channel
+            // Add 1st variant of product 1 to the channel
             await adminClient.query<
                 Codegen.AssignProductVariantsToChannelMutation,
                 { input: Codegen.AssignProductVariantsToChannelInput }
@@ -2952,7 +2952,7 @@ describe('Orders resolver', () => {
 
         it('Should update the order currency and return the updated order', async () => {
             await shopClient.asAnonymousUser();
-            // create simple order usig the available varinat
+            // create simple order using the available variant
             const { addItemsToOrder } = await shopClient.query<
                 CodegenShop.AddItemsToOrderMutation,
                 CodegenShop.AddItemsToOrderMutationVariables
