@@ -44,7 +44,7 @@ export function AddSurchargeForm({ onAddSurcharge }: Readonly<AddSurchargeFormPr
             sku: '',
             price: '0',
             priceIncludesTax: false,
-            taxRate: null,
+            taxRate: 0,
             taxDescription: '',
         },
     });
