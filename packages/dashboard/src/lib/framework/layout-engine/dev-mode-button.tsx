@@ -1,6 +1,6 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { CodeXmlIcon } from 'lucide-react';
+import { Locate } from 'lucide-react';
 import { forwardRef } from 'react';
 
 export const DevModeButton = forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
@@ -18,7 +18,7 @@ export const DevModeButton = forwardRef<HTMLButtonElement, React.ComponentProps<
                     )}
                     {...rest}
                 >
-                    <CodeXmlIcon className="w-4 h-4" />
+                    <Locate className="w-4 h-4" />
                 </Button>
             </div>
         );
