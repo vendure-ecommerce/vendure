@@ -1,3 +1,5 @@
+import { Money } from '@/vdb/components/data-display/money.js';
+import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { Trans } from '@lingui/react/macro';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { modifyOrderDocument, orderDetailDocument } from '../orders.graphql.js';
@@ -15,6 +17,7 @@ interface OrderModificationSummaryProps {
         id: string;
         name: string;
     }>;
+    onNoteChange?: (note: string) => void;
 }
 
 interface LineAdjustment {
@@ -31,6 +34,7 @@ export function OrderModificationSummary({
     modifyOrderInput,
     addedVariants,
     eligibleShippingMethods,
+    onNoteChange,
 }: Readonly<OrderModificationSummaryProps>) {
     // Map by line id for quick lookup
     const originalLineMap = new Map(originalOrder.lines.map(line => [line.id, line]));
@@ -100,6 +104,20 @@ export function OrderModificationSummary({
             eligibleShippingMethods.find(m => m.id === modifiedShippingMethodId)?.name ||
             modifiedShippingMethodId;
     }
+
+    // Added surcharges
+    const addedSurcharges = modifyOrderInput.surcharges ?? [];
+
+    const hasNoModifications =
+        adjustedLines.length === 0 &&
+        addedLines.length === 0 &&
+        removedLines.length === 0 &&
+        addedCouponCodes.length === 0 &&
+        removedCouponCodes.length === 0 &&
+        addedSurcharges.length === 0 &&
+        !modifyOrderInput.updateShippingAddress &&
+        !modifyOrderInput.updateBillingAddress &&
+        !shippingMethodChanged;
 
     return (
         <div className="text-sm">
@@ -206,18 +224,38 @@ export function OrderModificationSummary({
                     </ul>
                 </div>
             )}
-            {adjustedLines.length === 0 &&
-                addedLines.length === 0 &&
-                removedLines.length === 0 &&
-                addedCouponCodes.length === 0 &&
-                removedCouponCodes.length === 0 &&
-                !modifyOrderInput.updateShippingAddress &&
-                !modifyOrderInput.updateBillingAddress &&
-                !shippingMethodChanged && (
-                    <div className="text-muted-foreground">
-                        <Trans>No modifications made</Trans>
+            {addedSurcharges.length > 0 && (
+                <div className="mb-2">
+                    <div className="font-medium">
+                        <Trans>Adding {addedSurcharges.length} surcharge(s)</Trans>
                     </div>
-                )}
+                    <ul className="list-disc ml-4">
+                        {addedSurcharges.map((surcharge, index) => (
+                            <li key={`surcharge-${index}`}>
+                                <div className="flex items-center gap-1">
+                                    <span>{surcharge.description}:</span>
+                                    <Money value={surcharge.price} currency={originalOrder.currencyCode} />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {hasNoModifications && (
+                <div className="text-muted-foreground">
+                    <Trans>No modifications made</Trans>
+                </div>
+            )}
+            <div className="mb-4 mt-4">
+                <div className="font-medium mb-2">
+                    <Trans>Note</Trans>
+                </div>
+                <Textarea
+                    disabled={hasNoModifications}
+                    value={modifyOrderInput.note ?? ''}
+                    onChange={e => onNoteChange?.(e.target.value)}
+                />
+            </div>
         </div>
     );
 }
