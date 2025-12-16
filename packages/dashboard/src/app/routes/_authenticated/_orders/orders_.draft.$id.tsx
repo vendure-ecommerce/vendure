@@ -2,15 +2,14 @@ import { ConfirmationDialog } from '@/vdb/components/shared/confirmation-dialog.
 import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { CustomerSelector } from '@/vdb/components/shared/customer-selector.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { useGeneratedForm } from '@/vdb/framework/form-engine/use-generated-form.js';
 import {
+    ActionBarItem,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -295,35 +294,33 @@ function DraftOrderPage() {
                 <Trans>Draft order</Trans>: {entity?.code ?? ''}
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['DeleteOrder']}>
-                        <ConfirmationDialog
-                            title={t`Delete draft order`}
-                            description={t`Are you sure you want to delete this draft order?`}
-                            onConfirm={() => {
-                                deleteDraftOrder({ orderId: entity.id });
-                            }}
-                        >
-                            <Button variant="destructive" type="button">
-                                <Trans>Delete draft</Trans>
-                            </Button>
-                        </ConfirmationDialog>
-                    </PermissionGuard>
-                    <PermissionGuard requires={['UpdateOrder']}>
-                        <Button
-                            type="button"
-                            disabled={
-                                !entity.customer ||
-                                entity.lines.length === 0 ||
-                                entity.shippingLines.length === 0 ||
-                                entity.state !== 'Draft'
-                            }
-                            onClick={() => completeDraftOrder({ id: entity.id, state: 'ArrangingPayment' })}
-                        >
-                            <Trans>Complete draft</Trans>
+                <ActionBarItem itemId="delete-button" requiresPermission={['DeleteOrder']}>
+                    <ConfirmationDialog
+                        title={t`Delete draft order`}
+                        description={t`Are you sure you want to delete this draft order?`}
+                        onConfirm={() => {
+                            deleteDraftOrder({ orderId: entity.id });
+                        }}
+                    >
+                        <Button variant="destructive" type="button">
+                            <Trans>Delete draft</Trans>
                         </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                    </ConfirmationDialog>
+                </ActionBarItem>
+                <ActionBarItem itemId="complete-draft-button" requiresPermission={['UpdateOrder']}>
+                    <Button
+                        type="button"
+                        disabled={
+                            !entity.customer ||
+                            entity.lines.length === 0 ||
+                            entity.shippingLines.length === 0 ||
+                            entity.state !== 'Draft'
+                        }
+                        onClick={() => completeDraftOrder({ id: entity.id, state: 'ArrangingPayment' })}
+                    >
+                        <Trans>Complete draft</Trans>
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="order-table">

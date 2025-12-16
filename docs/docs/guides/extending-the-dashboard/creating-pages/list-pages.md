@@ -35,7 +35,7 @@ import {
     Button,
     DashboardRouteDefinition,
     ListPage,
-    PageActionBarRight,
+    ActionBarItem,
     DetailPageButton,
 } from '@vendure/dashboard';
 import { Link } from '@tanstack/react-router';
@@ -101,14 +101,14 @@ export const articleList: DashboardRouteDefinition = {
                 },
             }}
         >
-            <PageActionBarRight>
+            <ActionBarItem>
                 <Button asChild>
                     <Link to="./new">
                         <PlusIcon className="mr-2 h-4 w-4" />
                         New article
                     </Link>
                 </Button>
-            </PageActionBarRight>
+            </ActionBarItem>
         </ListPage>
     ),
 };
