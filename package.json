@@ -52,7 +52,7 @@
     "graphql": "~16.11.0",
     "husky": "^4.3.0",
     "klaw-sync": "^6.0.0",
-    "lerna": "^8.1.2",
+    "lerna": "^9.0.3",
     "lint-staged": "^10.5.4",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^4.1.0",
