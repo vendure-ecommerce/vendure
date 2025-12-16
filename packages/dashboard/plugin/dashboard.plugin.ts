@@ -185,7 +185,7 @@ export class DashboardPlugin implements NestModule {
     private createStaticServer(dashboardPath: string) {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 10_000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 1_000_000,
             standardHeaders: true,
             legacyHeaders: false,
         });
