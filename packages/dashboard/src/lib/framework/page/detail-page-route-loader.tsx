@@ -29,7 +29,7 @@ export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
     queryDocument,
     breadcrumb,
 }: DetailPageRouteLoaderConfig<T>) {
-    const loader: FileBaseRouteOptions<any, any>['loader'] = async ({
+    const loader: FileBaseRouteOptions<any, any, any>['loader'] = async ({
         context,
         params,
         location,

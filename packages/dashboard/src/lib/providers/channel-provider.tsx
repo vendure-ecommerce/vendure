@@ -147,6 +147,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                     defaultCurrencyCode: fullChannelData?.defaultCurrencyCode || 'USD',
                     pricesIncludeTax: fullChannelData?.pricesIncludeTax || false,
                     availableLanguageCodes: fullChannelData?.availableLanguageCodes || ['en'],
+                    availableCurrencyCodes: fullChannelData?.availableCurrencyCodes || ['USD'],
                 };
             });
         }
@@ -198,13 +199,16 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         });
     };
 
-    const contextValue: ChannelContext = {
-        channels,
-        activeChannel: selectedChannel,
-        isLoading,
-        setActiveChannel: setSelectedChannel,
-        refreshChannels,
-    };
+    const contextValue: ChannelContext = React.useMemo(
+        () => ({
+            channels,
+            activeChannel: selectedChannel,
+            isLoading,
+            setActiveChannel: setSelectedChannel,
+            refreshChannels,
+        }),
+        [channels, selectedChannel, isLoading, setSelectedChannel, refreshChannels],
+    );
 
     return <ChannelContext.Provider value={contextValue}>{children}</ChannelContext.Provider>;
 }

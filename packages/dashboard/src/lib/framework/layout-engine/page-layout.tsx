@@ -741,7 +741,7 @@ export type PageBlockProps = {
      * @description
      * Which column this block should appear in
      */
-    column: 'main' | 'side';
+    column: 'main' | 'side' | 'full';
     /**
      * @description
      * The ID of the block, e.g. "gift-cards" or "related-products".
