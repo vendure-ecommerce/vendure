@@ -246,7 +246,7 @@ export interface PaginatedListDataTableProps<
     ) => void | Promise<void>;
     /**
      * @description
-     * When true, drag and drop will be disabled.
+     * When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
      */
     disableDragAndDrop?: boolean;
 }

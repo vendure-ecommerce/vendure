@@ -18,17 +18,10 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import {
     closestCenter,
     DndContext,
-    DragEndEvent,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
-    arrayMove,
     SortableContext,
-    sortableKeyboardCoordinates,
     useSortable,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -49,12 +42,14 @@ import {
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import { GripVertical } from 'lucide-react';
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useId, useMemo, useRef } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
+import { useDragAndDrop } from '@/vdb/hooks/use-drag-and-drop.js';
+import { toast } from 'sonner';
 
 interface DraggableRowProps<TData> {
     row: Row<TData>;
@@ -150,7 +145,7 @@ interface DataTableProps<TData> {
     onReorder?: (oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) => void | Promise<void>;
     /**
      * @description
-     * When true, drag and drop will be disabled.
+     * When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
      */
     disableDragAndDrop?: boolean;
 }
@@ -209,60 +204,15 @@ export function DataTable<TData>({
     const prevSearchTermRef = useRef(searchTerm);
     const prevColumnFiltersRef = useRef(columnFilters);
 
-    // Drag and drop setup
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        }),
-    );
-
-    const [localData, setLocalData] = useState<TData[]>(data);
-    const [isReordering, setIsReordering] = useState(false);
-
-    // Update local data when data prop changes (but not during reordering)
-    useEffect(() => {
-        if (!isReordering) {
-            setLocalData(data);
-        }
-    }, [data, isReordering]);
-
-    const handleDragEnd = useCallback(
-        async (event: DragEndEvent) => {
-            const { active, over } = event;
-
-            if (!over || active.id === over.id || !onReorder) {
-                return;
-            }
-
-            const oldIndex = localData.findIndex(item => (item as { id: string }).id === active.id);
-            const newIndex = localData.findIndex(item => (item as { id: string }).id === over.id);
-
-            if (oldIndex === -1 || newIndex === -1) {
-                return;
-            }
-
-            // Optimistically update the UI
-            const originalState = [...localData];
-            const newData = arrayMove(localData, oldIndex, newIndex);
-            setLocalData(newData);
-            setIsReordering(true);
-
-            try {
-                // Call the user's onReorder callback with all items for context
-                await onReorder(oldIndex, newIndex, localData[oldIndex], localData);
-            } catch (error) {
-                // Revert on error
-                setLocalData(originalState);
-                console.error('Failed to reorder items:', error);
-            } finally {
-                setIsReordering(false);
-            }
+    const componentId = useId();
+    const { sensors, localData, handleDragEnd, itemIds, isReordering } = useDragAndDrop({
+        data,
+        onReorder,
+        disabled: disableDragAndDrop,
+        onError: error => {
+            toast.error(t`Failed to reorder items`);
         },
-        [localData, onReorder],
-    );
-
-    const itemIds = useMemo(() => localData.map(item => (item as { id: string }).id), [localData]);
+    });
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -277,7 +227,7 @@ export function DataTable<TData>({
     }, [defaultColumnVisibility]);
 
     // Add drag handle column if drag and drop is enabled
-    const enhancedColumns = useMemo(() => {
+    const columnsWithOptionalDragHandle = useMemo(() => {
         if (!disableDragAndDrop && onReorder) {
             const dragHandleColumn: ColumnDef<TData, any> = {
                 id: '__drag_handle__',
@@ -294,7 +244,7 @@ export function DataTable<TData>({
 
     let tableOptions: TableOptions<TData> = {
         data: localData,
-        columns: enhancedColumns,
+        columns: columnsWithOptionalDragHandle,
         getRowId: row => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -515,7 +465,7 @@ export function DataTable<TData>({
                                             
                                             if (isDraggableEnabled) {
                                                 return rows.map(row => (
-                                                    <DraggableRow key={row.id} row={row} isDragDisabled={isDragDisabled} />
+                                                    <DraggableRow key={`${row.id}-${componentId}`} row={row} isDragDisabled={isDragDisabled} />
                                                 ));
                                             }
                                             
@@ -536,7 +486,7 @@ export function DataTable<TData>({
                                     ) : (
                                         <TableRow className="animate-in fade-in duration-100">
                                             <TableCell
-                                                colSpan={enhancedColumns.length + (isDragDisabled ? 0 : 1)}
+                                                colSpan={columnsWithOptionalDragHandle.length + (isDragDisabled ? 0 : 1)}
                                                 className="h-24 text-center"
                                             >
                                                 <Trans>No results</Trans>

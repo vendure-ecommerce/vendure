@@ -373,7 +373,7 @@ export interface ListPageProps<
     onReorder?: (oldIndex: number, newIndex: number, item: any) => void | Promise<void>;
     /**
      * @description
-     * When true, drag and drop will be disabled. Useful when filtering or searching.
+     * When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set Useful when filtering or searching.
      * Defaults to false. Only relevant when `onReorder` is provided.
      */
     disableDragAndDrop?: boolean;

@@ -106,6 +106,103 @@ export interface TargetPosition {
 }
 
 /**
+ * Context for drag and drop position calculation
+ */
+interface DragContext<T extends HierarchicalItem> {
+    item: T;
+    targetItem: T | undefined;
+    previousItem: T | null;
+    isDraggingDown: boolean;
+    isTargetExpanded: boolean;
+    isPreviousExpanded: boolean;
+    sourceParentId: string;
+    items: T[];
+}
+
+/**
+ * Checks if dragging down directly onto an expanded item
+ */
+function isDroppingIntoExpandedTarget<T extends HierarchicalItem>(context: DragContext<T>): boolean {
+    const { isDraggingDown, targetItem, item, isTargetExpanded } = context;
+    return isDraggingDown && targetItem?.id !== item.id && isTargetExpanded;
+}
+
+/**
+ * Checks if dragging down into an expanded item's children area
+ */
+function isDroppingIntoExpandedPreviousChildren<T extends HierarchicalItem>(
+    context: DragContext<T>,
+): boolean {
+    const { isDraggingDown, targetItem, previousItem, item, isPreviousExpanded } = context;
+    return (
+        isDraggingDown &&
+        previousItem !== null &&
+        targetItem?.id !== item.id &&
+        isPreviousExpanded &&
+        targetItem?.parentId === previousItem.id
+    );
+}
+
+/**
+ * Checks if dragging up into an expanded item's children area
+ */
+function isDroppingIntoExpandedPreviousWhenDraggingUp<T extends HierarchicalItem>(
+    context: DragContext<T>,
+): boolean {
+    const { isDraggingDown, previousItem, isPreviousExpanded } = context;
+    return !isDraggingDown && previousItem !== null && isPreviousExpanded;
+}
+
+/**
+ * Creates a position for dropping into an expanded item as first child
+ */
+function createFirstChildPosition(parentId: string): TargetPosition {
+    return { targetParentId: parentId, adjustedIndex: 0 };
+}
+
+/**
+ * Calculates position for cross-parent drag operations
+ */
+function calculateCrossParentPosition<T extends HierarchicalItem>(
+    targetItem: T,
+    sourceParentId: string,
+    items: T[],
+): TargetPosition | null {
+    const targetItemParentId = getItemParentId(targetItem);
+
+    if (!targetItemParentId || targetItemParentId === sourceParentId) {
+        return null;
+    }
+
+    const targetSiblings = getItemSiblings(items, targetItemParentId);
+    const adjustedIndex = targetSiblings.findIndex(i => i.id === targetItem.id);
+
+    return { targetParentId: targetItemParentId, adjustedIndex };
+}
+
+/**
+ * Calculates position when dropping at the end of the list
+ */
+function calculateDropAtEndPosition<T extends HierarchicalItem>(
+    previousItem: T | null,
+    sourceParentId: string,
+    items: T[],
+): TargetPosition | null {
+    if (!previousItem) {
+        return null;
+    }
+
+    const previousItemParentId = getItemParentId(previousItem);
+
+    if (!previousItemParentId || previousItemParentId === sourceParentId) {
+        return null;
+    }
+
+    const targetSiblings = getItemSiblings(items, previousItemParentId);
+    return { targetParentId: previousItemParentId, adjustedIndex: targetSiblings.length };
+}
+
+/**
  * Determines the target parent and index for a hierarchical drag and drop operation
  */
 export function calculateDragTargetPosition<T extends HierarchicalItem>(params: {
@@ -120,51 +217,49 @@ export function calculateDragTargetPosition<T extends HierarchicalItem>(params: 
 
     const targetItem = items[newIndex];
     const previousItem = newIndex > 0 ? items[newIndex - 1] : null;
-    const isDraggingDown = oldIndex < newIndex;
 
-    let targetParentId = sourceParentId;
-    let adjustedIndex = 0;
+    const context: DragContext<T> = {
+        item,
+        targetItem,
+        previousItem,
+        isDraggingDown: oldIndex < newIndex,
+        isTargetExpanded: targetItem ? !!expanded[targetItem.id as keyof ExpandedState] : false,
+        isPreviousExpanded: previousItem ? !!expanded[previousItem.id as keyof ExpandedState] : false,
+        sourceParentId,
+        items,
+    };
 
-    // Check if dropping INTO an expanded collection
-    if (isDraggingDown && targetItem?.id !== item.id && expanded[targetItem.id as keyof ExpandedState]) {
-        // Dragging down onto expanded collection → make first child
-        targetParentId = targetItem.id;
-        adjustedIndex = 0;
-    } else if (
-        isDraggingDown &&
-        previousItem &&
-        targetItem?.id !== item.id &&
-        expanded[previousItem.id as keyof ExpandedState] &&
-        targetItem.parentId === previousItem.id
-    ) {
-        // Dragging down into expanded collection's children → make first child
-        targetParentId = previousItem.id;
-        adjustedIndex = 0;
-    } else if (!isDraggingDown && previousItem && expanded[previousItem.id as keyof ExpandedState]) {
-        // Dragging up into expanded collection → make first child
-        targetParentId = previousItem.id;
-        adjustedIndex = 0;
-    } else if (targetItem?.id !== item.id) {
-        // Normal reordering - determine target parent from targetItem
-        const targetItemParentId = getItemParentId(targetItem);
+    // Handle dropping into expanded items (becomes first child)
+    if (isDroppingIntoExpandedTarget(context)) {
+        return createFirstChildPosition(targetItem.id);
+    }
 
-        if (targetItemParentId && targetItemParentId !== sourceParentId) {
-            // Cross-parent move
-            targetParentId = targetItemParentId;
-            const targetSiblings = getItemSiblings(items, targetParentId);
-            adjustedIndex = targetSiblings.findIndex(i => i.id === targetItem.id);
-        }
-    } else if (!targetItem && previousItem) {
-        // Dropping at end - join previous item's parent
-        const previousItemParentId = getItemParentId(previousItem);
+    if (previousItem && isDroppingIntoExpandedPreviousChildren(context)) {
+        return createFirstChildPosition(previousItem.id);
+    }
 
-        if (previousItemParentId && previousItemParentId !== sourceParentId) {
-            targetParentId = previousItemParentId;
-            adjustedIndex = getItemSiblings(items, targetParentId).length;
+    if (previousItem && isDroppingIntoExpandedPreviousWhenDraggingUp(context)) {
+        return createFirstChildPosition(previousItem.id);
+    }
+
+    // Handle cross-parent drag operations
+    if (targetItem?.id !== item.id) {
+        const crossParentPosition = calculateCrossParentPosition(targetItem, sourceParentId, items);
+        if (crossParentPosition) {
+            return crossParentPosition;
         }
     }
 
-    return { targetParentId, adjustedIndex };
+    // Handle dropping at the end of the list
+    if (!targetItem && previousItem) {
+        const dropAtEndPosition = calculateDropAtEndPosition(previousItem, sourceParentId, items);
+        if (dropAtEndPosition) {
+            return dropAtEndPosition;
+        }
+    }
+
+    // Default: stay in the same parent at the beginning
+    return { targetParentId: sourceParentId, adjustedIndex: 0 };
 }
 
 /**

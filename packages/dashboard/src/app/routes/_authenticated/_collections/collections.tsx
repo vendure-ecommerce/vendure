@@ -138,15 +138,15 @@ function CollectionListPage() {
                 queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
             ];
 
-            if (targetParentId !== sourceParentId) {
+            if (targetParentId === sourceParentId) {
+                await Promise.all(queriesToInvalidate);
+                toast.success(t`Collection position updated`);
+            } else {
                 queriesToInvalidate.push(
                     queryClient.invalidateQueries({ queryKey: ['childCollections', targetParentId] })
                 );
                 await Promise.all(queriesToInvalidate);
                 toast.success(t`Collection moved to new parent`);
-            } else {
-                await Promise.all(queriesToInvalidate);
-                toast.success(t`Collection position updated`);
             }
         } catch (error) {
             console.error('Failed to reorder collection:', error);
@@ -156,12 +156,6 @@ function CollectionListPage() {
             throw error;
         }
     };
-
-    // Determine if drag-and-drop should be disabled
-    // We disable it when there's a search term (which shows all nested items flattened)
-    // We now ALLOW dragging when rows are expanded to enable nested reordering
-    const isFiltering = !!searchTerm;
-    const isDragDisabled = isFiltering;
 
     return (
         <ListPage
@@ -325,7 +319,7 @@ function CollectionListPage() {
                 },
             ]}
             onReorder={handleReorder}
-            disableDragAndDrop={isDragDisabled}
+            disableDragAndDrop={!!searchTerm} // Disable dragging while searching
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
