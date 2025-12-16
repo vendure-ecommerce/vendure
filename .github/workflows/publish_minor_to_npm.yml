@@ -6,6 +6,10 @@ on:
   schedule:
     - cron: '0 2 * * *'
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -39,6 +43,10 @@ jobs:
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+
+      # Ensure npm 11.5.1 or later is installed for trusted publishing
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         if: ${{ steps.commit_check.outputs.should_publish == 'true' }}
@@ -77,9 +85,6 @@ jobs:
       - name: Publish to NPM
         if: ${{ steps.commit_check.outputs.should_publish == 'true' }}
         run: npx lerna publish from-package --yes --dist-tag minor --no-git-reset
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
 
       # Informative noop when skipping
       - name: Skip publish
