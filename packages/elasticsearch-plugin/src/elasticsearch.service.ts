@@ -151,9 +151,15 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     if (tempIndexSettings) {
                         delete tempIndexSettings[param];
                     }
-                    delete existingIndexSettings[param];
+                    if (existingIndexSettings) {
+                        delete existingIndexSettings[param];
+                    }
                 }
-                if (!equal(tempIndexSettings, existingIndexSettings))
+                if (
+                    tempIndexSettings &&
+                    existingIndexSettings &&
+                    !equal(tempIndexSettings, existingIndexSettings)
+                )
                     Logger.warn(
                         `Index "${index}" settings differs from index setting in vendure config! Consider re-indexing the data.`,
                         loggerCtx,
@@ -326,7 +332,9 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 'An error occurred when querying Elasticsearch for priceRange aggregations',
             );
         }
-        return aggregations.total ? Number((aggregations.total as any).value) : 0;
+        return aggregations.total && (aggregations.total as any).value != null
+            ? Number((aggregations.total as any).value)
+            : 0;
     }
 
     /**

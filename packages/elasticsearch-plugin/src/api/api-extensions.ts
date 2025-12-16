@@ -1,5 +1,5 @@
-import { gql } from 'graphql-tag';
 import { DocumentNode } from 'graphql';
+import { gql } from 'graphql-tag';
 
 import { ElasticsearchOptions } from '../options';
 
