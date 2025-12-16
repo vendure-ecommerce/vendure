@@ -13,13 +13,11 @@ jobs:
       contents: read
       id-token: write
 
-    # Only allow workflow to run on minor branch
-    if: github.ref == 'refs/heads/minor'
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: minor
           fetch-depth: 0
 
       # Check if branch received commits in the last 24 h; skip remainder if none
