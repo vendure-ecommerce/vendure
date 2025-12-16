@@ -83,7 +83,7 @@ export interface DashboardActionBarItem {
  *
  * @docsCategory extensions-api
  * @docsPage ActionBar
- * @since 3.3.0
+ * @since 3.5.2
  */
 export type ActionBarItemPosition = { itemId: string; order: 'before' | 'after' | 'replace' };
 
