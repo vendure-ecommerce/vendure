@@ -1,29 +1,143 @@
-name: Publish Package to npmjs
+name: Publish to NPM
+
+# This workflow handles all publishing to npm for releases and pre-release nightly
+# builds. We must use a single file rather than separate workflow files because
+# Trusted Publishing currently supports only a single workflow file.
+
 on:
   release:
     types: [published]
+  schedule:
+    - cron: '0 2 * * *'  # Nightly at 02:00 UTC
   workflow_dispatch:
+    inputs:
+      publish_type:
+        description: 'Type of publish'
+        required: true
+        type: choice
+        options:
+          - release
+          - master-nightly
+          - minor-nightly
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  publish:
+  # Determine which publish type(s) to run based on trigger
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Determine publish matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo 'matrix=["release"]' >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            echo 'matrix=["master-nightly", "minor-nightly"]' >> $GITHUB_OUTPUT
+          else
+            echo 'matrix=["${{ inputs.publish_type }}"]' >> $GITHUB_OUTPUT
+          fi
+
+  publish:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        type: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: '22.x'
+          ref: ${{ matrix.type == 'minor-nightly' && 'minor' || matrix.type == 'master-nightly' && 'master' || '' }}
+          fetch-depth: ${{ matrix.type == 'release' && 1 || 0 }}
+
+      # For nightly builds: check if there were commits in the last 24 hours
+      - name: Check for new commits
+        id: commit_check
+        if: matrix.type != 'release'
+        run: |
+          COMMITS=$(git rev-list --count --since="24 hours" HEAD)
+          echo "Commits found: $COMMITS"
+          if [ "$COMMITS" -eq 0 ]; then
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: matrix.type == 'release' || steps.commit_check.outputs.should_publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
           registry-url: 'https://registry.npmjs.org'
-      # Ensure npm 11.5.1 or later is installed
+
       - name: Update npm
+        if: matrix.type == 'release' || steps.commit_check.outputs.should_publish == 'true'
         run: npm install -g npm@latest
-      # Install dependencies without modifying package-lock.json file
-      - run: npm install --no-save
-      - run: npm run build
-      - run: lerna publish from-package --yes
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+
+      - name: Install dependencies
+        if: matrix.type == 'release' || steps.commit_check.outputs.should_publish == 'true'
+        run: npm install --no-save
+
+      - name: Build
+        if: matrix.type == 'release' || steps.commit_check.outputs.should_publish == 'true'
+        run: npm run build
+
+      # Nightly builds: configure git and bump version
+      - name: Configure Git
+        if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'true'
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Get current date
+        if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'true'
+        id: date
+        run: echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Version packages (master-nightly)
+        if: matrix.type == 'master-nightly' && steps.commit_check.outputs.should_publish == 'true'
+        run: |
+          CURRENT_VERSION=$(node -p "require('./lerna.json').version")
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          PATCH=$((VERSION_PARTS[2] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${PATCH}-master-${{ steps.date.outputs.date }}"
+          npx lerna version $NEW_VERSION --no-git-tag-version --yes --no-push --force-publish
+
+      - name: Version packages (minor-nightly)
+        if: matrix.type == 'minor-nightly' && steps.commit_check.outputs.should_publish == 'true'
+        run: |
+          CURRENT_VERSION=$(node -p "require('./lerna.json').version")
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MINOR=$((VERSION_PARTS[1] + 1))
+          NEW_VERSION="${VERSION_PARTS[0]}.${MINOR}.0-minor-${{ steps.date.outputs.date }}"
+          npx lerna version $NEW_VERSION --no-git-tag-version --yes --no-push --force-publish
+
+      - name: Commit version changes
+        if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'true'
+        run: |
+          git add .
+          git commit -m "chore: Bump version for ${{ matrix.type }} pre-release"
+
+      # Publish to npm with appropriate dist-tag
+      - name: Publish to NPM (release)
+        if: matrix.type == 'release'
+        run: npx lerna publish from-package --yes
+
+      - name: Publish to NPM (master-nightly)
+        if: matrix.type == 'master-nightly' && steps.commit_check.outputs.should_publish == 'true'
+        run: npx lerna publish from-package --yes --dist-tag master --no-git-reset
+
+      - name: Publish to NPM (minor-nightly)
+        if: matrix.type == 'minor-nightly' && steps.commit_check.outputs.should_publish == 'true'
+        run: npx lerna publish from-package --yes --dist-tag minor --no-git-reset
+
+      - name: Skip publish (no new commits)
+        if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'false'
+        run: echo "No new commits in last 24 hours – skipping ${{ matrix.type }} publish."
