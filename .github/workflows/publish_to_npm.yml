@@ -138,7 +138,7 @@ jobs:
 
       - name: Publish to NPM (minor-nightly)
         if: matrix.type == 'minor-nightly' && steps.commit_check.outputs.should_publish == 'true'
-        run: npx lerna exec --no-private -- npm publish --access public --tag minor
+        run: npx lerna exec --no-private -- npm publish --dd --access public --tag minor
 
       - name: Skip publish (no new commits)
         if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'false'
