@@ -205,7 +205,7 @@ export function DataTable<TData>({
     const prevColumnFiltersRef = useRef(columnFilters);
 
     const componentId = useId();
-    const { sensors, localData, handleDragEnd, itemIds, isReordering } = useDragAndDrop({
+    const { sensors, localData, handleDragEnd, itemIds } = useDragAndDrop({
         data,
         onReorder,
         disabled: disableDragAndDrop,
