@@ -128,15 +128,15 @@ jobs:
       # Publish to npm with appropriate dist-tag
       - name: Publish to NPM (release)
         if: matrix.type == 'release'
-        run: npx lerna publish from-package --yes
+        run: npx lerna publish from-package --yes --loglevel silly
 
       - name: Publish to NPM (master-nightly)
         if: matrix.type == 'master-nightly' && steps.commit_check.outputs.should_publish == 'true'
-        run: npx lerna publish from-package --yes --dist-tag master --no-git-reset
+        run: npx lerna publish from-package --yes --dist-tag master --no-git-reset --loglevel silly
 
       - name: Publish to NPM (minor-nightly)
         if: matrix.type == 'minor-nightly' && steps.commit_check.outputs.should_publish == 'true'
-        run: npx lerna publish from-package --yes --dist-tag minor --no-git-reset
+        run: npx lerna publish from-package --yes --dist-tag minor --no-git-reset --loglevel silly
 
       - name: Skip publish (no new commits)
         if: matrix.type != 'release' && steps.commit_check.outputs.should_publish == 'false'
