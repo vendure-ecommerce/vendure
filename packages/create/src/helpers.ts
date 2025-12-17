@@ -183,8 +183,9 @@ export function installPackages(options: {
     dependencies: string[];
     isDevDependencies?: boolean;
     logLevel: CliLogLevel;
+    cwd?: string;
 }): Promise<void> {
-    const { dependencies, isDevDependencies = false, logLevel } = options;
+    const { dependencies, isDevDependencies = false, logLevel, cwd } = options;
     return new Promise((resolve, reject) => {
         const command = 'npm';
         const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
@@ -196,7 +197,10 @@ export function installPackages(options: {
             args.push('--verbose');
         }
 
-        const child = spawn(command, args, { stdio: logLevel === 'verbose' ? 'inherit' : 'ignore' });
+        const child = spawn(command, args, {
+            stdio: logLevel === 'verbose' ? 'inherit' : 'ignore',
+            cwd,
+        });
         child.on('close', code => {
             if (code !== 0) {
                 let message = 'An error occurred when installing dependencies.';
