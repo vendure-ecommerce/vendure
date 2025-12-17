@@ -234,6 +234,21 @@ export interface PaginatedListDataTableProps<
      * the list needs to be refreshed.
      */
     registerRefresher?: PaginatedListRefresherRegisterFn;
+    /**
+     * @description
+     * Callback when items are reordered via drag and drop.
+     * When provided, enables drag-and-drop functionality.
+     */
+    onReorder?: (
+        oldIndex: number,
+        newIndex: number,
+        item: PaginatedListItemFields<T>,
+    ) => void | Promise<void>;
+    /**
+     * @description
+     * When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
+     */
+    disableDragAndDrop?: boolean;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -378,6 +393,8 @@ export function PaginatedListDataTable<
     setTableOptions,
     transformData,
     registerRefresher,
+    onReorder,
+    disableDragAndDrop = false,
 }: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -498,6 +515,8 @@ export function PaginatedListDataTable<
                 bulkActions={bulkActions}
                 setTableOptions={setTableOptions}
                 onRefresh={refetchPaginatedList}
+                onReorder={onReorder}
+                disableDragAndDrop={disableDragAndDrop}
             />
         </PaginatedListContext.Provider>
     );

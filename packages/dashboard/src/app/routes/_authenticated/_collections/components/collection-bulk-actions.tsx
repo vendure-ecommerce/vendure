@@ -103,6 +103,13 @@ export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection,
         table.resetRowSelection();
     };
 
+    const handleResetExpanded = () => {
+        const resetExpanded = (table.options.meta as { resetExpanded: () => void })?.resetExpanded;
+        if (resetExpanded) {
+            resetExpanded();
+        }
+    };
+
     return (
         <>
             <DataTableBulkActionItem
@@ -116,6 +123,7 @@ export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection,
                 onOpenChange={setDialogOpen}
                 collectionsToMove={selection}
                 onSuccess={handleSuccess}
+                onResetExpanded={handleResetExpanded}
             />
         </>
     );
