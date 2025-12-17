@@ -4,7 +4,7 @@
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendure-ecommerce/vendure/"
+        "url": "https://github.com/vendure-ecommerce/vendure"
     },
     "keywords": [
         "vendure",
