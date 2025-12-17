@@ -366,12 +366,7 @@ export async function createVendureApp(
             .then(() => fs.writeFile(srcPathScript('environment.d'), envDtsSource))
             .then(() => fs.writeFile(srcPathScript('index'), indexSource))
             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
-            .then(() => {
-                // Only write README to server root if not a monorepo (monorepo has root README)
-                if (!includeStorefront) {
-                    return fs.writeFile(path.join(serverRoot, 'README.md'), readmeSource);
-                }
-            })
+            .then(() => fs.writeFile(path.join(serverRoot, 'README.md'), readmeSource))
             .then(() => fs.writeFile(path.join(serverRoot, 'Dockerfile'), dockerfileSource))
             .then(() => fs.writeFile(path.join(serverRoot, 'docker-compose.yml'), dockerComposeSource))
             .then(() => fs.ensureDir(path.join(serverRoot, 'src/plugins')))
