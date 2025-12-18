@@ -1,6 +1,9 @@
 import { intro, note, outro, select, spinner } from '@clack/prompts';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { program } from 'commander';
+import { randomBytes } from 'crypto';
 import fs from 'fs-extra';
+import Handlebars from 'handlebars';
 import { ChildProcess, spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
 import open from 'open';
@@ -8,7 +11,20 @@ import os from 'os';
 import path from 'path';
 import pc from 'picocolors';
 
-import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
+import {
+    AUTO_RUN_DELAY_MS,
+    CI_PAUSE_AFTER_CLOSE_MS,
+    CI_PAUSE_BEFORE_CLOSE_MS,
+    DEFAULT_PROJECT_VERSION,
+    NORMAL_PAUSE_BEFORE_CLOSE_MS,
+    PORT_SCAN_RANGE,
+    REQUIRED_NODE_VERSION,
+    SCAFFOLD_DELAY_MS,
+    SERVER_PORT,
+    STOREFRONT_PORT,
+    TIP_INTERVAL_MS,
+    TIPS_WHILE_WAITING,
+} from './constants';
 import {
     getCiConfiguration,
     getManualConfiguration,
@@ -20,10 +36,11 @@ import {
     checkNodeVersion,
     checkThatNpmCanReadCwd,
     cleanUpDockerResources,
+    downloadAndExtractStorefront,
+    findAvailablePort,
     getDependencies,
     installPackages,
     isSafeToCreateProjectIn,
-    isServerPortInUse,
     resolvePackageRootDir,
     scaffoldAlreadyExists,
     startPostgresDatabase,
@@ -62,6 +79,7 @@ program
         'Uses npm rather than as the default package manager. DEPRECATED: Npm is now the default',
     )
     .option('--ci', 'Runs without prompts for use in CI scenarios', false)
+    .option('--with-storefront', 'Include Next.js storefront (only used with --ci)', false)
     .parse(process.argv);
 
 const options = program.opts();
@@ -70,6 +88,7 @@ void createVendureApp(
     options.useNpm,
     options.verbose ? 'verbose' : options.logLevel || 'info',
     options.ci,
+    options.withStorefront,
 ).catch(err => {
     log(err);
     process.exit(1);
@@ -77,12 +96,13 @@ void createVendureApp(
 
 export async function createVendureApp(
     name: string | undefined,
-    useNpm: boolean,
+    _useNpm: boolean, // Deprecated: npm is now the default package manager
     logLevel: CliLogLevel,
     isCi: boolean = false,
+    withStorefront: boolean = false,
 ) {
     setLogLevel(logLevel);
-    if (!runPreChecks(name, useNpm)) {
+    if (!runPreChecks(name)) {
         return;
     }
 
@@ -107,22 +127,16 @@ export async function createVendureApp(
     checkCancel(mode);
 
     const portSpinner = spinner();
-    let port = SERVER_PORT;
-    const attemptedPortRange = 20;
+    let port: number;
     portSpinner.start(`Establishing port...`);
-    while (await isServerPortInUse(port)) {
-        const nextPort = port + 1;
-        portSpinner.message(pc.yellow(`Port ${port} is in use. Attempting to use ${nextPort}`));
-        port = nextPort;
-        if (port > SERVER_PORT + attemptedPortRange) {
-            portSpinner.stop(pc.red('Could not find an available port'));
-            outro(
-                `Please ensure there is a port available between ${SERVER_PORT} and ${SERVER_PORT + attemptedPortRange}`,
-            );
-            process.exit(1);
-        }
+    try {
+        port = await findAvailablePort(SERVER_PORT, PORT_SCAN_RANGE);
+        portSpinner.stop(`Using port ${port}`);
+    } catch (e: any) {
+        portSpinner.stop(pc.red('Could not find an available port'));
+        outro(e.message);
+        process.exit(1);
     }
-    portSpinner.stop(`Using port ${port}`);
     process.env.PORT = port.toString();
 
     const root = path.resolve(name);
@@ -149,66 +163,157 @@ export async function createVendureApp(
         readmeSource,
         dockerfileSource,
         dockerComposeSource,
+        tsconfigDashboardSource,
         populateProducts,
+        includeStorefront,
     } =
         mode === 'ci'
-            ? await getCiConfiguration(root, packageManager)
+            ? await getCiConfiguration(root, packageManager, port, withStorefront)
             : mode === 'manual'
-              ? await getManualConfiguration(root, packageManager)
-              : await getQuickStartConfiguration(root, packageManager);
+              ? await getManualConfiguration(root, packageManager, port)
+              : await getQuickStartConfiguration(root, packageManager, port);
+    // Determine the server root directory (either root or apps/server for monorepo)
+    const serverRoot = includeStorefront ? path.join(root, 'apps', 'server') : root;
+    const storefrontRoot = path.join(root, 'apps', 'storefront');
+    const storefrontPort = STOREFRONT_PORT;
+
     process.chdir(root);
     if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
         process.exit(1);
     }
 
-    const packageJsonContents = {
-        name: appName,
-        version: '0.1.0',
-        private: true,
-        scripts: {
-            'dev:server': 'ts-node ./src/index.ts',
-            'dev:worker': 'ts-node ./src/index-worker.ts',
-            dev: 'concurrently npm:dev:*',
-            build: 'tsc',
-            'start:server': 'node ./dist/index.js',
-            'start:worker': 'node ./dist/index-worker.js',
-            start: 'concurrently npm:start:*',
-        },
-    };
-
     const setupSpinner = spinner();
+    const projectType = includeStorefront ? 'monorepo' : 'project';
     setupSpinner.start(
-        `Setting up your new Vendure project in ${pc.green(root)}\nThis may take a few minutes...`,
+        `Setting up your new Vendure ${projectType} in ${pc.green(root)}\nThis may take a few minutes...`,
     );
 
-    const srcPathScript = (fileName: string): string => path.join(root, 'src', `${fileName}.ts`);
+    const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
+    const templatePath = (fileName: string) => path.join(__dirname, '../assets/monorepo', fileName);
 
-    fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJsonContents, null, 2) + os.EOL);
-    const { dependencies, devDependencies } = getDependencies(dbType, `@${packageJson.version as string}`);
+    if (includeStorefront) {
+        // Create monorepo structure
+        await fs.ensureDir(path.join(root, 'apps'));
+        await fs.ensureDir(serverRoot);
+        await fs.ensureDir(path.join(serverRoot, 'src'));
+
+        // Generate root package.json from template
+        const rootPackageTemplate = await fs.readFile(templatePath('root-package.json.hbs'), 'utf-8');
+        const rootPackageContent = Handlebars.compile(rootPackageTemplate)({ name: appName });
+        fs.writeFileSync(path.join(root, 'package.json'), rootPackageContent + os.EOL);
+
+        // Generate root README from template
+        const rootReadmeTemplate = await fs.readFile(templatePath('root-readme.hbs'), 'utf-8');
+        const rootReadmeContent = Handlebars.compile(rootReadmeTemplate)({
+            name: appName,
+            serverPort: port,
+            storefrontPort,
+            superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
+            superadminPassword: SUPER_ADMIN_USER_PASSWORD,
+        });
+        fs.writeFileSync(path.join(root, 'README.md'), rootReadmeContent);
+
+        // Copy root .gitignore
+        await fs.copyFile(templatePath('root-gitignore.template'), path.join(root, '.gitignore'));
+
+        // Create server package.json
+        const serverPackageJsonContents = {
+            name: 'server',
+            version: DEFAULT_PROJECT_VERSION,
+            private: true,
+            scripts: getServerPackageScripts(),
+        };
+        fs.writeFileSync(
+            path.join(serverRoot, 'package.json'),
+            JSON.stringify(serverPackageJsonContents, null, 2) + os.EOL,
+        );
+    } else {
+        // Single project structure (original behavior)
+        const packageJsonContents = {
+            name: appName,
+            version: DEFAULT_PROJECT_VERSION,
+            private: true,
+            scripts: getServerPackageScripts(),
+        };
+        fs.writeFileSync(
+            path.join(root, 'package.json'),
+            JSON.stringify(packageJsonContents, null, 2) + os.EOL,
+        );
+        fs.ensureDirSync(path.join(root, 'src'));
+    }
+
     setupSpinner.stop(`Created ${pc.green('package.json')}`);
 
-    const installSpinner = spinner();
-    installSpinner.start(`Installing ${dependencies[0]} + ${dependencies.length - 1} more dependencies`);
-    try {
-        await installPackages({ dependencies, logLevel });
-    } catch (e) {
-        outro(pc.red(`Failed to inst all dependencies. Please try again.`));
-        process.exit(1);
-    }
-    installSpinner.stop(`Successfully installed ${dependencies.length} dependencies`);
-
-    if (devDependencies.length) {
-        const installDevSpinner = spinner();
-        installDevSpinner.start(
-            `Installing ${devDependencies[0]} + ${devDependencies.length - 1} more dev dependencies`,
-        );
+    // Download storefront if needed
+    if (includeStorefront) {
+        const storefrontSpinner = spinner();
+        storefrontSpinner.start(`Downloading Next.js storefront...`);
         try {
-            await installPackages({ dependencies: devDependencies, isDevDependencies: true, logLevel });
-        } catch (e) {
-            outro(pc.red(`Failed to install dev dependencies. Please try again.`));
+            await downloadAndExtractStorefront(storefrontRoot);
+            // Update storefront package.json name
+            const storefrontPackageJsonPath = path.join(storefrontRoot, 'package.json');
+            const storefrontPackageJson = await fs.readJson(storefrontPackageJsonPath);
+            storefrontPackageJson.name = 'storefront';
+            await fs.writeJson(storefrontPackageJsonPath, storefrontPackageJson, { spaces: 2 });
+
+            // Generate storefront .env.local from template
+            const storefrontEnvTemplate = await fs.readFile(templatePath('storefront-env.hbs'), 'utf-8');
+            const storefrontEnvContent = Handlebars.compile(storefrontEnvTemplate)({
+                serverPort: port,
+                storefrontPort,
+                name: appName,
+                revalidationSecret: randomBytes(32).toString('base64'),
+            });
+            fs.writeFileSync(path.join(storefrontRoot, '.env.local'), storefrontEnvContent);
+
+            storefrontSpinner.stop(`Downloaded Next.js storefront`);
+        } catch (e: any) {
+            storefrontSpinner.stop(pc.red(`Failed to download storefront`));
+            log(e.message, { level: 'verbose' });
+            outro(pc.red(`Failed to download storefront: ${e.message as string}`));
             process.exit(1);
         }
-        installDevSpinner.stop(`Successfully installed ${devDependencies.length} dev dependencies`);
+    }
+
+    // Install dependencies
+    const { dependencies, devDependencies } = getDependencies(dbType, `@${packageJson.version as string}`);
+
+    // Install server dependencies
+    await installDependenciesWithSpinner({
+        dependencies,
+        logLevel,
+        cwd: serverRoot,
+        spinnerMessage: `Installing ${dependencies[0]} + ${dependencies.length - 1} more dependencies`,
+        successMessage: `Successfully installed ${dependencies.length} dependencies`,
+        failureMessage: 'Failed to install dependencies. Please try again.',
+    });
+
+    if (devDependencies.length) {
+        await installDependenciesWithSpinner({
+            dependencies: devDependencies,
+            isDevDependencies: true,
+            logLevel,
+            cwd: serverRoot,
+            spinnerMessage: `Installing ${devDependencies[0]} + ${devDependencies.length - 1} more dev dependencies`,
+            successMessage: `Successfully installed ${devDependencies.length} dev dependencies`,
+            failureMessage: 'Failed to install dev dependencies. Please try again.',
+        });
+    }
+
+    if (includeStorefront) {
+        // Install storefront dependencies
+        const storefrontInstalled = await installDependenciesWithSpinner({
+            dependencies: [],
+            logLevel,
+            cwd: storefrontRoot,
+            spinnerMessage: 'Installing storefront dependencies...',
+            successMessage: 'Installed storefront dependencies',
+            failureMessage: 'Failed to install storefront dependencies',
+            warnOnFailure: true,
+        });
+        if (!storefrontInstalled) {
+            log('You may need to run npm install in the storefront directory manually.', { level: 'info' });
+        }
     }
 
     const scaffoldSpinner = spinner();
@@ -216,35 +321,39 @@ export async function createVendureApp(
     // We add this pause so that the above output is displayed before the
     // potentially lengthy file operations begin, which can prevent that
     // from displaying and thus make the user think that the process has hung.
-    await sleep(500);
-    fs.ensureDirSync(path.join(root, 'src'));
-    const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
+    await sleep(SCAFFOLD_DELAY_MS);
+
+    const srcPathScript = (fileName: string): string => path.join(serverRoot, 'src', `${fileName}.ts`);
+
+    if (!includeStorefront) {
+        fs.ensureDirSync(path.join(serverRoot, 'src'));
+    }
+
     const configFile = srcPathScript('vendure-config');
 
     try {
         await fs
             .writeFile(configFile, configSource)
-            .then(() => fs.writeFile(path.join(root, '.env'), envSource))
+            .then(() => fs.writeFile(path.join(serverRoot, '.env'), envSource))
             .then(() => fs.writeFile(srcPathScript('environment.d'), envDtsSource))
             .then(() => fs.writeFile(srcPathScript('index'), indexSource))
             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
-            .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
-            .then(() => fs.writeFile(path.join(root, 'Dockerfile'), dockerfileSource))
-            .then(() => fs.writeFile(path.join(root, 'docker-compose.yml'), dockerComposeSource))
-            .then(() => fs.ensureDir(path.join(root, 'src/plugins')))
-            .then(() => fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')))
-            .then(() => fs.copyFile(assetPath('tsconfig.template.json'), path.join(root, 'tsconfig.json')))
+            .then(() => fs.writeFile(path.join(serverRoot, 'README.md'), readmeSource))
+            .then(() => fs.writeFile(path.join(serverRoot, 'Dockerfile'), dockerfileSource))
+            .then(() => fs.writeFile(path.join(serverRoot, 'docker-compose.yml'), dockerComposeSource))
+            .then(() => fs.ensureDir(path.join(serverRoot, 'src/plugins')))
+            .then(() => fs.copyFile(assetPath('gitignore.template'), path.join(serverRoot, '.gitignore')))
             .then(() =>
-                fs.copyFile(
-                    assetPath('tsconfig.dashboard.template.json'),
-                    path.join(root, 'tsconfig.dashboard.json'),
-                ),
+                fs.copyFile(assetPath('tsconfig.template.json'), path.join(serverRoot, 'tsconfig.json')),
             )
             .then(() =>
-                fs.copyFile(assetPath('vite.config.template.mts'), path.join(root, 'vite.config.mts')),
+                fs.writeFile(path.join(serverRoot, 'tsconfig.dashboard.json'), tsconfigDashboardSource),
             )
-            .then(() => createDirectoryStructure(root))
-            .then(() => copyEmailTemplates(root));
+            .then(() =>
+                fs.copyFile(assetPath('vite.config.template.mts'), path.join(serverRoot, 'vite.config.mts')),
+            )
+            .then(() => createDirectoryStructure(serverRoot))
+            .then(() => copyEmailTemplates(serverRoot));
     } catch (e: any) {
         outro(pc.red(`Failed to create app scaffold: ${e.message as string}`));
         process.exit(1);
@@ -253,7 +362,7 @@ export async function createVendureApp(
 
     if (mode === 'quick' && dbType === 'postgres') {
         cleanUpDockerResources(name);
-        await startPostgresDatabase(root);
+        await startPostgresDatabase(serverRoot);
     }
 
     const populateSpinner = spinner();
@@ -266,32 +375,11 @@ export async function createVendureApp(
         populateProducts
             ? 'We are populating sample data so that you can start testing right away'
             : 'We are setting up your Vendure server',
-        '☕ This can take a minute or two, so grab a coffee',
-        `✨ We'd love it if you drop us a star on GitHub: https://github.com/vendure-ecommerce/vendure`,
-        `📖 Check out the Vendure documentation at https://docs.vendure.io`,
-        `💬 Join our Discord community to chat with other Vendure developers: https://vendure.io/community`,
-        '💡 In the mean time, here are some tips to get you started',
-        `Vendure provides dedicated GraphQL APIs for both the Admin and Shop`,
-        `Almost every aspect of Vendure is customizable via plugins`,
-        `You can run 'vendure add' from the command line to add new plugins & features`,
-        `Use the EventBus in your plugins to react to events in the system`,
-        `Vendure supports multiple languages & currencies out of the box`,
-        `☕ Did we mention this can take a while?`,
-        `Our custom fields feature allows you to add any kind of data to your entities`,
-        `Vendure is built with TypeScript, so you get full type safety`,
-        `Combined with GraphQL's static schema, your type safety is end-to-end`,
-        `☕ Almost there now... thanks for your patience!`,
-        `Collections allow you to group products together`,
-        `Our AssetServerPlugin allows you to dynamically resize & optimize images`,
-        `Order flows are fully customizable to suit your business requirements`,
-        `Role-based permissions allow you to control access to every part of the system`,
-        `Customers can be grouped for targeted promotions & custom pricing`,
-        `You can find integrations in the Vendure Hub: https://vendure.io/hub`,
+        ...TIPS_WHILE_WAITING,
     ];
 
     let tipIndex = 0;
     let timer: any;
-    const tipInterval = 10_000;
 
     function displayTip() {
         populateSpinner.message(tips[tipIndex]);
@@ -300,22 +388,35 @@ export async function createVendureApp(
             // skip the intro tips if looping
             tipIndex = 3;
         }
-        timer = setTimeout(displayTip, tipInterval);
+        timer = setTimeout(displayTip, TIP_INTERVAL_MS);
     }
 
-    timer = setTimeout(displayTip, tipInterval);
+    timer = setTimeout(displayTip, TIP_INTERVAL_MS);
+
+    // Change to serverRoot so that ts-node can correctly resolve modules.
+    // In monorepo mode, dependencies are hoisted to the root node_modules,
+    // but ts-node needs to be anchored in the server directory for proper
+    // module resolution and to find the tsconfig.json.
+    process.chdir(serverRoot);
 
     // register ts-node so that the config file can be loaded
+    // We use transpileOnly to skip type checking during bootstrap, as the
+    // complex module resolution with npm workspaces and ESM packages can
+    // cause false TypeScript errors. Type checking happens when users run
+    // their own build/dev commands.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(resolvePackageRootDir('ts-node', root)).register();
+    require(resolvePackageRootDir('ts-node', serverRoot)).register({
+        project: path.join(serverRoot, 'tsconfig.json'),
+        transpileOnly: true,
+    });
 
     let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
         const { populate } = await import(
-            path.join(resolvePackageRootDir('@vendure/core', root), 'cli', 'populate')
+            path.join(resolvePackageRootDir('@vendure/core', serverRoot), 'cli', 'populate')
         );
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
-            path.join(resolvePackageRootDir('@vendure/core', root), 'dist', 'index')
+            path.join(resolvePackageRootDir('@vendure/core', serverRoot), 'dist', 'index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -329,7 +430,7 @@ export async function createVendureApp(
                   : LogLevel.Info;
 
         const bootstrapFn = async () => {
-            await checkDbConnection(config.dbConnectionOptions, root);
+            await checkDbConnection(config.dbConnectionOptions, serverRoot);
             const _app = await bootstrap({
                 ...config,
                 apiOptions: {
@@ -359,11 +460,11 @@ export async function createVendureApp(
         if (isCi) {
             log('[CI] Pausing before close...');
         }
-        await sleep(isCi ? 30000 : 2000);
+        await sleep(isCi ? CI_PAUSE_BEFORE_CLOSE_MS : NORMAL_PAUSE_BEFORE_CLOSE_MS);
         await app.close();
         if (isCi) {
             log('[CI] Pausing after close...');
-            await sleep(10000);
+            await sleep(CI_PAUSE_AFTER_CLOSE_MS);
         }
         populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
         clearTimeout(timer);
@@ -404,14 +505,21 @@ export async function createVendureApp(
 
                 // process.stdin.resume();
                 process.on('SIGINT', function () {
-                    displayOutro(root, name, superAdminCredentials);
+                    displayOutro({
+                        root,
+                        name,
+                        superAdminCredentials,
+                        includeStorefront,
+                        serverPort: port,
+                        storefrontPort,
+                    });
                     quickStartProcess?.kill('SIGINT');
                     process.exit(0);
                 });
 
                 // Give enough time for the server to get up and running
                 // before opening the window.
-                await sleep(10_000);
+                await sleep(AUTO_RUN_DELAY_MS);
                 try {
                     await open(dashboardUrl, {
                         newInstance: true,
@@ -427,7 +535,14 @@ export async function createVendureApp(
             }
         } else {
             clearTimeout(timer);
-            displayOutro(root, name, superAdminCredentials);
+            displayOutro({
+                root,
+                name,
+                superAdminCredentials,
+                includeStorefront,
+                serverPort: port,
+                storefrontPort,
+            });
             process.exit(0);
         }
     } catch (e: any) {
@@ -437,37 +552,144 @@ export async function createVendureApp(
     }
 }
 
-function displayOutro(
-    root: string,
-    name: string,
-    superAdminCredentials?: { identifier: string; password: string },
-) {
+/**
+ * Returns the standard npm scripts for the server package.json.
+ */
+function getServerPackageScripts(): Record<string, string> {
+    return {
+        'dev:server': 'ts-node ./src/index.ts',
+        'dev:worker': 'ts-node ./src/index-worker.ts',
+        dev: 'concurrently npm:dev:*',
+        build: 'tsc',
+        'start:server': 'node ./dist/index.js',
+        'start:worker': 'node ./dist/index-worker.js',
+        start: 'concurrently npm:start:*',
+    };
+}
+
+interface InstallDependenciesOptions {
+    dependencies: string[];
+    isDevDependencies?: boolean;
+    logLevel: CliLogLevel;
+    cwd: string;
+    spinnerMessage: string;
+    successMessage: string;
+    failureMessage: string;
+    warnOnFailure?: boolean;
+}
+
+/**
+ * Installs dependencies with a spinner, handling success/failure messaging.
+ * Returns true if installation succeeded, false otherwise.
+ */
+async function installDependenciesWithSpinner(installOptions: InstallDependenciesOptions): Promise<boolean> {
+    const {
+        dependencies,
+        isDevDependencies = false,
+        logLevel,
+        cwd,
+        spinnerMessage,
+        successMessage,
+        failureMessage,
+        warnOnFailure = false,
+    } = installOptions;
+
+    const installSpinner = spinner();
+    installSpinner.start(spinnerMessage);
+
+    try {
+        await installPackages({ dependencies, isDevDependencies, logLevel, cwd });
+        installSpinner.stop(successMessage);
+        return true;
+    } catch (e) {
+        if (warnOnFailure) {
+            installSpinner.stop(pc.yellow(`Warning: ${failureMessage}`));
+            return false;
+        } else {
+            outro(pc.red(failureMessage));
+            process.exit(1);
+        }
+    }
+}
+
+interface OutroOptions {
+    root: string;
+    name: string;
+    superAdminCredentials?: { identifier: string; password: string };
+    includeStorefront?: boolean;
+    serverPort?: number;
+    storefrontPort?: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-shadow
+function displayOutro(outroOptions: OutroOptions) {
+    const {
+        root,
+        name,
+        superAdminCredentials,
+        includeStorefront,
+        serverPort = SERVER_PORT,
+        storefrontPort = STOREFRONT_PORT,
+    } = outroOptions;
     const startCommand = 'npm run dev';
-    const nextSteps = [
-        `Your new Vendure server was created!`,
-        pc.gray(root),
-        `\n`,
-        `Next, run:`,
-        pc.gray('$ ') + pc.blue(pc.bold(`cd ${name}`)),
-        pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
-        `\n`,
-        `This will start the server in development mode.`,
-        `\n`,
-        `To run the Dashboard, in a new terminal navigate to your project directory and run:`,
-        pc.gray('$ ') + pc.blue(pc.bold(`npx vite`)),
-        `\n`,
-        `To access the Dashboard, open your browser and navigate to:`,
-        pc.green(`http://localhost:3000/dashboard`),
+    const identifier = superAdminCredentials?.identifier ?? SUPER_ADMIN_USER_IDENTIFIER;
+    const password = superAdminCredentials?.password ?? SUPER_ADMIN_USER_PASSWORD;
+
+    // Common footer for both modes
+    const commonFooter = [
         `\n`,
         `Use the following credentials to log in:`,
-        `Username: ${pc.green(superAdminCredentials?.identifier ?? 'superadmin')}`,
-        `Password: ${pc.green(superAdminCredentials?.password ?? 'superadmin')}`,
+        `Username: ${pc.green(identifier)}`,
+        `Password: ${pc.green(password)}`,
         '\n',
         '➡️ Docs: https://docs.vendure.io',
         '➡️ Discord community: https://vendure.io/community',
         '➡️ Star us on GitHub:',
         '   https://github.com/vendure-ecommerce/vendure',
     ];
+
+    let nextSteps: string[];
+
+    if (includeStorefront) {
+        nextSteps = [
+            `Your new Vendure project was created!`,
+            pc.gray(root),
+            `\n`,
+            `This is a monorepo with the following apps:`,
+            `  ${pc.cyan('apps/server')}     - Vendure backend`,
+            `  ${pc.cyan('apps/storefront')} - Next.js frontend`,
+            `\n`,
+            `Next, run:`,
+            pc.gray('$ ') + pc.blue(pc.bold(`cd ${name}`)),
+            pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
+            `\n`,
+            `This will start both the server and storefront.`,
+            `\n`,
+            `Access points:`,
+            `  Dashboard:  ${pc.green(`http://localhost:${serverPort}/dashboard`)}`,
+            `  Storefront: ${pc.green(`http://localhost:${storefrontPort}`)}`,
+            ...commonFooter,
+        ];
+    } else {
+        nextSteps = [
+            `Your new Vendure server was created!`,
+            pc.gray(root),
+            `\n`,
+            `Next, run:`,
+            pc.gray('$ ') + pc.blue(pc.bold(`cd ${name}`)),
+            pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
+            `\n`,
+            `This will start the server in development mode.`,
+            `\n`,
+            `To run the Dashboard, in a new terminal navigate to your project directory and run:`,
+            pc.gray('$ ') + pc.blue(pc.bold(`npx vite`)),
+            `\n`,
+            `To access the Dashboard, open your browser and navigate to:`,
+            pc.green(`http://localhost:${serverPort}/dashboard`),
+            ...commonFooter,
+        ];
+    }
+
     note(nextSteps.join('\n'), pc.green('Setup complete!'));
     outro(`Happy hacking!`);
 }
@@ -476,7 +698,7 @@ function displayOutro(
  * Run some initial checks to ensure that it is okay to proceed with creating
  * a new Vendure project in the given location.
  */
-function runPreChecks(name: string | undefined, useNpm: boolean): name is string {
+function runPreChecks(name: string | undefined): name is string {
     if (typeof name === 'undefined') {
         log(pc.red(`Please specify the project directory:`));
         log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`, { newline: 'after' });
