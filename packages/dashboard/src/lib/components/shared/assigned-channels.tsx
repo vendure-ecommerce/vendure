@@ -10,16 +10,10 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
-
-// Interface for channel type
-interface Channel {
-    id: string;
-    code: string;
-    token: string;
-}
+import type { SimpleChannel } from '@/vdb/providers/channel-provider.js';
 
 interface AssignedChannelsProps {
-    channels: Channel[];
+    channels: SimpleChannel[];
     entityId: string;
     canUpdate?: boolean;
     assignMutationFn: (variables: any) => Promise<any>;
@@ -75,7 +69,7 @@ export function AssignedChannels({
     return (
         <>
             <div className="flex flex-wrap gap-1 mb-2">
-                {channels.filter(c => c.code !== DEFAULT_CHANNEL_CODE).map((channel: Channel) => {
+                {channels.filter(c => c.code !== DEFAULT_CHANNEL_CODE).map((channel: SimpleChannel) => {
                     return (
                         <ChannelChip key={channel.id} channel={channel} removable={canUpdate && channel.id !== activeChannel?.id} onRemove={onRemoveHandler} />
                     );
@@ -94,10 +88,10 @@ export function AssignedChannels({
                         <Trans>Assign to channel</Trans>
                     </Button>
                     <AssignToChannelDialog
+                        entityType="product"
                         open={assignDialogOpen}
                         onOpenChange={setAssignDialogOpen}
                         entityIds={[entityId]}
-                        entityType="product"
                         mutationFn={assignMutationFn}
                         onSuccess={handleAssignSuccess}
                         buildInput={(channelId: string) => ({

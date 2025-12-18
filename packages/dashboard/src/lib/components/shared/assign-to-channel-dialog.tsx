@@ -70,7 +70,7 @@ export function AssignToChannelDialog({
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${entityIdsLength} products to channel`);
+            toast.error(t`Failed to assign ${entityIdsLength} ${entityType} to channel`);
         },
     });
 
@@ -89,18 +89,18 @@ export function AssignToChannelDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
-                        <Trans>{t`Assign product to channel`}</Trans>
+                        <Trans>Assign {entityType} to channel</Trans>
                     </DialogTitle>
                     <DialogDescription>
                         <Trans>
-                            {t`Select a channel to assign ${entityIds.length} products to`}
+                            Select a channel to assign {entityIds.length} {entityType} to
                         </Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <label className="text-sm font-medium">
-                            <Trans>{t`Channel`}</Trans>
+                            <Trans>Channel</Trans>
                         </label>
                         <Select value={selectedChannelId} onValueChange={setSelectedChannelId}>
                             <SelectTrigger>
@@ -119,10 +119,10 @@ export function AssignToChannelDialog({
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        <Trans>{t`Cancel`}</Trans>
+                        <Trans>Cancel</Trans>
                     </Button>
                     <Button onClick={handleAssign} disabled={!selectedChannelId || isPending}>
-                        <Trans>{t`Assign`}</Trans>
+                        <Trans>Assign</Trans>
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -1,22 +1,16 @@
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { X } from 'lucide-react';
-
-// Interface for facet value type
-interface Channel {
-    id: string;
-    code: string;
-    token: string;
-}
+import type { SimpleChannel } from '@/vdb/providers/channel-provider.js';
 
 interface ChannelChipProps {
-    channel: Channel;
+    channel: SimpleChannel;
     removable?: boolean;
     onRemove?: (id: string) => void;
 }
 
 /**
  * @description
- * A component for displaying a facet value as a chip.
+ * A component for displaying a channel as a chip.
  *
  * @docsCategory components
  * @since 3.4.0
@@ -25,7 +19,7 @@ export function ChannelChip({
     channel,
     removable = true,
     onRemove,
-}: ChannelChipProps) {
+}: Readonly<ChannelChipProps>) {
     return (
         <Badge
             variant="secondary"

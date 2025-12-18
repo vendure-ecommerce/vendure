@@ -80,7 +80,7 @@ function ProductDetailPage() {
                 featuredAssetId: entity.featuredAsset?.id,
                 assetIds: entity.assets.map(asset => asset.id),
                 facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
-                channelIds: entity.channels.map(c => c.id),
+                channelIds: entity.channels.map(c => c.id) ?? [],
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
                     languageCode: translation.languageCode,

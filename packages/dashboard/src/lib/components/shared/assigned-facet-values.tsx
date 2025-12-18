@@ -26,7 +26,7 @@ export function AssignedFacetValues({
     facetValues,
     canUpdate = true,
     onChange,
-}: AssignedFacetValuesProps) {
+}: Readonly<AssignedFacetValuesProps>) {
     const [knownFacetValues, setKnownFacetValues] = useState<FacetValue[]>(facetValues);
 
     function onSelectHandler(facetValue: FacetValue) {
