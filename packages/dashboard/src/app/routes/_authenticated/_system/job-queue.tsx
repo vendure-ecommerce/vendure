@@ -78,16 +78,20 @@ function JobQueuePage() {
     const refreshRef = useRef<() => void>(() => {});
     const { t } = useLingui();
     const [refreshInterval, setRefreshInterval] = useState(10000);
+    const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
 
     useEffect(() => {
         if (refreshInterval === 0) return;
 
         const interval = setInterval(() => {
-            refreshRef.current();
+            // Pause auto-refresh while the row action dropdown is open to avoid closing it mid-interaction
+            if (!isActionMenuOpen) {
+                refreshRef.current();
+            }
         }, refreshInterval);
 
         return () => clearInterval(interval);
-    }, [refreshInterval]);
+    }, [refreshInterval, isActionMenuOpen]);
 
     const currentInterval = REFRESH_INTERVALS.find(i => i.value === refreshInterval);
 
@@ -168,7 +172,7 @@ function JobQueuePage() {
                                 {row.original.state}
                                 {row.original.state === 'RUNNING' ? (
                                     <div className="flex items-center gap-2">
-                                        <DropdownMenu>
+                                        <DropdownMenu onOpenChange={setIsActionMenuOpen}>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                                                     <MoreVertical className="h-4 w-4" />
