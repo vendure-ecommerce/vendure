@@ -66,7 +66,7 @@ export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTota
                             <Trans>Shipping</Trans>
                         </div>
                         {order.shippingLines.map(sl => (
-                            <Badge variant="outline">
+                            <Badge variant="outline" key={sl.id}>
                                 {sl.shippingMethod.name}
                                 {order.shippingLines.length > 1
                                     ? ` (${formatCurrency(sl.discountedPriceWithTax, order.currencyCode)})`
