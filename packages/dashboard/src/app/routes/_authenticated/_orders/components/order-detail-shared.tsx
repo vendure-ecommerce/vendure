@@ -1,12 +1,11 @@
 import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
+    ActionBarItem,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -157,44 +156,42 @@ export function OrderDetailShared({
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{titleSlot?.(entity) || <DefaultOrderTitle entity={entity} />}</PageTitle>
-            <PageActionBar>
-                <PageActionBarRight
-                    dropdownMenuItems={[
-                        ...(nextStates.includes('Modifying')
-                            ? [
-                                  {
-                                      component: () => (
-                                          <DropdownMenuItem onClick={handleModifyClick}>
-                                              <Pencil className="w-4 h-4" />
-                                              <Trans>Modify</Trans>
-                                          </DropdownMenuItem>
-                                      ),
-                                  },
-                              ]
-                            : []),
-                    ]}
-                >
-                    {showAddPaymentButton && (
-                        <PermissionGuard requires={['UpdateOrder']}>
-                            <AddManualPaymentDialog
-                                order={entity}
-                                onSuccess={() => {
-                                    refreshEntity();
-                                }}
-                            />
-                        </PermissionGuard>
-                    )}
-                    {showFulfillButton && (
-                        <PermissionGuard requires={['UpdateOrder']}>
-                            <FulfillOrderDialog
-                                order={entity}
-                                onSuccess={() => {
-                                    refreshOrderAndHistory();
-                                }}
-                            />
-                        </PermissionGuard>
-                    )}
-                </PageActionBarRight>
+            <PageActionBar
+                dropdownMenuItems={[
+                    ...(nextStates.includes('Modifying')
+                        ? [
+                              {
+                                  component: () => (
+                                      <DropdownMenuItem onClick={handleModifyClick}>
+                                          <Pencil className="w-4 h-4" />
+                                          <Trans>Modify</Trans>
+                                      </DropdownMenuItem>
+                                  ),
+                              },
+                          ]
+                        : []),
+                ]}
+            >
+                {showAddPaymentButton && (
+                    <ActionBarItem itemId="add-payment-button" requiresPermission={['UpdateOrder']}>
+                        <AddManualPaymentDialog
+                            order={entity}
+                            onSuccess={() => {
+                                refreshEntity();
+                            }}
+                        />
+                    </ActionBarItem>
+                )}
+                {showFulfillButton && (
+                    <ActionBarItem itemId="fulfill-order-button" requiresPermission={['UpdateOrder']}>
+                        <FulfillOrderDialog
+                            order={entity}
+                            onSuccess={() => {
+                                refreshOrderAndHistory();
+                            }}
+                        />
+                    </ActionBarItem>
+                )}
             </PageActionBar>
             <PageLayout>
                 {/* Main Column Blocks */}

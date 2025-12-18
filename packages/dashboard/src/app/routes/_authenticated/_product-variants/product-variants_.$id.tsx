@@ -5,7 +5,6 @@ import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js'
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { TaxCategorySelector } from '@/vdb/components/shared/tax-category-selector.js';
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { Button } from '@/vdb/components/ui/button.js';
@@ -15,11 +14,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
+    ActionBarItem,
     CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -97,6 +96,7 @@ function ProductVariantDetailPage() {
                 prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
+                useGlobalOutOfStockThreshold : entity.useGlobalOutOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
                     stockOnHand: stockLevel.stockOnHand,
                     stockLocationId: stockLevel.stockLocation.id,
@@ -207,16 +207,14 @@ function ProductVariantDetailPage() {
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                <ActionBarItem itemId="save-button" requiresPermission={['UpdateProduct', 'UpdateCatalog']}>
+                    <Button
+                        type="submit"
+                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                    >
+                        {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="side" blockId="enabled">

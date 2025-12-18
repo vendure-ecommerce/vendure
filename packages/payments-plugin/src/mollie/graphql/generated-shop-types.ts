@@ -15,13 +15,9 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: { input: any; output: any };
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: { input: any; output: any };
-    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
     Money: { input: number; output: number };
-    /** The `Upload` scalar type represents a file upload. */
     Upload: { input: any; output: any };
 };
 
@@ -2551,6 +2547,8 @@ export enum Permission {
     Authenticated = 'Authenticated',
     /** Grants permission to create Administrator */
     CreateAdministrator = 'CreateAdministrator',
+    /** Grants permission to create ApiKey */
+    CreateApiKey = 'CreateApiKey',
     /** Grants permission to create Asset */
     CreateAsset = 'CreateAsset',
     /** Grants permission to create Products, Facets, Assets, Collections */
@@ -2595,6 +2593,8 @@ export enum Permission {
     CreateZone = 'CreateZone',
     /** Grants permission to delete Administrator */
     DeleteAdministrator = 'DeleteAdministrator',
+    /** Grants permission to delete ApiKey */
+    DeleteApiKey = 'DeleteApiKey',
     /** Grants permission to delete Asset */
     DeleteAsset = 'DeleteAsset',
     /** Grants permission to delete Products, Facets, Assets, Collections */
@@ -2643,6 +2643,8 @@ export enum Permission {
     Public = 'Public',
     /** Grants permission to read Administrator */
     ReadAdministrator = 'ReadAdministrator',
+    /** Grants permission to read ApiKey */
+    ReadApiKey = 'ReadApiKey',
     /** Grants permission to read Asset */
     ReadAsset = 'ReadAsset',
     /** Grants permission to read Products, Facets, Assets, Collections */
@@ -2689,6 +2691,8 @@ export enum Permission {
     SuperAdmin = 'SuperAdmin',
     /** Grants permission to update Administrator */
     UpdateAdministrator = 'UpdateAdministrator',
+    /** Grants permission to update ApiKey */
+    UpdateApiKey = 'UpdateApiKey',
     /** Grants permission to update Asset */
     UpdateAsset = 'UpdateAsset',
     /** Grants permission to update Products, Facets, Assets, Collections */
@@ -3244,7 +3248,9 @@ export type RoleList = PaginatedList & {
 
 export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']['input']>;
+    collectionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     collectionSlug?: InputMaybe<Scalars['String']['input']>;
+    collectionSlugs?: InputMaybe<Array<Scalars['String']['input']>>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
     /** @deprecated Use `facetValueFilters` instead */
     facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;

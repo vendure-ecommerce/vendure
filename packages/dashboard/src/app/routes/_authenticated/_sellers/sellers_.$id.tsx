@@ -1,14 +1,13 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
+    ActionBarItem,
     CustomFieldsPageBlock,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -72,16 +71,14 @@ function SellerDetailPage() {
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['UpdateSeller']}>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                <ActionBarItem itemId="save-button" requiresPermission={['UpdateSeller']}>
+                    <Button
+                        type="submit"
+                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                    >
+                        {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="main-form">

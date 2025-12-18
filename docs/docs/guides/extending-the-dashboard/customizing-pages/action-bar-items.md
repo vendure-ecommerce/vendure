@@ -36,6 +36,39 @@ defineDashboardExtension({
 
 ![Action bar button](action-bar-button.webp)
 
+## Location and position
+
+The `pageId` property is required in order to specify on which page the action bar item should appear.
+By default, the item will be placed to the left of any existing action bar items.
+
+However, since Vendure v3.6.0, you can also specify the `position` property for more control over the placement of your action bar item.
+
+See the section on [finding page and item ids](#finding-page-ids) below for help in determining the correct `pageId` and `itemId` values.
+
+```typescript
+import { Button, defineDashboardExtension } from '@vendure/dashboard';
+import { useState } from 'react';
+
+defineDashboardExtension({
+    actionBarItems: [
+        {
+            pageId: 'product-detail',
+            component: ({ context }) => {
+                // omitted for brevity
+            },
+            // highlight-start
+            position: {
+                // The ID of the existing action bar item to position relative to
+                itemId: 'save-button',
+                // Order can be 'before', 'after' or 'replace'
+                order: 'after',
+            },
+            // highlight-end
+        },
+    ],
+});
+```
+
 ## Context Data
 
 The `context` prop provides access to:
@@ -262,9 +295,9 @@ The dashboard provides several button variants you can use:
 6. **Group related actions**: Consider the order and grouping of multiple action items
 7. **Test thoroughly**: Verify your actions work correctly across different entity states
 
-## Finding Page IDs
+## Finding Page and Item IDs
 
-To find the `pageId` for your action bar items:
+To find the `pageId` and `itemId` for your action bar items:
 
 1. Enable [Dev Mode](/guides/extending-the-dashboard/extending-overview/#dev-mode) in the dashboard
 2. Navigate to the page where you want to add your action
