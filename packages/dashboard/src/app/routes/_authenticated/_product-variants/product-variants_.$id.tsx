@@ -13,7 +13,7 @@ import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { DEFAULT_CHANNEL_CODE, NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -72,7 +72,7 @@ function ProductVariantDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
-    const { activeChannel } = useChannel();
+    const { activeChannel, channels } = useChannel();
 
     const { data: stockLocationsData } = useQuery({
         queryKey: ['stockLocations'],
