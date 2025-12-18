@@ -161,6 +161,8 @@ function DropdownMenuSub({ ...props }: React.ComponentProps<typeof DropdownMenuP
     return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 
+const customDropdownMenuSubTriggerClassNames = 'data-[inset]:ps-8';
+const customChevronIconClassNames = 'ms-auto rtl:rotate-180';
 function DropdownMenuSubTrigger({
     className,
     inset,
@@ -175,12 +177,13 @@ function DropdownMenuSubTrigger({
             data-inset={inset}
             className={cn(
                 'focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8',
+                customDropdownMenuSubTriggerClassNames,
                 className,
             )}
             {...props}
         >
             {children}
-            <ChevronRightIcon className="ml-auto size-4" />
+            <ChevronRightIcon className={cn('size-4', customChevronIconClassNames)} />
         </DropdownMenuPrimitive.SubTrigger>
     );
 }
