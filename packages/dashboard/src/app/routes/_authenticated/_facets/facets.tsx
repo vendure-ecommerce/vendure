@@ -16,7 +16,7 @@ import {
     DuplicateFacetsBulkAction,
     RemoveFacetsFromChannelBulkAction,
 } from './components/facet-bulk-actions.js';
-import { FacetValuesSheet } from './components/facet-values-sheet.js';
+import { FacetValuesSheet, FacetValuesSheetProvider } from './components/facet-values-sheet.js';
 import { facetListDocument } from './facets.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
@@ -44,7 +44,7 @@ const FacetValuesCell: DataTableCellComponent<ResultOf<typeof facetListDocument>
                     />
                 );
             })}
-            <FacetValuesSheet facetId={row.original.id} facetName={row.original.name}>
+            <FacetValuesSheet key={row.original.id} facetId={row.original.id} facetName={row.original.name}>
                 {list.totalItems > 3 ? (
                     <div>
                         <Trans>+ {list.totalItems - 3} more</Trans>
@@ -59,6 +59,7 @@ const FacetValuesCell: DataTableCellComponent<ResultOf<typeof facetListDocument>
 
 function FacetListPage() {
     return (
+        <FacetValuesSheetProvider>
         <ListPage
             pageId="facet-list"
             title={<Trans>Facets</Trans>}
@@ -133,5 +134,6 @@ function FacetListPage() {
                 </PermissionGuard>
             </PageActionBarRight>
         </ListPage>
+        </FacetValuesSheetProvider>
     );
 }
