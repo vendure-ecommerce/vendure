@@ -559,8 +559,10 @@ function getServerPackageScripts(): Record<string, string> {
     return {
         'dev:server': 'ts-node ./src/index.ts',
         'dev:worker': 'ts-node ./src/index-worker.ts',
-        dev: 'concurrently npm:dev:*',
+        'dev:dashboard': 'vite --clearScreen false',
+        dev: 'concurrently --kill-others npm:dev:*',
         build: 'tsc',
+        'build:dashboard': 'vite build',
         'start:server': 'node ./dist/index.js',
         'start:worker': 'node ./dist/index-worker.js',
         start: 'concurrently npm:start:*',
