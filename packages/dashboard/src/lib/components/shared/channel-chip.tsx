@@ -13,7 +13,7 @@ interface ChannelChipProps {
  * A component for displaying a channel as a chip.
  *
  * @docsCategory components
- * @since 3.4.0
+ * @since 3.5.2
  */
 export function ChannelChip({
     channel,

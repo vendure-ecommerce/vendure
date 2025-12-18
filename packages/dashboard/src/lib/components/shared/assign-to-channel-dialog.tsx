@@ -65,7 +65,7 @@ export function AssignToChannelDialog({
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(t`Successfully assigned ${entityIdsLength} products to channel`);
+            toast.success(t`Successfully assigned ${entityIdsLength} ${entityType} to channel`);
             onSuccess?.();
             onOpenChange(false);
         },
