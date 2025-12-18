@@ -11,7 +11,7 @@ import {
 } from '@vendure/core';
 import { BraintreeGateway } from 'braintree';
 
-import { defaultExtractMetadataFn, getGateway } from './braintree-common';
+import { defaultExtractMetadataFn, getGateway, resolveMerchantAccountId } from './braintree-common';
 import { BRAINTREE_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { BraintreePluginOptions } from './types';
 
@@ -49,7 +49,7 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
             ) {
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
-            return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);
+            return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options, args);
         } catch (e: any) {
             Logger.error(e, loggerCtx);
             return {
@@ -94,12 +94,14 @@ async function processPayment(
     paymentMethodNonce: any,
     customerId: string | undefined,
     pluginOptions: BraintreePluginOptions,
+    args: any,
 ) {
     const response = await gateway.transaction.sale({
         customerId,
         amount: (amount / 100).toString(10),
         orderId: order.code,
         paymentMethodNonce,
+        merchantAccountId: resolveMerchantAccountId(order.currencyCode, args),
         options: {
             submitForSettlement: true,
             storeInVaultOnSuccess: !!customerId,

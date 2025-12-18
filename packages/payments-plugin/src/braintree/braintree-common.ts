@@ -1,3 +1,4 @@
+import { CurrencyCode } from '@vendure/core';
 import { BraintreeGateway, Environment, Transaction } from 'braintree';
 
 import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
@@ -50,6 +51,19 @@ export function defaultExtractMetadataFn(transaction: Transaction): { [key: stri
         metadata.public.paypalData = { authorizationId: transaction.paypalAccount.authorizationId };
     }
     return metadata;
+}
+
+export function resolveMerchantAccountId(
+    currencyCode: CurrencyCode,
+    options: BraintreePluginOptions,
+): string {
+    return (
+        options.merchantAccountIdByCurrency?.[currencyCode] ??
+        options.merchantAccountId ??
+        (() => {
+            throw new Error(`No Braintree merchantAccountId configured for currency ${currencyCode}`);
+        })()
+    );
 }
 
 function decodeAvsCode(code: string): string {
