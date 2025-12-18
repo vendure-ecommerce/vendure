@@ -5,8 +5,8 @@ import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { Trans } from '@lingui/react/macro';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import {
     getOperationVariablesFields,
 } from '../document-introspection/get-document-structure.js';
 
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { FormControl } from '@/vdb/components/ui/form.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
@@ -33,9 +34,9 @@ import { DetailEntityPath } from './page-types.js';
 
 /**
  * @description
- * **Status: Developer Preview**
+ * Props to configure the {@link DetailPage} component.
  *
- * @docsCategory components
+ * @docsCategory detail-views
  * @docsPage DetailPage
  * @since 3.3.0
  */
@@ -108,11 +109,7 @@ function FieldInputRenderer<
         case 'Float':
             return (
                 <FormControl>
-                    <Input
-                        type="number"
-                        value={field.value}
-                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                    />
+                    <NumberInput {...field} />
                 </FormControl>
             );
         case 'DateTime':
@@ -138,13 +135,11 @@ function FieldInputRenderer<
 
 /**
  * @description
- * **Status: Developer Preview**
- *
  * Auto-generates a detail page with a form based on the provided query and mutation documents.
  *
  * For more control over the layout, you would use the more low-level {@link Page} component.
  *
- * @docsCategory components
+ * @docsCategory detail-views
  * @docsPage DetailPage
  * @docsWeight 0
  * @since 3.3.0

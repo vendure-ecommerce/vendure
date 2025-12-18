@@ -63,7 +63,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
 
     const renderTrigger = () => {
         if (multiple) {
-            const selectedValues = value as string[];
+            const selectedValues: string[] = typeof value === 'string' ? [value] : value;
             return (
                 <Button
                     variant="outline"
@@ -71,7 +71,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
                     className={cn(
                         'w-full justify-between',
                         'min-h-[2.5rem] h-auto',
-                        'flex flex-wrap gap-1 p-1',
+                        'flex flex-wrap gap-1 p-1 shadow-xs',
                         className,
                     )}
                 >
@@ -127,7 +127,7 @@ export function MultiSelect<T extends boolean>(props: MultiSelectProps<T>) {
     return (
         <Popover>
             <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0" side="bottom" align="start">
+            <PopoverContent className="w-[200px] p-0" side="bottom" align="start" onWheel={(e) => e.stopPropagation()}>
                 {(showSearch === true || items.length > 10) && (
                     <div className="p-2">
                         <Input

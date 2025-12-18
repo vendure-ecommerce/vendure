@@ -1,9 +1,11 @@
 import { BooleanDisplayBadge, BooleanDisplayCheckbox } from '@/vdb/components/data-display/boolean.js';
 import { DateTime } from '@/vdb/components/data-display/date-time.js';
+import { Json } from '@/vdb/components/data-display/json.js';
 import { Money } from '@/vdb/components/data-display/money.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { DataDisplayComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
+import { DataTableDisplayComponent } from './types/data-table.js';
 
 globalRegistry.register('displayComponents', new Map<string, DataDisplayComponent>());
 
@@ -17,23 +19,10 @@ displayComponents.set('vendure:booleanBadge', BooleanDisplayBadge);
 displayComponents.set('vendure:dateTime', DateTime);
 displayComponents.set('vendure:asset', AssetDisplay);
 displayComponents.set('vendure:money', Money);
+displayComponents.set('vendure:json', Json);
 
 export function getDisplayComponent(id: string): DataDisplayComponent | undefined {
-    return globalRegistry.get('displayComponents').get(id);
-}
-
-/**
- * @description
- * Gets a display component using the targeting properties.
- * Uses the same key pattern as registration: pageId_blockId_fieldName
- */
-export function getTargetedDisplayComponent(
-    pageId: string,
-    blockId: string,
-    field: string,
-): DataDisplayComponent | undefined {
-    const key = generateDisplayComponentKey(pageId, blockId, field);
-    return globalRegistry.get('displayComponents').get(key);
+    return globalRegistry.get('displayComponents').get(id) as DataDisplayComponent | undefined;
 }
 
 /**
@@ -54,10 +43,10 @@ export function addDisplayComponent({
     pageId: string;
     blockId: string;
     field: string;
-    component: React.ComponentType<{ value: any; [key: string]: any }>;
+    component: DataDisplayComponent | DataTableDisplayComponent;
 }) {
     const displayComponents = globalRegistry.get('displayComponents');
-
+    
     // Generate the key using the helper function
     const key = generateDisplayComponentKey(pageId, blockId, field);
 

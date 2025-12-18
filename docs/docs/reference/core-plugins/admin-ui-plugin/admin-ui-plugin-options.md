@@ -22,6 +22,7 @@ interface AdminUiPluginOptions {
     hostname?: string;
     app?: AdminUiAppConfig | AdminUiAppDevModeConfig;
     adminUiConfig?: Partial<AdminUiConfig>;
+    compatibilityMode?: boolean;
 }
 ```
 
@@ -60,6 +61,14 @@ version, e.g. one pre-compiled with one or more ui extensions.
 
 Allows the contents of the `vendure-ui-config.json` file to be set, e.g.
 for specifying the Vendure GraphQL API host, available UI languages, etc.
+### compatibilityMode
 
+<MemberInfo kind="property" type={`boolean`} since="3.4.0" />
+
+:::warning Deprecated
+This option is deprecated and no longer has any effect.
+
+Previously used when running the AdminUiPlugin at the same time as the new `DashboardPlugin` to avoid conflicts, but this is no longer necessary as the schemas use different type names.
+:::
 
 </div>

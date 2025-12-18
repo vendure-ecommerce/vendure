@@ -412,6 +412,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## createFacetValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a single FacetValue</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">createFacetValue(input: <a href="/reference/graphql-api/admin/input-types#createfacetvalueinput">CreateFacetValueInput</a>!): <a href="/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## createFacetValues
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
@@ -1505,6 +1517,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## setSettingsStoreValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Set a single key-value pair (automatically scoped based on field configuration)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">setSettingsStoreValue(input: <a href="/reference/graphql-api/admin/input-types#settingsstoreinput">SettingsStoreInput</a>!): <a href="/reference/graphql-api/admin/object-types#setsettingsstorevalueresult">SetSettingsStoreValueResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## setSettingsStoreValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Set multiple key-value pairs in a transaction (each automatically scoped)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">setSettingsStoreValues(inputs: [<a href="/reference/graphql-api/admin/input-types#settingsstoreinput">SettingsStoreInput</a>!]!): [<a href="/reference/graphql-api/admin/object-types#setsettingsstorevalueresult">SetSettingsStoreValueResult</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## settlePayment
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
@@ -1698,6 +1734,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">updateFacet(input: <a href="/reference/graphql-api/admin/input-types#updatefacetinput">UpdateFacetInput</a>!): <a href="/reference/graphql-api/admin/object-types#facet">Facet</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## updateFacetValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update a single FacetValue</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">updateFacetValue(input: <a href="/reference/graphql-api/admin/input-types#updatefacetvalueinput">UpdateFacetValueInput</a>!): <a href="/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

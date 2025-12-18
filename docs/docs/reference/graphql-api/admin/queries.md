@@ -205,6 +205,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## facetValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">facetValue(id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## facetValues
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
@@ -227,6 +236,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
 <div class="graphql-code-line ">fulfillmentHandlers: [<a href="/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## getSettingsStoreValue
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get value for a specific key (automatically scoped based on field configuration)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">getSettingsStoreValue(key: <a href="/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## getSettingsStoreValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get multiple key-value pairs (each automatically scoped)</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">getSettingsStoreValues(keys: [<a href="/reference/graphql-api/admin/object-types#string">String</a>!]!): <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -394,6 +427,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## productOption
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">productOption(id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/reference/graphql-api/admin/object-types#productoption">ProductOption</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## productOptionGroup
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
@@ -407,6 +449,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
 <div class="graphql-code-line ">productOptionGroups(filterTerm: <a href="/reference/graphql-api/admin/object-types#string">String</a>): [<a href="/reference/graphql-api/admin/object-types#productoptiongroup">ProductOptionGroup</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## productOptions
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">productOptions(options: <a href="/reference/graphql-api/admin/input-types#productoptionlistoptions">ProductOptionListOptions</a>, groupId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>): <a href="/reference/graphql-api/admin/object-types#productoptionlist">ProductOptionList</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -587,6 +638,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
 <div class="graphql-code-line ">shippingMethods(options: <a href="/reference/graphql-api/admin/input-types#shippingmethodlistoptions">ShippingMethodListOptions</a>): <a href="/reference/graphql-api/admin/object-types#shippingmethodlist">ShippingMethodList</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## slugForEntity
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Generate slug for entity</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">slugForEntity(input: <a href="/reference/graphql-api/admin/input-types#slugforentityinput">SlugForEntityInput</a>!): <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

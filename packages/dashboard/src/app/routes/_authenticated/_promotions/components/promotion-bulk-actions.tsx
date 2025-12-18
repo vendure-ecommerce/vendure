@@ -41,7 +41,7 @@ export const AssignPromotionsToChannelBulkAction: BulkActionComponent<any> = ({ 
 };
 
 export const RemovePromotionsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -52,7 +52,7 @@ export const RemovePromotionsFromChannelBulkAction: BulkActionComponent<any> = (
             requiredPermissions={['UpdatePromotion']}
             buildInput={() => ({
                 promotionIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );
@@ -63,16 +63,6 @@ export const DuplicatePromotionsBulkAction: BulkActionComponent<any> = ({ select
         <DuplicateBulkAction
             entityType="Promotion"
             duplicatorCode="promotion-duplicator"
-            duplicatorArguments={[
-                {
-                    name: 'includeConditions',
-                    value: 'true',
-                },
-                {
-                    name: 'includeActions',
-                    value: 'true',
-                },
-            ]}
             requiredPermissions={['CreatePromotion']}
             entityName="Promotion"
             selection={selection}

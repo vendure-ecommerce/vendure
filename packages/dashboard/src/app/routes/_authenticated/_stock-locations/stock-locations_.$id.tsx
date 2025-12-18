@@ -17,7 +17,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_stock-locations/stock-loc
         queryDocument: stockLocationDetailQuery,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/stock-locations', label: 'Stock locations' },
+                { path: '/stock-locations', label: <Trans>Stock Locations</Trans> },
                 isNew ? <Trans>New stock location</Trans> : entity?.name,
             ];
         },
@@ -47,7 +47,7 @@ function StockLocationDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -64,16 +64,23 @@ function StockLocationDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated stock location'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created stock location`
+                    : t`Successfully updated stock location`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update stock location'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create stock location` : t`Failed to update stock location`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
@@ -89,7 +96,7 @@ function StockLocationDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

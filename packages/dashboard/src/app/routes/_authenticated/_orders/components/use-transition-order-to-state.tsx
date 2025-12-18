@@ -1,13 +1,20 @@
-import { api } from '@/vdb/graphql/api.js';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { orderHistoryDocument, transitionOrderToStateDocument } from '../orders.graphql.js';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/vdb/components/ui/dialog.js';
-import { Trans } from '@/vdb/lib/trans.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
-import { useState } from 'react';
-import { Button } from '@/vdb/components/ui/button.js';
 import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/vdb/components/ui/dialog.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans } from '@lingui/react/macro';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ResultOf } from 'gql.tada';
+import { useState } from 'react';
+import { orderHistoryDocument, transitionOrderToStateDocument } from '../orders.graphql.js';
 
 /**
  * Returns the state the order was in before it entered 'Modifying'.
@@ -29,7 +36,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
             });
             const items = result.order?.history?.items ?? [];
             const modifyingEntry = items.find(i => i.data?.to === 'Modifying');
-            return modifyingEntry ? (modifyingEntry.data?.from as string | undefined) : undefined;
+            return modifyingEntry ? (modifyingEntry.data?.from as string | undefined) : '';
         },
         enabled: !!orderId,
     });
@@ -48,7 +55,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
             }
         }
         return undefined;
-    }
+    };
 
     const transitionToPreModifyingState = async () => {
         if (data && orderId) {
@@ -70,7 +77,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
                     onSuccessFn?.();
                 }
             },
-            onError: (error) => {
+            onError: error => {
                 setTransitionError(error.message);
             },
         });
@@ -134,7 +141,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
         transitionToPreModifyingState,
         transitionToState,
         ManuallySelectNextState,
-        selectNextState: ({ onSuccess }: { onSuccess?: () => void }) => {
+        selectNextState: ({ onSuccess }: { onSuccess?: () => void | Promise<void> }) => {
             setSelectStateOpen(true);
             if (onSuccess) {
                 setOnSuccessFn(() => onSuccess);

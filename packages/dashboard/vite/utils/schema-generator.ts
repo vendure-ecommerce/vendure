@@ -26,19 +26,23 @@ export async function generateSchema({
         /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         schemaPromise = new Promise(async (resolve, reject) => {
             resetConfig();
-            await setConfig(vendureConfig ?? {});
+            try {
+                await setConfig(vendureConfig ?? {});
 
-            const runtimeConfig = await runPluginConfigurations(getConfig() as any);
-            const typesLoader = new GraphQLTypesLoader();
-            const finalSchema = await getFinalVendureSchema({
-                config: runtimeConfig,
-                typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
-                typesLoader,
-                apiType: 'admin',
-                output: 'sdl',
-            });
-            const safeSchema = buildSchema(finalSchema);
-            resolve(safeSchema);
+                const runtimeConfig = await runPluginConfigurations(getConfig() as any);
+                const typesLoader = new GraphQLTypesLoader();
+                const finalSchema = await getFinalVendureSchema({
+                    config: runtimeConfig,
+                    typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
+                    typesLoader,
+                    apiType: 'admin',
+                    output: 'sdl',
+                });
+                const safeSchema = buildSchema(finalSchema);
+                resolve(safeSchema);
+            } catch (e) {
+                reject(e);
+            }
         });
     }
     return schemaPromise;

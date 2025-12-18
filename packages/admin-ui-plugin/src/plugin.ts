@@ -23,7 +23,7 @@ import { rateLimit } from 'express-rate-limit';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { adminApiExtensions } from './api/api-extensions';
+import { getApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
     DEFAULT_APP_PATH,
@@ -77,10 +77,27 @@ export interface AdminUiPluginOptions {
      * for specifying the Vendure GraphQL API host, available UI languages, etc.
      */
     adminUiConfig?: Partial<AdminUiConfig>;
+    /**
+     * @description
+     * @deprecated This option no longer has any effect.
+     *
+     * Previously used when running the AdminUiPlugin at the same time as the new `DashboardPlugin`
+     * to avoid conflicts, but this is no longer necessary as the schemas use different type names.
+     *
+     * @since 3.4.0
+     */
+    compatibilityMode?: boolean;
 }
 
 /**
  * @description
+ *
+ * :::warning Deprecated
+ * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).
+ * The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues.
+ * Community contributions will always be merged and released.
+ * :::
+ *
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
  *
  * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by
@@ -130,8 +147,8 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     adminApiExtensions: {
-        schema: adminApiExtensions,
-        resolvers: [MetricsResolver],
+        schema: () => getApiExtensions(),
+        resolvers: () => [MetricsResolver],
     },
     providers: [MetricsService],
     compatibility: '^3.0.0',

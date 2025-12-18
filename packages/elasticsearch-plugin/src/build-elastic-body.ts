@@ -22,6 +22,7 @@ export function buildElasticBody(
         collectionId,
         collectionSlug,
         groupByProduct,
+        groupBySKU,
         skip,
         take,
         sort,
@@ -146,6 +147,9 @@ export function buildElasticBody(
     };
     if (groupByProduct) {
         body.collapse = { field: 'productId' };
+    }
+    if (groupBySKU) {
+        body.collapse = { field: 'sku.keyword' };
     }
     return body;
 }

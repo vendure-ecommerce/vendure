@@ -37,7 +37,20 @@ export async function testGroupByProduct(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(20);
+    expect(result.search.totalItems).toBe(21);
+}
+
+export async function testGroupBySKU(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                term: 'bonsai',
+                groupBySKU: true,
+            },
+        },
+    );
+    expect(result.search.totalItems).toBe(1);
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
@@ -46,10 +59,11 @@ export async function testNoGrouping(client: SimpleGraphQLClient) {
         {
             input: {
                 groupByProduct: false,
+                groupBySKU: false,
             },
         },
     );
-    expect(result.search.totalItems).toBe(34);
+    expect(result.search.totalItems).toBe(35);
 }
 
 export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
@@ -110,6 +124,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName)).toEqual([
         'Bonsai Tree',
+        'Bonsai Tree (Ch2)',
         'Camera Lens',
         'Clacky Keyboard',
         'Curvy Monitor',
@@ -157,6 +172,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         [
             'Bonsai Tree',
+            'Bonsai Tree (Ch2)',
             'Camera Lens',
             'Clacky Keyboard',
             'Curvy Monitor',
@@ -256,6 +272,7 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
+        'Bonsai Tree (Ch2)',
         'Orchid',
         'Spiky Cactus',
     ]);
@@ -273,6 +290,7 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
+        'Bonsai Tree (Ch2)',
         'Orchid',
         'Spiky Cactus',
     ]);

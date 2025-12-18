@@ -40,7 +40,7 @@ export const AssignPaymentMethodsToChannelBulkAction: BulkActionComponent<any> =
 };
 
 export const RemovePaymentMethodsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
+    const { activeChannel } = useChannel();
 
     return (
         <RemoveFromChannelBulkAction
@@ -51,7 +51,7 @@ export const RemovePaymentMethodsFromChannelBulkAction: BulkActionComponent<any>
             requiredPermissions={['UpdatePaymentMethod']}
             buildInput={() => ({
                 paymentMethodIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
         />
     );

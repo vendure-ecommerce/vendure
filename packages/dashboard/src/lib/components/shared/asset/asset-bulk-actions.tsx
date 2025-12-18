@@ -8,9 +8,10 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
+import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { ChevronDown } from 'lucide-react';
 import { Asset } from './asset-gallery.js';
 
@@ -34,9 +35,15 @@ interface AssetBulkActionsProps {
 
 export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<AssetBulkActionsProps>) {
     const { pageId } = usePage();
-    const { blockId } = usePageBlock();
+    const pageBlock = usePageBlock();
+    const blockId = pageBlock?.blockId;
 
-    if (selection.length === 0) {
+    const { position, shouldShow } = useFloatingBulkActions({
+        selectionCount: selection.length,
+        containerSelector: '[data-asset-gallery]',
+    });
+
+    if (!shouldShow) {
         return null;
     }
 
@@ -62,13 +69,21 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<A
     allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
-        <div className="flex items-center gap-2 px-2 py-1 mb-2 bg-muted/50 rounded-md border">
+        <div
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 bg-background shadow-2xl rounded-md border z-50"
+            style={{
+                height: 'auto',
+                maxHeight: '60px',
+                bottom: position.bottom,
+                left: position.left,
+            }}
+        >
             <span className="text-sm text-muted-foreground">
                 <Trans>{selection.length} selected</Trans>
             </span>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8">
+                    <Button variant="outline" size="sm" className="h-8 shadow-none">
                         <Trans>With selected...</Trans>
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>

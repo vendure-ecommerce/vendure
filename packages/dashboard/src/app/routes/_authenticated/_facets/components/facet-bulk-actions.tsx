@@ -2,11 +2,11 @@ import { toast } from 'sonner';
 
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { useLingui } from '@/vdb/lib/trans.js';
+import { useLingui } from '@lingui/react/macro';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 
@@ -45,8 +45,8 @@ export const AssignFacetsToChannelBulkAction: BulkActionComponent<any> = ({ sele
 };
 
 export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { selectedChannel } = useChannel();
-    const { i18n } = useLingui();
+    const { activeChannel } = useChannel();
+    const { t } = useLingui();
 
     return (
         <RemoveFromChannelBulkAction
@@ -57,7 +57,7 @@ export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ se
             requiredPermissions={['UpdateCatalog', 'UpdateFacet']}
             buildInput={() => ({
                 facetIds: selection.map(s => s.id),
-                channelId: selectedChannel?.id,
+                channelId: activeChannel?.id,
             })}
             onSuccess={result => {
                 const typedResult = result as ResultOf<typeof removeFacetsFromChannelDocument>;
@@ -68,15 +68,16 @@ export const RemoveFacetsFromChannelBulkAction: BulkActionComponent<any> = ({ se
                         if ('id' in item) {
                             // Do nothing
                         } else if ('message' in item) {
-                            errors.push(item.message);
-                            toast.error(i18n.t(`Failed to remove facet from channel: ${item.message}`));
+                            const message = item.message;
+                            errors.push(message);
+                            toast.error(t`Failed to remove facet from channel: ${message}`);
                         }
                     }
 
                     const successCount = selection.length - errors.length;
 
                     if (successCount > 0) {
-                        toast.success(i18n.t(`Successfully removed ${successCount} facets from channel`));
+                        toast.success(t`Successfully removed ${successCount} facets from channel`);
                     }
                 }
             }}
@@ -89,12 +90,6 @@ export const DuplicateFacetsBulkAction: BulkActionComponent<any> = ({ selection,
         <DuplicateBulkAction
             entityType="Facet"
             duplicatorCode="facet-duplicator"
-            duplicatorArguments={[
-                {
-                    name: 'includeValues',
-                    value: 'true',
-                },
-            ]}
             requiredPermissions={['UpdateCatalog', 'UpdateFacet']}
             entityName="Facet"
             selection={selection}

@@ -2,8 +2,9 @@ import { LabeledData } from '@/vdb/components/labeled-data.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
@@ -24,7 +25,8 @@ type FulfillmentDetailsProps = {
 
 export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<FulfillmentDetailsProps>) {
     const { formatDate } = useLocalFormat();
-    const { i18n } = useLingui();
+    const { t } = useLingui();
+    const { getTranslatedFulfillmentState } = useDynamicTranslations();
 
     // Create a map of order lines by ID for quick lookup
     const orderLinesMap = new Map(order.lines.map(line => [line.id, line]));
@@ -34,14 +36,14 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
         onSuccess: (result: ResultOf<typeof transitionFulfillmentToStateDocument>) => {
             const fulfillment = result.transitionFulfillmentToState;
             if (fulfillment.__typename === 'Fulfillment') {
-                toast.success(i18n.t('Fulfillment state updated successfully'));
+                toast.success(t`Fulfillment state updated successfully`);
                 onSuccess?.();
             } else {
-                toast.error(fulfillment.message ?? i18n.t('Failed to update fulfillment state'));
+                toast.error(fulfillment.message ?? t`Failed to update fulfillment state`);
             }
         },
         onError: error => {
-            toast.error(i18n.t('Failed to update fulfillment state'));
+            toast.error(t`Failed to update fulfillment state`);
         },
     });
 
@@ -77,8 +79,9 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
 
         const suggested = nextSuggestedState();
         if (suggested) {
+            const suggestedState = getTranslatedFulfillmentState(suggested);
             actions.push({
-                label: `Transition to ${suggested}`,
+                label: t`Transition to ${suggestedState}`,
                 onClick: () => handleStateTransition(suggested),
                 disabled: transitionFulfillmentMutation.isPending,
             });
@@ -86,7 +89,7 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
 
         nextOtherStates().forEach(state => {
             actions.push({
-                label: `Transition to ${state}`,
+                label: t`Transition to ${getTranslatedFulfillmentState(state)}`,
                 type: getTypeForState(state),
                 onClick: () => handleStateTransition(state),
                 disabled: transitionFulfillmentMutation.isPending,
@@ -101,7 +104,10 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
             <div className="space-y-1">
                 <LabeledData label={<Trans>Fulfillment ID</Trans>} value={fulfillment.id.slice(-8)} />
                 <LabeledData label={<Trans>Method</Trans>} value={fulfillment.method} />
-                <LabeledData label={<Trans>State</Trans>} value={fulfillment.state} />
+                <LabeledData
+                    label={<Trans>State</Trans>}
+                    value={getTranslatedFulfillmentState(fulfillment.state)}
+                />
                 {fulfillment.trackingCode && (
                     <LabeledData label={<Trans>Tracking code</Trans>} value={fulfillment.trackingCode} />
                 )}
@@ -143,7 +149,7 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
 
             <div className="mt-3 pt-3 border-t">
                 <StateTransitionControl
-                    currentState={fulfillment.state}
+                    currentState={getTranslatedFulfillmentState(fulfillment.state)}
                     actions={getFulfillmentActions()}
                     isLoading={transitionFulfillmentMutation.isPending}
                 />

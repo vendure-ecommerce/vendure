@@ -1,15 +1,13 @@
-import { Separator } from '@/vdb/components/ui/separator.js';
+import { Trans } from '@lingui/react/macro';
 import { ResultOf } from 'gql.tada';
 import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
-import { Trans } from '@/vdb/lib/trans.js';
 
-type OrderAddress = Omit<ResultOf<typeof orderAddressFragment>, 'country'> & {
-    country: string | { code: string; name: string } | null;
+type OrderAddress = Partial<Omit<ResultOf<typeof orderAddressFragment>, 'country'>> & {
+    country?: string | { code: string; name: string } | null;
 };
 
 export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
-
     const {
         fullName,
         company,
@@ -21,13 +19,17 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
         country,
         countryCode,
         phoneNumber,
-    } = address;
+    } = address ?? {};
 
     const countryName = typeof country === 'string' ? country : country?.name;
     const countryCodeString = country && typeof country !== 'string' ? country?.code : countryCode;
 
     if (!address || Object.values(address).every(value => !value)) {
-        return <div className="text-sm text-muted-foreground"><Trans>No address</Trans></div>;
+        return (
+            <div className="text-sm text-muted-foreground">
+                <Trans>No address</Trans>
+            </div>
+        );
     }
 
     return (
@@ -41,7 +43,7 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
                 <p>{[city, province].filter(Boolean).join(', ')}</p>
                 {postalCode && <p>{postalCode}</p>}
                 {country && (
-                    <div className="flex items-center gap-1.5 mt-1">
+                    <div className="flex items-center gap-1.5">
                         <Globe className="h-3 w-3 text-muted-foreground" />
                         <span>{countryName}</span>
                         {countryCodeString && (
@@ -49,17 +51,15 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
                         )}
                     </div>
                 )}
+                {phoneNumber && (
+                    <>
+                        <div className="flex items-center gap-1.5">
+                            <Phone className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">{phoneNumber}</span>
+                        </div>
+                    </>
+                )}
             </div>
-
-            {phoneNumber && (
-                <>
-                    <Separator className="my-2" />
-                    <div className="flex items-center gap-1.5">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm">{phoneNumber}</span>
-                    </div>
-                </>
-            )}
         </div>
     );
 }

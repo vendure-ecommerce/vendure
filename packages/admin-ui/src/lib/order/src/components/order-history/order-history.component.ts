@@ -129,7 +129,7 @@ export class OrderHistoryComponent {
                 entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
             this.order.fulfillments
         ) {
-            return this.order.fulfillments.find(f => f.id === entry.data.fulfillmentId);
+            return this.order.fulfillments.find(f => f.id == entry.data.fulfillmentId);
         }
     }
 

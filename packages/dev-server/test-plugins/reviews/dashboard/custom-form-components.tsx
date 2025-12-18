@@ -1,7 +1,5 @@
 import {
-    CustomFormComponentInputProps,
-    DataDisplayComponentProps,
-    DataInputComponentProps,
+    DashboardFormComponent,
     FormControl,
     MultiRelationInput,
     RelationSelectorConfig,
@@ -16,17 +14,17 @@ import {
 } from '@vendure/dashboard';
 import { graphql } from '../../../graphql/graphql';
 
-export function TextareaCustomField({ field }: CustomFormComponentInputProps) {
-    return <Textarea {...field} rows={4} />;
-}
-
-export function ResponseDisplay({ value }: DataDisplayComponentProps) {
-    return <div className="font-mono">{value}</div>;
-}
-
-export function BodyInputComponent(props: DataInputComponentProps) {
+export const TextareaCustomField: DashboardFormComponent = props => {
     return <Textarea {...props} rows={4} />;
-}
+};
+
+export const ResponseDisplay: DashboardFormComponent = ({ value }) => {
+    return <div className="font-mono">{value}</div>;
+};
+
+export const BodyInputComponent: DashboardFormComponent = props => {
+    return <Textarea {...props} rows={4} />;
+};
 
 const reviewFragment = graphql(`
     fragment Review on ProductReview {
@@ -49,39 +47,27 @@ const reviewListQuery = graphql(
     [reviewFragment],
 );
 
-export function ReviewSingleSelect(props: CustomFormComponentInputProps) {
+export const ReviewSingleSelect: DashboardFormComponent = props => {
     const config: RelationSelectorConfig<ResultOf<typeof reviewFragment>> = {
         listQuery: reviewListQuery,
         labelKey: 'summary',
         idKey: 'id',
     };
 
-    return (
-        <SingleRelationInput
-            value={props.field.value}
-            onChange={props.field.onChange}
-            config={config}
-        ></SingleRelationInput>
-    );
-}
+    return <SingleRelationInput {...props} config={config}></SingleRelationInput>;
+};
 
-export function ReviewMultiSelect(props: CustomFormComponentInputProps) {
+export const ReviewMultiSelect: DashboardFormComponent = props => {
     const config: RelationSelectorConfig<ResultOf<typeof reviewFragment>> = {
         listQuery: reviewListQuery,
         labelKey: 'summary',
         idKey: 'id',
     };
 
-    return (
-        <MultiRelationInput
-            value={props.field.value}
-            onChange={props.field.onChange}
-            config={config}
-        ></MultiRelationInput>
-    );
-}
+    return <MultiRelationInput config={config} {...props}></MultiRelationInput>;
+};
 
-export function ReviewStateSelect(props: DataInputComponentProps) {
+export const ReviewStateSelect: DashboardFormComponent = props => {
     return (
         <Select value={props.value} onValueChange={props.onChange} key={props.value}>
             <FormControl>
@@ -96,4 +82,4 @@ export function ReviewStateSelect(props: DataInputComponentProps) {
             </SelectContent>
         </Select>
     );
-}
+};

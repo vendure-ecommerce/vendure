@@ -28,6 +28,7 @@ export interface CompilerOptions {
     pathAdapter?: PathAdapter;
     logger?: Logger;
     pluginPackageScanner?: PackageScannerConfig;
+    module?: 'commonjs' | 'esm';
 }
 
 export interface CompileResult {
@@ -47,6 +48,9 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     const transformTsConfigPathMappings =
         pathAdapter?.transformTsConfigPathMappings ?? defaultPathAdapter.transformTsConfigPathMappings;
 
+    // 0. Clear the outputPath
+    fs.removeSync(outputPath);
+
     // 1. Compile TypeScript files
     const compileStart = Date.now();
     await compileTypeScript({
@@ -54,6 +58,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         outputPath,
         logger,
         transformTsConfigPathMappings,
+        module: options.module ?? 'commonjs',
     });
     logger.info(`TypeScript compilation completed in ${Date.now() - compileStart}ms`);
 
@@ -83,7 +88,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     // Create package.json with type commonjs
     await fs.writeFile(
         path.join(outputPath, 'package.json'),
-        JSON.stringify({ type: 'commonjs', private: true }, null, 2),
+        JSON.stringify({ type: options.module === 'esm' ? 'module' : 'commonjs', private: true }, null, 2),
     );
 
     // Find the exported config symbol
@@ -134,11 +139,13 @@ async function compileTypeScript({
     outputPath,
     logger,
     transformTsConfigPathMappings,
+    module,
 }: {
     inputPath: string;
     outputPath: string;
     logger: Logger;
     transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
+    module: 'commonjs' | 'esm';
 }): Promise<void> {
     await fs.ensureDir(outputPath);
 
@@ -152,7 +159,7 @@ async function compileTypeScript({
 
     const compilerOptions: ts.CompilerOptions = {
         target: ts.ScriptTarget.ES2020,
-        module: ts.ModuleKind.CommonJS,
+        module: module === 'esm' ? ts.ModuleKind.ESNext : ts.ModuleKind.CommonJS,
         moduleResolution: ts.ModuleResolutionKind.Node10, // More explicit CJS resolution
         experimentalDecorators: true,
         emitDecoratorMetadata: true,

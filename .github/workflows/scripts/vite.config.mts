@@ -1,4 +1,4 @@
-import { vendureDashboardPlugin } from '@vendure/dashboard/plugin';
+import { vendureDashboardPlugin } from '@vendure/dashboard/vite';
 import { join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
@@ -10,7 +10,7 @@ export default defineConfig({
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
-            adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
+            api: { host: 'http://localhost', port: 3000 },
             gqlOutputPath: './src/gql',
         }),
     ],

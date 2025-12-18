@@ -83,11 +83,21 @@ export async function discoverPlugins({
                             for (const decorator of decorators.elements) {
                                 const props = getDecoratorObjectProps(decorator);
                                 for (const prop of props) {
-                                    const isDashboardProd =
-                                        prop.key.name === 'dashboard' && prop.value.type === 'Literal';
-                                    if (isDashboardProd) {
-                                        dashboardPath = prop.value.value;
-                                        hasVendurePlugin = true;
+                                    if (prop.key.name === 'dashboard') {
+                                        if (prop.value.type === 'Literal') {
+                                            // Handle string format: dashboard: './path/to/dashboard'
+                                            dashboardPath = prop.value.value;
+                                            hasVendurePlugin = true;
+                                        } else if (prop.value.type === 'ObjectExpression') {
+                                            // Handle object format: dashboard: { location: './path/to/dashboard' }
+                                            const locationProp = prop.value.properties?.find(
+                                                (p: any) => p.key?.name === 'location',
+                                            );
+                                            if (locationProp && locationProp.value.type === 'Literal') {
+                                                dashboardPath = locationProp.value.value;
+                                                hasVendurePlugin = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -485,7 +495,7 @@ function guessNodeModulesRoot(vendureConfigPath: string, logger: Logger): string
         logger.debug(`Found core URL: ${coreUrl}`);
         const corePath = fileURLToPath(coreUrl);
         logger.debug(`Found core path: ${corePath}`);
-        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..');
+        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
     } catch (e) {
         logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
         nodeModulesRoot = path.dirname(vendureConfigPath);

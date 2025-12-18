@@ -8,12 +8,14 @@ import {
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    LanguageCode,
     LogLevel,
+    SettingsStoreScopes,
     VendureConfig,
 } from '@vendure/core';
+import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import { SentryPlugin } from '@vendure/sentry-plugin';
 import { TelemetryPlugin } from '@vendure/telemetry-plugin';
 import 'dotenv/config';
 import path from 'path';
@@ -61,35 +63,18 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-
-    customFields: {
-        Product: [
+    settingsStoreFields: {
+        MyPlugin: [
             {
-                name: 'infoUrl',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                name: 'globalVal',
             },
             {
-                name: 'downloadable',
-                type: 'boolean',
-                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
-            },
-            {
-                name: 'shortName',
-                type: 'localeString',
-                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
-            },
-            {
-                name: 'lastUpdated',
-                type: 'datetime',
-                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
-                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                name: 'userVal',
+                scope: SettingsStoreScopes.user,
             },
         ],
     },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -129,6 +114,37 @@ export const devConfig: VendureConfig = {
             },
         }),
         ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
+        ...(process.env.ENABLE_SENTRY === 'true' && process.env.SENTRY_DSN
+            ? [
+                  SentryPlugin.init({
+                      includeErrorTestMutation: true,
+                  }),
+              ]
+            : []),
+        // AdminUiPlugin.init({
+        //     route: 'admin',
+        //     port: 5001,
+        //     adminUiConfig: {},
+        //     // Un-comment to compile a custom admin ui
+        //     // app: compileUiExtensions({
+        //     //     outputPath: path.join(__dirname, './custom-admin-ui'),
+        //     //     extensions: [
+        //     //         {
+        //     //             id: 'ui-extensions-library',
+        //     //             extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
+        //     //             routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
+        //     //             providers: ['providers.ts'],
+        //     //         },
+        //     //         {
+        //     //             globalStyles: path.join(
+        //     //                 __dirname,
+        //     //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
+        //     //             ),
+        //     //         },
+        //     //     ],
+        //     //     devMode: true,
+        //     // }),
+        // }),
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
@@ -152,6 +168,10 @@ export const devConfig: VendureConfig = {
             //     ],
             //     devMode: true,
             // }),
+        }),
+        DashboardPlugin.init({
+            route: 'dashboard',
+            appDir: path.join(__dirname, './dist'),
         }),
     ],
 };

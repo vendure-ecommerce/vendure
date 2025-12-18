@@ -6,10 +6,12 @@ import {
     DeletionResult,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
+
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
+import { ListQueryOptions } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -22,6 +24,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 
@@ -40,24 +43,42 @@ export class ProductOptionService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
-    findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        return this.connection
-            .getRepository(ctx, ProductOption)
-            .find({
-                relations: ['group'],
-                where: { deletedAt: IsNull() },
-            })
-            .then(options => options.map(option => this.translator.translate(option, ctx)));
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductOption>,
+        groupId?: ID,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        const qb = this.listQueryBuilder.build(ProductOption, options, {
+            entityAlias: 'option',
+            ctx,
+            where: {
+                deletedAt: IsNull(),
+            },
+            relations,
+        });
+        if (groupId) {
+            qb.andWhere('option.groupId = :groupId', { groupId });
+        }
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items: items.map(option => this.translator.translate(option, ctx)),
+            totalItems,
+        }));
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
+    findOne(
+        ctx: RequestContext,
+        id: ID,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
             .findOne({
                 where: { id, deletedAt: IsNull() },
-                relations: ['group'],
+                relations: relations ?? ['group'],
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }

@@ -10,7 +10,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { getQueryName } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import type { DocumentNode } from 'graphql';
@@ -47,7 +48,7 @@ export interface RelationSelectorProps<T = any> {
      */
     selectorLabel?: React.ReactNode;
     value?: string | string[];
-    onChange: (value: string | string[]) => void;
+    onChange: (value: string | string[] | undefined) => void;
     disabled?: boolean;
     className?: string;
 }
@@ -343,7 +344,7 @@ export function RelationSelector<T>({
         } else {
             // Clear cache for single select
             setSelectedItemsCache([]);
-            onChange('');
+            onChange(undefined);
         }
     };
 
@@ -366,7 +367,7 @@ export function RelationSelector<T>({
     }, [selectedItemsCache, selectedIds, config.idKey, isMultiple]);
 
     return (
-        <div className={className}>
+        <div className={cn('overflow-auto', className)}>
             {/* Display selected items */}
             {selectedItems.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -376,9 +377,9 @@ export function RelationSelector<T>({
                         return (
                             <div
                                 key={itemId}
-                                className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm"
+                                className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm max-w-full min-w-0"
                             >
-                                <span>{label}</span>
+                                <div className="min-w-0 flex-1">{label}</div>
                                 {!disabled && (
                                     <button
                                         type="button"
@@ -403,10 +404,10 @@ export function RelationSelector<T>({
                             {isMultiple
                                 ? selectedItems.length > 0
                                     ? `Add more (${selectedItems.length} selected)`
-                                    : selectorLabel ?? <Trans>Select items</Trans>
+                                    : (selectorLabel ?? <Trans>Select items</Trans>)
                                 : selectedItems.length > 0
                                   ? 'Change selection'
-                                  : selectorLabel ?? <Trans>Select item</Trans>}
+                                  : (selectorLabel ?? <Trans>Select item</Trans>)}
                         </Trans>
                     </Button>
                 </PopoverTrigger>

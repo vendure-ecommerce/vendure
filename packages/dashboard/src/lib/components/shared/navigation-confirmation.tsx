@@ -1,4 +1,4 @@
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { useBlocker } from '@tanstack/react-router';
 import { UseFormReturn } from 'react-hook-form';
 
@@ -34,7 +34,7 @@ export function NavigationConfirmation(props: Readonly<NavigationConfirmationPro
             return props.form.formState.isDirty;
         },
         withResolver: true,
-        enableBeforeUnload: true,
+        enableBeforeUnload: () => props.form.formState.isDirty,
     });
     return (
         <Dialog open={status === 'blocked'} onOpenChange={reset}>

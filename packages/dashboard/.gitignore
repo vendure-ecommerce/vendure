@@ -25,5 +25,7 @@ dist-ssr
 *.sln
 *.sw?
 
-src/app/routeTree.gen.ts
 vite/tests/__temp
+
+*storybook.log
+storybook-static

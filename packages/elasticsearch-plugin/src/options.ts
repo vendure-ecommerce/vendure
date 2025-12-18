@@ -192,8 +192,8 @@ export interface ElasticsearchOptions {
      * If this property is set to `false` it's not accessible in the `customMappings` field but it's still getting
      * parsed to the elasticsearch index.
      *
-     * This config option defines custom mappings which are accessible when the "groupByProduct"
-     * input options is set to `true`. In addition, custom variant mappings can be accessed by using
+     * This config option defines custom mappings which are accessible when the "groupByProduct" or "groupBySKU"
+     * input options is set to `true` (Do not set both to true at the same time). In addition, custom variant mappings can be accessed by using
      * the `customProductVariantMappings` field, which is always available.
      *
      * @example
@@ -246,8 +246,8 @@ export interface ElasticsearchOptions {
     };
     /**
      * @description
-     * This config option defines custom mappings which are accessible when the "groupByProduct"
-     * input options is set to `false`. In addition, custom product mappings can be accessed by using
+     * This config option defines custom mappings which are accessible when the "groupByProduct" and "groupBySKU"
+     * input options are both set to `false`. In addition, custom product mappings can be accessed by using
      * the `customProductMappings` field, which is always available.
      *
      * @example

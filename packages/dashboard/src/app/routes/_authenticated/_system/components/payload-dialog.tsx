@@ -14,11 +14,18 @@ type PayloadDialogProps = {
     trigger: React.ReactNode;
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
+    onOpenChange?: (open: boolean) => void;
 };
 
-export function PayloadDialog({ payload, trigger, title, description }: Readonly<PayloadDialogProps>) {
+export function PayloadDialog({
+    payload,
+    trigger,
+    title,
+    description,
+    onOpenChange,
+}: Readonly<PayloadDialogProps>) {
     return (
-        <Dialog>
+        <Dialog onOpenChange={open => onOpenChange?.(open)}>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -26,7 +33,7 @@ export function PayloadDialog({ payload, trigger, title, description }: Readonly
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[600px]">
-                    <JsonEditor viewOnly data={payload} collapse />
+                    <JsonEditor viewOnly data={payload} collapse={1} rootFontSize={12} />
                 </ScrollArea>
             </DialogContent>
         </Dialog>

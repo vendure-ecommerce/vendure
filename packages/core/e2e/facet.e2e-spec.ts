@@ -21,11 +21,15 @@ import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_FACET,
+    CREATE_FACET_VALUE,
     GET_FACET_LIST,
     GET_FACET_LIST_SIMPLE,
+    GET_FACET_VALUE,
+    GET_FACET_VALUES,
     GET_FACET_WITH_VALUES,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_FACET,
+    UPDATE_FACET_VALUE,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -144,6 +148,84 @@ describe('Facet resolver', () => {
         expect(result.updateFacetValues[0].code).toBe('compact');
     });
 
+    it('createFacetValue (single)', async () => {
+        const result = await adminClient.query<
+            Codegen.CreateFacetValueMutation,
+            Codegen.CreateFacetValueMutationVariables
+        >(CREATE_FACET_VALUE, {
+            input: {
+                facetId: speakerTypeFacet.id,
+                code: 'wireless',
+                translations: [{ languageCode: LanguageCode.en, name: 'Wireless Speakers' }],
+            },
+        });
+
+        expect(result.createFacetValue).toEqual({
+            id: expect.any(String),
+            code: 'wireless',
+            name: 'Wireless Speakers',
+            languageCode: 'en',
+            facet: {
+                id: speakerTypeFacet.id,
+                name: 'Speaker Category',
+            },
+            translations: [
+                {
+                    id: expect.any(String),
+                    languageCode: LanguageCode.en,
+                    name: 'Wireless Speakers',
+                },
+            ],
+        });
+    });
+
+    it('updateFacetValue (single)', async () => {
+        // First get the newly created facet value
+        const facetWithValues = await adminClient.query<
+            Codegen.GetFacetWithValuesQuery,
+            Codegen.GetFacetWithValuesQueryVariables
+        >(GET_FACET_WITH_VALUES, {
+            id: speakerTypeFacet.id,
+        });
+
+        const wirelessFacetValue = facetWithValues.facet!.values.find(v => v.code === 'wireless')!;
+
+        const result = await adminClient.query<
+            Codegen.UpdateFacetValueMutation,
+            Codegen.UpdateFacetValueMutationVariables
+        >(UPDATE_FACET_VALUE, {
+            input: {
+                id: wirelessFacetValue.id,
+                code: 'bluetooth',
+                translations: [
+                    {
+                        id: wirelessFacetValue.translations[0].id,
+                        languageCode: LanguageCode.en,
+                        name: 'Bluetooth Speakers',
+                    },
+                ],
+            },
+        });
+
+        expect(result.updateFacetValue).toEqual({
+            id: wirelessFacetValue.id,
+            code: 'bluetooth',
+            name: 'Bluetooth Speakers',
+            languageCode: 'en',
+            facet: {
+                id: speakerTypeFacet.id,
+                name: 'Speaker Category',
+            },
+            translations: [
+                {
+                    id: expect.any(String),
+                    languageCode: LanguageCode.en,
+                    name: 'Bluetooth Speakers',
+                },
+            ],
+        });
+    });
+
     it('facets', async () => {
         const result = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
 
@@ -179,7 +261,7 @@ describe('Facet resolver', () => {
         const result = await adminClient.query(GetFacetWithValueListDocument, {
             id: speakerTypeFacet.id,
         });
-        expect(result.facet?.valueList.totalItems).toBe(3);
+        expect(result.facet?.valueList.totalItems).toBe(4);
     });
 
     it('facet with valueList with name filter', async () => {
@@ -193,7 +275,47 @@ describe('Facet resolver', () => {
                 },
             },
         });
-        expect(result.facet?.valueList.totalItems).toBe(2);
+        expect(result.facet?.valueList.totalItems).toBe(3);
+    });
+
+    it('facetValues list query', async () => {
+        const result = await adminClient.query<
+            Codegen.GetFacetValuesQuery,
+            Codegen.GetFacetValuesQueryVariables
+        >(GET_FACET_VALUES, {
+            options: {
+                filter: {
+                    facetId: { eq: speakerTypeFacet.id },
+                },
+            },
+        });
+
+        expect(result.facetValues.totalItems).toBe(4);
+        expect(result.facetValues.items.length).toBe(4);
+        expect(result.facetValues.items.map(v => v.code).sort()).toEqual([
+            'bluetooth',
+            'compact',
+            'hi-fi',
+            'pc',
+        ]);
+        expect(result.facetValues.items.every(v => v.facet.id === speakerTypeFacet.id)).toBe(true);
+    });
+
+    it('facetValue single query', async () => {
+        const pcFacetValue = speakerTypeFacet.values.find(v => v.code === 'pc')!;
+        const result = await adminClient.query<
+            Codegen.GetFacetValueQuery,
+            Codegen.GetFacetValueQueryVariables
+        >(GET_FACET_VALUE, {
+            id: pcFacetValue.id,
+        });
+
+        expect(result.facetValue).toBeDefined();
+        expect(result.facetValue!.id).toBe(pcFacetValue.id);
+        expect(result.facetValue!.code).toBe('pc');
+        expect(result.facetValue!.name).toBe('PC Speakers');
+        expect(result.facetValue!.facet.id).toBe(speakerTypeFacet.id);
+        expect(result.facetValue!.facet.name).toBe('Speaker Category');
     });
 
     it('product.facetValues resolver omits private facets in shop-api', async () => {

@@ -1,5 +1,4 @@
-'use client';
-
+import { useAllBulkActions } from '@/vdb/components/data-table/use-all-bulk-actions.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
@@ -7,11 +6,9 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
 import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
-import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
-import { usePage } from '@/vdb/hooks/use-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { useFloatingBulkActions } from '@/vdb/hooks/use-floating-bulk-actions.js';
+import { Trans } from '@lingui/react/macro';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
@@ -25,8 +22,7 @@ export function DataTableBulkActions<TData>({
     table,
     bulkActions,
 }: Readonly<DataTableBulkActionsProps<TData>>) {
-    const { pageId } = usePage();
-    const { blockId } = usePageBlock();
+    const allBulkActions = useAllBulkActions(bulkActions);
 
     // Cache to store selected items across page changes
     const selectedItemsCache = useRef<Map<string, TData>>(new Map());
@@ -52,17 +48,25 @@ export function DataTableBulkActions<TData>({
         })
         .filter((item): item is TData => item !== undefined);
 
-    if (selection.length === 0) {
+    const { position, shouldShow } = useFloatingBulkActions({
+        selectionCount: selection.length,
+        containerSelector: '[data-table-root], .data-table-container, table',
+        bottomOffset: 40,
+    });
+
+    if (!shouldShow) {
         return null;
     }
-    const extendedBulkActions = pageId ? getBulkActions(pageId, blockId) : [];
-    const allBulkActions = [...extendedBulkActions, ...(bulkActions ?? [])];
-    allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
         <div
-            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white shadow-2xl rounded-md border"
-            style={{ height: 'auto', maxHeight: '60px' }}
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 fixed transform -translate-x-1/2 shadow-2xl bg-background rounded-md border z-50"
+            style={{
+                height: 'auto',
+                maxHeight: '60px',
+                bottom: position.bottom,
+                left: position.left,
+            }}
         >
             <span className="text-sm text-muted-foreground">
                 <Trans>{selection.length} selected</Trans>

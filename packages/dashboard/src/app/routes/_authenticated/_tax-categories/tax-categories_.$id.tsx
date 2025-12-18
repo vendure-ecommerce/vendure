@@ -17,7 +17,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/_tax-categories/tax-catego
         queryDocument: taxCategoryDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-categories', label: 'Tax categories' },
+                { path: '/tax-categories', label: <Trans>Tax Categories</Trans> },
                 isNew ? <Trans>New tax category</Trans> : entity?.name,
             ];
         },
@@ -47,7 +47,7 @@ function TaxCategoryDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -58,21 +58,29 @@ function TaxCategoryDetailPage() {
             return {
                 id: entity.id,
                 name: entity.name,
+                isDefault: entity.isDefault,
                 customFields: entity.customFields,
             };
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated tax category'));
+            toast.success(
+                creatingNewEntity
+                    ? t`Successfully created tax category`
+                    : t`Successfully updated tax category`,
+            );
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update tax category'), {
-                description: err instanceof Error ? err.message : 'Unknown error',
-            });
+            toast.error(
+                creatingNewEntity ? t`Failed to create tax category` : t`Failed to update tax category`,
+                {
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                },
+            );
         },
     });
 
@@ -88,7 +96,7 @@ function TaxCategoryDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

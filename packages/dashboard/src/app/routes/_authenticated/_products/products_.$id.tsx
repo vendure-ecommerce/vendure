@@ -1,4 +1,5 @@
 import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
+import { SlugInput } from '@/vdb/components/data-input/slug-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -6,7 +7,7 @@ import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js'
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { FormControl, FormDescription, FormItem, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
@@ -22,12 +23,13 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
-import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
+import { ProductOptionGroupBadge } from './components/product-option-group-badge.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
 
@@ -40,7 +42,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id')(
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/products', label: 'Products' },
+                { path: '/products', label: <Trans>Products</Trans> },
                 isNew ? <Trans>New product</Trans> : entity?.name,
             ];
         },
@@ -52,7 +54,7 @@ function ProductDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
@@ -81,14 +83,16 @@ function ProductDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated product'));
+            toast.success(
+                creatingNewEntity ? t`Successfully created product` : t`Successfully updated product`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update product'), {
+            toast.error(creatingNewEntity ? t`Failed to create product` : t`Failed to update product`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -104,7 +108,7 @@ function ProductDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -133,7 +137,15 @@ function ProductDetailPage() {
                             control={form.control}
                             name="slug"
                             label={<Trans>Slug</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                            render={({ field }) => (
+                                <SlugInput
+                                    {...field}
+                                    entityName="Product"
+                                    fieldName="slug"
+                                    watchFieldName="name"
+                                    entityId={entity?.id}
+                                />
+                            )}
                         />
                     </DetailFormGrid>
 
@@ -154,13 +166,13 @@ function ProductDetailPage() {
                             }}
                             fromProductDetailPage={true}
                         />
-                        <div className="mt-4">
-                            <AddProductVariantDialog
-                                productId={params.id}
-                                onSuccess={() => {
-                                    refreshRef.current?.();
-                                }}
-                            />
+                        <div className="mt-4 flex gap-2">
+                            <Button asChild variant="outline">
+                                <Link to="./variants">
+                                    <PlusIcon className="mr-2 h-4 w-4" />
+                                    <Trans>Manage variants</Trans>
+                                </Link>
+                            </Button>
                         </div>
                     </PageBlock>
                 )}
@@ -175,21 +187,26 @@ function ProductDetailPage() {
                         />
                     </PageBlock>
                 )}
-                <PageBlock column="side" blockId="facet-values">
+                {entity?.optionGroups.length ? (
+                    <PageBlock column="side" blockId="option-groups" title={<Trans>Product Options</Trans>}>
+                        <div className="flex flex-wrap gap-1.5">
+                            {entity.optionGroups.map(g => (
+                                <ProductOptionGroupBadge key={g.id} id={g.id} name={g.name} />
+                            ))}
+                        </div>
+                    </PageBlock>
+                ) : null}
+                <PageBlock column="side" blockId="facet-values" title={<Trans>Facet Values</Trans>}>
                     <FormFieldWrapper
                         control={form.control}
                         name="facetValueIds"
-                        label={<Trans>Facet values</Trans>}
                         render={({ field }) => (
                             <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
                         )}
                     />
                 </PageBlock>
-                <PageBlock column="side" blockId="assets">
+                <PageBlock column="side" blockId="assets" title={<Trans>Assets</Trans>}>
                     <FormItem>
-                        <FormLabel>
-                            <Trans>Assets</Trans>
-                        </FormLabel>
                         <FormControl>
                             <EntityAssets
                                 assets={entity?.assets}

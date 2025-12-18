@@ -14,6 +14,7 @@ export const productVariantListDocument = graphql(
                     }
                     name
                     sku
+                    enabled
                     currencyCode
                     price
                     priceWithTax
@@ -59,6 +60,16 @@ export const productVariantDetailDocument = graphql(
                         name
                     }
                 }
+                options {
+                    id
+                    name
+                    code
+                    group {
+                        id
+                        name
+                        code
+                    }
+                }
                 translations {
                     id
                     languageCode
@@ -77,10 +88,10 @@ export const productVariantDetailDocument = graphql(
                 prices {
                     currencyCode
                     price
-                    customFields
                 }
                 trackInventory
                 outOfStockThreshold
+                useGlobalOutOfStockThreshold
                 stockLevels {
                     id
                     stockOnHand
@@ -178,6 +189,18 @@ export const updateProductVariantsDocument = graphql(`
                 id
                 name
                 code
+            }
+        }
+    }
+`);
+
+export const stockLocationsQueryDocument = graphql(`
+    query StockLocations {
+        stockLocations(options: { take: 100 }) {
+            items {
+                id
+                name
+                description
             }
         }
     }

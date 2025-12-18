@@ -17,7 +17,7 @@ import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { CheckIcon } from 'lucide-react';
@@ -53,7 +53,7 @@ export function OrderModificationPreviewDialog({
     modifyOrderInput,
     onResolve,
 }: Readonly<OrderModificationPreviewDialogProps>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
     const { formatCurrency } = useLocalFormat();
     // Use a ref to track the last input sent to avoid duplicate calls
     const lastInputRef = useRef<ModifyOrderInput | null>(null);
@@ -99,7 +99,7 @@ export function OrderModificationPreviewDialog({
         previewMutation.data?.modifyOrder?.__typename === 'Order' ? previewMutation.data.modifyOrder : null;
     const error =
         previewMutation.data && previewMutation.data.modifyOrder?.__typename !== 'Order'
-            ? previewMutation.data.modifyOrder?.message || i18n.t('Unknown error')
+            ? previewMutation.data.modifyOrder?.message || t`Unknown error`
             : previewMutation.error?.message || null;
     const loading = previewMutation.isPending;
 
@@ -161,7 +161,7 @@ export function OrderModificationPreviewDialog({
                     {error && <div className="text-destructive py-2">{error}</div>}
                     {previewOrder && !loading && !error && (
                         <>
-                            <OrderTable order={previewOrder} />
+                            <OrderTable pageId="order-modification-preview" order={previewOrder} />
                             {/* Refund/payment UI using Alert */}
                             {priceDifference < 0 && (
                                 <>
@@ -245,6 +245,7 @@ export function OrderModificationPreviewDialog({
                                                                             render={({ field }) => (
                                                                                 <FormControl>
                                                                                     <MoneyInput
+                                                                                        {...field}
                                                                                         value={
                                                                                             field.value || 0
                                                                                         }
@@ -302,7 +303,7 @@ export function OrderModificationPreviewDialog({
                                                             <Textarea
                                                                 {...field}
                                                                 className="bg-background"
-                                                                placeholder={i18n.t('Enter refund note')}
+                                                                placeholder={t`Enter refund note`}
                                                             />
                                                         )}
                                                     />

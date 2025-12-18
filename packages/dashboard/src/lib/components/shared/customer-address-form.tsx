@@ -1,7 +1,7 @@
 import { api } from '@/vdb/graphql/api.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -18,6 +18,7 @@ import {
 } from '../ui/form.js';
 import { Input } from '../ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
+import { CustomFieldsForm } from './custom-fields-form.js';
 
 // Query document to fetch available countries
 const getAvailableCountriesDocument = graphql(`
@@ -64,7 +65,7 @@ export function CustomerAddressForm<T>({
     onSubmit,
     onCancel,
 }: CustomerAddressFormProps<T>) {
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     // Fetch available countries
     const { data: countriesData, isLoading: isLoadingCountries } = useQuery({
@@ -237,7 +238,7 @@ export function CustomerAddressForm<T>({
                                 >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={i18n.t('Select a country')} />
+                                            <SelectValue placeholder={t`Select a country`} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
@@ -275,6 +276,8 @@ export function CustomerAddressForm<T>({
                     />
                 </div>
 
+                {/* Custom Fields */}
+                <CustomFieldsForm entityType="Address" control={form.control} />
                 {/* Default Address Checkboxes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <FormField

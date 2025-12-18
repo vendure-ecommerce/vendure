@@ -6,11 +6,12 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::warning Angular Admin UI Deprecation
-The Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/). The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues. Community contributions will always be merged and released.
+The Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/). The Angular Admin UI will not be maintained after **July 2026**. 
+Until then, we will continue patching critical bugs and security issues. Community contributions will always be merged and released.
 
-The first stable release of the React Admin Dashboard is targeted for **the end of July 2025**.
+**For new projects, use the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
 
-**For new projects, we strongly recommend using the [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/) instead.**
+If you want to use the Admin UI and the Dashboard together, both plugins can now be used simultaneously without any special configuration.
 :::
 
 When creating a plugin, you may wish to extend the Admin UI in order to expose a graphical interface to the plugin's functionality, or to add new functionality to the Admin UI itself. The UI can be extended with custom components written in [Angular](https://angular.io/) or [React](https://react.dev/).
@@ -25,25 +26,6 @@ UI extensions fall into two categories:
 - **Routes**: these are used to define new pages in the Admin UI, such as a new page for managing a custom entity. They would typically be defined in a file named `routes.ts`.
 
 ## Setup
-
-:::cli
-Use `npx vendure add` and select "Set up Admin UI extensions".
-
-If you don't already have any plugins in your project, first create a plugin to house your
-UI extensions. Then select:
-
-```sh
-[Plugin: UI] Set up Admin UI extensions
-```
-
-Then follow the prompts, which will guide you through the process of
-setting up the necessary files and folders for your UI extensions.
-:::
-
-### Manual setup
-
-It is recommended to use the `vendure add` command as described above, but if you prefer to set up the
-Admin UI extensions manually, or just want to get a better understanding of what the CLI is doing, follow these steps:
 
 First, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
@@ -165,8 +147,6 @@ export const config: VendureConfig = {
     ],
 };
 ```
-
-Everything above will be automatically done for you when you use the CLI.
 
 Now when you start the server, the following will happen:
 

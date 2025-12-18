@@ -5,10 +5,10 @@ import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
-import { Trans } from '@/vdb/lib/trans.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
+import { administratorListDocument } from './administrators.graphql.js';
 import { DeleteAdministratorsBulkAction } from './components/administrator-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
@@ -20,20 +20,30 @@ function AdministratorListPage() {
     return (
         <ListPage
             pageId="administrator-list"
-            title="Administrators"
+            title={<Trans>Administrators</Trans>}
             listQuery={administratorListDocument}
-            deleteMutation={deleteAdministratorDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
+                return searchTerm
+                    ? {
+                          firstName: { contains: searchTerm },
+                          lastName: { contains: searchTerm },
+                          emailAddress: { contains: searchTerm },
+                      }
+                    : {};
+            }}
+            transformVariables={variables => {
                 return {
-                    firstName: { contains: searchTerm },
-                    lastName: { contains: searchTerm },
-                    emailAddress: { contains: searchTerm },
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR',
+                    },
                 };
             }}
             additionalColumns={{
                 name: {
-                    header: 'Name',
+                    meta: { dependencies: ['id', 'firstName', 'lastName'] },
+                    header: () => <Trans>Name</Trans>,
                     cell: ({ row }) => (
                         <DetailPageButton
                             id={row.original.id}
@@ -42,11 +52,12 @@ function AdministratorListPage() {
                     ),
                 },
                 roles: {
-                    header: 'Roles',
+                    meta: { dependencies: ['user'] },
+                    header: () => <Trans>Roles</Trans>,
                     cell: ({ row }) => {
                         return (
                             <div className="flex flex-wrap gap-2">
-                                {row.original.user.roles.map(role => {
+                                {row.original.user?.roles.map(role => {
                                     return (
                                         <Badge variant="secondary" key={role.id}>
                                             <RoleCodeLabel code={role.code} />
@@ -60,7 +71,6 @@ function AdministratorListPage() {
             }}
             customizeColumns={{
                 emailAddress: {
-                    id: 'Identifier',
                     header: () => <Trans>Identifier</Trans>,
                     cell: ({ row }) => {
                         return <div>{row.original.emailAddress}</div>;
@@ -69,6 +79,7 @@ function AdministratorListPage() {
             }}
             defaultVisibility={{
                 emailAddress: true,
+                name: true,
             }}
             defaultColumnOrder={['name', 'emailAddress', 'roles']}
             bulkActions={[

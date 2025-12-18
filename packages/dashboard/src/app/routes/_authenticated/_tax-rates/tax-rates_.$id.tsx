@@ -1,4 +1,4 @@
-import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -20,7 +20,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { createTaxRateDocument, taxRateDetailDocument, updateTaxRateDocument } from './tax-rates.graphql.js';
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates_/$id'
         queryDocument: taxRateDetailDocument,
         breadcrumb(isNew, entity) {
             return [
-                { path: '/tax-rates', label: 'Tax rates' },
+                { path: '/tax-rates', label: <Trans>Tax Rates</Trans> },
                 isNew ? <Trans>New tax rate</Trans> : entity?.name,
             ];
         },
@@ -46,7 +46,7 @@ function TaxRateDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
-    const { i18n } = useLingui();
+    const { t } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -67,14 +67,16 @@ function TaxRateDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast.success(i18n.t('Successfully updated tax rate'));
+            toast.success(
+                creatingNewEntity ? t`Successfully created tax rate` : t`Successfully updated tax rate`,
+            );
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast.error(i18n.t('Failed to update tax rate'), {
+            toast.error(creatingNewEntity ? t`Failed to create tax rate` : t`Failed to update tax rate`, {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -90,7 +92,7 @@ function TaxRateDetailPage() {
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                         >
-                            <Trans>Update</Trans>
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>
@@ -119,12 +121,7 @@ function TaxRateDetailPage() {
                             name="value"
                             label={<Trans>Rate</Trans>}
                             render={({ field }) => (
-                                <AffixedInput
-                                    type="number"
-                                    suffix="%"
-                                    value={field.value}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value} min={0} step={0.01} suffix="%" />
                             )}
                         />
                         <FormFieldWrapper

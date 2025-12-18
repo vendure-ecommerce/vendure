@@ -2,6 +2,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+html[dir="rtl"] * {
+    direction: rtl;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* @source rules from extensions will be added here by the dashboardTailwindSourcePlugin */
@@ -94,7 +98,3 @@
     }
 }
 
-/* Overrides for the react-grid-layout library */
-.react-grid-item {
-    transition: none !important;
-}

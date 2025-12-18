@@ -12,6 +12,7 @@ import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { EntityDuplicatorService } from './helpers/entity-duplicator/entity-duplicator.service';
 import { EntityHydrator } from './helpers/entity-hydrator/entity-hydrator.service';
+import { EntitySlugService } from './helpers/entity-slug.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FacetValueChecker } from './helpers/facet-value-checker/facet-value-checker';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
@@ -27,8 +28,10 @@ import { PaymentStateMachine } from './helpers/payment-state-machine/payment-sta
 import { ProductPriceApplicator } from './helpers/product-price-applicator/product-price-applicator';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { RequestContextService } from './helpers/request-context/request-context.service';
+import { SettingsStoreService } from './helpers/settings-store/settings-store.service';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
+import { SlugService } from './helpers/slug.service';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from './helpers/translator/translator.service';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
@@ -78,6 +81,7 @@ const services = [
     CountryService,
     CustomerGroupService,
     CustomerService,
+    EntitySlugService,
     FacetService,
     FacetValueService,
     FulfillmentService,
@@ -97,6 +101,7 @@ const services = [
     SellerService,
     SessionService,
     ShippingMethodService,
+    SlugService,
     StockLevelService,
     StockLocationService,
     StockMovementService,
@@ -133,6 +138,7 @@ const helpers = [
     TranslatorService,
     EntityDuplicatorService,
     FacetValueChecker,
+    SettingsStoreService,
 ];
 
 /**
