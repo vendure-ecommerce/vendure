@@ -7,9 +7,9 @@ import { ChannelChip } from '@/vdb/components/shared/channel-chip.js';
 import { AssignToChannelDialog } from '@/vdb/components/shared/assign-to-channel-dialog.js';
 import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 
 // Interface for channel type
 interface Channel {
@@ -19,20 +19,16 @@ interface Channel {
 }
 
 interface AssignedChannelsProps {
-    value?: string[];
     channels: Channel[];
     entityId: string;
-    entityType: 'product' | 'variant';
     canUpdate?: boolean;
     assignMutationFn: (variables: any) => Promise<any>;
     removeMutationFn: (variables: any) => Promise<any>;
 }
 
 export function AssignedChannels({
-    value = [],
     channels,
     entityId,
-    entityType,
     canUpdate = true,
     assignMutationFn,
     removeMutationFn,
@@ -43,17 +39,14 @@ export function AssignedChannels({
     const [assignDialogOpen, setAssignDialogOpen] = useState(false);
     const { priceFactor, priceFactorField } = usePriceFactor();
 
-    const queryName = entityType === 'product' ? 'product' : 'productVariant';
-    const entityKey = entityType === 'product' ? 'productIds' : 'productVariantIds';
-
     const { mutate: removeFromChannel, isPending: isRemoving } = useMutation({
         mutationFn: removeMutationFn,
         onSuccess: () => {
-            toast.success(t`Successfully removed ${entityType} from channel`);
-            queryClient.invalidateQueries({ queryKey: ['DetailPage', queryName, { id: entityId }] });
+            toast.success(t`Successfully removed product from channel`);
+            queryClient.invalidateQueries({ queryKey: ['DetailPage', 'product', { id: entityId }] });
         },
         onError: () => {
-            toast.error(t`Failed to remove ${entityType} from channel`);
+            toast.error(t`Failed to remove product from channel`);
         },
     });
 
@@ -64,34 +57,27 @@ export function AssignedChannels({
         }
         removeFromChannel({
             input: {
-                [entityKey]: [entityId],
+                productIds: [entityId],
                 channelId,
             },
         });
     }
 
     const handleAssignSuccess = () => {
-        queryClient.invalidateQueries({ queryKey: ['DetailPage', queryName, { id: entityId }] });
+        queryClient.invalidateQueries({ queryKey: ['DetailPage', 'product', { id: entityId }] });
         setAssignDialogOpen(false);
     };
 
     // Only show add button if there are more channels available
-    const availableChannels = allChannels.filter(ch => !value.includes(ch.id));
+    const availableChannels = allChannels.filter(ch => !channels.map(c => c.id).includes(ch.id));
     const showAddButton = canUpdate && availableChannels.length > 0;
 
     return (
         <>
             <div className="flex flex-wrap gap-1 mb-2">
-                {value.map(id => {
-                    const channel = channels.find(c => c.id === id);
-                    if (!channel) return null;
+                {channels.filter(c => c.code !== DEFAULT_CHANNEL_CODE).map((channel: Channel) => {
                     return (
-                        <ChannelChip
-                            key={channel.id}
-                            channel={channel}
-                            removable={canUpdate && channel.id !== activeChannel?.id}
-                            onRemove={onRemoveHandler}
-                        />
+                        <ChannelChip key={channel.id} channel={channel} removable={canUpdate && channel.id !== activeChannel?.id} onRemove={onRemoveHandler} />
                     );
                 })}
             </div>
@@ -111,11 +97,10 @@ export function AssignedChannels({
                         open={assignDialogOpen}
                         onOpenChange={setAssignDialogOpen}
                         entityIds={[entityId]}
-                        entityType={entityType}
                         mutationFn={assignMutationFn}
                         onSuccess={handleAssignSuccess}
                         buildInput={(channelId: string) => ({
-                            [entityKey]: [entityId],
+                            productIds: [entityId],
                             channelId,
                             priceFactor,
                         })}

@@ -10,7 +10,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { FormControl, FormDescription, FormItem, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
-import { DEFAULT_CHANNEL_CODE, NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -219,10 +219,8 @@ function ProductDetailPage() {
                 {channels.length > 1 && entity && (
                     <PageBlock column="side" blockId="channels" title={<Trans>Channels</Trans>}>
                         <AssignedChannels
-                            value={entity.channels.filter(c => c.code !== DEFAULT_CHANNEL_CODE).map(c => c.id)}
-                            channels={entity.channels as any}
+                            channels={entity.channels}
                             entityId={entity.id}
-                            entityType="product"
                             canUpdate={!creatingNewEntity}
                             assignMutationFn={api.mutate(assignProductsToChannelDocument)}
                             removeMutationFn={api.mutate(removeProductsFromChannelDocument)}

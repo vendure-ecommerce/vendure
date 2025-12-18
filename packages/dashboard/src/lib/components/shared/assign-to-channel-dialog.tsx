@@ -23,7 +23,6 @@ interface AssignToChannelDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     entityIds: string[];
-    entityType: string;
     mutationFn: (variables: any) => Promise<ResultOf<any>>;
     onSuccess?: () => void;
     /**
@@ -47,7 +46,6 @@ export function AssignToChannelDialog({
     open,
     onOpenChange,
     entityIds,
-    entityType,
     mutationFn,
     onSuccess,
     buildInput,
@@ -65,12 +63,12 @@ export function AssignToChannelDialog({
     const { mutate, isPending } = useMutation({
         mutationFn,
         onSuccess: () => {
-            toast.success(t`Successfully assigned ${entityIdsLength} ${entityType} to channel`);
+            toast.success(t`Successfully assigned ${entityIdsLength} products to channel`);
             onSuccess?.();
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${entityIdsLength} ${entityType} to channel`);
+            toast.error(`Failed to assign ${entityIdsLength} products to channel`);
         },
     });
 
@@ -89,18 +87,18 @@ export function AssignToChannelDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
-                        <Trans>Assign {entityType} to channel</Trans>
+                        <Trans>{t`Assign product to channel`}</Trans>
                     </DialogTitle>
                     <DialogDescription>
                         <Trans>
-                            Select a channel to assign {entityIds.length} {entityType} to
+                            {t`Select a channel to assign ${entityIds.length} products to`}
                         </Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <label className="text-sm font-medium">
-                            <Trans>Channel</Trans>
+                            <Trans>{t`Channel`}</Trans>
                         </label>
                         <Select value={selectedChannelId} onValueChange={setSelectedChannelId}>
                             <SelectTrigger>
@@ -119,10 +117,10 @@ export function AssignToChannelDialog({
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        <Trans>Cancel</Trans>
+                        <Trans>{t`Cancel`}</Trans>
                     </Button>
                     <Button onClick={handleAssign} disabled={!selectedChannelId || isPending}>
-                        <Trans>Assign</Trans>
+                        <Trans>{t`Assign`}</Trans>
                     </Button>
                 </DialogFooter>
             </DialogContent>
