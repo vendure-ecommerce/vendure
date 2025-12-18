@@ -97,6 +97,7 @@ export function AssignedChannels({
                         open={assignDialogOpen}
                         onOpenChange={setAssignDialogOpen}
                         entityIds={[entityId]}
+                        entityType="product"
                         mutationFn={assignMutationFn}
                         onSuccess={handleAssignSuccess}
                         buildInput={(channelId: string) => ({

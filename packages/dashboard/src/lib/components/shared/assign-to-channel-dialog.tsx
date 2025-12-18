@@ -23,6 +23,7 @@ interface AssignToChannelDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     entityIds: string[];
+    entityType: string;
     mutationFn: (variables: any) => Promise<ResultOf<any>>;
     onSuccess?: () => void;
     /**
@@ -46,6 +47,7 @@ export function AssignToChannelDialog({
     open,
     onOpenChange,
     entityIds,
+    entityType,
     mutationFn,
     onSuccess,
     buildInput,
