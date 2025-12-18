@@ -54,7 +54,7 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: <Trans>Products</Trans> },
+                    { path: '/products', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];
@@ -97,7 +97,7 @@ function ProductVariantDetailPage() {
                 prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
-                useGlobalOutOfStockThreshold : entity.useGlobalOutOfStockThreshold,
+                useGlobalOutOfStockThreshold: entity.useGlobalOutOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
                     stockOnHand: stockLevel.stockOnHand,
                     stockLocationId: stockLevel.stockLocation.id,

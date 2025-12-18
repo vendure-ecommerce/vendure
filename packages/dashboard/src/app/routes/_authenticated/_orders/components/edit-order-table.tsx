@@ -270,6 +270,9 @@ export function EditOrderTable({
                                         }}
                                         value={''}
                                         selectorLabel={<Trans>Add coupon code</Trans>}
+                                        onBlur={() => {}}
+                                        name={'couponCode'}
+                                        ref={() => {}}
                                         onChange={code => onApplyCouponCode({ couponCode: code })}
                                     />
                                 </div>
