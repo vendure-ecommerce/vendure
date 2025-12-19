@@ -27,7 +27,8 @@ First, run the following command in your terminal, replacing `my-shop` with the 
 npx @vendure/create my-shop
 ```
 
-Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you. If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
+Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you.
+If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
 
 ```text
 ┌  Let's create a Vendure App ✨
@@ -37,6 +38,27 @@ Next, choose the "Quick Start" option. This is the fastest way to get a Vendure 
 │  ● Quick Start (Get up and running in a single step)
 │  ○ Manual Configuration
 └
+```
+
+Next you'll be prompted to include our official Next.js storefront starter in your project. This is optional, but recommended if you want to
+quickly see a working storefront connected to your Vendure server.
+
+```text
+┌  Let's create a Vendure App ✨
+│
+◇  How should we proceed?
+│  Quick Start
+│
+◇  Using port 3000
+│
+◇  Docker is running
+│
+// highlight-start
+◆  Would you like to include the Next.js storefront?
+│  ○ No
+│  ● Yes
+└
+// highlight-end
 ```
 
 And that's it! After a minute or two, you'll have a **fully-functional Vendure server** installed locally.
@@ -59,7 +81,22 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 
 **To quickly test out Vendure, we recommend using SQLite**, which requires no external dependencies. You can always switch to a different database later [by changing your configuration file](/guides/developer-guide/configuration/#connecting-to-the-database).
 
-![Vendure Create step 1](./create-1.webp)
+```text
+┌  Let's create a Vendure App ✨
+│
+◇  How should we proceed?
+│  Manual Configuration
+│
+◇  Using port 3000
+│
+◆  Which database are you using?
+│  ○ MySQL
+│  ○ MariaDB
+│  ○ Postgres
+// highlight-next-line
+│  ● SQLite
+└
+```
 
 :::tip
 If you select MySQL, MariaDB, or Postgres, you need to make sure you:
@@ -80,15 +117,70 @@ The final prompt will ask whether to populate your new Vendure server with some 
 
 **We recommend you do so**, as it will give you a good starting point for exploring the APIs, which we will cover in the [Try the API section](/guides/getting-started/try-the-api/), as well as providing some data to use when building your own storefront.
 
-![Vendure Create step 2](./create-2.webp)
+```text
+┌  Let's create a Vendure App ✨
+│
+◇  How should we proceed?
+│  Manual Configuration
+│
+// ...
+│
+◆  Populate with some sample product data?
+// highlight-next-line
+│  ● yes
+│  ○ no
+└
+```
 
-#### 3. Complete setup
+#### 3. Optional storefront setup
+
+From v3.5.2 onwards, you can choose to include an official Next.js Storefront Starter as part of your new Vendure project.
+
+#### 4. Complete setup
 
 Next, a project scaffold will be created and dependencies installed. This may take a few minutes.
 
 Once complete, you'll see a message like this:
 
-![Vendure Create step 3](./create-3.webp)
+```text
+◇  Setup complete! ─────────────────────────────────────╮
+│                                                       │
+│  Your new Vendure project was created!                │
+│  /Users/username/path/my-shop                         │
+│                                                       │
+│                                                       │
+│  This is a monorepo with the following apps:          │
+│    apps/server     - Vendure backend                  │
+│    apps/storefront - Next.js frontend                 │
+│                                                       │
+│                                                       │
+│  Next, run:                                           │
+│  $ cd my-shop                                         │
+│  $ npm run dev                                        │
+│                                                       │
+│                                                       │
+│  This will start both the server and storefront.      │
+│                                                       │
+│                                                       │
+│  Access points:                                       │
+│    Dashboard:  http://localhost:3000/dashboard        │
+│    Storefront: http://localhost:3001                  │
+│                                                       │
+│                                                       │
+│  Use the following credentials to log in:             │
+│  Username: superadmin                                 │
+│  Password: superadmin                                 │
+│                                                       │
+│                                                       │
+│  ➡️ Docs: https://docs.vendure.io                     │
+│  ➡️ Discord community: https://vendure.io/community   │
+│  ➡️ Star us on GitHub:                                │
+│     https://github.com/vendure-ecommerce/vendure      │
+│                                                       │
+├───────────────────────────────────────────────────────╯
+│
+└  Happy hacking!
+```
 
 ### Start the server
 
@@ -104,16 +196,13 @@ You should now be able to access:
 
 - The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
 - The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
+- The Vendure Dashboard: [http://localhost:3000/dashboard](http://localhost:3000/dashboard/)
 
-In another terminal, run:
+If you included the Next.js Storefront Starter, you can also access:
 
-```bash
-npx vite
-```
+- The Next.js Storefront: [http://localhost:3001](http://localhost:3001/)
 
-This runs the Vendure Dashboard in dev mode
-
-- The Vendure Dashboard: [http://localhost:5173/dashboard/](http://localhost:5173/dashboard/)
+![Running apps](./app-screens.webp)
 
 Congratulations! 🥳 You now have a fully functional Vendure server running locally.
 
@@ -122,7 +211,7 @@ Now you can explore Vendure by following our [Try the API guide](/guides/getting
 If you are new to GraphQL, you should also check out our [Introducing GraphQL guide](/guides/getting-started/graphql-intro/).
 
 :::tip
-Open the Dashboard at [http://localhost:5173/dashboard](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
+Open the Dashboard at [http://localhost:3000/dashboard](http://localhost:3000/dashboard) in your browser and log in with the superadmin credentials you specified, which default to:
 
 - **username**: superadmin
 - **password**: superadmin
@@ -143,11 +232,3 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
 
 - The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
 - If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
-
-## Set up a storefront
-
-Once you have a Vendure server running, you can set up a storefront to interact with it!
-
-We have a number of storefront starter kits available for you to use—head over to the [Storefront Starters](/guides/storefront/storefront-starters/) page to learn more.
-
-![Remix storefront](../../storefront/storefront-starters/remix-storefront.webp)
