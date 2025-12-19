@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageTitle
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="307" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="336" packageName="@vendure/dashboard" since="3.3.0" />
 
 A component for displaying the title of a page. This should be used inside the <a href='/reference/dashboard/page-layout/page#page'>Page</a> component.
 

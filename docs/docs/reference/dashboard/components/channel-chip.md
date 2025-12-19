@@ -1,5 +1,5 @@
 ---
-title: "NumberInput"
+title: "ChannelChip"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,18 +9,18 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## NumberInput
+## ChannelChip
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/number-input.tsx" sourceLine="23" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/channel-chip.tsx" sourceLine="18" packageName="@vendure/dashboard" since="3.5.2" />
 
-A component for displaying a numeric value.
+A component for displaying a channel as a chip.
 
 ```ts title="Signature"
-function NumberInput(props: Readonly<NumberInputProps>): void
+function ChannelChip(props: Readonly<ChannelChipProps>): void
 ```
 Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`Readonly&#60;NumberInputProps&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;ChannelChipProps&#62;`} />
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaginatedListDataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="351" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="366" packageName="@vendure/dashboard" since="3.4.0" />
 
 A wrapper around the <a href='/reference/dashboard/list-views/data-table#datatable'>DataTable</a> component, which automatically configures functionality common to
 list queries that implement the `PaginatedList` interface, which is the common way of representing lists
@@ -160,6 +160,12 @@ interface PaginatedListDataTableProps<T extends TypedDocumentNode<U, V>, U exten
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     registerRefresher?: PaginatedListRefresherRegisterFn;
+    onReorder?: (
+        oldIndex: number,
+        newIndex: number,
+        item: PaginatedListItemFields<T>,
+    ) => void | Promise<void>;
+    disableDragAndDrop?: boolean;
 }
 ```
 
@@ -285,6 +291,17 @@ interface PaginatedListDataTableProps<T extends TypedDocumentNode<U, V>, U exten
 <MemberInfo kind="property" type={`PaginatedListRefresherRegisterFn`}   />
 
 
+### onReorder
+
+<MemberInfo kind="property" type={`(         oldIndex: number,         newIndex: number,         item: PaginatedListItemFields&#60;T&#62;,     ) =&#62; void | Promise&#60;void&#62;`}   />
+
+Callback when items are reordered via drag and drop.
+When provided, enables drag-and-drop functionality.
+### disableDragAndDrop
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
 
 
 </div>

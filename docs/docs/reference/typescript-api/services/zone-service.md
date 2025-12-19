@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ZoneService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/zone.service.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/zone.service.ts" sourceLine="38" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> entities.
 
 ```ts title="Signature"
 class ZoneService {
-    constructor(connection: TransactionalConnection, configService: ConfigService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
+    constructor(connection: TransactionalConnection, configService: ConfigService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder, customFieldRelationService: CustomFieldRelationService)
     findAll(ctx: RequestContext, options?: ListQueryOptions<Zone>) => Promise<PaginatedList<Zone>>;
     findOne(ctx: RequestContext, zoneId: ID) => Promise<Zone | undefined>;
     getAllWithMembers(ctx: RequestContext) => Promise<Zone[]>;
@@ -33,7 +33,7 @@ class ZoneService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => ZoneService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, customFieldRelationService: CustomFieldRelationService) => ZoneService`}   />
 
 
 ### findAll

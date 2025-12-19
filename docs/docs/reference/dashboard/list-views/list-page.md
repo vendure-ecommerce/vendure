@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="459" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="475" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
@@ -141,6 +141,8 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
     bulkActions?: BulkAction[];
     registerRefresher?: PaginatedListRefresherRegisterFn;
+    onReorder?: (oldIndex: number, newIndex: number, item: any) => void | Promise<void>;
+    disableDragAndDrop?: boolean;
 }
 ```
 
@@ -478,6 +480,18 @@ See the <a href='/reference/dashboard/list-views/bulk-actions#bulkaction'>BulkAc
 Register a function that allows you to assign a refresh function for
 this list. The function can be assigned to a ref and then called when
 the list needs to be refreshed.
+### onReorder
+
+<MemberInfo kind="property" type={`(oldIndex: number, newIndex: number, item: any) =&#62; void | Promise&#60;void&#62;`}   />
+
+Callback when items are reordered via drag and drop.
+Only applies to top-level items. When provided, enables drag-and-drop functionality.
+### disableDragAndDrop
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set Useful when filtering or searching.
+Defaults to false. Only relevant when `onReorder` is provided.
 
 
 </div>
