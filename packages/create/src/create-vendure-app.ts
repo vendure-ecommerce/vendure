@@ -165,6 +165,7 @@ export async function createVendureApp(
         dockerfileSource,
         dockerComposeSource,
         tsconfigDashboardSource,
+        viteConfigSource,
         populateProducts,
         includeStorefront,
     } =
@@ -369,9 +370,7 @@ export async function createVendureApp(
             .then(() =>
                 fs.writeFile(path.join(serverRoot, 'tsconfig.dashboard.json'), tsconfigDashboardSource),
             )
-            .then(() =>
-                fs.copyFile(assetPath('vite.config.template.mts'), path.join(serverRoot, 'vite.config.mts')),
-            )
+            .then(() => fs.writeFile(path.join(serverRoot, 'vite.config.mts'), viteConfigSource))
             .then(() => createDirectoryStructure(serverRoot))
             .then(() => copyEmailTemplates(serverRoot));
     } catch (e: any) {
