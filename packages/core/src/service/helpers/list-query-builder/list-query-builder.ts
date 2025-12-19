@@ -458,18 +458,23 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         existsSubqueryCounter++;
         const aliasBase = `lqb_exists_${existsSubqueryCounter}`;
 
-        // Extract the parameter value from the original condition
-        const paramKey = Object.keys(condition.parameters)[0];
-        const paramValue = condition.parameters[paramKey];
-
         // Determine the comparison operator from the original clause
         const comparisonOperator = this.extractComparisonOperator(condition.clause);
 
-        const newParamKey = `exists_${paramKey}`;
-        const parameters: Record<string, any> = { [newParamKey]: paramValue };
+        // Copy all parameters with 'exists_' prefix to ensure uniqueness.
+        // This handles operators with multiple params like BETWEEN (arg1_a, arg1_b).
+        const parameters: Record<string, any> = {};
+        const paramKeys = Object.keys(condition.parameters);
+        for (const key of paramKeys) {
+            parameters[`exists_${key}`] = condition.parameters[key];
+        }
+        // Use the first param key as the base for the WHERE clause construction.
+        // For BETWEEN this will be 'exists_arg1' (we strip the _a/_b suffix).
+        const baseParamKey = paramKeys[0]?.replace(/_[ab]$/, '') ?? 'arg';
+        const newParamKey = `exists_${baseParamKey}`;
 
         // Helper to escape identifiers for the current database driver (handles PostgreSQL quoting)
-        const escape = (name: string) => mainQb.connection.driver.escape(name);
+        const escapeId = (name: string) => mainQb.connection.driver.escape(name);
 
         let existsQuery: string;
 
@@ -495,17 +500,17 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 columnName,
                 comparisonOperator,
                 newParamKey,
-                escape,
+                escapeId,
             );
 
             // EXISTS (SELECT 1 FROM junction_table jt
             //         INNER JOIN related_table rt ON jt.inverseColumn = rt.id
             //         WHERE jt.ownerColumn = main_entity.id AND rt.columnName = :paramValue)
             existsQuery = `EXISTS (
-                SELECT 1 FROM ${escape(junctionTableName)} ${escape(junctionAlias)}
-                INNER JOIN ${escape(inverseTableName)} ${escape(relatedAlias)}
-                    ON ${escape(junctionAlias)}.${escape(inverseColumn.databaseName)} = ${escape(relatedAlias)}.${escape('id')}
-                    WHERE ${escape(junctionAlias)}.${escape(ownerColumn.databaseName)} = ${escape(mainQb.alias)}.${escape('id')} AND ${whereCondition}
+                SELECT 1 FROM ${escapeId(junctionTableName)} ${escapeId(junctionAlias)}
+                INNER JOIN ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
+                    ON ${escapeId(junctionAlias)}.${escapeId(inverseColumn.databaseName)} = ${escapeId(relatedAlias)}.${escapeId('id')}
+                    WHERE ${escapeId(junctionAlias)}.${escapeId(ownerColumn.databaseName)} = ${escapeId(mainQb.alias)}.${escapeId('id')} AND ${whereCondition}
             )`;
         } else if (relation.isOneToMany) {
             // OneToMany: The related table has a foreign key back to the main entity
@@ -533,14 +538,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 columnName,
                 comparisonOperator,
                 newParamKey,
-                escape,
+                escapeId,
             );
 
             // EXISTS (SELECT 1 FROM related_table rt
             //         WHERE rt.foreignKey = main_entity.id AND rt.columnName = :paramValue)
             existsQuery = `EXISTS (
-                SELECT 1 FROM ${escape(inverseTableName)} ${escape(relatedAlias)}
-                WHERE ${escape(relatedAlias)}.${escape(foreignKeyColumn)} = ${escape(mainQb.alias)}.${escape('id')} AND ${whereCondition}
+                SELECT 1 FROM ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
+                WHERE ${escapeId(relatedAlias)}.${escapeId(foreignKeyColumn)} = ${escapeId(mainQb.alias)}.${escapeId('id')} AND ${whereCondition}
             )`;
         } else {
             // Not a *-to-Many relation, shouldn't happen but fall back gracefully
@@ -595,9 +600,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         columnName: string,
         operator: string,
         paramKey: string,
-        escape: (name: string) => string,
+        escapeId: (name: string) => string,
     ): string {
-        const col = `${escape(alias)}.${escape(columnName)}`;
+        const col = `${escapeId(alias)}.${escapeId(columnName)}`;
         if (operator === 'IN') {
             return `${col} IN (:...${paramKey})`;
         } else if (operator === 'NOT IN') {

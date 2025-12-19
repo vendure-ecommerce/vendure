@@ -1802,6 +1802,41 @@ describe('ListQueryBuilder', () => {
             // F has no tags, so no tag satisfies notEq
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E']);
         });
+
+        it('handles BETWEEN operator on *-to-Many field', async () => {
+            // Tag priorities: tag1=10, tag2=20, tag3=30
+            // Find entities with tags having priority between 15 and 25 (i.e., tag2 with priority 20)
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_TAGS, {
+                options: {
+                    sort: { label: SortOrder.ASC },
+                    filter: {
+                        tagPriority: { between: { start: 15, end: 25 } },
+                    },
+                },
+            });
+
+            // Entities with tag2 (priority 20): A, B, D, E
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'D', 'E']);
+        });
+
+        it('handles BETWEEN with _and on *-to-Many field', async () => {
+            // Find entities with tags having priority between 5 and 15 (tag1=10)
+            // AND tags having priority between 25 and 35 (tag3=30)
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_TAGS, {
+                options: {
+                    sort: { label: SortOrder.ASC },
+                    filter: {
+                        _and: [
+                            { tagPriority: { between: { start: 5, end: 15 } } },
+                            { tagPriority: { between: { start: 25, end: 35 } } },
+                        ],
+                    },
+                },
+            });
+
+            // Only E has both tag1 (priority 10) and tag3 (priority 30)
+            expect(getItemLabels(testEntities.items)).toEqual(['E']);
+        });
     });
 });
 

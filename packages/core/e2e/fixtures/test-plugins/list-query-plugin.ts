@@ -75,6 +75,9 @@ export class TestEntityTag extends VendureEntity {
     @Column()
     name: string;
 
+    @Column({ default: 0 })
+    priority: number;
+
     @ManyToMany(() => TestEntity, testEntity => testEntity.tags)
     testEntities: Relation<TestEntity[]>;
 }
@@ -235,6 +238,7 @@ export class ListQueryResolver {
                 customPropertyMap: {
                     customerLastName: 'orderRelation.customer.lastName',
                     tagId: 'tags.id',
+                    tagPriority: 'tags.priority',
                 },
             })
             .getManyAndCount()
@@ -323,6 +327,7 @@ const apiExtensions = gql`
         createdAt: DateTime!
         updatedAt: DateTime!
         name: String!
+        priority: Int!
     }
 
     type TestEntityList implements PaginatedList {
@@ -338,6 +343,7 @@ const apiExtensions = gql`
     input TestEntityFilterParameter {
         customerLastName: StringOperators
         tagId: IDOperators
+        tagPriority: NumberOperators
     }
 
     input TestEntitySortParameter {
@@ -467,12 +473,13 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
 
             // Create tags for testing ManyToMany filtering with duplicate fields in _and blocks
             // This tests the fix for GitHub issue #3267
+            // Priority values: tag1=10, tag2=20, tag3=30 (for testing BETWEEN operator)
             const tags = await this.connection.rawConnection
                 .getRepository(TestEntityTag)
                 .save([
-                    new TestEntityTag({ name: 'tag1' }),
-                    new TestEntityTag({ name: 'tag2' }),
-                    new TestEntityTag({ name: 'tag3' }),
+                    new TestEntityTag({ name: 'tag1', priority: 10 }),
+                    new TestEntityTag({ name: 'tag2', priority: 20 }),
+                    new TestEntityTag({ name: 'tag3', priority: 30 }),
                 ]);
 
             // Assign tags to test entities:
