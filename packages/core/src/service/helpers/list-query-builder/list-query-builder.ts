@@ -468,6 +468,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const newParamKey = `exists_${paramKey}`;
         const parameters: Record<string, any> = { [newParamKey]: paramValue };
 
+        // Helper to escape identifiers for the current database driver (handles PostgreSQL quoting)
+        const escape = (name: string) => mainQb.connection.driver.escape(name);
+
         let existsQuery: string;
 
         if (relation.isManyToMany) {
@@ -492,15 +495,17 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 columnName,
                 comparisonOperator,
                 newParamKey,
+                escape,
             );
 
             // EXISTS (SELECT 1 FROM junction_table jt
             //         INNER JOIN related_table rt ON jt.inverseColumn = rt.id
             //         WHERE jt.ownerColumn = main_entity.id AND rt.columnName = :paramValue)
             existsQuery = `EXISTS (
-                SELECT 1 FROM ${junctionTableName} ${junctionAlias}
-                INNER JOIN ${inverseTableName} ${relatedAlias} ON ${junctionAlias}.${inverseColumn.databaseName} = ${relatedAlias}.id
-                WHERE ${junctionAlias}.${ownerColumn.databaseName} = ${mainQb.alias}.id AND ${whereCondition}
+                SELECT 1 FROM ${escape(junctionTableName)} ${escape(junctionAlias)}
+                INNER JOIN ${escape(inverseTableName)} ${escape(relatedAlias)}
+                    ON ${escape(junctionAlias)}.${escape(inverseColumn.databaseName)} = ${escape(relatedAlias)}.${escape('id')}
+                    WHERE ${escape(junctionAlias)}.${escape(ownerColumn.databaseName)} = ${escape(mainQb.alias)}.${escape('id')} AND ${whereCondition}
             )`;
         } else if (relation.isOneToMany) {
             // OneToMany: The related table has a foreign key back to the main entity
@@ -528,13 +533,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 columnName,
                 comparisonOperator,
                 newParamKey,
+                escape,
             );
 
             // EXISTS (SELECT 1 FROM related_table rt
             //         WHERE rt.foreignKey = main_entity.id AND rt.columnName = :paramValue)
             existsQuery = `EXISTS (
-                SELECT 1 FROM ${inverseTableName} ${relatedAlias}
-                WHERE ${relatedAlias}.${foreignKeyColumn} = ${mainQb.alias}.id AND ${whereCondition}
+                SELECT 1 FROM ${escape(inverseTableName)} ${escape(relatedAlias)}
+                WHERE ${escape(relatedAlias)}.${escape(foreignKeyColumn)} = ${escape(mainQb.alias)}.${escape('id')} AND ${whereCondition}
             )`;
         } else {
             // Not a *-to-Many relation, shouldn't happen but fall back gracefully
@@ -589,19 +595,21 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         columnName: string,
         operator: string,
         paramKey: string,
+        escape: (name: string) => string,
     ): string {
+        const col = `${escape(alias)}.${escape(columnName)}`;
         if (operator === 'IN') {
-            return `${alias}.${columnName} IN (:...${paramKey})`;
+            return `${col} IN (:...${paramKey})`;
         } else if (operator === 'NOT IN') {
-            return `${alias}.${columnName} NOT IN (:...${paramKey})`;
+            return `${col} NOT IN (:...${paramKey})`;
         } else if (operator === 'IS NULL') {
-            return `${alias}.${columnName} IS NULL`;
+            return `${col} IS NULL`;
         } else if (operator === 'IS NOT NULL') {
-            return `${alias}.${columnName} IS NOT NULL`;
+            return `${col} IS NOT NULL`;
         } else if (operator === 'BETWEEN') {
-            return `${alias}.${columnName} BETWEEN :${paramKey}_a AND :${paramKey}_b`;
+            return `${col} BETWEEN :${paramKey}_a AND :${paramKey}_b`;
         }
-        return `${alias}.${columnName} ${operator} :${paramKey}`;
+        return `${col} ${operator} :${paramKey}`;
     }
 
     private parseTakeSkipParams(
