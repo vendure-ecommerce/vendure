@@ -128,6 +128,7 @@ export async function createVendureApp(
 
     const portSpinner = spinner();
     let port: number;
+    let storefrontPort: number = STOREFRONT_PORT;
     portSpinner.start(`Establishing port...`);
     try {
         port = await findAvailablePort(SERVER_PORT, PORT_SCAN_RANGE);
@@ -175,7 +176,23 @@ export async function createVendureApp(
     // Determine the server root directory (either root or apps/server for monorepo)
     const serverRoot = includeStorefront ? path.join(root, 'apps', 'server') : root;
     const storefrontRoot = path.join(root, 'apps', 'storefront');
-    const storefrontPort = STOREFRONT_PORT;
+
+    // Find an available storefront port if including storefront
+    if (includeStorefront) {
+        const storefrontPortSpinner = spinner();
+        storefrontPortSpinner.start(`Establishing storefront port...`);
+        try {
+            // Start scanning from the higher of STOREFRONT_PORT or serverPort + 1
+            // to avoid conflicts with the server port
+            const storefrontStartPort = Math.max(STOREFRONT_PORT, port + 1);
+            storefrontPort = await findAvailablePort(storefrontStartPort, PORT_SCAN_RANGE);
+            storefrontPortSpinner.stop(`Using storefront port ${storefrontPort}`);
+        } catch (e: any) {
+            storefrontPortSpinner.stop(pc.red('Could not find an available storefront port'));
+            outro(e.message);
+            process.exit(1);
+        }
+    }
 
     process.chdir(root);
     if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
@@ -250,10 +267,13 @@ export async function createVendureApp(
         storefrontSpinner.start(`Downloading Next.js storefront...`);
         try {
             await downloadAndExtractStorefront(storefrontRoot);
-            // Update storefront package.json name
+            // Update storefront package.json name and dev script port
             const storefrontPackageJsonPath = path.join(storefrontRoot, 'package.json');
             const storefrontPackageJson = await fs.readJson(storefrontPackageJsonPath);
             storefrontPackageJson.name = 'storefront';
+            if (storefrontPackageJson.scripts?.dev) {
+                storefrontPackageJson.scripts.dev = `next dev --port ${storefrontPort}`;
+            }
             await fs.writeJson(storefrontPackageJsonPath, storefrontPackageJson, { spaces: 2 });
 
             // Generate storefront .env.local from template
