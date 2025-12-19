@@ -27,7 +27,7 @@ First, run the following command in your terminal, replacing `my-shop` with the 
 npx @vendure/create my-shop
 ```
 
-Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you. 
+Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you.
 If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
 
 ```text
@@ -39,7 +39,8 @@ If you have Docker Desktop installed, it will create and configure a Postgres da
 │  ○ Manual Configuration
 └
 ```
-Next you'll be prompted to include our official Next.js storefront starter in your project. This is optional, but recommended if you want to 
+
+Next you'll be prompted to include our official Next.js storefront starter in your project. This is optional, but recommended if you want to
 quickly see a working storefront connected to your Vendure server.
 
 ```text
@@ -135,7 +136,7 @@ The final prompt will ask whether to populate your new Vendure server with some 
 
 From v3.5.2 onwards, you can choose to include an official Next.js Storefront Starter as part of your new Vendure project.
 
-#### 3. Complete setup
+#### 4. Complete setup
 
 Next, a project scaffold will be created and dependencies installed. This may take a few minutes.
 
@@ -210,7 +211,7 @@ Now you can explore Vendure by following our [Try the API guide](/guides/getting
 If you are new to GraphQL, you should also check out our [Introducing GraphQL guide](/guides/getting-started/graphql-intro/).
 
 :::tip
-Open the Dashboard at [http://localhost:3000/dashboard](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
+Open the Dashboard at [http://localhost:3000/dashboard](http://localhost:3000/dashboard) in your browser and log in with the superadmin credentials you specified, which default to:
 
 - **username**: superadmin
 - **password**: superadmin
@@ -231,4 +232,3 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
 
 - The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
 - If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
-
