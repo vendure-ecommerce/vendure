@@ -297,19 +297,13 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         this.joinCalculatedColumnRelations(qb, entity, options);
 
         const { customPropertyMap } = extendedOptions;
-        // Store the original customPropertyMap before normalization for EXISTS subquery generation
+        // Store the original customPropertyMap before normalization for EXISTS subquery generation.
+        // This is needed because normalizeCustomPropertyMap mutates customPropertyMap, but
+        // parseFilterParams needs the original paths to detect *-to-Many relations.
         const originalCustomPropertyMap = customPropertyMap ? { ...customPropertyMap } : undefined;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
-
-        // Detect which custom property fields map to *-to-Many relations.
-        // All filter conditions on these fields will use EXISTS subqueries for correct AND semantics.
-        const toManyRelationCustomProperties = this.getToManyRelationCustomProperties(
-            repo,
-            originalCustomPropertyMap,
-            options,
-        );
 
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
@@ -328,9 +322,8 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             entity,
             filterParams: options.filter,
             customPropertyMap,
-            entityAlias: qb.alias,
-            toManyRelationCustomProperties,
             originalCustomPropertyMap,
+            entityAlias: qb.alias,
         });
 
         if (filter.length) {
@@ -690,51 +683,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 filter._and?.some(nestedFilter => this.isPropertyUsedInFilter(property, nestedFilter)) ||
                 filter._or?.some(nestedFilter => this.isPropertyUsedInFilter(property, nestedFilter)))
         );
-    }
-
-    /**
-     * @description
-     * Identifies which custom property keys map to *-to-Many relations (OneToMany or ManyToMany).
-     * These fields require EXISTS subqueries for correct AND semantics when filtering across
-     * multiple related rows.
-     *
-     * @see https://github.com/vendure-ecommerce/vendure/issues/3267
-     */
-    private getToManyRelationCustomProperties<T extends VendureEntity>(
-        repository: Repository<T>,
-        originalCustomPropertyMap: { [name: string]: string } | undefined,
-        options: ListQueryOptions<T>,
-    ): Set<string> {
-        const toManyProperties = new Set<string>();
-        if (!originalCustomPropertyMap) {
-            return toManyProperties;
-        }
-
-        const metadata = repository.metadata;
-
-        for (const [property, path] of Object.entries(originalCustomPropertyMap)) {
-            // Only check properties that are actually being used in filters
-            if (
-                !this.isPropertyUsedInFilter(property, options.filter as NullOptionals<FilterParameter<any>>)
-            ) {
-                continue;
-            }
-
-            // Parse the path to get the relation name (e.g., 'facetValues.id' -> 'facetValues')
-            const pathParts = path.split('.');
-            if (pathParts.length < 2) {
-                continue;
-            }
-
-            const relationName = pathParts[0];
-            const relationMetadata = metadata.findRelationWithPropertyPath(relationName);
-
-            if (relationMetadata && (relationMetadata.isOneToMany || relationMetadata.isManyToMany)) {
-                toManyProperties.add(property);
-            }
-        }
-
-        return toManyProperties;
     }
 
     /**

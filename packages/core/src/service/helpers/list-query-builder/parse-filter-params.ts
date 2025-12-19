@@ -70,21 +70,19 @@ export interface ParseFilterParamsOptions<T extends VendureEntity> {
     filterParams?: NullOptionals<FilterParameter<T>> | null;
     /**
      * Map of custom property names to their relation paths (after normalization).
+     * Note: This map gets mutated by the ListQueryBuilder's normalizeCustomPropertyMap method.
      */
     customPropertyMap?: { [name: string]: string };
+    /**
+     * Original custom property map before normalization, containing the original relation paths.
+     * This is needed to detect *-to-Many relations and to generate EXISTS subqueries with
+     * the correct table/column references.
+     */
+    originalCustomPropertyMap?: { [name: string]: string };
     /**
      * The alias used for the main entity in the query.
      */
     entityAlias?: string;
-    /**
-     * Set of custom property keys that map to *-to-Many relations.
-     * All conditions on these fields will use EXISTS subqueries for correct AND semantics.
-     */
-    toManyRelationCustomProperties?: Set<string>;
-    /**
-     * Original custom property map before normalization, containing the original relation paths.
-     */
-    originalCustomPropertyMap?: { [name: string]: string };
 }
 
 /**
@@ -98,15 +96,8 @@ export interface ParseFilterParamsOptions<T extends VendureEntity> {
 export function parseFilterParams<T extends VendureEntity>(
     options: ParseFilterParamsOptions<T>,
 ): Array<WhereCondition | WhereGroup> {
-    const {
-        connection,
-        entity,
-        filterParams,
-        customPropertyMap,
-        entityAlias,
-        toManyRelationCustomProperties,
-        originalCustomPropertyMap,
-    } = options;
+    const { connection, entity, filterParams, customPropertyMap, originalCustomPropertyMap, entityAlias } =
+        options;
 
     if (!filterParams) {
         return [];
@@ -118,6 +109,15 @@ export function parseFilterParams<T extends VendureEntity>(
     const dbType = connection.options.type;
     let argIndex = 1;
 
+    // Detect which custom property fields map to *-to-Many relations.
+    // All filter conditions on these fields will use EXISTS subqueries for correct AND semantics.
+    const toManyRelationCustomProperties = getToManyRelationCustomProperties(
+        connection,
+        entity,
+        originalCustomPropertyMap,
+        filterParams,
+    );
+
     function buildConditionsForField(key: string, operation: FilterParameter<T>): WhereCondition[] {
         const output: WhereCondition[] = [];
         const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
@@ -127,7 +127,7 @@ export function parseFilterParams<T extends VendureEntity>(
         // Mark ALL conditions on *-to-Many relation custom properties for EXISTS subquery treatment.
         // This ensures correct AND semantics regardless of how many times the field is used.
         const isToManyCustomProperty =
-            toManyRelationCustomProperties?.has(key) && originalCustomPropertyMap?.[key];
+            toManyRelationCustomProperties.has(key) && originalCustomPropertyMap?.[key];
 
         for (const [operator, operand] of Object.entries(operation as object)) {
             let fieldName: string;
@@ -176,6 +176,81 @@ export function parseFilterParams<T extends VendureEntity>(
     }
 
     return processFilterParameter(filterParams as FilterParameter<T>);
+}
+
+/**
+ * @description
+ * Identifies which custom property keys map to *-to-Many relations (OneToMany or ManyToMany).
+ * These fields require EXISTS subqueries for correct AND semantics when filtering across
+ * multiple related rows.
+ *
+ * @see https://github.com/vendure-ecommerce/vendure/issues/3267
+ */
+function getToManyRelationCustomProperties<T extends VendureEntity>(
+    connection: DataSource,
+    entity: Type<T>,
+    originalCustomPropertyMap: { [name: string]: string } | undefined,
+    filterParams: NullOptionals<FilterParameter<T>>,
+): Set<string> {
+    const toManyProperties = new Set<string>();
+    if (!originalCustomPropertyMap) {
+        return toManyProperties;
+    }
+
+    const metadata = connection.getMetadata(entity);
+
+    for (const [property, path] of Object.entries(originalCustomPropertyMap)) {
+        // Only check properties that are actually being used in filters
+        if (!isPropertyUsedInFilter(property, filterParams as NullOptionals<FilterParameter<any>>)) {
+            continue;
+        }
+
+        // Parse the path to get the relation name (e.g., 'facetValues.id' -> 'facetValues')
+        const pathParts = path.split('.');
+        if (pathParts.length < 2) {
+            continue;
+        }
+
+        const relationName = pathParts[0];
+        const relationMetadata = metadata.findRelationWithPropertyPath(relationName);
+
+        if (relationMetadata && (relationMetadata.isOneToMany || relationMetadata.isManyToMany)) {
+            toManyProperties.add(property);
+        }
+    }
+
+    return toManyProperties;
+}
+
+/**
+ * Checks if a property is used anywhere in the filter parameters,
+ * including nested _and/_or blocks.
+ */
+function isPropertyUsedInFilter(
+    property: string,
+    filter: NullOptionals<FilterParameter<any>> | null | undefined,
+): boolean {
+    if (!filter) {
+        return false;
+    }
+    if (filter[property]) {
+        return true;
+    }
+    if (filter._and) {
+        for (const nestedFilter of filter._and) {
+            if (isPropertyUsedInFilter(property, nestedFilter)) {
+                return true;
+            }
+        }
+    }
+    if (filter._or) {
+        for (const nestedFilter of filter._or) {
+            if (isPropertyUsedInFilter(property, nestedFilter)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function buildWhereCondition(
