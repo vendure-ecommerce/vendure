@@ -26,6 +26,31 @@ msgid "The page will continue with the default query."
 msgstr "Sayfa varsayılan sorgu ile devam edecek."
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "Sorgu belgesi uzatılamadı"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "Sorgu uzatma geçersiz: en az bir üst düzey alan olmalı"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "Sorgu uzatma uyuşmazlığı:"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "Sorgu uzatma geçersiz GraphQL sözdizimi içeriyor"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "Sorgu uzatma hatası:"
+
+#. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
 msgid "Insights"
 msgstr "İçgörüler"
@@ -192,34 +217,14 @@ msgid "Orders Summary Widget"
 msgstr "Sipariş Özeti Widget'ı"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:41
-msgid "Failed to extend query document"
-msgstr "Sorgu belgesi uzatılamadı"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:43
-msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "Sorgu uzatma geçersiz: en az bir üst düzey alan olmalı"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:47
-msgid "Query extension mismatch: "
-msgstr "Sorgu uzatma uyuşmazlığı:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:49
-msgid "Query extension contains invalid GraphQL syntax"
-msgstr "Sorgu uzatma geçersiz GraphQL sözdizimi içeriyor"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:51
-msgid "Query extension error: "
-msgstr "Sorgu uzatma hatası:"
-
-#. js-lingui-explicit-id
 #: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "Bekleyen arama dizini güncellemeleri çalıştırılıyor"
+
+#. js-lingui-explicit-id
+#: src/lib/components/data-input/string-list-input.tsx:237
+msgid "Type and press Enter or comma to add..."
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -750,7 +755,7 @@ msgid "{0} customers"
 msgstr "{0} müşteri"
 
 #. placeholder {0}: selectedIds.length
-#: src/lib/components/data-input/product-multi-selector-input.tsx:401
+#: src/lib/components/data-input/product-multi-selector-input.tsx:398
 msgid "{0} items selected"
 msgstr "{0} öğe seçildi"
 
@@ -771,14 +776,14 @@ msgstr "{0} seçildi"
 msgid "{0} variants"
 msgstr "{0} varyant"
 
-#: src/lib/components/data-input/product-multi-selector-input.tsx:396
-#: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
+#: src/lib/components/data-input/product-multi-selector-input.tsx:393
+#: src/lib/components/shared/configurable-operation-multi-selector.tsx:223
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:109
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:137
 msgid "{label}"
 msgstr "{label}"
 
@@ -817,7 +822,7 @@ msgstr "{formattedDiff} tutarında iade gerekiyor. Ödeme tutarlarını seçin v
 msgid "Actions"
 msgstr "İşlemler"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:171
 msgctxt "active language"
 msgid "Active"
 msgstr "Etkin"
@@ -846,6 +851,10 @@ msgstr "Başka bir seçenek grubu ekle"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:132
 msgid "Add asset"
 msgstr "Varlık ekle"
+
+#: src/lib/components/layout/channel-switcher.tsx:204
+msgid "Add channel"
+msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
 msgid "Add column after"
@@ -968,7 +977,7 @@ msgstr "Öncesine satır ekle"
 msgid "Add stock level for another location"
 msgstr "Başka bir konum için stok seviyesi ekle"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:182
 msgid "Add Stock to Location"
 msgstr "Konuma Stok Ekle"
 
@@ -1045,7 +1054,11 @@ msgstr "Yöneticiler"
 msgid "after"
 msgstr "sonra"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:67
+#: src/lib/components/shared/alerts.tsx:33
+msgid "Alerts"
+msgstr ""
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:66
 msgid "All resources are up and running"
 msgstr "Tüm kaynaklar çalışıyor"
 
@@ -1065,8 +1078,8 @@ msgstr "{formattedDiff} tutarında ek ödeme gerekli olacak."
 msgid "AND"
 msgstr "VE"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
-#: src/lib/components/shared/customer-address-form.tsx:154
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:164
+#: src/lib/components/shared/customer-address-form.tsx:155
 msgid "Apartment, suite, etc."
 msgstr "Daire, suit, vb."
 
@@ -1128,6 +1141,12 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "Bu sayfadan ayrılmak istediğinizden emin misiniz? Kaydedilmemiş değişiklikler kaybolacak."
 
 #. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:51
+msgid "Are you sure you want to remove {0} {1} from this zone?"
+msgstr ""
+
+#. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "{0} {entityType} öğesini mevcut kanaldan kaldırmak istediğinizden emin misiniz?"
@@ -1171,7 +1190,7 @@ msgstr "Mevcut para birimleri"
 msgid "Available languages"
 msgstr "Mevcut diller"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:340
+#: src/lib/components/layout/manage-languages-dialog.tsx:345
 msgid "Available Languages"
 msgstr "Mevcut Diller"
 
@@ -1195,7 +1214,7 @@ msgstr "önce"
 msgid "between"
 msgstr "arasında"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:270
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:260
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:450
 msgid "Billing address"
@@ -1226,22 +1245,22 @@ msgstr "Hesaplayıcı"
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:337
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:350
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
 #: src/lib/components/data-table/use-generated-columns.tsx:359
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:396
+#: src/lib/components/layout/manage-languages-dialog.tsx:400
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
-#: src/lib/components/shared/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:328
 #: src/lib/components/shared/navigation-confirmation.tsx:55
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
@@ -1272,7 +1291,7 @@ msgstr "Kanal"
 msgid "Channel defaults"
 msgstr "Kanal varsayılanları"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:323
+#: src/lib/components/layout/manage-languages-dialog.tsx:328
 msgid "Channel Languages"
 msgstr "Kanal Dilleri"
 
@@ -1280,13 +1299,13 @@ msgstr "Kanal Dilleri"
 #: src/app/routes/_authenticated/_channels/channels.tsx:16
 #: src/app/routes/_authenticated/_channels/channels.tsx:24
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/lib/components/layout/channel-switcher.tsx:121
 msgid "Channels"
 msgstr "Kanallar"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:196
-#: src/lib/components/shared/customer-address-form.tsx:175
+#: src/lib/components/shared/customer-address-form.tsx:176
 msgid "City"
 msgstr "Şehir"
 
@@ -1295,7 +1314,7 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:304
 msgid "Clear all"
 msgstr "Tümünü temizle"
 
@@ -1321,6 +1340,7 @@ msgstr "Bu kargo yöntemini test etmek için \"Testi Çalıştır\"a tıklayın.
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
 #: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:61
 #: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
 msgid "Code"
 msgstr "Kod"
@@ -1343,9 +1363,9 @@ msgstr "Koleksiyonlar başarıyla taşındı"
 msgid "Column settings"
 msgstr "Sütun ayarları"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:126
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:165
-#: src/lib/components/shared/customer-address-form.tsx:116
+#: src/lib/components/shared/customer-address-form.tsx:117
 msgid "Company"
 msgstr "Şirket"
 
@@ -1358,7 +1378,7 @@ msgstr "Taslağı tamamla"
 msgid "Conditions"
 msgstr "Koşullar"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:261
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Configure available languages for your store and channels"
 msgstr "Mağazanız ve kanallarınız için mevcut dilleri yapılandırın"
 
@@ -1367,7 +1387,7 @@ msgstr "Mağazanız ve kanallarınız için mevcut dilleri yapılandırın"
 msgid "Confirm"
 msgstr "Onayla"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:116
 msgid "Confirm Action"
 msgstr "İşlemi Onayla"
 
@@ -1388,7 +1408,7 @@ msgstr "içerir"
 msgid "Contents"
 msgstr "İçerik"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:125
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "Devam et"
@@ -1404,9 +1424,10 @@ msgstr "Kişisele Kopyala"
 msgid "Countries"
 msgstr "Ülkeler"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:240
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:217
-#: src/lib/components/shared/customer-address-form.tsx:230
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:53
+#: src/lib/components/shared/customer-address-form.tsx:231
 msgid "Country"
 msgstr "Ülke"
 
@@ -1432,7 +1453,7 @@ msgstr "Sipariş için kupon kodu ayarlandı"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:200
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:111
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
@@ -1453,7 +1474,7 @@ msgstr "Oluştur"
 msgid "Create \"{0}\""
 msgstr "\"{0}\" oluştur"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:182
 msgid "Create {createCount} variants"
 msgstr "{createCount} varyant oluştur"
 
@@ -1470,16 +1491,16 @@ msgstr "Ürün seçenekleri oluştur"
 msgid "Create variant"
 msgstr "Varyant oluştur"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
 msgid "Create Variants"
 msgstr "Varyant Oluştur"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"
 msgstr "Ürününüz için varyantlar oluşturun"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
-#: src/lib/framework/layout-engine/page-layout.tsx:404
+#: src/lib/framework/layout-engine/page-layout.tsx:433
 msgid "Created"
 msgstr "Oluşturuldu"
 
@@ -1488,11 +1509,11 @@ msgstr "Oluşturuldu"
 msgid "Created at"
 msgstr "Oluşturulma tarihi"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:180
 msgid "Creating..."
 msgstr "Oluşturuluyor..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:142
 msgctxt "current channel"
 msgid "Current"
 msgstr "Güncel"
@@ -1501,7 +1522,7 @@ msgstr "Güncel"
 msgid "Current facet values"
 msgstr "Mevcut özellik değerleri"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:55
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:54
 msgid "Current status"
 msgstr "Mevcut durum"
 
@@ -1517,7 +1538,7 @@ msgstr "Özel Alanlar"
 msgid "Custom fields changed"
 msgstr "Özel alanlar değiştirildi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:245
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:217
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
 #: src/lib/components/shared/role-code-label.tsx:8
@@ -1587,8 +1608,8 @@ msgctxt "theme"
 msgid "Dark"
 msgstr "Koyu"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
-#: src/lib/components/shared/customer-address-form.tsx:310
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
+#: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Default Billing Address"
 msgstr "Varsayılan Fatura Adresi"
 
@@ -1604,12 +1625,12 @@ msgstr "Varsayılan para birimi"
 msgid "Default language"
 msgstr "Varsayılan dil"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:368
+#: src/lib/components/layout/manage-languages-dialog.tsx:373
 msgid "Default Language"
 msgstr "Varsayılan Dil"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
-#: src/lib/components/shared/customer-address-form.tsx:290
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
+#: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Default Shipping Address"
 msgstr "Varsayılan Kargo Adresi"
 
@@ -1706,7 +1727,7 @@ msgstr "Devre dışı"
 msgid "Discount"
 msgstr "İndirim"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Görüntüleme dili"
 
@@ -1854,6 +1875,7 @@ msgstr "Etkinleştir"
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
 #: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:57
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "Etkin"
@@ -1878,7 +1900,7 @@ msgstr "Bu iade ödemesi için işlem ID'sini girin"
 msgid "Enter transaction ID"
 msgstr "İşlem ID'sini girin"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:377
+#: src/lib/framework/layout-engine/page-layout.tsx:406
 msgid "Entity Information"
 msgstr "Varlık Bilgisi"
 
@@ -1900,7 +1922,7 @@ msgstr "Sipariş geçmişi yüklenirken hata: {0}"
 msgid "Error message"
 msgstr "Hata mesajı"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:124
 msgid "Error transitioning to state"
 msgstr "Duruma geçiş hatası"
 
@@ -2125,17 +2147,21 @@ msgstr "Görünüm çoğaltılamadı"
 msgid "Failed to fulfill order"
 msgstr "Sipariş teslim edilemedi"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:290
+#: src/lib/components/layout/manage-languages-dialog.tsx:295
 msgid "Failed to load global settings"
 msgstr "Genel ayarlar yüklenemedi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:139
 msgid "Failed to modify order"
 msgstr "Sipariş değiştirilemedi"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
 msgid "Failed to move collections"
 msgstr "Koleksiyonlar taşınamadı"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:36
+msgid "Failed to remove countries from zone"
+msgstr ""
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
 msgid "Failed to remove customer from group"
@@ -2163,7 +2189,7 @@ msgstr "Ödeme tamamlanamadı"
 msgid "Failed to settle refund"
 msgstr "İade tamamlanamadı"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:115
 msgid "Failed to transition order to state"
 msgstr "Sipariş duruma geçirilemedi"
 
@@ -2219,7 +2245,7 @@ msgstr "Teslimat durumu güncellenemedi"
 msgid "Failed to update global settings"
 msgstr "Genel ayarlar güncellenemedi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:92
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:59
 msgid "Failed to update order"
 msgstr "Sipariş güncellenemedi"
@@ -2302,7 +2328,7 @@ msgstr "Koleksiyon adına göre filtrele"
 msgid "Filter by tags"
 msgstr "Etiketlere göre filtrele"
 
-#: src/lib/components/data-table/data-table.tsx:244
+#: src/lib/components/data-table/data-table.tsx:243
 msgid "Filter..."
 msgstr "Filtrele..."
 
@@ -2363,7 +2389,7 @@ msgstr "{1} ile {2} arası teslimat #{0}"
 msgid "Fulfillment created"
 msgstr "Teslimat oluşturuldu"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:280
 msgid "Fulfillment details"
 msgstr "Teslimat detayları"
 
@@ -2384,9 +2410,9 @@ msgstr "Teslimat durumu başarıyla güncellendi"
 msgid "Fulfillment transitioned"
 msgstr "Teslimat geçiş yaptı"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:109
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:159
-#: src/lib/components/shared/customer-address-form.tsx:99
+#: src/lib/components/shared/customer-address-form.tsx:100
 msgid "Full Name"
 msgstr "Ad Soyad"
 
@@ -2399,7 +2425,7 @@ msgstr "Genel"
 msgid "Generate slug automatically"
 msgstr "Slug'ı otomatik oluştur"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:270
+#: src/lib/components/layout/manage-languages-dialog.tsx:275
 msgid "Global Languages"
 msgstr "Genel Diller"
 
@@ -2480,7 +2506,7 @@ msgstr "Başlık 5"
 msgid "Heading 6"
 msgstr "Başlık 6"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:43
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:42
 msgid "Health checks"
 msgstr "Sağlık kontrolleri"
 
@@ -2603,7 +2629,7 @@ msgid "Language"
 msgstr "Dil"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:107
 msgid "Language: {0}"
 msgstr "Dil: {0}"
 
@@ -2637,7 +2663,7 @@ msgid "Last Result"
 msgstr "Son Sonuç"
 
 #. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:58
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:57
 msgid "Last updated {0}"
 msgstr "Son güncelleme {0}"
 
@@ -2683,7 +2709,7 @@ msgstr "Adresler yükleniyor..."
 msgid "Loading collections..."
 msgstr "Koleksiyonlar yükleniyor..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:284
+#: src/lib/components/layout/manage-languages-dialog.tsx:289
 msgid "Loading global settings..."
 msgstr "Genel ayarlar yükleniyor..."
 
@@ -2706,7 +2732,7 @@ msgstr "Etiketler yükleniyor..."
 msgid "Loading..."
 msgstr "Yükleniyor..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Yerel ayar"
 
@@ -2730,8 +2756,8 @@ msgstr "Genel görünümleri yönet"
 msgid "Manage Global Views"
 msgstr "Genel Görünümleri Yönet"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:258
+#: src/lib/components/layout/channel-switcher.tsx:185
+#: src/lib/components/layout/manage-languages-dialog.tsx:263
 msgid "Manage Languages"
 msgstr "Dilleri Yönet"
 
@@ -2760,7 +2786,7 @@ msgstr "Bu tablo için kişisel kaydedilmiş görünümlerinizi yönetin"
 msgid "matches regex"
 msgstr "regex ile eşleşir"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Orta tarih"
 
@@ -2776,7 +2802,7 @@ msgstr "Yöntem"
 msgid "Metrics"
 msgstr "Metrikler"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:169
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
 msgid "Modify"
 msgstr "Değiştir"
@@ -2785,7 +2811,7 @@ msgstr "Değiştir"
 msgid "Modify order"
 msgstr "Siparişi değiştir"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:83
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:82
 msgid "Monitored Resources"
 msgstr "İzlenen Kaynaklar"
 
@@ -3057,7 +3083,7 @@ msgstr "Adres yok"
 msgid "No addresses found"
 msgstr "Adres bulunamadı"
 
-#: src/lib/components/shared/alerts.tsx:43
+#: src/lib/components/shared/alerts.tsx:45
 msgid "No alerts"
 msgstr "Uyarı yok"
 
@@ -3069,7 +3095,7 @@ msgstr "Fatura adresi yok"
 msgid "No countries found"
 msgstr "Ülke bulunamadı"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:255
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:227
 msgid "No customer"
 msgstr "Müşteri yok"
@@ -3090,11 +3116,11 @@ msgstr "Bu sipariş için uygun kargo yöntemi bulunamadı."
 msgid "No facet values"
 msgstr "Özellik değeri yok"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:300
 msgid "No fulfillments"
 msgstr "Teslimat yok"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:354
+#: src/lib/components/layout/manage-languages-dialog.tsx:359
 msgid "No global languages configured"
 msgstr "Genel dil yapılandırılmamış"
 
@@ -3140,7 +3166,7 @@ msgstr "Ödeme veya iade gerekmiyor"
 msgid "No result yet"
 msgstr "Henüz sonuç yok"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:365
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Sonuç yok"
@@ -3162,7 +3188,7 @@ msgstr "Kargo adresi yok"
 msgid "No shipping methods available"
 msgstr "Kullanılabilir kargo yöntemi yok"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:174
 msgid "No stock locations available on current channel"
 msgstr "Mevcut kanalda kullanılabilir stok konumu yok"
 
@@ -3283,7 +3309,7 @@ msgstr "Sipariş teslim edildi"
 msgid "Order fulfilled"
 msgstr "Sipariş teslim edildi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:233
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
 msgid "Order history"
 msgstr "Sipariş geçmişi"
@@ -3398,7 +3424,7 @@ msgstr "Ödeme yetkilendirildi"
 msgid "Payment cancelled successfully"
 msgstr "Ödeme başarıyla iptal edildi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:221
 msgid "Payment details"
 msgstr "Ödeme detayları"
 
@@ -3457,9 +3483,9 @@ msgstr "İzinler"
 msgid "Phone number"
 msgstr "Telefon numarası"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:273
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:241
-#: src/lib/components/shared/customer-address-form.tsx:263
+#: src/lib/components/shared/customer-address-form.tsx:264
 msgid "Phone Number"
 msgstr "Telefon Numarası"
 
@@ -3475,9 +3501,9 @@ msgstr "Testi çalıştırmak için lütfen ürün ekleyin ve kargo adresini dol
 msgid "Please select a target collection"
 msgstr "Lütfen hedef koleksiyon seçin"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:223
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:208
-#: src/lib/components/shared/customer-address-form.tsx:213
+#: src/lib/components/shared/customer-address-form.tsx:214
 msgid "Postal Code"
 msgstr "Posta Kodu"
 
@@ -3497,8 +3523,8 @@ msgstr "Sipariş değişikliklerini önizle"
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Fiyat"
 
@@ -3607,7 +3633,7 @@ msgstr "Sebep"
 msgid "Rebuild search index"
 msgstr "Arama indeksini yeniden oluştur"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:47
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:46
 msgid "Refresh"
 msgstr "Yenile"
 
@@ -3675,6 +3701,10 @@ msgstr "Kaldır"
 msgid "Remove from current channel"
 msgstr "Mevcut kanaldan kaldır"
 
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:49
+msgid "Remove from zone"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
 msgstr "Grubu kaldır"
@@ -3686,6 +3716,12 @@ msgstr "Öğeyi kaldır"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "Bağlantıyı kaldır"
+
+#. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:31
+msgid "Removed {0} {1} from zone"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:200
 msgid "Removed coupon codes"
@@ -3741,11 +3777,11 @@ msgstr "Çalışıyor"
 msgid "Same window"
 msgstr "Aynı pencere"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Örnek Biçimlendirme"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:216
 #: src/lib/components/data-table/views-sheet.tsx:210
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
 msgid "Save"
@@ -3755,8 +3791,8 @@ msgstr "Kaydet"
 msgid "Save a view as \"Global\" to make it available to all users."
 msgstr "Tüm kullanıcıların erişimine açmak için bir görünümü \"Genel\" olarak kaydedin."
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
-#: src/lib/components/shared/customer-address-form.tsx:329
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:341
+#: src/lib/components/shared/customer-address-form.tsx:332
 msgid "Save Address"
 msgstr "Adresi Kaydet"
 
@@ -3765,7 +3801,7 @@ msgid "Save changes"
 msgstr "Değişiklikleri kaydet"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Save Changes"
 msgstr "Değişiklikleri Kaydet"
 
@@ -3782,7 +3818,7 @@ msgid "Save View"
 msgstr "Görünümü Kaydet"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:403
 msgid "Saving..."
 msgstr "Kaydediliyor..."
 
@@ -3831,7 +3867,7 @@ msgstr "Arama indeksi yeniden oluşturma başlatılamadı"
 msgid "Search index rebuild started"
 msgstr "Arama indeksi yeniden oluşturma başlatıldı"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Dilleri ara..."
 
@@ -3870,8 +3906,8 @@ msgstr "Bir kanal seçin"
 msgid "Select a channel to assign {0} {entityType} to"
 msgstr "{0} {entityType} atamak için bir kanal seçin"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
-#: src/lib/components/shared/customer-address-form.tsx:240
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:250
+#: src/lib/components/shared/customer-address-form.tsx:241
 msgid "Select a country"
 msgstr "Bir ülke seçin"
 
@@ -3883,7 +3919,7 @@ msgstr "Bir para birimi seçin"
 msgid "Select a destination collection"
 msgstr "Bir hedef koleksiyon seçin"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Bir dil seçin"
 
@@ -3916,7 +3952,7 @@ msgstr "Bir adres seçin"
 msgid "Select an option"
 msgstr "Bir seçenek seçin"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:296
+#: src/lib/components/layout/manage-languages-dialog.tsx:301
 msgid "Select Available Languages"
 msgstr "Mevcut Dilleri Seç"
 
@@ -3932,11 +3968,11 @@ msgstr "Müşteri seç"
 msgid "Select date range"
 msgstr "Tarih aralığı seçin"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Görüntüleme dili seçin"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:358
+#: src/lib/components/layout/manage-languages-dialog.tsx:363
 msgid "Select from globally available languages for this channel"
 msgstr "Bu kanal için genel olarak kullanılabilir dillerden seçin"
 
@@ -3948,7 +3984,7 @@ msgstr "Öğe seç"
 msgid "Select items"
 msgstr "Öğe seç"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:103
 msgid "Select next state"
 msgstr "Sonraki durumu seç"
 
@@ -3960,7 +3996,7 @@ msgstr "Teslim edilecek miktarları seçin ve teslimat işleyicisini yapılandı
 msgid "Select seller"
 msgstr "Satıcı seç"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:107
 msgid "Select the next state for the order"
 msgstr "Sipariş için sonraki durumu seçin"
 
@@ -4031,7 +4067,7 @@ msgstr "İadeyi tamamla"
 msgid "Shipping"
 msgstr "Kargo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:262
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:234
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:418
 msgid "Shipping address"
@@ -4075,7 +4111,7 @@ msgstr "Sipariş için kargo yöntemi ayarlandı"
 msgid "Shipping Methods"
 msgstr "Kargo Yöntemleri"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Kısa tarih"
 
@@ -4100,7 +4136,7 @@ msgstr "Yönetici panosuna erişmek için oturum açın"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:306
 msgid "SKU"
 msgstr "SKU"
@@ -4118,7 +4154,7 @@ msgstr "Slug ayarlandı"
 msgid "Slug will be generated automatically..."
 msgstr "Slug otomatik oluşturulacak..."
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:74
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:73
 msgid "Some resources are down"
 msgstr "Bazı kaynaklar çalışmıyor"
 
@@ -4141,8 +4177,8 @@ msgstr "İl"
 msgid "State / Province"
 msgstr "İl / Bölge"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
-#: src/lib/components/shared/customer-address-form.tsx:192
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:202
+#: src/lib/components/shared/customer-address-form.tsx:193
 msgid "State/Province"
 msgstr "İl/Bölge"
 
@@ -4178,13 +4214,13 @@ msgstr "Stok Konumları"
 msgid "Stock on hand"
 msgstr "Eldeki stok"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:215
 msgid "Stock on Hand"
 msgstr "Eldeki Stok"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:147
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:175
-#: src/lib/components/shared/customer-address-form.tsx:137
+#: src/lib/components/shared/customer-address-form.tsx:138
 msgid "Street Address"
 msgstr "Sokak Adresi"
 
@@ -4365,7 +4401,7 @@ msgstr "{entityIdsLength} {entityType} için özellik değerleri başarıyla gü
 msgid "Successfully updated global settings"
 msgstr "Genel ayarlar başarıyla güncellendi"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:88
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:55
 msgid "Successfully updated order"
 msgstr "Sipariş başarıyla güncellendi"
@@ -4476,7 +4512,7 @@ msgstr "Vergi oranı: {taxRate}%"
 msgid "Tax Rates"
 msgstr "Vergi Oranları"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:205
 msgid "Tax summary"
 msgstr "Vergi özeti"
 
@@ -4559,7 +4595,7 @@ msgstr "Bunlar <0>{customerGroupName}</0> müşteri grubundaki müşterilerdir."
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Bunlar <0>{facetName}</0> özelliği için özellik değerleridir."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:311
+#: src/lib/components/layout/manage-languages-dialog.tsx:316
 msgid "These languages will be available for all channels to use"
 msgstr "Bu diller tüm kanalların kullanımına açık olacaktır"
 
@@ -4667,7 +4703,7 @@ msgstr "İşlem ID gereklidir"
 #. placeholder {0}: getTranslatedOrderState(state)
 #. placeholder {0}: getTranslatedPaymentState(state)
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:92
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:110
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
 msgstr "{0} durumuna geç"
@@ -4676,7 +4712,7 @@ msgstr "{0} durumuna geç"
 msgid "Transition to {suggestedState}"
 msgstr "{suggestedState} durumuna geç"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:130
 msgid "Transition to selected state"
 msgstr "Seçili duruma geç"
 
@@ -4740,7 +4776,7 @@ msgstr "Güncelle"
 msgid "Update the note content or visibility"
 msgstr "Not içeriğini veya görünürlüğünü güncelleyin"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:417
+#: src/lib/framework/layout-engine/page-layout.tsx:446
 msgid "Updated"
 msgstr "Güncellendi"
 
@@ -4752,13 +4788,13 @@ msgstr "Yükle"
 msgid "Usage limit"
 msgstr "Kullanım sınırı"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
-#: src/lib/components/shared/customer-address-form.tsx:313
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:316
 msgid "Use as the default billing address"
 msgstr "Varsayılan fatura adresi olarak kullan"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
-#: src/lib/components/shared/customer-address-form.tsx:293
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:305
+#: src/lib/components/shared/customer-address-form.tsx:296
 msgid "Use as the default shipping address"
 msgstr "Varsayılan kargo adresi olarak kullan"
 
@@ -4786,7 +4822,7 @@ msgstr "Yerel kimlik doğrulama stratejisi kullanılıyor"
 msgid "Values"
 msgstr "Değerler"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:205
 msgid "Variant"
 msgstr "Varyant"
 
@@ -4904,11 +4940,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Dün"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:333
+#: src/lib/components/layout/manage-languages-dialog.tsx:338
 msgid "You don't have permission to view channel settings"
 msgstr "Kanal ayarlarını görüntüleme izniniz yok"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:279
+#: src/lib/components/layout/manage-languages-dialog.tsx:284
 msgid "You don't have permission to view global language settings"
 msgstr "Genel dil ayarlarını görüntüleme izniniz yok"
 

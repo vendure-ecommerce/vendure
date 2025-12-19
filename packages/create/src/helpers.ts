@@ -2,13 +2,17 @@ import { cancel, isCancel, spinner } from '@clack/prompts';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import { execFile, execFileSync, execSync } from 'node:child_process';
+import { createWriteStream } from 'node:fs';
 import { platform } from 'node:os';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { promisify } from 'node:util';
 import path from 'path';
 import pc from 'picocolors';
 import semver from 'semver';
+import * as tar from 'tar';
 
-import { TYPESCRIPT_VERSION } from './constants';
+import { STOREFRONT_BRANCH, STOREFRONT_REPO, TYPESCRIPT_VERSION } from './constants';
 import { log } from './logger';
 import { CliLogLevel, DbType } from './types';
 
@@ -179,8 +183,9 @@ export function installPackages(options: {
     dependencies: string[];
     isDevDependencies?: boolean;
     logLevel: CliLogLevel;
+    cwd?: string;
 }): Promise<void> {
-    const { dependencies, isDevDependencies = false, logLevel } = options;
+    const { dependencies, isDevDependencies = false, logLevel, cwd } = options;
     return new Promise((resolve, reject) => {
         const command = 'npm';
         const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
@@ -192,7 +197,10 @@ export function installPackages(options: {
             args.push('--verbose');
         }
 
-        const child = spawn(command, args, { stdio: logLevel === 'verbose' ? 'inherit' : 'ignore' });
+        const child = spawn(command, args, {
+            stdio: logLevel === 'verbose' ? 'inherit' : 'ignore',
+            cwd,
+        });
         child.on('close', code => {
             if (code !== 0) {
                 let message = 'An error occurred when installing dependencies.';
@@ -267,7 +275,9 @@ export function checkDbConnection(options: any, root: string): Promise<true> {
 }
 
 async function checkMysqlDbExists(options: any, root: string): Promise<true> {
-    const mysql = await import(path.join(root, 'node_modules/mysql2/promise'));
+    // Use require.resolve to find the package, which handles npm workspace hoisting
+    const mysqlPath = require.resolve('mysql2/promise', { paths: [root] });
+    const mysql = await import(mysqlPath);
     const connectionOptions = {
         host: options.host,
         user: options.username,
@@ -297,7 +307,9 @@ async function checkMysqlDbExists(options: any, root: string): Promise<true> {
 }
 
 async function checkPostgresDbExists(options: any, root: string): Promise<true> {
-    const { Client } = await import(path.join(root, 'node_modules/pg'));
+    // Use require.resolve to find the package, which handles npm workspace hoisting
+    const pgPath = require.resolve('pg', { paths: [root] });
+    const { Client } = await import(pgPath);
     const connectionOptions = {
         host: options.host,
         user: options.username,
@@ -560,4 +572,68 @@ export function resolvePackageRootDir(packageName: string, rootDir: string) {
         dir = next;
     }
     return dir;
+}
+
+/**
+ * Downloads the Next.js storefront starter from GitHub and extracts it to the target directory.
+ * Uses the GitHub API tarball endpoint to avoid requiring git.
+ */
+export async function downloadAndExtractStorefront(targetDir: string): Promise<void> {
+    const tarballUrl = `https://api.github.com/repos/${STOREFRONT_REPO}/tarball/${STOREFRONT_BRANCH}`;
+    const tempTarPath = path.join(targetDir, '..', 'storefront-temp.tar.gz');
+
+    try {
+        // Fetch the tarball from GitHub
+        const response = await fetch(tarballUrl, {
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'User-Agent': 'vendure-create',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to download storefront: ${response.status} ${response.statusText}`);
+        }
+
+        // Save the tarball to a temp file
+        const fileStream = createWriteStream(tempTarPath);
+        // Convert the web ReadableStream to a Node.js Readable stream
+        const nodeReadable = Readable.fromWeb(response.body as import('stream/web').ReadableStream);
+        await pipeline(nodeReadable, fileStream);
+
+        // Create target directory
+        await fs.ensureDir(targetDir);
+
+        // Extract the tarball
+        await tar.extract({
+            file: tempTarPath,
+            cwd: targetDir,
+            strip: 1, // Remove the top-level directory from the archive
+        });
+
+        // Clean up temp file
+        await fs.remove(tempTarPath);
+    } catch (error) {
+        // Clean up on error
+        await fs.remove(tempTarPath).catch(() => {
+            // eslint-disable-next-line
+            console.error(error);
+        });
+        throw error;
+    }
+}
+
+/**
+ * Finds an available port starting from the given port.
+ * Returns the first available port within the specified range.
+ */
+export async function findAvailablePort(startPort: number, range: number = 20): Promise<number> {
+    let port = startPort;
+    while (await isServerPortInUse(port)) {
+        port++;
+        if (port > startPort + range) {
+            throw new Error(`Could not find an available port between ${startPort} and ${startPort + range}`);
+        }
+    }
+    return port;
 }

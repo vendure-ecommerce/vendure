@@ -51,7 +51,13 @@ const channelsDocument = graphql(
 
 // Define the type for a channel
 type ActiveChannel = ResultOf<typeof activeChannelDocument>['activeChannel'];
-type Channel = ResultOf<typeof channelFragment>;
+export type Channel = ResultOf<typeof channelFragment>;
+
+/**
+ * Simplified channel type with only the basic fields (id, code, token)
+ * Used in components that don't need the full channel information
+ */
+export type SimpleChannel = Pick<Channel, 'id' | 'code' | 'token'>;
 
 /**
  * @description

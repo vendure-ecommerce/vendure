@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useDetailPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="238" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="240" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -104,7 +104,9 @@ interface DetailPageOptions<T extends TypedDocumentNode<any, any>, C extends Typ
     entityName?: string;
     createDocument?: C;
     updateDocument?: U;
-    setValuesForUpdate: (entity: NonNullable<ResultOf<T>[EntityField]>) => VariablesOf<U>[VarNameUpdate];
+    setValuesForUpdate: (
+        entity: NonNullable<ResultOf<T>[EntityField]>,
+    ) => WithLooseCustomFields<VariablesOf<U>[VarNameUpdate]>;
     transformCreateInput?: (input: VariablesOf<C>[VarNameCreate]) => VariablesOf<C>[VarNameCreate];
     transformUpdateInput?: (input: VariablesOf<U>[VarNameUpdate]) => VariablesOf<U>[VarNameUpdate];
     onSuccess?: (entity: ResultOf<C>[keyof ResultOf<C>] | ResultOf<U>[keyof ResultOf<U>]) => void;
@@ -154,7 +156,7 @@ The document to create the entity.
 The document to update the entity.
 ### setValuesForUpdate
 
-<MemberInfo kind="property" type={`(entity: NonNullable&#60;ResultOf&#60;T&#62;[EntityField]&#62;) =&#62; VariablesOf&#60;U&#62;[VarNameUpdate]`}   />
+<MemberInfo kind="property" type={`(         entity: NonNullable&#60;ResultOf&#60;T&#62;[EntityField]&#62;,     ) =&#62; WithLooseCustomFields&#60;VariablesOf&#60;U&#62;[VarNameUpdate]&#62;`}   />
 
 The function to set the values for the update document.
 ### transformCreateInput
@@ -184,7 +186,7 @@ The function to call when the update is successful.
 
 ## UseDetailPageResult
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="156" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="158" packageName="@vendure/dashboard" since="3.3.0" />
 
 
 

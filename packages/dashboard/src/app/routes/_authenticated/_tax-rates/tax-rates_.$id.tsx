@@ -1,4 +1,4 @@
-import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
+import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { TaxCategorySelector } from '@/vdb/components/shared/tax-category-selector.js';
@@ -118,14 +118,7 @@ function TaxRateDetailPage() {
                             name="value"
                             label={<Trans>Rate</Trans>}
                             render={({ field }) => (
-                                <AffixedInput
-                                    {...field}
-                                    type="number"
-                                    suffix="%"
-                                    min={0}
-                                    value={field.value}
-                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                />
+                                <NumberInput {...field} value={field.value} min={0} step={0.01} suffix="%" />
                             )}
                         />
                         <FormFieldWrapper

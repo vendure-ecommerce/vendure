@@ -23,16 +23,16 @@ interface AssignToChannelBulkActionProps {
 }
 
 export function AssignToChannelBulkAction({
-                                              selection,
-                                              table,
-                                              entityType,
-                                              mutationFn,
-                                              requiredPermissions,
-                                              buildInput,
-                                              additionalFields,
-                                              additionalData = {},
-                                              onSuccess,
-                                          }: Readonly<AssignToChannelBulkActionProps>) {
+    selection,
+    table,
+    entityType,
+    mutationFn,
+    requiredPermissions,
+    buildInput,
+    additionalFields,
+    additionalData = {},
+    onSuccess,
+}: Readonly<AssignToChannelBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { channels } = useChannel();
     const [dialogOpen, setDialogOpen] = useState(false);

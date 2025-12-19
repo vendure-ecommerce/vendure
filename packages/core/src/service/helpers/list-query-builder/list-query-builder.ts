@@ -29,8 +29,14 @@ import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner'
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
-import { parseFilterParams, WhereGroup } from './parse-filter-params';
+import { parseFilterParams, WhereCondition, WhereGroup } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
+
+/**
+ * Counter for generating unique aliases in EXISTS subqueries.
+ * Using a module-level counter ensures uniqueness across all queries in a session.
+ */
+let existsSubqueryCounter = 0;
 
 /**
  * @description
@@ -291,9 +297,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         this.joinCalculatedColumnRelations(qb, entity, options);
 
         const { customPropertyMap } = extendedOptions;
+        // Store the original customPropertyMap before normalization for EXISTS subquery generation.
+        // This is needed because normalizeCustomPropertyMap mutates customPropertyMap, but
+        // parseFilterParams needs the original paths to detect *-to-Many relations.
+        const originalCustomPropertyMap = customPropertyMap ? { ...customPropertyMap } : undefined;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
+
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
         this.applyTranslationConditions(qb, entity, sortParams, extendedOptions.ctx);
@@ -305,7 +316,15 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             qb.alias,
             customFieldsForType,
         );
-        const filter = parseFilterParams(qb.connection, entity, options.filter, customPropertyMap, qb.alias);
+
+        const filter = parseFilterParams({
+            connection: qb.connection,
+            entity,
+            filterParams: options.filter,
+            customPropertyMap,
+            originalCustomPropertyMap,
+            entityAlias: qb.alias,
+        });
 
         if (filter.length) {
             const filterOperator = options.filterOperator ?? LogicalOperator.AND;
@@ -313,13 +332,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 new Brackets(qb1 => {
                     for (const condition of filter) {
                         if ('conditions' in condition) {
-                            this.addNestedWhereClause(qb1, condition, filterOperator);
+                            this.addNestedWhereClause(qb1, condition, filterOperator, qb, entity);
                         } else {
-                            if (filterOperator === LogicalOperator.AND) {
-                                qb1.andWhere(condition.clause, condition.parameters);
-                            } else {
-                                qb1.orWhere(condition.clause, condition.parameters);
-                            }
+                            this.applyWhereCondition(qb1, condition, filterOperator, qb, entity);
                         }
                     }
                 }),
@@ -336,22 +351,20 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         return qb;
     }
 
-    private addNestedWhereClause(
+    private addNestedWhereClause<T extends VendureEntity>(
         qb: WhereExpressionBuilder,
         whereGroup: WhereGroup,
         parentOperator: LogicalOperator,
+        mainQb: SelectQueryBuilder<T>,
+        entity: Type<T>,
     ) {
         if (whereGroup.conditions.length) {
             const subQb = new Brackets(qb1 => {
                 whereGroup.conditions.forEach(condition => {
                     if ('conditions' in condition) {
-                        this.addNestedWhereClause(qb1, condition, whereGroup.operator);
+                        this.addNestedWhereClause(qb1, condition, whereGroup.operator, mainQb, entity);
                     } else {
-                        if (whereGroup.operator === LogicalOperator.AND) {
-                            qb1.andWhere(condition.clause, condition.parameters);
-                        } else {
-                            qb1.orWhere(condition.clause, condition.parameters);
-                        }
+                        this.applyWhereCondition(qb1, condition, whereGroup.operator, mainQb, entity);
                     }
                 });
             });
@@ -361,6 +374,247 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 qb.orWhere(subQb);
             }
         }
+    }
+
+    /**
+     * Applies a WHERE condition to the query builder. For conditions that need EXISTS subquery
+     * treatment (duplicate custom property fields in _and blocks), generates an EXISTS subquery
+     * instead of a simple WHERE clause.
+     */
+    private applyWhereCondition<T extends VendureEntity>(
+        qb: WhereExpressionBuilder,
+        condition: WhereCondition,
+        operator: LogicalOperator,
+        mainQb: SelectQueryBuilder<T>,
+        entity: Type<T>,
+    ) {
+        if (condition.isExistsCondition) {
+            // Generate EXISTS subquery for duplicate custom property conditions
+            const existsClause = this.buildExistsSubquery(condition, mainQb, entity);
+            if (existsClause) {
+                if (operator === LogicalOperator.AND) {
+                    qb.andWhere(existsClause.clause, existsClause.parameters);
+                } else {
+                    qb.orWhere(existsClause.clause, existsClause.parameters);
+                }
+                return;
+            }
+        }
+
+        // Standard WHERE clause handling
+        if (operator === LogicalOperator.AND) {
+            qb.andWhere(condition.clause, condition.parameters);
+        } else {
+            qb.orWhere(condition.clause, condition.parameters);
+        }
+    }
+
+    /**
+     * Builds an EXISTS subquery for a custom property condition on a *-to-Many relation.
+     * This is necessary because a simple WHERE clause on a joined table cannot express
+     * "entity has related item with value A AND entity has related item with value B"
+     * when those are in separate rows of the related table.
+     *
+     * Supports both:
+     * - ManyToMany relations (uses junction table)
+     * - OneToMany relations (direct foreign key on the related table)
+     *
+     * @see https://github.com/vendure-ecommerce/vendure/issues/3267
+     */
+    private buildExistsSubquery<T extends VendureEntity>(
+        condition: WhereCondition,
+        mainQb: SelectQueryBuilder<T>,
+        entity: Type<T>,
+    ): { clause: string; parameters: Record<string, any> } | null {
+        if (!condition.isExistsCondition) {
+            return null;
+        }
+
+        const { customPropertyPath } = condition.isExistsCondition;
+        const pathParts = customPropertyPath.split('.');
+
+        if (pathParts.length < 2) {
+            return null;
+        }
+
+        const relationName = pathParts[0]; // e.g., 'facetValues' or 'orderLines'
+        const columnName = pathParts[1]; // e.g., 'id'
+
+        const metadata = mainQb.expressionMap.mainAlias?.metadata;
+        if (!metadata) {
+            return null;
+        }
+
+        const relation = metadata.findRelationWithPropertyPath(relationName);
+        if (!relation) {
+            return null;
+        }
+
+        // Get the related entity's table and column info
+        const inverseEntityMeta = relation.inverseEntityMetadata;
+        const inverseTableName = inverseEntityMeta.tableName;
+
+        // Generate unique alias using counter
+        existsSubqueryCounter++;
+        const aliasBase = `lqb_exists_${existsSubqueryCounter}`;
+
+        // Determine the comparison operator from the original clause
+        const comparisonOperator = this.extractComparisonOperator(condition.clause);
+
+        // Copy all parameters with 'exists_' prefix to ensure uniqueness.
+        // This handles operators with multiple params like BETWEEN (arg1_a, arg1_b).
+        const parameters: Record<string, any> = {};
+        const paramKeys = Object.keys(condition.parameters);
+        for (const key of paramKeys) {
+            parameters[`exists_${key}`] = condition.parameters[key];
+        }
+        // Use the first param key as the base for the WHERE clause construction.
+        // For BETWEEN this will be 'exists_arg1' (we strip the _a/_b suffix).
+        const baseParamKey = paramKeys[0]?.replace(/_[ab]$/, '') ?? 'arg';
+        const newParamKey = `exists_${baseParamKey}`;
+
+        // Helper to escape identifiers for the current database driver (handles PostgreSQL quoting)
+        const escapeId = (name: string) => mainQb.connection.driver.escape(name);
+
+        let existsQuery: string;
+
+        if (relation.isManyToMany) {
+            // ManyToMany: Uses a junction table
+            const junctionMeta = relation.junctionEntityMetadata;
+            if (!junctionMeta) {
+                return null;
+            }
+
+            const junctionTableName = junctionMeta.tableName;
+            const ownerColumn = junctionMeta.ownerColumns[0];
+            const inverseColumn = junctionMeta.inverseColumns[0];
+
+            if (!ownerColumn || !inverseColumn) {
+                return null;
+            }
+
+            const junctionAlias = aliasBase;
+            const relatedAlias = `${aliasBase}_related`;
+            const whereCondition = this.buildWhereConditionClause(
+                relatedAlias,
+                columnName,
+                comparisonOperator,
+                newParamKey,
+                escapeId,
+            );
+
+            // EXISTS (SELECT 1 FROM junction_table jt
+            //         INNER JOIN related_table rt ON jt.inverseColumn = rt.id
+            //         WHERE jt.ownerColumn = main_entity.id AND rt.columnName = :paramValue)
+            existsQuery = `EXISTS (
+                SELECT 1 FROM ${escapeId(junctionTableName)} ${escapeId(junctionAlias)}
+                INNER JOIN ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
+                    ON ${escapeId(junctionAlias)}.${escapeId(inverseColumn.databaseName)} = ${escapeId(relatedAlias)}.${escapeId('id')}
+                    WHERE ${escapeId(junctionAlias)}.${escapeId(ownerColumn.databaseName)} = ${escapeId(mainQb.alias)}.${escapeId('id')} AND ${whereCondition}
+            )`;
+        } else if (relation.isOneToMany) {
+            // OneToMany: The related table has a foreign key back to the main entity
+            const relatedAlias = aliasBase;
+
+            // Find the foreign key column on the related entity that points back to the main entity
+            const inverseRelation = relation.inverseRelation;
+            if (!inverseRelation) {
+                return null;
+            }
+
+            // Get the join columns from the inverse relation (ManyToOne side)
+            const joinColumns = inverseRelation.joinColumns;
+            if (!joinColumns || joinColumns.length === 0) {
+                return null;
+            }
+
+            const foreignKeyColumn = joinColumns[0].databaseName;
+            if (!foreignKeyColumn) {
+                return null;
+            }
+
+            const whereCondition = this.buildWhereConditionClause(
+                relatedAlias,
+                columnName,
+                comparisonOperator,
+                newParamKey,
+                escapeId,
+            );
+
+            // EXISTS (SELECT 1 FROM related_table rt
+            //         WHERE rt.foreignKey = main_entity.id AND rt.columnName = :paramValue)
+            existsQuery = `EXISTS (
+                SELECT 1 FROM ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
+                WHERE ${escapeId(relatedAlias)}.${escapeId(foreignKeyColumn)} = ${escapeId(mainQb.alias)}.${escapeId('id')} AND ${whereCondition}
+            )`;
+        } else {
+            // Not a *-to-Many relation, shouldn't happen but fall back gracefully
+            return null;
+        }
+
+        return {
+            clause: existsQuery,
+            parameters,
+        };
+    }
+
+    /**
+     * Extracts the comparison operator from a SQL clause string.
+     */
+    private extractComparisonOperator(clause: string): string {
+        if (clause.includes('!=')) {
+            return '!=';
+        } else if (clause.includes('>=')) {
+            return '>=';
+        } else if (clause.includes('<=')) {
+            return '<=';
+        } else if (clause.includes('>')) {
+            return '>';
+        } else if (clause.includes('<')) {
+            return '<';
+        } else if (clause.includes(' IN ')) {
+            return 'IN';
+        } else if (clause.includes(' NOT IN ')) {
+            return 'NOT IN';
+        } else if (clause.includes(' ILIKE ')) {
+            return 'ILIKE';
+        } else if (clause.includes(' NOT LIKE ') || clause.includes(' NOT ILIKE ')) {
+            return clause.includes('ILIKE') ? 'NOT ILIKE' : 'NOT LIKE';
+        } else if (clause.includes(' LIKE ')) {
+            return 'LIKE';
+        } else if (clause.includes(' IS NULL')) {
+            return 'IS NULL';
+        } else if (clause.includes(' IS NOT NULL')) {
+            return 'IS NOT NULL';
+        } else if (clause.includes(' BETWEEN ')) {
+            return 'BETWEEN';
+        }
+        return '=';
+    }
+
+    /**
+     * Builds a WHERE condition clause string for the EXISTS subquery.
+     */
+    private buildWhereConditionClause(
+        alias: string,
+        columnName: string,
+        operator: string,
+        paramKey: string,
+        escapeId: (name: string) => string,
+    ): string {
+        const col = `${escapeId(alias)}.${escapeId(columnName)}`;
+        if (operator === 'IN') {
+            return `${col} IN (:...${paramKey})`;
+        } else if (operator === 'NOT IN') {
+            return `${col} NOT IN (:...${paramKey})`;
+        } else if (operator === 'IS NULL') {
+            return `${col} IS NULL`;
+        } else if (operator === 'IS NOT NULL') {
+            return `${col} IS NOT NULL`;
+        } else if (operator === 'BETWEEN') {
+            return `${col} BETWEEN :${paramKey}_a AND :${paramKey}_b`;
+        }
+        return `${col} ${operator} :${paramKey}`;
     }
 
     private parseTakeSkipParams(

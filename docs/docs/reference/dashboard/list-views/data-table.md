@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="93" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="164" packageName="@vendure/dashboard" since="3.4.0" />
 
 A data table which includes sorting, filtering, pagination, bulk actions, column controls etc.
 
@@ -30,7 +30,7 @@ Parameters
 
 ## DataTableProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="54" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="113" packageName="@vendure/dashboard" since="3.4.0" />
 
 Props for configuring the <a href='/reference/dashboard/list-views/data-table#datatable'>DataTable</a>.
 
@@ -56,6 +56,8 @@ interface DataTableProps<TData> {
     bulkActions?: BulkAction[];
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
     onRefresh?: () => void;
+    onReorder?: (oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) => void | Promise<void>;
+    disableDragAndDrop?: boolean;
 }
 ```
 
@@ -162,6 +164,18 @@ when needed.
 <MemberInfo kind="property" type={`() =&#62; void`}   />
 
 
+### onReorder
+
+<MemberInfo kind="property" type={`(oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) =&#62; void | Promise&#60;void&#62;`}   />
+
+Callback when items are reordered via drag and drop.
+When provided, enables drag-and-drop functionality.
+The fourth parameter provides all items for context-aware reordering.
+### disableDragAndDrop
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
 
 
 </div>
@@ -169,7 +183,7 @@ when needed.
 
 ## DashboardDataTableDisplayComponent
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="16" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="18" packageName="@vendure/dashboard" since="3.4.0" />
 
 Allows you to define custom display components for specific columns in data tables.
 The pageId is already defined in the data table extension, so only the column name is needed.
@@ -177,7 +191,7 @@ The pageId is already defined in the data table extension, so only the column na
 ```ts title="Signature"
 interface DashboardDataTableDisplayComponent {
     column: string;
-    component: React.ComponentType<DataDisplayComponentProps<CellContext<any, any>>>;
+    component: DataTableDisplayComponent;
 }
 ```
 
@@ -190,7 +204,7 @@ interface DashboardDataTableDisplayComponent {
 The name of the column where this display component should be used.
 ### component
 
-<MemberInfo kind="property" type={`React.ComponentType&#60;DataDisplayComponentProps&#60;CellContext&#60;any, any&#62;&#62;&#62;`}   />
+<MemberInfo kind="property" type={`DataTableDisplayComponent`}   />
 
 The React component that will be rendered as the display.
 It should accept `value` and other standard display props.

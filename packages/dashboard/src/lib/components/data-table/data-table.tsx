@@ -16,6 +16,17 @@ import { usePage } from '@/vdb/hooks/use-page.js';
 import { useSavedViews } from '@/vdb/hooks/use-saved-views.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import {
+    closestCenter,
+    DndContext,
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
     ColumnDef,
     ColumnFilter,
     ColumnFiltersState,
@@ -23,18 +34,66 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     PaginationState,
+    Row,
     SortingState,
     Table as TableType,
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
-import React, { Suspense, useEffect, useRef } from 'react';
+import { GripVertical } from 'lucide-react';
+import React, { Suspense, useEffect, useId, useMemo, useRef } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableProvider } from './data-table-context.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadgeEditable } from './data-table-filter-badge-editable.js';
+import { useDragAndDrop } from '@/vdb/hooks/use-drag-and-drop.js';
+import { toast } from 'sonner';
+
+interface DraggableRowProps<TData> {
+    row: Row<TData>;
+    isDragDisabled: boolean;
+}
+
+function DraggableRow<TData>({ row, isDragDisabled }: Readonly<DraggableRowProps<TData>>) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: row.id,
+        disabled: isDragDisabled,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <TableRow
+            ref={setNodeRef}
+            style={style}
+            data-state={row.getIsSelected() && 'selected'}
+            className="animate-in fade-in duration-100"
+        >
+            {!isDragDisabled && (
+                <TableCell className="w-[40px] h-12">
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <GripVertical className="h-4 w-4" />
+                    </div>
+                </TableCell>
+            )}
+            {row.getVisibleCells().filter(cell => cell.column.id !== '__drag_handle__').map(cell => (
+                <TableCell key={cell.id} className="h-12">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+            ))}
+        </TableRow>
+    );
+}
 
 export interface FacetedFilter {
     title: string;
@@ -77,6 +136,18 @@ interface DataTableProps<TData> {
      */
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
     onRefresh?: () => void;
+    /**
+     * @description
+     * Callback when items are reordered via drag and drop.
+     * When provided, enables drag-and-drop functionality.
+     * The fourth parameter provides all items for context-aware reordering.
+     */
+    onReorder?: (oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) => void | Promise<void>;
+    /**
+     * @description
+     * When true, drag and drop will be disabled. This will only have an effect if the onReorder prop is also set
+     */
+    disableDragAndDrop?: boolean;
 }
 
 /**
@@ -111,6 +182,8 @@ export function DataTable<TData>({
     bulkActions,
     setTableOptions,
     onRefresh,
+    onReorder,
+    disableDragAndDrop = false,
 }: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
@@ -131,6 +204,16 @@ export function DataTable<TData>({
     const prevSearchTermRef = useRef(searchTerm);
     const prevColumnFiltersRef = useRef(columnFilters);
 
+    const componentId = useId();
+    const { sensors, localData, handleDragEnd, itemIds } = useDragAndDrop({
+        data,
+        onReorder,
+        disabled: disableDragAndDrop,
+        onError: error => {
+            toast.error(t`Failed to reorder items`);
+        },
+    });
+
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
         // we want to reset the column visibility to the default.
@@ -143,9 +226,25 @@ export function DataTable<TData>({
         // We intentionally do not include `columnVisibility` in the dependency array
     }, [defaultColumnVisibility]);
 
+    // Add drag handle column if drag and drop is enabled
+    const columnsWithOptionalDragHandle = useMemo(() => {
+        if (!disableDragAndDrop && onReorder) {
+            const dragHandleColumn: ColumnDef<TData, any> = {
+                id: '__drag_handle__',
+                header: '',
+                cell: () => null, // Rendered by DraggableRow
+                size: 40,
+                enableSorting: false,
+                enableHiding: false,
+            };
+            return [dragHandleColumn, ...columns];
+        }
+        return columns;
+    }, [columns, disableDragAndDrop, onReorder]);
+
     let tableOptions: TableOptions<TData> = {
-        data,
-        columns,
+        data: localData,
+        columns: columnsWithOptionalDragHandle,
         getRowId: row => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -219,6 +318,8 @@ export function DataTable<TData>({
     };
 
     const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
+
+    const isDragDisabled = disableDragAndDrop || !onReorder;
 
     return (
         <DataTableProvider
@@ -310,66 +411,94 @@ export function DataTable<TData>({
                 ) : null}
 
                 <div className="rounded-md border my-2 relative shadow-sm">
-                    <Table>
-                        <TableHeader className="bg-muted/50">
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                          header.column.columnDef.header,
-                                                          header.getContext(),
-                                                      )}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {isLoading && !data?.length ? (
-                                Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
-                                    <TableRow
-                                        key={`skeleton-${index}`}
-                                        className="animate-in fade-in duration-100"
-                                    >
-                                        {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
-                                            <TableCell
-                                                key={`skeleton-cell-${index}-${cellIndex}`}
-                                                className="h-12"
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        modifiers={[restrictToVerticalAxis]}
+                    >
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                {table.getHeaderGroups().map(headerGroup => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map(header => {
+                                            return (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                              header.column.columnDef.header,
+                                                              header.getContext(),
+                                                          )}
+                                                </TableHead>
+                                            );
+                                        })}
+                                    </TableRow>
+                                ))}
+                            </TableHeader>
+                            <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+                                <TableBody>
+                                    {isLoading && !localData?.length ? (
+                                        Array.from({ length: Math.min(pagination.pageSize, 100) }).map((_, index) => (
+                                            <TableRow
+                                                key={`skeleton-${index}`}
+                                                className="animate-in fade-in duration-100"
                                             >
-                                                <Skeleton className="h-4 my-2 w-full" />
+                                                {!isDragDisabled && (
+                                                    <TableCell className="w-[40px] h-12">
+                                                        <Skeleton className="h-4 w-4" />
+                                                    </TableCell>
+                                                )}
+                                                {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
+                                                    <TableCell
+                                                        key={`skeleton-cell-${index}-${cellIndex}`}
+                                                        className="h-12"
+                                                    >
+                                                        <Skeleton className="h-4 my-2 w-full" />
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : table.getRowModel().rows?.length ? (
+                                        (() => {
+                                            const isDraggableEnabled = onReorder && !isDragDisabled;
+                                            const rows = table.getRowModel().rows;
+                                            
+                                            if (isDraggableEnabled) {
+                                                return rows.map(row => (
+                                                    <DraggableRow key={`${row.id}-${componentId}`} row={row} isDragDisabled={isDragDisabled} />
+                                                ));
+                                            }
+                                            
+                                            return rows.map(row => (
+                                                <TableRow
+                                                    key={row.id}
+                                                    data-state={row.getIsSelected() && 'selected'}
+                                                    className="animate-in fade-in duration-100"
+                                                >
+                                                    {row.getVisibleCells().map(cell => (
+                                                        <TableCell key={cell.id} className="h-12">
+                                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ));
+                                        })()
+                                    ) : (
+                                        <TableRow className="animate-in fade-in duration-100">
+                                            <TableCell
+                                                colSpan={columnsWithOptionalDragHandle.length + (isDragDisabled ? 0 : 1)}
+                                                className="h-24 text-center"
+                                            >
+                                                <Trans>No results</Trans>
                                             </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map(row => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && 'selected'}
-                                        className="animate-in fade-in duration-100"
-                                    >
-                                        {row.getVisibleCells().map(cell => (
-                                            <TableCell key={cell.id} className="h-12">
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow className="animate-in fade-in duration-100">
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        <Trans>No results</Trans>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                            {children}
-                        </TableBody>
-                    </Table>
+                                        </TableRow>
+                                    )}
+                                    {children}
+                                </TableBody>
+                            </SortableContext>
+                        </Table>
+                    </DndContext>
                     <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
                 </div>
                 {onPageChange && totalItems != null && <DataTablePagination table={table} />}
