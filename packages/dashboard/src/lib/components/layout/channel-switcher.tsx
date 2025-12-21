@@ -61,9 +61,9 @@ export function ChannelSwitcher() {
     const availableLanguages = serverConfig?.availableLanguages || [];
     const hasMultipleLanguages = availableLanguages.length > 1;
 
-    // Reorder channels to put the currently selected one first
+    // Currently selected channel is displayed separately so filter it out of the list
     const orderedChannels = displayChannel
-        ? [displayChannel, ...channels.filter(ch => ch.id !== displayChannel.id)]
+        ? channels.filter(ch => ch.id !== displayChannel.id)
         : channels;
 
     // Sort language codes by their formatted names and map to code and label
@@ -78,6 +78,32 @@ export function ChannelSwitcher() {
             }
         }
     }, [activeChannel, contentLanguage]);
+
+    const renderChannel = (channel: typeof channels[number]) => (
+        <div key={channel.code}>
+            <DropdownMenuItem
+                onClick={() => setActiveChannel(channel.id)}
+                className="gap-2 p-2"
+            >
+                <div
+                    className={cn(
+                        'flex size-8 items-center justify-center rounded border',
+                        channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
+                    )}
+                >
+                                            <span className="truncate font-semibold text-xs uppercase">
+                                                {getChannelInitialsFromCode(channel.code)}
+                                            </span>
+                </div>
+                <ChannelCodeLabel code={channel.code} />
+                {channel.id === displayChannel?.id && (
+                    <span className="ml-auto text-xs text-muted-foreground">
+                                                <Trans context="current channel">Current</Trans>
+                                            </span>
+                )}
+            </DropdownMenuItem>
+        </div>
+    );
 
     return (
         <>
@@ -112,39 +138,19 @@ export function ChannelSwitcher() {
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg pt-0 max-h-[calc(100vh_-_16px)] overflow-y-auto"
                             align="start"
                             side={isMobile ? 'bottom' : 'right'}
                             sideOffset={4}
                         >
-                            <DropdownMenuLabel className="text-muted-foreground text-xs">
-                                <Trans>Channels</Trans>
-                            </DropdownMenuLabel>
-                            {orderedChannels.map((channel, index) => (
-                                <div key={channel.code}>
-                                    <DropdownMenuItem
-                                        onClick={() => setActiveChannel(channel.id)}
-                                        className="gap-2 p-2"
-                                    >
-                                        <div
-                                            className={cn(
-                                                'flex size-8 items-center justify-center rounded border',
-                                                channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
-                                            )}
-                                        >
-                                            <span className="truncate font-semibold text-xs uppercase">
-                                                {getChannelInitialsFromCode(channel.code)}
-                                            </span>
-                                        </div>
-                                        <ChannelCodeLabel code={channel.code} />
-                                        {channel.id === displayChannel?.id && (
-                                            <span className="ms-auto text-xs text-muted-foreground">
-                                                <Trans context="current channel">Current</Trans>
-                                            </span>
-                                        )}
-                                    </DropdownMenuItem>
-                                    {/* Show language sub-menu for the current channel */}
-                                    {channel.id === displayChannel?.id && (
+                            <div className="sticky top-0 pt-1 bg-popover z-10">
+                                <DropdownMenuLabel className="text-muted-foreground text-xs">
+                                    <Trans>Channels</Trans>
+                                </DropdownMenuLabel>
+                                {!!displayChannel && (
+                                    <>
+                                        {renderChannel(displayChannel)}
+                                        {/* Show language sub-menu for the current channel */}
                                         <DropdownMenuSub>
                                             <DropdownMenuSubTrigger className="gap-2 p-2 ps-4">
                                                 <Languages className="w-4 h-4" />
@@ -156,7 +162,7 @@ export function ChannelSwitcher() {
                                             <DropdownMenuSubContent>
                                                 {sortedLanguages?.map(({ code: languageCode, label }) => (
                                                     <DropdownMenuItem
-                                                        key={`${channel.code}-${languageCode}`}
+                                                        key={`${displayChannel.code}-${languageCode}`}
                                                         onClick={() => setContentLanguage(languageCode)}
                                                         className={`gap-2 p-2 ${contentLanguage === languageCode ? 'bg-accent' : ''}`}
                                                     >
@@ -187,11 +193,34 @@ export function ChannelSwitcher() {
                                                 </DropdownMenuItem>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuSub>
-                                    )}
-                                    {/* Add separator after the current channel group */}
-                                    {channel.id === displayChannel?.id &&
-                                        index === 0 &&
-                                        orderedChannels.length > 1 && <DropdownMenuSeparator />}
+                                        {/* Add separator after the current channel group */}
+                                        {orderedChannels.length > 1 && <DropdownMenuSeparator />}
+                                    </>
+                                )}
+                            </div>
+                            {orderedChannels.map((channel, index) => (
+                                <div key={channel.code}>
+                                    <DropdownMenuItem
+                                        onClick={() => setActiveChannel(channel.id)}
+                                        className="gap-2 p-2"
+                                    >
+                                        <div
+                                            className={cn(
+                                                'flex size-8 items-center justify-center rounded border',
+                                                channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
+                                            )}
+                                        >
+                                            <span className="truncate font-semibold text-xs uppercase">
+                                                {getChannelInitialsFromCode(channel.code)}
+                                            </span>
+                                        </div>
+                                        <ChannelCodeLabel code={channel.code} />
+                                        {channel.id === displayChannel?.id && (
+                                            <span className="ms-auto text-xs text-muted-foreground">
+                                                <Trans context="current channel">Current</Trans>
+                                            </span>
+                                        )}
+                                    </DropdownMenuItem>
                                 </div>
                             ))}
                             <DropdownMenuSeparator />
