@@ -91,15 +91,15 @@ export function ChannelSwitcher() {
                         channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
                     )}
                 >
-                                            <span className="truncate font-semibold text-xs uppercase">
-                                                {getChannelInitialsFromCode(channel.code)}
-                                            </span>
+                    <span className="truncate font-semibold text-xs uppercase">
+                        {getChannelInitialsFromCode(channel.code)}
+                    </span>
                 </div>
                 <ChannelCodeLabel code={channel.code} />
                 {channel.id === displayChannel?.id && (
                     <span className="ms-auto text-xs text-muted-foreground">
-                                                <Trans context="current channel">Current</Trans>
-                                            </span>
+                        <Trans context="current channel">Current</Trans>
+                    </span>
                 )}
             </DropdownMenuItem>
         </div>
