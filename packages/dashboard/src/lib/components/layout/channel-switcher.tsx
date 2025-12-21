@@ -194,7 +194,7 @@ export function ChannelSwitcher() {
                                             </DropdownMenuSubContent>
                                         </DropdownMenuSub>
                                         {/* Add separator after the current channel group */}
-                                        {orderedChannels.length > 1 && <DropdownMenuSeparator />}
+                                        {orderedChannels.length > 0 && <DropdownMenuSeparator />}
                                     </>
                                 )}
                             </div>
