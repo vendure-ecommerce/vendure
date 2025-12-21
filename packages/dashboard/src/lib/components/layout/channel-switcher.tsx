@@ -97,7 +97,7 @@ export function ChannelSwitcher() {
                 </div>
                 <ChannelCodeLabel code={channel.code} />
                 {channel.id === displayChannel?.id && (
-                    <span className="ml-auto text-xs text-muted-foreground">
+                    <span className="ms-auto text-xs text-muted-foreground">
                                                 <Trans context="current channel">Current</Trans>
                                             </span>
                 )}
@@ -198,31 +198,7 @@ export function ChannelSwitcher() {
                                     </>
                                 )}
                             </div>
-                            {orderedChannels.map((channel, index) => (
-                                <div key={channel.code}>
-                                    <DropdownMenuItem
-                                        onClick={() => setActiveChannel(channel.id)}
-                                        className="gap-2 p-2"
-                                    >
-                                        <div
-                                            className={cn(
-                                                'flex size-8 items-center justify-center rounded border',
-                                                channel.code === DEFAULT_CHANNEL_CODE ? 'bg-primary' : '',
-                                            )}
-                                        >
-                                            <span className="truncate font-semibold text-xs uppercase">
-                                                {getChannelInitialsFromCode(channel.code)}
-                                            </span>
-                                        </div>
-                                        <ChannelCodeLabel code={channel.code} />
-                                        {channel.id === displayChannel?.id && (
-                                            <span className="ms-auto text-xs text-muted-foreground">
-                                                <Trans context="current channel">Current</Trans>
-                                            </span>
-                                        )}
-                                    </DropdownMenuItem>
-                                </div>
-                            ))}
+                            {orderedChannels.map(renderChannel)}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
                                 <Link to={'/channels/new'}>
