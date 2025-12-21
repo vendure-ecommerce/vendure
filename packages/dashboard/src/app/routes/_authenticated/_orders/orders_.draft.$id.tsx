@@ -290,7 +290,7 @@ function DraftOrderPage() {
     };
 
     return (
-        <Page pageId="draft-order-detail" form={form}>
+        <Page pageId="draft-order-detail" form={form} entity={entity}>
             <PageTitle>
                 <Trans>Draft order</Trans>: {entity?.code ?? ''}
             </PageTitle>
