@@ -586,16 +586,6 @@ export class OrderService {
             return result.order;
         }
     }
-    async setCurrencyCodeForOrder(
-        ctx: RequestContext,
-        orderId: ID,
-        currencyCode: CurrencyCode,
-        relations?: RelationPaths<Order>,
-    ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        const result = await this.updateOrderCurrency(ctx, orderId, currencyCode, relations);
-
-        return result;
-    }
 
     async updateOrderCurrency(
         ctx: RequestContext,

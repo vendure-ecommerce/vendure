@@ -28,7 +28,7 @@ import {
     UpdateMultipleOrderItemsResult,
     UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
-import { CurrencyCode, QueryCountriesArgs } from '@vendure/common/lib/generated-types';
+import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
@@ -389,12 +389,7 @@ export class ShopOrderResolver {
             args[ACTIVE_ORDER_INPUT_FIELD_NAME],
             true,
         );
-        return this.orderService.setCurrencyCodeForOrder(
-            ctx,
-            order.id,
-            args.currencyCode as CurrencyCode,
-            relations,
-        );
+        return this.orderService.updateOrderCurrency(ctx, order.id, args.currencyCode, relations);
     }
 
     @Transaction()
