@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useGeneratedForm
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/form-engine/use-generated-form.tsx" sourceLine="80" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/form-engine/use-generated-form.tsx" sourceLine="86" packageName="@vendure/dashboard" since="3.3.0" />
 
 This hook is used to create a form from a document and an entity.
 It will create a form with the fields defined in the document's input type.
@@ -51,7 +51,7 @@ Parameters
 
 ## GeneratedFormOptions
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/form-engine/use-generated-form.tsx" sourceLine="20" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/form-engine/use-generated-form.tsx" sourceLine="24" packageName="@vendure/dashboard" since="3.3.0" />
 
 Options for the useGeneratedForm hook.
 
@@ -63,7 +63,9 @@ interface GeneratedFormOptions<T extends TypedDocumentNode<any, any>, VarName ex
     customFieldConfig?: any[];
     setValues: (
         entity: NonNullable<E>,
-    ) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
+    ) => WithLooseCustomFields<
+        VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>
+    >;
     onSubmit?: (
         values: VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>,
     ) => void;
@@ -94,7 +96,7 @@ The entity to use to generate the form.
 
 ### setValues
 
-<MemberInfo kind="property" type={`(         entity: NonNullable&#60;E&#62;,     ) =&#62; VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;`}   />
+<MemberInfo kind="property" type={`(         entity: NonNullable&#60;E&#62;,     ) =&#62; WithLooseCustomFields&#60;         VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;     &#62;`}   />
 
 
 ### onSubmit

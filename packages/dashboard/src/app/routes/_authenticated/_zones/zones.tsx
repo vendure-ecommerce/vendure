@@ -25,6 +25,7 @@ function ZoneListPage() {
             title={<Trans>Zones</Trans>}
             defaultVisibility={{
                 name: true,
+                regions: true,
             }}
             customizeColumns={{
                 name: {

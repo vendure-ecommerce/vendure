@@ -22,7 +22,17 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, Relation } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    Relation,
+} from 'typeorm';
 
 import { Calculated } from '../../../src/common/calculated-decorator';
 
@@ -50,6 +60,26 @@ export class CustomFieldOtherRelationTestEntity extends VendureEntity {
 
     @ManyToOne(() => TestEntity, testEntity => testEntity.customFields.otherRelation)
     parent: Relation<TestEntity>;
+}
+
+/**
+ * Entity used to test ManyToMany relations with customPropertyMap
+ * for the duplicate filter fix (GitHub issue #3267)
+ */
+@Entity()
+export class TestEntityTag extends VendureEntity {
+    constructor(input: Partial<TestEntityTag>) {
+        super(input);
+    }
+
+    @Column()
+    name: string;
+
+    @Column({ default: 0 })
+    priority: number;
+
+    @ManyToMany(() => TestEntity, testEntity => testEntity.tags)
+    testEntities: Relation<TestEntity[]>;
 }
 
 class TestEntityCustomFields {
@@ -145,11 +175,15 @@ export class TestEntity extends VendureEntity implements Translatable, HasCustom
     @Column(() => TestEntityCustomFields)
     customFields: TestEntityCustomFields;
 
-    @ManyToOne(() => TestEntity, (type) => type.parent)
+    @ManyToOne(() => TestEntity, type => type.parent)
     parent: TestEntity | null;
 
     @Column('int', { nullable: true })
     parentId: ID | null;
+
+    @ManyToMany(() => TestEntityTag, tag => tag.testEntities)
+    @JoinTable()
+    tags: Relation<TestEntityTag[]>;
 }
 
 @Entity()
@@ -199,9 +233,12 @@ export class ListQueryResolver {
                     'orderRelation.customer',
                     'customFields.relation',
                     'customFields.otherRelation',
+                    'tags',
                 ],
                 customPropertyMap: {
                     customerLastName: 'orderRelation.customer.lastName',
+                    tagId: 'tags.id',
+                    tagPriority: 'tags.priority',
                 },
             })
             .getManyAndCount()
@@ -282,6 +319,15 @@ const apiExtensions = gql`
         nullableDate: DateTime
         customFields: TestEntityCustomFields!
         parent: TestEntity
+        tags: [TestEntityTag!]!
+    }
+
+    type TestEntityTag implements Node {
+        id: ID!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        name: String!
+        priority: Int!
     }
 
     type TestEntityList implements PaginatedList {
@@ -296,6 +342,8 @@ const apiExtensions = gql`
 
     input TestEntityFilterParameter {
         customerLastName: StringOperators
+        tagId: IDOperators
+        tagPriority: NumberOperators
     }
 
     input TestEntitySortParameter {
@@ -311,6 +359,7 @@ const apiExtensions = gql`
         TestEntity,
         TestEntityPrice,
         TestEntityTranslation,
+        TestEntityTag,
         CustomFieldRelationTestEntity,
         CustomFieldOtherRelationTestEntity,
     ],
@@ -403,7 +452,9 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
             // test entity with self-referencing relation without tree structure decorator
             testEntities[0].parent = testEntities[1];
             testEntities[3].parent = testEntities[1];
-            await this.connection.rawConnection.getRepository(TestEntity).save([testEntities[0], testEntities[3]]);
+            await this.connection.rawConnection
+                .getRepository(TestEntity)
+                .save([testEntities[0], testEntities[3]]);
 
             const translations: any = {
                 A: { [LanguageCode.en]: 'apple', [LanguageCode.de]: 'apfel' },
@@ -419,6 +470,39 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                 B: [{ data: 'B' }],
                 C: [{ data: 'C' }],
             };
+
+            // Create tags for testing ManyToMany filtering with duplicate fields in _and blocks
+            // This tests the fix for GitHub issue #3267
+            // Priority values: tag1=10, tag2=20, tag3=30 (for testing BETWEEN operator)
+            const tags = await this.connection.rawConnection
+                .getRepository(TestEntityTag)
+                .save([
+                    new TestEntityTag({ name: 'tag1', priority: 10 }),
+                    new TestEntityTag({ name: 'tag2', priority: 20 }),
+                    new TestEntityTag({ name: 'tag3', priority: 30 }),
+                ]);
+
+            // Assign tags to test entities:
+            // A: tag1, tag2     (both tags)
+            // B: tag1, tag2     (both tags)
+            // C: tag1           (only tag1)
+            // D: tag2           (only tag2)
+            // E: tag1, tag2, tag3 (all tags)
+            // F: (no tags)
+            const entityTagAssignments: Record<string, string[]> = {
+                A: ['tag1', 'tag2'],
+                B: ['tag1', 'tag2'],
+                C: ['tag1'],
+                D: ['tag2'],
+                E: ['tag1', 'tag2', 'tag3'],
+                F: [],
+            };
+
+            for (const testEntity of testEntities) {
+                const tagNames = entityTagAssignments[testEntity.label] || [];
+                testEntity.tags = tags.filter(t => tagNames.includes(t.name));
+            }
+            await this.connection.rawConnection.getRepository(TestEntity).save(testEntities);
 
             for (const testEntity of testEntities) {
                 await this.connection.rawConnection.getRepository(TestEntityPrice).save([
@@ -455,12 +539,14 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                                 data: nestedContent.data,
                             }),
                         );
-                        await this.connection.rawConnection.getRepository(CustomFieldOtherRelationTestEntity).save(
-                            new CustomFieldOtherRelationTestEntity({
-                                parent: testEntity,
-                                data: nestedContent.data,
-                            }),
-                        );
+                        await this.connection.rawConnection
+                            .getRepository(CustomFieldOtherRelationTestEntity)
+                            .save(
+                                new CustomFieldOtherRelationTestEntity({
+                                    parent: testEntity,
+                                    data: nestedContent.data,
+                                }),
+                            );
                     }
                 }
             }

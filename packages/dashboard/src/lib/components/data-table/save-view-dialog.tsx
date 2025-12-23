@@ -7,6 +7,8 @@ import { Input } from '../ui/input.js';
 import { Label } from '../ui/label.js';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group.js';
 import { toast } from 'sonner';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 
 interface SaveViewDialogProps {
     open: boolean;
@@ -25,6 +27,21 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
     const [scope, setScope] = useState<'user' | 'global'>('user');
     const [saving, setSaving] = useState(false);
     const { saveView, userViews, globalViews, canManageGlobalViews } = useSavedViews();
+    const { pageId } = usePage();
+    const { settings } = useUserSettings();
+
+    const defaultVisibility = {
+        id: false,
+        createdAt: false,
+        updatedAt: false,
+        type: false,
+        currencyCode: false,
+    }
+    const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
+    const columnVisibility = pageId
+        ? (tableSettings?.columnVisibility ?? defaultVisibility)
+        : defaultVisibility;
+    const columnOrder = pageId ? (tableSettings?.columnOrder ?? []) : [];
 
     const handleSave = async () => {
         if (!name.trim()) {
@@ -45,6 +62,10 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
                 name: name.trim(),
                 scope,
                 filters,
+                columnConfig : {
+                    columnVisibility,
+                    columnOrder,
+                },
                 searchTerm,
             });
             toast.success(`View "${name}" saved successfully`);

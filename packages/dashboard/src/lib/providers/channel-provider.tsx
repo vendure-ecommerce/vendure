@@ -51,7 +51,13 @@ const channelsDocument = graphql(
 
 // Define the type for a channel
 type ActiveChannel = ResultOf<typeof activeChannelDocument>['activeChannel'];
-type Channel = ResultOf<typeof channelFragment>;
+export type Channel = ResultOf<typeof channelFragment>;
+
+/**
+ * Simplified channel type with only the basic fields (id, code, token)
+ * Used in components that don't need the full channel information
+ */
+export type SimpleChannel = Pick<Channel, 'id' | 'code' | 'token'>;
 
 /**
  * @description
@@ -147,6 +153,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                     defaultCurrencyCode: fullChannelData?.defaultCurrencyCode || 'USD',
                     pricesIncludeTax: fullChannelData?.pricesIncludeTax || false,
                     availableLanguageCodes: fullChannelData?.availableLanguageCodes || ['en'],
+                    availableCurrencyCodes: fullChannelData?.availableCurrencyCodes || ['USD'],
                 };
             });
         }
@@ -198,13 +205,16 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         });
     };
 
-    const contextValue: ChannelContext = {
-        channels,
-        activeChannel: selectedChannel,
-        isLoading,
-        setActiveChannel: setSelectedChannel,
-        refreshChannels,
-    };
+    const contextValue: ChannelContext = React.useMemo(
+        () => ({
+            channels,
+            activeChannel: selectedChannel,
+            isLoading,
+            setActiveChannel: setSelectedChannel,
+            refreshChannels,
+        }),
+        [channels, selectedChannel, isLoading, setSelectedChannel, refreshChannels],
+    );
 
     return <ChannelContext.Provider value={contextValue}>{children}</ChannelContext.Provider>;
 }

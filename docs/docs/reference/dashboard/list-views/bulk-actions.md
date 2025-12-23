@@ -112,7 +112,7 @@ Parameters
 
 ## BulkAction
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="107" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/data-table.ts" sourceLine="109" packageName="@vendure/dashboard" since="3.4.0" />
 
 A bulk action is a component that will be rendered in the bulk actions dropdown.
 
