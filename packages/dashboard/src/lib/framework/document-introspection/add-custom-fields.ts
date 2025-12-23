@@ -193,8 +193,34 @@ function applyCustomFieldsToSelection(
             .filter(isFieldNode)
             .find(field => field.name.value === 'translations');
 
-        if (localizedFields.length && translationsField && translationsField.selectionSet) {
-            (translationsField.selectionSet.selections as SelectionNode[]).push({
+        if (localizedFields.length) {
+            const ensureTranslationSelectionSet = () =>
+                translationsField?.selectionSet ??
+                ({
+                    kind: Kind.SELECTION_SET,
+                    selections: [
+                        {
+                            kind: Kind.FIELD,
+                            name: { kind: Kind.NAME, value: 'languageCode' },
+                        },
+                    ],
+                } as SelectionSetNode);
+
+            const selectionSetForTranslations = ensureTranslationSelectionSet();
+
+            // Make sure the translations field exists so locale custom fields can be populated
+            if (!translationsField) {
+                (selectionSet.selections as SelectionNode[]).push({
+                    kind: Kind.FIELD,
+                    name: { kind: Kind.NAME, value: 'translations' },
+                    selectionSet: selectionSetForTranslations,
+                } as FieldNode);
+            } else {
+                translationsField.selectionSet = selectionSetForTranslations;
+            }
+
+            // Always include locale custom fields inside translations
+            (selectionSetForTranslations.selections as SelectionNode[]).push({
                 name: {
                     kind: Kind.NAME,
                     value: 'customFields',
