@@ -56,7 +56,7 @@ export const devConfig: VendureConfig = {
     },
     dbConnectionOptions: {
         synchronize: false,
-        logging: false,
+        logging: true, // Enable all logging
         migrations: [path.join(__dirname, 'migrations/*.ts')],
         ...getDbConfig(),
     },

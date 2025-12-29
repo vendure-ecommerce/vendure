@@ -52,7 +52,7 @@ function CollectionListPage() {
         .map(([id, _]) => id);
 
     const { data: childCollectionsData } = useQuery({
-        queryKey: ['childCollections', ...expandedIds.sort()],
+        queryKey: ['childCollections', ...expandedIds.sort((a, b) => a.localeCompare(b))],
         queryFn: () =>
             api.query(collectionListDocument, {
                 options: {

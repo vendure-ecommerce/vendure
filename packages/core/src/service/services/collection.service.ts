@@ -405,6 +405,7 @@ export class CollectionService implements OnModuleInit {
         ctx?: RequestContext,
     ): Promise<Array<Translated<Collection> | Collection>> {
         // Use PostgreSQL recursive CTE to fetch all ancestors in a single query
+        Logger.verbose(`[OPTIMIZED CTE] Getting ancestors for collection ${collectionId}`);
         const query = `
             WITH RECURSIVE collection_ancestors AS (
                 -- Base case: get the immediate parent (depth 1)

@@ -65,8 +65,7 @@ export class CollectionEntityResolver {
         const onlyTotalItems = this.isOnlyTotalItemsRequested(info);
 
         if (onlyTotalItems) {
-            // On top level (e.g. viewing collections) only retrieve count
-            Logger.log(`Only retrieving total items for collection ${collection.id}`);
+            // e.g. viewing collections only retrieve count for display purposes
             const totalItems = await this.productVariantService.getVariantCountByCollectionId(
                 ctx,
                 collection.id,
