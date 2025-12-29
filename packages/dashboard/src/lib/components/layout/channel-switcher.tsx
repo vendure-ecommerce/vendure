@@ -13,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
@@ -138,78 +139,80 @@ export function ChannelSwitcher() {
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg pt-0 max-h-[calc(100vh_-_16px)] overflow-y-auto"
+                            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg pt-0 pr-0"
                             align="start"
                             side={isMobile ? 'bottom' : 'right'}
                             sideOffset={4}
                         >
-                            <div className="sticky top-0 pt-1 bg-popover z-10">
-                                <DropdownMenuLabel className="text-muted-foreground text-xs">
-                                    <Trans>Channels</Trans>
-                                </DropdownMenuLabel>
-                                {!!displayChannel && (
-                                    <>
-                                        {renderChannel(displayChannel)}
-                                        {/* Show language sub-menu for the current channel */}
-                                        <DropdownMenuSub>
-                                            <DropdownMenuSubTrigger className="gap-2 p-2 ps-4">
-                                                <Languages className="w-4 h-4" />
-                                                <div className="flex gap-1 ms-2">
-                                                    <span className="text-muted-foreground">Content: </span>
-                                                    {formatLanguageName(contentLanguage)}
-                                                </div>
-                                            </DropdownMenuSubTrigger>
-                                            <DropdownMenuSubContent>
-                                                {sortedLanguages?.map(({ code: languageCode, label }) => (
-                                                    <DropdownMenuItem
-                                                        key={`${displayChannel.code}-${languageCode}`}
-                                                        onClick={() => setContentLanguage(languageCode)}
-                                                        className={`gap-2 p-2 ${contentLanguage === languageCode ? 'bg-accent' : ''}`}
-                                                    >
-                                                        <div className="flex w-6 h-5 items-center justify-center rounded border">
-                                                            <span className="truncate font-medium text-xs">
-                                                                {languageCode.toUpperCase()}
-                                                            </span>
-                                                        </div>
-                                                        <span>{label}</span>
-                                                        {contentLanguage === languageCode && (
-                                                            <span className="ms-auto text-xs text-muted-foreground">
-                                                                <Trans context="active language">
-                                                                    Active
-                                                                </Trans>
-                                                            </span>
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                ))}
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    onClick={() => setShowManageLanguagesDialog(true)}
-                                                    className="gap-2 p-2"
-                                                >
+                            <ScrollArea className="max-h-[calc(100vh_-_24px)] overflow-y-auto pr-1">
+                                <div className="sticky top-0 pt-1 bg-popover z-10">
+                                    <DropdownMenuLabel className="text-muted-foreground text-xs">
+                                        <Trans>Channels</Trans>
+                                    </DropdownMenuLabel>
+                                    {!!displayChannel && (
+                                        <>
+                                            {renderChannel(displayChannel)}
+                                            {/* Show language sub-menu for the current channel */}
+                                            <DropdownMenuSub>
+                                                <DropdownMenuSubTrigger className="gap-2 p-2 ps-4">
                                                     <Languages className="w-4 h-4" />
-                                                    <span>
-                                                        <Trans>Manage Languages</Trans>
-                                                    </span>
-                                                </DropdownMenuItem>
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuSub>
-                                        {/* Add separator after the current channel group */}
-                                        {orderedChannels.length > 0 && <DropdownMenuSeparator />}
-                                    </>
-                                )}
-                            </div>
-                            {orderedChannels.map(renderChannel)}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
-                                <Link to={'/channels/new'}>
-                                    <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                                        <Plus className="size-4" />
-                                    </div>
-                                    <div className="text-muted-foreground font-medium">
-                                        <Trans>Add channel</Trans>
-                                    </div>
-                                </Link>
-                            </DropdownMenuItem>
+                                                    <div className="flex gap-1 ms-2">
+                                                        <span className="text-muted-foreground">Content: </span>
+                                                        {formatLanguageName(contentLanguage)}
+                                                    </div>
+                                                </DropdownMenuSubTrigger>
+                                                <DropdownMenuSubContent>
+                                                    {sortedLanguages?.map(({ code: languageCode, label }) => (
+                                                        <DropdownMenuItem
+                                                            key={`${displayChannel.code}-${languageCode}`}
+                                                            onClick={() => setContentLanguage(languageCode)}
+                                                            className={`gap-2 p-2 ${contentLanguage === languageCode ? 'bg-accent' : ''}`}
+                                                        >
+                                                            <div className="flex w-6 h-5 items-center justify-center rounded border">
+                                                                <span className="truncate font-medium text-xs">
+                                                                    {languageCode.toUpperCase()}
+                                                                </span>
+                                                            </div>
+                                                            <span>{label}</span>
+                                                            {contentLanguage === languageCode && (
+                                                                <span className="ms-auto text-xs text-muted-foreground">
+                                                                    <Trans context="active language">
+                                                                        Active
+                                                                    </Trans>
+                                                                </span>
+                                                            )}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        onClick={() => setShowManageLanguagesDialog(true)}
+                                                        className="gap-2 p-2"
+                                                    >
+                                                        <Languages className="w-4 h-4" />
+                                                        <span>
+                                                            <Trans>Manage Languages</Trans>
+                                                        </span>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuSubContent>
+                                            </DropdownMenuSub>
+                                            {/* Add separator after the current channel group */}
+                                            {orderedChannels.length > 0 && <DropdownMenuSeparator />}
+                                        </>
+                                    )}
+                                </div>
+                                {orderedChannels.map(renderChannel)}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
+                                    <Link to={'/channels/new'}>
+                                        <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                                            <Plus className="size-4" />
+                                        </div>
+                                        <div className="text-muted-foreground font-medium">
+                                            <Trans>Add channel</Trans>
+                                        </div>
+                                    </Link>
+                                </DropdownMenuItem>
+                            </ScrollArea>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </SidebarMenuItem>
