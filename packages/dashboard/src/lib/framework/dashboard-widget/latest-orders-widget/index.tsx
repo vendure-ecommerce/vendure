@@ -95,10 +95,16 @@ export function LatestOrdersWidget() {
                         },
                     },
                     total: {
+                        meta: {
+                            dependencies: ['currencyCode'],
+                        },
                         header: t`Total`,
                         cell: OrderMoneyCell,
                     },
-                    totalWithTax: { cell: OrderMoneyCell },
+                    totalWithTax: {
+                        meta: { dependencies: ['currencyCode'] },
+                        cell: OrderMoneyCell,
+                    },
                     state: { cell: OrderStateCell },
                     customer: { cell: CustomerCell },
                 }}
