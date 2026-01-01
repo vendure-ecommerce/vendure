@@ -95,6 +95,9 @@ export function LatestOrdersWidget() {
                         },
                     },
                     total: {
+                        meta: {
+                            dependencies: ['currencyCode'],
+                        },
                         header: t`Total`,
                         cell: OrderMoneyCell,
                     },
