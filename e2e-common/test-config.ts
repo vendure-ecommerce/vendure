@@ -104,7 +104,7 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
-                username: 'root',
+                username: 'vendure',
                 password: 'password',
             };
         case 'mysql':
@@ -113,7 +113,7 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mysql',
                 host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
-                username: 'root',
+                username: 'vendure',
                 password: 'password',
             };
         case 'sqljs':
