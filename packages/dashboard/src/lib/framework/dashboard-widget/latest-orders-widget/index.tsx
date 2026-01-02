@@ -22,7 +22,7 @@ export function LatestOrdersWidget() {
     const { dateRange } = useWidgetFilters();
     const { setTableSettings, settings } = useUserSettings();
     const tableSettings = settings.tableSettings?.[WIDGET_ID];
-    
+
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: 'orderPlacedAt',
@@ -42,6 +42,13 @@ export function LatestOrdersWidget() {
             },
         },
     ]);
+
+    // Update page size if user settings change
+    useEffect(() => {
+        if (tableSettings?.pageSize !== undefined) {
+            setPageSize(tableSettings.pageSize);
+        }
+    }, [tableSettings?.pageSize]);
 
     // Update filters when date range changes
     useEffect(() => {
