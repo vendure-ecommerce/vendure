@@ -5,6 +5,7 @@ import {
     OrderStateCell,
 } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
@@ -19,6 +20,9 @@ export const WIDGET_ID = 'latest-orders-widget';
 export function LatestOrdersWidget() {
     const { t } = useLingui();
     const { dateRange } = useWidgetFilters();
+    const { setTableSettings, settings } = useUserSettings();
+    const tableSettings = settings.tableSettings?.[WIDGET_ID];
+
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: 'orderPlacedAt',
@@ -26,7 +30,7 @@ export function LatestOrdersWidget() {
         },
     ]);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(tableSettings?.pageSize ?? 10);
     const [filters, setFilters] = useState<ColumnFiltersState>([
         {
             id: 'orderPlacedAt',
@@ -38,6 +42,13 @@ export function LatestOrdersWidget() {
             },
         },
     ]);
+
+    // Update page size if user settings change
+    useEffect(() => {
+        if (tableSettings?.pageSize !== undefined) {
+            setPageSize(tableSettings.pageSize);
+        }
+    }, [tableSettings?.pageSize]);
 
     // Update filters when date range changes
     useEffect(() => {
@@ -53,6 +64,14 @@ export function LatestOrdersWidget() {
             },
         ]);
     }, [dateRange]);
+
+    const defaultVisibility = {
+        code: true,
+        total: true,
+        orderPlacedAt: true,
+    };
+
+    const columnVisibility = tableSettings?.columnVisibility ?? defaultVisibility;
 
     return (
         <DashboardBaseWidget id={WIDGET_ID} title={t`Latest Orders`} description={t`Your latest orders`}>
@@ -106,9 +125,11 @@ export function LatestOrdersWidget() {
                 sorting={sorting}
                 columnFilters={filters}
                 listQuery={latestOrdersQuery}
-                onPageChange={(_, page, pageSize) => {
+                defaultVisibility={columnVisibility}
+                onPageChange={(_, page, newPageSize) => {
                     setPage(page);
-                    setPageSize(pageSize);
+                    setPageSize(newPageSize);
+                    setTableSettings(WIDGET_ID, 'pageSize', newPageSize);
                 }}
                 onSortChange={(_, sorting) => {
                     setSorting(sorting);
@@ -116,10 +137,8 @@ export function LatestOrdersWidget() {
                 onFilterChange={(_, filters) => {
                     setFilters(filters);
                 }}
-                defaultVisibility={{
-                    code: true,
-                    total: true,
-                    orderPlacedAt: true,
+                onColumnVisibilityChange={(_, columnVisibility) => {
+                    setTableSettings(WIDGET_ID, 'columnVisibility', columnVisibility);
                 }}
             />
         </DashboardBaseWidget>
