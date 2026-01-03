@@ -185,6 +185,18 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
             setSelectedChannelId(undefined);
         }
 
+        // Ensure channel token in localStorage stays in sync with selected channel.
+        // This handles the case where activeChannelId persists but the token was cleared (e.g., after logout).
+        if (selectedChannelId && channels.length > 0) {
+            const selectedChannel = channels.find(c => c.id === selectedChannelId);
+            if (selectedChannel) {
+                const currentToken = localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+                if (currentToken !== selectedChannel.token) {
+                    setChannelTokenInLocalStorage(selectedChannel.token);
+                }
+            }
+        }
+
         // If no selected channel is set, use the first available channel
         if (!selectedChannelId && channels.length > 0) {
             const defaultChannel = channels[0];
