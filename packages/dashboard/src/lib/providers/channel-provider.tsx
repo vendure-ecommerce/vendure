@@ -204,6 +204,10 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                 const currentToken = getChannelTokenFromLocalStorage();
                 if (currentToken !== selectedChannel.token) {
                     setChannelTokenInLocalStorage(selectedChannel.token);
+                    // Invalidate queries to refetch with the corrected token
+                    queryClient.invalidateQueries({
+                        queryKey: ['activeChannel', isAuthenticated],
+                    });
                 }
             }
         } else if (channels.length > 0) {
@@ -212,7 +216,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
             setSelectedChannelId(defaultChannel.id);
             setChannelTokenInLocalStorage(defaultChannel.token);
         }
-    }, [selectedChannelId, channels]);
+    }, [selectedChannelId, channels, queryClient, isAuthenticated]);
 
     const isLoading = isActiveChannelLoading;
 
