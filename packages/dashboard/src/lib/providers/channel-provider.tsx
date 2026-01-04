@@ -183,11 +183,9 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         // If selected channel is not valid for this user, reset it
         if (selectedChannelId && validChannelIds.length && !validChannelIds.includes(selectedChannelId)) {
             setSelectedChannelId(undefined);
-        }
-
-        // Ensure channel token in localStorage stays in sync with selected channel.
-        // This handles the case where activeChannelId persists but the token was cleared (e.g., after logout).
-        if (selectedChannelId && channels.length > 0) {
+        } else if (selectedChannelId && channels.length > 0) {
+            // Ensure channel token in localStorage stays in sync with selected channel.
+            // This handles the case where activeChannelId persists but the token was cleared (e.g., after logout).
             const selectedChannel = channels.find(c => c.id === selectedChannelId);
             if (selectedChannel) {
                 const currentToken = localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
@@ -195,10 +193,8 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
                     setChannelTokenInLocalStorage(selectedChannel.token);
                 }
             }
-        }
-
-        // If no selected channel is set, use the first available channel
-        if (!selectedChannelId && channels.length > 0) {
+        } else if (channels.length > 0) {
+            // If no selected channel is set, use the first available channel
             const defaultChannel = channels[0];
             setSelectedChannelId(defaultChannel.id);
             setChannelTokenInLocalStorage(defaultChannel.token);
