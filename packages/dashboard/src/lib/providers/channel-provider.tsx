@@ -97,6 +97,19 @@ export interface ChannelContext {
 }
 
 /**
+ * Retrieves the channel token from localStorage.
+ * Returns null if localStorage is unavailable or an error occurs.
+ */
+function getChannelTokenFromLocalStorage(): string | null {
+    try {
+        return localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+    } catch (e) {
+        console.error('Failed to retrieve channel token from localStorage', e);
+        return null;
+    }
+}
+
+/**
  * Sets the channel token in localStorage, which is then used by the `api`
  * object to ensure we add the correct token header to all API calls.
  */
@@ -188,7 +201,7 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
             // This handles the case where activeChannelId persists but the token was cleared (e.g., after logout).
             const selectedChannel = channels.find(c => c.id === selectedChannelId);
             if (selectedChannel) {
-                const currentToken = localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+                const currentToken = getChannelTokenFromLocalStorage();
                 if (currentToken !== selectedChannel.token) {
                     setChannelTokenInLocalStorage(selectedChannel.token);
                 }
