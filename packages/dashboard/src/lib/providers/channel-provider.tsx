@@ -223,12 +223,12 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
     // Find the selected channel from the list of channels
     const selectedChannel = activeChannelData?.activeChannel;
 
-    const refreshChannels = () => {
+    const refreshChannels = React.useCallback(() => {
         refreshCurrentUser();
         queryClient.invalidateQueries({
             queryKey: ['channels', isAuthenticated],
         });
-    };
+    }, [refreshCurrentUser, queryClient, isAuthenticated]);
 
     const contextValue: ChannelContext = React.useMemo(
         () => ({
