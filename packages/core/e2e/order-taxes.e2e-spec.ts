@@ -203,7 +203,7 @@ describe('Order taxes', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1216
+        // https://github.com/vendurehq/vendure/issues/1216
         it('re-calculates OrderLine prices when shippingAddress causes activeTaxZone change', async () => {
             const { taxRates } = await adminClient.query<Codegen.GetTaxRateListQuery>(GET_TAX_RATE_LIST);
             // Set the TaxRates to Asia to 0%
@@ -252,7 +252,7 @@ describe('Order taxes', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1216
+        // https://github.com/vendurehq/vendure/issues/1216
         it('re-calculates OrderLine prices when billingAddress causes activeTaxZone change', async () => {
             await shopClient.query<
                 CodegenShop.SetBillingAddressMutation,

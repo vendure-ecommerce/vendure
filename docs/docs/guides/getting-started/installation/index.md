@@ -17,7 +17,7 @@ import TabItem from '@theme/TabItem';
 
 ## @vendure/create
 
-The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
+The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendurehq/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
 
 ### Quick Start
 
@@ -175,7 +175,7 @@ Once complete, you'll see a message like this:
 │  ➡️ Docs: https://docs.vendure.io                     │
 │  ➡️ Discord community: https://vendure.io/community   │
 │  ➡️ Star us on GitHub:                                │
-│     https://github.com/vendure-ecommerce/vendure      │
+│     https://github.com/vendurehq/vendure      │
 │                                                       │
 ├───────────────────────────────────────────────────────╯
 │
@@ -230,5 +230,5 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
     npx @vendure/create my-shop --log-level verbose
     ```
 
-- The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
+- The [supported TypeScript version](https://github.com/vendurehq/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
 - If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.

@@ -14,7 +14,7 @@ Vendure v2 introduces a number of breaking changes to the database schema, some 
 :::
 
 1. Make sure all your Vendure packages to the latest v2 versions.
-2. Use your package manager to install the [v2 migration tool](https://github.com/vendure-ecommerce/v2-migration-tool): `npm install @vendure/migrate-v2`
+2. Use your package manager to install the [v2 migration tool](https://github.com/vendurehq/v2-migration-tool): `npm install @vendure/migrate-v2`
     - Note, if you run into the error `"Cannot find module '@ardatan/aggregate-error'"`, delete node_modules and the lockfile and reinstall.
 3. Add the `MigrationV2Plugin` to your plugins array:
    ```ts
@@ -31,8 +31,8 @@ Vendure v2 introduces a number of breaking changes to the database schema, some 
    The sole function of this plugin is to temporarily remove some "NOT NULL" constraints from certain columns, which allows us to run the next part of the migration.
 4. Generate a new migration file, `npm run migration:generate v2`
 5. Edit the newly-created migration file by following the comments in these examples: 
-    - [postgres](https://github.com/vendure-ecommerce/v2-migration-tool/blob/master/src/migrations/1686649098749-v201-postgres.ts)
-    - [mysql](https://github.com/vendure-ecommerce/v2-migration-tool/blob/master/src/migrations/1686655918823-v201-mysql.ts)
+    - [postgres](https://github.com/vendurehq/v2-migration-tool/blob/master/src/migrations/1686649098749-v201-postgres.ts)
+    - [mysql](https://github.com/vendurehq/v2-migration-tool/blob/master/src/migrations/1686655918823-v201-mysql.ts)
 
    In your migrations files, you'll import the `vendureV2Migrations` from `@vendure/migrate-v2`.
 6. Run the migration with `npm run migration:run`.

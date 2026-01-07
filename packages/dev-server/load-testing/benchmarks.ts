@@ -21,7 +21,7 @@ import { getLoadTestConfig } from './load-test-config';
 
 /**
  * This set of benchmarks aims to specifically test the performance issues discussed
- * in issue https://github.com/vendure-ecommerce/vendure/issues/1506.
+ * in issue https://github.com/vendurehq/vendure/issues/1506.
  *
  * In order to test these issues, we need a test dataset that will create:
  *

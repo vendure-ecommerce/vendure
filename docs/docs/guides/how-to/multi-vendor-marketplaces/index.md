@@ -12,10 +12,10 @@ This guide introduces the major concepts & APIs you will need to understand in o
 
 ## Multi-vendor plugin
 
-All the concepts presented here have been implemented in our [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin). The guides here will refer to specific parts of this plugin which you should consult to get a full understanding of how an implementation would look.
+All the concepts presented here have been implemented in our [example multi-vendor plugin](https://github.com/vendurehq/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin). The guides here will refer to specific parts of this plugin which you should consult to get a full understanding of how an implementation would look.
 
 :::caution
-**Note:** the [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin) is for educational purposes only, and for the sake of clarity leaves out several parts that would be required in a production-ready solution, such as email verification and setup of a real payment solution.
+**Note:** the [example multi-vendor plugin](https://github.com/vendurehq/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin) is for educational purposes only, and for the sake of clarity leaves out several parts that would be required in a production-ready solution, such as email verification and setup of a real payment solution.
 :::
 
 ![The Dashboard Aggregate Order screen](./aggregate-order.webp)

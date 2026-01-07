@@ -446,7 +446,7 @@ describe('Role resolver', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1874
+    // https://github.com/vendurehq/vendure/issues/1874
     describe('role escalation', () => {
         let defaultChannel: Codegen.GetChannelsQuery['channels']['items'][number];
         let secondChannel: Codegen.GetChannelsQuery['channels']['items'][number];

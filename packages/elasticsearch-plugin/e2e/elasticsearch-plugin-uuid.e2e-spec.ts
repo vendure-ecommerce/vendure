@@ -5,7 +5,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import {
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
@@ -19,7 +19,7 @@ import { GetCollectionListQuery } from './graphql/generated-e2e-elasticsearch-pl
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
-// https://github.com/vendure-ecommerce/vendure/issues/494
+// https://github.com/vendurehq/vendure/issues/494
 describe('Elasticsearch plugin with UuidIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
@@ -91,7 +91,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
         expect(search.totalItems).toBe(1);
     });
 
-        it('with search term grouped by SKU', async () => {
+    it('with search term grouped by SKU', async () => {
         const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {

@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { DefaultLogger, User } from '@vendure/core';
+import { User } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { InitialData } from '../src/index';
 
 import {
@@ -200,7 +200,7 @@ describe('populate() function', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1445
+    // https://github.com/vendurehq/vendure/issues/1445
     describe('clashing option names', () => {
         let app: INestApplication;
 

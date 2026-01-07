@@ -8,15 +8,15 @@ import {
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { OrderFragment } from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     AddPaymentToOrderMutation,
     AddPaymentToOrderMutationVariables,
@@ -25,7 +25,6 @@ import {
     TransitionToStateMutation,
     TransitionToStateMutationVariables,
 } from './graphql/generated-e2e-shop-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
@@ -165,9 +164,8 @@ describe('Order process', () => {
                 quantity: 1,
             });
 
-            const { nextOrderStates } = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(
-                GET_NEXT_STATES,
-            );
+            const { nextOrderStates } =
+                await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(GET_NEXT_STATES);
 
             expect(nextOrderStates).toEqual(['ValidatingCustomer']);
         });
@@ -265,9 +263,8 @@ describe('Order process', () => {
             transitionEndSpy.mockClear();
             transitionEndSpy2.mockClear();
 
-            const { nextOrderStates } = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(
-                GET_NEXT_STATES,
-            );
+            const { nextOrderStates } =
+                await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(GET_NEXT_STATES);
 
             expect(nextOrderStates).toEqual(['ArrangingPayment', 'AddingItems', 'Cancelled']);
 
@@ -285,7 +282,7 @@ describe('Order process', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/963
+        // https://github.com/vendurehq/vendure/issues/963
         it('allows addPaymentToOrder from a custom state', async () => {
             await shopClient.query<
                 CodegenShop.SetShippingMethodMutation,

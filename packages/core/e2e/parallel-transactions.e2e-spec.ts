@@ -3,7 +3,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 import { SlowMutationPlugin } from './fixtures/test-plugins/slow-mutation-plugin';
@@ -59,7 +59,7 @@ describe('Parallel transactions', () => {
         );
     }, 100000);
 
-    // A real-world error-case originally reported in https://github.com/vendure-ecommerce/vendure/issues/527
+    // A real-world error-case originally reported in https://github.com/vendurehq/vendure/issues/527
     it('does not deadlock on concurrent creating ProductVariants', async () => {
         const CONCURRENCY_LIMIT = 4;
 
