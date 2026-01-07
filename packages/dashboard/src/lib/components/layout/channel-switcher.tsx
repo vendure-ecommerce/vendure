@@ -1,6 +1,7 @@
 import { ChevronsUpDown, Languages, Plus } from 'lucide-react';
 
 import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -201,17 +202,19 @@ export function ChannelSwitcher() {
                                     )}
                                 </div>
                                 {orderedChannels.map(renderChannel)}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
-                                    <Link to={'/channels/new'}>
-                                        <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                                            <Plus className="size-4" />
-                                        </div>
-                                        <div className="text-muted-foreground font-medium">
-                                            <Trans>Add channel</Trans>
-                                        </div>
-                                    </Link>
-                                </DropdownMenuItem>
+                                <PermissionGuard requires={['CreateChannel']}>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="gap-2 p-2 cursor-pointer" asChild>
+                                        <Link to={'/channels/new'}>
+                                            <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                                                <Plus className="size-4" />
+                                            </div>
+                                            <div className="text-muted-foreground font-medium">
+                                                <Trans>Add channel</Trans>
+                                            </div>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </PermissionGuard>
                             </ScrollArea>
                         </DropdownMenuContent>
                     </DropdownMenu>
