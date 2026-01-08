@@ -53,6 +53,7 @@ import { moveToIndex } from '../helpers/utils/move-to-index';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
+import { ProductVariantService } from './product-variant.service';
 import { RoleService } from './role.service';
 
 export type ApplyCollectionFiltersJobData = {
@@ -99,6 +100,7 @@ export class CollectionService implements OnModuleInit {
         private translator: TranslatorService,
         private roleService: RoleService,
         private requestContextService: RequestContextService,
+        private productVariantService: ProductVariantService,
     ) {}
 
     /**
@@ -221,23 +223,12 @@ export class CollectionService implements OnModuleInit {
             // when the dashboard queries productVariants { totalItems } e.g. the collection list query
             if (items.length > 0) {
                 const collectionIds = items.map(c => c.id);
-                const variantCounts = await this.connection
-                    .getRepository(ctx, ProductVariant)
-                    .createQueryBuilder('variant')
-                    .select('collection.id', 'collectionId')
-                    .addSelect('COUNT(DISTINCT variant.id)', 'count')
-                    .innerJoin('variant.collections', 'collection')
-                    .innerJoin('variant.product', 'product')
-                    .where('collection.id IN (:...ids)', { ids: collectionIds })
-                    .andWhere('variant.deletedAt IS NULL')
-                    .andWhere('product.deletedAt IS NULL')
-                    .groupBy('collection.id')
-                    .getRawMany();
+                const countMap = await this.productVariantService.getVariantCountsByCollectionIds(
+                    ctx,
+                    collectionIds,
+                );
 
                 // Store counts on collection objects so the resolver can use them
-                const countMap = new Map(
-                    variantCounts.map(row => [row.collectionId, Number.parseInt(row.count, 10)]),
-                );
                 items.forEach(collection => {
                     (collection as CollectionWithVariantCount).__productVariantCount =
                         countMap.get(collection.id) ?? 0;
