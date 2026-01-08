@@ -72,7 +72,8 @@ export class CollectionEntityResolver {
         }
 
         // Check if count was pre-loaded in findAll
-        const cachedCount = (collection as any).__productVariantCount;
+        const cachedCount = (collection as Collection & { __productVariantCount: number })
+            .__productVariantCount;
         const isCountOnlyRequest = !options?.skip && !options?.take && !options?.filter && !options?.sort;
 
         if (isCountOnlyRequest && cachedCount !== undefined) {

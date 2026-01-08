@@ -264,12 +264,10 @@ export class ProductVariantService {
 
         const countMap = new Map<ID, number>();
 
-        // Initialize all collections with 0
         collectionIds.forEach(id => countMap.set(id, 0));
 
-        // Fill in actual counts
         counts.forEach(row => {
-            countMap.set(row.collectionId, parseInt(row.count, 10));
+            countMap.set(row.collectionId, Number.parseInt(row.count, 10));
         });
 
         return countMap;

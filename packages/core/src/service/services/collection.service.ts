@@ -67,6 +67,9 @@ export type ApplyCollectionFiltersJobData = {
     collectionIds: ID[];
     applyToChangedVariantsOnly?: boolean;
 };
+interface CollectionWithVariantCount extends Translated<Collection> {
+    __productVariantCount?: number;
+}
 
 /**
  * @description
@@ -215,7 +218,7 @@ export class CollectionService implements OnModuleInit {
             );
 
             // Eagerly load product variant counts to prevent N+1 queries
-            // when the dashboard queries productVariants { totalItems }
+            // when the dashboard queries productVariants { totalItems } e.g. the collection list query
             if (items.length > 0) {
                 const collectionIds = items.map(c => c.id);
                 const variantCounts = await this.connection
@@ -233,10 +236,11 @@ export class CollectionService implements OnModuleInit {
 
                 // Store counts on collection objects so the resolver can use them
                 const countMap = new Map(
-                    variantCounts.map(row => [row.collectionId, parseInt(row.count, 10)]),
+                    variantCounts.map(row => [row.collectionId, Number.parseInt(row.count, 10)]),
                 );
                 items.forEach(collection => {
-                    (collection as any).__productVariantCount = countMap.get(collection.id) ?? 0;
+                    (collection as CollectionWithVariantCount).__productVariantCount =
+                        countMap.get(collection.id) ?? 0;
                 });
             }
 
