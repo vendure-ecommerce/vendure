@@ -74,31 +74,15 @@ export class CollectionEntityResolver {
         // Check if count was pre-loaded in findAll
         const cachedCount = (collection as Collection & { __productVariantCount: number })
             .__productVariantCount;
-        // Only treat as count-only when explicit flag is provided
-        const isCountOnlyRequest = (options as any)?.countOnly === true;
 
-        if (isCountOnlyRequest && cachedCount !== undefined) {
-            // Return cached count without querying for explicit count-only requests
-            return {
-                items: [],
-                totalItems: cachedCount,
-            };
-        }
-
-        // Fetch items normally (cachedCount will optimize the totalItems query if available)
-        const result = await this.productVariantService.getVariantsByCollectionId(
+        // Fetch items, passing cached count to avoid redundant count query when available
+        return this.productVariantService.getVariantsByCollectionId(
             ctx,
             collection.id,
             options,
             relations,
+            cachedCount,
         );
-
-        // Use cached count to avoid extra query if available and no filters applied
-        if (cachedCount !== undefined && !options?.filter) {
-            result.totalItems = cachedCount;
-        }
-
-        return result;
     }
 
     @ResolveField()

@@ -211,6 +211,7 @@ export class ProductVariantService {
         collectionId: ID,
         options: ListQueryOptions<ProductVariant>,
         relations: RelationPaths<ProductVariant> = [],
+        cachedTotalItems?: number,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const qb = this.listQueryBuilder
             .build(ProductVariant, options, {
@@ -226,6 +227,17 @@ export class ProductVariantService {
 
         if (options && options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
             qb.andWhere('product.enabled = :enabled', { enabled: true });
+        }
+
+        // If a cached count is provided and no filters are applied, use it to avoid a duplicate count query
+        if (cachedTotalItems !== undefined && !options?.filter) {
+            return qb.getMany().then(async variants => {
+                const items = await this.applyPricesAndTranslateVariants(ctx, variants);
+                return {
+                    items,
+                    totalItems: cachedTotalItems,
+                };
+            });
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
