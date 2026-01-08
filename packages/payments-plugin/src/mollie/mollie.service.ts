@@ -1,6 +1,7 @@
 import createMollieClient, {
     CaptureMethod,
     Locale,
+    MollieClient,
     PaymentMethod as MollieClientMethod,
     PaymentStatus,
 } from '@mollie/api-client';
@@ -10,22 +11,25 @@ import { ModuleRef } from '@nestjs/core';
 import {
     ActiveOrderService,
     assertFound,
+    ConfigService,
     EntityHydrator,
     ErrorResult,
+    ForbiddenError,
     ID,
     idsAreEqual,
     Injector,
     LanguageCode,
     Logger,
+    LogLevel,
     Order,
     OrderService,
     OrderState,
+    OrderStateMachine,
     OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateMachine } from '@vendure/core/';
 import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
@@ -69,6 +73,7 @@ export class MollieService {
         private orderService: OrderService,
         private entityHydrator: EntityHydrator,
         private moduleRef: ModuleRef,
+        private configService: ConfigService,
     ) {
         this.injector = new Injector(this.moduleRef);
     }
@@ -227,6 +232,7 @@ export class MollieService {
             `Received status update for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
             loggerCtx,
         );
+        // TODO write lock to MolliePayments entity
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -342,6 +348,7 @@ export class MollieService {
         throw Error(
             `Unhandled incoming Mollie status '${molliePayment.status}' for order ${order.code} with status '${order.state}'`,
         );
+        // TODO Try catch and remove lock from MolliePayments entity if anything fails
     }
 
     /**
@@ -413,29 +420,56 @@ export class MollieService {
         ctx: RequestContext,
         paymentMethodCode: string,
     ): Promise<MolliePaymentMethod[]> {
-        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
-        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
-        if (!apiKey) {
-            throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
-        }
-
-        const client = createMollieClient({ apiKey });
+        const client = await this.getMollieClient(ctx, paymentMethodCode);
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
         const additionalParams = await this.options.enabledPaymentMethodsParams?.(
             this.injector,
             ctx,
             activeOrder ?? null,
         );
-
-        // We use the orders API, so list available methods for that API usage
         const methods = await client.methods.list({
             ...additionalParams,
-            resource: 'orders',
+            resource: 'payments',
         });
         return methods.map(m => ({
             ...m,
             code: m.id,
         }));
+    }
+
+    /**
+     * Fetches the order from Mollie, and updates the status of the order in Vendure based on the Mollie payment status
+     */
+    async updateOrderStatusFromMollie(ctx: RequestContext, orderCode: string): Promise<Order | undefined> {
+        // Fetch order by code via resolver, because we need the same permissions and order delay
+        const order = await this.orderService.findOneByCode(ctx, orderCode);
+        if (
+            !order ||
+            !(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))
+        ) {
+            // We throw even if the order does not exist, since giving a different response
+            // opens the door to an enumeration attack to find valid order codes.
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+        // TODO get settled payments from Mollie
+        // TODO handleStatusUpdate for each payment
+
+        return await this.orderService.findOneByCode(ctx, orderCode);
+    }
+
+    /**
+     * Get the Mollie client for the current channel
+     */
+    private async getMollieClient(ctx: RequestContext, paymentMethodCode?: string): Promise<MollieClient> {
+        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
+        if (!paymentMethod) {
+            throw Error(`No Mollie payment method found`);
+        }
+        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        if (!apiKey) {
+            throw Error(`No apiKey configured for payment method ${paymentMethod.code}`);
+        }
+        return createMollieClient({ apiKey });
     }
 
     /**

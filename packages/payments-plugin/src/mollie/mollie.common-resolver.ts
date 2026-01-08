@@ -5,7 +5,7 @@ import {
     MolliePaymentIntent,
     MolliePaymentIntentError,
     MolliePaymentIntentInput,
-    MolliePaymentIntentResult
+    MolliePaymentIntentResult,
 } from './graphql/generated-shop-types';
 import { MollieService } from './mollie.service';
 
@@ -20,6 +20,14 @@ export class MollieCommonResolver {
         @Args('input') input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
         return this.mollieService.createPaymentIntent(ctx, input);
+    }
+
+    @Mutation()
+    async updateOrderStatusFromMollie(
+        @Ctx() ctx: RequestContext,
+        @Args('input') input: MolliePaymentIntentInput,
+    ): Promise<MolliePaymentIntentResult> {
+        return this.mollieService.updateOrderStatusFromMollie(ctx, input);
     }
 
     @ResolveField()
