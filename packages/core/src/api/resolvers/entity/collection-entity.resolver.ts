@@ -70,6 +70,20 @@ export class CollectionEntityResolver {
                 },
             };
         }
+
+        // Check if count was pre-loaded in findAll
+        const cachedCount = (collection as any).__productVariantCount;
+        const isCountOnlyRequest = !options?.skip && !options?.take && !options?.filter && !options?.sort;
+
+        if (isCountOnlyRequest && cachedCount !== undefined) {
+            // Return cached count without querying
+            return {
+                items: [],
+                totalItems: cachedCount,
+            };
+        }
+
+        // Fall back to querying for full list or when cache not available
         return this.productVariantService.getVariantsByCollectionId(ctx, collection.id, options, relations);
     }
 

@@ -213,6 +213,33 @@ export class CollectionService implements OnModuleInit {
             const items = collections.map(collection =>
                 this.translator.translate(collection, ctx, ['parent']),
             );
+
+            // Eagerly load product variant counts to prevent N+1 queries
+            // when the dashboard queries productVariants { totalItems }
+            if (items.length > 0) {
+                const collectionIds = items.map(c => c.id);
+                const variantCounts = await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .createQueryBuilder('variant')
+                    .select('collection.id', 'collectionId')
+                    .addSelect('COUNT(DISTINCT variant.id)', 'count')
+                    .innerJoin('variant.collections', 'collection')
+                    .innerJoin('variant.product', 'product')
+                    .where('collection.id IN (:...ids)', { ids: collectionIds })
+                    .andWhere('variant.deletedAt IS NULL')
+                    .andWhere('product.deletedAt IS NULL')
+                    .groupBy('collection.id')
+                    .getRawMany();
+
+                // Store counts on collection objects so the resolver can use them
+                const countMap = new Map(
+                    variantCounts.map(row => [row.collectionId, parseInt(row.count, 10)]),
+                );
+                items.forEach(collection => {
+                    (collection as any).__productVariantCount = countMap.get(collection.id) ?? 0;
+                });
+            }
+
             return {
                 items,
                 totalItems,

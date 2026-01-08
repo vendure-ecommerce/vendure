@@ -238,6 +238,44 @@ export class ProductVariantService {
     }
 
     /**
+     * Get variant counts for multiple collections in a single query
+     * Solves N+1 issue when fetching productVariants.totalItems
+     */
+    async getVariantCountsByCollectionIds(
+        ctx: RequestContext,
+        collectionIds: ID[],
+    ): Promise<Map<ID, number>> {
+        if (collectionIds.length === 0) {
+            return new Map();
+        }
+
+        const counts = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .select('collection.id', 'collectionId')
+            .addSelect('COUNT(DISTINCT variant.id)', 'count')
+            .innerJoin('variant.collections', 'collection')
+            .innerJoin('variant.product', 'product')
+            .where('collection.id IN (:...ids)', { ids: collectionIds })
+            .andWhere('variant.deletedAt IS NULL')
+            .andWhere('product.deletedAt IS NULL')
+            .groupBy('collection.id')
+            .getRawMany();
+
+        const countMap = new Map<ID, number>();
+
+        // Initialize all collections with 0
+        collectionIds.forEach(id => countMap.set(id, 0));
+
+        // Fill in actual counts
+        counts.forEach(row => {
+            countMap.set(row.collectionId, parseInt(row.count, 10));
+        });
+
+        return countMap;
+    }
+
+    /**
      * @description
      * Returns all Channels to which the ProductVariant is assigned.
      */
