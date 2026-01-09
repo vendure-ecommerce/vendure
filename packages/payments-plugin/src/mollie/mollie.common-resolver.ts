@@ -1,5 +1,5 @@
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
+import { Allow, Ctx, Order, Permission, RequestContext } from '@vendure/core';
 
 import {
     MolliePaymentIntent,
@@ -23,11 +23,11 @@ export class MollieCommonResolver {
     }
 
     @Mutation()
-    async updateOrderStatusFromMollie(
+    async syncMolliePaymentStatus(
         @Ctx() ctx: RequestContext,
-        @Args('input') input: MolliePaymentIntentInput,
-    ): Promise<MolliePaymentIntentResult> {
-        return this.mollieService.updateOrderStatusFromMollie(ctx, input);
+        @Args('orderCode') orderCode: string,
+    ): Promise<Order | undefined> {
+        return this.mollieService.syncMolliePaymentStatus(ctx, orderCode);
     }
 
     @ResolveField()

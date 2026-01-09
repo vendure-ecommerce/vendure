@@ -51,11 +51,11 @@ const commonSchemaExtensions = gql`
     extend type Mutation {
         createMolliePaymentIntent(input: MolliePaymentIntentInput!): MolliePaymentIntentResult!
         """
-        Update the status of the order in Vendure based on the status of the Mollie payment.
-        You can call this mutation on your order confirmation page, so that you don't have to wait for the Mollie webhook to be processed.
-        This uses 'getOrderByCode' internally, so it is only available for the first 2 hours after the order is placed.
+        Fetch the payment status from Mollie and update the order status in Vendure accordingly.
+        use this mutation when the Mollie webhook is delayed and youy want to force update the order status.
+        Throws a ForbiddenError for unauthenticated calls when the order is not yet settled.
         """
-        updateOrderStatusFromMollie(orderCode: String!): Order
+        syncMolliePaymentStatus(orderCode: String!): Order
     }
 `;
 

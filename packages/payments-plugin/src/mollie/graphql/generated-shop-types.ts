@@ -2063,7 +2063,7 @@ export type MutationUpdateCustomerPasswordArgs = {
     newPassword: Scalars['String']['input'];
 };
 
-export type MutationUpdateOrderStatusFromMollieArgs = {
+export type MutationSyncMolliePaymentStatusArgs = {
     orderCode: Scalars['String']['input'];
 };
 
