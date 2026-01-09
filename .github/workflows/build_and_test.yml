@@ -87,6 +87,9 @@ jobs:
                     MARIADB_DATABASE: vendure
                     MARIADB_USER: vendure
                     MARIADB_PASSWORD: password
+                    # Ensure InnoDB is used for locking support
+                    MARIADB_MYSQL_LOCALHOST_USER: 1
+                    MARIADB_INITDB_SKIP_TZINFO: 1
                 ports:
                     - 3306
                 options: --health-cmd="mariadb-admin ping -h localhost -u vendure -ppassword" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -146,39 +149,49 @@ jobs:
             - name: Build
               run: npx lerna run ci
             - name: Wait for services to be ready
+              env:
+                  E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+                  E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+                  E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+                  E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+                  E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+                  DB: ${{ matrix.db }}
               run: |
                   echo "Waiting for required services..."
                   # Wait for redis
-                  for i in {1..60}; do
-                    if nc -z localhost $E2E_REDIS_PORT; then break; fi
+                  for i in {1..30}; do
+                    if nc -z localhost $E2E_REDIS_PORT; then echo "Redis Ready"; break; fi
+                    if [ $i -eq 30 ]; then echo "Redis Timeout"; exit 1; fi
                     sleep 1
                   done
 
                   # Wait for DB ports depending on matrix value
                   if [ "$DB" = "postgres" ]; then
-                    for i in {1..60}; do
-                      if nc -z localhost $E2E_POSTGRES_PORT; then break; fi
+                    for i in {1..30}; do
+                      if nc -z localhost $E2E_POSTGRES_PORT; then echo "Postgres Ready"; break; fi
+                      if [ $i -eq 30 ]; then echo "Postgres Timeout"; exit 1; fi
                       sleep 1
                     done
                   elif [ "$DB" = "mariadb" ]; then
-                    for i in {1..60}; do
-                      if nc -z localhost $E2E_MARIADB_PORT; then break; fi
+                    for i in {1..30}; do
+                      if nc -z localhost $E2E_MARIADB_PORT; then echo "MariaDB Ready"; break; fi
+                      if [ $i -eq 30 ]; then echo "MariaDB Timeout"; exit 1; fi
                       sleep 1
                     done
                   elif [ "$DB" = "mysql" ]; then
-                    for i in {1..60}; do
-                      if nc -z localhost $E2E_MYSQL_PORT; then break; fi
+                    for i in {1..30}; do
+                      if nc -z localhost $E2E_MYSQL_PORT; then echo "MySQL Ready"; break; fi
+                      if [ $i -eq 30 ]; then echo "MySQL Timeout"; exit 1; fi
                       sleep 1
                     done
                   fi
 
                   # Wait for Elasticsearch
-                  for i in {1..60}; do
-                    if curl --silent --fail http://localhost:$E2E_ELASTIC_PORT/_cluster/health >/dev/null 2>&1; then break; fi
+                  for i in {1..30}; do
+                    if curl --silent --fail "http://localhost:$E2E_ELASTIC_PORT/_cluster/health?wait_for_status=yellow&timeout=1s" >/dev/null 2>&1; then echo "Elasticsearch Ready"; break; fi
+                    if [ $i -eq 30 ]; then echo "Elasticsearch Timeout"; exit 1; fi
                     sleep 1
                   done
-
-                  echo "Services appear reachable."
             - name: e2e tests
               env:
                   E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}

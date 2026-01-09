@@ -97,6 +97,16 @@ function getDbConfig(): DataSourceOptions {
                 port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
                 username: 'vendure',
                 password: 'password',
+                // Connection timeouts to prevent aborted connections
+                connectTimeout: 60000,
+                // Keep connections alive
+                keepConnectionAlive: true,
+                extra: {
+                    // Connection pool settings
+                    max: 10,
+                    idleTimeoutMillis: 30000,
+                    connectionTimeoutMillis: 60000,
+                },
             };
         case 'mariadb':
             return {
@@ -106,6 +116,19 @@ function getDbConfig(): DataSourceOptions {
                 port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
                 username: 'vendure',
                 password: 'password',
+                extra: {
+                    // Ensure tables use InnoDB for locking support
+                    initSql: "SET default_storage_engine=InnoDB;",
+                    // Connection pool settings
+                    connectionLimit: 10,
+                    waitForConnections: true,
+                    queueLimit: 0,
+                },
+                // Connection timeouts to prevent aborted connections
+                connectTimeout: 60000,
+                acquireTimeout: 60000,
+                // Keep connections alive
+                keepConnectionAlive: true,
             };
         case 'mysql':
             return {
@@ -115,6 +138,19 @@ function getDbConfig(): DataSourceOptions {
                 port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
                 username: 'vendure',
                 password: 'password',
+                extra: {
+                    // Ensure tables use InnoDB for locking support
+                    initSql: "SET default_storage_engine=InnoDB;",
+                    // Connection pool settings
+                    connectionLimit: 10,
+                    waitForConnections: true,
+                    queueLimit: 0,
+                },
+                // Connection timeouts to prevent aborted connections
+                connectTimeout: 60000,
+                acquireTimeout: 60000,
+                // Keep connections alive
+                keepConnectionAlive: true,
             };
         case 'sqljs':
         default:
