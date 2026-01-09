@@ -254,7 +254,16 @@ export class RequestContext {
     /**
      * @description
      * Returns `true` if there is an active Session & User associated with this request,
-     * and that User has the specified permissions on the active Channel.
+     * and that User has **at least one** of the specified permissions on the active Channel.
+     *
+     * This method uses OR logic - it checks if the user has ANY of the given permissions,
+     * not ALL of them. For AND logic, use {@link userHasAllPermissions}.
+     *
+     * @example
+     * ```ts
+     * // Returns true if user has ReadProduct OR ReadCatalog
+     * ctx.userHasPermissions([Permission.ReadProduct, Permission.ReadCatalog]);
+     * ```
      */
     userHasPermissions(permissions: Permission[]): boolean {
         const user = this.session?.user;
