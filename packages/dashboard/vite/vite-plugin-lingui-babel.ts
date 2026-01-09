@@ -3,8 +3,7 @@ import type { Plugin } from 'vite';
 
 /**
  * @description
- * A custom Vite plugin that transforms Lingui macros in the Vendure Dashboard source files
- * using Babel instead of SWC.
+ * A custom Vite plugin that transforms Lingui macros in files using Babel instead of SWC.
  *
  * This plugin solves a critical compatibility issue with SWC plugins:
  * - SWC plugins are compiled Wasm binaries that require exact version matching with `@swc/core`
@@ -15,6 +14,14 @@ import type { Plugin } from 'vite';
  * The plugin runs BEFORE `@vitejs/plugin-react` and transforms files containing Lingui macros
  * (imports from `@lingui/core/macro` or `@lingui/react/macro`) using the Babel-based
  * `@lingui/babel-plugin-lingui-macro`.
+ *
+ * Files processed:
+ * - `@vendure/dashboard/src` files (in node_modules for external projects)
+ * - `packages/dashboard/src` files (in monorepo development)
+ * - User's dashboard extension files (e.g., custom plugins using Lingui)
+ *
+ * Files NOT processed:
+ * - Other node_modules packages (they shouldn't contain Lingui macros)
  *
  * @see https://github.com/vendurehq/vendure/issues/3929
  * @see https://github.com/lingui/swc-plugin/issues/179
@@ -30,14 +37,6 @@ export function linguiBabelPlugin(): Plugin {
             // Strip query params for path matching (Vite adds ?v=xxx for cache busting)
             const cleanId = id.split('?')[0];
 
-            // Only process files from @vendure/dashboard source
-            // This handles both:
-            // 1. Local development in monorepo (path contains packages/dashboard/src)
-            // 2. External projects (path contains node_modules/@vendure/dashboard/src)
-            if (!cleanId.includes('@vendure/dashboard/src') && !cleanId.includes('packages/dashboard/src')) {
-                return null;
-            }
-
             // Only process TypeScript/JavaScript files
             if (!/\.[tj]sx?$/.test(cleanId)) {
                 return null;
@@ -47,6 +46,19 @@ export function linguiBabelPlugin(): Plugin {
             // This is a fast check to avoid running Babel on files that don't need it
             if (!code.includes('@lingui/') || !code.includes('/macro')) {
                 return null;
+            }
+
+            // Skip node_modules files EXCEPT for @vendure/dashboard source
+            // This ensures:
+            // 1. Dashboard source files get transformed (both in monorepo and external projects)
+            // 2. User's extension files get transformed (not in node_modules)
+            // 3. Other node_modules packages are left alone
+            if (cleanId.includes('node_modules')) {
+                const isVendureDashboard =
+                    cleanId.includes('@vendure/dashboard/src') || cleanId.includes('packages/dashboard/src');
+                if (!isVendureDashboard) {
+                    return null;
+                }
             }
 
             try {
