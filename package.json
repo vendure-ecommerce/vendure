@@ -70,8 +70,8 @@
         "@nx/nx-linux-x64-gnu": "17.2.8",
         "@nx/nx-win32-x64-msvc": "17.2.8",
         "@rollup/rollup-linux-x64-gnu": "^4.13.0",
-        "@swc/core-darwin-arm64": "1.7.19",
-        "@swc/core-linux-x64-gnu": "1.4.7"
+        "@swc/core-darwin-arm64": "1.15.8",
+        "@swc/core-linux-x64-gnu": "1.15.8"
     },
     "resolutions": {
         "@apollo/server": "^5.0.0"
