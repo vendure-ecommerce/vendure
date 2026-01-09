@@ -4,7 +4,7 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { ReplicationMode, EntityManager } from 'typeorm';
+import { EntityManager, ReplicationMode } from 'typeorm';
 
 import {
     REQUEST_CONTEXT_KEY,
@@ -264,6 +264,34 @@ export class RequestContext {
         const permissionsOnChannel = user.channelPermissions.find(c => idsAreEqual(c.id, this.channelId));
         if (permissionsOnChannel) {
             return this.arraysIntersect(permissionsOnChannel.permissions, permissions);
+        }
+        return false;
+    }
+
+    /**
+     * @description
+     * Returns `true` if there is an active Session & User associated with this request,
+     * and that User has **all** of the specified permissions on the active Channel.
+     *
+     * This method uses AND logic - it checks if the user has EVERY one of the given permissions.
+     * For OR logic (any permission), use {@link userHasPermissions}.
+     *
+     * @example
+     * ```ts
+     * // Returns true only if user has BOTH ReadProduct AND UpdateProduct
+     * ctx.userHasAllPermissions([Permission.ReadProduct, Permission.UpdateProduct]);
+     * ```
+     *
+     * @since 3.6.0
+     */
+    userHasAllPermissions(permissions: Permission[]): boolean {
+        const user = this.session?.user;
+        if (!user || !this.channelId) {
+            return false;
+        }
+        const permissionsOnChannel = user.channelPermissions.find(c => idsAreEqual(c.id, this.channelId));
+        if (permissionsOnChannel) {
+            return permissions.every(permission => permissionsOnChannel.permissions.includes(permission));
         }
         return false;
     }
