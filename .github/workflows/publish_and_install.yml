@@ -108,11 +108,6 @@ jobs:
               run: |
                 cd ~/install/test-app
                 node setup-test-plugin.js
-            - name: Check SWC version
-              shell: bash
-              run: |
-                cd ~/install/test-app
-                npm ls @swc/core
             - name: Install Playwright
               run: |
                 cd $GITHUB_WORKSPACE
