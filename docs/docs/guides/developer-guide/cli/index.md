@@ -107,8 +107,8 @@ npx vendure add -c MyPlugin
 # Add API extension to a plugin
 npx vendure add -a MyPlugin --queryName getCustomData --mutationName updateCustomData
 
-# Add UI extensions to a plugin
-npx vendure add -u MyPlugin
+# Add Dashboard extensions to a plugin
+npx vendure add -d MyPlugin
 
 # Use custom config file
 npx vendure add -p MyPlugin --config ./custom-vendure.config.ts
@@ -142,8 +142,8 @@ yarn vendure add -c MyPlugin
 # Add API extension to a plugin
 yarn vendure add -a MyPlugin --queryName getCustomData --mutationName updateCustomData
 
-# Add UI extensions to a plugin
-yarn vendure add -u MyPlugin
+# Add Dashboard extensions to a plugin
+yarn vendure add -d MyPlugin
 
 # Use custom config file
 yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
@@ -154,16 +154,16 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 
 #### Add Command Options
 
-| Flag | Long Form | Description | Example |
-|------|-----------|-------------|---------|
-| `-p` | `--plugin <n>` | Create a new plugin | `vendure add -p MyPlugin` |
-| `-e` | `--entity <n>` | Add a new entity to a plugin | `vendure add -e MyEntity --selected-plugin MyPlugin` |
-| `-s` | `--service <n>` | Add a new service to a plugin | `vendure add -s MyService --selected-plugin MyPlugin` |
-| `-j` | `--job-queue [plugin]` | Add job queue support | `vendure add -j MyPlugin --name job-name --selected-service ServiceName` |
-| `-c` | `--codegen [plugin]` | Add GraphQL codegen configuration | `vendure add -c MyPlugin` |
-| `-a` | `--api-extension [plugin]` | Add API extension scaffold | `vendure add -a MyPlugin --queryName getName --mutationName setName` |
-| `-u` | `--ui-extensions [plugin]` | Add UI extensions setup | `vendure add -u MyPlugin` |
-| | `--config <path>` | Specify custom Vendure config file | `--config ./custom-config.ts` |
+| Flag | Long Form                  | Description                        | Example                                                                  |
+|------|----------------------------|------------------------------------|--------------------------------------------------------------------------|
+| `-p` | `--plugin <n>`             | Create a new plugin                | `vendure add -p MyPlugin`                                                |
+| `-e` | `--entity <n>`             | Add a new entity to a plugin       | `vendure add -e MyEntity --selected-plugin MyPlugin`                     |
+| `-s` | `--service <n>`            | Add a new service to a plugin      | `vendure add -s MyService --selected-plugin MyPlugin`                    |
+| `-j` | `--job-queue [plugin]`     | Add job queue support              | `vendure add -j MyPlugin --name job-name --selected-service ServiceName` |
+| `-c` | `--codegen [plugin]`       | Add GraphQL codegen configuration  | `vendure add -c MyPlugin`                                                |
+| `-a` | `--api-extension [plugin]` | Add API extension scaffold         | `vendure add -a MyPlugin --queryName getName --mutationName setName`     |
+| `-d` | `--dashboard [plugin]`     | Add Dashboard extensions setup     | `vendure add -d MyPlugin`                                                |
+|      | `--config <path>`          | Specify custom Vendure config file | `--config ./custom-config.ts`                                            |
 
 #### Sub-options for specific commands
 
