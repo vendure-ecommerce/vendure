@@ -1,5 +1,5 @@
 ---
-title: "CLI"
+title: 'CLI'
 ---
 
 import Tabs from '@theme/Tabs';
@@ -70,7 +70,7 @@ yarn vendure add
 
 ![Add command](./add-command.webp)
 
-The CLI will guide you through the process of adding new functionality to your project. 
+The CLI will guide you through the process of adding new functionality to your project.
 
 The `add` command is much more than a simple file generator. It is able to
 analyze your project source code to deeply understand and correctly update your project files.
@@ -155,7 +155,7 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 #### Add Command Options
 
 | Flag | Long Form                  | Description                        | Example                                                                  |
-|------|----------------------------|------------------------------------|--------------------------------------------------------------------------|
+| ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
 | `-p` | `--plugin <n>`             | Create a new plugin                | `vendure add -p MyPlugin`                                                |
 | `-e` | `--entity <n>`             | Add a new entity to a plugin       | `vendure add -e MyEntity --selected-plugin MyPlugin`                     |
 | `-s` | `--service <n>`            | Add a new service to a plugin      | `vendure add -s MyService --selected-plugin MyPlugin`                    |
@@ -168,19 +168,23 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 #### Sub-options for specific commands
 
 **Entity (`-e`) additional options:**
+
 - `--selected-plugin <n>`: Name of the plugin to add the entity to (required)
 - `--custom-fields`: Add custom fields support to the entity
 - `--translatable`: Make the entity translatable
 
 **Service (`-s`) additional options:**
+
 - `--selected-plugin <n>`: Name of the plugin to add the service to (required)
 - `--type <type>`: Type of service: basic or entity (default: basic)
 
 **Job Queue (`-j`) additional options:**
+
 - `--name <name>`: Name for the job queue (required)
 - `--selected-service <name>`: Service to add the job queue to (required)
 
 **API Extension (`-a`) additional options: (requires either)**
+
 - `--queryName <n>`: Name for the GraphQL query
 - `--mutationName <n>`: Name for the GraphQL mutation
 
@@ -258,11 +262,11 @@ yarn vendure migrate -g my-migration -o ./custom/migrations
 
 #### Migrate Command Options
 
-| Flag | Long Form | Description | Example |
-|------|-----------|-------------|---------|
-| `-g` | `--generate <name>` | Generate a new migration | `vendure migrate -g add-user-table` |
-| `-r` | `--run` | Run all pending migrations | `vendure migrate -r` |
-| | `--revert` | Revert the last migration | `vendure migrate --revert` |
+| Flag | Long Form             | Description                            | Example                                           |
+| ---- | --------------------- | -------------------------------------- | ------------------------------------------------- |
+| `-g` | `--generate <name>`   | Generate a new migration               | `vendure migrate -g add-user-table`               |
+| `-r` | `--run`               | Run all pending migrations             | `vendure migrate -r`                              |
+|      | `--revert`            | Revert the last migration              | `vendure migrate --revert`                        |
 | `-o` | `--output-dir <path>` | Custom output directory for migrations | `vendure migrate -g my-migration -o ./migrations` |
 
 ## The Schema Command
@@ -331,12 +335,76 @@ yarn vendure migrate --api shop --format json
 #### Migrate Command Options
 
 | Flag | Long Form             | Description                                     | Example                                                        |
-|------|-----------------------|-------------------------------------------------|----------------------------------------------------------------|
+| ---- | --------------------- | ----------------------------------------------- | -------------------------------------------------------------- |
 | `-a` | `--api <admin,shop>`  | Select the API (required)                       | `vendure schema --api admin`                                   |
 | `-d` | `--dir <dir>`         | Select the output dir (defaults to current dir) | `vendure schema --api admin --dir ../..`                       |
 | `-n` | `--file-name <name>`  | The name of the generated file                  | `vendure schema --api admin --file-name introspection.graphql` |
 | `-f` | `--format <sdl,json>` | The output format (defaults to SDL)             | `vendure schema --api admin --format json`                     |
 
+## Working in Monorepos
+
+The Vendure CLI automatically supports monorepo structures where packages have their own `tsconfig.json` files that extend a shared base configuration.
+
+### Requirements
+
+For the CLI to work correctly in a monorepo, ensure that:
+
+1. **Each package containing a Vendure config has its own `tsconfig.json`** that extends the root config
+2. **Path mappings are defined in your root `tsconfig.json`**
+
+### Example Setup
+
+A typical monorepo structure:
+
+```text
+my-monorepo/
+├── tsconfig.json             # Root config with path mappings
+├── packages/
+│   └── vendure-app/
+│       ├── tsconfig.json     # Extends root config
+│       └── src/
+│           └── vendure-config.ts
+└── libs/
+    └── shared/
+        └── src/
+            └── index.ts
+```
+
+**Root `tsconfig.json`:**
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@my-org/shared": ["libs/shared/src/index.ts"]
+        }
+    }
+}
+```
+
+**Package `packages/vendure-app/tsconfig.json`:**
+
+```json
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist"
+    }
+}
+```
+
+### How It Works
+
+When you run CLI commands, it:
+
+1. Locates the nearest `tsconfig.json` by walking up from your Vendure config file
+2. Resolves the `extends` chain to merge all configurations
+3. Registers path mappings so imports like `@my-org/shared` resolve correctly
+
+:::info
+The CLI automatically detects your monorepo structure. No additional configuration flags are required as long as your `tsconfig.json` files are properly set up with `extends`.
+:::
 
 ## Getting Help
 
