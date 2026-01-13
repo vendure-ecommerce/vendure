@@ -450,8 +450,8 @@ export class MollieService {
             .take(500) // Only search through the last 500 payments for performance reasons
             .filter(payment => {
                 return (
-                    (payment.description === orderCode && payment.status === PaymentStatus.paid) ||
-                    payment.status === PaymentStatus.authorized
+                    payment.description === orderCode &&
+                    (payment.status === PaymentStatus.paid || payment.status === PaymentStatus.authorized)
                 );
             });
         const processedPaymentIds: string[] = [];
