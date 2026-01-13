@@ -228,7 +228,7 @@ export class MollieService {
         ctx: RequestContext,
         { paymentMethodId, paymentId }: OrderStatusInput,
     ): Promise<Order | undefined> {
-        Logger.info(`Processing Mollie payment '${paymentId}'for channel ${ctx.channel.token}`, loggerCtx);
+        Logger.info(`Processing Mollie payment '${paymentId}' for channel ${ctx.channel.token}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -457,25 +457,25 @@ export class MollieService {
         const processedPaymentIds: string[] = [];
         for await (const payment of payments) {
             // This will handle the Mollie payment as if it were an incoming webhook
-            order = await this.handleMolliePaymentStatus(ctx, {
+            const updatedOrder = await this.handleMolliePaymentStatus(ctx, {
                 paymentMethodId: paymentMethod.id,
                 paymentId: payment.id,
             });
+            if (updatedOrder) {
+                order = updatedOrder;
+            }
             processedPaymentIds.push(payment.id);
-            if (order?.state === 'PaymentSettled') {
+            if (order.state === 'PaymentSettled') {
                 break; // No further processing needed, because the order is already settled
             }
         }
         Logger.info(
-            `Synced status for order '${order?.code ?? 'unknown'}' from '${originalOrderState}' to '${
-                order?.state ?? 'unknown'
+            `Synced status for order '${order.code}' from '${originalOrderState}' to '${
+                order.state
             }' based on Mollie payment(s) ${processedPaymentIds.join(',')}`,
             loggerCtx,
         );
-        if (
-            !order ||
-            !(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))
-        ) {
+        if (!(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
         return order;
