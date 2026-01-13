@@ -3,8 +3,8 @@ import { ChannelService, LanguageCode, Logger, RequestContext, Transaction } fro
 import { Request } from 'express';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { MollieService } from './mollie.service';
 import { MolliePluginOptions } from './mollie.plugin';
+import { MollieService } from './mollie.service';
 
 @Controller('payments')
 export class MollieController {
@@ -12,7 +12,7 @@ export class MollieController {
         private mollieService: MollieService,
         private channelService: ChannelService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
-    ) { }
+    ) {}
 
     @Post('mollie/:channelToken/:paymentMethodId')
     @Transaction()
@@ -23,10 +23,13 @@ export class MollieController {
         @Req() req: Request,
     ): Promise<void> {
         if (this.options.disableWebhookProcessing) {
-            return Logger.warn(`Webhook processing is disabled, ignoring incoming webhook '${body.id}'`, loggerCtx);
+            return Logger.warn(
+                `Webhook processing is disabled, ignoring incoming webhook '${String(body?.id)}'`,
+                loggerCtx,
+            );
         }
         if (!body.id) {
-            return Logger.warn(' Ignoring incoming webhook, because it has no body.id.', loggerCtx);
+            return Logger.warn('Ignoring incoming webhook, because it has no body.id.', loggerCtx);
         }
         try {
             // We need to construct a RequestContext based on the channelToken,

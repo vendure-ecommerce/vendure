@@ -56,33 +56,30 @@ async function runMollieDevServer() {
         }
     `);
     // Create method
-    await adminClient.query(
-        CREATE_PAYMENT_METHOD,
-        {
-            input: {
-                code: 'mollie',
-                translations: [
-                    {
-                        languageCode: LanguageCode.en,
-                        name: 'Mollie payment test',
-                        description: 'This is a Mollie test payment method',
-                    },
-                ],
-                enabled: true,
-                handler: {
-                    code: molliePaymentHandler.code,
-                    arguments: [
-                        {
-                            name: 'redirectUrl',
-                            value: `${tunnel.url}/admin/orders?filter=open&page=1`,
-                        },
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
-                    ],
+    await adminClient.query(CREATE_PAYMENT_METHOD, {
+        input: {
+            code: 'mollie',
+            translations: [
+                {
+                    languageCode: LanguageCode.en,
+                    name: 'Mollie payment test',
+                    description: 'This is a Mollie test payment method',
                 },
+            ],
+            enabled: true,
+            handler: {
+                code: molliePaymentHandler.code,
+                arguments: [
+                    {
+                        name: 'redirectUrl',
+                        value: `${tunnel.url}/admin/orders?filter=open&page=1`,
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
+                ],
             },
         },
-    );
+    });
     // Prepare a test order where the total is 0
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query(ADD_ITEM_TO_ORDER, {
@@ -103,13 +100,12 @@ async function runMollieDevServer() {
     console.log('Payment intent result', result);
 
     // Uncomme this line to disable webhook processing and test the `syncMolliePaymentStatus` mutation
-    MolliePlugin.options.disableWebhookProcessing = true;
+    // MolliePlugin.options.disableWebhookProcessing = true;
 }
 
 (async () => {
     await runMollieDevServer();
 })();
-
 
 const CREATE_MOLLIE_PAYMENT_INTENT = gql`
     mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {

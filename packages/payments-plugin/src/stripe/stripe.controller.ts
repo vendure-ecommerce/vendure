@@ -36,7 +36,7 @@ export class StripeController {
         private requestContextService: RequestContextService,
         private connection: TransactionalConnection,
         private channelService: ChannelService,
-    ) { }
+    ) {}
 
     @Post('stripe')
     async webhook(
@@ -124,8 +124,12 @@ export class StripeController {
                 // to transition the order state. Issue: https://github.com/vendure-ecommerce/vendure/issues/3072
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
                     const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-                    const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
-                    
+                    const ctxWithDefaultChannel = await this.createContext(
+                        defaultChannel.token,
+                        languageCode,
+                        request,
+                    );
+
                     transitionToStateResult = await this.orderService.transitionToState(
                         ctxWithDefaultChannel,
                         orderId,

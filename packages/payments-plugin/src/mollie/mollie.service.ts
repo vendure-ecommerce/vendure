@@ -53,13 +53,13 @@ interface OrderStatusInput {
 class PaymentIntentError implements MolliePaymentIntentError {
     errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
 
-    constructor(public message: string) { }
+    constructor(public message: string) {}
 }
 
 class InvalidInputError implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
-    constructor(public message: string) { }
+    constructor(public message: string) {}
 }
 
 @Injectable()
@@ -163,7 +163,7 @@ export class MollieService {
         if (!billingAddress) {
             return new InvalidInputError(
                 "Order doesn't have a complete shipping address or billing address. " +
-                'At least city, postalCode, streetline1 and country are needed to create a payment intent.',
+                    'At least city, postalCode, streetline1 and country are needed to create a payment intent.',
             );
         }
         const alreadyPaid = totalCoveredByPayments(order);
@@ -228,10 +228,7 @@ export class MollieService {
         ctx: RequestContext,
         { paymentMethodId, paymentId }: OrderStatusInput,
     ): Promise<Order | undefined> {
-        Logger.info(
-            `Processing Mollie payment '${paymentId}'for channel ${ctx.channel.token}`,
-            loggerCtx,
-        );
+        Logger.info(`Processing Mollie payment '${paymentId}'for channel ${ctx.channel.token}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -257,7 +254,8 @@ export class MollieService {
             });
         }
         Logger.info(
-            `Processing Mollie payment status '${molliePayment.status}' for order ${molliePayment.description
+            `Processing Mollie payment status '${molliePayment.status}' for order ${
+                molliePayment.description
             } for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
             loggerCtx,
         );
@@ -291,7 +289,8 @@ export class MollieService {
         }
         if (order.state === 'Cancelled' && molliePayment.status === PaymentStatus.paid) {
             Logger.error(
-                `Order '${order.code}' is 'Cancelled'', but was paid for with '${molliePayment.id}'. Payment '${molliePayment.id
+                `Order '${order.code}' is 'Cancelled'', but was paid for with '${molliePayment.id}'. Payment '${
+                    molliePayment.id
                 }' should be refunded.`,
                 loggerCtx,
             );
@@ -369,7 +368,7 @@ export class MollieService {
             if (transitionToStateResult instanceof OrderStateTransitionError) {
                 throw Error(
                     `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} ` +
-                    `to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
+                        `to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
                 );
             }
         }
@@ -407,7 +406,8 @@ export class MollieService {
         const result = await this.orderService.settlePayment(ctx, payment.id);
         if ((result as ErrorResult).message) {
             throw Error(
-                `Error settling payment ${payment.id} for order ${order.code}: ${(result as ErrorResult).errorCode
+                `Error settling payment ${payment.id} for order ${order.code}: ${
+                    (result as ErrorResult).errorCode
                 } - ${(result as ErrorResult).message}`,
             );
         }
@@ -445,21 +445,33 @@ export class MollieService {
         const originalOrderState = order.state;
         const [mollieClient, paymentMethod] = await this.getMollieClient(ctx);
         // Find payments for orderCode that are authorized or paid
-        const payments = mollieClient.payments.iterate()
+        const payments = mollieClient.payments
+            .iterate()
             .take(500) // Only search through the last 500 payments for performance reasons
             .filter(payment => {
-                return payment.description === orderCode && payment.status === PaymentStatus.paid || payment.status === PaymentStatus.authorized
+                return (
+                    (payment.description === orderCode && payment.status === PaymentStatus.paid) ||
+                    payment.status === PaymentStatus.authorized
+                );
             });
-            const processedPaymentIds: string[] = [];
+        const processedPaymentIds: string[] = [];
         for await (const payment of payments) {
             // This will handle the Mollie payment as if it were an incoming webhook
-            order = await this.handleMolliePaymentStatus(ctx, { paymentMethodId: paymentMethod.id, paymentId: payment.id });
+            order = await this.handleMolliePaymentStatus(ctx, {
+                paymentMethodId: paymentMethod.id,
+                paymentId: payment.id,
+            });
             processedPaymentIds.push(payment.id);
             if (order?.state === 'PaymentSettled') {
                 break; // No further processing needed, because the order is already settled
             }
         }
-        Logger.info(`Synced status for order '${order?.code}' from '${originalOrderState}' to '${order?.state}' based on Mollie payment(s) ${processedPaymentIds.join(',')}`, loggerCtx);
+        Logger.info(
+            `Synced status for order '${order?.code ?? 'unknown'}' from '${originalOrderState}' to '${
+                order?.state ?? 'unknown'
+            }' based on Mollie payment(s) ${processedPaymentIds.join(',')}`,
+            loggerCtx,
+        );
         if (
             !order ||
             !(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))
@@ -472,7 +484,10 @@ export class MollieService {
     /**
      * Get the Mollie client for the current channel
      */
-    private async getMollieClient(ctx: RequestContext, paymentMethodCode?: string): Promise<[MollieClient, PaymentMethod]> {
+    private async getMollieClient(
+        ctx: RequestContext,
+        paymentMethodCode?: string,
+    ): Promise<[MollieClient, PaymentMethod]> {
         const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
         if (!paymentMethod) {
             throw Error(`No Mollie payment method found`);

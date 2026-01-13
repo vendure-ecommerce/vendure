@@ -76,9 +76,9 @@ export interface MolliePluginOptions {
     ) => AdditionalEnabledPaymentMethodsParams | Promise<AdditionalEnabledPaymentMethodsParams>;
     /**
      * @description
-     * Disable the processing of incoming Mollie webhooks. 
+     * Disable the processing of incoming Mollie webhooks.
      * Handle with care! This will keep orders in 'AddingItems' state if you don't manually process the Mollie payments via the `syncMolliePaymentStatus` mutation.
-     * 
+     *
      * @since 3.6.0
      */
     disableWebhookProcessing?: boolean;
@@ -174,7 +174,29 @@ export interface MolliePluginOptions {
  * ```
  *
  * After completing payment on the Mollie platform,
- * the user is redirected to the redirect url that was provided in the `createMolliePaymentIntent` mutation, e.g. `https://storefront/order/CH234X5`
+ * the user is redirected to the redirect url that was provided in the `createMolliePaymentIntent` mutation, e.g. `https://storefront/order/CH234X5`.
+ *
+ * ### Force payment status update
+ *
+ * Mollie does not give any guarantees on webhook delivery time, and in some rare cases,
+ * the Mollie webhook is delayed and the order status is not updated in Vendure.
+ *
+ * You can use the `syncMolliePaymentStatus` mutation to force update the order status based on the Mollie payment status.
+ * This mutation will find any settled or authorized Mollie payments for the given order and update the order status in Vendure accordingly.
+ *
+ * ```GraphQL
+ * mutation SyncMolliePaymentStatus {
+ *   syncMolliePaymentStatus(orderCode: "CH234X5") {
+ *     id
+ *     state
+ *   }
+ * }
+ * ```
+ *
+ * You should wait for an incoming webhook first, because due to technical limitations on the Mollie API, the `syncMolliePaymentStatus`
+ * mutation will iterate through the last 500 Mollie payments to find the payments for the given order.
+ * Hence, it is not very performant, and should only be used as a fallback when a webhook
+ * was not received for ~10 seconds.
  *
  * ## Pay later methods
  *
@@ -184,17 +206,16 @@ export interface MolliePluginOptions {
  * This will transition your order to 'PaymentAuthorized' after the Mollie hosted checkout.
  * You need to manually capture the payment after the order is fulfilled, by settling existing payments, either via the admin UI or in custom code.
  *
- * Make sure to capture a payment within 28 days, after that the payment will be automaticallreleased.
+ * Make sure to capture a payment within 28 days, after that the payment will be automatically released.
  * See the [Mollie documentation](https://docs.mollie.com/docs/place-a-hold-for-a-payment#authorization-expiration-window)
  * for more information.
  *
  * ## ArrangingAdditionalPayment state
  *
- * In some rare cases, a customer can add items to the active order, while a Mollie checkout is still open,
- * for example by opening your storefront in another browser tab.
- * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
- * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
- * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
+ * In some cases, a customer can add items to the active order, while a Mollie checkout is still open, or an administrator can modify an order.
+ * Both of these actions will result in an order being in `ArrangingAdditionalPayment` status.
+ * To finalize an order in `ArrangingAdditionalPayment` status, you can use call the `createMolliePaymentIntent` mutation again with an additional `orderId` as input.
+ * The `orderId` argument is needed, because an order in `ArrangingAdditionalPayment` status is not an active order anymore.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
