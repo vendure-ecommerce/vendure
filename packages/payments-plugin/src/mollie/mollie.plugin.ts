@@ -91,7 +91,7 @@ export interface MolliePluginOptions {
  *
  * ### Requirements
  *
- * 1. You will need to create a Mollie account and get your apiKey in the dashboard.
+ * 1. You will need to create a Mollie account and get your api key from the Mollie dashboard.
  * 2. Install the Payments plugin and the Mollie client:
  *
  *     `yarn add \@vendure/payments-plugin \@mollie/api-client`
@@ -112,7 +112,7 @@ export interface MolliePluginOptions {
  *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/' }),
  *     ]
  *     ```
- * 2. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
+ * 2. Create a new payment method in the Admin UI, and select "Mollie payments" as the handler.
  * 3. Set your Mollie apiKey in the `API Key` field.
  * 4. Set the `Fallback redirectUrl` to the url that the customer should be redirected to after completing the payment.
  * You can override this url by passing the `redirectUrl` as an argument to the `createMolliePaymentIntent` mutation.
@@ -120,8 +120,8 @@ export interface MolliePluginOptions {
  * ### Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
- * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
- * back to your storefront after completing the payment.
+ * payment method was given the code "mollie-payment-method". The `redirectUrl` should be your order confirmation page.
+ * It is the url that is used to redirect the customer back to your storefront after completing the payment.
  *
  * ```GraphQL
  * mutation CreateMolliePaymentIntent {
@@ -143,11 +143,9 @@ export interface MolliePluginOptions {
  * }
  * ```
  *
- * The response will contain
- * a redirectUrl, which can be used to redirect your customer to the Mollie
- * platform.
+ * You can use `molliePaymentIntent.url` to redirect the customer to the Mollie platform.
  *
- * 'molliePaymentMethodCode' is an optional parameter that can be passed to skip Mollie's hosted payment method selection screen
+ * The `molliePaymentMethodCode` is an optional parameter that can be passed to preselect a payment method, and skip Mollie's payment method selection screen
  * You can get available Mollie payment methods with the following query:
  *
  * ```GraphQL
@@ -174,7 +172,8 @@ export interface MolliePluginOptions {
  * ```
  *
  * After completing payment on the Mollie platform,
- * the user is redirected to the redirect url that was provided in the `createMolliePaymentIntent` mutation, e.g. `https://storefront/order/CH234X5`.
+ * the user is redirected by Mollie to the provided redirect url (confirmation page).
+ * E.g. `https://storefront/order/`. The redirect url here was `https://storefront/order`, the order code `CH234X5` is appended automatically by the plugin.
  *
  * #### Force payment status update
  *
