@@ -89,7 +89,7 @@ export interface MolliePluginOptions {
  * Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
  * This plugin uses the Order API from Mollie, not the Payments API.
  *
- * ## Requirements
+ * ### Requirements
  *
  * 1. You will need to create a Mollie account and get your apiKey in the dashboard.
  * 2. Install the Payments plugin and the Mollie client:
@@ -100,7 +100,7 @@ export interface MolliePluginOptions {
  *
  *     `npm install \@vendure/payments-plugin \@mollie/api-client`
  *
- * ## Setup
+ * ### Setup
  *
  * 1. Add the plugin to your VendureConfig `plugins` array:
  *     ```ts
@@ -117,7 +117,7 @@ export interface MolliePluginOptions {
  * 4. Set the `Fallback redirectUrl` to the url that the customer should be redirected to after completing the payment.
  * You can override this url by passing the `redirectUrl` as an argument to the `createMolliePaymentIntent` mutation.
  *
- * ## Storefront usage
+ * ### Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
  * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
@@ -176,7 +176,7 @@ export interface MolliePluginOptions {
  * After completing payment on the Mollie platform,
  * the user is redirected to the redirect url that was provided in the `createMolliePaymentIntent` mutation, e.g. `https://storefront/order/CH234X5`.
  *
- * ### Force payment status update
+ * #### Force payment status update
  *
  * Mollie does not give any guarantees on webhook delivery time, and in some rare cases,
  * the Mollie webhook is delayed and the order status is not updated in Vendure.
@@ -198,7 +198,7 @@ export interface MolliePluginOptions {
  * Hence, it is not very performant, and should only be used as a fallback when a webhook
  * was not received for ~10 seconds.
  *
- * ## Pay later methods
+ * ### Pay later methods
  *
  * Mollie supports pay-later methods like 'Klarna Pay Later'. Pay-later methods are captured immediately after payment.
  *
@@ -210,7 +210,7 @@ export interface MolliePluginOptions {
  * See the [Mollie documentation](https://docs.mollie.com/docs/place-a-hold-for-a-payment#authorization-expiration-window)
  * for more information.
  *
- * ## ArrangingAdditionalPayment state
+ * ### ArrangingAdditionalPayment state
  *
  * In some cases, a customer can add items to the active order, while a Mollie checkout is still open, or an administrator can modify an order.
  * Both of these actions will result in an order being in `ArrangingAdditionalPayment` status.
