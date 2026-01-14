@@ -13,8 +13,8 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
 import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
 import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
@@ -64,9 +64,7 @@ export function ChannelSwitcher() {
     const hasMultipleLanguages = availableLanguages.length > 1;
 
     // Currently selected channel is displayed separately so filter it out of the list
-    const orderedChannels = displayChannel
-        ? channels.filter(ch => ch.id !== displayChannel.id)
-        : channels;
+    const orderedChannels = displayChannel ? channels.filter(ch => ch.id !== displayChannel.id) : channels;
 
     // Sort language codes by their formatted names and map to code and label
     const sortedLanguages = useSortedLanguages(displayChannel?.availableLanguageCodes);
@@ -81,12 +79,9 @@ export function ChannelSwitcher() {
         }
     }, [activeChannel, contentLanguage]);
 
-    const renderChannel = (channel: typeof channels[number]) => (
+    const renderChannel = (channel: (typeof channels)[number]) => (
         <div key={channel.code}>
-            <DropdownMenuItem
-                onClick={() => setActiveChannel(channel.id)}
-                className="gap-2 p-2"
-            >
+            <DropdownMenuItem onClick={() => setActiveChannel(channel.id)} className="gap-2 p-2">
                 <div
                     className={cn(
                         'flex size-8 items-center justify-center rounded border',
@@ -140,7 +135,7 @@ export function ChannelSwitcher() {
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg pt-0 pr-0"
+                            className="w-(--radix-dropdown-menu-trigger-width) min-w-72 rounded-lg pt-0 pr-0"
                             align="start"
                             side={isMobile ? 'bottom' : 'right'}
                             sideOffset={4}
@@ -156,10 +151,14 @@ export function ChannelSwitcher() {
                                             {/* Show language sub-menu for the current channel */}
                                             <DropdownMenuSub>
                                                 <DropdownMenuSubTrigger className="gap-2 p-2 ps-4">
-                                                    <Languages className="w-4 h-4" />
+                                                    <Languages className="w-4 h-4 shrink-0" />
                                                     <div className="flex gap-1 ms-2">
-                                                        <span className="text-muted-foreground">Content: </span>
-                                                        {formatLanguageName(contentLanguage)}
+                                                        <span className="text-muted-foreground shrink-0">
+                                                            Content:
+                                                        </span>
+                                                        <span className="truncate">
+                                                            {formatLanguageName(contentLanguage)}
+                                                        </span>
                                                     </div>
                                                 </DropdownMenuSubTrigger>
                                                 <DropdownMenuSubContent>
@@ -169,14 +168,14 @@ export function ChannelSwitcher() {
                                                             onClick={() => setContentLanguage(languageCode)}
                                                             className={`gap-2 p-2 ${contentLanguage === languageCode ? 'bg-accent' : ''}`}
                                                         >
-                                                            <div className="flex w-6 h-5 items-center justify-center rounded border">
-                                                                <span className="truncate font-medium text-xs">
+                                                            <div className="flex w-fit min-w-9 px-1.5 h-5 items-center justify-center rounded border shrink-0">
+                                                                <span className="font-medium text-xs">
                                                                     {languageCode.toUpperCase()}
                                                                 </span>
                                                             </div>
-                                                            <span>{label}</span>
+                                                            <span className="truncate flex-1">{label}</span>
                                                             {contentLanguage === languageCode && (
-                                                                <span className="ms-auto text-xs text-muted-foreground">
+                                                                <span className="ms-auto text-xs text-muted-foreground shrink-0">
                                                                     <Trans context="active language">
                                                                         Active
                                                                     </Trans>
