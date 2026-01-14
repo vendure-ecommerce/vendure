@@ -154,7 +154,7 @@ export function ChannelSwitcher() {
                                                     <Languages className="w-4 h-4 shrink-0" />
                                                     <div className="flex gap-1 ms-2">
                                                         <span className="text-muted-foreground shrink-0">
-                                                            Content:
+                                                            <Trans>Content:</Trans>
                                                         </span>
                                                         <span className="truncate">
                                                             {formatLanguageName(contentLanguage)}

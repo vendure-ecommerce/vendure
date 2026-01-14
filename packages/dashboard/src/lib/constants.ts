@@ -1,3 +1,5 @@
+import { schemaCurrencyCodes } from '@/vdb/graphql/schema-enums.js';
+
 export const NEW_ENTITY_PATH = 'new';
 export const AUTHENTICATED_ROUTE_PREFIX = '/_authenticated';
 export const DEFAULT_CHANNEL_CODE = '__default_channel__';
@@ -12,8 +14,6 @@ export const LS_KEY_USER_SETTINGS = 'vendure-user-settings';
 export const LS_KEY_SELECTED_CHANNEL_TOKEN = 'vendure-selected-channel-token';
 export const LS_KEY_SHIPPING_TEST_ORDER = 'vendure-shipping-test-order';
 export const LS_KEY_SHIPPING_TEST_ADDRESS = 'vendure-shipping-test-address';
-
-import { schemaCurrencyCodes } from '@/vdb/graphql/schema-enums.js';
 
 /**
  * @description
