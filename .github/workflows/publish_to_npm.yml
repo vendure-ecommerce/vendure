@@ -20,10 +20,6 @@ on:
           - master-nightly
           - minor-nightly
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   # Determine which publish type(s) to run based on trigger
   setup:
@@ -45,6 +41,9 @@ jobs:
   publish:
     needs: setup
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
