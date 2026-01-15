@@ -62,6 +62,17 @@ class InvalidInputError implements MolliePaymentIntentError {
     constructor(public message: string) {}
 }
 
+/**
+ * If order is not in one of these states, we don't need to handle any incoming status update from Mollie
+ */
+const VENDURE_STATES_THAT_REQUIRE_ACTION: OrderState[] = [
+    'AddingItems',
+    'ArrangingPayment',
+    'ArrangingAdditionalPayment',
+    'PaymentAuthorized',
+    'Draft',
+];
+
 @Injectable()
 export class MollieService {
     private readonly injector: Injector;
@@ -296,15 +307,8 @@ export class MollieService {
             );
             return order;
         }
-        // If order is not in one of these states, we don't need to handle the Mollie status
-        const vendureStatesThatRequireAction: OrderState[] = [
-            'AddingItems',
-            'ArrangingPayment',
-            'ArrangingAdditionalPayment',
-            'PaymentAuthorized',
-            'Draft',
-        ];
-        if (!vendureStatesThatRequireAction.includes(order.state)) {
+
+        if (!VENDURE_STATES_THAT_REQUIRE_ACTION.includes(order.state)) {
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${molliePayment.status}'`,
                 loggerCtx,
@@ -442,20 +446,36 @@ export class MollieService {
         if (!order) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
+        if (!VENDURE_STATES_THAT_REQUIRE_ACTION.includes(order.state)) {
+            Logger.info(
+                `syncMolliePaymentStatus: Order ${order.code} is already '${order.state}', no need to fetch Mollie payments.`,
+                loggerCtx,
+            );
+            return order;
+        }
         const originalOrderState = order.state;
         const [mollieClient, paymentMethod] = await this.getMollieClient(ctx);
         // Find payments for orderCode that are authorized or paid
-        const payments = mollieClient.payments
-            .iterate()
-            .take(500) // Only search through the last 500 payments for performance reasons
-            .filter(payment => {
-                return (
-                    payment.description === orderCode &&
-                    (payment.status === PaymentStatus.paid || payment.status === PaymentStatus.authorized)
-                );
-            });
         const processedPaymentIds: string[] = [];
-        for await (const payment of payments) {
+        let count = 0;
+        const MAX_PAYMENTS = 500; // Max payments to prevent looping over ALL payments in the Mollie
+        for await (const payment of mollieClient.payments.iterate()) {
+            if (count++ >= MAX_PAYMENTS) {
+                Logger.warn(
+                    `syncMolliePaymentStatus: Stopping after processing ${MAX_PAYMENTS} payments for order '${order.code}' to avoid indefinite looping.`,
+                    loggerCtx,
+                );
+                break;
+            }
+            count++;
+            if (payment.description !== orderCode) {
+                // Not for this order, skipping this payment
+                continue;
+            }
+            if (payment.status !== PaymentStatus.paid && payment.status !== PaymentStatus.authorized) {
+                // Not paid or authorized, skipping this payment
+                continue;
+            }
             // This will handle the Mollie payment as if it were an incoming webhook
             const updatedOrder = await this.handleMolliePaymentStatus(ctx, {
                 paymentMethodId: paymentMethod.id,
@@ -469,12 +489,15 @@ export class MollieService {
                 break; // No further processing needed, because the order is already settled
             }
         }
-        Logger.info(
-            `Synced status for order '${order.code}' from '${originalOrderState}' to '${
-                order.state
-            }' based on Mollie payment(s) ${processedPaymentIds.join(',')}`,
-            loggerCtx,
-        );
+        if (processedPaymentIds.length > 0) {
+            Logger.info(
+                `Synced status for order '${order.code}' from '${originalOrderState}' to '${
+                    order.state
+                }' based on Mollie payment(s) ${processedPaymentIds.join(',')}`,
+                loggerCtx,
+            );
+        }
+
         if (!(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
