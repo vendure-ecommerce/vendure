@@ -1,17 +1,13 @@
 ---
 title: "VendureDashboardPlugin"
-isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
-import MemberInfo from '@site/src/components/MemberInfo';
-import GenerationInfo from '@site/src/components/GenerationInfo';
-import MemberDescription from '@site/src/components/MemberDescription';
 
 
 ## vendureDashboardPlugin
 
-<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="166" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="168" packageName="@vendure/dashboard" since="3.4.0" />
 
 This is the Vite plugin which powers the Vendure Dashboard, including:
 
@@ -32,7 +28,7 @@ Parameters
 
 ## VitePluginVendureDashboardOptions
 
-<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="31" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="32" packageName="@vendure/dashboard" since="3.4.0" />
 
 Options for the <a href='/reference/dashboard/vite-plugin/vendure-dashboard-plugin#venduredashboardplugin'>vendureDashboardPlugin</a> Vite plugin.
 
@@ -130,6 +126,7 @@ type VitePluginVendureDashboardOptions = {
      */
     disablePlugins?: {
         tanstackRouter?: boolean;
+        linguiBabel?: boolean;
         react?: boolean;
         lingui?: boolean;
         themeVariables?: boolean;

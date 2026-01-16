@@ -1,20 +1,19 @@
 ---
 title: "Allow Decorator"
-isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
-import MemberInfo from '@site/src/components/MemberInfo';
-import GenerationInfo from '@site/src/components/GenerationInfo';
-import MemberDescription from '@site/src/components/MemberDescription';
 
 
 ## Allow
 
-<GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="51" packageName="@vendure/core" />
 
 Attaches metadata to the resolver defining which permissions are required to execute the
 operation, using one or more <a href='/reference/typescript-api/common/permission#permission'>Permission</a> values.
+
+When multiple permissions are specified, the user needs only **one** of them (OR logic).
+This is useful for operations that can be performed by users with different permission sets.
 
 In a GraphQL context, it can be applied to top-level queries and mutations as well as field resolvers.
 
@@ -37,6 +36,17 @@ For more information see [Understanding Permission.Owner](/reference/typescript-
  @Allow(Permission.SuperAdmin)
  @Query()
  getAdministrators() {
+     // ...
+ }
+```
+
+*Example*
+
+```ts
+ // User needs ReadProduct OR ReadCatalog (either grants access)
+ @Allow(Permission.ReadProduct, Permission.ReadCatalog)
+ @Query()
+ getProducts() {
      // ...
  }
 ```
