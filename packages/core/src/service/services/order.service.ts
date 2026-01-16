@@ -335,7 +335,7 @@ export class OrderService {
         );
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: relations ?? ['lines', 'customer', 'channels', 'shippingLines'],
+                relations: effectiveRelations,
                 channelId: ctx.channelId,
                 ctx,
             })
