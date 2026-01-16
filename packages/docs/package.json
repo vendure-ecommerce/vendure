@@ -1,0 +1,33 @@
+{
+    "name": "@vendure/docs",
+    "version": "3.5.3",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "license": "GPL-3.0-or-later",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
+    "scripts": {
+        "build": "rimraf dist && tsc -p ./tsconfig.build.json"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist/**/*",
+        "docs/**/*"
+    ],
+    "exports": {
+        ".": "./dist/index.js",
+        "./manifest": "./dist/manifest.js"
+    },
+    "dependencies": {
+        "@vendure-io/docs-provider": "^0.2.0"
+    },
+    "devDependencies": {
+        "rimraf": "^5.0.5",
+        "typescript": "5.8.2"
+    }
+}

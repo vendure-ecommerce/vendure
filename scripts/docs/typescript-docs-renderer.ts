@@ -69,9 +69,7 @@ export class TypescriptDocsRenderer {
                 const existingContent = exists && fs.readFileSync(indexFile).toString();
                 const hasActualContent = existingContent && existingContent.includes('isDefaultIndex: false');
                 if (!exists && !hasActualContent) {
-                    const indexFileContent =
-                        generateFrontMatter(subCategory, true) +
-                        `\n\nimport DocCardList from '@theme/DocCardList';\n\n<DocCardList />`;
+                    const indexFileContent = generateFrontMatter(subCategory, true);
                     fs.writeFileSync(indexFile, indexFileContent);
                     generatedCount++;
                 }
