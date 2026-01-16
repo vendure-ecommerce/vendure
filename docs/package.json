@@ -1,6 +1,6 @@
 {
     "name": "@vendure/docs",
-    "version": "0.0.0",
+    "version": "0.0.0-202601161707",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -18,6 +18,8 @@
     "scripts": {
         "build": "rimraf dist && tsc -p ./tsconfig.build.json",
         "prepublishOnly": "npm run build",
+        "publish:local": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish",
+        "publish:local:next": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish --tag next",
         "typecheck": "tsc"
     },
     "dependencies": {

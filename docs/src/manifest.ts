@@ -6,10 +6,11 @@ const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const file = (relativePath: string) => join(packageRoot, relativePath);
 
 export const manifest: DocsPackageManifest = {
-    id: 'vendure',
+    id: 'oss',
     name: 'Vendure Documentation',
     version: '3.5.2',
     vendureVersion: 'v3',
+    basePath: packageRoot,
     navigation: [
         // Learn Sidebar
         {
@@ -19,7 +20,7 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Installation',
                     slug: 'installation',
-                    file: file('docs/guides/getting-started/installation/index.md'),
+                    file: file('docs/guides/getting-started/installation/index.mdx'),
                 },
                 {
                     title: 'Introducing GraphQL',
@@ -40,72 +41,72 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Auth',
                     slug: 'auth',
-                    file: file('docs/guides/core-concepts/auth/index.md'),
+                    file: file('docs/guides/core-concepts/auth/index.mdx'),
                 },
                 {
                     title: 'Channels',
                     slug: 'channels',
-                    file: file('docs/guides/core-concepts/channels/index.md'),
+                    file: file('docs/guides/core-concepts/channels/index.mdx'),
                 },
                 {
                     title: 'Collections',
                     slug: 'collections',
-                    file: file('docs/guides/core-concepts/collections/index.md'),
+                    file: file('docs/guides/core-concepts/collections/index.mdx'),
                 },
                 {
                     title: 'Customers',
                     slug: 'customers',
-                    file: file('docs/guides/core-concepts/customers/index.md'),
+                    file: file('docs/guides/core-concepts/customers/index.mdx'),
                 },
                 {
                     title: 'Email',
                     slug: 'email',
-                    file: file('docs/guides/core-concepts/email/index.md'),
+                    file: file('docs/guides/core-concepts/email/index.mdx'),
                 },
                 {
                     title: 'Images & Assets',
                     slug: 'images-assets',
-                    file: file('docs/guides/core-concepts/images-assets/index.md'),
+                    file: file('docs/guides/core-concepts/images-assets/index.mdx'),
                 },
                 {
                     title: 'Money',
                     slug: 'money',
-                    file: file('docs/guides/core-concepts/money/index.md'),
+                    file: file('docs/guides/core-concepts/money/index.mdx'),
                 },
                 {
                     title: 'Orders',
                     slug: 'orders',
-                    file: file('docs/guides/core-concepts/orders/index.md'),
+                    file: file('docs/guides/core-concepts/orders/index.mdx'),
                 },
                 {
                     title: 'Payment',
                     slug: 'payment',
-                    file: file('docs/guides/core-concepts/payment/index.md'),
+                    file: file('docs/guides/core-concepts/payment/index.mdx'),
                 },
                 {
                     title: 'Products',
                     slug: 'products',
-                    file: file('docs/guides/core-concepts/products/index.md'),
+                    file: file('docs/guides/core-concepts/products/index.mdx'),
                 },
                 {
                     title: 'Promotions',
                     slug: 'promotions',
-                    file: file('docs/guides/core-concepts/promotions/index.md'),
+                    file: file('docs/guides/core-concepts/promotions/index.mdx'),
                 },
                 {
                     title: 'Shipping',
                     slug: 'shipping',
-                    file: file('docs/guides/core-concepts/shipping/index.md'),
+                    file: file('docs/guides/core-concepts/shipping/index.mdx'),
                 },
                 {
                     title: 'Stock Control',
                     slug: 'stock-control',
-                    file: file('docs/guides/core-concepts/stock-control/index.md'),
+                    file: file('docs/guides/core-concepts/stock-control/index.mdx'),
                 },
                 {
                     title: 'Taxes',
                     slug: 'taxes',
-                    file: file('docs/guides/core-concepts/taxes/index.md'),
+                    file: file('docs/guides/core-concepts/taxes/index.mdx'),
                 },
             ],
         },
@@ -117,175 +118,175 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Overview',
                     slug: 'overview',
-                    file: file('docs/guides/developer-guide/overview/index.md'),
+                    file: file('docs/guides/developer-guide/overview/index.mdx'),
                 },
                 {
                     title: 'The API Layer',
                     slug: 'the-api-layer',
-                    file: file('docs/guides/developer-guide/the-api-layer/index.md'),
+                    file: file('docs/guides/developer-guide/the-api-layer/index.mdx'),
                 },
                 {
                     title: 'The Service Layer',
                     slug: 'the-service-layer',
-                    file: file('docs/guides/developer-guide/the-service-layer/index.md'),
+                    file: file('docs/guides/developer-guide/the-service-layer/index.mdx'),
                 },
                 // Fundamentals section
                 {
                     title: 'CLI',
                     slug: 'cli',
-                    file: file('docs/guides/developer-guide/cli/index.md'),
+                    file: file('docs/guides/developer-guide/cli/index.mdx'),
                 },
                 {
                     title: 'Configuration',
                     slug: 'configuration',
-                    file: file('docs/guides/developer-guide/configuration/index.md'),
+                    file: file('docs/guides/developer-guide/configuration/index.mdx'),
                 },
                 {
                     title: 'Custom Fields',
                     slug: 'custom-fields',
-                    file: file('docs/guides/developer-guide/custom-fields/index.md'),
+                    file: file('docs/guides/developer-guide/custom-fields/index.mdx'),
                 },
                 {
                     title: 'Error Handling',
                     slug: 'error-handling',
-                    file: file('docs/guides/developer-guide/error-handling/index.md'),
+                    file: file('docs/guides/developer-guide/error-handling/index.mdx'),
                 },
                 {
                     title: 'Events',
                     slug: 'events',
-                    file: file('docs/guides/developer-guide/events/index.md'),
+                    file: file('docs/guides/developer-guide/events/index.mdx'),
                 },
                 {
                     title: 'Migrations',
                     slug: 'migrations',
-                    file: file('docs/guides/developer-guide/migrations/index.md'),
+                    file: file('docs/guides/developer-guide/migrations/index.mdx'),
                 },
                 {
                     title: 'Plugins',
                     slug: 'plugins',
-                    file: file('docs/guides/developer-guide/plugins/index.md'),
+                    file: file('docs/guides/developer-guide/plugins/index.mdx'),
                 },
                 {
                     title: 'Security',
                     slug: 'security',
-                    file: file('docs/guides/developer-guide/security/index.md'),
+                    file: file('docs/guides/developer-guide/security/index.mdx'),
                 },
                 {
                     title: 'Strategies & Configurable Operations',
                     slug: 'strategies-configurable-operations',
-                    file: file('docs/guides/developer-guide/strategies-configurable-operations/index.md'),
+                    file: file('docs/guides/developer-guide/strategies-configurable-operations/index.mdx'),
                 },
                 {
                     title: 'Testing',
                     slug: 'testing',
-                    file: file('docs/guides/developer-guide/testing/index.md'),
+                    file: file('docs/guides/developer-guide/testing/index.mdx'),
                 },
                 {
                     title: 'Updating',
                     slug: 'updating',
-                    file: file('docs/guides/developer-guide/updating/index.md'),
+                    file: file('docs/guides/developer-guide/updating/index.mdx'),
                 },
                 {
                     title: 'Worker & Job Queue',
                     slug: 'worker-job-queue',
-                    file: file('docs/guides/developer-guide/worker-job-queue/index.md'),
+                    file: file('docs/guides/developer-guide/worker-job-queue/index.mdx'),
                 },
                 {
                     title: 'Settings Store',
                     slug: 'settings-store',
-                    file: file('docs/guides/developer-guide/settings-store/index.md'),
+                    file: file('docs/guides/developer-guide/settings-store/index.mdx'),
                 },
                 // Extend section
                 {
                     title: 'REST Endpoint',
                     slug: 'rest-endpoint',
-                    file: file('docs/guides/developer-guide/rest-endpoint/index.md'),
+                    file: file('docs/guides/developer-guide/rest-endpoint/index.mdx'),
                 },
                 {
                     title: 'Custom Permissions',
                     slug: 'custom-permissions',
-                    file: file('docs/guides/developer-guide/custom-permissions/index.md'),
+                    file: file('docs/guides/developer-guide/custom-permissions/index.mdx'),
                 },
                 {
                     title: 'Database Entity',
                     slug: 'database-entity',
-                    file: file('docs/guides/developer-guide/database-entity/index.md'),
+                    file: file('docs/guides/developer-guide/database-entity/index.mdx'),
                 },
                 {
                     title: 'Extend GraphQL API',
                     slug: 'extend-graphql-api',
-                    file: file('docs/guides/developer-guide/extend-graphql-api/index.md'),
+                    file: file('docs/guides/developer-guide/extend-graphql-api/index.mdx'),
                 },
                 // Advanced Topics section
                 {
                     title: 'Custom Strategies in Plugins',
                     slug: 'custom-strategies-in-plugins',
-                    file: file('docs/guides/developer-guide/custom-strategies-in-plugins/index.md'),
+                    file: file('docs/guides/developer-guide/custom-strategies-in-plugins/index.mdx'),
                 },
                 {
                     title: 'Channel Aware',
                     slug: 'channel-aware',
-                    file: file('docs/guides/developer-guide/channel-aware/index.md'),
+                    file: file('docs/guides/developer-guide/channel-aware/index.mdx'),
                 },
                 {
                     title: 'Translatable',
                     slug: 'translatable',
-                    file: file('docs/guides/developer-guide/translatable/index.md'),
+                    file: file('docs/guides/developer-guide/translatable/index.mdx'),
                 },
                 {
                     title: 'Has Custom Fields',
                     slug: 'has-custom-fields',
-                    file: file('docs/guides/developer-guide/has-custom-fields/index.md'),
+                    file: file('docs/guides/developer-guide/has-custom-fields/index.mdx'),
                 },
                 {
                     title: 'Cache',
                     slug: 'cache',
-                    file: file('docs/guides/developer-guide/cache/index.md'),
+                    file: file('docs/guides/developer-guide/cache/index.mdx'),
                 },
                 {
                     title: 'Dataloaders',
                     slug: 'dataloaders',
-                    file: file('docs/guides/developer-guide/dataloaders/index.md'),
+                    file: file('docs/guides/developer-guide/dataloaders/index.mdx'),
                 },
                 {
                     title: 'DB Subscribers',
                     slug: 'db-subscribers',
-                    file: file('docs/guides/developer-guide/db-subscribers/index.md'),
+                    file: file('docs/guides/developer-guide/db-subscribers/index.mdx'),
                 },
                 {
                     title: 'Importing Data',
                     slug: 'importing-data',
-                    file: file('docs/guides/developer-guide/importing-data/index.md'),
+                    file: file('docs/guides/developer-guide/importing-data/index.mdx'),
                 },
                 {
                     title: 'Logging',
                     slug: 'logging',
-                    file: file('docs/guides/developer-guide/logging/index.md'),
+                    file: file('docs/guides/developer-guide/logging/index.mdx'),
                 },
                 {
                     title: 'Scheduled Tasks',
                     slug: 'scheduled-tasks',
-                    file: file('docs/guides/developer-guide/scheduled-tasks/index.md'),
+                    file: file('docs/guides/developer-guide/scheduled-tasks/index.mdx'),
                 },
                 {
                     title: 'Stand-alone Scripts',
                     slug: 'stand-alone-scripts',
-                    file: file('docs/guides/developer-guide/stand-alone-scripts/index.md'),
+                    file: file('docs/guides/developer-guide/stand-alone-scripts/index.mdx'),
                 },
                 {
                     title: 'Translations',
                     slug: 'translations',
-                    file: file('docs/guides/developer-guide/translations/index.md'),
+                    file: file('docs/guides/developer-guide/translations/index.mdx'),
                 },
                 {
                     title: 'Uploading Files',
                     slug: 'uploading-files',
-                    file: file('docs/guides/developer-guide/uploading-files/index.md'),
+                    file: file('docs/guides/developer-guide/uploading-files/index.mdx'),
                 },
                 {
                     title: 'Nest DevTools',
                     slug: 'nest-devtools',
-                    file: file('docs/guides/developer-guide/nest-devtools/index.md'),
+                    file: file('docs/guides/developer-guide/nest-devtools/index.mdx'),
                 },
             ],
         },
@@ -296,57 +297,57 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'CMS Integration Plugin',
                     slug: 'cms-integration-plugin',
-                    file: file('docs/guides/how-to/cms-integration-plugin/index.md'),
+                    file: file('docs/guides/how-to/cms-integration-plugin/index.mdx'),
                 },
                 {
                     title: 'Codegen',
                     slug: 'codegen',
-                    file: file('docs/guides/how-to/codegen/index.md'),
+                    file: file('docs/guides/how-to/codegen/index.mdx'),
                 },
                 {
                     title: 'Configurable Products',
                     slug: 'configurable-products',
-                    file: file('docs/guides/how-to/configurable-products/index.md'),
+                    file: file('docs/guides/how-to/configurable-products/index.mdx'),
                 },
                 {
                     title: 'Digital Products',
                     slug: 'digital-products',
-                    file: file('docs/guides/how-to/digital-products/index.md'),
+                    file: file('docs/guides/how-to/digital-products/index.mdx'),
                 },
                 {
                     title: 'GitHub OAuth Authentication',
                     slug: 'github-oauth-authentication',
-                    file: file('docs/guides/how-to/github-oauth-authentication/index.md'),
+                    file: file('docs/guides/how-to/github-oauth-authentication/index.mdx'),
                 },
                 {
                     title: 'Google OAuth Authentication',
                     slug: 'google-oauth-authentication',
-                    file: file('docs/guides/how-to/google-oauth-authentication/index.md'),
+                    file: file('docs/guides/how-to/google-oauth-authentication/index.mdx'),
                 },
                 {
                     title: 'Multi-vendor Marketplaces',
                     slug: 'multi-vendor-marketplaces',
-                    file: file('docs/guides/how-to/multi-vendor-marketplaces/index.md'),
+                    file: file('docs/guides/how-to/multi-vendor-marketplaces/index.mdx'),
                 },
                 {
                     title: 'Paginated List',
                     slug: 'paginated-list',
-                    file: file('docs/guides/how-to/paginated-list/index.md'),
+                    file: file('docs/guides/how-to/paginated-list/index.mdx'),
                 },
                 {
                     title: 'Publish Plugin',
                     slug: 'publish-plugin',
-                    file: file('docs/guides/how-to/publish-plugin/index.md'),
+                    file: file('docs/guides/how-to/publish-plugin/index.mdx'),
                 },
                 {
                     title: 'S3 Asset Storage',
                     slug: 's3-asset-storage',
-                    file: file('docs/guides/how-to/s3-asset-storage/index.md'),
+                    file: file('docs/guides/how-to/s3-asset-storage/index.mdx'),
                 },
                 {
                     title: 'Telemetry',
                     slug: 'telemetry',
-                    file: file('docs/guides/how-to/telemetry/index.md'),
+                    file: file('docs/guides/how-to/telemetry/index.mdx'),
                 },
             ],
         },
@@ -357,87 +358,87 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Getting Started',
                     slug: 'getting-started',
-                    file: file('docs/guides/extending-the-dashboard/getting-started/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/getting-started/index.mdx'),
                 },
                 {
                     title: 'Extending Overview',
                     slug: 'extending-overview',
-                    file: file('docs/guides/extending-the-dashboard/extending-overview/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/extending-overview/index.mdx'),
                 },
                 {
                     title: 'Creating Pages',
                     slug: 'creating-pages',
-                    file: file('docs/guides/extending-the-dashboard/creating-pages/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/creating-pages/index.mdx'),
                     children: [
                         {
                             title: 'List Pages',
                             slug: 'list-pages',
-                            file: file('docs/guides/extending-the-dashboard/creating-pages/list-pages.md'),
+                            file: file('docs/guides/extending-the-dashboard/creating-pages/list-pages.mdx'),
                         },
                         {
                             title: 'Detail Pages',
                             slug: 'detail-pages',
-                            file: file('docs/guides/extending-the-dashboard/creating-pages/detail-pages.md'),
+                            file: file('docs/guides/extending-the-dashboard/creating-pages/detail-pages.mdx'),
                         },
                         {
                             title: 'Tabbed Pages',
                             slug: 'tabbed-pages',
-                            file: file('docs/guides/extending-the-dashboard/creating-pages/tabbed-pages.md'),
+                            file: file('docs/guides/extending-the-dashboard/creating-pages/tabbed-pages.mdx'),
                         },
                     ],
                 },
                 {
                     title: 'Customizing Pages',
                     slug: 'customizing-pages',
-                    file: file('docs/guides/extending-the-dashboard/customizing-pages/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/customizing-pages/index.mdx'),
                     children: [
                         {
                             title: 'Customizing List Pages',
                             slug: 'customizing-list-pages',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-list-pages.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-list-pages.mdx',
                             ),
                         },
                         {
                             title: 'Customizing Detail Pages',
                             slug: 'customizing-detail-pages',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-detail-pages.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-detail-pages.mdx',
                             ),
                         },
                         {
                             title: 'Customizing Login Page',
                             slug: 'customizing-login-page',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-login-page.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/customizing-login-page.mdx',
                             ),
                         },
                         {
                             title: 'Page Blocks',
                             slug: 'page-blocks',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/page-blocks.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/page-blocks.mdx',
                             ),
                         },
                         {
                             title: 'Action Bar Items',
                             slug: 'action-bar-items',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/action-bar-items.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/action-bar-items.mdx',
                             ),
                         },
                         {
                             title: 'Insights Widgets',
                             slug: 'insights-widgets',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/insights-widgets.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/insights-widgets.mdx',
                             ),
                         },
                         {
                             title: 'History Entries',
                             slug: 'history-entries',
                             file: file(
-                                'docs/guides/extending-the-dashboard/customizing-pages/history-entries.md',
+                                'docs/guides/extending-the-dashboard/customizing-pages/history-entries.mdx',
                             ),
                         },
                     ],
@@ -445,20 +446,20 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Custom Form Elements',
                     slug: 'custom-form-components',
-                    file: file('docs/guides/extending-the-dashboard/custom-form-components/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/custom-form-components/index.mdx'),
                     children: [
                         {
                             title: 'Form Component Examples',
                             slug: 'form-component-examples',
                             file: file(
-                                'docs/guides/extending-the-dashboard/custom-form-components/form-component-examples.md',
+                                'docs/guides/extending-the-dashboard/custom-form-components/form-component-examples.mdx',
                             ),
                         },
                         {
                             title: 'Relation Selectors',
                             slug: 'relation-selectors',
                             file: file(
-                                'docs/guides/extending-the-dashboard/custom-form-components/relation-selectors.md',
+                                'docs/guides/extending-the-dashboard/custom-form-components/relation-selectors.mdx',
                             ),
                         },
                     ],
@@ -466,42 +467,42 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Navigation',
                     slug: 'navigation',
-                    file: file('docs/guides/extending-the-dashboard/navigation/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/navigation/index.mdx'),
                 },
                 {
                     title: 'Alerts',
                     slug: 'alerts',
-                    file: file('docs/guides/extending-the-dashboard/alerts/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/alerts/index.mdx'),
                 },
                 {
                     title: 'Data Fetching',
                     slug: 'data-fetching',
-                    file: file('docs/guides/extending-the-dashboard/data-fetching/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/data-fetching/index.mdx'),
                 },
                 {
                     title: 'Theming',
                     slug: 'theming',
-                    file: file('docs/guides/extending-the-dashboard/theming/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/theming/index.mdx'),
                 },
                 {
                     title: 'Localization',
                     slug: 'localization',
-                    file: file('docs/guides/extending-the-dashboard/localization/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/localization/index.mdx'),
                 },
                 {
                     title: 'Deployment',
                     slug: 'deployment',
-                    file: file('docs/guides/extending-the-dashboard/deployment/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/deployment/index.mdx'),
                 },
                 {
                     title: 'Tech Stack',
                     slug: 'tech-stack',
-                    file: file('docs/guides/extending-the-dashboard/tech-stack/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/tech-stack/index.mdx'),
                 },
                 {
                     title: 'Migration',
                     slug: 'migration',
-                    file: file('docs/guides/extending-the-dashboard/migration/index.md'),
+                    file: file('docs/guides/extending-the-dashboard/migration/index.mdx'),
                 },
             ],
         },
@@ -512,48 +513,48 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Storefront Starters',
                     slug: 'storefront-starters',
-                    file: file('docs/guides/storefront/storefront-starters/index.md'),
+                    file: file('docs/guides/storefront/storefront-starters/index.mdx'),
                 },
                 {
                     title: 'Connect API',
                     slug: 'connect-api',
-                    file: file('docs/guides/storefront/connect-api/index.md'),
+                    file: file('docs/guides/storefront/connect-api/index.mdx'),
                 },
                 {
                     title: 'Codegen',
                     slug: 'codegen',
-                    file: file('docs/guides/storefront/codegen/index.md'),
+                    file: file('docs/guides/storefront/codegen/index.mdx'),
                 },
                 // Storefront Tasks
                 {
                     title: 'Navigation Menu',
                     slug: 'navigation-menu',
-                    file: file('docs/guides/storefront/navigation-menu/index.md'),
+                    file: file('docs/guides/storefront/navigation-menu/index.mdx'),
                 },
                 {
                     title: 'Listing Products',
                     slug: 'listing-products',
-                    file: file('docs/guides/storefront/listing-products/index.md'),
+                    file: file('docs/guides/storefront/listing-products/index.mdx'),
                 },
                 {
                     title: 'Product Detail',
                     slug: 'product-detail',
-                    file: file('docs/guides/storefront/product-detail/index.md'),
+                    file: file('docs/guides/storefront/product-detail/index.mdx'),
                 },
                 {
                     title: 'Active Order',
                     slug: 'active-order',
-                    file: file('docs/guides/storefront/active-order/index.md'),
+                    file: file('docs/guides/storefront/active-order/index.mdx'),
                 },
                 {
                     title: 'Checkout Flow',
                     slug: 'checkout-flow',
-                    file: file('docs/guides/storefront/checkout-flow/index.md'),
+                    file: file('docs/guides/storefront/checkout-flow/index.mdx'),
                 },
                 {
                     title: 'Customer Accounts',
                     slug: 'customer-accounts',
-                    file: file('docs/guides/storefront/customer-accounts/index.md'),
+                    file: file('docs/guides/storefront/customer-accounts/index.mdx'),
                 },
             ],
         },
@@ -564,58 +565,58 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'Production Configuration',
                     slug: 'production-configuration',
-                    file: file('docs/guides/deployment/production-configuration/index.md'),
+                    file: file('docs/guides/deployment/production-configuration/index.mdx'),
                 },
                 {
                     title: 'Using Docker',
                     slug: 'using-docker',
-                    file: file('docs/guides/deployment/using-docker.md'),
+                    file: file('docs/guides/deployment/using-docker.mdx'),
                 },
                 {
                     title: 'Horizontal Scaling',
                     slug: 'horizontal-scaling',
-                    file: file('docs/guides/deployment/horizontal-scaling.md'),
+                    file: file('docs/guides/deployment/horizontal-scaling.mdx'),
                 },
                 {
                     title: 'Getting Data into Production',
                     slug: 'getting-data-into-production',
-                    file: file('docs/guides/deployment/getting-data-into-production.md'),
+                    file: file('docs/guides/deployment/getting-data-into-production.mdx'),
                 },
                 {
                     title: 'Server Resource Requirements',
                     slug: 'server-resource-requirements',
-                    file: file('docs/guides/deployment/server-resource-requirements.md'),
+                    file: file('docs/guides/deployment/server-resource-requirements.mdx'),
                 },
                 {
                     title: 'Deploying Admin UI',
                     slug: 'deploying-admin-ui',
-                    file: file('docs/guides/deployment/deploying-admin-ui.md'),
+                    file: file('docs/guides/deployment/deploying-admin-ui.mdx'),
                 },
                 // Deployment Guides
                 {
                     title: 'Deploy to Northflank',
                     slug: 'deploy-to-northflank',
-                    file: file('docs/guides/deployment/deploy-to-northflank/index.md'),
+                    file: file('docs/guides/deployment/deploy-to-northflank/index.mdx'),
                 },
                 {
                     title: 'Deploy to Digital Ocean App Platform',
                     slug: 'deploy-to-digital-ocean-app-platform',
-                    file: file('docs/guides/deployment/deploy-to-digital-ocean-app-platform/index.md'),
+                    file: file('docs/guides/deployment/deploy-to-digital-ocean-app-platform/index.mdx'),
                 },
                 {
                     title: 'Deploy to Railway',
                     slug: 'deploy-to-railway',
-                    file: file('docs/guides/deployment/deploy-to-railway/index.md'),
+                    file: file('docs/guides/deployment/deploy-to-railway/index.mdx'),
                 },
                 {
                     title: 'Deploy to Render',
                     slug: 'deploy-to-render',
-                    file: file('docs/guides/deployment/deploy-to-render/index.md'),
+                    file: file('docs/guides/deployment/deploy-to-render/index.mdx'),
                 },
                 {
                     title: 'Deploy to Google Cloud Run',
                     slug: 'deploy-to-google-cloud-run',
-                    file: file('docs/guides/deployment/deploy-to-google-cloud-run/index.md'),
+                    file: file('docs/guides/deployment/deploy-to-google-cloud-run/index.mdx'),
                 },
             ],
         },
@@ -631,24 +632,24 @@ export const manifest: DocsPackageManifest = {
                         {
                             title: 'Getting Started',
                             slug: 'getting-started',
-                            file: file('docs/guides/extending-the-admin-ui/getting-started/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/getting-started/index.mdx'),
                         },
                         {
                             title: 'UI Library',
                             slug: 'ui-library',
-                            file: file('docs/guides/extending-the-admin-ui/ui-library/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/ui-library/index.mdx'),
                         },
                         {
                             title: 'Admin UI Theming & Branding',
                             slug: 'admin-ui-theming-branding',
                             file: file(
-                                'docs/guides/extending-the-admin-ui/admin-ui-theming-branding/index.md',
+                                'docs/guides/extending-the-admin-ui/admin-ui-theming-branding/index.mdx',
                             ),
                         },
                         {
                             title: 'Adding UI Translations',
                             slug: 'adding-ui-translations',
-                            file: file('docs/guides/extending-the-admin-ui/adding-ui-translations/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/adding-ui-translations/index.mdx'),
                         },
                         {
                             title: 'Using Other Frameworks',
@@ -659,81 +660,81 @@ export const manifest: DocsPackageManifest = {
                         {
                             title: 'Nav Menu',
                             slug: 'nav-menu',
-                            file: file('docs/guides/extending-the-admin-ui/nav-menu/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/nav-menu/index.mdx'),
                         },
                         {
                             title: 'Alerts',
                             slug: 'alerts',
-                            file: file('docs/guides/extending-the-admin-ui/alerts/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/alerts/index.mdx'),
                         },
                         {
                             title: 'Add Actions to Pages',
                             slug: 'add-actions-to-pages',
-                            file: file('docs/guides/extending-the-admin-ui/add-actions-to-pages/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/add-actions-to-pages/index.mdx'),
                         },
                         {
                             title: 'Page Tabs',
                             slug: 'page-tabs',
-                            file: file('docs/guides/extending-the-admin-ui/page-tabs/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/page-tabs/index.mdx'),
                         },
                         {
                             title: 'Custom Form Inputs',
                             slug: 'custom-form-inputs',
-                            file: file('docs/guides/extending-the-admin-ui/custom-form-inputs/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/custom-form-inputs/index.mdx'),
                         },
                         {
                             title: 'Custom Data Table Components',
                             slug: 'custom-data-table-components',
                             file: file(
-                                'docs/guides/extending-the-admin-ui/custom-data-table-components/index.md',
+                                'docs/guides/extending-the-admin-ui/custom-data-table-components/index.mdx',
                             ),
                         },
                         {
                             title: 'Custom Detail Components',
                             slug: 'custom-detail-components',
                             file: file(
-                                'docs/guides/extending-the-admin-ui/custom-detail-components/index.md',
+                                'docs/guides/extending-the-admin-ui/custom-detail-components/index.mdx',
                             ),
                         },
                         {
                             title: 'Bulk Actions',
                             slug: 'bulk-actions',
-                            file: file('docs/guides/extending-the-admin-ui/bulk-actions/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/bulk-actions/index.mdx'),
                         },
                         {
                             title: 'Dashboard Widgets',
                             slug: 'dashboard-widgets',
-                            file: file('docs/guides/extending-the-admin-ui/dashboard-widgets/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/dashboard-widgets/index.mdx'),
                         },
                         {
                             title: 'Custom Timeline Components',
                             slug: 'custom-timeline-components',
                             file: file(
-                                'docs/guides/extending-the-admin-ui/custom-timeline-components/index.md',
+                                'docs/guides/extending-the-admin-ui/custom-timeline-components/index.mdx',
                             ),
                         },
                         // Routes
                         {
                             title: 'Defining Routes',
                             slug: 'defining-routes',
-                            file: file('docs/guides/extending-the-admin-ui/defining-routes/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/defining-routes/index.mdx'),
                         },
                         {
                             title: 'Creating List Views',
                             slug: 'creating-list-views',
-                            file: file('docs/guides/extending-the-admin-ui/creating-list-views/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/creating-list-views/index.mdx'),
                         },
                         {
                             title: 'Creating Detail Views',
                             slug: 'creating-detail-views',
-                            file: file('docs/guides/extending-the-admin-ui/creating-detail-views/index.md'),
+                            file: file('docs/guides/extending-the-admin-ui/creating-detail-views/index.mdx'),
                         },
                     ],
                 },
                 {
                     title: 'Migrating from v1',
                     slug: 'migrating-from-v1',
-                    file: file('docs/guides/developer-guide/migrating-from-v1/index.md'),
+                    file: file('docs/guides/developer-guide/migrating-from-v1/index.mdx'),
                 },
             ],
         },
@@ -746,72 +747,72 @@ export const manifest: DocsPackageManifest = {
                 {
                     title: 'TypeScript API',
                     slug: 'typescript-api',
-                    file: file('docs/reference/typescript-api/index.md'),
+                    file: file('docs/reference/typescript-api/_index.mdx'),
                 },
                 {
                     title: 'Core Plugins',
                     slug: 'core-plugins',
-                    file: file('docs/reference/core-plugins/index.md'),
+                    file: file('docs/reference/core-plugins/index.mdx'),
                     children: [
                         {
                             title: 'AdminUiPlugin',
                             slug: 'admin-ui-plugin',
-                            file: file('docs/reference/core-plugins/admin-ui-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/admin-ui-plugin/index.mdx'),
                         },
                         {
                             title: 'AssetServerPlugin',
                             slug: 'asset-server-plugin',
-                            file: file('docs/reference/core-plugins/asset-server-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/asset-server-plugin/index.mdx'),
                         },
                         {
                             title: 'DashboardPlugin',
                             slug: 'dashboard-plugin',
-                            file: file('docs/reference/core-plugins/dashboard-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/dashboard-plugin/index.mdx'),
                         },
                         {
                             title: 'ElasticsearchPlugin',
                             slug: 'elasticsearch-plugin',
-                            file: file('docs/reference/core-plugins/elasticsearch-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/elasticsearch-plugin/index.mdx'),
                         },
                         {
                             title: 'EmailPlugin',
                             slug: 'email-plugin',
-                            file: file('docs/reference/core-plugins/email-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/email-plugin/index.mdx'),
                         },
                         {
                             title: 'GraphiQLPlugin',
                             slug: 'graphiql-plugin',
-                            file: file('docs/reference/core-plugins/graphiql-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/graphiql-plugin/index.mdx'),
                         },
                         {
                             title: 'HardenPlugin',
                             slug: 'harden-plugin',
-                            file: file('docs/reference/core-plugins/harden-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/harden-plugin/index.mdx'),
                         },
                         {
                             title: 'JobQueuePlugin',
                             slug: 'job-queue-plugin',
-                            file: file('docs/reference/core-plugins/job-queue-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/job-queue-plugin/index.mdx'),
                         },
                         {
                             title: 'PaymentsPlugin',
                             slug: 'payments-plugin',
-                            file: file('docs/reference/core-plugins/payments-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/payments-plugin/index.mdx'),
                         },
                         {
                             title: 'SentryPlugin',
                             slug: 'sentry-plugin',
-                            file: file('docs/reference/core-plugins/sentry-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/sentry-plugin/index.mdx'),
                         },
                         {
                             title: 'StellatePlugin',
                             slug: 'stellate-plugin',
-                            file: file('docs/reference/core-plugins/stellate-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/stellate-plugin/index.mdx'),
                         },
                         {
                             title: 'TelemetryPlugin',
                             slug: 'telemetry-plugin',
-                            file: file('docs/reference/core-plugins/telemetry-plugin/index.md'),
+                            file: file('docs/reference/core-plugins/telemetry-plugin/index.mdx'),
                         },
                     ],
                 },
@@ -822,24 +823,24 @@ export const manifest: DocsPackageManifest = {
                         {
                             title: 'Admin API',
                             slug: 'admin',
-                            file: file('docs/reference/graphql-api/admin/index.md'),
+                            file: file('docs/reference/graphql-api/admin/_index.mdx'),
                         },
                         {
                             title: 'Shop API',
                             slug: 'shop',
-                            file: file('docs/reference/graphql-api/shop/index.md'),
+                            file: file('docs/reference/graphql-api/shop/_index.mdx'),
                         },
                     ],
                 },
                 {
                     title: 'Dashboard API',
                     slug: 'dashboard',
-                    file: file('docs/reference/dashboard/index.md'),
+                    file: file('docs/reference/dashboard/index.mdx'),
                 },
                 {
                     title: 'Admin UI API',
                     slug: 'admin-ui-api',
-                    file: file('docs/reference/admin-ui-api/index.md'),
+                    file: file('docs/reference/admin-ui-api/index.mdx'),
                 },
             ],
         },
@@ -847,32 +848,32 @@ export const manifest: DocsPackageManifest = {
         {
             title: 'User Guide',
             slug: 'user-guide',
-            file: file('docs/user-guide/index.md'),
+            file: file('docs/user-guide/index.mdx'),
             children: [
                 {
                     title: 'Catalog',
                     slug: 'catalog',
-                    file: file('docs/user-guide/catalog/index.md'),
+                    file: file('docs/user-guide/catalog/index.mdx'),
                 },
                 {
                     title: 'Orders',
                     slug: 'orders',
-                    file: file('docs/user-guide/orders/index.md'),
+                    file: file('docs/user-guide/orders/index.mdx'),
                 },
                 {
                     title: 'Customers',
                     slug: 'customers',
-                    file: file('docs/user-guide/customers/index.md'),
+                    file: file('docs/user-guide/customers/index.mdx'),
                 },
                 {
                     title: 'Promotions',
                     slug: 'promotions',
-                    file: file('docs/user-guide/promotions/index.md'),
+                    file: file('docs/user-guide/promotions/index.mdx'),
                 },
                 {
                     title: 'Settings',
                     slug: 'settings',
-                    file: file('docs/user-guide/settings/index.md'),
+                    file: file('docs/user-guide/settings/index.mdx'),
                 },
             ],
         },
