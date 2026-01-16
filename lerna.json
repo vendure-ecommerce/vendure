@@ -1,13 +1,11 @@
 {
-  "packages": [
-    "packages/*"
-  ],
-  "version": "3.5.3",
-  "npmClient": "npm",
-  "command": {
-    "version": {
-      "push": false
-    }
-  },
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
+    "packages": ["packages/*"],
+    "version": "3.5.2",
+    "npmClient": "npm",
+    "command": {
+        "version": {
+            "push": false
+        }
+    },
+    "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
