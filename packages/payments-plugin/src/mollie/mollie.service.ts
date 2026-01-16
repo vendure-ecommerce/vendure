@@ -467,7 +467,6 @@ export class MollieService {
                 );
                 break;
             }
-            count++;
             if (payment.description !== orderCode) {
                 // Not for this order, skipping this payment
                 continue;
