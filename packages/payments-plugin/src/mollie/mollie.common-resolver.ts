@@ -23,6 +23,7 @@ export class MollieCommonResolver {
     }
 
     @Mutation()
+    @Allow(Permission.Owner)
     async syncMolliePaymentStatus(
         @Ctx() ctx: RequestContext,
         @Args('orderCode') orderCode: string,
