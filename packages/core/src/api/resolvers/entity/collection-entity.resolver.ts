@@ -5,8 +5,9 @@ import {
     ConfigurableOperation,
     ProductVariantListOptions,
 } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -22,6 +23,13 @@ import { Api } from '../../decorators/api.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
+/**
+ * Cache key for storing the promise that resolves to batch-fetched collection variant counts.
+ * Used by collection list resolvers to batch-fetch counts and avoid N+1 queries.
+ * The promise resolves to a Map<ID, number> of collection IDs to variant counts.
+ */
+export const COLLECTION_VARIANT_COUNTS_CACHE_KEY = 'CollectionEntityResolver.productVariants.counts';
+
 @Resolver('Collection')
 export class CollectionEntityResolver {
     constructor(
@@ -30,6 +38,7 @@ export class CollectionEntityResolver {
         private assetService: AssetService,
         private localeStringHydrator: LocaleStringHydrator,
         private configurableOperationCodec: ConfigurableOperationCodec,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @ResolveField()
@@ -60,6 +69,23 @@ export class CollectionEntityResolver {
         @Api() apiType: ApiType,
         @Relations({ entity: ProductVariant, omit: ['assets'] }) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        // Check for a pre-fetched count promise from the collections list query.
+        // If we have a cached promise and no items are being requested (take === 0),
+        // we can await it and return early without hitting the database.
+        // Note: Only use cached counts for admin API, since shop API applies additional
+        // filters (e.g., enabled status) that would make the cached count inaccurate.
+        if (args.options?.take === 0 && apiType === 'admin') {
+            const cachedCountsPromise = this.requestContextCache.get<Promise<Map<ID, number>>>(
+                ctx,
+                COLLECTION_VARIANT_COUNTS_CACHE_KEY,
+            );
+            if (cachedCountsPromise) {
+                const counts = await cachedCountsPromise;
+                const count = counts.get(collection.id) ?? 0;
+                return { items: [], totalItems: count };
+            }
+        }
+
         let options: ListQueryOptions<Product> = args.options;
         if (apiType === 'shop') {
             options = {

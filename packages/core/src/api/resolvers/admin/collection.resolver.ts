@@ -1,4 +1,8 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Info, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLResolveInfo } from 'graphql';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const graphqlFields = require('graphql-fields');
 import {
     ConfigurableOperationDefinition,
     DeletionResponse,
@@ -16,18 +20,21 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
+import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
+import { COLLECTION_VARIANT_COUNTS_CACHE_KEY } from '../entity/collection-entity.resolver';
 
 @Resolver()
 export class CollectionResolver {
@@ -35,6 +42,8 @@ export class CollectionResolver {
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private configurableOperationCodec: ConfigurableOperationCodec,
+        private productVariantService: ProductVariantService,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @Query()
@@ -51,13 +60,30 @@ export class CollectionResolver {
     async collections(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
+        @Info() info: GraphQLResolveInfo,
         @Relations({
             entity: Collection,
             omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
         })
         relations: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.collectionService.findAll(ctx, args.options || undefined, relations);
+        const result = await this.collectionService.findAll(ctx, args.options || undefined, relations);
+
+        // Only batch-fetch variant counts if productVariants.totalItems is requested
+        // to avoid unnecessary queries when the client doesn't need count data.
+        // We cache the promise (not the result) so the query runs in parallel with
+        // the rest of the resolver chain, and field resolvers can await it when needed.
+        const fields = graphqlFields(info);
+        const itemFields = fields.items ?? {};
+        const productVariantsFields = itemFields.productVariants ?? {};
+        if ('totalItems' in productVariantsFields) {
+            const collectionIds = result.items.map(c => c.id);
+            const variantCountsPromise =
+                this.productVariantService.getVariantCountsByCollectionIds(ctx, collectionIds);
+            this.requestContextCache.set(ctx, COLLECTION_VARIANT_COUNTS_CACHE_KEY, variantCountsPromise);
+        }
+
+        return result;
     }
 
     @Query()
