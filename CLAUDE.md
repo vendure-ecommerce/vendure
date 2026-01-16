@@ -47,6 +47,7 @@ Vendure is a headless e-commerce framework built on NestJS, TypeORM, and GraphQL
 2. Build that package: `cd packages/<name> && npm run build` (or `npm run watch` for continuous)
 3. If needed, update `packages/dev-server/dev-config.ts` to test new features
 4. Restart dev server: `cd packages/dev-server && npm run dev`
+5. Run e2e tests `cd packages/<name> && npm run e2e <test-file>`
 
 ### Initial Setup
 ```bash
@@ -64,8 +65,8 @@ npm run dev
 ```bash
 npm run build              # Build all packages
 npm run watch:core-common  # Watch core + common (most common during dev)
-npm run test               # Run all unit tests
-npm run e2e                # Run all E2E tests
+npm run test               # Run all unit tests (prefer targeted runs in package dirs)
+npm run e2e                # Run all E2E tests (prefer targeted runs in package dirs)
 npm run lint               # ESLint with auto-fix
 npm run codegen            # Generate GraphQL types
 ```
@@ -93,8 +94,8 @@ DB=sqlite npm run populate
 ## Testing
 
 - **Unit tests**: Co-located as `*.spec.ts`, run with `npm run test`
-- **E2E tests**: In `packages/<name>/e2e/` as `*.e2e-spec.ts`
-- **Debug E2E**: `E2E_DEBUG=true npm run e2e` (1800s timeout)
+- **E2E tests**: In `packages/<name>/e2e/` as `*.e2e-spec.ts`, run with `npm run e2e <test-file>` from package dir
+- **E2E cache**: Seed data gets cached in `packages/<name>/e2e/__data__` for speed. Delete to reset after schema changes.
 
 ## Code Style
 
