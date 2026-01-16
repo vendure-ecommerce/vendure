@@ -25,6 +25,7 @@ import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
     collectionDetailDocument,
@@ -56,6 +57,7 @@ function CollectionDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
+    const queryClient = useQueryClient();
     const [pendingFilterApplication, setPendingFilterApplication] = useState(false);
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
@@ -101,7 +103,10 @@ function CollectionDetailPage() {
             if (filtersWereDirty) {
                 // Show loading skeleton while filters are being applied in the job queue
                 setPendingFilterApplication(true);
-                setTimeout(() => setPendingFilterApplication(false), 2000);
+                setTimeout(() => {
+                    queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
+                    setPendingFilterApplication(false);
+                }, 2000);
             }
             resetForm();
             if (creatingNewEntity) {
