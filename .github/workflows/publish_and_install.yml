@@ -132,8 +132,8 @@ jobs:
                 # start the dev server in the background
                 npm run dev &
                 DEV_PID=$!
-                # Wait for the dev server to be available
-                wait-on http://localhost:3000 --timeout 60000
+                # Wait for the dev server to be available (use /health endpoint, not root)
+                wait-on http://localhost:3000/health --timeout 60000
                 # Start the dashboard with --strictPort to fail fast if port is in use
                 npx vite --port 5173 --strictPort &
                 DASHBOARD_PID=$!
