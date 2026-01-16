@@ -29,26 +29,22 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    publish_install:
-        runs-on: ${{ matrix.os }}
+    # Job 1: Build all packages and publish to Verdaccio (runs once)
+    build_and_publish:
+        runs-on: ubuntu-latest
         permissions:
             contents: read
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
-                node-version: [20.x, 22.x, 24.x]
-            fail-fast: false
         steps:
             - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Use Node.js 22.x
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 22.x
+                  cache: 'npm'
             - name: Install Verdaccio
               run: |
                   npm install -g verdaccio
                   npm install -g wait-on
-                  tmp_registry_log=`mktemp`
                   mkdir -p $HOME/.config/verdaccio
                   cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
                   nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
@@ -59,12 +55,8 @@ jobs:
                     'http://localhost:4873/-/user/org.couchdb.user:test')
                   TOKEN=$(echo "$TOKEN_RES" | jq -r '.token')
                   npm set //localhost:4873/:_authToken $TOKEN
-            - name: Windows dependencies
-              if: matrix.os == 'windows-latest'
-              run: npm install -g @angular/cli
             - name: npm install
-              run: |
-                  npm install
+              run: npm install
               env:
                   CI: true
             - name: Publish to Verdaccio
@@ -72,6 +64,62 @@ jobs:
                   nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
                   wait-on http://localhost:4873
                   npx lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873
+            - name: Package Verdaccio storage
+              run: |
+                  cd $HOME/.config/verdaccio
+                  tar -czf verdaccio-storage.tar.gz storage htpasswd
+            - name: Upload Verdaccio storage
+              uses: actions/upload-artifact@v4
+              with:
+                  name: verdaccio-storage
+                  path: ~/.config/verdaccio/verdaccio-storage.tar.gz
+                  retention-days: 1
+
+    # Job 2: Test installation on various OS/Node combinations
+    test:
+        needs: build_and_publish
+        runs-on: ${{ matrix.os }}
+        permissions:
+            contents: read
+        strategy:
+            matrix:
+                # For PRs: run minimal matrix (1 job). For push: run full matrix (9 jobs)
+                os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "windows-latest", "macos-latest"]') }}
+                node-version: ${{ github.event_name == 'pull_request' && fromJSON('["22.x"]') || fromJSON('["20.x", "22.x", "24.x"]') }}
+            fail-fast: false
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Download Verdaccio storage
+              uses: actions/download-artifact@v4
+              with:
+                  name: verdaccio-storage
+                  path: ~/verdaccio-download
+            - name: Setup Verdaccio with pre-built packages
+              run: |
+                  npm install -g verdaccio
+                  npm install -g wait-on
+                  mkdir -p $HOME/.config/verdaccio
+                  cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+                  # Extract the pre-built storage
+                  cd $HOME/.config/verdaccio
+                  tar -xzf ~/verdaccio-download/verdaccio-storage.tar.gz
+                  # Start Verdaccio
+                  nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
+                  wait-on http://localhost:4873
+                  # Setup auth token
+                  TOKEN_RES=$(curl -XPUT \
+                    -H "Content-type: application/json" \
+                    -d '{ "name": "test", "password": "test" }' \
+                    'http://localhost:4873/-/user/org.couchdb.user:test')
+                  TOKEN=$(echo "$TOKEN_RES" | jq -r '.token')
+                  npm set //localhost:4873/:_authToken $TOKEN
+            - name: Windows dependencies
+              if: matrix.os == 'windows-latest'
+              run: npm install -g @angular/cli
             - name: Install via @vendure/create
               run: |
                   mkdir -p $HOME/install
@@ -120,6 +168,11 @@ jobs:
               run: |
                 cd ~/install/test-app
                 node setup-test-plugin.js
+            - name: Cache Playwright browsers
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
             - name: Install Playwright
               run: |
                 cd $GITHUB_WORKSPACE
