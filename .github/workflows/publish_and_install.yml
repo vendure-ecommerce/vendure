@@ -85,7 +85,10 @@ jobs:
               run: |
                   cd $HOME/install/test-app
                   npm run dev &
+                  DEV_PID=$!
                   node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
+                  # Kill the dev server so the dashboard tests can start fresh
+                  kill $DEV_PID 2>/dev/null || true
             - name: Copy files (Windows)
               if: runner.os == 'Windows'
               shell: pwsh
