@@ -51,13 +51,13 @@ For a more complete guide, see the [Using Docker guide](/guides/deployment/using
 
 PM2 must be installed on your server:
 
-```sh
+```bash
 npm install pm2@latest -g
 ```
 
 Your processes can then be run in [cluster mode](https://pm2.keymetrics.io/docs/usage/cluster-mode/) with the following command:
 
-```sh
+```bash
 pm2 start ./dist/index.js -i 4
 ```
 

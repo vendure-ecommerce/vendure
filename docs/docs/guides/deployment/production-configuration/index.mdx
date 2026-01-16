@@ -47,7 +47,7 @@ It is recommended that you install and configure the [HardenPlugin](/reference/c
 
 Install the plugin: 
 
-```sh
+```bash
 npm install @vendure/harden-plugin
 
 # or
@@ -104,13 +104,13 @@ Vendure internally treats all dates & times as UTC. However, you may sometimes r
 
 You can check the timezone in **MySQL/MariaDB** by executing:
 
-```SQL
+```sql
 SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP);
 ```
 and you should expect to see `00:00:00`.
 
 In **Postgres**, you can execute:
-```SQL
+```sql
 show timezone;
 ```
 and you should expect to see `UTC` or `Etc/UTC`.

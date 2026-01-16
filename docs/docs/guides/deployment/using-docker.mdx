@@ -21,13 +21,13 @@ RUN npm run build
 
 This Dockerfile can then be built into an "image" using:
 
-```sh
+```bash
 docker build -t vendure .
 ```
 
 This same image can be used to run both the Vendure server and the worker:
 
-```sh
+```bash
 # Run the server
 docker run -dp 3000:3000 --name vendure-server vendure npm run start:server
 
