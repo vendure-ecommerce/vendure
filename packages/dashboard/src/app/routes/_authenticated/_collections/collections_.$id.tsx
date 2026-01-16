@@ -24,6 +24,7 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import {
     collectionDetailDocument,
@@ -33,6 +34,7 @@ import {
 import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
 import { CollectionContentsTable } from './components/collection-contents-table.js';
 import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
+import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 
 const pageId = 'collection-detail';
 
@@ -54,6 +56,7 @@ function CollectionDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
+    const [pendingFilterApplication, setPendingFilterApplication] = useState(false);
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -90,9 +93,16 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
+            const filtersWereDirty =
+                form.getFieldState('inheritFilters').isDirty || form.getFieldState('filters').isDirty;
             toast(
                 creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
+            if (filtersWereDirty) {
+                // Show loading skeleton while filters are being applied in the job queue
+                setPendingFilterApplication(true);
+                setTimeout(() => setPendingFilterApplication(false), 2000);
+            }
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -106,7 +116,9 @@ function CollectionDetailPage() {
     });
 
     const shouldPreviewContents =
-        form.getFieldState('inheritFilters').isDirty || form.getFieldState('filters').isDirty;
+        form.getFieldState('inheritFilters').isDirty ||
+        form.getFieldState('filters').isDirty ||
+        pendingFilterApplication;
 
     const currentFiltersValue = form.watch('filters');
     const currentInheritFiltersValue = form.watch('inheritFilters');
@@ -220,7 +232,13 @@ function CollectionDetailPage() {
                     </FormItem>
                 </PageBlock>
                 <PageBlock column="main" blockId="contents" title={<Trans>Contents</Trans>}>
-                    {shouldPreviewContents || creatingNewEntity ? (
+                    {pendingFilterApplication ? (
+                        <div className="space-y-2">
+                           {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-10 w-full" />
+                           ))}
+                        </div>
+                    ) : shouldPreviewContents || creatingNewEntity ? (
                         <CollectionContentsPreviewTable
                             parentId={entity?.parent?.id}
                             filters={currentFiltersValue ?? []}
