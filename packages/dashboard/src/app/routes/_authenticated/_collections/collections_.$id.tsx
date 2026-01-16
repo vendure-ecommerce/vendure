@@ -22,10 +22,10 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useJobQueuePolling } from '@/vdb/hooks/use-job-queue-polling.js';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
     collectionDetailDocument,
@@ -35,7 +35,6 @@ import {
 import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
 import { CollectionContentsTable } from './components/collection-contents-table.js';
 import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
-import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 
 const pageId = 'collection-detail';
 
@@ -55,10 +54,19 @@ export const Route = createFileRoute('/_authenticated/_collections/collections_/
 function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
+    const router = useRouter();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
     const queryClient = useQueryClient();
-    const [pendingFilterApplication, setPendingFilterApplication] = useState(false);
+
+    // Check if we navigated here after creating a collection with filters
+    const locationState = router.state.location.state as { applyingFilters?: boolean } | undefined;
+
+    const { isPolling: pendingFilterApplication, startPolling } = useJobQueuePolling(
+        'apply-collection-filters',
+        () => queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
+        locationState?.applyingFilters,
+    );
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -100,17 +108,15 @@ function CollectionDetailPage() {
             toast(
                 creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
-            if (filtersWereDirty) {
-                // Show loading skeleton while filters are being applied in the job queue
-                setPendingFilterApplication(true);
-                setTimeout(() => {
-                    queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
-                    setPendingFilterApplication(false);
-                }, 2000);
-            }
             resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../$id`, params: { id: data.id } });
+                await navigate({
+                    to: `../$id`,
+                    params: { id: data.id },
+                    state: filtersWereDirty ? { applyingFilters: true } : undefined,
+                });
+            } else if (filtersWereDirty) {
+                startPolling();
             }
         },
         onError: err => {
@@ -237,13 +243,7 @@ function CollectionDetailPage() {
                     </FormItem>
                 </PageBlock>
                 <PageBlock column="main" blockId="contents" title={<Trans>Contents</Trans>}>
-                    {pendingFilterApplication ? (
-                        <div className="space-y-2">
-                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Skeleton key={i} className="h-10 w-full" />
-                           ))}
-                        </div>
-                    ) : shouldPreviewContents || creatingNewEntity ? (
+                    {pendingFilterApplication || shouldPreviewContents || creatingNewEntity ? (
                         <CollectionContentsPreviewTable
                             parentId={entity?.parent?.id}
                             filters={currentFiltersValue ?? []}
