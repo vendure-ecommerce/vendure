@@ -85,10 +85,19 @@ jobs:
               run: |
                   cd $HOME/install/test-app
                   npm run dev &
-                  DEV_PID=$!
                   node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
-                  # Kill the dev server so the dashboard tests can start fresh
-                  kill $DEV_PID 2>/dev/null || true
+            - name: Kill dev server after smoke tests
+              shell: bash
+              run: |
+                  # Kill everything on port 3000 so dashboard tests can start fresh
+                  # (npm run dev spawns child processes that aren't killed by killing the parent)
+                  if [[ "$RUNNER_OS" == "Windows" ]]; then
+                      # Windows: use netstat to find PID and taskkill
+                      netstat -ano | grep ':3000' | grep 'LISTENING' | awk '{print $5}' | head -1 | xargs -r taskkill //F //PID 2>/dev/null || true
+                  else
+                      # Linux/macOS: use lsof
+                      lsof -ti:3000 | xargs kill 2>/dev/null || true
+                  fi
             - name: Copy files (Windows)
               if: runner.os == 'Windows'
               shell: pwsh
