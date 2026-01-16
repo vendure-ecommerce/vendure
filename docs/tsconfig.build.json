@@ -1,0 +1,14 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "rootDir": "./src"
+    },
+    "include": ["src/index.ts", "src/manifest.ts"],
+    "exclude": ["node_modules", "dist", "docs"]
+}

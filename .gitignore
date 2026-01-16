@@ -19,6 +19,7 @@ docs/static/intro.js*
 docs/static/intro.css*
 docs/public
 docs/data/build.json
+docs/dist/
 yarn-error.log
 e2e-common/ports.json
 

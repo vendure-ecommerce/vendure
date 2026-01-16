@@ -1,12 +1,8 @@
 ---
 title: "RequestContext"
-isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
-import MemberInfo from '@site/src/components/MemberInfo';
-import GenerationInfo from '@site/src/components/GenerationInfo';
-import MemberDescription from '@site/src/components/MemberDescription';
 
 
 ## RequestContext
@@ -52,6 +48,7 @@ class RequestContext {
     empty() => RequestContext;
     deserialize(ctxObject: SerializedRequestContext) => RequestContext;
     userHasPermissions(permissions: Permission[]) => boolean;
+    userHasAllPermissions(permissions: Permission[]) => boolean;
     serialize() => SerializedRequestContext;
     copy() => RequestContext;
     req: Request | undefined
@@ -92,7 +89,33 @@ Creates a new RequestContext object from a serialized object created by the
 <MemberInfo kind="method" type={`(permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => boolean`}   />
 
 Returns `true` if there is an active Session & User associated with this request,
-and that User has the specified permissions on the active Channel.
+and that User has **at least one** of the specified permissions on the active Channel.
+
+This method uses OR logic - it checks if the user has ANY of the given permissions,
+not ALL of them. For AND logic, use {@link userHasAllPermissions}.
+
+*Example*
+
+```ts
+// Returns true if user has ReadProduct OR ReadCatalog
+ctx.userHasPermissions([Permission.ReadProduct, Permission.ReadCatalog]);
+```
+### userHasAllPermissions
+
+<MemberInfo kind="method" type={`(permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => boolean`}  since="3.6.0"  />
+
+Returns `true` if there is an active Session & User associated with this request,
+and that User has **all** of the specified permissions on the active Channel.
+
+This method uses AND logic - it checks if the user has EVERY one of the given permissions.
+For OR logic (any permission), use {@link userHasPermissions}.
+
+*Example*
+
+```ts
+// Returns true only if user has BOTH ReadProduct AND UpdateProduct
+ctx.userHasAllPermissions([Permission.ReadProduct, Permission.UpdateProduct]);
+```
 ### serialize
 
 <MemberInfo kind="method" type={`() => SerializedRequestContext`}   />

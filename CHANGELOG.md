@@ -1,3 +1,23 @@
+## <small>3.5.3 (2026-01-16)</small>
+
+
+#### Features
+
+* **core** Expand userHasPermissions docstring; Add new userHasAllPermissions method  (#4107) ([f2d0359](https://github.com/vendurehq/vendure/commit/f2d0359)), closes [#4107](https://github.com/vendurehq/vendure/issues/4107)
+* **dashboard** Provide entity object to draft-order-detail Page component (#4073) ([bad41da](https://github.com/vendurehq/vendure/commit/bad41da)), closes [#4073](https://github.com/vendurehq/vendure/issues/4073)
+* **dashboard** Use dynamic schema-driven languages and currencies (#4111) ([888e946](https://github.com/vendurehq/vendure/commit/888e946)), closes [#4111](https://github.com/vendurehq/vendure/issues/4111)
+
+#### Fixes
+
+* **core** Use previously unused relations filter in findByCustomerId (#4118) ([8859797](https://github.com/vendurehq/vendure/commit/8859797)), closes [#4118](https://github.com/vendurehq/vendure/issues/4118)
+* **dashboard** Channel switcher not scrollable if list exceeds screen height (#4075) ([9c1081a](https://github.com/vendurehq/vendure/commit/9c1081a)), closes [#4075](https://github.com/vendurehq/vendure/issues/4075)
+* **dashboard** Fix compilation issues caused by SWC version issues (#4105) ([8f5496a](https://github.com/vendurehq/vendure/commit/8f5496a)), closes [#4105](https://github.com/vendurehq/vendure/issues/4105)
+* **dashboard** Fix incorrect currency being displayed in latest orders widget (#4090) ([f3a47ef](https://github.com/vendurehq/vendure/commit/f3a47ef)), closes [#4090](https://github.com/vendurehq/vendure/issues/4090)
+* **dashboard** Fix struct custom fields not rendering options or custom components (#4115) ([27ba769](https://github.com/vendurehq/vendure/commit/27ba769)), closes [#4115](https://github.com/vendurehq/vendure/issues/4115)
+* **dashboard** Hide "Add channel" button for users without CreateChannel permission (#4097) ([84d7733](https://github.com/vendurehq/vendure/commit/84d7733)), closes [#4097](https://github.com/vendurehq/vendure/issues/4097)
+* **dashboard** Prevent NaN or empty values in Latest Orders table (#4092) ([e1d277e](https://github.com/vendurehq/vendure/commit/e1d277e)), closes [#4092](https://github.com/vendurehq/vendure/issues/4092)
+* **dashboard** Re-sync channel token when activeChannelId persists but token is cleared (#4094) ([2f3ff85](https://github.com/vendurehq/vendure/commit/2f3ff85)), closes [#4094](https://github.com/vendurehq/vendure/issues/4094) [#4095](https://github.com/vendurehq/vendure/issues/4095)
+
 ## <small>3.5.2 (2025-12-19)</small>
 
 
