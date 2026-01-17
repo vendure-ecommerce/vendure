@@ -26,9 +26,10 @@ import {
     setOrderCustomFieldsDocument,
     transitionOrderToStateDocument,
 } from '../orders.graphql.js';
-import { canAddFulfillment, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
+import { canAddFulfillment, canRefundOrder, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
 import { AddManualPaymentDialog } from './add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './fulfill-order-dialog.js';
+import { RefundOrderDialog } from './refund-order-dialog.js';
 import { FulfillmentDetails } from './fulfillment-details.js';
 import { OrderAddress } from './order-address.js';
 import { OrderHistoryContainer } from './order-history/order-history-container.js';
@@ -185,6 +186,16 @@ export function OrderDetailShared({
                 {showFulfillButton && (
                     <ActionBarItem itemId="fulfill-order-button" requiresPermission={['UpdateOrder']}>
                         <FulfillOrderDialog
+                            order={entity}
+                            onSuccess={() => {
+                                refreshOrderAndHistory();
+                            }}
+                        />
+                    </ActionBarItem>
+                )}
+                {canRefundOrder(entity) && (
+                    <ActionBarItem itemId="refund-order-button" requiresPermission={['UpdateOrder']}>
+                        <RefundOrderDialog
                             order={entity}
                             onSuccess={() => {
                                 refreshOrderAndHistory();
