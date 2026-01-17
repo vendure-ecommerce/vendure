@@ -18,8 +18,8 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { Pencil, User } from 'lucide-react';
-import { useMemo } from 'react';
+import { Pencil, RotateCcw, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
     orderDetailDocument,
@@ -145,6 +145,8 @@ export function OrderDetailShared({
     const nextStates = entity.nextStates;
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
+    const showRefundOption = canRefundOrder(entity);
+    const [refundDialogOpen, setRefundDialogOpen] = useState(false);
 
     async function refreshOrderAndHistory() {
         if (entity) {
@@ -166,6 +168,18 @@ export function OrderDetailShared({
                                       <DropdownMenuItem onClick={handleModifyClick}>
                                           <Pencil className="w-4 h-4" />
                                           <Trans>Modify</Trans>
+                                      </DropdownMenuItem>
+                                  ),
+                              },
+                          ]
+                        : []),
+                    ...(showRefundOption
+                        ? [
+                              {
+                                  component: () => (
+                                      <DropdownMenuItem onClick={() => setRefundDialogOpen(true)}>
+                                          <RotateCcw className="w-4 h-4" />
+                                          <Trans>Refund & Cancel</Trans>
                                       </DropdownMenuItem>
                                   ),
                               },
@@ -193,15 +207,15 @@ export function OrderDetailShared({
                         />
                     </ActionBarItem>
                 )}
-                {canRefundOrder(entity) && (
-                    <ActionBarItem itemId="refund-order-button" requiresPermission={['UpdateOrder']}>
-                        <RefundOrderDialog
-                            order={entity}
-                            onSuccess={() => {
-                                refreshOrderAndHistory();
-                            }}
-                        />
-                    </ActionBarItem>
+                {showRefundOption && (
+                    <RefundOrderDialog
+                        order={entity}
+                        open={refundDialogOpen}
+                        onOpenChange={setRefundDialogOpen}
+                        onSuccess={() => {
+                            refreshOrderAndHistory();
+                        }}
+                    />
                 )}
             </PageActionBar>
             <PageLayout>
