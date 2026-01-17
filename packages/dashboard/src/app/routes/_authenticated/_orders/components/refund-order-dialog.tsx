@@ -40,6 +40,8 @@ import { getMaxRefundableQuantity, lineCanBeRefunded } from '../utils/order-util
 interface RefundOrderDialogProps {
     order: Order;
     onSuccess?: () => void;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 type LineSelection = { quantity: number; cancel: boolean };
@@ -52,11 +54,19 @@ const REFUND_REASONS = [
     { value: 'other', label: 'Other' },
 ];
 
-export function RefundOrderDialog({ order, onSuccess }: Readonly<RefundOrderDialogProps>) {
+export function RefundOrderDialog({
+    order,
+    onSuccess,
+    open: controlledOpen,
+    onOpenChange: controlledOnOpenChange,
+}: Readonly<RefundOrderDialogProps>) {
     const { t } = useLingui();
     const { formatCurrency, toMajorUnits, toMinorUnits } = useLocalFormat();
 
-    const [open, setOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : internalOpen;
+    const setOpen = isControlled ? (controlledOnOpenChange ?? (() => {})) : setInternalOpen;
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lineSelections, setLineSelections] = useState<Record<string, LineSelection>>({});
     const [refundShippingLineIds, setRefundShippingLineIds] = useState<string[]>([]);
@@ -357,15 +367,17 @@ export function RefundOrderDialog({ order, onSuccess }: Readonly<RefundOrderDial
 
     return (
         <>
-            <Button
-                onClick={e => {
-                    e.stopPropagation();
-                    handleOpen();
-                }}
-                variant="outline"
-            >
-                <Trans>Refund</Trans>
-            </Button>
+            {!isControlled && (
+                <Button
+                    onClick={e => {
+                        e.stopPropagation();
+                        handleOpen();
+                    }}
+                    variant="outline"
+                >
+                    <Trans>Refund & Cancel</Trans>
+                </Button>
+            )}
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
