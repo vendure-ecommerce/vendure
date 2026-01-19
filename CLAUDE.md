@@ -110,11 +110,13 @@ DB=sqlite npm run populate
 
 Conventional commits enforced by commitlint:
 ```
-type(scope): message
+type(scope): Message
 
 Types: feat, fix, docs, perf, style, refactor, test, chore
 Scopes: core, common, admin-ui, dashboard, email-plugin, etc.
 ```
+
+- If you are fixing an issue, include `Fixes #ISSUE_NUMBER` in the body, or if it's not a full fix, `Relates to #ISSUE_NUMBER`.
 
 ## GraphQL
 
