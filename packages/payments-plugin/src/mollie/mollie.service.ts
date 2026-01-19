@@ -1,6 +1,7 @@
 import createMollieClient, {
     CaptureMethod,
     Locale,
+    MollieClient,
     PaymentMethod as MollieClientMethod,
     PaymentStatus,
 } from '@mollie/api-client';
@@ -10,22 +11,25 @@ import { ModuleRef } from '@nestjs/core';
 import {
     ActiveOrderService,
     assertFound,
+    ConfigService,
     EntityHydrator,
     ErrorResult,
+    ForbiddenError,
     ID,
     idsAreEqual,
     Injector,
     LanguageCode,
     Logger,
+    LogLevel,
     Order,
     OrderService,
     OrderState,
+    OrderStateMachine,
     OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateMachine } from '@vendure/core/';
 import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
@@ -42,7 +46,7 @@ import { MolliePluginOptions } from './mollie.plugin';
 import { MolliePaymentMetadata } from './types';
 
 interface OrderStatusInput {
-    paymentMethodId: string;
+    paymentMethodId: ID;
     paymentId: string;
 }
 
@@ -58,6 +62,17 @@ class InvalidInputError implements MolliePaymentIntentError {
     constructor(public message: string) {}
 }
 
+/**
+ * If order is not in one of these states, we don't need to handle any incoming status update from Mollie
+ */
+const VENDURE_STATES_THAT_REQUIRE_ACTION: OrderState[] = [
+    'AddingItems',
+    'ArrangingPayment',
+    'ArrangingAdditionalPayment',
+    'PaymentAuthorized',
+    'Draft',
+];
+
 @Injectable()
 export class MollieService {
     private readonly injector: Injector;
@@ -69,6 +84,7 @@ export class MollieService {
         private orderService: OrderService,
         private entityHydrator: EntityHydrator,
         private moduleRef: ModuleRef,
+        private configService: ConfigService,
     ) {
         this.injector = new Injector(this.moduleRef);
     }
@@ -219,18 +235,16 @@ export class MollieService {
     /**
      * Update Vendure payments and order status based on the incoming Mollie payment
      */
-    async handleMollieStatusUpdate(
+    async handleMolliePaymentStatus(
         ctx: RequestContext,
         { paymentMethodId, paymentId }: OrderStatusInput,
-    ): Promise<void> {
-        Logger.info(
-            `Received status update for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
-            loggerCtx,
-        );
+    ): Promise<Order | undefined> {
+        Logger.info(`Processing Mollie payment '${paymentId}' for channel ${ctx.channel.token}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
-            return Logger.warn(`No paymentMethod found with id ${paymentMethodId}`, loggerCtx);
+            Logger.warn(`No paymentMethod found with id ${paymentMethodId}`, loggerCtx);
+            return;
         }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -251,7 +265,7 @@ export class MollieService {
             });
         }
         Logger.info(
-            `Processing incoming webhook status '${molliePayment.status}' for order ${
+            `Processing Mollie payment status '${molliePayment.status}' for order ${
                 molliePayment.description
             } for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
             loggerCtx,
@@ -264,12 +278,12 @@ export class MollieService {
         }
         const mollieStatesThatRequireAction: PaymentStatus[] = [PaymentStatus.authorized, PaymentStatus.paid];
         if (!mollieStatesThatRequireAction.includes(molliePayment.status)) {
-            // No need to handle this mollie webhook status
+            // No need to handle this mollie status
             Logger.info(
-                `Ignoring Mollie status '${molliePayment.status}' from incoming webhook for '${order.code}'`,
+                `Ignoring Mollie status '${molliePayment.status}' for order '${order.code}'`,
                 loggerCtx,
             );
-            return;
+            return order;
         }
         if (order.orderPlacedAt) {
             const paymentWithSameTransactionId = order.payments.find(
@@ -281,7 +295,7 @@ export class MollieService {
                     `Order '${order.code}' is already paid. Mollie payment '${molliePayment.id}' should be refunded.`,
                     loggerCtx,
                 );
-                return;
+                return order;
             }
         }
         if (order.state === 'Cancelled' && molliePayment.status === PaymentStatus.paid) {
@@ -291,22 +305,15 @@ export class MollieService {
                 }' should be refunded.`,
                 loggerCtx,
             );
-            return;
+            return order;
         }
-        // If order is not in one of these states, we don't need to handle the Mollie webhook
-        const vendureStatesThatRequireAction: OrderState[] = [
-            'AddingItems',
-            'ArrangingPayment',
-            'ArrangingAdditionalPayment',
-            'PaymentAuthorized',
-            'Draft',
-        ];
-        if (!vendureStatesThatRequireAction.includes(order.state)) {
+
+        if (!VENDURE_STATES_THAT_REQUIRE_ACTION.includes(order.state)) {
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${molliePayment.status}'`,
                 loggerCtx,
             );
-            return;
+            return order;
         }
         const amount = amountToCents(molliePayment.amount);
         // Metadata to add to a payment
@@ -320,11 +327,12 @@ export class MollieService {
         };
         if (order.state === 'PaymentAuthorized' && molliePayment.status === PaymentStatus.paid) {
             // If our order is in PaymentAuthorized state, it means a 2 step payment was used (E.g. a pay-later method like Klarna)
-            return this.settleExistingPayment(ctx, order, molliePayment.id);
+            await this.settleExistingPayment(ctx, order, molliePayment.id);
+            return await this.orderService.findOne(ctx, order.id);
         }
         if (molliePayment.status === PaymentStatus.paid) {
             await this.addPayment(ctx, order, amount, mollieMetadata, paymentMethod.code, 'Settled');
-            return;
+            return await this.orderService.findOne(ctx, order.id);
         }
         if (order.state === 'AddingItems' && molliePayment.status === PaymentStatus.authorized) {
             // Transition order to PaymentAuthorized by creating an authorized payment
@@ -336,7 +344,7 @@ export class MollieService {
                 paymentMethod.code,
                 'Authorized',
             );
-            return;
+            return await this.orderService.findOne(ctx, order.id);
         }
         // Any other combination of Mollie status and Vendure status indicates something is wrong.
         throw Error(
@@ -413,29 +421,104 @@ export class MollieService {
         ctx: RequestContext,
         paymentMethodCode: string,
     ): Promise<MolliePaymentMethod[]> {
-        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
-        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
-        if (!apiKey) {
-            throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
-        }
-
-        const client = createMollieClient({ apiKey });
+        const [client] = await this.getMollieClient(ctx, paymentMethodCode);
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
         const additionalParams = await this.options.enabledPaymentMethodsParams?.(
             this.injector,
             ctx,
             activeOrder ?? null,
         );
-
-        // We use the orders API, so list available methods for that API usage
         const methods = await client.methods.list({
             ...additionalParams,
-            resource: 'orders',
+            resource: 'payments',
         });
         return methods.map(m => ({
             ...m,
             code: m.id,
         }));
+    }
+
+    /**
+     * Fetches the payment from Mollie, and updates the status of the order in Vendure based on the Mollie payment status
+     */
+    async syncMolliePaymentStatus(ctx: RequestContext, orderCode: string): Promise<Order> {
+        let order = await this.orderService.findOneByCode(ctx, orderCode);
+        if (!order) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+        if (!VENDURE_STATES_THAT_REQUIRE_ACTION.includes(order.state)) {
+            Logger.info(
+                `syncMolliePaymentStatus: Order ${order.code} is already '${order.state}', no need to fetch Mollie payments.`,
+                loggerCtx,
+            );
+            return order;
+        }
+        const originalOrderState = order.state;
+        const [mollieClient, paymentMethod] = await this.getMollieClient(ctx);
+        // Find payments for orderCode that are authorized or paid
+        const processedPaymentIds: string[] = [];
+        let count = 0;
+        const MAX_PAYMENTS = 500; // Max payments to prevent looping over ALL payments in the Mollie
+        for await (const payment of mollieClient.payments.iterate()) {
+            if (count++ >= MAX_PAYMENTS) {
+                Logger.warn(
+                    `syncMolliePaymentStatus: Stopping after processing ${MAX_PAYMENTS} payments for order '${order.code}' to avoid indefinite looping.`,
+                    loggerCtx,
+                );
+                break;
+            }
+            if (payment.description !== orderCode) {
+                // Not for this order, skipping this payment
+                continue;
+            }
+            if (payment.status !== PaymentStatus.paid && payment.status !== PaymentStatus.authorized) {
+                // Not paid or authorized, skipping this payment
+                continue;
+            }
+            // This will handle the Mollie payment as if it were an incoming webhook
+            const updatedOrder = await this.handleMolliePaymentStatus(ctx, {
+                paymentMethodId: paymentMethod.id,
+                paymentId: payment.id,
+            });
+            if (updatedOrder) {
+                order = updatedOrder;
+            }
+            processedPaymentIds.push(payment.id);
+            if (order.state === 'PaymentSettled') {
+                break; // No further processing needed, because the order is already settled
+            }
+        }
+        if (processedPaymentIds.length > 0) {
+            Logger.info(
+                `Synced status for order '${order.code}' from '${originalOrderState}' to '${
+                    order.state
+                }' based on Mollie payment(s) ${processedPaymentIds.join(',')}`,
+                loggerCtx,
+            );
+        }
+
+        if (!(await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+        return order;
+    }
+
+    /**
+     * Get the Mollie client for the current channel
+     */
+    private async getMollieClient(
+        ctx: RequestContext,
+        paymentMethodCode?: string,
+    ): Promise<[MollieClient, PaymentMethod]> {
+        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
+        if (!paymentMethod) {
+            throw Error(`No Mollie payment method found`);
+        }
+        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        if (!apiKey) {
+            throw Error(`No apiKey configured for payment method ${paymentMethod.code}`);
+        }
+        return [createMollieClient({ apiKey }), paymentMethod];
     }
 
     /**
@@ -449,6 +532,9 @@ export class MollieService {
         await orderStateMachine.transition(ctx, orderCopy, state);
     }
 
+    /**
+     * Get the Mollie payment method by code, or the first payment method with Mollie as handler
+     */
     private async getPaymentMethod(
         ctx: RequestContext,
         paymentMethodCode?: string | null,

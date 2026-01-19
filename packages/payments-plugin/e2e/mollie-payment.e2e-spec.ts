@@ -41,6 +41,7 @@ import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
     createMolliePaymentIntentDocument,
     getMolliePaymentMethodsDocument,
+    syncMolliePaymentStatusDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -122,7 +123,6 @@ describe('Mollie payments', () => {
                     arguments: [
                         { name: 'redirectUrl', value: mollieMockData.redirectUrl },
                         { name: 'apiKey', value: mollieMockData.apiKey },
-                        { name: 'autoCapture', value: 'false' },
                     ],
                 },
                 translations: [
@@ -346,7 +346,7 @@ describe('Mollie payments', () => {
 
         it('Should get available paymentMethods', async () => {
             nock('https://api.mollie.com/')
-                .get('/v2/methods?resource=orders')
+                .get('/v2/methods?resource=payments')
                 .reply(200, mollieMockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { molliePaymentMethods } = await shopClient.query(getMolliePaymentMethodsDocument, {
@@ -612,6 +612,64 @@ describe('Mollie payments', () => {
             order = orderByCode!;
             expect(createCaptureRequest.amount.value).toBe('3127.60'); // Full amount
             expect(order.state).toBe('PaymentSettled');
+        });
+    });
+
+    describe('Force status update when no webhook is received', () => {
+        it('Should prepare a new order', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            order = addItemToOrder as FragmentOf<typeof testOrderFragment>;
+            await setShipping(shopClient);
+            expect(order.totalWithTax).toBe(311760);
+            expect(order.code).toBeDefined();
+            expect(order.state).toBe('AddingItems');
+        });
+
+        // Instead of receiving a webhook, we make Vendure fetch payments from Mollie manually and update the order status accordingly
+        it('Syncs status based on Mollie payment', async () => {
+            // Mock the payments list endpoint (used by iterator to find payments for the order)
+            nock('https://api.mollie.com/')
+                .get('/v2/payments')
+                .query(true)
+                .reply(200, {
+                    count: 1,
+                    _embedded: {
+                        payments: [
+                            {
+                                ...mollieMockData.molliePaymentResponse,
+                                id: 'tr_syncTestPayment',
+                                description: order.code,
+                                status: OrderStatus.paid,
+                            },
+                        ],
+                    },
+                    _links: {
+                        self: {
+                            href: 'https://api.mollie.com/v2/payments',
+                            type: 'application/hal+json',
+                        },
+                    },
+                });
+            // Mock the individual payment GET endpoint (used by handleMolliePaymentStatus to get the payment details)
+            nock('https://api.mollie.com/')
+                .get('/v2/payments/tr_syncTestPayment')
+                .reply(200, {
+                    ...mollieMockData.molliePaymentResponse,
+                    id: 'tr_syncTestPayment',
+                    description: order.code,
+                    status: OrderStatus.paid,
+                    amount: { value: '3127.60', currency: 'EUR' },
+                });
+            // Call the sync mutation
+            const { syncMolliePaymentStatus } = await shopClient.query<any>(syncMolliePaymentStatusDocument, {
+                orderCode: order.code,
+            });
+            expect(syncMolliePaymentStatus.state).toBe('PaymentSettled');
+            expect(syncMolliePaymentStatus.code).toBe(order.code);
         });
     });
 });
