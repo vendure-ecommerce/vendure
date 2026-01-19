@@ -2,7 +2,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { cancelOrderDocument, refundOrderDocument } from '../orders.graphql.js';
@@ -56,7 +56,7 @@ export interface UseRefundOrderReturn {
     resetState: () => void;
 }
 
-export function useRefundOrder(order: Order, onSuccess?: () => void): UseRefundOrderReturn {
+export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => void): UseRefundOrderReturn {
     const { t } = useLingui();
     const { formatCurrency } = useLocalFormat();
 
@@ -68,6 +68,26 @@ export function useRefundOrder(order: Order, onSuccess?: () => void): UseRefundO
     const [manuallySetRefundTotal, setManuallySetRefundTotal] = useState(false);
     const [refundTotal, setRefundTotal] = useState(0);
     const [refundablePayments, setRefundablePayments] = useState<RefundablePayment[]>([]);
+
+    // Track previous open state to detect open transitions
+    const prevOpen = useRef(open);
+    useEffect(() => {
+        if (open && !prevOpen.current) {
+            // Dialog just opened - initialize state
+            const selections: Record<string, LineSelection> = {};
+            order.lines.forEach(line => {
+                selections[line.id] = { quantity: 0, cancel: false };
+            });
+            setLineSelections(selections);
+            setRefundShippingLineIds([]);
+            setSelectedReason('');
+            setCustomReason('');
+            setManuallySetRefundTotal(false);
+            setRefundTotal(0);
+            setRefundablePayments(getRefundablePayments(order.payments));
+        }
+        prevOpen.current = open;
+    }, [open, order]);
 
     const reason = selectedReason === 'other' ? customReason : selectedReason;
 
