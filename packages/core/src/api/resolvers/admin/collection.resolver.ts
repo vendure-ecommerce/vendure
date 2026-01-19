@@ -25,6 +25,7 @@ import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
+import { isFieldInSelection } from '../../common/is-field-in-selection';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
@@ -63,32 +64,11 @@ export class CollectionResolver {
     ): Promise<PaginatedList<Translated<Collection>>> {
         const collections = await this.collectionService.findAll(ctx, args.options || undefined, relations);
         // Only cache collection IDs if productVariantCount is requested in the query
-        if (this.isFieldRequested(info, 'productVariantCount')) {
+        if (isFieldInSelection(info, 'productVariantCount')) {
             const collectionIds = collections.items.map(c => c.id);
             this.requestContextCache.set(ctx, 'CollectionService.collectionIds', collectionIds);
         }
         return collections;
-    }
-
-    /**
-     * Checks if a specific field is requested in the GraphQL query selection set.
-     * Looks for the field within the 'items' selection of a paginated list.
-     */
-    private isFieldRequested(info: GraphQLResolveInfo, fieldName: string): boolean {
-        for (const fieldNode of info.fieldNodes) {
-            const selections = fieldNode.selectionSet?.selections ?? [];
-            for (const selection of selections) {
-                if (selection.kind === 'Field' && selection.name.value === 'items') {
-                    const itemSelections = selection.selectionSet?.selections ?? [];
-                    for (const itemSelection of itemSelections) {
-                        if (itemSelection.kind === 'Field' && itemSelection.name.value === fieldName) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     @Query()
