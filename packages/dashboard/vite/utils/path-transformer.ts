@@ -37,8 +37,9 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
 
         // Escape special regex chars, then replace * with capture group
         const regexStr: string = pattern
-            .replaceAll(/[.+?^${}()|[\]\\]/g, String.raw`\$&`)
-            .replaceAll('*', '(.*)');
+            .replace(/[.+?^${}()|[\]\\]/g, String.raw`\$&`)
+            .split('*')
+            .join('(.*)');
 
         const regex = new RegExp('^' + regexStr + '$');
 
@@ -120,7 +121,7 @@ function resolvePathAlias(moduleSpecifier: string, pathMatchers: PathMatcher[]):
         const match = regex.exec(moduleSpecifier);
         if (match) {
             const target = targets[0];
-            const resolved = hasWildcard && match[1] ? target.replaceAll('*', match[1]) : target;
+            const resolved = hasWildcard && match[1] ? target.split('*').join(match[1]) : target;
 
             return normalizeResolvedPath(resolved);
         }
@@ -137,7 +138,7 @@ function normalizeResolvedPath(resolved: string): string {
     // Normalize to relative path with ./ prefix
     let result = resolved.startsWith('./') ? resolved.substring(2) : resolved;
     result = `./${result}`;
-    result = result.replaceAll('\\', '/');
+    result = result.split('\\').join('/');
 
     // Convert TypeScript extensions to JavaScript equivalents for ESM
     return convertExtension(result);
