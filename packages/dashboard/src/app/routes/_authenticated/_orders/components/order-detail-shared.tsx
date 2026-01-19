@@ -164,6 +164,7 @@ export function OrderDetailShared({
                     ...(nextStates.includes('Modifying')
                         ? [
                               {
+                                  requiresPermission: ['UpdateOrder'],
                                   component: () => (
                                       <DropdownMenuItem onClick={handleModifyClick}>
                                           <Pencil className="w-4 h-4" />
@@ -176,6 +177,7 @@ export function OrderDetailShared({
                     ...(showRefundOption
                         ? [
                               {
+                                  requiresPermission: ['UpdateOrder'],
                                   component: () => (
                                       <DropdownMenuItem onClick={() => setRefundDialogOpen(true)}>
                                           <RotateCcw className="w-4 h-4" />
