@@ -70,8 +70,12 @@ export function VariantPriceDetail({
     }, [taxRatesData, activeChannel, taxCategoryId]);
 
     useEffect(() => {
-        setGrossPrice(Math.round((price ?? 0) * ((100 + taxRate) / 100)));
-    }, [price, taxRate]);
+        if (priceIncludesTax) {
+            setGrossPrice(price ?? 0);
+        } else {
+            setGrossPrice(Math.round((price ?? 0) * ((100 + taxRate) / 100)));
+        }
+    }, [price, taxRate, priceIncludesTax]);
 
     return (
         <div className="space-y-1">
