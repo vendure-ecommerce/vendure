@@ -181,7 +181,8 @@ export function RefundOrderDialog({
                                                             type="number"
                                                             min={0}
                                                             max={maxRefundable}
-                                                            value={selection?.quantity ?? 0}
+                                                            value={selection?.quantity || ''}
+                                                            placeholder="0"
                                                             onChange={e => {
                                                                 const value = Math.min(
                                                                     Math.max(0, parseInt(e.target.value, 10) || 0),
