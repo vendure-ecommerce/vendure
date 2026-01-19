@@ -155,7 +155,7 @@ export function RefundOrderDialog({
                                                             );
                                                             refund.onRefundQuantityChange(line.id, value);
                                                         }}
-                                                        className="w-20 text-center"
+                                                        className="w-20 text-right"
                                                     />
                                                 </td>
                                                 <td className="p-2 text-center">
