@@ -69,7 +69,8 @@ export function useJobQueuePolling(queueName: string, onComplete: () => void, st
 
     const startPolling = useCallback(() => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        startTimeRef.current = new Date().toISOString();
+        // Look back 5 seconds to catch jobs created before the mutation returned
+        startTimeRef.current = new Date(Date.now() - 5000).toISOString();
         setIsPolling(true);
         // Safety fallback: max 30 seconds
         timeoutRef.current = setTimeout(() => {
