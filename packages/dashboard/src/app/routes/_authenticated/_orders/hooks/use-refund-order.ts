@@ -69,26 +69,6 @@ export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => vo
     const [refundTotal, setRefundTotal] = useState(0);
     const [refundablePayments, setRefundablePayments] = useState<RefundablePayment[]>([]);
 
-    // Track previous open state to detect open transitions
-    const prevOpen = useRef(open);
-    useEffect(() => {
-        if (open && !prevOpen.current) {
-            // Dialog just opened - initialize state
-            const selections: Record<string, LineSelection> = {};
-            order.lines.forEach(line => {
-                selections[line.id] = { quantity: 0, cancel: false };
-            });
-            setLineSelections(selections);
-            setRefundShippingLineIds([]);
-            setSelectedReason('');
-            setCustomReason('');
-            setManuallySetRefundTotal(false);
-            setRefundTotal(0);
-            setRefundablePayments(getRefundablePayments(order.payments));
-        }
-        prevOpen.current = open;
-    }, [open, order]);
-
     const reason = selectedReason === 'other' ? customReason : selectedReason;
 
     const cancelOrderMutation = useMutation({
@@ -112,6 +92,15 @@ export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => vo
         setRefundTotal(0);
         setRefundablePayments(getRefundablePayments(order.payments));
     }, [order]);
+
+    // Initialize state when dialog opens
+    const prevOpen = useRef(open);
+    useEffect(() => {
+        if (open && !prevOpen.current) {
+            resetState();
+        }
+        prevOpen.current = open;
+    }, [open, resetState]);
 
     const totalRefundableAmount = useMemo(
         () => getTotalRefundableAmount(refundablePayments),
@@ -283,6 +272,8 @@ export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => vo
 
             const paymentsToRefund = refundablePayments.filter(p => p.selected && p.amountToRefund > 0);
 
+            let successfulRefundCount = 0;
+
             for (const payment of paymentsToRefund) {
                 const refundResult = await refundOrderMutation.mutateAsync({
                     input: {
@@ -296,12 +287,19 @@ export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => vo
                 });
 
                 if (refundResult.refundOrder.__typename !== 'Refund') {
+                    if (successfulRefundCount > 0) {
+                        toast.warning(t`Partial refund completed`, {
+                            description: t`${successfulRefundCount} payment(s) refunded before failure. Check order history for details.`,
+                        });
+                    }
                     toast.error(t`Failed to process refund`, {
                         description: refundResult.refundOrder.message,
                     });
                     setIsSubmitting(false);
                     return;
                 }
+
+                successfulRefundCount++;
             }
 
             toast.success(t`Refund processed successfully`);
