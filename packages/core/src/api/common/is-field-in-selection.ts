@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { FieldNode, GraphQLResolveInfo } from 'graphql';
 
 /**
  * Checks if a specific field is requested in the GraphQL query selection set.
@@ -9,18 +9,10 @@ export function isFieldInSelection(
     fieldName: string,
     parentFieldName = 'items',
 ): boolean {
-    for (const fieldNode of info.fieldNodes) {
-        const selections = fieldNode.selectionSet?.selections ?? [];
-        for (const selection of selections) {
-            if (selection.kind === 'Field' && selection.name.value === parentFieldName) {
-                const itemSelections = selection.selectionSet?.selections ?? [];
-                for (const itemSelection of itemSelections) {
-                    if (itemSelection.kind === 'Field' && itemSelection.name.value === fieldName) {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-    return false;
+    const parentSelections = info.fieldNodes.flatMap(node => node.selectionSet?.selections ?? []);
+    const parentField = parentSelections.find(
+        (s): s is FieldNode => s.kind === 'Field' && s.name.value === parentFieldName,
+    );
+    const childSelections = parentField?.selectionSet?.selections ?? [];
+    return childSelections.some((s): s is FieldNode => s.kind === 'Field' && s.name.value === fieldName);
 }
