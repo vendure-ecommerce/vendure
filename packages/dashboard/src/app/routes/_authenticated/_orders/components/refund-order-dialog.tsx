@@ -22,7 +22,7 @@ import {
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { AlertCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRefundOrder } from '../hooks/use-refund-order.js';
 import { Order } from '../utils/order-types.js';
@@ -53,6 +53,15 @@ export function RefundOrderDialog({
         setOpen(false);
         onSuccess?.();
     });
+
+    // Initialize state when dialog opens (handles controlled mode)
+    const prevOpen = useRef(open);
+    useEffect(() => {
+        if (open && !prevOpen.current) {
+            refund.resetState();
+        }
+        prevOpen.current = open;
+    }, [open, refund]);
 
     const reasons = useMemo(
         () => [
