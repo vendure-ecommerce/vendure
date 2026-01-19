@@ -319,6 +319,27 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * @description
+     * Returns a count of all ProductVariants in the given Collection.
+     * This is a fast count query that does not load any relations.
+     */
+    async getProductVariantCount(ctx: RequestContext, collectionId: ID): Promise<number> {
+        return this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('productvariant')
+            .innerJoin('productvariant.channels', 'channel', 'channel.id = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .innerJoin('productvariant.collections', 'collection', 'collection.id = :collectionId', {
+                collectionId,
+            })
+            .innerJoin('productvariant.product', 'product')
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere('productvariant.deletedAt IS NULL')
+            .getCount();
+    }
+
+    /**
+     * @description
      * Returns an array of name/id pairs representing all ancestor Collections up
      * to the Root Collection.
      */

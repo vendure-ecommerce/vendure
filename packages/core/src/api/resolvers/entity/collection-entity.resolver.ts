@@ -74,6 +74,11 @@ export class CollectionEntityResolver {
     }
 
     @ResolveField()
+    async productVariantCount(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<number> {
+        return this.collectionService.getProductVariantCount(ctx, collection.id);
+    }
+
+    @ResolveField()
     async breadcrumbs(
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
