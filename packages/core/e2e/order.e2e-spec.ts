@@ -67,6 +67,7 @@ import {
     getOrderListWithQtyDocument,
     getOrderWithLineCalculatedPropsDocument,
     getOrderWithPaymentsDocument,
+    getOrderWithRefundLinesDocument,
     getProductWithVariantsDocument,
     getStockMovementDocument,
     refundOrderDocument,
@@ -2014,6 +2015,85 @@ describe('Orders resolver', () => {
             expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[1].total).toBe(
                 productInOrder!.variants[0].priceWithTax + order!.shippingWithTax,
             );
+        });
+
+        // TODO: LINK RELATED ISSUE HERE
+        it('creates duplicate RefundLines when same lines sent to multiple payment refunds', async () => {
+            const result = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[2].emailAddress,
+                password,
+            );
+            const testOrderId = result.orderId;
+
+            await proceedToArrangingPayment(shopClient, 2);
+
+            const { addPaymentToOrder: orderAfterFirstPayment } = await shopClient.query(addPaymentDocument, {
+                input: {
+                    method: partialPaymentMethod.code,
+                    metadata: { amount: PARTIAL_PAYMENT_AMOUNT },
+                },
+            });
+            shopOrderGuard.assertSuccess(orderAfterFirstPayment);
+            const firstPaymentId = orderAfterFirstPayment.payments![0].id;
+
+            const { addPaymentToOrder: completedOrder } = await shopClient.query(addPaymentDocument, {
+                input: {
+                    method: singleStageRefundablePaymentMethod.code,
+                    metadata: {},
+                },
+            });
+            shopOrderGuard.assertSuccess(completedOrder);
+            const secondPayment = completedOrder.payments!.find(
+                p => p.method === singleStageRefundablePaymentMethod.code,
+            )!;
+            const secondPaymentId = secondPayment.id;
+            const secondPaymentAmount = secondPayment.amount;
+
+            const { order } = await adminClient.query(getOrderDocument, { id: testOrderId });
+            const refundLines = order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity }));
+            const totalQuantityOrdered = order!.lines.reduce((sum, l) => sum + l.quantity, 0);
+            expect(totalQuantityOrdered).toBeGreaterThan(0);
+
+            const { refundOrder: refund1 } = await adminClient.query(refundOrderDocument, {
+                input: {
+                    lines: refundLines,
+                    shipping: 0,
+                    adjustment: 0,
+                    amount: PARTIAL_PAYMENT_AMOUNT,
+                    reason: 'Test refund 1',
+                    paymentId: firstPaymentId,
+                },
+            });
+            refundGuard.assertSuccess(refund1);
+
+            const { refundOrder: refund2 } = await adminClient.query(refundOrderDocument, {
+                input: {
+                    lines: refundLines,
+                    shipping: 0,
+                    adjustment: 0,
+                    amount: secondPaymentAmount,
+                    reason: 'Test refund 2',
+                    paymentId: secondPaymentId,
+                },
+            });
+            refundGuard.assertSuccess(refund2);
+
+            const { order: orderWithRefunds } = await adminClient.query(getOrderWithRefundLinesDocument, {
+                id: testOrderId,
+            });
+
+            const allRefundLines: Array<{ orderLineId: string; quantity: number }> = [];
+            for (const payment of orderWithRefunds!.payments) {
+                for (const refund of payment.refunds) {
+                    allRefundLines.push(...refund.lines);
+                }
+            }
+
+            const totalRefundedQuantity = allRefundLines.reduce((sum, rl) => sum + rl.quantity, 0);
+
+            expect(totalRefundedQuantity).toBe(totalQuantityOrdered);
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/847
