@@ -319,23 +319,39 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * @description
-     * Returns a count of all ProductVariants in the given Collection.
-     * This is a fast count query that does not load any relations.
+     * Returns a Map of collection IDs to their product variant counts.
+     * This performs a single bulk query to get counts for all provided collection IDs,
+     * avoiding N+1 query issues when resolving productVariantCount on multiple collections.
      */
-    async getProductVariantCount(ctx: RequestContext, collectionId: ID): Promise<number> {
-        return this.connection
+    async getProductVariantCounts(ctx: RequestContext, collectionIds: ID[]): Promise<Map<ID, number>> {
+        if (collectionIds.length === 0) {
+            return new Map();
+        }
+        const results = await this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('productvariant')
+            .select('collection.id', 'collectionId')
+            .addSelect('COUNT(DISTINCT productvariant.id)', 'count')
             .innerJoin('productvariant.channels', 'channel', 'channel.id = :channelId', {
                 channelId: ctx.channelId,
             })
-            .innerJoin('productvariant.collections', 'collection', 'collection.id = :collectionId', {
-                collectionId,
+            .innerJoin('productvariant.collections', 'collection', 'collection.id IN (:...collectionIds)', {
+                collectionIds,
             })
             .innerJoin('productvariant.product', 'product')
             .andWhere('product.deletedAt IS NULL')
             .andWhere('productvariant.deletedAt IS NULL')
-            .getCount();
+            .groupBy('collection.id')
+            .getRawMany<{ collectionId: string; count: string }>();
+
+        const countMap = new Map<ID, number>();
+        for (const id of collectionIds) {
+            countMap.set(id, 0);
+        }
+        for (const result of results) {
+            countMap.set(result.collectionId, Number(result.count));
+        }
+        return countMap;
     }
 
     /**

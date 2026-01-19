@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Info, Query, Resolver } from '@nestjs/graphql';
 import {
     QueryCollectionArgs,
     QueryCollectionsArgs,
@@ -10,7 +10,9 @@ import {
 } from '@vendure/common/lib/generated-shop-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { GraphQLResolveInfo } from 'graphql';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
@@ -33,6 +35,7 @@ export class ShopProductsResolver {
         private facetValueService: FacetValueService,
         private collectionService: CollectionService,
         private facetService: FacetService,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @Query()
@@ -84,6 +87,7 @@ export class ShopProductsResolver {
             omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
         })
         relations: RelationPaths<Collection>,
+        @Info() info: GraphQLResolveInfo,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const options: ListQueryOptions<Collection> = {
             ...args.options,
@@ -92,7 +96,34 @@ export class ShopProductsResolver {
                 isPrivate: { eq: false },
             },
         };
-        return this.collectionService.findAll(ctx, options || undefined, relations);
+        const collections = await this.collectionService.findAll(ctx, options || undefined, relations);
+        // Only cache collection IDs if productVariantCount is requested in the query
+        if (this.isFieldRequested(info, 'productVariantCount')) {
+            const collectionIds = collections.items.map(c => c.id);
+            this.requestContextCache.set(ctx, 'CollectionService.collectionIds', collectionIds);
+        }
+        return collections;
+    }
+
+    /**
+     * Checks if a specific field is requested in the GraphQL query selection set.
+     * Looks for the field within the 'items' selection of a paginated list.
+     */
+    private isFieldRequested(info: GraphQLResolveInfo, fieldName: string): boolean {
+        for (const fieldNode of info.fieldNodes) {
+            const selections = fieldNode.selectionSet?.selections ?? [];
+            for (const selection of selections) {
+                if (selection.kind === 'Field' && selection.name.value === 'items') {
+                    const itemSelections = selection.selectionSet?.selections ?? [];
+                    for (const itemSelection of itemSelections) {
+                        if (itemSelection.kind === 'Field' && itemSelection.name.value === fieldName) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Query()

@@ -5,8 +5,9 @@ import {
     ConfigurableOperation,
     ProductVariantListOptions,
 } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -30,6 +31,7 @@ export class CollectionEntityResolver {
         private assetService: AssetService,
         private localeStringHydrator: LocaleStringHydrator,
         private configurableOperationCodec: ConfigurableOperationCodec,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @ResolveField()
@@ -75,7 +77,35 @@ export class CollectionEntityResolver {
 
     @ResolveField()
     async productVariantCount(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<number> {
-        return this.collectionService.getProductVariantCount(ctx, collection.id);
+        let cachedCountsPromise = this.requestContextCache.get<Promise<Map<ID, number>>>(
+            ctx,
+            'CollectionService.getProductVariantCounts',
+        );
+        if (!cachedCountsPromise) {
+            const cachedCollectionIds = this.requestContextCache.get<ID[]>(
+                ctx,
+                'CollectionService.collectionIds',
+            );
+            if (cachedCollectionIds?.length) {
+                // Lazily create the batch query promise on first access
+                cachedCountsPromise = this.collectionService.getProductVariantCounts(
+                    ctx,
+                    cachedCollectionIds,
+                );
+                this.requestContextCache.set(
+                    ctx,
+                    'CollectionService.getProductVariantCounts',
+                    cachedCountsPromise,
+                );
+            }
+        }
+        if (cachedCountsPromise) {
+            const countsMap = await cachedCountsPromise;
+            return countsMap.get(collection.id) ?? 0;
+        }
+        // Fallback to single query if cache not available (e.g., single collection query)
+        const singleCountMap = await this.collectionService.getProductVariantCounts(ctx, [collection.id]);
+        return singleCountMap.get(collection.id) ?? 0;
     }
 
     @ResolveField()
