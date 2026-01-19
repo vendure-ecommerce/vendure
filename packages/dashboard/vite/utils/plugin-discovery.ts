@@ -422,7 +422,7 @@ export async function findVendurePluginFiles({
         ignore: [
             // Skip nested node_modules (transitive deps) but not .pnpm directory.
             // [!.] ensures .pnpm paths are kept since pnpm stores all packages there.
-            '**/node_modules/[!.]*/**/node_modules/**',
+            '**/node_modules/[!.pnpm]*/**/node_modules/**',
             '**/*.spec.js',
             '**/*.test.js',
         ],
