@@ -25,7 +25,7 @@ import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { useJobQueuePolling } from '@/vdb/hooks/use-job-queue-polling.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
     collectionDetailDocument,
@@ -54,18 +54,13 @@ export const Route = createFileRoute('/_authenticated/_collections/collections_/
 function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
-    const router = useRouter();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
     const queryClient = useQueryClient();
 
-    // Check if we navigated here after creating a collection with filters
-    const locationState = router.state.location.state as { applyingFilters?: boolean } | undefined;
-
     const { isPolling: pendingFilterApplication, startPolling } = useJobQueuePolling(
         'apply-collection-filters',
         () => queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
-        locationState?.applyingFilters,
     );
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
@@ -109,14 +104,14 @@ function CollectionDetailPage() {
                 creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
             resetForm();
+            if (filtersWereDirty) {
+                startPolling();
+            }
             if (creatingNewEntity) {
                 await navigate({
                     to: `../$id`,
                     params: { id: data.id },
-                    state: filtersWereDirty ? { applyingFilters: true } : undefined,
                 });
-            } else if (filtersWereDirty) {
-                startPolling();
             }
         },
         onError: err => {
