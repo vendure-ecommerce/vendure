@@ -1680,6 +1680,31 @@ export const getOrderWithPaymentsDocument = graphql(`
     }
 `);
 
+export const getOrderWithRefundLinesDocument = graphql(`
+    query GetOrderWithRefundLines($id: ID!) {
+        order(id: $id) {
+            id
+            lines {
+                id
+                quantity
+                orderPlacedQuantity
+            }
+            payments {
+                id
+                method
+                refunds {
+                    id
+                    total
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+            }
+        }
+    }
+`);
+
 export const getOrderListWithQtyDocument = graphql(`
     query GetOrderListWithQty($options: OrderListOptions) {
         orders(options: $options) {
