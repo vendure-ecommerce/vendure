@@ -209,7 +209,6 @@ export function DataTable<TData>({
                 ...pagination,
                 pageIndex: 0,
             });
-            pagination.pageIndex;
         }
         prevColumnFiltersRef.current = columnFilters;
     }, [columnFilters]);
@@ -255,6 +254,7 @@ export function DataTable<TData>({
                                     title={filter?.title}
                                     options={filter?.options}
                                     optionsFn={filter?.optionsFn}
+                                    icon={filter?.icon}
                                 />
                             ))}
                         </Suspense>

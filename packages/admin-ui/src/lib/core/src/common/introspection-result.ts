@@ -128,6 +128,8 @@ const result: PossibleTypesResultData = {
             'Address',
             'Administrator',
             'Allocation',
+            'ApiKey',
+            'ApiKeyTranslation',
             'Asset',
             'AuthenticationMethod',
             'Cancellation',
@@ -171,6 +173,7 @@ const result: PossibleTypesResultData = {
         ],
         PaginatedList: [
             'AdministratorList',
+            'ApiKeyList',
             'AssetList',
             'ChannelList',
             'CollectionList',

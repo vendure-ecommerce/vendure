@@ -26,7 +26,7 @@ defineDashboardExtension({
             location: {
                 // This is the pageId of the page where this block will be
                 pageId: 'product-detail',
-                // can be "main" or "side"
+                // can be "main", "side" or "full"
                 column: 'side',
                 position: {
                     // Blocks are positioned relative to existing blocks on
@@ -90,10 +90,11 @@ position: {
 
 ## Block Columns
 
-Blocks can be placed in two columns:
+Blocks can be placed in three columns:
 
 - **`main`**: The main content area (wider column on the left)
 - **`side`**: The sidebar area (narrower column on the right)
+- **`full`**: Takes up the full horizontal width. This is mostly useful for adding blocks to list pages
 
 ## Context Data
 

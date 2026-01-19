@@ -13,6 +13,7 @@ import { ConfigurableOperationCodec } from './common/configurable-operation-code
 import { CustomFieldRelationResolverService } from './common/custom-field-relation-resolver.service';
 import { IdCodecService } from './common/id-codec.service';
 import { AdministratorResolver } from './resolvers/admin/administrator.resolver';
+import { ApiKeyResolver } from './resolvers/admin/api-key.resolver';
 import { AssetResolver } from './resolvers/admin/asset.resolver';
 import { AuthResolver } from './resolvers/admin/auth.resolver';
 import { ChannelResolver } from './resolvers/admin/channel.resolver';
@@ -96,6 +97,7 @@ import { ShopShippingMethodsResolver } from './resolvers/shop/shop-shipping-meth
 
 const adminResolvers = [
     AdministratorResolver,
+    ApiKeyResolver,
     AssetResolver,
     AuthResolver,
     ChannelResolver,

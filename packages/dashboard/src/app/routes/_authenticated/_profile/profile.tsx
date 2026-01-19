@@ -3,11 +3,11 @@ import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js'
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import {
+    ActionBarItem,
     CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -74,14 +74,14 @@ function ProfilePage() {
                 <Trans>Profile</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="save-button">
                     <Button
                         type="submit"
                         disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                     >
                         <Trans>Update</Trans>
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="main-form">

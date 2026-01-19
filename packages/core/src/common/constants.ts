@@ -51,6 +51,7 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
             `Grants permission to ${operation} PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings`,
     ),
     new CrudPermissionDefinition('Administrator'),
+    new CrudPermissionDefinition('ApiKey'),
     new CrudPermissionDefinition('Asset'),
     new CrudPermissionDefinition('Channel'),
     new CrudPermissionDefinition('Collection'),

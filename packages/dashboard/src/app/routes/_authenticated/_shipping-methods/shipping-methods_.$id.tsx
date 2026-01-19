@@ -1,17 +1,16 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
+    ActionBarItem,
     CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -114,25 +113,25 @@ function ShippingMethodDetailPage() {
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    {!creatingNewEntity && entity && (
+                {!creatingNewEntity && entity && (
+                    <ActionBarItem itemId="test-shipping-button">
                         <TestSingleShippingMethodSheet checker={checker} calculator={calculator} />
-                    )}
-                    <PermissionGuard requires={['UpdateShippingMethod']}>
-                        <Button
-                            type="submit"
-                            disabled={
-                                !form.formState.isDirty ||
-                                !form.formState.isValid ||
-                                isPending ||
-                                !checker?.code ||
-                                !calculator?.code
-                            }
-                        >
-                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                    </ActionBarItem>
+                )}
+                <ActionBarItem itemId="save-button" requiresPermission={['UpdateShippingMethod']}>
+                    <Button
+                        type="submit"
+                        disabled={
+                            !form.formState.isDirty ||
+                            !form.formState.isValid ||
+                            isPending ||
+                            !checker?.code ||
+                            !calculator?.code
+                        }
+                    >
+                        {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="main-form">

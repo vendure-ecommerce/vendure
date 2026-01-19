@@ -1,5 +1,12 @@
 import { graphql } from '@/graphql/graphql';
-import { DashboardRouteDefinition, DetailPageButton, ListPage } from '@vendure/dashboard';
+import { Trans } from '@lingui/react/macro';
+import {
+    ActionBarItem,
+    Button,
+    DashboardRouteDefinition,
+    DetailPageButton,
+    ListPage,
+} from '@vendure/dashboard';
 
 const getReviewList = graphql(`
     query GetProductReviews($options: ProductReviewListOptions) {
@@ -47,7 +54,7 @@ export const reviewList: DashboardRouteDefinition = {
     component: route => (
         <ListPage
             pageId="review-list"
-            title="Product Reviews"
+            title={<Trans>Product Reviews</Trans>}
             listQuery={getReviewList}
             route={route}
             defaultVisibility={{
@@ -82,6 +89,10 @@ export const reviewList: DashboardRouteDefinition = {
                     },
                 },
             }}
-        />
+        >
+            <ActionBarItem itemId="my-custom-button">
+                <Button>My Button</Button>
+            </ActionBarItem>
+        </ListPage>
     ),
 };

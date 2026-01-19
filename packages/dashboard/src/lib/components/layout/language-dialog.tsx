@@ -1,10 +1,11 @@
 import { CurrencyCode } from '@/vdb/constants.js';
 import { useDisplayLocale } from '@/vdb/hooks/use-display-locale.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
 import { useUiLanguageLoader } from '@/vdb/hooks/use-ui-language-loader.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';
 import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog.js';
@@ -18,12 +19,24 @@ export function LanguageDialog() {
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const { humanReadableLanguageAndLocale } = useDisplayLocale();
     const availableCurrencyCodes = Object.values(CurrencyCode);
-    const { formatCurrency, formatLanguageName, formatRegionName, formatCurrencyName, formatDate } =
-        useLocalFormat();
+    const { formatCurrency, formatRegionName, formatCurrencyName, formatDate } = useLocalFormat();
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
-    const orderedAvailableLanguages = availableLanguages.slice().sort((a, b) => a.localeCompare(b));
-    const orderedAvailableLocales = availableLocales.slice().sort((a, b) => a.localeCompare(b));
+    // Map and sort languages by their formatted names
+    const sortedLanguages = useSortedLanguages(availableLanguages);
+
+    // Map and sort locales by their formatted region names
+    const sortedLocales = useMemo(
+        () =>
+            availableLocales
+                .map(code => ({
+                    code,
+                    label: formatRegionName(code),
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)),
+        [availableLocales, formatRegionName],
+    );
+
     const handleLanguageChange = async (value: string) => {
         setDisplayLanguage(value);
         void loadAndActivateLocale(value);
@@ -46,10 +59,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a language" />
                         </SelectTrigger>
                         <SelectContent>
-                            {orderedAvailableLanguages.map(language => (
-                                <SelectItem key={language} value={language} className="flex gap-1">
-                                    <span className="uppercase text-muted-foreground">{language}</span>
-                                    <span>{formatLanguageName(language)}</span>
+                            {sortedLanguages.map(({ code, label }) => (
+                                <SelectItem key={code} value={code} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{code}</span>
+                                    <span>{label}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -64,10 +77,10 @@ export function LanguageDialog() {
                             <SelectValue placeholder="Select a locale" />
                         </SelectTrigger>
                         <SelectContent>
-                            {orderedAvailableLocales.map(locale => (
-                                <SelectItem key={locale} value={locale} className="flex gap-1">
-                                    <span className="uppercase text-muted-foreground">{locale}</span>
-                                    <span>{formatRegionName(locale)}</span>
+                            {sortedLocales.map(({ code, label }) => (
+                                <SelectItem key={code} value={code} className="flex gap-1">
+                                    <span className="uppercase text-muted-foreground">{code}</span>
+                                    <span>{label}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>

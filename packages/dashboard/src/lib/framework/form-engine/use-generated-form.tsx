@@ -9,6 +9,10 @@ import { getOperationVariablesFields } from '../document-introspection/get-docum
 import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
 import { removeEmptyIdFields, transformRelationFields } from './utils.js';
 
+export type WithLooseCustomFields<T> = T extends { customFields?: any }
+    ? Omit<T, 'customFields'> & { customFields?: T['customFields'] | unknown }
+    : T;
+
 /**
  * @description
  * Options for the useGeneratedForm hook.
@@ -40,7 +44,9 @@ export interface GeneratedFormOptions<
     customFieldConfig?: any[]; // Add custom field config for validation
     setValues: (
         entity: NonNullable<E>,
-    ) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
+    ) => WithLooseCustomFields<
+        VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>
+    >;
     onSubmit?: (
         values: VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>,
     ) => void;

@@ -34,7 +34,7 @@ export function NavigationConfirmation(props: Readonly<NavigationConfirmationPro
             return props.form.formState.isDirty;
         },
         withResolver: true,
-        enableBeforeUnload: true,
+        enableBeforeUnload: () => props.form.formState.isDirty,
     });
     return (
         <Dialog open={status === 'blocked'} onOpenChange={reset}>

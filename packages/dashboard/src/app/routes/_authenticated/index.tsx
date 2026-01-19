@@ -12,10 +12,10 @@ import {
 } from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
 import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
+    ActionBarItem,
     FullWidthPageBlock,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
@@ -181,19 +181,21 @@ function DashboardPage() {
                 <Trans>Insights</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="date-range-picker">
                     <DateRangePicker
                         dateRange={dateRange}
                         onDateRangeChange={setDateRange}
                         className="mr-2"
                     />
+                </ActionBarItem>
+                <ActionBarItem itemId="edit-layout-button">
                     <Button
                         variant={editMode ? 'default' : 'outline'}
                         onClick={() => setEditMode(prev => !prev)}
                     >
                         {editMode ? t`Save Layout` : t`Edit Layout`}
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="widgets">

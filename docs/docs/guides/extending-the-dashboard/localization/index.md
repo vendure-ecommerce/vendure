@@ -1,0 +1,94 @@
+---
+title: 'Localization'
+---
+
+:::note
+Support for localization of Dashboard extensions was added in v3.5.1
+:::
+
+The Dashboard uses [Lingui](https://lingui.dev/), which provides a powerful i18n solution for React:
+
+- ICU MessageFormat support
+- Automatic message extraction
+- TypeScript integration
+- Pluralization support
+- Compile-time optimization
+
+## Wrap your strings
+
+First you'll need to wrap any strings that need to be localized:
+
+```tsx
+import { Trans, useLingui } from '@lingui/react/macro';
+
+function MyComponent() {
+    const { t } = useLingui();
+
+    return (
+        <div>
+            <h1>
+                // highlight-next-line
+                <Trans>Welcome to Dashboard</Trans>
+            </h1>
+            // highlight-next-line
+            <p>{t`Click here to continue`}</p>
+        </div>
+    );
+}
+```
+
+You will mainly make use of the [Trans component](https://lingui.dev/ref/react#trans)
+and the [useLingui hook](https://lingui.dev/ref/react#uselingui).
+
+## Extract translations
+
+Create a `lingui.config.js` file in your project root, with references to any plugins that need to be localized:
+
+```js title="lingui.config.js
+import { defineConfig } from '@lingui/cli';
+
+export default defineConfig({
+    sourceLocale: 'en',
+    // Add any locales you wish to support
+    locales: ['en', 'de'],
+    catalogs: [
+        // For each plugin you want to localize, add a catalog entry
+        {
+            // This is the output location of the generated .po files
+            path: '<rootDir>/src/plugins/reviews/dashboard/i18n/{locale}',
+            // This is the pattern that tells Lingui which files to scan
+            // to extract translation strings
+            include: ['<rootDir>/src/plugins/reviews/dashboard/**'],
+        },
+    ],
+});
+```
+
+Then extract the translations:
+
+```bash
+npx lingui extract
+```
+
+This will output the given locale files in the directories specified in the config file above.
+In this case:
+
+```
+src/
+└── plugins/
+    └── reviews/
+        └── dashboard/
+            └── i18n/
+                ├── en.po
+                └── de.po
+```
+
+Since we set the "sourceLocale" to be "en", the `en.po` file will already be complete. You'll then need to
+open up the `de.po` file and add German translations for each of the strings, by filling out the empty `msgstr` values:
+
+```po title="de.po"
+#: test-plugins/reviews/dashboard/review-list.tsx:51
+msgid "Welcome to Dashboard"
+// highlight-next-line
+msgstr "Willkommen zum Dashboard"
+```

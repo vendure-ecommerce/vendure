@@ -1,5 +1,3 @@
-import { Permission } from '@vendure/common/lib/generated-types';
-
 import { useAuth } from './use-auth.js';
 import { useChannel } from './use-channel.js';
 
@@ -33,7 +31,9 @@ export function usePermissions() {
         if (!selectedChannel) {
             return false;
         }
-        return permissions.some(permission => selectedChannel.permissions.includes(permission as Permission));
+        return permissions.some(permission =>
+            selectedChannel.permissions.includes(permission as (typeof selectedChannel.permissions)[number]),
+        );
     }
 
     return { hasPermissions };
