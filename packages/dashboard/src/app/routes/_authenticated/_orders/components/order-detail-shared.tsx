@@ -101,6 +101,7 @@ export function OrderDetailShared({
     });
 
     const customFieldConfig = useCustomFieldConfig('Order');
+    const [refundDialogOpen, setRefundDialogOpen] = useState(false);
 
     const stateTransitionActions = useMemo(() => {
         if (!entity) {
@@ -146,7 +147,6 @@ export function OrderDetailShared({
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
     const showRefundOption = canRefundOrder(entity);
-    const [refundDialogOpen, setRefundDialogOpen] = useState(false);
 
     async function refreshOrderAndHistory() {
         if (entity) {
