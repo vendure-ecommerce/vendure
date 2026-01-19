@@ -5,6 +5,13 @@ export interface PathTransformerOptions {
     paths: Record<string, string[]>;
 }
 
+interface PathMatcher {
+    pattern: string;
+    regex: RegExp;
+    targets: string[];
+    hasWildcard: boolean;
+}
+
 /**
  * Creates a TypeScript custom transformer that rewrites import/export paths
  * from tsconfig path aliases to their resolved relative paths.
@@ -29,7 +36,9 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
         const hasWildcard = pattern.includes('*');
 
         // Escape special regex chars, then replace * with capture group
-        const regexStr = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.*)');
+        const regexStr: string = pattern
+            .replaceAll(/[.+?^${}()|[\]\\]/g, String.raw`\$&`)
+            .replaceAll('*', '(.*)');
 
         const regex = new RegExp('^' + regexStr + '$');
 
@@ -44,7 +53,7 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
                 node.moduleSpecifier &&
                 ts.isStringLiteral(node.moduleSpecifier)
             ) {
-                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text);
+                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text, pathMatchers);
                 if (resolvedPath) {
                     return context.factory.updateImportDeclaration(
                         node,
@@ -62,7 +71,7 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
                 node.moduleSpecifier &&
                 ts.isStringLiteral(node.moduleSpecifier)
             ) {
-                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text);
+                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text, pathMatchers);
                 if (resolvedPath) {
                     return context.factory.updateExportDeclaration(
                         node,
@@ -82,7 +91,7 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
                 node.arguments.length > 0 &&
                 ts.isStringLiteral(node.arguments[0])
             ) {
-                const resolvedPath = resolvePathAlias(node.arguments[0].text);
+                const resolvedPath = resolvePathAlias(node.arguments[0].text, pathMatchers);
                 if (resolvedPath) {
                     return context.factory.updateCallExpression(node, node.expression, node.typeArguments, [
                         context.factory.createStringLiteral(resolvedPath),
@@ -94,55 +103,64 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
             return ts.visitEachChild(node, visitor, context);
         };
 
-        /**
-         * Resolves a path alias to its actual path.
-         * Returns undefined if the module specifier doesn't match any path alias.
-         */
-        function resolvePathAlias(moduleSpecifier: string): string | undefined {
-            if (moduleSpecifier.startsWith('.') || moduleSpecifier.startsWith('/')) {
-                return undefined;
-            }
-
-            for (const { regex, targets, hasWildcard } of pathMatchers) {
-                const match = moduleSpecifier.match(regex);
-                if (match) {
-                    const target = targets[0];
-
-                    let resolved: string;
-                    if (hasWildcard && match[1]) {
-                        resolved = target.replace('*', match[1]);
-                    } else {
-                        resolved = target;
-                    }
-
-                    // Normalize to relative path with ./ prefix
-                    if (resolved.startsWith('./')) {
-                        resolved = resolved.substring(2);
-                    }
-                    resolved = './' + resolved;
-                    resolved = resolved.replace(/\\/g, '/');
-
-                    // Convert TypeScript extensions to JavaScript equivalents for ESM
-                    // .ts -> .js, .tsx -> .js, .mts -> .mjs, .cts -> .cjs
-                    if (resolved.endsWith('.ts') || resolved.endsWith('.tsx')) {
-                        resolved = resolved.replace(/\.tsx?$/, '.js');
-                    } else if (resolved.endsWith('.mts')) {
-                        resolved = resolved.replace(/\.mts$/, '.mjs');
-                    } else if (resolved.endsWith('.cts')) {
-                        resolved = resolved.replace(/\.cts$/, '.cjs');
-                    } else if (!resolved.match(/\.\w+$/)) {
-                        // No extension - assume directory import, add /index.js
-                        resolved += '/index.js';
-                    }
-                    // Files with other extensions (.json, .js, etc.) are left as-is
-
-                    return resolved;
-                }
-            }
-
-            return undefined;
-        }
-
         return sourceFile => ts.visitNode(sourceFile, visitor) as ts.SourceFile;
     };
+}
+
+/**
+ * Resolves a path alias to its actual path.
+ * Returns undefined if the module specifier doesn't match any path alias.
+ */
+function resolvePathAlias(moduleSpecifier: string, pathMatchers: PathMatcher[]): string | undefined {
+    if (moduleSpecifier.startsWith('.') || moduleSpecifier.startsWith('/')) {
+        return undefined;
+    }
+
+    for (const { regex, targets, hasWildcard } of pathMatchers) {
+        const match = regex.exec(moduleSpecifier);
+        if (match) {
+            const target = targets[0];
+            const resolved = hasWildcard && match[1] ? target.replaceAll('*', match[1]) : target;
+
+            return normalizeResolvedPath(resolved);
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * Normalizes a resolved path to a relative path with ./ prefix
+ * and converts TypeScript extensions to JavaScript equivalents.
+ */
+function normalizeResolvedPath(resolved: string): string {
+    // Normalize to relative path with ./ prefix
+    let result = resolved.startsWith('./') ? resolved.substring(2) : resolved;
+    result = `./${result}`;
+    result = result.replaceAll('\\', '/');
+
+    // Convert TypeScript extensions to JavaScript equivalents for ESM
+    return convertExtension(result);
+}
+
+/**
+ * Converts TypeScript extensions to JavaScript equivalents for ESM.
+ * .ts -> .js, .tsx -> .js, .mts -> .mjs, .cts -> .cjs
+ */
+function convertExtension(filePath: string): string {
+    if (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) {
+        return filePath.replace(/\.tsx?$/, '.js');
+    }
+    if (filePath.endsWith('.mts')) {
+        return filePath.replace(/\.mts$/, '.mjs');
+    }
+    if (filePath.endsWith('.cts')) {
+        return filePath.replace(/\.cts$/, '.cjs');
+    }
+    // No extension - assume directory import, add /index.js
+    if (!/\.\w+$/.test(filePath)) {
+        return `${filePath}/index.js`;
+    }
+    // Files with other extensions (.json, .js, etc.) are left as-is
+    return filePath;
 }
