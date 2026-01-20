@@ -9,7 +9,7 @@ This guide provides guidance for updating the Vendure core framework to a newer 
 
 ## How to update
 
-First, check the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md) for an overview of the changes and any breaking changes in the next version.
+First, check the [changelog](https://github.com/vendurehq/vendure/blob/master/CHANGELOG.md) for an overview of the changes and any breaking changes in the next version.
 
 In your project's `package.json` file, find all the `@vendure/...` packages and change the version
 to the latest. All the Vendure packages have the same version, and are all released together.
@@ -38,7 +38,7 @@ However, there are some exceptions to this rule:
 - In minor versions, (e.g. v2.0 to v2.1) we may update underlying dependencies to new major versions, which may in turn introduce breaking changes. These will be clearly noted in the changelog.
 - In minor versions we may also occasionally introduce non-destructive changes to the database schema. For instance, we may add a new column which would then require a database migration. We will _not_ introduce database schema changes that could potentially result in data loss in a minor version.
 
-Any instances of these exceptions will be clearly indicated in the [Changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md). The reasoning for these exceptions is discussed in the [Versioning policy RFC](https://github.com/vendure-ecommerce/vendure/issues/1846).
+Any instances of these exceptions will be clearly indicated in the [Changelog](https://github.com/vendurehq/vendure/blob/master/CHANGELOG.md). The reasoning for these exceptions is discussed in the [Versioning policy RFC](https://github.com/vendurehq/vendure/issues/1846).
 
 ### What kinds of breaking changes can be expected?
 
@@ -48,7 +48,7 @@ Major version upgrades (e.g. v1.x to v2.x) can include:
 * Changes to the GraphQL schema
 * Updates of major underlying libraries, such as upgrading NestJS to a new major version
 
-Every release will be accompanied by an entry in the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md), listing the changes in that release. And breaking changes are clearly listed under a **BREAKING CHANGE** heading.
+Every release will be accompanied by an entry in the [changelog](https://github.com/vendurehq/vendure/blob/master/CHANGELOG.md), listing the changes in that release. And breaking changes are clearly listed under a **BREAKING CHANGE** heading.
 
 ### Database migrations
 

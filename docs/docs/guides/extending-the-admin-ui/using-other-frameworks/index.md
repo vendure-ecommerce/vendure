@@ -8,7 +8,7 @@ From version 2.1.0, Admin UI extensions can be written in either Angular or Reac
 It is, however, possible to extend the Admin UI using other frameworks such as Vue, Svelte, Solid etc. Note that the extension experience is much more limited than with Angular or React, but depending on your needs it may be sufficient.
 
 :::info
-For working examples of a UI extensions built with **Vue**, see the [real-world-vendure ui extensions](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/ui-extensions)
+For working examples of a UI extensions built with **Vue**, see the [real-world-vendure ui extensions](https://github.com/vendurehq/real-world-vendure/tree/master/src/ui-extensions)
 :::
 
 There is still a small amount of Angular "glue code" needed to let the compiler know how to integrate your extension, so let's take a look at how this is done.

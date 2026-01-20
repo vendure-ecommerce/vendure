@@ -305,8 +305,8 @@ export class EventBus implements OnModuleDestroy {
      *
      * For more context on these two issues, see:
      *
-     * * https://github.com/vendure-ecommerce/vendure/issues/520
-     * * https://github.com/vendure-ecommerce/vendure/issues/1107
+     * * https://github.com/vendurehq/vendure/issues/520
+     * * https://github.com/vendurehq/vendure/issues/1107
      */
     private async awaitActiveTransactions<T extends VendureEvent>(event: T): Promise<T | undefined> {
         const entry = Object.entries(event).find(([_, value]) => value instanceof RequestContext);

@@ -184,37 +184,11 @@ async function runDashboardTests() {
     }
 }
 
-// Wait for the dashboard to be available
-async function awaitDashboardStartup() {
-    console.log('Checking for availability of Dashboard...');
-    let attempts = 0;
-    const maxAttempts = 30;
-
-    while (attempts < maxAttempts) {
-        try {
-            const response = await fetch('http://localhost:5173');
-            if (response.ok) {
-                console.log('Dashboard is running!');
-                return;
-            }
-        } catch (e) {
-            // Ignore errors and continue polling
-        }
-
-        attempts++;
-        if (attempts < maxAttempts) {
-            console.log('Dashboard not yet available, waiting 2s...');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-    }
-
-    throw new Error('Unable to establish connection to Dashboard server!');
-}
-
 // Main execution
 async function main() {
     try {
-        await awaitDashboardStartup();
+        // Note: The workflow uses wait-on to ensure the dashboard is available
+        // before running this script, so we can proceed directly to tests
         await runDashboardTests();
         process.exit(0);
     } catch (error) {

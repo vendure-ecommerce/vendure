@@ -3,7 +3,7 @@ import { SelectQueryBuilder } from 'typeorm';
 import { Logger } from '../config/logger/vendure-logger';
 
 /**
- * This is a work-around for this issue: https://github.com/vendure-ecommerce/vendure/issues/1664
+ * This is a work-around for this issue: https://github.com/vendurehq/vendure/issues/1664
  *
  * Explanation:
  * When calling `FindOptionsUtils.joinEagerRelations()`, there appears to be a bug in TypeORM whereby

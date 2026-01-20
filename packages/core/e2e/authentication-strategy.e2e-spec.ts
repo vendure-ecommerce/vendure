@@ -8,7 +8,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     TestAuthenticationStrategy,
@@ -18,13 +18,13 @@ import {
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AttemptLoginDocument,
     CurrentUserFragment,
     CustomerFragment,
     HistoryEntryType,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
@@ -193,7 +193,7 @@ describe('AuthenticationStrategy', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/695
+        // https://github.com/vendurehq/vendure/issues/695
         it('multiple external auth strategies to not interfere with one another', async () => {
             const EXPECTED_CUSTOMERS = [
                 {
@@ -206,9 +206,8 @@ describe('AuthenticationStrategy', () => {
                 },
             ];
 
-            const { customers: customers1 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers1 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers1.items).toEqual(EXPECTED_CUSTOMERS);
             const { authenticate: auth1 } = await shopClient.query<Codegen.AuthenticateMutation>(
                 AUTHENTICATE,
@@ -225,9 +224,8 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(auth1);
             expect(auth1.identifier).toBe(userData.email);
 
-            const { customers: customers2 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers2 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers2.items).toEqual(EXPECTED_CUSTOMERS);
 
             await shopClient.asAnonymousUser();
@@ -247,9 +245,8 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(auth2);
             expect(auth2.identifier).toBe(userData.email);
 
-            const { customers: customers3 } = await adminClient.query<Codegen.GetCustomersQuery>(
-                GET_CUSTOMERS,
-            );
+            const { customers: customers3 } =
+                await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(customers3.items).toEqual(EXPECTED_CUSTOMERS);
         });
 
@@ -303,7 +300,7 @@ describe('AuthenticationStrategy', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/926
+        // https://github.com/vendurehq/vendure/issues/926
         it('Customer and Admin external auth does not reuse same User for different strategies', async () => {
             const emailAddress = 'hello@test-domain.com';
             await adminClient.asAnonymousUser();
@@ -338,7 +335,7 @@ describe('AuthenticationStrategy', () => {
     describe('native auth', () => {
         const testEmailAddress = 'test-person@testdomain.com';
 
-        // https://github.com/vendure-ecommerce/vendure/issues/486#issuecomment-704991768
+        // https://github.com/vendurehq/vendure/issues/486#issuecomment-704991768
         it('allows login for an email address which is shared by a previously-deleted Customer', async () => {
             const { createCustomer: result1 } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
@@ -413,7 +410,7 @@ describe('No NativeAuthStrategy on Shop API', () => {
         await server.destroy();
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2282
+    // https://github.com/vendurehq/vendure/issues/2282
     it('can log in to Admin API', async () => {
         const { login } = await adminClient.query(AttemptLoginDocument, {
             username: 'superadmin',

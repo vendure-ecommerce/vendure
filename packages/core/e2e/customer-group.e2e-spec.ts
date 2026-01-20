@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { HistoryEntryType } from './graphql/generated-e2e-admin-types';
@@ -273,13 +273,12 @@ describe('CustomerGroup resolver', () => {
         expect(deleteCustomerGroup.message).toBeNull();
         expect(deleteCustomerGroup.result).toBe(DeletionResult.DELETED);
 
-        const { customerGroups } = await adminClient.query<Codegen.GetCustomerGroupsQuery>(
-            GET_CUSTOMER_GROUPS,
-        );
+        const { customerGroups } =
+            await adminClient.query<Codegen.GetCustomerGroupsQuery>(GET_CUSTOMER_GROUPS);
         expect(customerGroups.totalItems).toBe(0);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1785
+    // https://github.com/vendurehq/vendure/issues/1785
     it('removes customer from group when customer is deleted', async () => {
         const customer5Id = customers[4].id;
         const { createCustomerGroup } = await adminClient.query<

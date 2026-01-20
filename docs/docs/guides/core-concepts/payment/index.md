@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 Vendure can support many kinds of payment workflows, such as authorizing and capturing payment in a single step upon checkout or authorizing on checkout and then capturing on fulfillment.
 
 :::info
-For complete working examples of real payment integrations, see the [payments-plugins](https://github.com/vendure-ecommerce/vendure/tree/master/packages/payments-plugin/src)
+For complete working examples of real payment integrations, see the [payments-plugins](https://github.com/vendurehq/vendure/tree/master/packages/payments-plugin/src)
 :::
 
 ## Authorization & Settlement

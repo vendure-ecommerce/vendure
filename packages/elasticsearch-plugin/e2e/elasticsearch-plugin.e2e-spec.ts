@@ -3,11 +3,9 @@ import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
-    DefaultLogger,
     FacetValue,
     facetValueCollectionFilter,
     LanguageCode,
-    LogLevel,
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
@@ -17,15 +15,15 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import * as Codegen from '../../core/e2e/graphql/generated-e2e-admin-types';
 import {
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
 } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -34,8 +32,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -922,7 +920,7 @@ describe('Elasticsearch plugin', () => {
                 expect(t3?.enabled).toEqual(false);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/295
+            // https://github.com/vendurehq/vendure/issues/295
             it('enabled status survives reindex', async () => {
                 await adminClient.query<Codegen.ReindexMutation>(REINDEX);
 
@@ -938,7 +936,7 @@ describe('Elasticsearch plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/609
+        // https://github.com/vendurehq/vendure/issues/609
         describe('Synthetic index items', () => {
             let createdProductId: string;
 
@@ -1193,7 +1191,7 @@ describe('Elasticsearch plugin', () => {
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/896
+            // https://github.com/vendurehq/vendure/issues/896
             it('removing from channel with multiple languages', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
@@ -1391,7 +1389,7 @@ describe('Elasticsearch plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1638
+        // https://github.com/vendurehq/vendure/issues/1638
         it('hydrates variant custom field relation', async () => {
             const { updateProductVariants } = await adminClient.query<
                 Codegen.UpdateProductVariantsMutation,
