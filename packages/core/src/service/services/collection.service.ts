@@ -345,11 +345,13 @@ export class CollectionService implements OnModuleInit {
             .getRawMany<{ collectionId: string; count: string }>();
 
         const countMap = new Map<ID, number>();
+        // Normalize IDs to strings to ensure consistent Map key types,
+        // since raw query results return collectionId as string
         for (const id of collectionIds) {
-            countMap.set(id, 0);
+            countMap.set(String(id), 0);
         }
         for (const result of results) {
-            countMap.set(result.collectionId, Number(result.count));
+            countMap.set(String(result.collectionId), Number(result.count));
         }
         return countMap;
     }

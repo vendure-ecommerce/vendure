@@ -101,11 +101,11 @@ export class CollectionEntityResolver {
         }
         if (cachedCountsPromise) {
             const countsMap = await cachedCountsPromise;
-            return countsMap.get(collection.id) ?? 0;
+            return countsMap.get(String(collection.id)) ?? 0;
         }
         // Fallback to single query if cache not available (e.g., single collection query)
         const singleCountMap = await this.collectionService.getProductVariantCounts(ctx, [collection.id]);
-        return singleCountMap.get(collection.id) ?? 0;
+        return singleCountMap.get(String(collection.id)) ?? 0;
     }
 
     @ResolveField()
