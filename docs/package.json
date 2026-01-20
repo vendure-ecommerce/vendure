@@ -1,6 +1,6 @@
 {
     "name": "@vendure/docs",
-    "version": "0.0.0-202601161707",
+    "version": "0.0.0-20260116211406",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -13,7 +13,8 @@
     },
     "files": [
         "dist",
-        "docs"
+        "docs",
+        "README.md"
     ],
     "scripts": {
         "build": "rimraf dist && tsc -p ./tsconfig.build.json",
@@ -23,7 +24,7 @@
         "typecheck": "tsc"
     },
     "dependencies": {
-        "@vendure-io/docs-provider": "^0.2.0"
+        "@vendure-io/docs-provider": "^0.3.0"
     },
     "devDependencies": {
         "rimraf": "^5.0.5",

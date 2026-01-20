@@ -6,8 +6,8 @@ const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const file = (relativePath: string) => join(packageRoot, relativePath);
 
 export const manifest: DocsPackageManifest = {
-    id: 'oss',
-    name: 'Vendure Documentation',
+    id: 'core',
+    name: 'Vendure Core Documentation',
     version: '3.5.2',
     vendureVersion: 'v3',
     basePath: packageRoot,
