@@ -82,4 +82,5 @@ export const CacheKey = {
     AllZones: 'AllZones',
     ActiveTaxZone: 'ActiveTaxZone',
     ActiveTaxZone_PPA: 'ActiveTaxZone_PPA',
+    CollectionVariantCounts: 'CollectionService.getProductVariantCounts',
 };

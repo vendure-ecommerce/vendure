@@ -18,6 +18,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { GraphQLResolveInfo } from 'graphql';
 
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -63,10 +64,12 @@ export class CollectionResolver {
         @Info() info: GraphQLResolveInfo,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const collections = await this.collectionService.findAll(ctx, args.options || undefined, relations);
-        // Only cache collection IDs if productVariantCount is requested in the query
+        // Cache the variant counts query promise if productVariantCount is requested,
+        // allowing the DB query to start before the field resolvers are called
         if (isFieldInSelection(info, 'productVariantCount')) {
             const collectionIds = collections.items.map(c => c.id);
-            this.requestContextCache.set(ctx, 'CollectionService.collectionIds', collectionIds);
+            const countsPromise = this.collectionService.getProductVariantCounts(ctx, collectionIds);
+            this.requestContextCache.set(ctx, CacheKey.CollectionVariantCounts, countsPromise);
         }
         return collections;
     }

@@ -8,6 +8,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -77,28 +78,10 @@ export class CollectionEntityResolver {
 
     @ResolveField()
     async productVariantCount(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<number> {
-        let cachedCountsPromise = this.requestContextCache.get<Promise<Map<ID, number>>>(
+        const cachedCountsPromise = this.requestContextCache.get<Promise<Map<ID, number>>>(
             ctx,
-            'CollectionService.getProductVariantCounts',
+            CacheKey.CollectionVariantCounts,
         );
-        if (!cachedCountsPromise) {
-            const cachedCollectionIds = this.requestContextCache.get<ID[]>(
-                ctx,
-                'CollectionService.collectionIds',
-            );
-            if (cachedCollectionIds?.length) {
-                // Lazily create the batch query promise on first access
-                cachedCountsPromise = this.collectionService.getProductVariantCounts(
-                    ctx,
-                    cachedCollectionIds,
-                );
-                this.requestContextCache.set(
-                    ctx,
-                    'CollectionService.getProductVariantCounts',
-                    cachedCountsPromise,
-                );
-            }
-        }
         if (cachedCountsPromise) {
             const countsMap = await cachedCountsPromise;
             return countsMap.get(String(collection.id)) ?? 0;
