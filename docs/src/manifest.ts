@@ -626,6 +626,7 @@ const manifestInput: DocsPackageManifestInput = {
         {
             title: 'Legacy APIs',
             slug: 'legacy-apis',
+            hidden: true,
             children: [
                 {
                     title: 'Angular Admin UI',
@@ -952,6 +953,7 @@ const manifestInput: DocsPackageManifestInput = {
         {
             title: 'User Guide',
             slug: 'user-guide',
+            hidden: true,
             file: file('docs/user-guide/index.mdx'),
             children: [
                 {
