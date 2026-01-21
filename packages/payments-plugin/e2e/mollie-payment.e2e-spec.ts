@@ -582,6 +582,50 @@ describe('Mollie payments', () => {
             expect(mollieRequest.captureMode).toBe('manual');
         });
 
+        it('Should not allow setting immediateCapture=false via client input, when it is already set on the plugin level to true', async () => {
+            MolliePlugin.options.immediateCapture = true;
+            const logSpy = vi.spyOn(Logger, 'warn');
+            let mollieRequest: any;
+            nock('https://api.mollie.com/')
+                .post('/v2/payments', body => {
+                    mollieRequest = body;
+                    return true;
+                })
+                .reply(200, mollieMockData.molliePaymentResponse);
+            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+                input: {
+                    immediateCapture: false,
+                },
+            });
+            MolliePlugin.options.immediateCapture = undefined; // Reset again for next test
+            expect(logSpy.mock.calls?.[0]?.[0]).toContain(
+                `'immediateCapture' is overridden by the plugin options to 'true'`,
+            );
+            expect(mollieRequest.captureMode).toBe('automatic');
+        });
+
+        it('Should not allow setting immediateCapture=true via client input, when it is already set on the plugin level to false', async () => {
+            MolliePlugin.options.immediateCapture = false;
+            const logSpy = vi.spyOn(Logger, 'warn');
+            let mollieRequest: any;
+            nock('https://api.mollie.com/')
+                .post('/v2/payments', body => {
+                    mollieRequest = body;
+                    return true;
+                })
+                .reply(200, mollieMockData.molliePaymentResponse);
+            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+                input: {
+                    immediateCapture: true,
+                },
+            });
+            MolliePlugin.options.immediateCapture = undefined; // Reset again for next test
+            expect(logSpy.mock.calls?.[0]?.[0]).toContain(
+                `'immediateCapture' is overridden by the plugin options to 'false'`,
+            );
+            expect(mollieRequest.captureMode).toBe('manual');
+        });
+
         it('Should authorize payment with immediateCapture = false', async () => {
             nock('https://api.mollie.com/')
                 .get(`/v2/payments/${mollieMockData.molliePaymentResponse.id}`)
