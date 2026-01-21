@@ -1,0 +1,39 @@
+---
+title: "CustomerHistoryEntry"
+generated: true
+---
+
+
+## CustomerHistoryEntry
+
+<GenerationInfo sourceFile="packages/core/src/entity/history-entry/customer-history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
+
+Represents an event in the history of a particular <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>.
+
+```ts title="Signature"
+class CustomerHistoryEntry extends HistoryEntry {
+    constructor(input: DeepPartial<CustomerHistoryEntry>)
+    @Index()
+    @ManyToOne(type => Customer, { onDelete: 'CASCADE' })
+    customer: Customer;
+}
+```
+* Extends: <code><a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a></code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(input: DeepPartial<<a href='/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>>) => CustomerHistoryEntry`}   />
+
+
+### customer
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>`}   />
+
+
+
+
+</div>

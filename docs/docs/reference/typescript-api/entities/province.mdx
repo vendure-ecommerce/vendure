@@ -1,0 +1,38 @@
+---
+title: "Province"
+generated: true
+---
+
+
+## Province
+
+<GenerationInfo sourceFile="packages/core/src/entity/region/province.entity.ts" sourceLine="13" packageName="@vendure/core" />
+
+A Province represents an administrative subdivision of a <a href='/reference/typescript-api/entities/country#country'>Country</a>. For example, in the
+United States, the country would be "United States" and the province would be "California".
+
+```ts title="Signature"
+class Province extends Region {
+    constructor(input?: DeepPartial<Province>)
+    readonly type: RegionType = 'province';
+}
+```
+* Extends: <code><a href='/reference/typescript-api/entities/region#region'>Region</a></code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(input?: DeepPartial<<a href='/reference/typescript-api/entities/province#province'>Province</a>>) => Province`}   />
+
+
+### type
+
+<MemberInfo kind="property" type={`RegionType`}   />
+
+
+
+
+</div>

@@ -1,11 +1,13 @@
-import type { DocsPackageManifest } from '@vendure-io/docs-provider';
+import type { DocsPackageManifestInput, FileInfo } from '@vendure-io/docs-provider';
+import { createNestedNavigationFromFolder, resolveManifest } from '@vendure-io/docs-provider';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const file = (relativePath: string) => join(packageRoot, relativePath);
+const folder = (relativePath: string) => join(packageRoot, relativePath);
 
-export const manifest: DocsPackageManifest = {
+const manifestInput: DocsPackageManifestInput = {
     id: 'core',
     name: 'Vendure Core Documentation',
     version: '3.5.2',
@@ -748,6 +750,12 @@ export const manifest: DocsPackageManifest = {
                     title: 'TypeScript API',
                     slug: 'typescript-api',
                     file: file('docs/reference/typescript-api/_index.mdx'),
+                    children: createNestedNavigationFromFolder(
+                        folder('docs/reference/typescript-api'),
+                        {
+                            filter: (info: FileInfo) => info.filename !== '_index.mdx',
+                        },
+                    ),
                 },
                 {
                     title: 'Core Plugins',
@@ -758,61 +766,133 @@ export const manifest: DocsPackageManifest = {
                             title: 'AdminUiPlugin',
                             slug: 'admin-ui-plugin',
                             file: file('docs/reference/core-plugins/admin-ui-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/admin-ui-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'AssetServerPlugin',
                             slug: 'asset-server-plugin',
                             file: file('docs/reference/core-plugins/asset-server-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/asset-server-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'DashboardPlugin',
                             slug: 'dashboard-plugin',
                             file: file('docs/reference/core-plugins/dashboard-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/dashboard-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'ElasticsearchPlugin',
                             slug: 'elasticsearch-plugin',
                             file: file('docs/reference/core-plugins/elasticsearch-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/elasticsearch-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'EmailPlugin',
                             slug: 'email-plugin',
                             file: file('docs/reference/core-plugins/email-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/email-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'GraphiQLPlugin',
                             slug: 'graphiql-plugin',
                             file: file('docs/reference/core-plugins/graphiql-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/graphiql-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'HardenPlugin',
                             slug: 'harden-plugin',
                             file: file('docs/reference/core-plugins/harden-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/harden-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'JobQueuePlugin',
                             slug: 'job-queue-plugin',
                             file: file('docs/reference/core-plugins/job-queue-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/job-queue-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'PaymentsPlugin',
                             slug: 'payments-plugin',
                             file: file('docs/reference/core-plugins/payments-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/payments-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'SentryPlugin',
                             slug: 'sentry-plugin',
                             file: file('docs/reference/core-plugins/sentry-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/sentry-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'StellatePlugin',
                             slug: 'stellate-plugin',
                             file: file('docs/reference/core-plugins/stellate-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/stellate-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'TelemetryPlugin',
                             slug: 'telemetry-plugin',
                             file: file('docs/reference/core-plugins/telemetry-plugin/index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/core-plugins/telemetry-plugin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                                },
+                            ),
                         },
                     ],
                 },
@@ -824,11 +904,23 @@ export const manifest: DocsPackageManifest = {
                             title: 'Admin API',
                             slug: 'admin',
                             file: file('docs/reference/graphql-api/admin/_index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/graphql-api/admin'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== '_index.mdx',
+                                },
+                            ),
                         },
                         {
                             title: 'Shop API',
                             slug: 'shop',
                             file: file('docs/reference/graphql-api/shop/_index.mdx'),
+                            children: createNestedNavigationFromFolder(
+                                folder('docs/reference/graphql-api/shop'),
+                                {
+                                    filter: (info: FileInfo) => info.filename !== '_index.mdx',
+                                },
+                            ),
                         },
                     ],
                 },
@@ -836,11 +928,23 @@ export const manifest: DocsPackageManifest = {
                     title: 'Dashboard API',
                     slug: 'dashboard',
                     file: file('docs/reference/dashboard/index.mdx'),
+                    children: createNestedNavigationFromFolder(
+                        folder('docs/reference/dashboard'),
+                        {
+                            filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                        },
+                    ),
                 },
                 {
                     title: 'Admin UI API',
                     slug: 'admin-ui-api',
                     file: file('docs/reference/admin-ui-api/index.mdx'),
+                    children: createNestedNavigationFromFolder(
+                        folder('docs/reference/admin-ui-api'),
+                        {
+                            filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                        },
+                    ),
                 },
             ],
         },
@@ -884,3 +988,5 @@ export const manifest: DocsPackageManifest = {
         docsPath: 'docs/docs',
     },
 };
+
+export const manifest = resolveManifest(manifestInput);

@@ -1,6 +1,6 @@
 {
     "name": "@vendure/docs",
-    "version": "0.0.0-20260116211406",
+    "version": "0.0.0-202601201808",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -24,7 +24,7 @@
         "typecheck": "tsc"
     },
     "dependencies": {
-        "@vendure-io/docs-provider": "^0.3.0"
+        "@vendure-io/docs-provider": "^0.4.0"
     },
     "devDependencies": {
         "rimraf": "^5.0.5",

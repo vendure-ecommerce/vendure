@@ -1,0 +1,26 @@
+---
+title: "RegisterInitializer"
+generated: true
+---
+
+
+## registerInitializer
+
+<GenerationInfo sourceFile="packages/testing/src/initializers/initializers.ts" sourceLine="16" packageName="@vendure/testing" />
+
+Registers a <a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a> for the given database type. Should be called before invoking
+<a href='/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>.
+
+```ts title="Signature"
+function registerInitializer(type: DataSourceOptions['type'], initializer: TestDbInitializer<any>): void
+```
+Parameters
+
+### type
+
+<MemberInfo kind="parameter" type={`DataSourceOptions['type']`} />
+
+### initializer
+
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a><any>`} />
+
