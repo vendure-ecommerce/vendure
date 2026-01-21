@@ -583,10 +583,11 @@ describe('Mollie payments', () => {
         });
 
         it('Should not allow setting immediateCapture=false via client input, when it is already set on the plugin level to true', async () => {
+            const originalImmediateCapture = MolliePlugin.options.immediateCapture;
             MolliePlugin.options.immediateCapture = true;
             const logSpy = vi.spyOn(Logger, 'warn');
             onTestFinished(() => {
-                MolliePlugin.options.immediateCapture = undefined;
+                MolliePlugin.options.immediateCapture = originalImmediateCapture;
                 logSpy.mockClear();
             });
             let mollieRequest: any;
