@@ -78,7 +78,8 @@ export interface MolliePluginOptions {
      * @description
      * Immediate capture mode for pay-later methods like Klarna.
      * Setting this option will make the plugin ignore the `immediateCapture` option in the `createMolliePaymentIntent` mutation.
-     * Default is false.
+     *
+     * The default is true, unless set otherwise as input in the `createMolliePaymentIntent` mutation.
      */
     immediateCapture?: boolean;
 }
