@@ -2,10 +2,6 @@
 title: "ConfigurableOperationDef"
 generated: true
 ---
-
-
-## ConfigurableOperationDef
-
 <GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="335" packageName="@vendure/core" />
 
 A ConfigurableOperationDef is a special type of object used extensively by Vendure to define
@@ -13,15 +9,15 @@ code blocks which have arguments which are configurable at run-time by the admin
 
 This is the mechanism used by:
 
-* <a href='/reference/typescript-api/configuration/collection-filter#collectionfilter'>CollectionFilter</a>
-* <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>
-* <a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>
-* <a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>
-* <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>
-* <a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>
+* <DocsLink href="/reference/typescript-api/configuration/collection-filter#collectionfilter">CollectionFilter</DocsLink>
+* <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>
+* <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">PromotionAction</DocsLink>
+* <DocsLink href="/reference/typescript-api/promotions/promotion-condition#promotioncondition">PromotionCondition</DocsLink>
+* <DocsLink href="/reference/typescript-api/shipping/shipping-calculator#shippingcalculator">ShippingCalculator</DocsLink>
+* <DocsLink href="/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker">ShippingEligibilityChecker</DocsLink>
 
 Any class which extends ConfigurableOperationDef works in the same way: it takes a
-config object as the constructor argument. That config object extends the <a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>
+config object as the constructor argument. That config object extends the <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">ConfigurableOperationDefOptions</DocsLink>
 interface and typically adds some kind of business logic function to it.
 
 For example, in the case of `ShippingEligibilityChecker`,
@@ -35,13 +31,13 @@ arguments that are exposed via the Admin UI as data input components. This allow
 be set at run-time by the Administrator. Those values can then be accessed in the business logic
 of the operation.
 
-The data type of the args can be one of <a href='/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>, and the configuration is further explained in
-the docs of <a href='/reference/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a>.
+The data type of the args can be one of <DocsLink href="/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype">ConfigArgType</DocsLink>, and the configuration is further explained in
+the docs of <DocsLink href="/reference/typescript-api/configurable-operation-def/config-args#configargs">ConfigArgs</DocsLink>.
 
 ## Dependency Injection
 If your business logic relies on injectable providers, such as the `TransactionalConnection` object, or any of the
 internal Vendure services or those defined in a plugin, you can inject them by using the config object's
-`init()` method, which exposes the <a href='/reference/typescript-api/common/injector#injector'>Injector</a>.
+`init()` method, which exposes the <DocsLink href="/reference/typescript-api/common/injector#injector">Injector</DocsLink>.
 
 Here's an example of a ShippingCalculator that injects a service which has been defined in a plugin:
 

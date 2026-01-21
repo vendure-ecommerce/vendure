@@ -2,14 +2,10 @@
 title: "Calculated"
 generated: true
 ---
-
-
-## Calculated
-
 <GenerationInfo sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="43" packageName="@vendure/core" />
 
 Used to define calculated entity getters. The decorator simply attaches an array of "calculated"
-property names to the entity's prototype. This array is then used by the <a href='/reference/typescript-api/data-access/calculated-property-subscriber#calculatedpropertysubscriber'>CalculatedPropertySubscriber</a>to transfer the getter function from the prototype to the entity instance.
+property names to the entity's prototype. This array is then used by the <DocsLink href="/reference/typescript-api/data-access/calculated-property-subscriber#calculatedpropertysubscriber">CalculatedPropertySubscriber</DocsLink>to transfer the getter function from the prototype to the entity instance.
 
 ```ts title="Signature"
 function Calculated(queryInstruction?: CalculatedColumnQueryInstruction): MethodDecorator
@@ -20,13 +16,9 @@ Parameters
 
 <MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>`} />
 
-
-
-## CalculatedColumnQueryInstruction
-
 <GenerationInfo sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="17" packageName="@vendure/core" />
 
-Optional metadata used to tell the <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a> & <a href='/reference/typescript-api/request/relations-decorator#relations'>Relations</a> decorator how to deal with
+Optional metadata used to tell the <DocsLink href="/reference/typescript-api/data-access/list-query-builder#listquerybuilder">ListQueryBuilder</DocsLink> & <DocsLink href="/reference/typescript-api/request/relations-decorator#relations">Relations</DocsLink> decorator how to deal with
 calculated columns when sorting, filtering and deriving required relations from GraphQL operations.
 
 ```ts title="Signature"

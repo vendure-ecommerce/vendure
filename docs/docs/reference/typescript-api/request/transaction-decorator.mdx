@@ -2,15 +2,11 @@
 title: "Transaction Decorator"
 generated: true
 ---
-
-
-## Transaction
-
 <GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="81" packageName="@vendure/core" />
 
 Runs the decorated method in a TypeORM transaction. It works by creating a transactional
 QueryRunner which gets attached to the RequestContext object. When the RequestContext
-is the passed to the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getRepository()` method, this
+is the passed to the <DocsLink href="/reference/typescript-api/data-access/transactional-connection#transactionalconnection">TransactionalConnection</DocsLink> `getRepository()` method, this
 QueryRunner is used to execute the queries within this transaction.
 
 Essentially, the entire resolver function is wrapped in a try-catch block which commits the
@@ -33,14 +29,10 @@ async myMutation(@Ctx() ctx: RequestContext) {
 }
 ```
 
-
-
-## TransactionMode
-
 <GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="32" packageName="@vendure/core" />
 
 The Transaction decorator can handle transactions automatically (which is the default) or be set to
-"manual" mode, where the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
+"manual" mode, where the <DocsLink href="/reference/typescript-api/data-access/transactional-connection#transactionalconnection">TransactionalConnection</DocsLink> `.startTransaction()` and `.commitOpenTransaction()`
 methods must them be used.
 
 *Example*
@@ -63,10 +55,6 @@ the case that an uncaught error is thrown within the resolver.
 ```ts title="Signature"
 type TransactionMode = 'auto' | 'manual'
 ```
-
-
-## TransactionIsolationLevel
-
 <GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="45" packageName="@vendure/core" />
 
 Transactions can be run at different isolation levels. The default is undefined, which

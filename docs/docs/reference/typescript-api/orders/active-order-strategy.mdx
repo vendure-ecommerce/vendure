@@ -2,17 +2,13 @@
 title: "ActiveOrderStrategy"
 generated: true
 ---
-
-
-## ActiveOrderStrategy
-
 <GenerationInfo sourceFile="packages/core/src/config/order/active-order-strategy.ts" sourceLine="127" packageName="@vendure/core" since="1.9.0" />
 
 This strategy is used to determine the active Order for all order-related operations in
 the Shop API. By default, all the Shop API operations that relate to the active Order (e.g.
 `activeOrder`, `addItemToOrder`, `applyCouponCode` etc.) will implicitly create a new Order
 and set it on the current Session, and then read the session to obtain the active Order.
-This behaviour is defined by the <a href='/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy'>DefaultActiveOrderStrategy</a>.
+This behaviour is defined by the <DocsLink href="/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy">DefaultActiveOrderStrategy</DocsLink>.
 
 The `InputType` generic argument should correspond to the input type defined by the
 `defineInputType()` method.

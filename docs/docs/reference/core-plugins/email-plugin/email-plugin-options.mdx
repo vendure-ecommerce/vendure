@@ -2,10 +2,6 @@
 title: "EmailPluginOptions"
 generated: true
 ---
-
-
-## EmailPluginOptions
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="77" packageName="@vendure/email-plugin" />
 
 Configuration for the EmailPlugin.
@@ -50,7 +46,7 @@ Configures how the emails are sent.
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a><string, any>>`}   />
 
-An array of <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s which define which Vendure events will trigger
+An array of <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>s which define which Vendure events will trigger
 emails, and how those emails are generated.
 ### globalTemplateVars
 
@@ -75,10 +71,6 @@ better match with custom email sending functionality.
 
 
 </div>
-
-
-## GlobalTemplateVarsFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="64" packageName="@vendure/email-plugin" since="2.3.0" />
 
 Allows you to dynamically load the "globalTemplateVars" key async and access Vendure services
@@ -112,10 +104,6 @@ type GlobalTemplateVarsFn = (
     injector: Injector,
 ) => Promise<{ [key: string]: any }>
 ```
-
-
-## EmailPluginDevModeOptions
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="150" packageName="@vendure/email-plugin" />
 
 Configuration for running the EmailPlugin in development mode.

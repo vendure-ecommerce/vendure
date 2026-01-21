@@ -2,10 +2,6 @@
 title: "HistoryEntries"
 generated: true
 ---
-
-
-## DashboardHistoryEntryComponent
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/history-entries.ts" sourceLine="96" packageName="@vendure/dashboard" since="3.4.3" />
 
 A definition of a custom component that will be used to render the given
@@ -58,14 +54,14 @@ The `type` should correspond to a valid `HistoryEntryType`, such as
 
 - `CUSTOMER_REGISTERED`
 - `ORDER_STATE_TRANSITION`
-- some custom type - see the <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a> docs for a guide on
+- some custom type - see the <DocsLink href="/reference/typescript-api/services/history-service#historyservice">HistoryService</DocsLink> docs for a guide on
   how to define custom history entry types.
 ### component
 
 <MemberInfo kind="property" type={`React.ComponentType<{         entry: <a href='/reference/dashboard/extensions-api/history-entries#historyentryitem'>HistoryEntryItem</a>;         entity: OrderHistoryOrderDetail | CustomerHistoryCustomerDetail;     }>`}   />
 
 The component which is used to render the timeline entry. It should use the
-<a href='/reference/dashboard/extensions-api/history-entries#historyentry'>HistoryEntry</a> component and pass the appropriate props to configure
+<DocsLink href="/reference/dashboard/extensions-api/history-entries#historyentry">HistoryEntry</DocsLink> component and pass the appropriate props to configure
 how it will be displayed.
 
 The `entity` prop will be a subset of the Order object for Order history entries,
@@ -73,10 +69,6 @@ or a subset of the Customer object for customer history entries.
 
 
 </div>
-
-
-## HistoryEntryItem
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/types/history-entries.ts" sourceLine="14" packageName="@vendure/dashboard" since="3.4.3" />
 
 This object contains the information about the history entry.
@@ -148,13 +140,9 @@ and the `ORDER_STATE_TRANSITION` data looks like this:
 
 
 </div>
-
-
-## HistoryEntryProps
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/history-entry/history-entry.tsx" sourceLine="14" packageName="@vendure/dashboard" since="3.4.3" />
 
-The props for the <a href='/reference/dashboard/extensions-api/history-entries#historyentry'>HistoryEntry</a> component.
+The props for the <DocsLink href="/reference/dashboard/extensions-api/history-entries#historyentry">HistoryEntry</DocsLink> component.
 
 ```ts title="Signature"
 interface HistoryEntryProps {
@@ -226,10 +214,6 @@ be collapsible.
 
 
 </div>
-
-
-## HistoryEntry
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/history-entry/history-entry.tsx" sourceLine="74" packageName="@vendure/dashboard" since="3.4.3" />
 
 A component which is used to display a history entry in the order/customer history timeline.

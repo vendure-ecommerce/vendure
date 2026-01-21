@@ -91,7 +91,6 @@ export class TypescriptDocsRenderer {
     ): string {
         const { title, weight, category, description, members } = info;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(info);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output +=
@@ -118,7 +117,6 @@ export class TypescriptDocsRenderer {
     private renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, type, fullText } = typeAliasInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(typeAliasInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderTypeAliasSignature(typeAliasInfo);
@@ -133,7 +131,6 @@ export class TypescriptDocsRenderer {
     private renderEnum(enumInfo: EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText } = enumInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(enumInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderEnumSignature(enumInfo);
@@ -143,7 +140,6 @@ export class TypescriptDocsRenderer {
     private renderFunction(functionInfo: FunctionInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText, parameters } = functionInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(functionInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderFunctionSignature(functionInfo, knownTypeMap);
@@ -157,7 +153,6 @@ export class TypescriptDocsRenderer {
     private renderVariable(variableInfo: VariableInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText } = variableInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(variableInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         return output;
@@ -370,7 +365,7 @@ export class TypescriptDocsRenderer {
     private renderDescription(description: string, knownTypeMap: TypeMap, docsUrl: string): string {
         for (const [key, val] of knownTypeMap) {
             const re = new RegExp(`{@link\\s*${key}}`, 'g');
-            description = description.replace(re, `<a href='${docsUrl}/${val}'>${key}</a>`);
+            description = description.replace(re, `<DocsLink href="${docsUrl}/${val}">${key}</DocsLink>`);
         }
         return description;
     }

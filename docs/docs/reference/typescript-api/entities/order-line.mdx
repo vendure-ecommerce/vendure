@@ -2,13 +2,9 @@
 title: "OrderLine"
 generated: true
 ---
-
-
-## OrderLine
-
 <GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="32" packageName="@vendure/core" />
 
-A single line on an <a href='/reference/typescript-api/entities/order#order'>Order</a> which contains information about the <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and
+A single line on an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> which contains information about the <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> and
 quantity ordered, as well as the price and tax information.
 
 ```ts title="Signature"
@@ -109,7 +105,7 @@ class OrderLine extends VendureEntity implements HasCustomFields {
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>`}   />
 
-The <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> of the <a href='/reference/typescript-api/entities/seller#seller'>Seller</a> for a multivendor setup.
+The <DocsLink href="/reference/typescript-api/entities/channel#channel">Channel</DocsLink> of the <DocsLink href="/reference/typescript-api/entities/seller#seller">Seller</DocsLink> for a multivendor setup.
 ### sellerChannelId
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
@@ -119,8 +115,8 @@ The <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> of 
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>`}   />
 
-The <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to which this line has been assigned.
-This is determined by the configured <a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>.
+The <DocsLink href="/reference/typescript-api/entities/shipping-line#shippingline">ShippingLine</DocsLink> to which this line has been assigned.
+This is determined by the configured <DocsLink href="/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy">ShippingLineAssignmentStrategy</DocsLink>.
 ### shippingLineId
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
@@ -130,7 +126,7 @@ This is determined by the configured <a href='/reference/typescript-api/shipping
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>`}   />
 
-The <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which is being ordered.
+The <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> which is being ordered.
 ### productVariantId
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
@@ -175,7 +171,7 @@ The <a href='/reference/typescript-api/entities/product-variant#productvariant'>
 
 <MemberInfo kind="property" type={`number`}   />
 
-The quantity of this OrderLine at the time the order was placed (as per the <a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>).
+The quantity of this OrderLine at the time the order was placed (as per the <DocsLink href="/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy">OrderPlacedStrategy</DocsLink>).
 ### initialListPrice
 
 <MemberInfo kind="property" type={`number`}   />
@@ -187,7 +183,7 @@ the Order has been performed.
 
 <MemberInfo kind="property" type={`number`}   />
 
-This is the price as listed by the ProductVariant (and possibly modified by the <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>),
+This is the price as listed by the ProductVariant (and possibly modified by the <DocsLink href="/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy">OrderItemPriceCalculationStrategy</DocsLink>),
 which, depending on the current Channel, may or may not include tax.
 ### listPriceIncludesTax
 

@@ -2,15 +2,11 @@
 title: "BulkAction"
 generated: true
 ---
-
-
-## BulkAction
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="99" packageName="@vendure/admin-ui" since="1.8.0" />
 
 Configures a bulk action which can be performed on all selected items in a list view.
 
-For a full example, see the <a href='/reference/admin-ui-api/bulk-actions/register-bulk-action#registerbulkaction'>registerBulkAction</a> docs.
+For a full example, see the <DocsLink href="/reference/admin-ui-api/bulk-actions/register-bulk-action#registerbulkaction">registerBulkAction</DocsLink> docs.
 
 ```ts title="Signature"
 interface BulkAction<ItemType = any, ComponentType = any> {
@@ -116,10 +112,6 @@ registerBulkAction({
 
 
 </div>
-
-
-## BulkActionLocationId
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="12" packageName="@vendure/admin-ui" since="1.8.0" />
 
 A valid location of a list view that supports the bulk actions API.
@@ -146,10 +138,6 @@ type BulkActionLocationId = | 'product-list'
     | 'zone-members-list'
     | string
 ```
-
-
-## BulkActionFunctionContext
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="43" packageName="@vendure/admin-ui" since="1.8.0" />
 
 This is the argument which gets passed to the `getTranslationVars` and `isVisible` functions
@@ -193,10 +181,6 @@ to get service instances which might be needed in the click handler.
 
 
 </div>
-
-
-## BulkActionClickContext
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="74" packageName="@vendure/admin-ui" since="1.8.0" />
 
 This is the argument which gets passed to the `onClick` function of a BulkAction.

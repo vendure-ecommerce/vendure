@@ -2,16 +2,12 @@
 title: "JobBuffer"
 generated: true
 ---
-
-
-## JobBuffer
-
 <GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer.ts" sourceLine="83" packageName="@vendure/core" since="1.3.0" />
 
 A JobBuffer is used to temporarily prevent jobs from being sent to the job queue for processing.
 Instead, it collects certain jobs (as specified by the `collect()` method), and stores them.
 
-How these buffered jobs are stored is determined by the configured <a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>.
+How these buffered jobs are stored is determined by the configured <DocsLink href="/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy">JobBufferStorageStrategy</DocsLink>.
 
 The JobBuffer can be thought of as a kind of "interceptor" of jobs. That is, when a JobBuffer is active,
 it sits in between calls to `JobQueue.add()` and the actual adding of the job to the queue.
@@ -62,7 +58,7 @@ export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobD
 }
 ```
 
-A JobBuffer is used by adding it to the <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, at which point it will become active
+A JobBuffer is used by adding it to the <DocsLink href="/reference/typescript-api/job-queue/job-queue-service#jobqueueservice">JobQueueService</DocsLink>, at which point it will become active
 and start collecting jobs.
 
 At some later point, the buffer can be flushed, causing the buffered jobs to be passed through the

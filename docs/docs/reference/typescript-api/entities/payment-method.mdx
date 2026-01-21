@@ -2,14 +2,10 @@
 title: "PaymentMethod"
 generated: true
 ---
-
-
-## PaymentMethod
-
 <GenerationInfo sourceFile="packages/core/src/entity/payment-method/payment-method.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
-A PaymentMethod is created automatically according to the configured <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s defined
-in the <a href='/reference/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a> config.
+A PaymentMethod is created automatically according to the configured <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>s defined
+in the <DocsLink href="/reference/typescript-api/payment/payment-options#paymentoptions">PaymentOptions</DocsLink> config.
 
 ```ts title="Signature"
 class PaymentMethod extends VendureEntity implements Translatable, ChannelAware, HasCustomFields {

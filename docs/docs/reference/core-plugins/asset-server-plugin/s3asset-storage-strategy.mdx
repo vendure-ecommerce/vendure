@@ -2,13 +2,9 @@
 title: "S3AssetStorageStrategy"
 generated: true
 ---
-
-
-## S3AssetStorageStrategy
-
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/config/s3-asset-storage-strategy.ts" sourceLine="155" packageName="@vendure/asset-server-plugin" />
 
-An <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
+An <DocsLink href="/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy">AssetStorageStrategy</DocsLink> which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
 To us this strategy you must first have access to an AWS account.
 See their [getting started guide](https://aws.amazon.com/s3/getting-started/) for how to get set up.
 
@@ -18,11 +14,11 @@ Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aw
 npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
 ```
 
-**Note:** Rather than instantiating this manually, use the <a href='/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> function.
+**Note:** Rather than instantiating this manually, use the <DocsLink href="/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage">configureS3AssetStorage</DocsLink> function.
 
 ## Use with S3-compatible services (MinIO)
 This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/).
-See the <a href='/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> for an example with MinIO.
+See the <DocsLink href="/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage">configureS3AssetStorage</DocsLink> for an example with MinIO.
 
 ```ts title="Signature"
 class S3AssetStorageStrategy implements AssetStorageStrategy {
@@ -91,10 +87,6 @@ class S3AssetStorageStrategy implements AssetStorageStrategy {
 
 
 </div>
-
-
-## S3Config
-
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/config/s3-asset-storage-strategy.ts" sourceLine="19" packageName="@vendure/asset-server-plugin" />
 
 Configuration for connecting to AWS S3.
@@ -140,13 +132,9 @@ Using type `any` in order to avoid the need to include `aws-sdk` dependency in g
 
 
 </div>
-
-
-## configureS3AssetStorage
-
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/config/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin" />
 
-Returns a configured instance of the <a href='/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
+Returns a configured instance of the <DocsLink href="/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy">S3AssetStorageStrategy</DocsLink> which can then be passed to the <DocsLink href="/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions">AssetServerOptions</DocsLink>`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 

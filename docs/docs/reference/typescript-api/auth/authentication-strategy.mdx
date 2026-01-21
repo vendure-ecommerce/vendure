@@ -2,10 +2,6 @@
 title: "AuthenticationStrategy"
 generated: true
 ---
-
-
-## AuthenticationStrategy
-
 <GenerationInfo sourceFile="packages/core/src/config/auth/authentication-strategy.ts" sourceLine="23" packageName="@vendure/core" />
 
 An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
@@ -83,7 +79,7 @@ the _first_ input will be assumed to be the top-level input.
 
 Used to authenticate a user with the authentication provider. This method
 will implement the provider-specific authentication logic, and should resolve to either a
-<a href='/reference/typescript-api/entities/user#user'>User</a> object on success, or `false | string` on failure.
+<DocsLink href="/reference/typescript-api/entities/user#user">User</DocsLink> object on success, or `false | string` on failure.
 A `string` return could be used to describe what error happened, otherwise `false` to an unknown error.
 ### onLogOut
 

@@ -2,17 +2,13 @@
 title: "Promotion"
 generated: true
 ---
-
-
-## Promotion
-
 <GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="61" packageName="@vendure/core" />
 
 A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
 will be applied to an Order.
 
-Each assigned <a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a> is checked against the Order, and if they all return `true`,
-then each assign <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionlineaction'>PromotionLineAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a> is applied to the Order.
+Each assigned <DocsLink href="/reference/typescript-api/promotions/promotion-condition#promotioncondition">PromotionCondition</DocsLink> is checked against the Order, and if they all return `true`,
+then each assign <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionitemaction">PromotionItemAction</DocsLink> / <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionlineaction">PromotionLineAction</DocsLink> / <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionorderaction">PromotionOrderAction</DocsLink> / <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionshippingaction">PromotionShippingAction</DocsLink> is applied to the Order.
 
 ```ts title="Signature"
 class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields, Translatable {

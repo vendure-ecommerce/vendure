@@ -2,13 +2,9 @@
 title: "StockLocationService"
 generated: true
 ---
-
-
-## StockLocationService
-
 <GenerationInfo sourceFile="packages/core/src/service/services/stock-location.service.ts" sourceLine="41" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a> entities.
+Contains methods relating to <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink> entities.
 
 ```ts title="Signature"
 class StockLocationService {
@@ -90,25 +86,25 @@ permission on the target channel. StockLocations cannot be removed from the defa
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => `}   />
 
 Returns the locations and quantities to use for allocating stock when an OrderLine is created.
-This uses the configured <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
+This uses the configured <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
 ### getReleaseLocations
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => `}   />
 
 Returns the locations and quantities to use for releasing allocated stock when an OrderLine is cancelled
-or modified. This uses the configured <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
+or modified. This uses the configured <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
 ### getSaleLocations
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => `}   />
 
 Returns the locations and quantities to use for creating sales when an Order is fulfilled.
-This uses the configured <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
+This uses the configured <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
 ### getCancellationLocations
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => `}   />
 
 Returns the locations and quantities to use for cancelling sales when an OrderLine is cancelled
-after fulfillment. This uses the configured <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
+after fulfillment. This uses the configured <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
 
 
 </div>

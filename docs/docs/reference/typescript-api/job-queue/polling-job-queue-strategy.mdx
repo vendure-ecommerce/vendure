@@ -2,17 +2,13 @@
 title: "PollingJobQueueStrategy"
 generated: true
 ---
-
-
-## PollingJobQueueStrategy
-
 <GenerationInfo sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="242" packageName="@vendure/core" />
 
-This class allows easier implementation of <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> in a polling style.
-Instead of providing <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `start()` you should provide a `next` method.
+This class allows easier implementation of <DocsLink href="/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy">JobQueueStrategy</DocsLink> in a polling style.
+Instead of providing <DocsLink href="/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy">JobQueueStrategy</DocsLink> `start()` you should provide a `next` method.
 
 This class should be extended by any strategy which does not support a push-based system
-to notify on new jobs. It is used by the <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a> and <a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>.
+to notify on new jobs. It is used by the <DocsLink href="/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy">SqlJobQueueStrategy</DocsLink> and <DocsLink href="/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy">InMemoryJobQueueStrategy</DocsLink>.
 
 ```ts title="Signature"
 class PollingJobQueueStrategy extends InjectableJobQueueStrategy {

@@ -2,14 +2,10 @@
 title: "Transitions"
 generated: true
 ---
-
-
-## Transitions
-
 <GenerationInfo sourceFile="packages/core/src/common/finite-state-machine/types.ts" sourceLine="30" packageName="@vendure/core" />
 
 A type which is used to define valid states and transitions for a state machine based
-on <a href='/reference/typescript-api/state-machine/fsm#fsm'>FSM</a>.
+on <DocsLink href="/reference/typescript-api/state-machine/fsm#fsm">FSM</DocsLink>.
 
 *Example*
 
@@ -30,7 +26,7 @@ const trafficLightTransitions: Transitions<LightColor> = {
 ```
 
 The `mergeStrategy` property defines how to handle the merging of states when one set of
-transitions is being merged with another (as in the case of defining a <a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>)
+transitions is being merged with another (as in the case of defining a <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink>)
 
 ```ts title="Signature"
 type Transitions<State extends string, Target extends string = State> = {

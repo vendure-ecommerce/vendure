@@ -2,13 +2,9 @@
 title: "PaymentOptions"
 generated: true
 ---
-
-
-## PaymentOptions
-
 <GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="873" packageName="@vendure/core" />
 
-Defines payment-related options in the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
+Defines payment-related options in the <DocsLink href="/reference/typescript-api/configuration/vendure-config#vendureconfig">VendureConfig</DocsLink>.
 
 ```ts title="Signature"
 interface PaymentOptions {
@@ -26,14 +22,14 @@ interface PaymentOptions {
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>[]`}   />
 
-Defines which <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s are available when configuring
-<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
+Defines which <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>s are available when configuring
+<DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">PaymentMethod</DocsLink>s
 ### paymentMethodEligibilityCheckers
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>[]`}   />
 
-Defines which <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>s are available when configuring
-<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
+Defines which <DocsLink href="/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker">PaymentMethodEligibilityChecker</DocsLink>s are available when configuring
+<DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">PaymentMethod</DocsLink>s
 ### customPaymentProcess
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a><any>>`}   />
@@ -44,13 +40,13 @@ Defines which <a href='/reference/typescript-api/payment/payment-method-eligibil
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a><any>>`} default={`<a href='/reference/typescript-api/payment/default-payment-process#defaultpaymentprocess'>defaultPaymentProcess</a>`}  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the payment process state machine.
-Takes an array of objects implementing the <a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a> interface.
+Takes an array of objects implementing the <DocsLink href="/reference/typescript-api/payment/payment-process#paymentprocess">PaymentProcess</DocsLink> interface.
 ### refundProcess
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/payment/refund-process#refundprocess'>RefundProcess</a><any>>`} default={`<a href='/reference/typescript-api/payment/default-refund-process#defaultrefundprocess'>defaultRefundProcess</a>`}   />
 
 Allows the definition of custom states and transition logic for the refund process state machine.
-Takes an array of objects implementing the <a href='/reference/typescript-api/payment/refund-process#refundprocess'>RefundProcess</a> interface.
+Takes an array of objects implementing the <DocsLink href="/reference/typescript-api/payment/refund-process#refundprocess">RefundProcess</DocsLink> interface.
 
 
 </div>

@@ -2,10 +2,6 @@
 title: "SchedulerStrategy"
 generated: true
 ---
-
-
-## SchedulerStrategy
-
 <GenerationInfo sourceFile="packages/core/src/scheduler/scheduler-strategy.ts" sourceLine="42" packageName="@vendure/core" since="3.3.0" />
 
 This strategy is used to define the mechanism by which scheduled tasks are executed
@@ -16,7 +12,7 @@ are multiple instances of the worker running.
 To do this, the strategy must use some form of shared storage and a method of
 locking so that only a single worker is allowed to execute the task.
 
-By default, the <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy'>DefaultSchedulerStrategy</a> will use the database to enable
+By default, the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> will use the database to enable
 this functionality.
 
 ```ts title="Signature"
@@ -50,7 +46,7 @@ Execute a scheduled task. This method must also take care of
 ensuring that the task is executed exactly once at the scheduled time,
 even if there are multiple instances of the worker running.
 
-For instance, in the <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy'>DefaultSchedulerStrategy</a> we make use of a
+For instance, in the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> we make use of a
 dedicated database table and a locking mechansim. If you implement a custom
 SchedulerStrategy, you must use some other form of shared locking mechanism
 that could make use of something like Redis etc. to ensure that the task
@@ -79,7 +75,7 @@ instance which we typically do not want. Instead, it should be used
 to signal to the strategy that this specific task needs to be invoked
 at the soonest opportunity.
 
-For instance, in the <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy'>DefaultSchedulerStrategy</a> this is done by setting
+For instance, in the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> this is done by setting
 a flag in the database table which is checked periodically and causes those tasks
 to get immediately invoked.
 ### updateTask
@@ -90,10 +86,6 @@ Update a scheduled task.
 
 
 </div>
-
-
-## TaskReport
-
 <GenerationInfo sourceFile="packages/core/src/scheduler/scheduler-strategy.ts" sourceLine="16" packageName="@vendure/core" since="3.3.0" />
 
 A report on the status of a scheduled task.

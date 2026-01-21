@@ -2,10 +2,6 @@
 title: "OrderModifier"
 generated: true
 ---
-
-
-## OrderModifier
-
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-modifier/order-modifier.ts" sourceLine="84" packageName="@vendure/core" />
 
 This helper is responsible for modifying the contents of an Order.
@@ -61,7 +57,7 @@ matches, or `undefined` if no match is found.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields?: { [key: string]: any }) => `}   />
 
-Returns the OrderLine containing the given <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, taking into account any custom field values. If no existing
+Returns the OrderLine containing the given <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink>, taking into account any custom field values. If no existing
 OrderLine is found, a new OrderLine will be created.
 ### updateOrderLineQuantity
 

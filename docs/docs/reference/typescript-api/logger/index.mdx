@@ -2,10 +2,6 @@
 title: "Logger"
 generated: true
 ---
-
-
-## Logger
-
 <GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="136" packageName="@vendure/core" />
 
 The Logger is responsible for all logging in a Vendure application.
@@ -20,14 +16,14 @@ import { Logger } from '@vendure/core';
 Logger.info(`Some log message`, 'My Vendure Plugin');
 ```
 
-The actual implementation - where the logs are written to - is defined by the <a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>
-instance configured in the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>. By default, the <a href='/reference/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a> is used, which
+The actual implementation - where the logs are written to - is defined by the <DocsLink href="/reference/typescript-api/logger/vendure-logger#vendurelogger">VendureLogger</DocsLink>
+instance configured in the <DocsLink href="/reference/typescript-api/configuration/vendure-config#vendureconfig">VendureConfig</DocsLink>. By default, the <DocsLink href="/reference/typescript-api/logger/default-logger#defaultlogger">DefaultLogger</DocsLink> is used, which
 logs to the console.
 
 ## Implementing a custom logger
 
 A custom logger can be passed to the `logger` config option by creating a class which implements the
-<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface. For example, here is how you might go about implementing a logger which
+<DocsLink href="/reference/typescript-api/logger/vendure-logger#vendurelogger">VendureLogger</DocsLink> interface. For example, here is how you might go about implementing a logger which
 logs to a file:
 
 *Example*

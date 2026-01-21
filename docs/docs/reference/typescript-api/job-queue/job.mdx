@@ -2,15 +2,11 @@
 title: "Job"
 generated: true
 ---
-
-
-## Job
-
 <GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@vendure/core" />
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
 It is intended to be used for long-running work triggered by API requests. Jobs should now generally
-be directly instantiated. Rather, the <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> `add()` method should be used to create and
+be directly instantiated. Rather, the <DocsLink href="/reference/typescript-api/job-queue/#jobqueue">JobQueue</DocsLink> `add()` method should be used to create and
 add a new Job to a queue.
 
 ```ts title="Signature"
@@ -129,7 +125,7 @@ class Job<T extends JobData<T> = any> {
 <MemberInfo kind="method" type={`() => `}   />
 
 Calling this signifies that the job work has started. This method should be
-called in the <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `next()` method.
+called in the <DocsLink href="/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy">JobQueueStrategy</DocsLink> `next()` method.
 ### setProgress
 
 <MemberInfo kind="method" type={`(percent: number) => `}   />
@@ -170,10 +166,6 @@ Used to register event handler for job events
 
 
 </div>
-
-
-## JobEventType
-
 <GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="15" packageName="@vendure/core" />
 
 An event raised by a Job.
@@ -181,10 +173,6 @@ An event raised by a Job.
 ```ts title="Signature"
 type JobEventType = 'progress'
 ```
-
-
-## JobEventListener
-
 <GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="24" packageName="@vendure/core" />
 
 The signature of the event handler expected by the `Job.on()` method.

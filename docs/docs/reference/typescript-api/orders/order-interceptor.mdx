@@ -2,10 +2,6 @@
 title: "OrderInterceptor"
 generated: true
 ---
-
-
-## OrderInterceptor
-
 <GenerationInfo sourceFile="packages/core/src/config/order/order-interceptor.ts" sourceLine="214" packageName="@vendure/core" since="3.1.0" />
 
 An OrderInterceptor is a class which can be used to intercept and modify the behavior of order-related
@@ -35,7 +31,7 @@ OrderInterceptors are executed when the following mutations are called:
 - `adjustOrderLine`
 - `removeItemFromOrder`
 
-Additionally, if you are working directly with the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>, the following methods will trigger
+Additionally, if you are working directly with the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink>, the following methods will trigger
 any registered OrderInterceptors:
 
 - `addItemToOrder`
@@ -229,21 +225,21 @@ interface OrderInterceptor extends InjectableStrategy {
 
 Called when a new item is about to be added to the order,
 as in the `addItemToOrder` mutation or the `addItemToOrder()` / `addItemsToOrder()` method
-of the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>.
+of the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink>.
 ### willAdjustOrderLine
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: WillAdjustOrderLineInput) => Promise<void | string> | void | string`}   />
 
 Called when an existing order line is about to be adjusted,
 as in the `adjustOrderLine` mutation or the `adjustOrderLine()` / `adjustOrderLines()` method
-of the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>.
+of the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink>.
 ### willRemoveItemFromOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>) => Promise<void | string> | void | string`}   />
 
 Called when an item is about to be removed from the order,
 as in the `removeItemFromOrder` mutation or the `removeItemFromOrder()` / `removeItemsFromOrder()` method
-of the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>.
+of the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink>.
 
 
 </div>

@@ -2,10 +2,6 @@
 title: "StellatePlugin"
 generated: true
 ---
-
-
-## StellatePlugin
-
 <GenerationInfo sourceFile="packages/stellate-plugin/src/stellate-plugin.ts" sourceLine="246" packageName="@vendure/stellate-plugin" since="2.1.5" />
 
 A plugin to integrate the [Stellate](https://stellate.co/) GraphQL caching service with your Vendure server.
@@ -29,7 +25,7 @@ npm install @vendure/stellate-plugin
 ## Configuration
 
 The plugin is configured via the `StellatePlugin.init()` method. This method accepts an options object
-which defines the Stellate service name and API token, as well as an array of <a href='/reference/core-plugins/stellate-plugin/purge-rule#purgerule'>PurgeRule</a>s which
+which defines the Stellate service name and API token, as well as an array of <DocsLink href="/reference/core-plugins/stellate-plugin/purge-rule#purgerule">PurgeRule</DocsLink>s which
 define how the plugin will respond to Vendure events in order to trigger calls to the
 Stellate [Purging API](https://stellate.co/docs/graphql-edge-cache/purging-api).
 
@@ -152,7 +148,7 @@ export const searchProductsDocument = graphql(`
 
 The configuration above only accounts for caching of some of the built-in Vendure entity types. If you have
 custom entity types, you may well want to add them to the Stellate cache. In this case, you'll also need a way to
-purge those entities from the cache when they are updated. This is where the <a href='/reference/core-plugins/stellate-plugin/purge-rule#purgerule'>PurgeRule</a> comes in.
+purge those entities from the cache when they are updated. This is where the <DocsLink href="/reference/core-plugins/stellate-plugin/purge-rule#purgerule">PurgeRule</DocsLink> comes in.
 
 Let's imagine that you have built a simple CMS plugin for Vendure which exposes an `Article` entity in your Shop API, and
 you have added this to your Stellate configuration:
@@ -180,7 +176,7 @@ const config: Config = {
 export default config;
 ```
 
-You can then add a custom <a href='/reference/core-plugins/stellate-plugin/purge-rule#purgerule'>PurgeRule</a> to the StellatePlugin configuration:
+You can then add a custom <DocsLink href="/reference/core-plugins/stellate-plugin/purge-rule#purgerule">PurgeRule</DocsLink> to the StellatePlugin configuration:
 
 *Example*
 

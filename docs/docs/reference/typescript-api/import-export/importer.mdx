@@ -2,16 +2,12 @@
 title: "Importer"
 generated: true
 ---
-
-
-## Importer
-
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/importer/importer.ts" sourceLine="42" packageName="@vendure/core" />
 
 Parses and imports Products using the CSV import format.
 
-Internally it is using the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a> to parse the CSV file, and then the
-<a href='/reference/typescript-api/import-export/fast-importer-service#fastimporterservice'>FastImporterService</a> and the <a href='/reference/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> to actually create the resulting
+Internally it is using the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink> to parse the CSV file, and then the
+<DocsLink href="/reference/typescript-api/import-export/fast-importer-service#fastimporterservice">FastImporterService</DocsLink> and the <DocsLink href="/reference/typescript-api/import-export/asset-importer#assetimporter">AssetImporter</DocsLink> to actually create the resulting
 entities in the Vendure database.
 
 ```ts title="Signature"

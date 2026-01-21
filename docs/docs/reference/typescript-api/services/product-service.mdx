@@ -2,13 +2,9 @@
 title: "ProductService"
 generated: true
 ---
-
-
-## ProductService
-
 <GenerationInfo sourceFile="packages/core/src/service/services/product.service.ts" sourceLine="54" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/reference/typescript-api/entities/product#product'>Product</a> entities.
+Contains methods relating to <DocsLink href="/reference/typescript-api/entities/product#product">Product</DocsLink> entities.
 
 ```ts title="Signature"
 class ProductService {
@@ -88,7 +84,7 @@ Returns all Channels to which the Product is assigned.
 Assigns a Product to the specified Channel, and optionally uses a `priceFactor` to set the ProductVariantPrices
 on the new Channel.
 
-Internally, this method will also call <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a> `assignProductVariantsToChannel()` for
+Internally, this method will also call <DocsLink href="/reference/typescript-api/services/product-variant-service#productvariantservice">ProductVariantService</DocsLink> `assignProductVariantsToChannel()` for
 each of the Product's variants, and will assign the Product's Assets to the Channel too.
 ### removeProductsFromChannel
 

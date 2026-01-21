@@ -2,10 +2,6 @@
 title: "DataService"
 generated: true
 ---
-
-
-## DataService
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/providers/data.service.ts" sourceLine="34" packageName="@vendure/admin-ui" />
 
 Used to interact with the Admin API via GraphQL queries. Internally this service uses the
@@ -26,7 +22,7 @@ class DataService {
 
 <MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network', options: ExtendedQueryOptions = {}) => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a><T, V>`}   />
 
-Perform a GraphQL query. Returns a <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a> which allows further control over
+Perform a GraphQL query. Returns a <DocsLink href="/reference/admin-ui-api/services/data-service#queryresult">QueryResult</DocsLink> which allows further control over
 they type of result returned, e.g. stream of values, single value etc.
 
 *Example*
@@ -65,10 +61,6 @@ const result$ = this.dataService.mutate(gql`
 
 
 </div>
-
-
-## QueryResult
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/query-result.ts" sourceLine="31" packageName="@vendure/admin-ui" />
 
 This class wraps the Apollo Angular QueryRef object and exposes some getters

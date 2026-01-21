@@ -2,10 +2,6 @@
 title: "Error Types"
 generated: true
 ---
-
-
-## InternalServerError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="14" packageName="@vendure/core" />
 
 This error should be thrown when some unexpected and exceptional case is encountered.
@@ -29,10 +25,6 @@ class InternalServerError extends I18nError {
 
 
 </div>
-
-
-## UserInputError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="27" packageName="@vendure/core" />
 
 This error should be thrown when user input is not as expected.
@@ -56,10 +48,6 @@ class UserInputError extends I18nError {
 
 
 </div>
-
-
-## IllegalOperationError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="40" packageName="@vendure/core" />
 
 This error should be thrown when an operation is attempted which is not allowed.
@@ -83,10 +71,6 @@ class IllegalOperationError extends I18nError {
 
 
 </div>
-
-
-## UnauthorizedError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="53" packageName="@vendure/core" />
 
 This error should be thrown when the user's authentication credentials do not match.
@@ -110,10 +94,6 @@ class UnauthorizedError extends I18nError {
 
 
 </div>
-
-
-## ForbiddenError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="67" packageName="@vendure/core" />
 
 This error should be thrown when a user attempts to access a resource which is outside of
@@ -138,13 +118,9 @@ class ForbiddenError extends I18nError {
 
 
 </div>
-
-
-## ChannelNotFoundError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="81" packageName="@vendure/core" />
 
-This error should be thrown when a <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> cannot be found based on the provided
+This error should be thrown when a <DocsLink href="/reference/typescript-api/entities/channel#channel">Channel</DocsLink> cannot be found based on the provided
 channel token.
 
 ```ts title="Signature"
@@ -166,10 +142,6 @@ class ChannelNotFoundError extends I18nError {
 
 
 </div>
-
-
-## EntityNotFoundError
-
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="95" packageName="@vendure/core" />
 
 This error should be thrown when an entity cannot be found in the database, i.e. no entity of

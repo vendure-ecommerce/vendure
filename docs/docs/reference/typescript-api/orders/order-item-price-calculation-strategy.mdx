@@ -2,14 +2,10 @@
 title: "OrderItemPriceCalculationStrategy"
 generated: true
 ---
-
-
-## OrderItemPriceCalculationStrategy
-
 <GenerationInfo sourceFile="packages/core/src/config/order/order-item-price-calculation-strategy.ts" sourceLine="60" packageName="@vendure/core" />
 
 The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
-<a href='/reference/typescript-api/orders/default-order-item-price-calculation-strategy#defaultorderitempricecalculationstrategy'>DefaultOrderItemPriceCalculationStrategy</a> is used.
+<DocsLink href="/reference/typescript-api/orders/default-order-item-price-calculation-strategy#defaultorderitempricecalculationstrategy">DefaultOrderItemPriceCalculationStrategy</DocsLink> is used.
 
 :::info
 
@@ -82,7 +78,7 @@ Receives the ProductVariant to be added to the Order as well as any OrderLine cu
 the price for a single unit.
 
 Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
-passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>to join the missing relations.
+passed in to this method if they are set to `eager: true`. Otherwise, you can use the <DocsLink href="/reference/typescript-api/data-access/entity-hydrator#entityhydrator">EntityHydrator</DocsLink>to join the missing relations.
 
 Note: the `quantity` argument was added in v2.0.0
 

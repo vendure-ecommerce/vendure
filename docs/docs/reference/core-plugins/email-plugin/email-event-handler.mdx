@@ -2,15 +2,11 @@
 title: "EmailEventHandler"
 generated: true
 ---
-
-
-## EmailEventHandler
-
 <GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="150" packageName="@vendure/email-plugin" />
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
-A handler is created by creating a new <a href='/reference/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a> and calling the `.on()` method
+A handler is created by creating a new <DocsLink href="/reference/core-plugins/email-plugin/email-event-listener#emaileventlistener">EmailEventListener</DocsLink> and calling the `.on()` method
 to specify which event to respond to.
 
 *Example*
@@ -38,9 +34,9 @@ By default, the handler will respond to all events on all channels and use the s
 and body template.
 
 Since v2.0 the `.addTemplate()` method has been **deprecated**. To serve different templates — for example, based on the current
-`languageCode` — implement a custom <a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a> and pass it to `EmailPlugin.init({ templateLoader: new MyTemplateLoader() })`.
+`languageCode` — implement a custom <DocsLink href="/reference/core-plugins/email-plugin/template-loader#templateloader">TemplateLoader</DocsLink> and pass it to `EmailPlugin.init({ templateLoader: new MyTemplateLoader() })`.
 
-The language is typically determined by the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object, so the
+The language is typically determined by the `languageCode` property of the event's `ctx` (<DocsLink href="/reference/typescript-api/request/request-context#requestcontext">RequestContext</DocsLink>) object, so the
 `loadTemplate()` method can use that to locate the correct template file.
 
 *Example*
@@ -69,7 +65,7 @@ EmailPlugin.init({
 ## Defining a custom handler
 
 Let's say you have a plugin which defines a new event type, `QuoteRequestedEvent`. In your plugin you have defined a mutation
-which is executed when the customer requests a quote in your storefront, and in your resolver, you use the <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a> to publish a
+which is executed when the customer requests a quote in your storefront, and in your resolver, you use the <DocsLink href="/reference/typescript-api/events/event-bus#eventbus">EventBus</DocsLink> to publish a
 new `QuoteRequestedEvent`.
 
 You now want to email the customer with their quote. Here are the steps you would take to set this up:
@@ -201,17 +197,17 @@ setTemplateVars() method.
 
 <MemberInfo kind="method" type={`(optionalAddressFieldsFn: <a href='/reference/core-plugins/email-plugin/email-plugin-types#setoptionaladdressfieldsfn'>SetOptionalAddressFieldsFn</a><Event>) => `}  since="1.1.0"  />
 
-A function which allows <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a> to be specified such as "cc" and "bcc".
+A function which allows <DocsLink href="/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields">OptionalAddressFields</DocsLink> to be specified such as "cc" and "bcc".
 ### setMetadata
 
 <MemberInfo kind="method" type={`(optionalSetMetadataFn: <a href='/reference/core-plugins/email-plugin/email-plugin-types#setmetadatafn'>SetMetadataFn</a><Event>) => `}  since="3.1.0"  />
 
-A function which allows <a href='/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata'>EmailMetadata</a> to be specified for the email. This can be used
+A function which allows <DocsLink href="/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata">EmailMetadata</DocsLink> to be specified for the email. This can be used
 to store arbitrary data about the email which can be used for tracking or other purposes.
 
-It will be exposed in the <a href='/reference/core-plugins/email-plugin/email-send-event#emailsendevent'>EmailSendEvent</a> as `event.metadata`. Here's an example of usage:
+It will be exposed in the <DocsLink href="/reference/core-plugins/email-plugin/email-send-event#emailsendevent">EmailSendEvent</DocsLink> as `event.metadata`. Here's an example of usage:
 
-- An <a href='/reference/typescript-api/events/event-types#orderstatetransitionevent'>OrderStateTransitionEvent</a> occurs, and the EmailEventListener starts processing it.
+- An <DocsLink href="/reference/typescript-api/events/event-types#orderstatetransitionevent">OrderStateTransitionEvent</DocsLink> occurs, and the EmailEventListener starts processing it.
 - The EmailEventHandler attaches metadata to the email:
    ```ts
    new EmailEventListener(EventType.ORDER_CONFIRMATION)
@@ -221,7 +217,7 @@ It will be exposed in the <a href='/reference/core-plugins/email-plugin/email-se
        orderId: event.order.id,
      }));
   ```
-- Then, the EmailPlugin tries to send the email and publishes <a href='/reference/core-plugins/email-plugin/email-send-event#emailsendevent'>EmailSendEvent</a>,
+- Then, the EmailPlugin tries to send the email and publishes <DocsLink href="/reference/core-plugins/email-plugin/email-send-event#emailsendevent">EmailSendEvent</DocsLink>,
   passing ctx, emailDetails, error or success, and this metadata.
 - In another part of the server, we have an eventBus that subscribes to EmailSendEvent. We can use
   `metadata.type` and `metadata.orderId` to identify the related order. For example, we can indicate on the
@@ -268,7 +264,7 @@ templates for channels or languageCodes other than the default.
 Allows data to be loaded asynchronously which can then be used as template variables.
 The `loadDataFn` has access to the event, the TypeORM `Connection` object, and an
 `inject()` function which can be used to inject any of the providers exported
-by the <a href='/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>. The return value of the `loadDataFn` will be
+by the <DocsLink href="/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule">PluginCommonModule</DocsLink>. The return value of the `loadDataFn` will be
 added to the `event` as the `data` property.
 
 *Example*

@@ -2,15 +2,11 @@
 title: "CacheService"
 generated: true
 ---
-
-
-## CacheService
-
 <GenerationInfo sourceFile="packages/core/src/cache/cache.service.ts" sourceLine="21" packageName="@vendure/core" since="3.1.0" />
 
 The CacheService is used to cache data in order to optimize performance.
 
-Internally it makes use of the configured <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> to persist
+Internally it makes use of the configured <DocsLink href="/reference/typescript-api/cache/cache-strategy#cachestrategy">CacheStrategy</DocsLink> to persist
 the cache into a key-value store.
 
 ```ts title="Signature"
@@ -41,7 +37,7 @@ class CacheService {
 
 <MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/cache/cache-config#cacheconfig'>CacheConfig</a>) => <a href='/reference/typescript-api/cache/#cache'>Cache</a>`}   />
 
-Creates a new <a href='/reference/typescript-api/cache/#cache'>Cache</a> instance with the given configuration.
+Creates a new <DocsLink href="/reference/typescript-api/cache/#cache">Cache</DocsLink> instance with the given configuration.
 
 The `Cache` instance provides a convenience wrapper around the `CacheService`
 methods.

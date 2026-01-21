@@ -2,15 +2,11 @@
 title: "Region"
 generated: true
 ---
-
-
-## Region
-
 <GenerationInfo sourceFile="packages/core/src/entity/region/region.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 A Region represents a geographical administrative unit, such as a Country, Province, State, Prefecture etc.
-This is an abstract class which is extended by the <a href='/reference/typescript-api/entities/country#country'>Country</a> and <a href='/reference/typescript-api/entities/province#province'>Province</a> entities.
-Regions can be grouped into <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>s which are in turn used to determine applicable shipping and taxes for an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
+This is an abstract class which is extended by the <DocsLink href="/reference/typescript-api/entities/country#country">Country</DocsLink> and <DocsLink href="/reference/typescript-api/entities/province#province">Province</DocsLink> entities.
+Regions can be grouped into <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink>s which are in turn used to determine applicable shipping and taxes for an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink>.
 
 ```ts title="Signature"
 class Region extends VendureEntity implements Translatable, HasCustomFields {

@@ -2,10 +2,6 @@
 title: "StripePlugin"
 generated: true
 ---
-
-
-## StripePlugin
-
 <GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="160" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through [Stripe](https://stripe.com/docs) via the Payment Intents API.
@@ -41,7 +37,7 @@ the Stripe CLI to test your webhook locally. See the _local development_ section
       }),
     ]
     ````
-    For all the plugin options, see the <a href='/reference/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a> type.
+    For all the plugin options, see the <DocsLink href="/reference/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions">StripePluginOptions</DocsLink> type.
 2. Create a new PaymentMethod in the Admin UI, and select "Stripe payments" as the handler.
 3. Set the webhook secret and API key in the PaymentMethod form.
 
@@ -173,10 +169,6 @@ Initialize the Stripe payment plugin
 
 
 </div>
-
-
-## StripePluginOptions
-
 <GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="29" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Stripe payments plugin.

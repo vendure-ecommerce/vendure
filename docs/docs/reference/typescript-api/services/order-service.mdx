@@ -2,13 +2,9 @@
 title: "OrderService"
 generated: true
 ---
-
-
-## OrderService
-
 <GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="141" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/reference/typescript-api/entities/order#order'>Order</a> entities.
+Contains methods relating to <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> entities.
 
 ```ts title="Signature"
 class OrderService {
@@ -91,8 +87,8 @@ class OrderService {
 <MemberInfo kind="method" type={`() => OrderProcessState[]`}   />
 
 Returns an array of all the configured states and transitions of the order process. This is
-based on the default order process plus all configured <a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> objects
-defined in the <a href='/reference/typescript-api/orders/order-options#orderoptions'>OrderOptions</a> `process` array.
+based on the default order process plus all configured <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink> objects
+defined in the <DocsLink href="/reference/typescript-api/orders/order-options#orderoptions">OrderOptions</DocsLink> `process` array.
 ### findAll
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: OrderListOptions, relations?: RelationPaths<<a href='/reference/typescript-api/entities/order#order'>Order</a>>) => Promise<<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a><<a href='/reference/typescript-api/entities/order#order'>Order</a>>>`}   />
@@ -122,17 +118,17 @@ defined in the <a href='/reference/typescript-api/orders/order-options#orderopti
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>[]>`}   />
 
-Returns all <a href='/reference/typescript-api/entities/payment#payment'>Payment</a> entities associated with the Order.
+Returns all <DocsLink href="/reference/typescript-api/entities/payment#payment">Payment</DocsLink> entities associated with the Order.
 ### getOrderModifications
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>[]>`}   />
 
-Returns an array of any <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a> entities associated with the Order.
+Returns an array of any <DocsLink href="/reference/typescript-api/entities/order-modification#ordermodification">OrderModification</DocsLink> entities associated with the Order.
 ### getPaymentRefunds
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>[]>`}   />
 
-Returns any <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>s associated with a <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>.
+Returns any <DocsLink href="/reference/typescript-api/entities/refund#refund">Refund</DocsLink>s associated with a <DocsLink href="/reference/typescript-api/entities/payment#payment">Payment</DocsLink>.
 ### getSellerOrders
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise<<a href='/reference/typescript-api/entities/order#order'>Order</a>[]>`}   />
@@ -233,18 +229,18 @@ Removes all OrderLines from the Order.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, surchargeInput: Partial<Omit<<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>, 'id' | 'createdAt' | 'updatedAt' | 'order'>>) => Promise<<a href='/reference/typescript-api/entities/order#order'>Order</a>>`}   />
 
-Adds a <a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a> to the Order.
+Adds a <DocsLink href="/reference/typescript-api/entities/surcharge#surcharge">Surcharge</DocsLink> to the Order.
 ### removeSurchargeFromOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, surchargeId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/order#order'>Order</a>>`}   />
 
-Removes a <a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a> from the Order.
+Removes a <DocsLink href="/reference/typescript-api/entities/surcharge#surcharge">Surcharge</DocsLink> from the Order.
 ### applyCouponCode
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, couponCode: string) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><ApplyCouponCodeResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>>>`}   />
 
 Applies a coupon code to the Order, which should be a valid coupon code as specified in the configuration
-of an active <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>.
+of an active <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink>.
 ### removeCouponCode
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, couponCode: string) => `}   />
@@ -254,7 +250,7 @@ Removes a coupon code from the Order.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[]>`}   />
 
-Returns all <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>s associated with an Order.
+Returns all <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink>s associated with an Order.
 ### getNextOrderStates
 
 <MemberInfo kind="method" type={`(order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => readonly <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>[]`}   />
@@ -284,16 +280,16 @@ Unsets the billing address for the Order.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<ShippingMethodQuote[]>`}   />
 
-Returns an array of quotes stating which <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>s may be applied to this Order.
-This is determined by the configured <a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> of each ShippingMethod.
+Returns an array of quotes stating which <DocsLink href="/reference/typescript-api/entities/shipping-method#shippingmethod">ShippingMethod</DocsLink>s may be applied to this Order.
+This is determined by the configured <DocsLink href="/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker">ShippingEligibilityChecker</DocsLink> of each ShippingMethod.
 
 The quote also includes a price for each method, as determined by the configured
-<a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a> of each eligible ShippingMethod.
+<DocsLink href="/reference/typescript-api/shipping/shipping-calculator#shippingcalculator">ShippingCalculator</DocsLink> of each eligible ShippingMethod.
 ### getEligiblePaymentMethods
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<PaymentMethodQuote[]>`}   />
 
-Returns an array of quotes stating which <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s may be used on this Order.
+Returns an array of quotes stating which <DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">PaymentMethod</DocsLink>s may be used on this Order.
 ### setShippingMethod
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, shippingMethodIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><SetOrderShippingMethodResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>>>`}   />
@@ -323,7 +319,7 @@ Allows the Order to be modified, which allows several aspects of the Order to be
 
 * Changes to OrderLine quantities
 * New OrderLines being added
-* Arbitrary <a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>s being added
+* Arbitrary <DocsLink href="/reference/typescript-api/entities/surcharge#surcharge">Surcharge</DocsLink>s being added
 * Shipping or billing address changes
 
 Setting the `dryRun` input property to `true` will apply all changes, including updating the price of the
@@ -334,7 +330,7 @@ __Using dryRun option, you must wrap function call in transaction manually.__
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><TransitionPaymentToStateResult, <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>>>`}   />
 
-Transitions the given <a href='/reference/typescript-api/entities/payment#payment'>Payment</a> to a new state.
+Transitions the given <DocsLink href="/reference/typescript-api/entities/payment#payment">Payment</DocsLink> to a new state.
 ### addPaymentToOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, input: PaymentInput) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><AddPaymentToOrderResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>>>`}   />
@@ -355,13 +351,13 @@ dashboard of your payment provider.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><<a href='/reference/typescript-api/payment/payment-method-types#settlepaymentresult'>SettlePaymentResult</a>, <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>>>`}   />
 
-Settles a payment by invoking the <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>'s `settlePayment()` method. Automatically
+Settles a payment by invoking the <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>'s `settlePayment()` method. Automatically
 transitions the Order state if all Payments are settled.
 ### cancelPayment
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><<a href='/reference/typescript-api/payment/payment-method-types#cancelpaymentresult'>CancelPaymentResult</a>, <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>>>`}   />
 
-Cancels a payment by invoking the <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>'s `cancelPayment()` method (if defined), and transitions the Payment to
+Cancels a payment by invoking the <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>'s `cancelPayment()` method (if defined), and transitions the Payment to
 the `Cancelled` state.
 ### createFulfillment
 
@@ -383,13 +379,13 @@ Returns an array of all Surcharges associated with the Order.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CancelOrderInput) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><CancelOrderResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>>>`}   />
 
 Cancels an Order by transitioning it to the `Cancelled` state. If stock is being tracked for the ProductVariants
-in the Order, then new <a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>s will be created to correct the stock levels.
+in the Order, then new <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">StockMovement</DocsLink>s will be created to correct the stock levels.
 ### refundOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><RefundOrderResult, <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>>>`}   />
 
-Creates a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> against the order and in doing so invokes the `createRefund()` method of the
-<a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>.
+Creates a <DocsLink href="/reference/typescript-api/entities/refund#refund">Refund</DocsLink> against the order and in doing so invokes the `createRefund()` method of the
+<DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>.
 ### settleRefund
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: SettleRefundInput) => Promise<<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>>`}   />
@@ -404,7 +400,7 @@ Associates a Customer with the Order.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: AddNoteToOrderInput) => Promise<<a href='/reference/typescript-api/entities/order#order'>Order</a>>`}   />
 
-Creates a new "ORDER_NOTE" type <a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a> in the Order's history timeline.
+Creates a new "ORDER_NOTE" type <DocsLink href="/reference/typescript-api/entities/order-history-entry#orderhistoryentry">OrderHistoryEntry</DocsLink> in the Order's history timeline.
 ### updateOrderNote
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateOrderNoteInput) => Promise<<a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a>>`}   />
@@ -427,13 +423,13 @@ Deletes an Order, ensuring that any Sessions that reference this Order are deref
 When a guest user with an anonymous Order signs in and has an existing Order associated with that Customer,
 we need to reconcile the contents of the two orders.
 
-The logic used to do the merging is specified in the <a href='/reference/typescript-api/orders/order-options#orderoptions'>OrderOptions</a> `mergeStrategy` config setting.
+The logic used to do the merging is specified in the <DocsLink href="/reference/typescript-api/orders/order-options#orderoptions">OrderOptions</DocsLink> `mergeStrategy` config setting.
 ### applyPriceAdjustments
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, updatedOrderLines?: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[], relations?: RelationPaths<<a href='/reference/typescript-api/entities/order#order'>Order</a>>) => Promise<<a href='/reference/typescript-api/entities/order#order'>Order</a>>`}   />
 
 Applies promotions, taxes and shipping to the Order. If the `updatedOrderLines` argument is passed in,
-then all of those OrderLines will have their prices re-calculated using the configured <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
+then all of those OrderLines will have their prices re-calculated using the configured <DocsLink href="/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy">OrderItemPriceCalculationStrategy</DocsLink>.
 
 
 </div>

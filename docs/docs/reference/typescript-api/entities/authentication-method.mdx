@@ -2,14 +2,10 @@
 title: "AuthenticationMethod"
 generated: true
 ---
-
-
-## AuthenticationMethod
-
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-An AuthenticationMethod represents the means by which a <a href='/reference/typescript-api/entities/user#user'>User</a> is authenticated. There are two kinds:
-<a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> and <a href='/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>.
+An AuthenticationMethod represents the means by which a <DocsLink href="/reference/typescript-api/entities/user#user">User</DocsLink> is authenticated. There are two kinds:
+<DocsLink href="/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod">NativeAuthenticationMethod</DocsLink> and <DocsLink href="/reference/typescript-api/entities/authentication-method#externalauthenticationmethod">ExternalAuthenticationMethod</DocsLink>.
 
 ```ts title="Signature"
 class AuthenticationMethod extends VendureEntity {
@@ -32,10 +28,6 @@ class AuthenticationMethod extends VendureEntity {
 
 
 </div>
-
-
-## ExternalAuthenticationMethod
-
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/external-authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
 This method is used when an external authentication service is used to authenticate Vendure Users.
@@ -81,10 +73,6 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
 
 
 </div>
-
-
-## NativeAuthenticationMethod
-
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/native-authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
 This is the default, built-in authentication method which uses a identifier (typically username or email address)

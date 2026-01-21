@@ -2,10 +2,6 @@
 title: "NavMenuSection"
 generated: true
 ---
-
-
-## NavMenuSection
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="57" packageName="@vendure/admin-ui" />
 
 A NavMenuSection is a grouping of links in the main
@@ -56,7 +52,7 @@ interface NavMenuSection {
 <MemberInfo kind="property" type={`string | ((userPermissions: string[]) => boolean)`}   />
 
 Control the display of this item based on the user permissions. Note: if you attempt to pass a
-<a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a> object, you will get a compilation error. Instead, pass the plain
+<DocsLink href="/reference/typescript-api/auth/permission-definition#permissiondefinition">PermissionDefinition</DocsLink> object, you will get a compilation error. Instead, pass the plain
 string version. For example, if the permission is defined as:
 ```ts
 export const MyPermission = new PermissionDefinition('ProductReview');

@@ -2,16 +2,12 @@
 title: "PermissionDefinition"
 generated: true
 ---
-
-
-## PermissionDefinition
-
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="86" packageName="@vendure/core" />
 
 Defines a new Permission with which to control access to GraphQL resolvers & REST controllers.
-Used in conjunction with the <a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator (see example below).
+Used in conjunction with the <DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator (see example below).
 
-**Note:** To define CRUD permissions, use the <a href='/reference/typescript-api/auth/permission-definition#crudpermissiondefinition'>CrudPermissionDefinition</a>.
+**Note:** To define CRUD permissions, use the <DocsLink href="/reference/typescript-api/auth/permission-definition#crudpermissiondefinition">CrudPermissionDefinition</DocsLink>.
 
 *Example*
 
@@ -61,14 +57,10 @@ class PermissionDefinition {
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 
 
 </div>
-
-
-## CrudPermissionDefinition
-
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="146" packageName="@vendure/core" />
 
 Defines a set of CRUD Permissions for the given name, i.e. a `name` of 'Wishlist' will create
@@ -125,32 +117,28 @@ class CrudPermissionDefinition extends PermissionDefinition {
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Create' CRUD permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 ### Read
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Read' CRUD permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 ### Update
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Update' CRUD permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 ### Delete
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Delete' CRUD permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 
 
 </div>
-
-
-## RwPermissionDefinition
-
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="245" packageName="@vendure/core" since="3.5.0" />
 
 Defines a set of Read-Write Permissions for the given name, i.e. a `name` of 'DashboardSavedViews' will create
@@ -211,23 +199,19 @@ class RwPermissionDefinition extends PermissionDefinition {
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Read' permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 ### Write
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>`}   />
 
 Returns the 'Write' permission defined by this definition, for use in the
-<a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<DocsLink href="/reference/typescript-api/request/allow-decorator#allow">Allow</DocsLink> decorator.
 
 
 </div>
-
-
-## PermissionDefinitionConfig
-
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="10" packageName="@vendure/core" />
 
-Configures a <a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>
+Configures a <DocsLink href="/reference/typescript-api/auth/permission-definition#permissiondefinition">PermissionDefinition</DocsLink>
 
 ```ts title="Signature"
 interface PermissionDefinitionConfig {

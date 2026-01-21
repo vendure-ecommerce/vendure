@@ -2,10 +2,6 @@
 title: "ModalService"
 generated: true
 ---
-
-
-## ModalService
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.service.ts" sourceLine="21" packageName="@vendure/admin-ui" />
 
 This service is responsible for instantiating a ModalDialog component and
@@ -30,7 +26,7 @@ class ModalService {
 
 <MemberInfo kind="method" type={`(component: Type<T> &#38; Type<<a href='/reference/admin-ui-api/services/modal-service#dialog'>Dialog</a><R>>, options?: <a href='/reference/admin-ui-api/services/modal-service#modaloptions'>ModalOptions</a><T>) => Observable<R | undefined>`}   />
 
-Create a modal from a component. The component must implement the <a href='/reference/admin-ui-api/services/modal-service#dialog'>Dialog</a> interface.
+Create a modal from a component. The component must implement the <DocsLink href="/reference/admin-ui-api/services/modal-service#dialog">Dialog</DocsLink> interface.
 Additionally, the component should include templates for the title and the buttons to be
 displayed in the modal dialog. See example:
 
@@ -78,10 +74,6 @@ Displays a modal dialog with the provided title, body and buttons.
 
 
 </div>
-
-
-## Dialog
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="9" packageName="@vendure/admin-ui" />
 
 Any component intended to be used with the ModalService.fromComponent() method must implement
@@ -105,10 +97,6 @@ to this method and then complete.
 
 
 </div>
-
-
-## DialogConfig
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="33" packageName="@vendure/admin-ui" />
 
 Configures a generic modal dialog.
@@ -153,10 +141,6 @@ interface DialogConfig<T> {
 
 
 </div>
-
-
-## ModalOptions
-
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="48" packageName="@vendure/admin-ui" />
 
 Options to configure the behaviour of the modal.

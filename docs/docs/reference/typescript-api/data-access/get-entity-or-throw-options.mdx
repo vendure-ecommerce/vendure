@@ -2,13 +2,9 @@
 title: "GetEntityOrThrowOptions"
 generated: true
 ---
-
-
-## GetEntityOrThrowOptions
-
 <GenerationInfo sourceFile="packages/core/src/connection/types.ts" sourceLine="10" packageName="@vendure/core" />
 
-Options used by the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getEntityOrThrow` method.
+Options used by the <DocsLink href="/reference/typescript-api/data-access/transactional-connection#transactionalconnection">TransactionalConnection</DocsLink> `getEntityOrThrow` method.
 
 ```ts title="Signature"
 interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
@@ -29,7 +25,7 @@ interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 An optional channelId to limit results to entities assigned to the given Channel. Should
-only be used when getting entities that implement the <a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a> interface.
+only be used when getting entities that implement the <DocsLink href="/reference/typescript-api/entities/interfaces#channelaware">ChannelAware</DocsLink> interface.
 ### retries
 
 <MemberInfo kind="property" type={`number`} default={`0`}  since="1.1.0"  />

@@ -2,10 +2,6 @@
 title: "ChangedPriceHandlingStrategy"
 generated: true
 ---
-
-
-## ChangedPriceHandlingStrategy
-
 <GenerationInfo sourceFile="packages/core/src/config/order/changed-price-handling-strategy.ts" sourceLine="24" packageName="@vendure/core" />
 
 This strategy defines how we handle the situation where an item exists in an Order, and
@@ -43,7 +39,7 @@ interface ChangedPriceHandlingStrategy extends InjectableStrategy {
 
 This method is called when adding to or adjusting OrderLines, if the latest price
 (as determined by the ProductVariant price, potentially modified by the configured
-<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>) differs from the initial price at the time
+<DocsLink href="/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy">OrderItemPriceCalculationStrategy</DocsLink>) differs from the initial price at the time
 that the OrderLine was created.
 
 

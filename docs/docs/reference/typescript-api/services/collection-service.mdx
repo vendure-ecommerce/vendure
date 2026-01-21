@@ -2,13 +2,9 @@
 title: "CollectionService"
 generated: true
 ---
-
-
-## CollectionService
-
 <GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="77" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/reference/typescript-api/entities/collection#collection'>Collection</a> entities.
+Contains methods relating to <DocsLink href="/reference/typescript-api/entities/collection#collection">Collection</DocsLink> entities.
 
 ```ts title="Signature"
 class CollectionService implements OnModuleInit {
@@ -73,7 +69,7 @@ class CollectionService implements OnModuleInit {
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition[]`}   />
 
-Returns all configured CollectionFilters, as specified by the <a href='/reference/typescript-api/products-stock/catalog-options#catalogoptions'>CatalogOptions</a>.
+Returns all configured CollectionFilters, as specified by the <DocsLink href="/reference/typescript-api/products-stock/catalog-options#catalogoptions">CatalogOptions</DocsLink>.
 ### getParent
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collectionId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/collection#collection'>Collection</a> | undefined>`}   />
@@ -148,7 +144,7 @@ its siblings.
 <MemberInfo kind="method" type={`(applyAllFiltersOnProductUpdates: boolean) => `}  since="3.1.3"  />
 
 By default, whenever product data is updated (as determined by subscribing to the
-<a href='/reference/typescript-api/events/event-types#productevent'>ProductEvent</a> and <a href='/reference/typescript-api/events/event-types#productvariantevent'>ProductVariantEvent</a> events), the CollectionFilters are re-applied
+<DocsLink href="/reference/typescript-api/events/event-types#productevent">ProductEvent</DocsLink> and <DocsLink href="/reference/typescript-api/events/event-types#productvariantevent">ProductVariantEvent</DocsLink> events), the CollectionFilters are re-applied
 to all Collections.
 
 In certain scenarios, such as when a large number of products are updated at once due to

@@ -2,14 +2,10 @@
 title: "PageBlock"
 generated: true
 ---
-
-
-## PageBlock
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="591" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
-A component for displaying a block of content on a page. This should be used inside the <a href='/reference/dashboard/page-layout/#pagelayout'>PageLayout</a> component.
+A component for displaying a block of content on a page. This should be used inside the <DocsLink href="/reference/dashboard/page-layout/#pagelayout">PageLayout</DocsLink> component.
 It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
 to identify the block.
 
@@ -30,13 +26,9 @@ Parameters
 
 <MemberInfo kind="parameter" type={`Readonly<<a href='/reference/dashboard/page-layout/page-block#pageblockprops'>PageBlockProps</a>>`} />
 
-
-
-## PageBlockProps
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="540" packageName="@vendure/dashboard" since="3.3.0" />
 
-Props used to configure the <a href='/reference/dashboard/page-layout/page-block#pageblock'>PageBlock</a> component.
+Props used to configure the <DocsLink href="/reference/dashboard/page-layout/page-block#pageblock">PageBlock</DocsLink> component.
 
 ```ts title="Signature"
 type PageBlockProps = {
@@ -84,16 +76,12 @@ An optional set of CSS classes to apply to the block.
 
 
 </div>
-
-
-## FullWidthPageBlock
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="638" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 A component for displaying a block of content on a page that takes up the full width of the page.
-This should be used inside the <a href='/reference/dashboard/page-layout/#pagelayout'>PageLayout</a> component.
+This should be used inside the <DocsLink href="/reference/dashboard/page-layout/#pagelayout">PageLayout</DocsLink> component.
 
 ```ts title="Signature"
 function FullWidthPageBlock(props: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>): void
@@ -104,15 +92,11 @@ Parameters
 
 <MemberInfo kind="parameter" type={`Readonly<Pick<<a href='/reference/dashboard/page-layout/page-block#pageblockprops'>PageBlockProps</a>, 'children' | 'className' | 'blockId'>>`} />
 
-
-
-## CustomFieldsPageBlock
-
 <GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="668" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
 A component for displaying an auto-generated form for custom fields on a page.
-This is a special form of <a href='/reference/dashboard/page-layout/page-block#pageblock'>PageBlock</a> that automatically generates
+This is a special form of <DocsLink href="/reference/dashboard/page-layout/page-block#pageblock">PageBlock</DocsLink> that automatically generates
 a form corresponding to the custom fields for the given entity type.
 
 *Example*

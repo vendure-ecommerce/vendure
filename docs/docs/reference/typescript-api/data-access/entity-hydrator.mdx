@@ -2,10 +2,6 @@
 title: "EntityHydrator"
 generated: true
 ---
-
-
-## EntityHydrator
-
 <GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="77" packageName="@vendure/core" since="1.3.0" />
 
 This is a helper class which is used to "hydrate" entity instances, which means to populate them
@@ -49,7 +45,7 @@ available, and those FacetValues will have their `facet` relations joined too.
 
 This `hydrate` method will _also_ automatically take care or translating any
 translatable entities (e.g. Product, Collection, Facet), and if the `applyProductVariantPrices`
-options is used (see <a href='/reference/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>), any related ProductVariant will have the correct
+options is used (see <DocsLink href="/reference/typescript-api/data-access/hydrate-options#hydrateoptions">HydrateOptions</DocsLink>), any related ProductVariant will have the correct
 Channel-specific prices applied to them.
 
 Custom field relations may also be hydrated:

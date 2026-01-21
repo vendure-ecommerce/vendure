@@ -2,35 +2,23 @@
 title: "Email Plugin Types"
 generated: true
 ---
-
-
-## EventWithContext
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="22" packageName="@vendure/email-plugin" />
 
 A VendureEvent which also includes a `ctx` property containing the current
-<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, which is used to determine the channel and language
+<DocsLink href="/reference/typescript-api/request/request-context#requestcontext">RequestContext</DocsLink>, which is used to determine the channel and language
 to use when generating the email.
 
 ```ts title="Signature"
 type EventWithContext = VendureEvent & { ctx: RequestContext }
 ```
-
-
-## EventWithAsyncData
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="32" packageName="@vendure/email-plugin" />
 
-A VendureEvent with a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> and a `data` property which contains the
-value resolved from the <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.loadData()` callback.
+A VendureEvent with a <DocsLink href="/reference/typescript-api/request/request-context#requestcontext">RequestContext</DocsLink> and a `data` property which contains the
+value resolved from the <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>`.loadData()` callback.
 
 ```ts title="Signature"
 type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R }
 ```
-
-
-## EmailDetails
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="288" packageName="@vendure/email-plugin" />
 
 The final, generated email details to be sent.
@@ -93,13 +81,9 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
 
 
 </div>
-
-
-## LoadDataFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="322" packageName="@vendure/email-plugin" />
 
-A function used to load async data for use by an <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.
+A function used to load async data for use by an <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>.
 
 ```ts title="Signature"
 type LoadDataFn<Event extends EventWithContext, R> = (context: {
@@ -107,10 +91,6 @@ type LoadDataFn<Event extends EventWithContext, R> = (context: {
     injector: Injector;
 }) => Promise<R>
 ```
-
-
-## EmailAttachment
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="341" packageName="@vendure/email-plugin" />
 
 An object defining a file attachment for an email. Based on the object described
@@ -121,13 +101,9 @@ the attachment file.
 ```ts title="Signature"
 type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 ```
-
-
-## LoadTemplateInput
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="402" packageName="@vendure/email-plugin" />
 
-The object passed to the <a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a> `loadTemplate()` method.
+The object passed to the <DocsLink href="/reference/core-plugins/email-plugin/template-loader#templateloader">TemplateLoader</DocsLink> `loadTemplate()` method.
 
 ```ts title="Signature"
 interface LoadTemplateInput {
@@ -159,14 +135,10 @@ EmailEventHandler's `setTemplateVars()` method.
 
 
 </div>
-
-
-## SetTemplateVarsFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="435" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
-See <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
+See <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>.setTemplateVars().
 
 ```ts title="Signature"
 type SetTemplateVarsFn<Event> = (
@@ -174,10 +146,6 @@ type SetTemplateVarsFn<Event> = (
     globals: { [key: string]: any },
 ) => { [key: string]: any }
 ```
-
-
-## SetAttachmentsFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="449" packageName="@vendure/email-plugin" />
 
 A function used to define attachments to be sent with the email.
@@ -187,10 +155,6 @@ how attachments work in Nodemailer.
 ```ts title="Signature"
 type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>
 ```
-
-
-## SetSubjectFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="457" packageName="@vendure/email-plugin" />
 
 A function used to define the subject to be sent with the email.
@@ -202,10 +166,6 @@ type SetSubjectFn<Event> = (
     injector: Injector,
 ) => string | Promise<string>
 ```
-
-
-## OptionalAddressFields
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="471" packageName="@vendure/email-plugin" since="1.1.0" />
 
 Optional address-related fields for sending the email.
@@ -238,37 +198,25 @@ An email address that will appear on the _Reply-To:_ field
 
 
 </div>
-
-
-## SetOptionalAddressFieldsFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="497" packageName="@vendure/email-plugin" since="1.1.0" />
 
-A function used to set the <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
+A function used to set the <DocsLink href="/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields">OptionalAddressFields</DocsLink>.
 
 ```ts title="Signature"
 type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>
 ```
-
-
-## SetMetadataFn
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="509" packageName="@vendure/email-plugin" since="3.1.0" />
 
-A function used to set the <a href='/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata'>EmailMetadata</a>.
+A function used to set the <DocsLink href="/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata">EmailMetadata</DocsLink>.
 
 ```ts title="Signature"
 type SetMetadataFn<Event> = (event: Event) => EmailMetadata | Promise<EmailMetadata>
 ```
-
-
-## EmailMetadata
-
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="519" packageName="@vendure/email-plugin" since="3.1.0" />
 
-Metadata that can be attached to an email via the <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.setMetadata()` method.
+Metadata that can be attached to an email via the <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>`.setMetadata()` method.
 
 ```ts title="Signature"
 type EmailMetadata = Record<string, any>

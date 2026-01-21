@@ -2,13 +2,9 @@
 title: "PaymentMethodConfigOptions"
 generated: true
 ---
-
-
-## PaymentMethodConfigOptions
-
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="255" packageName="@vendure/core" />
 
-Defines the object which is used to construct the <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>.
+Defines the object which is used to construct the <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>.
 
 ```ts title="Signature"
 interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
@@ -31,7 +27,7 @@ interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableO
 
 This function provides the logic for creating a payment. For example,
 it may call out to a third-party service with the data and should return a
-<a href='/reference/typescript-api/payment/payment-method-types#createpaymentresult'>CreatePaymentResult</a> object contains the details of the payment.
+<DocsLink href="/reference/typescript-api/payment/payment-method-types#createpaymentresult">CreatePaymentResult</DocsLink> object contains the details of the payment.
 ### settlePayment
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/payment-method-types#settlepaymentfn'>SettlePaymentFn</a><T>`}   />
@@ -61,7 +57,7 @@ omitted and any Refunds will have to be settled manually by an administrator.
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a><<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, <a href='/reference/typescript-api/payment/payment-transition-data#paymenttransitiondata'>PaymentTransitionData</a>>`}   />
 
-This function, when specified, will be invoked before any transition from one <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> to another.
+This function, when specified, will be invoked before any transition from one <DocsLink href="/reference/typescript-api/payment/payment-state#paymentstate">PaymentState</DocsLink> to another.
 The return value (a sync / async `boolean`) is used to determine whether the transition is permitted.
 
 

@@ -2,13 +2,9 @@
 title: "CustomerService"
 generated: true
 ---
-
-
-## CustomerService
-
 <GenerationInfo sourceFile="packages/core/src/service/services/customer.service.ts" sourceLine="80" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/reference/typescript-api/entities/customer#customer'>Customer</a> entities.
+Contains methods relating to <DocsLink href="/reference/typescript-api/entities/customer#customer">Customer</DocsLink> entities.
 
 ```ts title="Signature"
 class CustomerService {
@@ -71,12 +67,12 @@ to the current active Channel only.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customerId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/address#address'>Address</a>[]>`}   />
 
-Returns all <a href='/reference/typescript-api/entities/address#address'>Address</a> entities associated with the specified Customer.
+Returns all <DocsLink href="/reference/typescript-api/entities/address#address">Address</DocsLink> entities associated with the specified Customer.
 ### getCustomerGroups
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customerId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]>`}   />
 
-Returns a list of all <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a> entities.
+Returns a list of all <DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">CustomerGroup</DocsLink> entities.
 ### create
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateCustomerInput, password?: string) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><CreateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>>>`}   />
@@ -84,7 +80,7 @@ Returns a list of all <a href='/reference/typescript-api/entities/customer-group
 Creates a new Customer, including creation of a new User with the special `customer` Role.
 
 If the `password` argument is specified, the Customer will be immediately verified. If not,
-then an <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a> is published, so that the customer can have their
+then an <DocsLink href="/reference/typescript-api/events/event-types#accountregistrationevent">AccountRegistrationEvent</DocsLink> is published, so that the customer can have their
 email address verified and set their password in a later step using the `verifyCustomerEmailAddress()`
 method.
 
@@ -108,9 +104,9 @@ This method is intended to be used in admin-created Customer flows.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RegisterCustomerInput) => Promise<RegisterCustomerAccountResult | EmailAddressConflictError | PasswordValidationError>`}   />
 
-Registers a new Customer account with the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a> and starts
-the email verification flow (unless <a href='/reference/typescript-api/auth/auth-options#authoptions'>AuthOptions</a> `requireVerification` is set to `false`)
-by publishing an <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>.
+Registers a new Customer account with the <DocsLink href="/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy">NativeAuthenticationStrategy</DocsLink> and starts
+the email verification flow (unless <DocsLink href="/reference/typescript-api/auth/auth-options#authoptions">AuthOptions</DocsLink> `requireVerification` is set to `false`)
+by publishing an <DocsLink href="/reference/typescript-api/events/event-types#accountregistrationevent">AccountRegistrationEvent</DocsLink>.
 
 This method is intended to be used in storefront Customer-creation flows.
 ### refreshVerificationToken
@@ -118,18 +114,18 @@ This method is intended to be used in storefront Customer-creation flows.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string) => Promise<void>`}   />
 
 Refreshes a stale email address verification token by generating a new one and
-publishing a <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>.
+publishing a <DocsLink href="/reference/typescript-api/events/event-types#accountregistrationevent">AccountRegistrationEvent</DocsLink>.
 ### verifyCustomerEmailAddress
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise<<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a><VerifyCustomerAccountResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>>>`}   />
 
-Given a valid verification token which has been published in an <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>, this
+Given a valid verification token which has been published in an <DocsLink href="/reference/typescript-api/events/event-types#accountregistrationevent">AccountRegistrationEvent</DocsLink>, this
 method is used to set the Customer as `verified` as part of the account registration flow.
 ### requestPasswordReset
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string) => Promise<void>`}   />
 
-Publishes a new <a href='/reference/typescript-api/events/event-types#passwordresetevent'>PasswordResetEvent</a> for the given email address. This event creates
+Publishes a new <DocsLink href="/reference/typescript-api/events/event-types#passwordresetevent">PasswordResetEvent</DocsLink> for the given email address. This event creates
 a token which can be used in the `resetPassword()` method.
 ### resetPassword
 
@@ -141,14 +137,14 @@ this method will change the Customer's password to that given as the `password` 
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/reference/typescript-api/common/id#id'>ID</a>, newEmailAddress: string) => Promise<boolean | EmailAddressConflictError>`}   />
 
-Publishes a <a href='/reference/typescript-api/events/event-types#identifierchangerequestevent'>IdentifierChangeRequestEvent</a> for the given User. This event contains a token
+Publishes a <DocsLink href="/reference/typescript-api/events/event-types#identifierchangerequestevent">IdentifierChangeRequestEvent</DocsLink> for the given User. This event contains a token
 which is then used in the `updateEmailAddress()` method to change the email address of the User &
 Customer.
 ### updateEmailAddress
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise<boolean | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError>`}   />
 
-Given a valid email update token published in a <a href='/reference/typescript-api/events/event-types#identifierchangerequestevent'>IdentifierChangeRequestEvent</a>, this method
+Given a valid email update token published in a <DocsLink href="/reference/typescript-api/events/event-types#identifierchangerequestevent">IdentifierChangeRequestEvent</DocsLink>, this method
 will update the Customer & User email address.
 ### createOrUpdate
 
@@ -159,7 +155,7 @@ For guest checkouts, we assume that a matching email address is the same custome
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customerId: <a href='/reference/typescript-api/common/id#id'>ID</a>, input: CreateAddressInput) => Promise<<a href='/reference/typescript-api/entities/address#address'>Address</a>>`}   />
 
-Creates a new <a href='/reference/typescript-api/entities/address#address'>Address</a> for the given Customer.
+Creates a new <DocsLink href="/reference/typescript-api/entities/address#address">Address</DocsLink> for the given Customer.
 ### updateAddress
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateAddressInput) => Promise<<a href='/reference/typescript-api/entities/address#address'>Address</a>>`}   />

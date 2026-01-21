@@ -2,10 +2,6 @@
 title: "Populate"
 generated: true
 ---
-
-
-## populate
-
 <GenerationInfo sourceFile="packages/core/src/cli/populate.ts" sourceLine="51" packageName="@vendure/core" />
 
 Populates the Vendure server with some initial data and (optionally) product data from
@@ -18,9 +14,9 @@ The argument can be either a Channel object or a valid channel `token`.
 
 Internally the `populate()` function does the following:
 
-1. Uses the <a href='/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
-2. If `productsCsvPath` is provided, uses <a href='/reference/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
-3. Uses <a href='/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate collections specified in the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+1. Uses the <DocsLink href="/reference/typescript-api/import-export/populator#populator">Populator</DocsLink> to populate the <DocsLink href="/reference/typescript-api/import-export/initial-data#initialdata">InitialData</DocsLink>.
+2. If `productsCsvPath` is provided, uses <DocsLink href="/reference/typescript-api/import-export/importer#importer">Importer</DocsLink> to populate Product data.
+3. Uses <DocsLink href="/reference/typescript-api/import-export/populator#populator">Populator</DocsLink> to populate collections specified in the <DocsLink href="/reference/typescript-api/import-export/initial-data#initialdata">InitialData</DocsLink>.
 
 *Example*
 

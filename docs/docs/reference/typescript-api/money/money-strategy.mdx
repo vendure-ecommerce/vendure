@@ -2,14 +2,10 @@
 title: "MoneyStrategy"
 generated: true
 ---
-
-
-## MoneyStrategy
-
 <GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="63" packageName="@vendure/core" since="2.0.0" />
 
 The MoneyStrategy defines how monetary values are stored and manipulated. The MoneyStrategy
-is defined in <a href='/reference/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>:
+is defined in <DocsLink href="/reference/typescript-api/configuration/entity-options#entityoptions">EntityOptions</DocsLink>:
 
 *Example*
 
@@ -23,11 +19,11 @@ const config: VendureConfig = {
 
 ## Range
 
-The <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> uses an `int` field in the database, which puts an
+The <DocsLink href="/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy">DefaultMoneyStrategy</DocsLink> uses an `int` field in the database, which puts an
 effective limit of ~21.4 million on any stored value. For certain use cases
 (e.g. business sales with very high amounts, or currencies with very large
 denominations), this may cause issues. In this case, you can use the
-<a href='/reference/typescript-api/money/big-int-money-strategy#bigintmoneystrategy'>BigIntMoneyStrategy</a> which will use the `bigint` type to store monetary values,
+<DocsLink href="/reference/typescript-api/money/big-int-money-strategy#bigintmoneystrategy">BigIntMoneyStrategy</DocsLink> which will use the `bigint` type to store monetary values,
 giving an effective upper limit of over 9 quadrillion.
 
 ## Precision
@@ -98,7 +94,7 @@ UI as to how many decimal places to display.
 <MemberInfo kind="method" type={`(value: number, quantity?: number) => number`}   />
 
 Defines the logic used to round monetary values. For instance, the default behavior
-in the <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> is to round the value, then multiply.
+in the <DocsLink href="/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy">DefaultMoneyStrategy</DocsLink> is to round the value, then multiply.
 
 ```ts
 return Math.round(value * quantity);

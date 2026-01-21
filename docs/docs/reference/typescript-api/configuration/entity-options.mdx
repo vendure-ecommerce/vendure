@@ -2,10 +2,6 @@
 title: "EntityOptions"
 generated: true
 ---
-
-
-## EntityOptions
-
 <GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1036" packageName="@vendure/core" since="1.3.0" />
 
 Options relating to the internal handling of entities.
@@ -44,7 +40,7 @@ a fresh database.
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/configuration/entity-duplicator#entityduplicator'>EntityDuplicator</a><any>>`} default={`defaultEntityDuplicators`}  since="2.2.0"  />
 
-An array of <a href='/reference/typescript-api/configuration/entity-duplicator#entityduplicator'>EntityDuplicator</a> instances which are used to duplicate entities
+An array of <DocsLink href="/reference/typescript-api/configuration/entity-duplicator#entityduplicator">EntityDuplicator</DocsLink> instances which are used to duplicate entities
 when using the `duplicateEntity` mutation.
 ### moneyStrategy
 
@@ -82,7 +78,7 @@ smaller value here will prevent data inconsistencies between instances.
 Allows the metadata of the built-in TypeORM entities to be manipulated. This allows you
 to do things like altering data types, adding indices etc. This is an advanced feature
 which should be used with some caution as it will result in DB schema changes. For examples
-see <a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>.
+see <DocsLink href="/reference/typescript-api/configuration/entity-options#entitymetadatamodifier">EntityMetadataModifier</DocsLink>.
 ### slugStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/slug-strategy#slugstrategy'>SlugStrategy</a>`} default={`<a href='/reference/typescript-api/configuration/default-slug-strategy#defaultslugstrategy'>DefaultSlugStrategy</a>`}  since="3.5.0"  />
@@ -92,10 +88,6 @@ Slugs are URL-friendly versions of text commonly used for entity identifiers in 
 
 
 </div>
-
-
-## EntityMetadataModifier
-
 <GenerationInfo sourceFile="packages/core/src/config/entity-metadata/entity-metadata-modifier.ts" sourceLine="56" packageName="@vendure/core" since="1.6.0" />
 
 A function which allows TypeORM entity metadata to be manipulated prior to the DB schema being generated

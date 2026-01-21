@@ -2,14 +2,10 @@
 title: "TransactionalConnection"
 generated: true
 ---
-
-
-## TransactionalConnection
-
 <GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="41" packageName="@vendure/core" />
 
 The TransactionalConnection is a wrapper around the TypeORM `Connection` object which works in conjunction
-with the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the
+with the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator to implement per-request transactions. All services which access the
 database should use this class rather than the raw TypeORM connection, to ensure that db changes can be
 easily wrapped in transactions when required.
 
@@ -66,7 +62,7 @@ is discouraged without a deliberate reason.
 
 Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
 the RequestContext argument when possible, otherwise the queries will be executed outside of any
-ongoing transactions which have been started by the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
+ongoing transactions which have been started by the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator.
 
 The `options` parameter allows specifying additional configurations, such as the `replicationMode`,
 which determines whether the repository should interact with the master or replica database.
@@ -84,7 +80,7 @@ or not. If `RequestContext` is provided, the repository is bound to any ongoing 
 Allows database operations to be wrapped in a transaction, ensuring that in the event of an error being
 thrown at any point, the entire transaction will be rolled back and no changes will be saved.
 
-In the context of API requests, you should instead use the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator on your resolver or
+In the context of API requests, you should instead use the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator on your resolver or
 controller method.
 
 On the other hand, for code that does not run in the context of a GraphQL/REST request, this method
@@ -94,7 +90,7 @@ inconsistent state.
 Such situations include function processed by the JobQueue or stand-alone scripts which make use
 of Vendure internal services.
 
-If there is already a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object available, you should pass it in as the first
+If there is already a <DocsLink href="/reference/typescript-api/request/request-context#requestcontext">RequestContext</DocsLink> object available, you should pass it in as the first
 argument in order to create transactional context as the copy. If not, omit the first argument and an empty
 RequestContext object will be created, which is then used to propagate the transaction to
 all inner method calls.
@@ -133,12 +129,12 @@ private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amo
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, isolationLevel?: <a href='/reference/typescript-api/request/transaction-decorator#transactionisolationlevel'>TransactionIsolationLevel</a>) => `}   />
 
 Manually start a transaction if one is not already in progress. This method should be used in
-conjunction with the `'manual'` mode of the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
+conjunction with the `'manual'` mode of the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator.
 ### commitOpenTransaction
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => `}   />
 
-Manually commits any open transaction. Should be very rarely needed, since the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
+Manually commits any open transaction. Should be very rarely needed, since the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator
 and the internal TransactionInterceptor take care of this automatically. Use-cases include situations
 in which the worker thread needs to access changes made in the current transaction, or when using the
 Transaction decorator in manual mode.
@@ -146,7 +142,7 @@ Transaction decorator in manual mode.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => `}   />
 
-Manually rolls back any open transaction. Should be very rarely needed, since the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
+Manually rolls back any open transaction. Should be very rarely needed, since the <DocsLink href="/reference/typescript-api/request/transaction-decorator#transaction">Transaction</DocsLink> decorator
 and the internal TransactionInterceptor take care of this automatically. Use-cases include when using the
 Transaction decorator in manual mode.
 ### getEntityOrThrow
