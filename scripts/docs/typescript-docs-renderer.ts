@@ -64,7 +64,7 @@ export class TypescriptDocsRenderer {
             const pathParts = [];
             for (const subCategory of page.category) {
                 pathParts.push(subCategory);
-                const indexFile = path.join(outputPath, ...pathParts, 'index.md');
+                const indexFile = path.join(outputPath, ...pathParts, 'index.mdx');
                 const exists = fs.existsSync(indexFile);
                 const existingContent = exists && fs.readFileSync(indexFile).toString();
                 const hasActualContent = existingContent && existingContent.includes('isDefaultIndex: false');
@@ -75,7 +75,7 @@ export class TypescriptDocsRenderer {
                 }
             }
 
-            fs.writeFileSync(path.join(categoryDir, page.fileName + '.md'), markdown);
+            fs.writeFileSync(path.join(categoryDir, page.fileName + '.mdx'), markdown);
             generatedCount++;
         }
         return generatedCount;
@@ -352,7 +352,7 @@ export class TypescriptDocsRenderer {
         let typeText = type
             .trim()
             // encode HTML entities
-            .replace(/[\u00A0-\u9999<>\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+            .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 
